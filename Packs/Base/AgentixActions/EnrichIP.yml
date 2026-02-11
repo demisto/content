@@ -1,0 +1,104 @@
+commonfields:
+  id: EnrichIP
+  version: -1
+display: Enrich IP
+name: EnrichIP
+tags:
+ - ip
+ - enrichment
+category: Data Enrichment & Threat Intelligence
+description: |
+  A comprehensive action to enrich the provided IP address indicator and retrieve all available data.
+  The results include both tenant-specific internal information (from the Threat Intelligence Management (TIM) brand) and global threat intelligence.
+  Global threat intelligence is retrieved using configured integrations to identify potential malicious activity.
+  ACTION REDUNDANCY WARNING: Due to its comprehensive nature, DO NOT use 'EnrichIndicator' or 'CortexListIndicators' in parallel with this action, as the data is already included in the output.
+  PREREQUISITE: Ensure that one or more of these external integrations are configured in your environment.
+args:
+  - name: ip_list
+    required: true
+    description: A comma-separated list of IP addresses (IPv4 or IPv6) to enrich. e.g., '1.1.1.1, 2001:db8::1'.
+    type: string
+    underlyingargname: ip_list
+  - name: external_enrichment
+    required: false
+    description: Always set to true.
+    type: string
+    defaultvalue: "true"
+    underlyingargname: external_enrichment
+  - name: additional_fields
+    required: false
+    description: When set to true, the output will include additional fields about the IP address. Default is true.
+    type: string
+    defaultvalue: "true"
+    underlyingargname: additional_fields
+outputs:
+- underlyingoutputcontextpath: IPEnrichment.Value
+  description: The actual IP address indicator that was enriched.
+  type: string
+  name: IPEnrichment.Value
+- underlyingoutputcontextpath: IPEnrichment.Results.AdditionalFields.ASN
+  description: The Autonomous System Number (ASN) name associated with the IP address, e.g., "AS8948".
+  type: string
+  name: IPEnrichment.Results.AdditionalFields.ASN
+- underlyingoutputcontextpath: IPEnrichment.Results.AdditionalFields.MalwareFamily
+  description: The specific malware family associated with the malicious activity originating from or targeting this IP.
+  type: string
+  name: IPEnrichment.Results.AdditionalFields.MalwareFamily
+- underlyingoutputcontextpath: IPEnrichment.Results.AdditionalFields.Geo.Country
+  description: The country determined to be the physical location of the IP address (geolocation data).
+  type: string
+  name: IPEnrichment.Results.AdditionalFields.Geo.Country
+- underlyingoutputcontextpath: IPEnrichment.Results.AdditionalFields.Geo.Location
+  description: "The specific geographical coordinates of the IP address, provided in the format: 'latitude:longitude'."
+  type: string
+  name: IPEnrichment.Results.AdditionalFields.Geo.Location
+- underlyingoutputcontextpath: IPEnrichment.Results.AdditionalFields.Region
+  description: The administrative region, state, or province where the IP address is geographically located.
+  type: string
+  name: IPEnrichment.Results.AdditionalFields.Region
+- underlyingoutputcontextpath: IPEnrichment.Results.AdditionalFields.Tags
+  description: Descriptive tags or categories associated with the IP address.
+  type: Unknown
+  name: IPEnrichment.Results.AdditionalFields.Tags
+- underlyingoutputcontextpath: IPEnrichment.Results.AdditionalFields.Malicious.Vendor
+  description: The vendor or source that reported this IP address as malicious.
+  type: string
+  name: IPEnrichment.Results.AdditionalFields.Malicious.Vendor
+- underlyingoutputcontextpath: IPEnrichment.Results.AdditionalFields.Malicious.Description
+  description: A detailed explanation or rationale provided by the vendor regarding why the IP address was flagged as malicious.
+  type: string
+  name: IPEnrichment.Results.AdditionalFields.Malicious.Description
+- underlyingoutputcontextpath: IPEnrichment.Results.Address
+  description: The IP address value of the enriched indicator.
+  type: string
+  name: IPEnrichment.Results.Address
+- underlyingoutputcontextpath: IPEnrichment.Results.Brand
+  description: The brand that provided the enrichment information for this IP indicator.
+  type: string
+  name: IPEnrichment.Results.Brand
+- underlyingoutputcontextpath: IPEnrichment.Results.Reliability
+  description: "The reliability score of the reporting Brand. Options: A+ - Completely reliable, A - Reliable, B - Usually reliable, C - Fairly reliable, D - Not usually reliable, E - Unreliable, F - Reliability cannot be judged."
+  type: string
+  name: IPEnrichment.Results.Reliability
+- underlyingoutputcontextpath: IPEnrichment.Results.Verdict
+  description: "The risk classification (verdict) for this specific IP indicator, based on a single brand's analysis. Options: Unknown, Benign, Suspicious, Malicious."
+  type: string
+  name: IPEnrichment.Results.Verdict
+- underlyingoutputcontextpath: IPEnrichment.MaxVerdict
+  description: "The highest risk classification (maximum verdict) aggregated from all brands' verdicts found for this IP. Options: Unknown, Benign, Suspicious, Malicious."
+  type: string
+  name: IPEnrichment.MaxVerdict
+underlyingcontentitem:
+  id: ip-enrichment
+  name: ip-enrichment
+  type: script
+  version: -1
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- agentix
+- cloud
+- cloud_runtime_security
+- edr
+- xsiam

@@ -1,0 +1,65 @@
+commonfields:
+  id: MicrosoftDefenderUnisolateMachine
+  version: -1
+display: Microsoft Defender - Unisolate Machine
+name: MicrosoftDefenderUnisolateMachine
+tags:
+ - Endpoint
+category: Endpoint
+description: >
+  Unisolate a specific machine from the network.
+  Undo an isolation of a machine.
+args:
+  - description: A comma-separated string of machine IDs to be used for isolation. e.g., 23890987654323456789,345678909876543456789.
+    type: string
+    name: machine_id
+    required: true
+    underlyingargname: machine_id
+  - description: A comment to associate with the isolation action.
+    name: comment
+    required: true
+    isgeneratable: true
+    type: string
+    underlyingargname: comment
+outputs:
+  - underlyingoutputcontextpath: MicrosoftATP.MachineAction.ID
+    description: Unique identifier of the machine action performed (e.g., unisolation).
+    type: string
+    name: MicrosoftATP.MachineAction.ID
+  - underlyingoutputcontextpath: MicrosoftATP.MachineAction.Scope
+    description: The scope or extent of the action applied. May include user-level or machine-wide context.
+    type: string
+    name: MicrosoftATP.MachineAction.Scope
+  - underlyingoutputcontextpath: MicrosoftATP.MachineAction.Status
+    description: Current status of the action (e.g., Pending, Succeeded, Failed).
+    type: string
+    name: MicrosoftATP.MachineAction.Status
+  - underlyingoutputcontextpath: MicrosoftATP.MachineAction.ComputerDNSName
+    description: DNS name of the machine on which the action was executed.
+    type: string
+    name: MicrosoftATP.MachineAction.ComputerDNSName
+  - underlyingoutputcontextpath: MicrosoftATP.MachineAction.CreationDateTimeUtc
+    description: Timestamp (in UTC) when the action was created.
+    type: date
+    name: MicrosoftATP.MachineAction.CreationDateTimeUtc
+  - underlyingoutputcontextpath: MicrosoftATP.MachineAction.LastUpdateTimeUtc
+    description: Timestamp (in UTC) when the status of the action was last updated.
+    type: date
+    name: MicrosoftATP.MachineAction.LastUpdateTimeUtc
+  - underlyingoutputcontextpath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier
+    description: Unique identifier (e.g., hash) of the file related to the action, if applicable.
+    type: string
+    name: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier
+  - underlyingoutputcontextpath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
+    description: Type of the file identifier used (e.g., "SHA1", "SHA256", or "MD5").
+    type: string
+    name: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
+underlyingcontentitem:
+  id: MicrosoftAtpUnisolateMachine
+  name: MicrosoftAtpUnisolateMachine
+  type: script
+  version: -1
+  command: ''
+requiresuserapproval: true
+marketplaces:
+- platform

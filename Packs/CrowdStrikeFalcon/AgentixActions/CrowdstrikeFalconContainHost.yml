@@ -1,0 +1,34 @@
+commonfields:
+  id: CrowdstrikeFalconContainHost
+  version: -1
+display: Crowdstrike Falcon - Contain Host
+name: CrowdstrikeFalconContainHost
+tags:
+- Isolated
+- Under-Investigation
+category: Endpoint
+description: |-
+  Isolates one or more CrowdStrike-managed endpoints by placing them into network containment.
+
+  While contained, the local firewall on each host is reconfigured to block all inbound and outbound traffic,
+  except for communication with CrowdStrike Cloud Services and any IP addresses explicitly allowed
+  in the organization's containment policy.
+
+  This command is useful for immediate response actions during incident investigations or active threats.
+args:
+- description: "A comma\u2011separated string of one or more CrowdStrike Host Agent\
+    \ IDs (AIDs). Can be found Under ID of the output of the cs-falcon-search-device\
+    \ command or in the CrowdStrike Falcon console under Host Management-Containment."
+  name: ids
+  required: true
+  underlyingargname: ids
+  type: string
+underlyingcontentitem:
+  id: CrowdstrikeFalcon
+  name: CrowdstrikeFalcon
+  type: command
+  version: -1
+  command: 'cs-falcon-contain-host'
+requiresuserapproval: true
+marketplaces:
+- platform

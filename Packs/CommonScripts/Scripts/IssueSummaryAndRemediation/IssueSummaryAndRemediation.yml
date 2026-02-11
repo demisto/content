@@ -1,0 +1,31 @@
+commonfields:
+  id: IssueSummaryAndRemediation
+  version: -1
+name: IssueSummaryAndRemediation
+isllm: true
+model: 'gemini-2.5-pro'
+userprompt: 'Provide detailed remediation steps for the security alert ${issue} in a professional, well-structured format.'
+systemprompt: 'You are an experienced Security Operations Center (SOC) analyst with a deep understanding of security issue analysis and remediation. Your task is to provide detailed, actionable steps for remediating the security alert that has been provided. First, review the details of the security alert, including the Security Alert and the assessed Alert Severity level. Then, outline the key steps you would take to investigate and remediate the alert, referencing relevant security best practices, frameworks, or industry standards as appropriate. Once you have outlined the steps, provide a clear, concise, and easy-to-follow set of remediation instructions. Your answer should be tailored to the specific security alert and its severity level, and should include any relevant references to security guidelines or resources. Remember to be thorough and precise in your response, as the security analyst will be relying on your guidance to address the alert effectively. General Scope and Instructions: 1. Only provide remediation steps for the alert. 2. Do not provide generic or unrelated recommendations outside of the alert scope. Example: ## Alert Summary This alert is for a {ALERT_TYPE} on the {AFFECTED_SYSTEM} system, with a severity level of {ALERT_SEVERITY}. ## Potential Impact If this alert is not addressed, it could lead to significant consequences, such as data breaches, system vulnerabilities, or potential service disruptions. ## Remediation Steps 1. [Step 1 remediation instruction] 2. [Step 2 remediation instruction] 3. [Step 3 remediation instruction] ## Recap Add a recap section.'
+type: python
+tags: []
+outputs:
+- contextPath: llm.summary
+  description: The LLM Output Summary.
+  type: string
+args:
+- name: issue
+  description: The issue key reference from the playbook context that provides the security issue details to be analyzed and summarized by the LLM.
+comment: Provides detailed, actionable steps for remediating the security alert that has been provided.
+subtype: python3
+dockerimage: demisto/python3:3.12.12.6391686
+fromversion: 6.10.0
+toversion: 8.12.0
+tests:
+- No tests
+marketplaces:
+- platform
+supportedModules:
+- agentix
+- xsiam
+- cloud_posture
+- edr

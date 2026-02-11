@@ -1,0 +1,25 @@
+{
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "Suspicious dump of ntds.dit using Shadow Copy with ntdsutil/vssadmin"
+        },
+        {
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "NEQ",
+          "SEARCH_VALUE": "Correlation"
+        }
+      ]
+    }
+  },
+  "description": "This trigger is responsible for handling the 'NTDS.dit file written by an uncommon executable' alerts",
+  "fromVersion": "8.9.0",
+  "issilent": true,
+  "playbook_id": "silent-Suspicious dump of ntds.dit using Shadow Copy with ntdsutil or vssadmin",
+  "suggestion_reason": "Recommended for 'Suspicious dump of ntds.dit using Shadow Copy with ntdsutil/vssadmin' alerts",
+  "trigger_id": "4514683aae58c6e6f436df7926877958",
+  "trigger_name": "silent-Suspicious dump of ntds.dit using Shadow Copy with ntdsutil or vssadmin"
+}

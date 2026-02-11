@@ -1,0 +1,105 @@
+tests:
+  - name: Basic Indicator Relationship Search
+    prompt: "Find relationships for IP 8.8.8.8"
+    agent_id: bf38cca4-3865-4fb0-aa1a-9be6779fda74
+    expected_outcomes:
+    - evaluation_mode: any_of
+      actions:
+      - action_id: CortexListIndicatorRelationships
+        arguments:
+          entities: "8.8.8.8"
+
+  - name: Domain Related Indicator Search
+    prompt: "Find all the domains related to the indicator 1.2.3.4"
+    agent_id: bf38cca4-3865-4fb0-aa1a-9be6779fda74
+    expected_outcomes:
+    - evaluation_mode: any_of
+      actions:
+      - action_id: CortexListIndicatorRelationships
+        arguments:
+          entities: "1.2.3.4"
+          entities_types: "Domain"
+
+  - name: Complex Relationship Investigation
+    prompt: "Search for relationships that include malware and IP addresses"
+    agent_id: bf38cca4-3865-4fb0-aa1a-9be6779fda74
+    expected_outcomes:
+    - evaluation_mode: any_of
+      actions:
+      - action_id: CortexListIndicatorRelationships
+        arguments:
+          entities_types: "Malware,IP"
+
+  - name: Verbose Relationship Details
+    prompt: "Get detailed relationships for domain example.com"
+    agent_id: bf38cca4-3865-4fb0-aa1a-9be6779fda74
+    expected_outcomes:
+    - evaluation_mode: any_of
+      actions:
+      - action_id: CortexListIndicatorRelationships
+        arguments:
+          entities: "example.com"
+          verbose: true
+
+  - name: Threat Actor Relationship Tracking
+    prompt: "Find all relationships involving the threat actor APT29"
+    agent_id: bf38cca4-3865-4fb0-aa1a-9be6779fda74
+    expected_outcomes:
+    - evaluation_mode: any_of
+      actions:
+      - action_id: CortexListIndicatorRelationships
+        arguments:
+          entities: "APT29"
+          entities_types: "Threat Actor"
+
+  - name: CVE Relationship Discovery
+    prompt: "Show all relationships that CVE-2023-1234 exploits"
+    agent_id: bf38cca4-3865-4fb0-aa1a-9be6779fda74
+    expected_outcomes:
+    - evaluation_mode: any_of
+      actions:
+      - action_id: CortexListIndicatorRelationships
+        arguments:
+          entities: "CVE-2023-1234"
+          relationships: "exploits"
+
+  - name: Campaign Indicator Connections
+    prompt: "Investigate relationships for Lazarus Group campaign"
+    agent_id: bf38cca4-3865-4fb0-aa1a-9be6779fda74
+    expected_outcomes:
+    - evaluation_mode: any_of
+      actions:
+      - action_id: CortexListIndicatorRelationships
+        arguments:
+          entities: "Lazarus Group"
+          entities_types: "Campaign"
+
+  - name: Revoked Relationship Inclusion
+    prompt: "Include revoked relationships for the indicators 1.2.3.4 and example.org"
+    agent_id: bf38cca4-3865-4fb0-aa1a-9be6779fda74
+    expected_outcomes:
+    - evaluation_mode: any_of
+      actions:
+      - action_id: CortexListIndicatorRelationships
+        arguments:
+          entities: "1.2.3.4,example.org"
+          revoked: true
+      - action_id: CortexListIndicatorRelationships
+        arguments:
+          entities: "1.2.3.4"
+          revoked: true
+      - action_id: CortexListIndicatorRelationships
+        arguments:
+          entities: "example.org"
+          revoked: true
+
+  - name: IP Addresses for a Malicious Domain
+    prompt: "Find all IP addresses that the domain malicious.com resolves to"
+    agent_id: bf38cca4-3865-4fb0-aa1a-9be6779fda74
+    expected_outcomes:
+    - evaluation_mode: any_of
+      actions:
+      - action_id: CortexListIndicatorRelationships
+        arguments:
+          entities_types: "Domain,IP"
+          relationships: "resolved-by"

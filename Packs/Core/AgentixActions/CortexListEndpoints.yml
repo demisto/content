@@ -1,0 +1,169 @@
+commonfields:
+  id: CortexListEndpoints
+  version: -1
+display: Cortex - List Endpoints
+name: CortexListEndpoints
+category: Data Enrichment & Threat Intelligence
+description: >
+  Searches for endpoints (can also be referred as XDR Agents or Agents) based on provided filters and retrieves endpoints data.
+args:
+  - name: endpoint_name
+    type: string
+    description: A comma-separated list of endpoint names. Uses equal operator.
+    underlyingargname: endpoint_name
+  - name: endpoint_type
+    type: string
+    description: |-
+      A comma-separated list of endpoint types. Options: mobile, server, workstation, containerized, serverless.
+    underlyingargname: endpoint_type
+  - name: endpoint_status
+    type: string
+    description: |-
+      A comma-separated list of endpoint connection statuses. Options: connected, lost, disconnected, uninstalled, vdi pending login, forensics offline.
+    underlyingargname: endpoint_status
+  - name: platform
+    type: string
+    description: |-
+      A comma-separated list of endpoint platforms. Options: windows, mac, linux, android, ios, serverless.
+    underlyingargname: platform
+  - name: operating_system
+    type: string
+    description: A comma-separated list of operating system names (e.g., Windows, macOS, Linux).
+    underlyingargname: operating_system
+  - name: agent_version
+    type: string
+    description: A comma-separated list of agent versions (e.g., 8.9.0.14028).
+    underlyingargname: agent_version
+  - name: agent_eol
+    type: string
+    description: |-
+      Indicates whether the endpoint is running an End-of-Life (EOL) agent version. Options: true, false.
+    underlyingargname: agent_eol
+  - name: os_version
+    type: string
+    description: A comma-separated list of OS versions (e.g., 10.0.22621).
+    underlyingargname: os_version
+  - name: ip_address
+    type: string
+    description: A comma-separated list of endpoint IP addresses.
+    underlyingargname: ip_address
+  - name: domain
+    type: string
+    description: A comma-separated list of domain names.
+    underlyingargname: domain
+  - name: assigned_prevention_policy
+    type: string
+    description: |-
+      A comma-separated list of assigned prevention policies. Options: pcastro, Caas Default, kris, democloud, Linux Default, Android Default, Serverless Function Default, macOS Default, iOS Default, Windows Default, bcpolicy.
+    underlyingargname: assigned_prevention_policy
+  - name: tags
+    type: string
+    description: A comma-separated list of endpoint tags.
+    underlyingargname: tags
+  - name: endpoint_id
+    type: string
+    description: A comma-separated list of endpoint IDs.
+    underlyingargname: endpoint_id
+  - name: operational_status
+    type: string
+    description: |-
+      A comma-separated list of endpoint operational protection statuses. Options: protected, partially protected, unprotected.
+    underlyingargname: operational_status
+  - name: cloud_provider
+    type: string
+    description: |-
+      A comma-separated list of cloud providers. Options: aws, azure, gcp, alibaba, oracle, on_prem.
+    underlyingargname: cloud_provider
+  - name: cloud_region
+    type: string
+    description: A comma-separated list of cloud regions (e.g., us-east-1).
+    underlyingargname: cloud_region
+  - name: page
+    type: string
+    description: Page number for pagination. Default is 0.
+    underlyingargname: page
+  - name: page_size
+    type: string
+    description: The number of endpoints to return per page. Default and maximum is 100.
+    underlyingargname: page_size
+outputs:
+  - underlyingoutputcontextpath: Core.Endpoint.endpoint_name
+    description: The endpoint name.
+    type: String
+    name: Core.Endpoint.endpoint_name
+  - underlyingoutputcontextpath: Core.Endpoint.endpoint_type
+    description: The endpoint type.
+    type: String
+    name: Core.Endpoint.endpoint_type
+  - underlyingoutputcontextpath: Core.Endpoint.endpoint_status
+    description: The endpoint status.
+    type: String
+    name: Core.Endpoint.endpoint_status
+  - underlyingoutputcontextpath: Core.Endpoint.platform
+    description: The endpoint platform.
+    type: String
+    name: Core.Endpoint.platform
+  - underlyingoutputcontextpath: Core.Endpoint.operating_system
+    description: The operating system of the endpoint.
+    type: String
+    name: Core.Endpoint.operating_system
+  - underlyingoutputcontextpath: Core.Endpoint.agent_version
+    description: The agent version installed on the endpoint.
+    type: String
+    name: Core.Endpoint.agent_version
+  - underlyingoutputcontextpath: Core.Endpoint.agent_eol
+    description: Indicates whether the endpoint is running a supported or EOL agent version.
+    type: String
+    name: Core.Endpoint.agent_eol
+  - underlyingoutputcontextpath: Core.Endpoint.os_version
+    description: The operating system version.
+    type: String
+    name: Core.Endpoint.os_version
+  - underlyingoutputcontextpath: Core.Endpoint.ip_address
+    description: The endpoint IP address.
+    type: String
+    name: Core.Endpoint.ip_address
+  - underlyingoutputcontextpath: Core.Endpoint.domain
+    description: The domain of the endpoint.
+    type: String
+    name: Core.Endpoint.domain
+  - underlyingoutputcontextpath: Core.Endpoint.assigned_prevention_policy
+    description: The assigned prevention policy.
+    type: String
+    name: Core.Endpoint.assigned_prevention_policy
+  - underlyingoutputcontextpath: Core.Endpoint.group_name
+    description: A list of group names the endpoint belongs to.
+    type: String
+    name: Core.Endpoint.group_name
+  - underlyingoutputcontextpath: Core.Endpoint.tags
+    description: A list of tags assigned to the endpoint.
+    type: String
+    name: Core.Endpoint.tags
+  - underlyingoutputcontextpath: Core.Endpoint.endpoint_id
+    description: The unique endpoint ID.
+    type: String
+    name: Core.Endpoint.endpoint_id
+  - underlyingoutputcontextpath: Core.Endpoint.operational_status
+    description: The operational status of the endpoint.
+    type: String
+    name: Core.Endpoint.operational_status
+  - underlyingoutputcontextpath: Core.Endpoint.cloud_provider
+    description: The cloud provider associated with the endpoint.
+    type: String
+    name: Core.Endpoint.cloud_provider
+  - underlyingoutputcontextpath: Core.Endpoint.cloud_region
+    description: The cloud region of the endpoint.
+    type: String
+    name: Core.Endpoint.cloud_region
+underlyingcontentitem:
+  id: Cortex Core - Platform
+  name: Cortex Core - Platform
+  type: command
+  version: -1
+  command: core-list-endpoints
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- xsiam
+- cloud_posture

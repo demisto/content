@@ -1,0 +1,5427 @@
+id: silent-Multiple discovery commands on a Windows host
+version: -1
+issilent: true
+name: silent-Multiple discovery commands on a Windows host
+description: |
+  #### This playbook is designed to handle the following alerts:
+  - Multiple discovery commands on a Windows host by the same process
+  - Remote Multiple discovery commands on a Windows host by the same IP
+  - Multiple discovery commands on a Windows host by the same process from a web server CGO
+  - Multiple discovery commands on a Windows host by the same process from an SQL server CGO
+  - Multiple discovery commands on a Windows host by the same process from a remote CGO
+  - Rare Multiple discovery commands on a Windows host by the same process
+
+
+  #### The playbook executes the following stages:
+  *Investigation:*
+  - Check the CGO SHA256 Reputation if malicious.
+  - Check the CGO SHA256 Reputation if medium and the   CGO process is unsigned.
+  - OS Actor CMD analysis is at high risk.
+  - OS Actor CMD analysis is at medium, and there is an output file for the discovery commands.
+  - Check if the host risk score is high.
+  - Check if the host risk score is medium and there is an output file, or the command line analysis is at medium risk.
+  - Check for host-related alerts
+  - Check if there are any related alerts on the remote host ( if there are any) and their host risk score.
+
+  *Additional advanced preformed checks:*
+  - If there is a script associated with the os actor command line, check the following:
+      - the script's sha256 reputation.
+      - the script's content with the command line analysis.
+      - detonate the script in Wildfire Sandbox.
+      - Check the process sha256 that created the script for reputation.
+
+  *Remediation:*
+
+  - Terminate the causality
+  - Add to the block list all the suspicious SHA256 files.
+  - Quarantine the malicious files.
+  - Block IP on the host and block the external IP if required.
+tags:
+- T1018 - Remote System Discovery
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 30a97886-2fd0-4cbb-8231-743ad206e680
+    type: start
+    task:
+      id: 30a97886-2fd0-4cbb-8231-743ad206e680
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 742,
+          "y": 97
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: cb74c684-3205-440f-8c00-9fc0a5a40484
+    type: regular
+    task:
+      id: cb74c684-3205-440f-8c00-9fc0a5a40484
+      version: -1
+      name: Get Reputation on CGO Sha256
+      description: This script gathers file reputation data from multiple integrations and returns a "FileEnrichment" object with consolidated information to the context output.
+      scriptName: file-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      external_enrichment:
+        simple: "true"
+      file_hash:
+        simple: ${alert.cgosha256}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 1a69a753-f270-469c-8ef4-c6043c1dfe3a
+    type: regular
+    task:
+      id: 1a69a753-f270-469c-8ef4-c6043c1dfe3a
+      version: -1
+      name: Get additional alert data - remote IP
+      description: Returns information about each alert ID.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 742,
+          "y": 245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 19d4f51e-2df2-4c3d-8115-5754d97d8836
+    type: title
+    task:
+      id: 19d4f51e-2df2-4c3d-8115-5754d97d8836
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+      - "7"
+      - "15"
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 742,
+          "y": 404
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 050e85fa-f27e-4442-863d-dfcfa8ebce0f
+    type: title
+    task:
+      id: 050e85fa-f27e-4442-863d-dfcfa8ebce0f
+      version: -1
+      name: Investigate CGO Process
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "113"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 538
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: ea545411-0789-483d-8011-1c42b568d1e5
+    type: regular
+    task:
+      id: ea545411-0789-483d-8011-1c42b568d1e5
+      version: -1
+      name: Set the CGO Signature status
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: CGOIsUnsigned
+      value:
+        complex:
+          root: alert
+          accessor: cgosigner
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: "False"
+              equals: {}
+              lhs:
+                value:
+                  simple: alert.cgosigner
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs: {}
+              rhsB: {}
+              then:
+                value:
+                  simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 1124
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 7729af22-241b-4ac0-8fd8-ad4ef4c91562
+    type: regular
+    task:
+      id: 7729af22-241b-4ac0-8fd8-ad4ef4c91562
+      version: -1
+      name: Get Alert's Host Risk Score
+      description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
+      script: '|||core-list-risky-hosts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      host_id:
+        simple: ${alert.hostname}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -650,
+          "y": 677
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 693ee8e6-30d2-4247-8fd5-1e052103570d
+    type: title
+    task:
+      id: 693ee8e6-30d2-4247-8fd5-1e052103570d
+      version: -1
+      name: Remote CGO
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1880,
+          "y": 538
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 7aa9cb15-a2b7-4fee-a39f-d0a50b7b9ccd
+    type: regular
+    task:
+      id: 7aa9cb15-a2b7-4fee-a39f-d0a50b7b9ccd
+      version: -1
+      name: Get the Host data of the remote IP
+      description: This script gathers endpoint data from multiple integrations and returns an endpoint entity with consolidated information to the context.
+      scriptName: get-endpoint-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+      - "124"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      endpoint_ip:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: actor_remote_ip
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: Core.OriginalAlert.event.causality_actor_remote_ip
+                iscontext: true
+              raw: {}
+          - operator: uniq
+      extend-context:
+        simple: remtoehostdata=
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2740,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 1873e436-907f-44a8-84e3-ce5cf099c980
+    type: condition
+    task:
+      id: 1873e436-907f-44a8-84e3-ce5cf099c980
+      version: -1
+      name: Is there a remote IP to enrich?
+      description: Check if there is a remote IP that assoicated with the IP.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "145"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.OriginalAlert.event.actor_remote_ip
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.OriginalAlert.event.causality_actor_remote_ip
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1880,
+          "y": 677
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: e670d67a-a050-4240-8dc8-8d2f1cb76177
+    type: title
+    task:
+      id: e670d67a-a050-4240-8dc8-8d2f1cb76177
+      version: -1
+      name: Verdict
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "129"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 732,
+          "y": 1603
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 3c65efd9-7a16-4f5b-8a6e-d11e41b6f36b
+    type: condition
+    task:
+      id: 3c65efd9-7a16-4f5b-8a6e-d11e41b6f36b
+      version: -1
+      name: Is there a resolution for the remote host?
+      description: Is there a resolution for the remote host?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EndpointData.Hostname
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2740,
+          "y": 1174
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 6b2f6169-c370-4cfa-917e-d8ab18f3c6d4
+    type: regular
+    task:
+      id: 6b2f6169-c370-4cfa-917e-d8ab18f3c6d4
+      version: -1
+      name: Get Malware Alerts on the Remote Host
+      description: |
+        This task searches for suspicious alerts that may indicate a compromised remote endpoint.
+
+        The task searches for the following alerts with the same agent ID (within a 1-day timeframe):
+        - Malware Agent Alerts.
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      extend-context:
+        simple: RemoteAlerts=
+      fromdate:
+        simple: 1 days ago
+      ignore-outputs:
+        simple: "true"
+      query:
+        simple: "(agent_ip_addresses:${Core.OriginalAlert.event.actor_remote_ip} or \nagent_ip_addresses:${Core.OriginalAlert.event.causality_actor_remote_ip}) and (sourceBrand:TRAPS or categoryname:Malware)"
+      todate:
+        simple: now
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2740,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: ab58c496-4db1-43d7-8e07-bbb513cf9e94
+    type: title
+    task:
+      id: ab58c496-4db1-43d7-8e07-bbb513cf9e94
+      version: -1
+      name: Investigate OS Actor Process
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+      - "118"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": 538
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 993cdf8f-22d6-4ff2-8d13-7fd03f5cb2fd
+    type: regular
+    task:
+      id: 993cdf8f-22d6-4ff2-8d13-7fd03f5cb2fd
+      version: -1
+      name: Command Line Analysis - OS Actor CMD
+      description: |-
+        This script evaluates command-line threats by analyzing both original and decoded inputs. It assigns weighted scores to detected patterns, such as AMSI bypass or credential dumping, and applies risk combination bonuses for multiple detections. The total score is normalized to a 0-100 scale, with risk levels categorized as follows:
+
+        * 0-25: Low Risk
+        * 26-50: Medium Risk
+        * 51-90: High Risk
+        * 91-100: Critical Risk
+
+        The scoring mechanism provides a comprehensive risk assessment, considering both the severity and frequency of malicious behaviors.
+      scriptName: CommandLineAnalysis
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      command_line:
+        complex:
+          root: alert
+          accessor: osparentcmd
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1069,
+          "y": 677
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: c0c17d08-2ced-4e64-84db-c70881c39ebb
+    type: title
+    task:
+      id: c0c17d08-2ced-4e64-84db-c70881c39ebb
+      version: -1
+      name: Invesitgate the Host
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -829,
+          "y": 538
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: e033c131-7fd7-4aa8-aaaa-270b5f84da94
+    type: regular
+    task:
+      id: e033c131-7fd7-4aa8-aaaa-270b5f84da94
+      version: -1
+      name: Get Related Alerts on the Triggered Host
+      description: "This task searches for suspicious alerts that may indicate a compromised endpoint.\n\nThe task searches for alerts with the following names:\n- PowerShell suspicious flags\n- Process calls ActiveX Object with a shell command\n- Rundll32.exe executes a rare unsigned module with suspicious characteristics\n- Script file added to startup-related Registry keys\n- Suspicious certutil command line\n- Possible DLL Side-Loading into a Microsoft process from a suspicious folder\n- Image file execution options (IFEO) registry key set to execute a shell or scripting engine process\n- Phantom DLL Loading \n- Command-line arguments match Mimikatz execution\n- Rundll32.exe was used to run JavaScript\n- Highly rare SMB activity to multiple hosts\n- Process attempts to kill a known security/AV tool\n- Memory dumping with comsvcs.dll\n- Credential dumping via fgdump.exe\n- Credential dumping via gsecdump.exe \n- A suspicious direct syscall was executed by unsigned process from a user folder\n- Abnormal sensitive RPC traffic to multiple hosts\n- Multiple discovery commands from an unsigned causalit\n\n"
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      fromdate:
+        simple: 5 hours ago
+      query:
+        simple: "(\ncaseid:${alert.parentXDRIncident=val.split('-')[1]})  \nAND \n(\nname:\"PowerShell suspicious flags\" OR \nname:\"Process calls ActiveX Object with a shell command\" OR \nname:\"Rundll32.exe executes a rare unsigned module with suspicious characteristics\" OR \nname:\"Script file added to startup-related Registry keys\" OR\nname:\"Suspicious certutil command line\" OR \nname:\"Possible DLL Side-Loading into a Microsoft process from a suspicious folder\" OR \nname:\"Image file execution options (IFEO) registry key set to execute a shell or scripting engine process\" OR \nname:\"Phantom DLL Loading\" OR \nname:\"Command-line arguments match Mimikatz execution\" OR \nname:\"Rundll32.exe was used to run JavaScript\" OR \nname:\"Highly rare SMB activity to multiple hosts\" OR \nname:\"Process attempts to kill a known security/AV tool\" OR \nname:\"Memory dumping with comsvcs.dll\" OR \nname:\"Credential dumping via fgdump.exe\" OR \nname:\"Credential dumping via gsecdump.exe\" OR \nname:\"A suspicious direct syscall was executed by unsigned process from a user folder\" OR \nname:\"Abnormal sensitive RPC traffic to multiple hosts\" OR \nname:\"Multiple discovery commands from an unsigned causality\" \n)"
+      todate:
+        simple: now
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1046,
+          "y": 677
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 16e1821f-683e-4e4a-8de3-02068ad71d75
+    type: condition
+    task:
+      id: 16e1821f-683e-4e4a-8de3-02068ad71d75
+      version: -1
+      name: Is the CGO malicious?
+      description: Check if the CGO is malicious by checking its dbot score retrieved from the `file-enrichment` command.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "135"
+      "yes":
+      - "131"
+      - "132"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.cgosha256
+                      iscontext: true
+                    ignorecase: true
+                accessor: TIMScore
+            iscontext: true
+          right:
+            value: {}
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: DBotScore
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.cgosha256
+                      iscontext: true
+                    ignorecase: true
+                accessor: TIMScore
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 7cd39b9a-fef7-4abe-8ba6-92cc7db5088c
+    type: regular
+    task:
+      id: 7cd39b9a-fef7-4abe-8ba6-92cc7db5088c
+      version: -1
+      name: Set Key to Remediation Steps
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "135"
+    scriptarguments:
+      key:
+        simple: RemediationTruePositive
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 527,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 2ba6daf8-0cbc-48b8-85a1-f3549f369eb5
+    type: condition
+    task:
+      id: 2ba6daf8-0cbc-48b8-85a1-f3549f369eb5
+      version: -1
+      name: Suspicious CGO and Unsigned or Suspicious Path?
+      description: Check if the CGO reputation score is suspicious, and also if it or unsigned or executed from a suspicious path.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "135"
+      "yes":
+      - "131"
+      - "132"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.cgosha256
+                      iscontext: true
+                    ignorecase: true
+                accessor: TIMScore
+            iscontext: true
+          right:
+            value: {}
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.cgosha256
+                      iscontext: true
+                    ignorecase: true
+                accessor: TIMScore
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CGOIsUnsigned
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+        - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: SuspiciousCGOPath
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: SuspiciousCGOPath
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: "No"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 6538d70a-9c70-4d79-8013-5e97b1e8feae
+    type: condition
+    task:
+      id: 6538d70a-9c70-4d79-8013-5e97b1e8feae
+      version: -1
+      name: CMD Analysis - High Risk
+      description: Check if the CommandLineAnalysis determined a Risk Level of High.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "135"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: CommandLineAnalysis.risk
+            iscontext: true
+          right:
+            value:
+              simple: High Risk
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: CommandLineAnalysis.risk
+            iscontext: true
+          right:
+            value:
+              simple: Critical Risk
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1063,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: f6723d0f-435e-4a9d-88b4-1b178c2e444c
+    type: condition
+    task:
+      id: f6723d0f-435e-4a9d-88b4-1b178c2e444c
+      version: -1
+      name: CMD Analysis - Medium Risk + Output File
+      description: Check if the CommandLineAnalysis determined a Risk Level of Medium, and there is an output file for the commands' results.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "135"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: CommandLineAnalysis
+                accessor: risk
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: Medium Risk
+          ignorecase: true
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: OutputFile
+            iscontext: true
+          right:
+            value:
+              simple: Nothing was found
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -670,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: eb766d88-405b-4948-8f91-1dd14a091826
+    type: condition
+    task:
+      id: eb766d88-405b-4948-8f91-1dd14a091826
+      version: -1
+      name: Host Risk Score High
+      description: Check if the Hosts' risk score is High.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "135"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.RiskyHost.risk_level
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Core.RiskyHost.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: High
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: c57243bd-8a2f-45a5-85ef-3d58a94365d6
+    type: condition
+    task:
+      id: c57243bd-8a2f-45a5-85ef-3d58a94365d6
+      version: -1
+      name: Host Risk Score medium and output file or command analysis medium
+      description: Check if the Host's risk level is Medium and if there is an output file for the command's results, or if the command line analysis is medium.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "135"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Core.RiskyHost.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: med
+          ignorecase: true
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: OutputFile
+            iscontext: true
+          right:
+            value:
+              simple: Nothing was found
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: CommandLineAnalysis.risk
+            iscontext: true
+          right:
+            value:
+              simple: Medium Risk
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 8525716d-f7ed-42cd-8174-109364167854
+    type: condition
+    task:
+      id: 8525716d-f7ed-42cd-8174-109364167854
+      version: -1
+      name: Host Related Alerts
+      description: Are there any Host-Related Alerts
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "135"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: HostAlerts
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 527,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 16e4f199-9546-40ca-8d2c-1500b4113ebe
+    type: condition
+    task:
+      id: 16e4f199-9546-40ca-8d2c-1500b4113ebe
+      version: -1
+      name: Any suspicious alerts found?
+      description: Any suspicious alerts found?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1046,
+          "y": 1049
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 231d2e11-32ce-4efb-8df1-7c882076d54b
+    type: regular
+    task:
+      id: 231d2e11-32ce-4efb-8df1-7c882076d54b
+      version: -1
+      name: Set Found Host Alerts
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: HostAlerts
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1046,
+          "y": 1455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 3a419f5c-73e8-4059-8ddf-6a334bc45834
+    type: condition
+    task:
+      id: 3a419f5c-73e8-4059-8ddf-6a334bc45834
+      version: -1
+      name: Remote Related Alerts Or Remote Risk Score High
+      description: Check if there are any Remote Related Alerts or if the Remote IP is associated with a Risk Score of High
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "135"
+      "yes":
+      - "133"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RemoteHostRiskScore.Name
+            iscontext: true
+          right:
+            value: {}
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: EndpointData.RiskLevel
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: EndpointData.RiskLevel
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: High
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2230,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 9cd6dd72-7392-479d-8661-0d073e13903a
+    type: title
+    task:
+      id: 9cd6dd72-7392-479d-8661-0d073e13903a
+      version: -1
+      name: HA-Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1645,
+          "y": 2870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 968a37d1-c561-4c04-86f5-333bb96bf576
+    type: regular
+    task:
+      id: 968a37d1-c561-4c04-86f5-333bb96bf576
+      version: -1
+      name: Extract Script Path from the OS Actor Process
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      key:
+        simple: PSscript.Path
+      value:
+        complex:
+          root: alert
+          accessor: osparentcmd
+          transformers:
+          - operator: RegexGroups
+            args:
+              flags: {}
+              groups:
+                value:
+                  simple: "0"
+              keys: {}
+              regex:
+                value:
+                  simple: (?i)([A-Z]:\\(?:[^\\\"']+\\)*[^\\\"']+\.(?:ps1|bat|cmd))|(\\\\[^\\\"']+\\(?:[^\\\"']+\\)*[^\\\"']+\.(?:ps1|bat|cmd))
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys:
+                value:
+                  simple: "true"
+          - operator: uniq
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Nothing was found
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1645,
+          "y": 3039
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: f9692d49-cec5-4353-80d0-abc04c42b24e
+    type: condition
+    task:
+      id: f9692d49-cec5-4353-80d0-abc04c42b24e
+      version: -1
+      name: Is there a script to detonate?
+      description: Is there a script to detonate?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "49"
+      "yes":
+      - "78"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: PSscript.Path
+            iscontext: true
+          right:
+            value:
+              simple: Nothing was found
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1645,
+          "y": 3188
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: b1e3640a-d3cf-4723-8e0d-4f6c9f0cce45
+    type: title
+    task:
+      id: b1e3640a-d3cf-4723-8e0d-4f6c9f0cce45
+      version: -1
+      name: Terminate Causality
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "136"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -448,
+          "y": 6639.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 49090cae-8a9e-4fd4-8d1f-3112108df08c
+    type: title
+    task:
+      id: 49090cae-8a9e-4fd4-8d1f-3112108df08c
+      version: -1
+      name: Block Hash
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 192,
+          "y": 6639.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: c8dc91b7-20a3-430e-8f8c-2ddc50d5600e
+    type: title
+    task:
+      id: c8dc91b7-20a3-430e-8f8c-2ddc50d5600e
+      version: -1
+      name: Quarantine Suspicious files
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "87"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1048,
+          "y": 6639.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 72f46e1e-3b4e-46fb-8259-0d3d4afb2afb
+    type: regular
+    task:
+      id: 72f46e1e-3b4e-46fb-8259-0d3d4afb2afb
+      version: -1
+      name: Add Malicious and Suspicious SHA256 to the block list
+      description: Block lists requested files which have not already been block listed or added to allow lists.
+      script: '|||core-blocklist-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      comment:
+        simple: Added automatically by the playbook - "Multiple discovery commands on a Windows host"
+      hash_list:
+        complex:
+          root: FileEnrichment
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: FileEnrichment.TIMScore
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+            - operator: isEqualString
+              left:
+                value:
+                  simple: FileEnrichment.TIMScore
+                iscontext: true
+              right:
+                value:
+                  simple: "2"
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: FileEnrichment.Value
+                iscontext: true
+              right:
+                value:
+                  simple: PSscript.Sha256
+                iscontext: true
+              ignorecase: true
+            - operator: containsGeneral
+              left:
+                value:
+                  simple: FileEnrichment.Value
+                iscontext: true
+              right:
+                value:
+                  simple: alert.cgosha256
+                iscontext: true
+              ignorecase: true
+            - operator: containsGeneral
+              left:
+                value:
+                  simple: FileEnrichment.Value
+                iscontext: true
+              right:
+                value:
+                  simple: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_sha256
+                iscontext: true
+              ignorecase: true
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      incident_id:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 7000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 95bda8c6-fe63-48c8-88fa-e26c9c6e8972
+    type: condition
+    task:
+      id: 95bda8c6-fe63-48c8-88fa-e26c9c6e8972
+      version: -1
+      name: Check if CGO or Script's SHA256 is suspicious
+      description: Check if CGO or Script's SHA256 is suspicious
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "47"
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.cgosha256
+                      iscontext: true
+                  - operator: containsGeneral
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: PSscript.Sha256
+                      iscontext: true
+                  - operator: containsGeneral
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_sha256
+                      iscontext: true
+                accessor: TIMScore
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: RemediationActions.BlockHash
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 192,
+          "y": 6774.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 2ca49d2f-e1db-4771-86a5-1109cde95d56
+    type: regular
+    task:
+      id: 2ca49d2f-e1db-4771-86a5-1109cde95d56
+      version: -1
+      name: Terminate causality
+      description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4 and above.
+      script: '|||core-terminate-causality'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "45"
+      '#none#':
+      - "47"
+    scriptarguments:
+      agent_id:
+        simple: ${alert.agentid}
+      causality_id:
+        simple: ${alert.cid.[0]}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": -450,
+          "y": 7000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 707538a9-39ec-4eca-8581-17f30b6e2609
+    type: regular
+    task:
+      id: 707538a9-39ec-4eca-8581-17f30b6e2609
+      version: -1
+      name: Terminate Process Manually
+      description: |-
+        Dear Analyst,
+
+        During the containment phase, the playbook couldn’t terminate the process: ${Core.OriginalAlert.event.action_process_image_name}
+
+        Please terminate the process manually if possible.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -448,
+          "y": 7376.75
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 25ac73e4-18a4-4279-8ea1-1c14b9c1f550
+    type: title
+    task:
+      id: 25ac73e4-18a4-4279-8ea1-1c14b9c1f550
+      version: -1
+      name: Close Alert as True Positive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "98"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 192,
+          "y": 7707
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: f820c15c-60bc-41e7-8ac1-c4c5f4738039
+    type: title
+    task:
+      id: f820c15c-60bc-41e7-8ac1-c4c5f4738039
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "40"
+      - "39"
+      - "41"
+      - "120"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 192,
+          "y": 6489
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 00f0cacc-f681-476f-80ca-9aae53e36a3f
+    type: title
+    task:
+      id: 00f0cacc-f681-476f-80ca-9aae53e36a3f
+      version: -1
+      name: Proceed with investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "82"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2667,
+          "y": 3378
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: d3da95e5-2ee4-41ca-8019-9610b9993b74
+    type: collection
+    task:
+      id: d3da95e5-2ee4-41ca-8019-9610b9993b74
+      version: -1
+      name: Manual Task - Analyst Decision
+      description: Analyst review is required to determine whether to take remediation actions, or to close the alert as a false positive.
+      tags:
+      - analyst_decision
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      key:
+        simple: Message
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 6157.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            #### Dear Analyst,
+            Please note that during the investigation, the playbook contacted multiple checks and was trying to collect different evidence from multiple triangles. The checks that we've performed to identify if this is a malicious alert are:
+            - Check the CGO SHA256 Reputation if malicious.
+            - Check the CGO SHA256 Reputation if medium and the   CGO process is unsigned.
+            - OS Actor CMD analysis is at high risk.
+            - OS Actor CMD analysis is at medium, and there is an output file for the discovery commands.
+            - Check if the host risk score is high.
+            - Check if the host risk score is medium and there is an output file, or the command line analysis is at medium risk.
+            - Check for host-related alerts
+            - Check if there are any related alerts on the remote host ( if there are any) and their host risk score.
+
+            Additional advanced preformed checks:
+            - If there is a script associated with the os actor command line, check the following:
+                - the script's sha256 reputation.
+                - the script's content with the command line analysis.
+                - detonate the script in Wildfire Sandbox.
+                - Check the process sha256 that created the script for reputation.
+
+
+            ---
+
+            ### Decision Required:
+            Please investigate the script file that the playbook was unable to retrieve and choose the action you would like to perform:
+
+            - **False Positive** - Close the alert as a false positive.
+            - **True Positive** - Handle the alert as a true positive. This will initiate remediation actions such as terminating malicious processes and blocking related files.
+            *(Note: During the remediation stage, you will need to approve the remediation actions.)*
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: False Positive
+        - simple: True Positive
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Analyst Decision
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: d6ed11d0-ea91-402e-b62a-a6bf75cfe874
+    type: condition
+    task:
+      id: d6ed11d0-ea91-402e-b62a-a6bf75cfe874
+      version: -1
+      name: Check Analyst Decision
+      description: Evaluate the analyst's decision on whether to proceed with remediation actions or close the alert as a false positive.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Auto - False positive:
+      - "99"
+      False Positive:
+      - "71"
+      True Positive:
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: False Positive
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Analyst Decision.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: False Positive
+          ignorecase: true
+    - label: True Positive
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Analyst Decision.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: True Positive
+          ignorecase: true
+    - label: Auto - False positive
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FalsePositive
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 6313
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: a3d1a13a-0dd7-4079-890c-ae9817a5abc7
+    type: regular
+    task:
+      id: a3d1a13a-0dd7-4079-890c-ae9817a5abc7
+      version: -1
+      name: Retrieve Script Files
+      description: Retrieves script files from the endpoint.
+      script: '|||core-retrieve-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      endpoint_ids:
+        simple: ${alert.agentid}
+      windows_file_paths:
+        complex:
+          root: PSscript
+          accessor: Path
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '"'
+          - operator: uniq
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1645,
+          "y": 3522
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: f457e91f-a285-4e2c-8fb0-59891e4a5067
+    type: regular
+    task:
+      id: f457e91f-a285-4e2c-8fb0-59891e4a5067
+      version: -1
+      name: Retrieve file details
+      description: View the file retrieved by the core-retrieve-files command according to the action ID. Before running this command, you can use the core-action-status-get command to check if this action completed successfully.
+      script: '|||core-retrieve-file-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      action_id:
+        simple: ${Core.RetrievedFiles.action_id}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1645,
+          "y": 3679.25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 78cebca1-1ecf-423c-8b91-c2522d66b635
+    type: regular
+    task:
+      id: 78cebca1-1ecf-423c-8b91-c2522d66b635
+      version: -1
+      name: Unzip the Script file
+      description: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
+      scriptName: UnzipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1645,
+          "y": 3839.25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 45434f86-d91e-45eb-823a-0b273ef54ffe
+    type: regular
+    task:
+      id: 45434f86-d91e-45eb-823a-0b273ef54ffe
+      version: -1
+      name: Loads script contents to context
+      description: Load the contents of a file into context.
+      scriptName: ReadFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: vbs,vbe,vb,js,jse,ps1,bat,jar,cpl,wsf,wsh,asp,cmd,hta,pyc,rb,py,sh
+              ignorecase: true
+          accessor: EntryID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2085,
+          "y": 4363
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 3dd41aae-25c8-4ab5-861f-7732370b78f2
+    type: regular
+    task:
+      id: 3dd41aae-25c8-4ab5-861f-7732370b78f2
+      version: -1
+      name: Script Analysis
+      description: |-
+        This script evaluates command-line threats by analyzing both original and decoded inputs. It assigns weighted scores to detected patterns, such as AMSI bypass or credential dumping, and applies risk combination bonuses for multiple detections. The total score is normalized to a 0-100 scale, with risk levels categorized as follows:
+
+        * 0-25: Low Risk
+        * 26-50: Medium Risk
+        * 51-90: High Risk
+        * 91-100: Critical Risk
+
+        The scoring mechanism provides a comprehensive risk assessment, considering both the severity and frequency of malicious behaviors.
+      scriptName: CommandLineAnalysis
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      command_line:
+        simple: ${FileData}
+      custom_patterns:
+        simple: (?i)(DownloadFile|\$payload|regsvr32|subprocess|chr|urlopen|socket\.socket|addEventListener|unescape|WinHttpRequest|bitsadmin|beval\(|atob\(|WScript\.Sleep|String\.fromCharCode|binascii\.a2b_base64|Base64Decode|CreateObject\(\"Wscript\.Shell\"\)|objShell\.Run|requests\.get|os\.system|os\.popen|urllib\.request|ctypes\.windll\.kernel32|Base64\.decode64|base64\.b64decode|ActiveXObject\(\"WScript\.Shell\"\)|ActiveXObject\(\"MSXML2\.XMLHTTP\"\)|ActiveXObject\(\"MSXML2\.ServerXMLHTTP\"\)|addEventListener\(\)|ADODB\.Stream|Scripting\.FileSystemObject|Shell\.Application|GetObject\(\"winmgmts\:|-ExecutionPolicy\s+Unrestricted)
+      extend-context:
+        simple: ScriptCommandLineAnalisys=
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2085,
+          "y": 4514
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 60dc64b1-30f8-449e-860c-0dc9b67d691b
+    type: condition
+    task:
+      id: 60dc64b1-30f8-449e-860c-0dc9b67d691b
+      version: -1
+      name: Does the script have malicious or suspicious parameters?
+      description: |+
+        This task evaluates the command-line analysis results and checks if the risk score is greater than or equal to 30. If it is, mark the result as **Malicious**.
+
+        If the score is in the range of 10–29, mark the result as **Suspicious**.
+
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "70"
+      Malicious:
+      - "139"
+      Suspicious:
+      - "76"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: ScriptCommandLineAnalisys.score
+            iscontext: true
+          right:
+            value:
+              simple: "30"
+    - label: Suspicious
+      condition:
+      - - operator: InRange
+          left:
+            value:
+              complex:
+                root: ScriptCommandLineAnalisys
+                accessor: score
+                transformers:
+                - operator: sort
+                  args:
+                    descending:
+                      value:
+                        simple: "true"
+                - operator: FirstArrayElement
+            iscontext: true
+          right:
+            value:
+              simple: 10,29
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1880,
+          "y": 4695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 3e82637d-f57e-4330-ac32-768e489e9f00
+    type: condition
+    task:
+      id: 3e82637d-f57e-4330-ac32-768e489e9f00
+      version: -1
+      name: Does the script have a malicious reputation?
+      description: Determines the appropriate verdict based on the reputation of the scripts files.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "70"
+      Malicious:
+      - "139"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: PSscript.Sha256
+                      iscontext: true
+                    ignorecase: true
+                accessor: TIMScore
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: PSscript.Sha256
+                      iscontext: true
+                    ignorecase: true
+                accessor: TIMScore
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 4179
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: e0d3b8f5-8cd7-4ada-8fa8-36b5a8be1338
+    type: condition
+    task:
+      id: e0d3b8f5-8cd7-4ada-8fa8-36b5a8be1338
+      version: -1
+      name: Script Successfully Retrieved?
+      description: Checks whether the script was retrieved successfully.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "64"
+      '#default#':
+      - "70"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExtractedFiles
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Info
+            iscontext: true
+          ignorecase: true
+      - - operator: inList
+          left:
+            value:
+              simple: |
+                File.Info
+            iscontext: true
+          right:
+            value:
+              simple: vbs,vbe,vb,js,jse,ps1,bat,jar,cpl,wsf,wsh,asp,cmd,hta,pyc,rb,py,sh
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1645,
+          "y": 4179
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: b542cf60-dc07-42ee-8f6c-e8a6e4e5e413
+    type: condition
+    task:
+      id: b542cf60-dc07-42ee-8f6c-e8a6e4e5e413
+      version: -1
+      name: Were all the scripts retrieved?
+      description: Check if all the scripts were retrieved.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "59"
+      "yes":
+      - "71"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: PSscript
+                accessor: Path
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: FileData
+                transformers:
+                - operator: count
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1645,
+          "y": 5975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: 00e4f793-49ab-463f-8b21-06355e293fd1
+    type: title
+    task:
+      id: 00e4f793-49ab-463f-8b21-06355e293fd1
+      version: -1
+      name: Close Alert as False Positive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "99"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2667,
+          "y": 6489
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 3407db13-0872-4b77-8034-4bcfdf3378fb
+    type: playbook
+    task:
+      id: 3407db13-0872-4b77-8034-4bcfdf3378fb
+      version: -1
+      name: Wildfire Sandbox - Detonate and Analyze File
+      description: |
+        This playbook uploads, detonates, and analyzes files for the Wildfire sandbox.
+      playbookName: Wildfire Detonate and Analyze File
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "74"
+    scriptarguments:
+      File:
+        complex:
+          root: File
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: vbs,vbe,vb,js,jse,ps1,bat,jar,cpl,wsf,wsh,asp,cmd,hta,pyc,rb,py,sh
+              ignorecase: true
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 2450,
+          "y": 5340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: 69b8a6b8-c8e0-45a8-83a3-e97f92545721
+    type: regular
+    task:
+      id: 69b8a6b8-c8e0-45a8-83a3-e97f92545721
+      version: -1
+      name: Wildfire get verdict
+      description: Returns a verdict for a hash.
+      script: '|||wildfire-get-verdict'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "75"
+    scriptarguments:
+      hash:
+        simple: ${PSscript.Sha256}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2450,
+          "y": 5506
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 004d5171-c78e-40d3-81a6-964e09b1bc99
+    type: condition
+    task:
+      id: 004d5171-c78e-40d3-81a6-964e09b1bc99
+      version: -1
+      name: Is the WildFire verdict malicious for the script?
+      description: Checks if the WildFire verdict is malicious for the script.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "70"
+      Malicious:
+      - "139"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: WildFire.Verdicts.VerdictDescription
+            iscontext: true
+          right:
+            value:
+              simple: malware
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: WildFire.Verdicts.VerdictDescription
+            iscontext: true
+          right:
+            value:
+              simple: C2
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: WildFire.Verdicts.VerdictDescription
+            iscontext: true
+          right:
+            value:
+              simple: phishing
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2085,
+          "y": 5670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: fa23e2a8-4309-439e-89f9-2925ba5693f1
+    type: regular
+    task:
+      id: fa23e2a8-4309-439e-89f9-2925ba5693f1
+      version: -1
+      name: Wildfire get verdict
+      description: Returns a verdict for a hash.
+      script: '|||wildfire-get-verdict'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      hash:
+        complex:
+          root: PSscript
+          accessor: Sha256
+          transformers:
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys:
+                value:
+                  simple: "true"
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2085,
+          "y": 5005
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: 4a0ce535-cdde-445d-8813-0d400ce25ec5
+    type: condition
+    task:
+      id: 4a0ce535-cdde-445d-8813-0d400ce25ec5
+      version: -1
+      name: Is the hash known by WildFire Sandbox?
+      description: Checks if the hash is known by WildFire Sandbox.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "73"
+      "yes":
+      - "75"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsString
+          left:
+            value:
+              simple: WildFire.Verdicts.VerdictDescription
+            iscontext: true
+          right:
+            value:
+              simple: unknown
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2085,
+          "y": 5160.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: ffde244f-b167-47ff-85c8-1f13aadfd48c
+    type: title
+    task:
+      id: ffde244f-b167-47ff-85c8-1f13aadfd48c
+      version: -1
+      name: Retrieve Script info
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "61"
+      - "114"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1645,
+          "y": 3388
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: 201509b8-b07a-4275-826a-86c1c79cc707
+    type: regular
+    task:
+      id: 201509b8-b07a-4275-826a-86c1c79cc707
+      version: -1
+      name: 'Set the Script Hash key '
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "83"
+      - "97"
+    scriptarguments:
+      key:
+        simple: PSscript.Sha256
+      value:
+        simple: ${Core.ScriptResult.results..executed_command.command_output.[1]}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 3839.25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 137705b3-85f3-4d23-82d0-d5c8b8154b15
+    type: condition
+    task:
+      id: 137705b3-85f3-4d23-82d0-d5c8b8154b15
+      version: -1
+      name: Check if there are results from script execution
+      description: Check if there are results from script execution
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "82"
+      "yes":
+      - "80"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.ScriptResult.results..executed_command.command_output.[1]
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 3679.25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: d1152105-75c7-4413-8553-415bd4bd5259
+    type: title
+    task:
+      id: d1152105-75c7-4413-8553-415bd4bd5259
+      version: -1
+      name: No hash was found
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "119"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2667,
+          "y": 3836.75
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: 5b80ae8e-92da-446d-8517-3ec7f62d5ba4
+    type: regular
+    task:
+      id: 5b80ae8e-92da-446d-8517-3ec7f62d5ba4
+      version: -1
+      name: Get a reputation for the script
+      description: This script gathers file reputation data from multiple integrations and returns a "FileEnrichment" object with consolidated information to the context output.
+      scriptName: file-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      external_enrichment:
+        simple: "true"
+      file_hash:
+        complex:
+          root: PSscript
+          accessor: Sha256
+          transformers:
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys:
+                value:
+                  simple: "true"
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 4018.75
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: d691a177-91c2-4da4-94bf-b634b9d8469f
+    type: condition
+    task:
+      id: d691a177-91c2-4da4-94bf-b634b9d8469f
+      version: -1
+      name: 'Check if there are any suspicious files '
+      description: Check if the DLL is suspicious
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "47"
+      CGO:
+      - "92"
+      PS Script:
+      - "96"
+    separatecontext: false
+    conditions:
+    - label: CGO
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.cgosha256
+                      iscontext: true
+                    ignorecase: true
+                accessor: TIMScore
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.cgosha256
+                      iscontext: true
+                    ignorecase: true
+                accessor: TIMScore
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: RemediationActions.QuarantineFile
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    - label: PS Script
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: PSscript.Sha256
+                accessor: TIMScore
+            iscontext: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: PSscript.Sha256
+                accessor: TIMScore
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: RemediationActions.QuarantineFile
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1048,
+          "y": 6774.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "91":
+    id: "91"
+    taskid: 2dc880b5-0036-4f85-bbed-28748d6618dc
+    type: regular
+    task:
+      id: 2dc880b5-0036-4f85-bbed-28748d6618dc
+      version: -1
+      name: Manual action needed –Malicious file couldn't be quarantined
+      description: |
+        Dear Analyst,
+
+        The playbook was unable to quarantine the suspicious files due to the following possible reasons:
+
+        - The file/s is no longer located on the host.
+        - The endpoint is currently disconnected.
+        - The file is being used and can't be quarantined while running.
+
+
+        Please take manual action to terminate the causality process if needed and quarantine the suspicious file.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": 7490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: ecfa9fad-9749-4a53-8c3d-498aabe1d44f
+    type: title
+    task:
+      id: ecfa9fad-9749-4a53-8c3d-498aabe1d44f
+      version: -1
+      name: Quarantine Suspicious CGO process
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "141"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2050,
+          "y": 6930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: 7c580d7d-c722-4b99-8cad-8e3cd5c8d432
+    type: title
+    task:
+      id: 7c580d7d-c722-4b99-8cad-8e3cd5c8d432
+      version: -1
+      name: Quarentine Suspicious Script File
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "143"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1310,
+          "y": 6930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "97":
+    id: "97"
+    taskid: 8f595ea8-61e8-4eda-8a37-2a615e708cb9
+    type: title
+    task:
+      id: 8f595ea8-61e8-4eda-8a37-2a615e708cb9
+      version: -1
+      name: XQL Check
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "110"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -317.5,
+          "y": 4026.25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "98":
+    id: "98"
+    taskid: 85077091-2a71-4877-8066-932ae61e6010
+    type: regular
+    task:
+      id: 85077091-2a71-4877-8066-932ae61e6010
+      version: -1
+      name: Close Alert as True Positive
+      description: Close the current alert as a True Positive.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "100"
+    scriptarguments:
+      closeNotes:
+        simple: Malicious activity detected - Alert was remediated. Handled by the playbook "Multiple discovery commands on a Windows host".
+      closeReason:
+        simple: Resolved - True Positive
+      id:
+        complex:
+          root: alert
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 192,
+          "y": 7880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "99":
+    id: "99"
+    taskid: f9d37b19-66e6-4b45-8985-3baf55220580
+    type: regular
+    task:
+      id: f9d37b19-66e6-4b45-8985-3baf55220580
+      version: -1
+      name: Close Alert - False Positive
+      description: Close the current alert as a False Positive.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "100"
+    scriptarguments:
+      closeNotes:
+        simple: No indication of malicious activity was found. This alert was handled via the playbook "Multiple discovery commands on a Windows host".
+      closeReason:
+        simple: Resolved - False Positive
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2667,
+          "y": 6699.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: e1e7e58e-fb21-4cc6-8c82-faf90782f854
+    type: title
+    task:
+      id: e1e7e58e-fb21-4cc6-8c82-faf90782f854
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2667,
+          "y": 8040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "101":
+    id: "101"
+    taskid: f4e42769-8d1f-41e8-85d9-2d2c3edaf176
+    type: regular
+    task:
+      id: f4e42769-8d1f-41e8-85d9-2d2c3edaf176
+      version: -1
+      name: 'XQL Query - Search script file creation '
+      description: |-
+        Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+        When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+        unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "108"
+      '#none#':
+      - "102"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      max_fields:
+        simple: "100"
+      query:
+        simple: |-
+          dataset = xdr_data
+
+          | filter agent_id = "${alert.agentid}" and event_type = ENUM.FILE and event_sub_type = ENUM.FILE_WRITE and action_file_sha256 = "${PSscript.Sha256.[0]}" and action_file_sha256 != null
+          | fields action_file_sha256, action_file_path, action_file_name, actor_process_image_name, causality_actor_process_image_name, os_actor_process_image_name ,causality_actor_process_image_sha256,os_actor_process_image_sha256,
+          action_file_signature_product,
+          action_file_signature_vendor
+      query_name:
+        simple: Find the created file SHA256
+      time_frame:
+        simple: between ${XQL.QueryStartTime} and ${XQL.QueryEndTime}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": -317.5,
+          "y": 4770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "102":
+    id: "102"
+    taskid: cea53401-732b-438e-8b24-11e7eeccf970
+    type: condition
+    task:
+      id: cea53401-732b-438e-8b24-11e7eeccf970
+      version: -1
+      name: Any results from XQL?
+      description: Any results from XQL?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "107"
+      "yes":
+      - "104"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXQL.GenericQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXQL.GenericQuery.query_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Find the created file SHA256
+                accessor: results
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -317.5,
+          "y": 5235.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "103":
+    id: "103"
+    taskid: db0502e6-c5a7-4fc7-8ec1-b1753b626824
+    type: title
+    task:
+      id: db0502e6-c5a7-4fc7-8ec1-b1753b626824
+      version: -1
+      name: Check Created File
+      description: A file was created on the host, check for hash
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "101"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -317.5,
+          "y": 4644
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "104":
+    id: "104"
+    taskid: 62e2fd0d-f731-4868-8979-8d72769a98b4
+    type: regular
+    task:
+      id: 62e2fd0d-f731-4868-8979-8d72769a98b4
+      version: -1
+      name: Enrich File
+      description: This script gathers file reputation data from multiple integrations and returns a "FileEnrichment" object with consolidated information to the context output.
+      scriptName: file-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "105"
+    scriptarguments:
+      external_enrichment:
+        simple: "true"
+      file_hash:
+        complex:
+          root: PaloAltoNetworksXQL.GenericQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXQL.GenericQuery.query_name
+                iscontext: true
+              right:
+                value:
+                  simple: Find the created file SHA256
+          accessor: results.os_actor_process_image_sha256
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -317.5,
+          "y": 5525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "105":
+    id: "105"
+    taskid: f735edc0-0da9-4d98-8b3b-5715d241a41b
+    type: condition
+    task:
+      id: f735edc0-0da9-4d98-8b3b-5715d241a41b
+      version: -1
+      name: Check for malicious files
+      description: Check if CGO hash is malicious
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "106"
+      "yes":
+      - "137"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FileEnrichment.SHA256
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: FileEnrichment.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TIM
+                    ignorecase: true
+                - - operator: greaterThanOrEqual
+                    left:
+                      value:
+                        simple: FileEnrichment.Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "2"
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.SHA256
+                      iscontext: true
+                    right:
+                      value:
+                        simple: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_sha256
+                      iscontext: true
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -317.5,
+          "y": 5681
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "106":
+    id: "106"
+    taskid: 0ab07b27-6fd5-4ac4-8384-52e072aaf6f0
+    type: title
+    task:
+      id: 0ab07b27-6fd5-4ac4-8384-52e072aaf6f0
+      version: -1
+      name: No suspicious files created
+      description: No suspicious files were created on the target machine.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "151"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -698.5,
+          "y": 5980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "107":
+    id: "107"
+    taskid: 87952500-4180-4f5f-843c-df162e460e06
+    type: title
+    task:
+      id: 87952500-4180-4f5f-843c-df162e460e06
+      version: -1
+      name: No XQL Results
+      description: No results were found when running the XQL query.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "106"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -698.5,
+          "y": 5425
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "108":
+    id: "108"
+    taskid: 971fe20d-5d49-4031-8eb6-351f8f884c36
+    type: title
+    task:
+      id: 971fe20d-5d49-4031-8eb6-351f8f884c36
+      version: -1
+      name: Handle Error
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "112"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -697.5,
+          "y": 4930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "110":
+    id: "110"
+    taskid: 1db29ab8-ed06-491f-85f7-b6347915e9e7
+    type: regular
+    task:
+      id: 1db29ab8-ed06-491f-85f7-b6347915e9e7
+      version: -1
+      name: 'Retrieve the query''s timeframe: start time'
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "111"
+    scriptarguments:
+      key:
+        simple: XQL.QueryStartTime
+      value:
+        complex:
+          root: alert
+          accessor: timestamp
+          transformers:
+          - operator: ModifyDateTime
+            args:
+              variation:
+                value:
+                  simple: 1 day ago
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -317.5,
+          "y": 4354
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "111":
+    id: "111"
+    taskid: f30b877b-574b-457a-8033-595c3ab23b51
+    type: regular
+    task:
+      id: f30b877b-574b-457a-8033-595c3ab23b51
+      version: -1
+      name: 'Retrieve the query''s timeframe: end time'
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "103"
+    scriptarguments:
+      key:
+        simple: XQL.QueryEndTime
+      value:
+        complex:
+          root: alert
+          accessor: timestamp
+          transformers:
+          - operator: ModifyDateTime
+            args:
+              variation:
+                value:
+                  simple: now
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -317.5,
+          "y": 4490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "112":
+    id: "112"
+    taskid: 15354911-7ea1-49f3-878c-b4096a563535
+    type: regular
+    task:
+      id: 15354911-7ea1-49f3-878c-b4096a563535
+      version: -1
+      name: 'Manual – Search file using XQL query and quarantine the file '
+      description: |-
+        Dear Analyst,
+
+        Ensure that the 'XQL Query Engine' integration is active. If it's not enabled, activate the integration or manually run the following XQL query to determine if the CGO that created the PowerShell script is malicious.
+
+        Query:
+
+        dataset = xdr_data
+
+        | filter agent_id = "${Core.OriginalAlert.event.agent_id}" and event_type = ENUM.FILE and event_sub_type = ENUM.FILE_WRITE and action_file_name in ${PSscript.Sha256} and action_file_sha256 != null
+        | fields action_file_sha256, action_file_path, action_file_name, actor_process_image_name, causality_actor_process_image_name, os_actor_process_image_name ,causality_actor_process_sha256,
+        action_file_signature_product,
+        action_file_signature_vendor
+
+        If the query output indicates a malicious file, quarantine and remove the file immediately.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "102"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -697.5,
+          "y": 5075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "113":
+    id: "113"
+    taskid: c35465c2-6ec6-4d89-8ad1-60fb930d6e8e
+    type: condition
+    task:
+      id: c35465c2-6ec6-4d89-8ad1-60fb930d6e8e
+      version: -1
+      name: Check if there is a CGO SHA256
+      description: Check if there is a CGO SHA256
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "1"
+      - "5"
+      - "127"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: alert.cgosha256
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 687
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "114":
+    id: "114"
+    taskid: c3e33cfe-f9fd-4662-87f5-4caf2ce686a9
+    type: regular
+    task:
+      id: c3e33cfe-f9fd-4662-87f5-4caf2ce686a9
+      version: -1
+      name: Get Script's File Hash
+      description: Run a shell command on a specific endpoint and return its result.
+      script: '|||core-execute-command'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "81"
+    scriptarguments:
+      command:
+        simple: certutil -hashfile "${PSscript.Path}" sha256
+      endpoint_ids:
+        simple: ${alert.agentid}
+      ignore-outputs:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 3522
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "118":
+    id: "118"
+    taskid: 8820b936-6972-4947-916d-3814557bf20d
+    type: regular
+    task:
+      id: 8820b936-6972-4947-916d-3814557bf20d
+      version: -1
+      name: Check if the OS Parent CMD contains an output file
+      description: This task checks if the OS parent CMD contains an output file that will log the discovery commands outputs. By using the regex extract script, the path of the file will be extracted to the context key.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: OutputFile
+      value:
+        complex:
+          root: alert
+          accessor: osparentcmd
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (?:\s|^)(?:\>\>?\s*[^\r\n]+|[|]\s*Out-File\s+[^\r\n]+|-\s*(?:OutFile|FilePath)\s+[^\r\n]+)(?=\r?$)
+              unpack_matches: {}
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys:
+                value:
+                  simple: "true"
+          - operator: uniq
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Nothing was found
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 677
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "119":
+    id: "119"
+    taskid: 90402a07-53cf-4e7b-8bf5-0b683d956bc6
+    type: title
+    task:
+      id: 90402a07-53cf-4e7b-8bf5-0b683d956bc6
+      version: -1
+      name: Close Alert as False Positive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "71"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2667,
+          "y": 5960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "120":
+    id: "120"
+    taskid: 57c6f36e-b0cf-41cc-8ccc-aff0fe46e3e6
+    type: title
+    task:
+      id: 57c6f36e-b0cf-41cc-8ccc-aff0fe46e3e6
+      version: -1
+      name: Block Remote IP connection
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "121"
+      - "47"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 6639.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "121":
+    id: "121"
+    taskid: 7053467e-a803-4395-877c-ffc5c8be47c1
+    type: condition
+    task:
+      id: 7053467e-a803-4395-877c-ffc5c8be47c1
+      version: -1
+      name: Is there a remote IP to block?
+      description: Is there a remote IP to enrich?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "47"
+      "yes":
+      - "122"
+      - "149"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.OriginalAlert.event.actor_remote_ip
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.OriginalAlert.event.causality_actor_remote_ip
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: RemediationActions.BlockRemoteIP
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 6925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "122":
+    id: "122"
+    taskid: c92ea6e7-be4d-497f-8ab7-eaf5a5d4f0c4
+    type: regular
+    task:
+      id: c92ea6e7-be4d-497f-8ab7-eaf5a5d4f0c4
+      version: -1
+      name: Block Remote IP Connection
+      description: Block malicious or suspicious IP addresses.
+      script: '|||core-block-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      addresses:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: causality_actor_remote_ip
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: Core.OriginalAlert.event.actor_remote_ip
+                iscontext: true
+              raw: {}
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys:
+                value:
+                  simple: "true"
+          - operator: uniq
+      endpoint_list:
+        simple: ${alert.agentid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 7190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "124":
+    id: "124"
+    taskid: d02359de-b88f-4e87-8f72-cc12cac82e42
+    type: regular
+    task:
+      id: d02359de-b88f-4e87-8f72-cc12cac82e42
+      version: -1
+      name: XQL Query - Check if it's a new IP
+      description: "This task executes the XQL query to check if the IP is new in the system. \nThe query will check for 3-day logs in the XQL data, and deduct the first and last log timeframes. If the difference in hours is less than 48, the IP will be considered as new."
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "125"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      max_fields:
+        simple: "100"
+      query:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: causality_actor_remote_ip
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: Core.OriginalAlert.event.actor_remote_ip
+                iscontext: true
+              raw: {}
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys:
+                value:
+                  simple: "true"
+          - operator: uniq
+          - operator: FirstArrayElement
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: " config timeframe = 3d case_sensitive = false \n| datamodel dataset in(*) \n| filter XDM_ALIAS.ipv4 = \""
+              suffix:
+                value:
+                  simple: |
+                    "
+                    | fields _time
+                    | sort asc _time
+                    | comp earliest(_time) as first_seen
+                    | alter hours_beetween_logs = timestamp_diff(current_time(),first_seen ,"HOUR")
+                    |alter is_it_new = if((hours_beetween_logs<48) or (hours_beetween_logs = null),"Yes","No")
+                    | fields is_it_new
+      query_name:
+        simple: Check if this is a new IP
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2340,
+          "y": 1174
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "125":
+    id: "125"
+    taskid: 7b2d7392-266b-4590-88f2-2874517db889
+    type: regular
+    task:
+      id: 7b2d7392-266b-4590-88f2-2874517db889
+      version: -1
+      name: Set XQL results to context
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: NewRemoteIP
+      value:
+        complex:
+          root: PaloAltoNetworksXQL.GenericQuery.results
+          accessor: is_it_new
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "No"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2340,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "126":
+    id: "126"
+    taskid: ebc3a790-1157-4b68-8295-5d792816f906
+    type: condition
+    task:
+      id: ebc3a790-1157-4b68-8295-5d792816f906
+      version: -1
+      name: Check if the IP is new in the Environment or not in a domain
+      description: Check if the IP is new in the Environment or not in a domain
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "135"
+      "yes":
+      - "133"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: NewRemoteIP
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: EndpointData
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: EndpointData.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory
+                accessor: ID
+            iscontext: true
+          right:
+            value:
+              simple: CN=
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1816,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "127":
+    id: "127"
+    taskid: fd7cea42-ab70-4e74-8ab0-5cd4baa365aa
+    type: regular
+    task:
+      id: fd7cea42-ab70-4e74-8ab0-5cd4baa365aa
+      version: -1
+      name: Check the path of the CGO is suspicious
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: SuspiciousCGOPath
+      value:
+        complex:
+          root: alert
+          accessor: cgopath
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (?i)(?:\\|/)(?:temp|tmp|appdata|programdata|downloads|recycle\.bin|[^\\/:]+\.bin)(?:\\|/).*?\.(exe|dll|bat|cmd|ps1|vbs|js|msi)\b
+              unpack_matches: {}
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "No"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "129":
+    id: "129"
+    taskid: b8c77b61-d708-4289-8ab1-034720441c1b
+    type: regular
+    task:
+      id: b8c77b61-d708-4289-8ab1-034720441c1b
+      version: -1
+      name: Create Key For Remediation Actions
+      description: Set multiple keys/values to the context.
+      scriptName: SetMultipleValues
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "130"
+    scriptarguments:
+      keys:
+        simple: TerminateCGO,BlockHash,QuarantineFile,BlockRemoteIP
+      parent:
+        simple: RemediationActions
+      values:
+        simple: True,False,False,False
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 732,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "130":
+    id: "130"
+    taskid: 7ff8d3ed-70e8-4e4b-8855-cab5fdda9309
+    type: title
+    task:
+      id: 7ff8d3ed-70e8-4e4b-8855-cab5fdda9309
+      version: -1
+      name: Conditions
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+      - "29"
+      - "126"
+      - "32"
+      - "28"
+      - "27"
+      - "26"
+      - "25"
+      - "24"
+      - "148"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 732,
+          "y": 1890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "131":
+    id: "131"
+    taskid: d1724af6-af4a-44a9-8421-f719d191cb98
+    type: regular
+    task:
+      id: d1724af6-af4a-44a9-8421-f719d191cb98
+      version: -1
+      name: Set Rmdiation Steps - Quarantine File
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: RemediationActions.QuarantineFile
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1630,
+          "y": 2305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "132":
+    id: "132"
+    taskid: 13834ee0-d098-43ba-82df-217f1123d903
+    type: regular
+    task:
+      id: 13834ee0-d098-43ba-82df-217f1123d903
+      version: -1
+      name: Set Rmdiation Steps - Block Hash
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: RemediationActions.BlockHash
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 2305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "133":
+    id: "133"
+    taskid: b55c4752-4edf-4e52-840e-7a7535b205c7
+    type: regular
+    task:
+      id: b55c4752-4edf-4e52-840e-7a7535b205c7
+      version: -1
+      name: Set Rmdiation Steps -Block Remote IP
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: RemediationActions.BlockRemoteIP
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2230,
+          "y": 2305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "134":
+    id: "134"
+    taskid: 9e494f27-d7a5-493b-8d9c-2b9199bbc624
+    type: title
+    task:
+      id: 9e494f27-d7a5-493b-8d9c-2b9199bbc624
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "48"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 192,
+          "y": 3076.66650390625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "135":
+    id: "135"
+    taskid: cbbe3550-2e2a-4b2a-886e-6fa6875509a3
+    type: condition
+    task:
+      id: cbbe3550-2e2a-4b2a-886e-6fa6875509a3
+      version: -1
+      name: Check If it Should Process to Remediation Steps
+      description: Should proceed to remediation steps based on the top conditions or continue investigation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "134"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: RemediationTruePositive
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 2630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "136":
+    id: "136"
+    taskid: fd865d91-0959-4915-8825-56c833dbe707
+    type: condition
+    task:
+      id: fd865d91-0959-4915-8825-56c833dbe707
+      version: -1
+      name: Check if Terminate CGO is needed?
+      description: Check if Terminate CGO is needed?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "47"
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: RemediationActions.TerminateCGO
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -449,
+          "y": 6817.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "137":
+    id: "137"
+    taskid: 2a0cb22d-2374-49ac-8ecc-325bee9fb9f3
+    type: regular
+    task:
+      id: 2a0cb22d-2374-49ac-8ecc-325bee9fb9f3
+      version: -1
+      name: Set Rmdiation Steps - Block Hash
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      key:
+        simple: RemdiationActions.BlockHash
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 6052.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "138":
+    id: "138"
+    taskid: 0ee88e28-9e9a-4b3e-8481-7c6630f22cb3
+    type: regular
+    task:
+      id: 0ee88e28-9e9a-4b3e-8481-7c6630f22cb3
+      version: -1
+      name: Set Rmdiation Steps - Quarantine File
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      key:
+        simple: RemdiationActions.QuarantineFile
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 927,
+          "y": 6052.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "139":
+    id: "139"
+    taskid: 6ba224fd-cef1-4d4c-8847-454410a3eebc
+    type: title
+    task:
+      id: 6ba224fd-cef1-4d4c-8847-454410a3eebc
+      version: -1
+      name: Conditions
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "138"
+      - "137"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 717,
+          "y": 5890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "141":
+    id: "141"
+    taskid: f872bb57-aeeb-40e0-806f-496fb3fd1d8e
+    type: regular
+    task:
+      id: f872bb57-aeeb-40e0-806f-496fb3fd1d8e
+      version: -1
+      name: Quarantine the CGO file
+      description: This script executes the 'quarantine-file' command on a specified file via the appropriate agent. This script is used to isolate files identified as suspicious.
+      scriptName: quarantine-file
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "91"
+      '#none#':
+      - "142"
+    scriptarguments:
+      endpoint_id:
+        simple: ${alert.agentid}
+      file_hash:
+        simple: ${alert.cgosha256}
+      file_path:
+        simple: ${alert.cgopath}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 2050,
+          "y": 7063.75
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "142":
+    id: "142"
+    taskid: 6c351942-59ec-4900-8e35-0334c661da46
+    type: condition
+    task:
+      id: 6c351942-59ec-4900-8e35-0334c661da46
+      version: -1
+      name: Did the file quarantine operation fail?
+      description: Did the file quarantine operation fail?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "47"
+      "yes":
+      - "91"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: QuarantineFile.Status
+            iscontext: true
+          right:
+            value:
+              simple: Failed
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2050,
+          "y": 7321.75
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "143":
+    id: "143"
+    taskid: 62ac355d-ff4a-4aa0-8e01-b4545db83806
+    type: regular
+    task:
+      id: 62ac355d-ff4a-4aa0-8e01-b4545db83806
+      version: -1
+      name: Quarantine the PS Script file
+      description: This script executes the 'quarantine-file' command on a specified file via the appropriate agent. This script is used to isolate files identified as suspicious.
+      scriptName: quarantine-file
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "91"
+      '#none#':
+      - "144"
+    scriptarguments:
+      endpoint_id:
+        simple: ${alert.agentid}
+      file_hash:
+        simple: ${PSscript.Sha256}
+      file_path:
+        simple: ${PSscript.Path}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 1310,
+          "y": 7063.75
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "144":
+    id: "144"
+    taskid: 33d0a509-4872-448e-82ea-2e186af46d51
+    type: condition
+    task:
+      id: 33d0a509-4872-448e-82ea-2e186af46d51
+      version: -1
+      name: Did the file quarantine operation fail?
+      description: Did the file quarantine operation fail?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "47"
+      "yes":
+      - "91"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: QuarantineFile.Status
+            iscontext: true
+          right:
+            value:
+              simple: Failed
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1310,
+          "y": 7321.75
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "145":
+    id: "145"
+    taskid: 5628c6f5-24e3-4684-88bf-fb49b8013e7e
+    type: condition
+    task:
+      id: 5628c6f5-24e3-4684-88bf-fb49b8013e7e
+      version: -1
+      name: Check if the IP is Internal
+      description: Check if the remote IP internal or external
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "146"
+      - "124"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: IsInCidrRanges
+          left:
+            value:
+              complex:
+                root: Core.OriginalAlert.event
+                accessor: causality_actor_remote_ip
+                transformers:
+                - operator: AppendIfNotEmpty
+                  args:
+                    item:
+                      value:
+                        simple: Core.OriginalAlert.event.actor_remote_ip
+                      iscontext: true
+                    raw: {}
+                - operator: RemoveEmpty
+                  args:
+                    empty_values: {}
+                    remove_keys:
+                      value:
+                        simple: "true"
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: lists
+                accessor: PrivateIPs
+                transformers:
+                - operator: RegexExtractAll
+                  args:
+                    error_if_no_match: {}
+                    ignore_case: {}
+                    multi_line: {}
+                    period_matches_newline: {}
+                    regex:
+                      value:
+                        simple: (\b(?:\d{1,3}\.){3}\d{1,3}\b/\d{1,2})
+                    unpack_matches: {}
+                - operator: join
+                  args:
+                    separator:
+                      value:
+                        simple: ','
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2140,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "146":
+    id: "146"
+    taskid: c7bc8474-f439-4008-838f-f1df1a6d9c05
+    type: regular
+    task:
+      id: c7bc8474-f439-4008-838f-f1df1a6d9c05
+      version: -1
+      name: IP Enrichment
+      description: This script gathers ip reputation data from multiple integrations and returns an ip entity with consolidated information to the context.
+      scriptName: ip-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "147"
+    scriptarguments:
+      external_enrichment:
+        simple: "true"
+      ip_list:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: actor_remote_ip
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: Core.OriginalAlert.event.causality_actor_remote_ip
+                iscontext: true
+              raw: {}
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys:
+                value:
+                  simple: "true"
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "147":
+    id: "147"
+    taskid: 6e6014e1-164f-4136-8a80-c671a9fea7ff
+    type: regular
+    task:
+      id: 6e6014e1-164f-4136-8a80-c671a9fea7ff
+      version: -1
+      name: Set External Remote IP
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: ExternalRemoteIP
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "148":
+    id: "148"
+    taskid: a093d3d8-20bd-415e-8427-5ec953941eb3
+    type: condition
+    task:
+      id: a093d3d8-20bd-415e-8427-5ec953941eb3
+      version: -1
+      name: Is there an external remote IP?.
+      description: Check if the IP is an external IP.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "135"
+      "yes":
+      - "133"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ExternalRemoteIP
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2711,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "149":
+    id: "149"
+    taskid: ed7483aa-69ea-4650-87ee-0d0b6dc501f1
+    type: condition
+    task:
+      id: ed7483aa-69ea-4650-87ee-0d0b6dc501f1
+      version: -1
+      name: Is it an External IP
+      description: The script blocks a list of IP addresses in supported integrations.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "47"
+      "yes":
+      - "150"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ExternalRemoteIP
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 7190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "150":
+    id: "150"
+    taskid: 870d60e4-8ac1-4435-8b13-ba61589ae260
+    type: regular
+    task:
+      id: 870d60e4-8ac1-4435-8b13-ba61589ae260
+      version: -1
+      name: Block external IP
+      description: The script blocks a list of IP addresses in supported integrations.
+      scriptName: block-external-ip
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      ip_list:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: causality_actor_remote_ip
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: Core.OriginalAlert.event.actor_remote_ip
+              raw: {}
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys:
+                value:
+                  simple: "true"
+          - operator: uniq
+    results:
+    - push_job_id
+    - commit_job_id
+    - panorama_responses
+    - executed_brands
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 7376.75
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "151":
+    id: "151"
+    taskid: 4a92f22b-07d4-4fef-8a01-90d0608168a3
+    type: regular
+    task:
+      id: 4a92f22b-07d4-4fef-8a01-90d0608168a3
+      version: -1
+      name: Investigation is currently False Positive
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      key:
+        simple: FalsePositive
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -698.5,
+          "y": 6110.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "32_133_yes": 0.28
+    },
+    "paper": {
+      "dimensions": {
+        "height": 8003,
+        "width": 4183,
+        "x": -1063,
+        "y": 97
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.8.0

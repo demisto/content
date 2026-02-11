@@ -1,0 +1,134 @@
+commonfields:
+  id: PANOSSecurityPolicyMatch
+  version: -1
+display: PAN-OS - List Matching Security Policy Rules
+name: PANOSListMatchingSecurityPolicyRules
+tags:
+ - firewall management
+ - policy control
+ - Palo Alto Networks Products
+category: Network Security
+description: |-
+  Checks whether a session matches a specified security policy by analyzing traffic flow parameters including source and destination addresses, protocol, ports, zones, applications, and user information. This action helps determine which security policy rule would be applied to a specific network session, useful for troubleshooting connectivity issues and validating policy configurations. It can be executed on a Firewall device or a Panorama device, depending on the integration instance configuration.
+args:
+  - name: application
+    description: The application name.
+    type: string
+    underlyingargname: application
+  - name: category
+    description: The category name.
+    type: string
+    underlyingargname: category
+  - name: destination
+    required: true
+    description: The destination port.
+    type: string
+    underlyingargname: destination
+  - name: from
+    description: The from zone.
+    type: string
+    underlyingargname: from
+  - name: to
+    description: The to zone.
+    type: string
+    underlyingargname: to
+  - name: protocol
+    description: The IP protocol numeric value
+    type: string
+    required: true
+    underlyingargname: protocol
+  - name: source
+    description: The source IP address.
+    required: true
+    type: string
+    underlyingargname: source
+  - name: source-user
+    description: The source user.
+    type: string
+    underlyingargname: source-user
+  - name: target
+    description: The target number of the firewall. Used only on a Panorama instance.
+    type: string
+    underlyingargname: target
+  - name: vsys
+    description: The target VSYS of the firewall. Used only on a Panorama instance.
+    type: string
+    underlyingargname: vsys
+outputs:
+  - underlyingoutputcontextpath: Panorama.SecurityPolicyMatch.Query
+    description: The query for the session to test.
+    type: string
+    name: Panorama.SecurityPolicyMatch.Query
+  - underlyingoutputcontextpath: Panorama.SecurityPolicyMatch.Rules.Name
+    description: The matching rule name.
+    type: string
+    name: Panorama.SecurityPolicyMatch.Rules.Name
+  - underlyingoutputcontextpath: Panorama.SecurityPolicyMatch.Rules.Action
+    description: The matching rule action.
+    type: string
+    name: Panorama.SecurityPolicyMatch.Rules.Action
+  - underlyingoutputcontextpath: Panorama.SecurityPolicyMatch.Rules.Category
+    description: The matching rule category.
+    type: string
+    name: Panorama.SecurityPolicyMatch.Rules.Category
+  - underlyingoutputcontextpath: Panorama.SecurityPolicyMatch.Rules.Destination
+    description: The matching rule destination.
+    type: string
+    name: Panorama.SecurityPolicyMatch.Rules.Destination
+  - underlyingoutputcontextpath: Panorama.SecurityPolicyMatch.Rules.From
+    description: The matching rule from zone.
+    type: string
+    name: Panorama.SecurityPolicyMatch.Rules.From
+  - underlyingoutputcontextpath: Panorama.SecurityPolicyMatch.Rules.Source
+    description: The matching rule source.
+    type: string
+    name: Panorama.SecurityPolicyMatch.Rules.Source
+  - underlyingoutputcontextpath: Panorama.SecurityPolicyMatch.Rules.To
+    description: The matching rule to zone.
+    type: string
+    name: Panorama.SecurityPolicyMatch.Rules.To
+  - underlyingoutputcontextpath: Panorama.SecurityPolicyMatch.QueryFields.Application
+    description: The application name.
+    type: string
+    name: Panorama.SecurityPolicyMatch.QueryFields.Application
+  - underlyingoutputcontextpath: Panorama.SecurityPolicyMatch.QueryFields.Category
+    description: The category name.
+    type: string
+    name: Panorama.SecurityPolicyMatch.QueryFields.Category
+  - underlyingoutputcontextpath: Panorama.SecurityPolicyMatch.QueryFields.Destination
+    description: The destination IP address.
+    type: string
+    name: Panorama.SecurityPolicyMatch.QueryFields.Destination
+  - underlyingoutputcontextpath: Panorama.SecurityPolicyMatch.QueryFields.DestinationPort
+    description: The destination port.
+    type: number
+    name: Panorama.SecurityPolicyMatch.QueryFields.DestinationPort
+  - underlyingoutputcontextpath: Panorama.SecurityPolicyMatch.QueryFields.From
+    description: The query fields from zone.
+    type: string
+    name: Panorama.SecurityPolicyMatch.QueryFields.From
+  - underlyingoutputcontextpath: Panorama.SecurityPolicyMatch.QueryFields.To
+    description: The query fields to zone.
+    type: string
+    name: Panorama.SecurityPolicyMatch.QueryFields.To
+  - underlyingoutputcontextpath: Panorama.SecurityPolicyMatch.QueryFields.Protocol
+    description: The IP protocol value.
+    type: string
+    name: Panorama.SecurityPolicyMatch.QueryFields.Protocol
+  - underlyingoutputcontextpath: Panorama.SecurityPolicyMatch.QueryFields.Source
+    description: The source IP address.
+    type: string
+    name: Panorama.SecurityPolicyMatch.QueryFields.Source
+  - underlyingoutputcontextpath: Panorama.SecurityPolicyMatch.QueryFields.SourceUser
+    description: The source user.
+    type: string
+    name: Panorama.SecurityPolicyMatch.QueryFields.SourceUser
+underlyingcontentitem:
+  id: Panorama
+  name: Panorama
+  type: command
+  version: -1
+  command: pan-os-security-policy-match
+requiresuserapproval: false
+marketplaces:
+- platform

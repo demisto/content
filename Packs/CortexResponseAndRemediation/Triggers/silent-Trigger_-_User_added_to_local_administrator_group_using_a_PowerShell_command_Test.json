@@ -1,0 +1,25 @@
+{
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "User added to local administrator group using a PowerShell command"
+        },
+        {
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "NEQ",
+          "SEARCH_VALUE": "Correlation"
+        }
+      ]
+    }
+  },
+  "description": "This trigger is responsible for handling 'User added to local administrator group using a PowerShell command' alert",
+  "fromVersion": "8.9.0",
+  "issilent": true,
+  "playbook_id": "silent-User added to local administrator group using a PowerShell command Test",
+  "suggestion_reason": "Recommended for the 'User added to local administrator group using a PowerShell command' alert",
+  "trigger_id": "87918b1270d5c44ac4e1d7abf2eefa12",
+  "trigger_name": "silent-User added to local administrator group using a PowerShell command Test"
+}

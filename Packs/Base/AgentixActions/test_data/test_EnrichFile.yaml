@@ -1,0 +1,206 @@
+tests:
+  - name: "Enrich single MD5 hash from malware sample"
+    prompt: "Enrich this suspicious file hash d41d8cd98f00b204e9800998ecf8427e found in our environment"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichFile
+            arguments:
+              file_hash: "d41d8cd98f00b204e9800998ecf8427e"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Enrich SHA1 hash from incident investigation"
+    prompt: "Can you get reputation data for this file SHA1: da39a3ee5e6b4b0d3255bfef95601890afd80709"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichFile
+            arguments:
+              file_hash: "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Enrich SHA256 hash from threat hunting"
+    prompt: "I need to enrich this SHA256 hash e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 to check if it's malicious"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichFile
+            arguments:
+              file_hash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Enrich SHA512 hash from forensic analysis"
+    prompt: "Please enrich SHA512 hash cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichFile
+            arguments:
+              file_hash: "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Enrich multiple hashes from batch analysis"
+    prompt: "Enrich these file hashes: 5d41402abc4b2a76b9719d911017c592, aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichFile
+            arguments:
+              file_hash: "5d41402abc4b2a76b9719d911017c592,aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Enrich mixed hash types from security alert"
+    prompt: "Get threat intelligence for these hashes: 098f6bcd4621d373cade4e832627b4f6, 5ba93c9db0cff93f52b521d7420e43f6eda2784f, 2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichFile
+            arguments:
+              file_hash: "098f6bcd4621d373cade4e832627b4f6,5ba93c9db0cff93f52b521d7420e43f6eda2784f,2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Enrich multiple SHA256 hashes from IOC list"
+    prompt: "I have these SHA256 IOCs that need enrichment: 6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b, d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichFile
+            arguments:
+              file_hash: "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b,d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Comprehensive file enrichment with external sources"
+    prompt: "Run comprehensive enrichment on file hash 7d865e959b2466918c9863afca942d0fb89d7c9ac0c99bafc3749504ded97730 using external threat intelligence"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichFile
+            arguments:
+              file_hash: "7d865e959b2466918c9863afca942d0fb89d7c9ac0c99bafc3749504ded97730"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Enrich file with additional metadata fields"
+    prompt: "Enrich hash 4e1243bd22c66e76c2ba9eddc1f91394e57f9f83 and include all additional metadata fields in the results"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichFile
+            arguments:
+              file_hash: "4e1243bd22c66e76c2ba9eddc1f91394e57f9f83"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Quick file reputation check"
+    prompt: "Check reputation for file MD5 8b1a9953c4611296a827abf8c47804d7"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichFile
+            arguments:
+              file_hash: "8b1a9953c4611296a827abf8c47804d7"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Enrich suspicious executable hash"
+    prompt: "This executable has hash f2ca1bb6c7e907d06dafe4687d34fe1c and appears suspicious, please enrich it"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichFile
+            arguments:
+              file_hash: "f2ca1bb6c7e907d06dafe4687d34fe1c"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Analyze file hash from email attachment"
+    prompt: "Email attachment has SHA1 hash 356a192b7913b04c54574d18c28d46e6395428ab, need full enrichment analysis"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichFile
+            arguments:
+              file_hash: "356a192b7913b04c54574d18c28d46e6395428ab"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Batch enrichment for incident response"
+    prompt: "Need to enrich these file hashes found during incident investigation: 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08, 60303ae22b998861bce3b28f33eec1be758a213c86c93c076dbe9f558c11c752, ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichFile
+            arguments:
+              file_hash: "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08,60303ae22b998861bce3b28f33eec1be758a213c86c93c076dbe9f558c11c752,ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Enrich potential ransomware hash"
+    prompt: "Found this hash 4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a on encrypted files, please get full threat intelligence"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichFile
+            arguments:
+              file_hash: "4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Invalid hash format should fail"
+    prompt: "Enrich this invalid hash: not_a_hash_123"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - expected_error: "Invalid hash format provided. Supported hash types are: MD5, SHA1, SHA256, and SHA512."
+
+  - name: "Empty hash value should fail"
+    prompt: "Enrich file hash: "
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - expected_error: "File hash is required and cannot be empty."
+
+  - name: "Mixed valid and invalid hashes should fail"
+    prompt: "Enrich these hashes: d41d8cd98f00b204e9800998ecf8427e, invalid_hash, da39a3ee5e6b4b0d3255bfef95601890afd80709"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - expected_error: "One or more hash values are invalid. All hashes must be valid MD5, SHA1, SHA256, or SHA512 format."
+
+  - name: "Hash too short should fail"
+    prompt: "Please enrich this hash: abc123"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - expected_error: "Invalid hash format provided. Hash length does not match any supported hash type (MD5, SHA1, SHA256, SHA512)."
+
+  - name: "Informational question about file enrichment"
+    prompt: "What types of file hashes can be enriched?"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions: []
+
+  - name: "General help request"
+    prompt: "How does file enrichment work?"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions: []

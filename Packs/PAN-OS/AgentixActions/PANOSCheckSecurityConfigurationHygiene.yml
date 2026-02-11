@@ -1,0 +1,62 @@
+commonfields:
+  id: PANOSCheckSecurityConfigurationHygiene
+  version: -1
+display: PAN-OS - Get Security Hygiene
+name: PANOSGetSecurityHygiene
+tags:
+ - firewall management
+ - threat prevention
+ - policy control
+ - Palo Alto Networks Products
+category: Network Security
+description: |-
+  This action executes hygiene checks on PAN-OS firewall configurations to identify settings that don't meet security best practices. It evaluates log forwarding profiles, security zones, threat prevention profiles (spyware, URL filtering, vulnerability), and security rules to ensure proper logging, profile assignments, and appropriate blocking/alerting on threats based on severity levels.
+
+  Workflow:
+  Review the configuration hygiene results in the JSON output and format a response to the user including:
+    - Summarize issues found, grouping related issues by "issue_code".
+    - Offer the user a list of affected items with a particular issue of their choice.  If requested, include the "name" value from the JSON output - this is the name of the actual configuration item that has the issue.
+args:
+  - name: targetDevice
+    description: The serial number of a specific firewall to target (Used when connected to Panorama).
+    type: string
+    underlyingargname: targetDevice
+outputs:
+  - underlyingoutputcontextpath: PANOS.ConfigurationHygiene.Summary
+    description: |-
+      A list of hygiene check summaries evaluating Log Forwarding Profiles, Security Zones, Threat Prevention Profiles (Spyware, URL Filtering, Vulnerability), and Security Rules against security best practices. Shows the total issue count and the pass/fail status per check type.
+      The JSON is as follows:
+      {
+        description: The description of the hygiene check,
+        issue_code: The shorthand code for this hygiene check,
+        issue_count: Total number of matching issues
+        result: Whether the check passed or failed
+      }
+    type: json
+    name: PANOS.ConfigurationHygiene.Summary
+  - underlyingoutputcontextpath: PANOS.ConfigurationHygiene.Result
+    description: |-
+      A list of hygiene check results identifying specific configuration objects that violate security best practices, including a description of the issue found, the configuration location (container name), and the name of the object affected by the issue.
+      The JSON is as follows:
+      {
+        container_name: The parent container (DG, Template, VSYS) this object belongs to,
+        description: Human readable description of the issue,
+        hostid: Serial number of the device where this issue was identified,
+        issue_code: The shorthand code for the issue,
+        name:	The affected object name
+      }
+    type: json
+    name: PANOS.ConfigurationHygiene.Result
+underlyingcontentitem:
+  id: PAN-OS - Run Security Configuration Hygiene Checks
+  name: PAN-OS - Run Security Configuration Hygiene Checks
+  type: playbook
+  version: -1
+  command: ''
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- agentix
+- xsiam
+- cloud_posture

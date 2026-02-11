@@ -1,0 +1,64 @@
+commonfields:
+  id: TrendMicroApexUdsoAdd
+  version: -1
+display: Trend Micro Apex One - Update UDSO List
+tags:
+  - Endpoint
+  - Suspicious Objects
+  - Trend Micro
+category: Endpoint
+description: |-
+  Adds a suspicious object (IP address, domain, URL, file SHA-1, or base64 file content) to the
+  User-Defined Suspicious Object (UDSO) list in Trend Micro Apex Central.
+  The object will be used for future scanning and enforcement based on the selected action.
+name: TrendMicroApexOneUpdateUDSOList
+args:
+  - name: type
+    description: >-
+      The type of the suspicious object to add.
+      Valid values are:
+      - ip
+      - url
+      - file_sha1
+      - domain
+      - file
+    required: true
+    type: string
+    underlyingargname: type
+  - name: content
+    description: >-
+      The content of the suspicious object, based on the selected type.
+      For example: `8.8.8.8` for type `ip`, or a SHA-1 hash for `file_sha1`.
+      For type `file`, provide the raw binary content encoded in base64.
+    required: true
+    type: string
+    underlyingargname: content
+  - name: scan_action
+    description: >-
+      The scan action to perform on the suspicious object (The "quarantine" scan action is only available for file type objects).
+      Optional values are:
+      - log
+      - block
+      - quarantine
+    required: true
+    type: string
+    underlyingargname: scan_action
+  - name: notes
+    description: A custom description or comment for the suspicious object.
+    type: string
+    underlyingargname: notes
+  - name: expiration
+    description: >-
+      The expiration date and time (UTC) for the object to be removed from the list.
+      Format: `YYYY-MM-DDTHH:MM:SSZ`, for example: `2025-06-02T09:00:00Z`.
+    type: date
+    underlyingargname: expiration
+underlyingcontentitem:
+  id: 'Trend Micro Apex'
+  name: 'Trend Micro Apex'
+  type: command
+  version: -1
+  command: 'trendmicro-apex-udso-add'
+requiresuserapproval: true
+marketplaces:
+- platform

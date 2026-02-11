@@ -1,0 +1,66 @@
+commonfields:
+  id: CortexUpdateEndpointVersion
+  version: -1
+name: CortexUpdateEndpointVersion
+display: Cortex - Update Endpoint Version
+tags:
+ - Endpoint
+category: Endpoint
+description: |-
+  Updates the version of the specified endpoints (can also be referred as XDR Agents or Agents)
+  to the provided target version, with optional scheduling support (days and hours).
+args:
+  - name: endpoint_ids
+    description: A comma-separated list of endpoint IDs.
+    type: string
+    required: true
+    underlyingargname: endpoint_ids
+  - name: platform
+    description: |-
+      The platform of the endpoints. Options: windows, macos, linux.
+    type: string
+    required: true
+    underlyingargname: platform
+  - name: version
+    description: The target version for updating the endpoints.
+    type: string
+    required: true
+    underlyingargname: version
+  - name: start_time
+    description: |-
+      The start time for the update. Enter the time in a 24-hour format (HH:MM).
+      Ensure that there are at least two hours between the start time and the end time.
+    type: string
+    underlyingargname: start_time
+  - name: end_time
+    description: The end time for the update. Enter the time in a 24-hour format (HH:MM).
+    type: string
+    underlyingargname: end_time
+  - name: days
+    description: |-
+      A comma-separated list of days of the week the update may run.
+      Options: Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday.
+    type: string
+    underlyingargname: days
+outputs:
+  - underlyingoutputcontextpath: Core.EndpointUpdate.endpoint_ids
+    type: string
+    description: The IDs of the endpoints on which the update run.
+    name: Core.EndpointUpdate.endpoint_ids
+  - underlyingoutputcontextpath: Core.EndpointUpdate.action_id
+    type: string
+    description: The ID of the update action. 0 means that the action failed.
+    name: Core.EndpointUpdate.action_id
+underlyingcontentitem:
+  id: Cortex Core - Platform
+  name: Cortex Core - Platform
+  type: command
+  version: -1
+  command: core-update-endpoint-version
+requiresuserapproval: true
+marketplaces:
+- platform
+supportedModules:
+- cloud_runtime_security
+- edr
+- xsiam

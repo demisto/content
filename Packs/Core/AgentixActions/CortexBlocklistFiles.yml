@@ -1,0 +1,57 @@
+commonfields:
+  id: CortexBlocklistFiles
+  version: -1
+name: CortexBlockFile
+display: Cortex - Block File
+tags:
+ - Endpoint
+category: Endpoint
+description: >
+  Blocklists the specified SHA256 file hashes in Cortex by adding them to Cortex's blocklist.
+  Skips any that already exist in Cortex's allowlist or blocklist.
+  Optionally returns detailed results with counts of added and skipped hashes.
+args:
+  - name: incident_id
+    required: false
+    type: string
+    description: Links the response action to the triggered case (formerly known as incident).
+    underlyingargname: incident_id
+  - name: hash_list
+    required: true
+    type: string
+    description: A comma-separated list of file hashes to blocklist. Each entry must be a valid SHA256 hash.
+    underlyingargname: hash_list
+  - name: comment
+    required: false
+    type: string
+    description: 'Optional text note describing the reason or context for this blocklist action. Example: "Hash added to blocklist by Agentix while handling issue #123".'
+    underlyingargname: comment
+  - name: detailed_response
+    required: false
+    isgeneratable: true
+    type: boolean
+    defaultvalue: 'false'
+    description: If true, returns a detailed response with counts of added and skipped hashes. The default is false.
+    underlyingargname: detailed_response
+outputs:
+  - underlyingoutputcontextpath: Core.blocklist.added_hashes
+    description: A dictionary containing a list of file hashes that were successfully added to the blocklist.
+    type: Unknown
+    name: Core.blocklist.added_hashes
+  - underlyingoutputcontextpath: Core.blocklist.excluded_hashes
+    description: A dictionary containing a list of file hashes that were not added to the blocklist (e.g., already blocklisted or allowlisted).
+    type: Unknown
+    name: Core.blocklist.excluded_hashes
+underlyingcontentitem:
+  id: Cortex Core - IR
+  name: Cortex Core - IR
+  type: command
+  version: -1
+  command: 'core-blocklist-files'
+requiresuserapproval: true
+marketplaces:
+- platform
+supportedModules:
+- xsiam
+- cloud_runtime_security
+- edr

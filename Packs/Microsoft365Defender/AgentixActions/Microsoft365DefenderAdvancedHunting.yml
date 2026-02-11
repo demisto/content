@@ -1,0 +1,51 @@
+commonfields:
+  id: Microsoft365DefenderAdvancedHunting
+  version: -1
+display: Microsoft Defender Advanced Hunting - Run Query
+name: MicrosoftDefenderAdvancedHuntingRunQuery
+tags:
+ - Threat Hunting
+ - Microsoft 365 Defender
+category: Endpoint
+description: |-
+    Runs an Advanced Hunting query in Microsoft 365 Defender.
+    Advanced Hunting is a threat-hunting tool that uses Kusto Query Language (KQL) to search across 30 days of raw event data,
+    including signals from Microsoft Defender for Endpoint, Defender for Identity, Defender for Office 365, and more.
+    Learn more: https://learn.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide
+args:
+  - name: query
+    description: |-
+      The Kusto Query Language (KQL) string to execute in Microsoft 365 Defender's Advanced Hunting interface.
+      Example: `DeviceEvents | where ActionType == "ProcessCreated"`
+    required: true
+    type: string
+    underlyingargname: query
+  - name: timeout
+    defaultvalue: '30'
+    description: The maximum time (in seconds) to wait for the HTTP request to return a result before timing out.
+    type: number
+    underlyingargname: timeout
+  - name: limit
+    defaultvalue: '50'
+    description: The maximum number of records to return. Use `-1` to return all results without limit.
+    required: true
+    type: number
+    underlyingargname: limit
+outputs:
+  - underlyingoutputcontextpath: Microsoft365Defender.Hunt.query
+    description: The KQL query that was executed.
+    type: string
+    name: Microsoft365Defender.Hunt.query
+  - underlyingoutputcontextpath: Microsoft365Defender.Hunt.results
+    description: A list of dictionaries representing the results returned by the Advanced Hunting query. The exact fields depend on the query.
+    type: json
+    name: Microsoft365Defender.Hunt.results
+underlyingcontentitem:
+  id: Microsoft 365 Defender
+  name: Microsoft 365 Defender
+  type: command
+  version: -1
+  command: 'microsoft-365-defender-advanced-hunting'
+requiresuserapproval: false
+marketplaces:
+- platform

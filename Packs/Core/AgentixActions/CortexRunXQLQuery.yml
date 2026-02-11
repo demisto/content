@@ -1,0 +1,76 @@
+commonfields:
+  id: CortexRunXQLQuery
+  version: -1
+display: Cortex - Run XQL Query
+name: CortexRunXQLQuery
+tags:
+  - Utilities
+category: Endpoint
+description: |-
+  Executes an XQL query on the Cortex platform and returns a link to view results in the Query Center.
+  When wait_for_results is set to true, polls every 10 seconds until results are available or timeout is reached, then returns both the link and the query results.
+  Results are limited to a maximum of 1000 records. If the query specifies a larger LIMIT, it will be automatically reduced to 1000.
+args:
+  - name: query
+    underlyingargname: query
+    description: The XQL query string to execute.
+    type: string
+    required: true
+  - name: timeframe
+    underlyingargname: timeframe
+    type: string
+    description: |-
+      The time range for the query in relative date or range format. Examples: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00". Default is the last 24 hours.
+    defaultvalue: "24 hours"
+  - name: wait_for_results
+    underlyingargname: wait_for_results
+    type: string
+    description: |-
+      Whether to wait and poll for query results. When true, returns both results and the Query Center link. When false, returns only the Query Center link. Options: true, false. Default is true.
+    defaultvalue: "true"
+outputs:
+  - underlyingoutputcontextpath: GenericXQLQuery.execution_id
+    name: GenericXQLQuery.execution_id
+    description: An integer representing the unique ID of the XQL query execution.
+    type: String
+  - underlyingoutputcontextpath: GenericXQLQuery.status
+    name: GenericXQLQuery.status
+    description: |-
+      The status of the query. Options: SUCCESS, FAIL, PENDING.
+    type: String
+  - underlyingoutputcontextpath: GenericXQLQuery.error_details
+    name: GenericXQLQuery.error_details
+    description: Error information in case of a failed query.
+    type: String
+  - underlyingoutputcontextpath: GenericXQLQuery.query_url
+    name: GenericXQLQuery.query_url
+    description: URL to view the complete query results in the Query Center.
+    type: String
+  - underlyingoutputcontextpath: GenericXQLQuery.number_of_results
+    name: GenericXQLQuery.number_of_results
+    description: Integer representing the number of results returned.
+    type: Number
+  - underlyingoutputcontextpath: GenericXQLQuery.results
+    name: GenericXQLQuery.results
+    description: The query results data. Only populated when wait_for_results is set to true.
+    type: Unknown
+  - underlyingoutputcontextpath: GenericXQLQuery.query_limit_modified
+    name: GenericXQLQuery.query_limit_modified
+    description: Contains a message if the query's LIMIT clause was automatically reduced to 1000. When this field is non-empty, the results are capped and may not include all matching records. Inform the user about this limitation.
+    type: String
+underlyingcontentitem:
+  id: Cortex Core - Platform
+  name: Cortex Core - Platform
+  type: command
+  version: -1
+  command: core-xql-generic-query-platform
+requiresuserapproval: false
+marketplaces:
+  - platform
+supportedModules:
+- xsiam
+- agentix
+- cloud
+- cloud_posture
+- cloud_runtime_security
+- edr

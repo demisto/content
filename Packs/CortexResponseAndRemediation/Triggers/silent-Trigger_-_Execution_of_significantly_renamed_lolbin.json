@@ -1,0 +1,34 @@
+{
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+          "OR": [
+            {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Execution of significantly renamed lolbin"
+            }
+          ]
+        },
+        {
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "NEQ",
+          "SEARCH_VALUE": "Correlation"
+        }
+      ]
+    }
+  },
+  "description": "This trigger is responsible for handling the 'Execution of significantly renamed lolbin' alerts",
+  "fromVersion": "8.9.0",
+  "issilent": true,
+  "playbook_id": "silent-Execution of significantly renamed lolbin",
+  "suggestion_reason": "Recommended for 'Execution of significantly renamed lolbin' alerts",
+  "supportedModules": [
+    "cloud_runtime_security",
+    "xsiam",
+    "edr"
+  ],
+  "trigger_id": "1996d1da575788646fea3dff7dc048e1",
+  "trigger_name": "silent-Execution of significantly renamed lolbin"
+}

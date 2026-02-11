@@ -1,0 +1,169 @@
+commonfields:
+  id: SearchIssues
+  version: -1
+display: Cortex - List Issues
+name: CortexListIssues
+tags:
+  - Utility
+category: Utilities
+description: >
+  Searches Cortex issues using the provided filters. All filters are applied together.
+  Note: If OR logic is needed across different fields (E.g., "name contains 'malware' or description contains 'phishing'"), the action should run once per field with the other filters applied.
+args:
+  - description: A comma-separated list of issue names.
+    name: issue_name
+    type: string
+    underlyingargname: issue_name
+  - name: offset
+    description: The starting point for pagination of search results.
+    type: string
+    underlyingargname: offset
+  - name: limit
+    description: The last position for pagination search results.
+    type: string
+    underlyingargname: limit
+  - name: issue_id
+    description: A comma-separated list of issue identifiers to search issues by specific IDs.
+    type: string
+    underlyingargname: issue_id
+  - name: severity
+    description: "A comma-separated list of issue severity levels to search issues by. Options: low, medium, high, critical."
+    type: string
+    underlyingargname: severity
+  - name: issue_description
+    description: The description of the issue to search issues by.
+    type: string
+    underlyingargname: issue_description
+  - name: issue_domain
+    description: "A comma-separated list of domains associated with the issue to search issues by, for example: Health, Hunting, IT, Posture, Security."
+    type: string
+    underlyingargname: issue_domain
+  - name: status
+    description: "A comma-separated list of the current status of the issue to search issues by. Options: New, In Progress, Resolved."
+    type: string
+    underlyingargname: status
+  - name: not_status
+    description: "A comma-separated list of statuses to exclude from the results of the issue search. Options: New, In Progress, Resolved."
+    type: string
+    underlyingargname: not_status
+  - name: assignee
+    description: |
+      A comma-separated list of assigned users to search the issue by.
+      Alternatively, use "unassigned" (for all unassigned issues) or "assigned" (for all assigned issues).
+      These keywords are exclusive and cannot be combined with usernames.
+    type: string
+    underlyingargname: assignee
+  - name: issue_source
+    description: "A comma-separated list of issue sources to filter the issues by. Options: XDR Agent, XDR Analytics, XDR Analytics BIOC, PAN NGFW, XDR BIOC, XDR IOC, Threat Intelligence, XDR Managed Threat Hunting, Correlation, Prisma Cloud, Prisma Cloud Compute, ASM, IoT Security, Custom Alert, Health, SaaS Attachments, Attack Path, Cloud Network Analyzer, IaC Scanner, CAS Secret Scanner, CI/CD Risks, CLI Scanner, CIEM Scanner, API Traffic Monitor, API Posture Scanner, Agentless Disk Scanner, Kubernetes Scanner, Compute Policy, CSPM Scanner, CAS CVE Scanner, CAS License Scanner, Secrets Scanner, SAST Scanner, Data Policy, Attack Surface Test, Package Operational Risk, Vulnerability Policy, AI Security Posture."
+    type: string
+    underlyingargname: issue_source
+  - name: asset_ids
+    description: A comma-separated list of related asset identifiers associated with the issue to search the issue by.
+    type: string
+    underlyingargname: asset_ids
+  - name: start_time
+    description: "The start time for filtering. Supports free text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."
+    type: date
+    underlyingargname: start_time
+  - name: end_time
+    description: "The end time for filtering. This argument is not required. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."
+    type: date
+    underlyingargname: end_time
+  - name: sha256
+    description: "A comma-separated list of SHA256 hashes for processes and file macros involved in the issue to filter the issues by."
+    type: string
+    underlyingargname: sha256
+outputs:
+  - underlyingoutputcontextpath: Core.Issue.internal_id
+    description: The internal ID of the issue.
+    type: String
+    name: Core.Issue.internal_id
+  - underlyingoutputcontextpath: Core.Issue.issue_source
+    description: The source of the issue.
+    type: String
+    name: Core.Issue.issue_source
+  - underlyingoutputcontextpath: Core.Issue.status.progress
+    description: The progress status of the issue.
+    type: String
+    name: Core.Issue.status.progress
+  - underlyingoutputcontextpath: Core.Issue.assigned_to_pretty
+    description: The user assigned to the issue.
+    type: String
+    name: Core.Issue.assigned_to_pretty
+  - underlyingoutputcontextpath: Core.Issue.assigned_to
+    description: The user pretty name assigned to the issue.
+    type: String
+    name: Core.Issue.assigned_to
+  - underlyingoutputcontextpath: Core.Issue.assetid
+    description: The asset ID related to the issue.
+    type: String
+    name: Core.Issue.assetid
+  - underlyingoutputcontextpath: Core.Issue.action_file_macro_sha256
+    description: The File Macro SHA256 hash of the action file macro.
+    type: String
+    name: Core.Issue.action_file_macro_sha256
+  - underlyingoutputcontextpath: Core.Issue.os_actor_process_image_sha256
+    description: The OS Parent SHA256 hash of the OS actor process image.
+    type: String
+    name: Core.Issue.os_actor_process_image_sha256
+  - underlyingoutputcontextpath: Core.Issue.issue_domain
+    description: The domain of the issue.
+    type: String
+    name: Core.Issue.issue_domain
+  - underlyingoutputcontextpath: Core.Issue.action_process_image_sha256
+    description: The Action process image SHA256 hash.
+    type: String
+    name: Core.Issue.action_process_image_sha256
+  - underlyingoutputcontextpath: Core.Issue.causality_actor_process_image_sha256
+    description: The Causality actor process image SHA256 hash.
+    type: String
+    name: Core.Issue.causality_actor_process_image_sha256
+  - underlyingoutputcontextpath: Core.Issue.actor_process_image_sha256
+    description: The Actor process image SHA256 hash.
+    type: String
+    name: Core.Issue.actor_process_image_sha256
+  - underlyingoutputcontextpath: Core.Issue.source_insert_ts
+    description: The detection timestamp.
+    type: Number
+    name: Core.Issue.source_insert_ts
+  - underlyingoutputcontextpath: Core.Issue.issue_name
+    description: The name of the issue.
+    type: String
+    name: Core.Issue.issue_name
+  - underlyingoutputcontextpath: Core.Issue.severity
+    description: The severity of the issue.
+    type: String
+    name: Core.Issue.severity
+  - underlyingoutputcontextpath: Core.Issue.issue_description
+    description: The issue description.
+    type: String
+    name: Core.Issue.issue_description
+  - underlyingoutputcontextpath: Core.Issue.Identity_type
+    description: The identity type associated with the issue.
+    type: String
+    name: Core.Issue.Identity_type
+  - underlyingoutputcontextpath: Core.Issue.issue_category
+    description: The category of the issue.
+    type: String
+    name: Core.Issue.issue_category
+  - underlyingoutputcontextpath: Core.Issue.agentsid
+    description: The agent (endpoint) IDs associated with the issue.
+    type: String
+    name: Core.Issue.agentsid
+  - underlyingoutputcontextpath: Core.Issue.case_id
+    description: The case ID associated with the issue.
+    type: String
+    name: Core.Issue.case_id
+underlyingcontentitem:
+  id: SearchIssuesAgentix
+  name: SearchIssuesAgentix
+  type: script
+  version: -1
+  command: ""
+requiresuserapproval: false
+marketplaces:
+  - platform
+supportedModules:
+  - agentix
+  - xsiam
+  - cloud_posture

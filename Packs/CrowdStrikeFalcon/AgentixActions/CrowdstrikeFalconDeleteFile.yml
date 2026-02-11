@@ -1,0 +1,28 @@
+commonfields:
+  id: CrowdStrikeFalconDeleteFile
+  version: -1
+display: CrowdStrike Falcon - Delete File
+name: CrowdStrikeFalconDeleteFile
+category: Endpoint
+description: >
+  Deletes a file from CrowdStrike Falcon.
+args:
+  - name: file_id
+    description: |
+        The ID of the file to delete.
+    type: string
+    underlyingargname: file_id
+  - name: file_name
+    description: |
+        The name of the file to delete.
+    type: string
+    underlyingargname: file_name
+underlyingcontentitem:
+  id: CrowdstrikeFalcon
+  name: CrowdstrikeFalcon
+  type: command
+  version: -1
+  command: "cs-falcon-delete-file"
+requiresuserapproval: true
+marketplaces:
+- platform

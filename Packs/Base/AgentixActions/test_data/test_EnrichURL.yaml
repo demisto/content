@@ -1,0 +1,199 @@
+tests:
+  - name: Single suspicious URL enrichment
+    prompt: "Enrich this suspicious URL for threat intelligence: https://malicious-site.com/login"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichURL
+            arguments:
+              url_list: "[\"https://malicious-site.com/login\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: Multiple URLs from phishing investigation
+    prompt: "I need to check these URLs found in a phishing email: https://fake-bank.com, https://evil.download/payload.exe, and http://suspicious-redirect.net"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichURL
+            arguments:
+              url_list: "[\"https://fake-bank.com\", \"https://evil.download/payload.exe\", \"http://suspicious-redirect.net\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: URL reputation check with external sources
+    prompt: "Get full threat intelligence on https://example-domain.org using all available external sources"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichURL
+            arguments:
+              url_list: "[\"https://example-domain.org\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: Incident investigation URL batch check
+    prompt: "During incident response, need to check reputation of these URLs: https://attack-vector.com/exploit, https://c2-server.evil, https://data-exfil.badsite"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichURL
+            arguments:
+              url_list: "[\"https://attack-vector.com/exploit\", \"https://c2-server.evil\", \"https://data-exfil.badsite\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: URL with complex query parameters
+    prompt: "Analyze this URL with tracking parameters: https://example.com/search?q=malware&tags=red,yellow,green&source=email"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichURL
+            arguments:
+              url_list: "[\"https://example.com/search?q=malware&tags=red,yellow,green&source=email\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: Shortened URL investigation
+    prompt: "Investigate this shortened URL found in suspicious email: https://bit.ly/3xY2zAb"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichURL
+            arguments:
+              url_list: "[\"https://bit.ly/3xY2zAb\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: Threat hunting URL analysis
+    prompt: "For threat hunting, enrich these IoCs: http://malware-host.ru/bot.php, https://phishing-kit.top/admin/"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichURL
+            arguments:
+              url_list: "[\"http://malware-host.ru/bot.php\", \"https://phishing-kit.top/admin/\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: IP-based URL enrichment
+    prompt: "Check reputation of this IP-based URL: http://192.168.1.100:8080/malicious"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichURL
+            arguments:
+              url_list: "[\"http://192.168.1.100:8080/malicious\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: HTTPS URL from security alert
+    prompt: "Security alert triggered by this URL, need full analysis: https://secure-looking-but-fake.bank.com/login.html"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichURL
+            arguments:
+              url_list: "[\"https://secure-looking-but-fake.bank.com/login.html\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: Multiple URLs without external enrichment
+    prompt: "Check these URLs using only internal data sources: https://domain1.com, https://domain2.org, https://domain3.net"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichURL
+            arguments:
+              url_list: "[\"https://domain1.com\", \"https://domain2.org\", \"https://domain3.net\"]"
+              external_enrichment: "false"
+              additional_fields: "true"
+
+  - name: URL enrichment minimal output
+    prompt: "Get basic reputation for https://suspicious-download.site with minimal output fields"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichURL
+            arguments:
+              url_list: "[\"https://suspicious-download.site\"]"
+              external_enrichment: "true"
+              additional_fields: "false"
+
+  - name: Malware analysis URL check
+    prompt: "Found this URL in malware sample, need complete threat intel: http://c2-command.evil/beacon"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichURL
+            arguments:
+              url_list: "[\"http://c2-command.evil/beacon\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: Internal only enrichment without additional fields
+    prompt: "Quick internal check on https://internal-tool.corp using TIM only, basic output"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichURL
+            arguments:
+              url_list: "[\"https://internal-tool.corp\"]"
+              external_enrichment: "false"
+              additional_fields: "false"
+
+  - name: FTP URL investigation
+    prompt: "Analyze this FTP URL found in logs: ftp://file-server.suspicious.org/uploads/"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichURL
+            arguments:
+              url_list: "[\"ftp://file-server.suspicious.org/uploads/\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: URL with non-standard port
+    prompt: "Check this URL with custom port from network traffic: https://evil-server.com:9999/backdoor"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichURL
+            arguments:
+              url_list: "[\"https://evil-server.com:9999/backdoor\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: Invalid JSON format error
+    prompt: "Enrich URLs: invalid-url-format"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - expected_error: "Invalid URL format provided. URLs must be provided as a JSON array or comma-separated list."
+
+  - name: Missing required URL list
+    prompt: "Run URL enrichment with external sources"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - expected_error: "Missing required parameter: url_list. Please provide URLs to enrich."
+
+  - name: General URL enrichment question
+    prompt: "What does URL enrichment do and what threat intelligence sources are used?"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions: []

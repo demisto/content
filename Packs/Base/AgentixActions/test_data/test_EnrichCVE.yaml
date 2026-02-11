@@ -1,0 +1,224 @@
+tests:
+  - name: Single CVE enrichment request
+    prompt: "Enrich CVE-2021-44228 and get all available threat intelligence data"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichCVE
+            arguments:
+              cve_list: "CVE-2021-44228"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: Multiple CVE enrichment for incident investigation
+    prompt: "I need to enrich these CVEs found in our latest incident: CVE-2023-22515, CVE-2023-22518, CVE-2024-1234"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichCVE
+            arguments:
+              cve_list: "CVE-2023-22515, CVE-2023-22518, CVE-2024-1234"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: CVE enrichment with CVSS score request
+    prompt: "Get threat intelligence and CVSS scores for CVE-2022-0847"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichCVE
+            arguments:
+              cve_list: "CVE-2022-0847"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: Critical vulnerability assessment
+    prompt: "Enrich CVE-2024-3400 and provide all available context including publication dates and descriptions"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichCVE
+            arguments:
+              cve_list: "CVE-2024-3400"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: Vulnerability research request
+    prompt: "I'm researching Log4j vulnerabilities, can you enrich CVE-2021-44228 and CVE-2021-45046?"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichCVE
+            arguments:
+              cve_list: "CVE-2021-44228, CVE-2021-45046"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: Security advisory analysis
+    prompt: "Pull threat intelligence data for CVE-2023-34362 from all available sources"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichCVE
+            arguments:
+              cve_list: "CVE-2023-34362"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: Patch management prioritization
+    prompt: "Get enrichment data for CVE-2023-4911 to help with patch prioritization"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichCVE
+            arguments:
+              cve_list: "CVE-2023-4911"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: Threat hunting investigation
+    prompt: "Enrich these CVEs identified during threat hunting: CVE-2022-30190, CVE-2022-26937"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichCVE
+            arguments:
+              cve_list: "CVE-2022-30190, CVE-2022-26937"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: Incident response CVE analysis
+    prompt: "Need to gather intelligence on CVE-2024-27348 for our incident response"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichCVE
+            arguments:
+              cve_list: "CVE-2024-27348"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: Vulnerability assessment batch
+    prompt: "Enrich CVE-2023-28252, CVE-2023-29336, CVE-2023-32046, CVE-2023-35311 for vulnerability assessment"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichCVE
+            arguments:
+              cve_list: "CVE-2023-28252, CVE-2023-29336, CVE-2023-32046, CVE-2023-35311"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: Zero-day vulnerability research
+    prompt: "Get all available threat intel for the recent zero-day CVE-2024-0001"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichCVE
+            arguments:
+              cve_list: "CVE-2024-0001"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: Risk assessment CVE enrichment
+    prompt: "Perform threat intelligence enrichment on CVE-2023-23397 for risk assessment"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichCVE
+            arguments:
+              cve_list: "CVE-2023-23397"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: Exploitation analysis request
+    prompt: "I need detailed threat intelligence on CVE-2022-41040 and CVE-2022-41082"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichCVE
+            arguments:
+              cve_list: "CVE-2022-41040, CVE-2022-41082"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: Emergency response CVE lookup
+    prompt: "Urgent: enrich CVE-2024-9999 with all available data including CVSS and publication info"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichCVE
+            arguments:
+              cve_list: "CVE-2024-9999"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: Invalid CVE format error
+    prompt: "Enrich CVE-INVALID-123 for our security assessment"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichCVE
+            arguments:
+              cve_list: "CVE-INVALID-123"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: Empty CVE identifier error
+    prompt: "Enrich CVE with all available threat intelligence"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - expected_error: "CVE identifier is required. Please provide a valid CVE identifier (e.g., CVE-2021-44228)"
+
+  - name: Malformed CVE list error
+    prompt: "Enrich these CVEs: CVE-2023-1234, INVALID-CVE, not-a-cve"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichCVE
+            arguments:
+              cve_list: "CVE-2023-1234, INVALID-CVE, not-a-cve"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: Clarification request about CVE enrichment
+    prompt: "What kind of information can I get from CVE enrichment?"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions: []
+
+  - name: General CVE help request
+    prompt: "How does CVE threat intelligence enrichment work?"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions: []
+
+  - name: Compliance reporting CVE analysis
+    prompt: "Enrich CVE-2023-45866 for compliance reporting with detailed descriptions"
+    agent_id: threat-intel-agent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: EnrichCVE
+            arguments:
+              cve_list: "CVE-2023-45866"
+              external_enrichment: "true"
+              additional_fields: "true"

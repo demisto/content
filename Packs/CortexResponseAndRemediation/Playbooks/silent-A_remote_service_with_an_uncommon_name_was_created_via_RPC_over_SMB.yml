@@ -1,0 +1,4374 @@
+id: silent-A remote service with an uncommon name was created via RPC over SMB
+version: -1
+name: silent-A remote service with an uncommon name was created via RPC over SMB
+description: "This playbook is triggered by an alert for the creation of a remote service with an uncommon name using the RPC over SMB protocol. It is designed to automatically investigate and respond to this activity, which is a common lateral movement technique used by attackers to establish persistence and execute malicious code on remote systems. The playbook analyzes the service, process, and network activity, and if the activity is deemed malicious, it will automatically perform remediation steps such as isolating the endpoint and removing the malicious service."
+tags:
+- 'T1021.002 - Remote Services: SMB/Windows Admin Shares'
+- 'T1569.002 - System Services: Service Execution'
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 15fe0bba-608d-40ec-84b0-5fd50356ea58
+    type: start
+    task:
+      id: 15fe0bba-608d-40ec-84b0-5fd50356ea58
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1397.75,
+          "y": -1594
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 01db6782-c5f7-48c1-8bb9-57e947d81bbd
+    type: regular
+    task:
+      id: 01db6782-c5f7-48c1-8bb9-57e947d81bbd
+      version: -1
+      name: Get Alert extra data
+      description: Returns information about each alert ID.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+      - "16"
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 832,
+          "y": -1112
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: d6b2b1c1-e938-4841-8b4c-3cab8410ddbf
+    type: regular
+    task:
+      id: d6b2b1c1-e938-4841-8b4c-3cab8410ddbf
+      version: -1
+      name: Get related alerts
+      description: This task searches for Cortex XSIAM related alerts to the current alert.
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      query:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'caseid:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1397.75,
+          "y": -1112
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 795f019c-b237-4864-8488-59e857dff2cd
+    type: condition
+    task:
+      id: 795f019c-b237-4864-8488-59e857dff2cd
+      version: -1
+      name: Is the integration of 'XQL Query Engine' available?
+      description: Returns 'yes' if integration brand 'XQL Query Engine' is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "136"
+      "no":
+      - "101"
+    scriptarguments:
+      brandname:
+        simple: XQL Query Engine
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1015.5,
+          "y": 1732
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: aadfd72a-4824-41b8-88e6-07c0fad654b4
+    type: regular
+    task:
+      id: aadfd72a-4824-41b8-88e6-07c0fad654b4
+      version: -1
+      name: XQL Query - Search file creation event by certutil
+      description: |-
+        Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+        When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+        unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "153"
+      '#none#':
+      - "10"
+    scriptarguments:
+      extend-context:
+        simple: TargetMachine.XQL.CreatedFiles=
+      ignore-outputs:
+        simple: "false"
+      max_fields:
+        simple: "100"
+      query:
+        simple: |-
+          dataset = xdr_data
+
+          | filter agent_id = "${Core.OriginalAlert.event.agent_id}" and event_type = ENUM.FILE and event_sub_type = ENUM.FILE_WRITE and action_file_name in ("${DiscoveredFiles.Names=>val.join('\", \"')}") and action_file_sha256 != null
+          | fields action_file_sha256, action_file_path, action_file_name, actor_process_image_name, causality_actor_process_image_name, os_actor_process_image_name ,
+          action_file_signature_product,
+          action_file_signature_vendor
+      query_name:
+        simple: Find the created file SHA256
+      time_frame:
+        simple: between ${XQL.QueryStartTime} and ${XQL.QueryEndTime}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 1880,
+          "y": -32
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: c536cbc0-04a3-4e34-8dcd-cb3990fa457e
+    type: regular
+    task:
+      id: c536cbc0-04a3-4e34-8dcd-cb3990fa457e
+      version: -1
+      name: 'Retrieve the query''s timeframe: start time'
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: XQL.QueryStartTime
+      value:
+        complex:
+          root: alert
+          accessor: timestamp
+          transformers:
+          - operator: ModifyDateTime
+            args:
+              variation:
+                value:
+                  simple: 5 min ago
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ' '
+              toReplace:
+                value:
+                  simple: T
+          - operator: RegexReplace
+            args:
+              action_dt: {}
+              ignore_case: {}
+              multi_line: {}
+              output_format: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: \..+
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1840,
+          "y": -1112
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 366d0919-e929-46d9-8161-0ec412f722b5
+    type: regular
+    task:
+      id: 366d0919-e929-46d9-8161-0ec412f722b5
+      version: -1
+      name: 'Retrieve the query''s timeframe: end time'
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      key:
+        simple: XQL.QueryEndTime
+      value:
+        complex:
+          root: alert
+          accessor: timestamp
+          transformers:
+          - operator: ModifyDateTime
+            args:
+              variation:
+                value:
+                  simple: 5 minutes after
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ' '
+              toReplace:
+                value:
+                  simple: T
+          - operator: RegexReplace
+            args:
+              action_dt: {}
+              ignore_case: {}
+              multi_line: {}
+              output_format: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: \..+
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1840,
+          "y": -993
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: d5556238-22d6-43b7-8610-f746ed6c9545
+    type: condition
+    task:
+      id: d5556238-22d6-43b7-8610-f746ed6c9545
+      version: -1
+      name: Any results from XQL?
+      description: Check if the XQL query returned any results for created files on the target machine.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "121"
+      "yes":
+      - "69"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TargetMachine.XQL.CreatedFiles.results
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: ff890656-79c0-423e-8bf9-3039d455eb53
+    type: regular
+    task:
+      id: ff890656-79c0-423e-8bf9-3039d455eb53
+      version: -1
+      name: Get Remote Endpoint Data
+      description: This script gathers endpoint data from multiple integrations and returns an endpoint entity with consolidated information to the context.
+      scriptName: get-endpoint-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "74"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      brands:
+        simple: Cortex Core - IR
+      endpoint_ip:
+        simple: ${Core.OriginalAlert.event.actor_remote_ip}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 832,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 7733a5b7-2328-4bdd-801d-c01c0236f33b
+    type: condition
+    task:
+      id: 7733a5b7-2328-4bdd-801d-c01c0236f33b
+      version: -1
+      name: Check if hostname was found
+      description: Checks if a hostname was found in the endpoint data to determine the next course of action.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "72"
+      "yes":
+      - "64"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EndpointData.Hostname
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -56.5,
+          "y": 2195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 1bbb4e91-3386-4e5d-8a8a-69520987b959
+    type: title
+    task:
+      id: 1bbb4e91-3386-4e5d-8a8a-69520987b959
+      version: -1
+      name: Analyze files created on the machine
+      description: Checks the file created on the machine by XQL query.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 408,
+          "y": -953
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 4637c8f1-04f5-45a7-8ec7-fda4cc701d44
+    type: title
+    task:
+      id: 4637c8f1-04f5-45a7-8ec7-fda4cc701d44
+      version: -1
+      name: Isolation and admin shares
+      description: Isolate the machine used for the attack.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "89"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 928.75,
+          "y": 4439
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 97b4e1fc-f92e-4525-8108-ac1c90a44022
+    type: regular
+    task:
+      id: 97b4e1fc-f92e-4525-8108-ac1c90a44022
+      version: -1
+      name: Command Line Analysis
+      description: |-
+        This script evaluates command-line threats by analyzing both original and decoded inputs. It assigns weighted scores to detected patterns, such as AMSI bypass or credential dumping, and applies risk combination bonuses for multiple detections. The total score is normalized to a 0-100 scale, with risk levels categorized as follows:
+
+        * 0-25: Low Risk
+        * 26-50: Medium Risk
+        * 51-90: High Risk
+        * 91-100: Critical Risk
+
+        The scoring mechanism provides a comprehensive risk assessment, considering both the severity and frequency of malicious behaviors.
+      scriptName: CommandLineAnalysis
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      command_line:
+        simple: ${Core.OriginalAlert.event.action_rpc_func_str_call_fields.lpBinaryPathName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1397.75,
+          "y": 1027
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 371e620e-06a2-4a77-8634-8ba1a13b1085
+    type: title
+    task:
+      id: 371e620e-06a2-4a77-8634-8ba1a13b1085
+      version: -1
+      name: Check Created Files
+      description: A file was created on the host, check for hash
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1397.75,
+          "y": -177.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 546ee274-1723-4a6f-885f-153975ebd4b5
+    type: regular
+    task:
+      id: 546ee274-1723-4a6f-885f-153975ebd4b5
+      version: -1
+      name: Check for a valid remote IP
+      description: Verify that the remote IP address from the alert is valid and properly formatted.
+      scriptName: VerifyValidIP
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      input:
+        simple: ${Core.OriginalAlert.event.actor_remote_ip}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 832,
+          "y": -960.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 987faa19-8515-4835-835c-1909d4401dc4
+    type: title
+    task:
+      id: 987faa19-8515-4835-835c-1909d4401dc4
+      version: -1
+      name: No valid remote IP was found
+      description: No valid remote IP was found for the attacking machine.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": -700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: a2e1db2b-3f62-41c0-804d-ed4607c49228
+    type: title
+    task:
+      id: a2e1db2b-3f62-41c0-804d-ed4607c49228
+      version: -1
+      name: Check for suspicious activity after event
+      description: Using an XQL query check for suspicious command lines used after the event.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2117.5,
+          "y": 2067
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 8f2dbae8-cb22-4b3a-8d16-a3ddeb52fc95
+    type: regular
+    task:
+      id: 8f2dbae8-cb22-4b3a-8d16-a3ddeb52fc95
+      version: -1
+      name: XQL Query - Search usage of cmd and Powershell
+      description: |-
+        Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+        When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+        unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "151"
+      '#none#':
+      - "32"
+    scriptarguments:
+      extend-context:
+        simple: TargetMachine.XQL.Activity=
+      ignore-outputs:
+        simple: "true"
+      max_fields:
+        simple: "100"
+      query:
+        simple: "dataset = xdr_data \n| filter agent_id = \"${Core.OriginalAlert.event.agent_id}\" and event_type = ENUM.PROCESS and actor_process_image_name in (\"cmd.exe\", \"powershell.exe\") and action_process_image_command_line != null\n| fields _time, actor_process_command_line , action_process_image_command_line"
+      query_name:
+        simple: Suspicious command lines
+      time_frame:
+        simple: between ${XQL.QueryStartTime} and ${XQL.QueryEndTime}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": -2117.5,
+          "y": 2187.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 1669465a-2abb-4968-8950-ba460230ef94
+    type: condition
+    task:
+      id: 1669465a-2abb-4968-8950-ba460230ef94
+      version: -1
+      name: Any results from XQL?
+      description: Check if the XQL query returned any results for suspicious command line activity on the target machine.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "155"
+      "yes":
+      - "71"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TargetMachine.XQL.Activity.results
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2117.5,
+          "y": 2337
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 754c4ad4-dadd-49d8-89c6-998ea1aed895
+    type: title
+    task:
+      id: 754c4ad4-dadd-49d8-89c6-998ea1aed895
+      version: -1
+      name: Disable admin share on target machine?
+      description: Disable the admin shares on the target machine and reboot the machine if selected by the user.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "142"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 704.75,
+          "y": 5029
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: e331094d-2cc2-40a9-8203-666cc97bee2c
+    type: title
+    task:
+      id: e331094d-2cc2-40a9-8203-666cc97bee2c
+      version: -1
+      name: Data Collection
+      description: Initial data gathering of the alert for the playbook.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
+      - "75"
+      - "76"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1397.75,
+          "y": -1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 5fef4177-71b7-4843-80e5-fa4dd05b3a9c
+    type: title
+    task:
+      id: 5fef4177-71b7-4843-80e5-fa4dd05b3a9c
+      version: -1
+      name: Investigation
+      description: Start investigating the alert after collecting all needed data.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1397.75,
+          "y": -330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 3573e321-c1a5-4a3f-8b03-b993abb2cd27
+    type: condition
+    task:
+      id: 3573e321-c1a5-4a3f-8b03-b993abb2cd27
+      version: -1
+      name: Is the IP valid?
+      description: Checks the results of the previous task to make sure the IP is a valid one.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: VerifyValidIP
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: VerifyValidIP.IP
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ${Core.OriginalAlert.event.actor_remote_ip}
+                accessor: Valid
+            iscontext: true
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: Core.OriginalAlert.event.actor_remote_ip
+            iscontext: true
+          right:
+            value:
+              simple: '::'
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 832,
+          "y": -847
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 654c64e3-500c-4aac-ae81-ed6e5ecc3a61
+    type: regular
+    task:
+      id: 654c64e3-500c-4aac-ae81-ed6e5ecc3a61
+      version: -1
+      name: Get files path
+      description: Extracts regex data from the provided text. The script support groups and looping.
+      scriptName: MatchRegexV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      contextKey:
+        simple: DiscoveredFiles.Path
+      data:
+        simple: ${Core.OriginalAlert.event.action_rpc_func_str_call_fields.lpBinaryPathName}
+      regex:
+        simple: (?:(?:(?:\w:)|(?:%\w+%))?\\[^.]+)+[.][\w\d]+
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 408,
+          "y": -847
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 73ee3e16-31f5-4c06-a5f1-a3a43e1aa762
+    type: regular
+    task:
+      id: 73ee3e16-31f5-4c06-a5f1-a3a43e1aa762
+      version: -1
+      name: Extract File names
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      key:
+        simple: DiscoveredFiles.Names
+      value:
+        complex:
+          root: DiscoveredFiles
+          accessor: Path
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: \
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 408,
+          "y": -707.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 029a9e0b-ec86-4734-8b0a-4723f7caa6f6
+    type: condition
+    task:
+      id: 029a9e0b-ec86-4734-8b0a-4723f7caa6f6
+      version: -1
+      name: Is Command Line Suspicious?
+      description: Check if the command line analysis score indicates suspicious activity by evaluating if the score is greater than or equal to 40.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "137"
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CommandLineAnalysis.score
+            iscontext: true
+          right:
+            value:
+              simple: "40"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 9dcdce43-4a0d-4c37-8b78-f90f99074a6c
+    type: regular
+    task:
+      id: 9dcdce43-4a0d-4c37-8b78-f90f99074a6c
+      version: -1
+      name: Disable Admin Shares
+      description: Initiate a new endpoint script execution of shell commands.
+      script: '|||core-run-script-execute-commands'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "143"
+    scriptarguments:
+      commands:
+        simple: powershell.exe Remove-ItemProperty -Name LocalAccountTokenFilterPolicy -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Force -ErrorAction SilentlyContinue
+      endpoint_ids:
+        simple: ${alert.agentid}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 704.75,
+          "y": 5387
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 29f58968-ea36-421b-827f-ad4b3fb0f6ed
+    type: title
+    task:
+      id: 29f58968-ea36-421b-827f-ad4b3fb0f6ed
+      version: -1
+      name: Remediation
+      description: The playbook found enough evidence of the action being suspicious and will move into the remediation part.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "83"
+      - "84"
+      - "17"
+      - "82"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1397.75,
+          "y": 4176
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 249871ff-f31c-4071-8a15-acc460522101
+    type: title
+    task:
+      id: 249871ff-f31c-4071-8a15-acc460522101
+      version: -1
+      name: Deep Investigation
+      description: See below for more details, this is a placeholder for better visibility.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "100"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -683,
+          "y": 1564
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: cb4a1097-cc5f-4e48-8c90-6acfb2261b0b
+    type: title
+    task:
+      id: cb4a1097-cc5f-4e48-8c90-6acfb2261b0b
+      version: -1
+      name: Check for data on attacking machine
+      description: Uses XQL to get additional information about commands that were ran on the attacking machine and mentions the target by IP or hostname.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -56.5,
+          "y": 2067
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: dbfd47bd-d89b-4d43-83cd-5533a7acf795
+    type: regular
+    task:
+      id: dbfd47bd-d89b-4d43-83cd-5533a7acf795
+      version: -1
+      name: XQL Query -  command lines on attacking machine
+      description: |-
+        Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+        When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+        unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "138"
+      '#none#':
+      - "65"
+    scriptarguments:
+      extend-context:
+        simple: Attacker.XQL=
+      ignore-outputs:
+        simple: "true"
+      max_fields:
+        simple: "100"
+      query:
+        simple: "dataset = xdr_data \n| filter agent_id = \"${EndpointData.ID}\" and event_type = ENUM.PROCESS and actor_process_image_name in (\"cmd.exe\", \"powershell.exe\") and action_process_image_command_line != null and (action_process_image_command_line contains \"${alert.hostip.[0]}\" or action_process_image_command_line contains \"${alert.hostname}\")\n| fields _time, actor_process_command_line , action_process_image_command_line, action_process_image_path,\naction_process_username, action_process_image_name, action_process_image_sha256"
+      query_name:
+        simple: Find command lines on attacking machine
+      time_frame:
+        simple: between ${XQL.QueryStartTime} and ${XQL.QueryEndTime}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": -56.5,
+          "y": 2357
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: c6fd65a0-4d2f-4030-801f-d1336f23f5fa
+    type: condition
+    task:
+      id: c6fd65a0-4d2f-4030-801f-d1336f23f5fa
+      version: -1
+      name: Any results from XQL?
+      description: Check if the XQL query returned any results from the attacking machine to determine if command line activity was found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "122"
+      "yes":
+      - "73"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Attacker.XQL.results
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -266,
+          "y": 2510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 33ec3b78-9a9b-4112-8e52-41014d2d0d97
+    type: title
+    task:
+      id: 33ec3b78-9a9b-4112-8e52-41014d2d0d97
+      version: -1
+      name: Set Alert Time Frame
+      description: Sets the time frame for XQL searches - 5 minutes prior to the alert and 5 minutes after it (10 minutes in general).
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1840,
+          "y": -1221
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 60fe3f2e-6c97-4284-831c-888f29ca55d3
+    type: regular
+    task:
+      id: 60fe3f2e-6c97-4284-831c-888f29ca55d3
+      version: -1
+      name: Enrich File
+      description: This script gathers file reputation data from multiple integrations and returns a "FileEnrichment" object with consolidated information to the context output.
+      scriptName: file-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "106"
+    scriptarguments:
+      external_enrichment:
+        simple: "true"
+      file_hash:
+        complex:
+          root: TargetMachine.XQL.CreatedFiles.results
+          accessor: action_file_sha256
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 447
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: 49660249-21ab-4832-8fc0-7ec50c2642e5
+    type: regular
+    task:
+      id: 49660249-21ab-4832-8fc0-7ec50c2642e5
+      version: -1
+      name: Check entailing command lines
+      description: |-
+        This script evaluates command-line threats by analyzing both original and decoded inputs. It assigns weighted scores to detected patterns, such as AMSI bypass or credential dumping, and applies risk combination bonuses for multiple detections. The total score is normalized to a 0-100 scale, with risk levels categorized as follows:
+
+        * 0-25: Low Risk
+        * 26-50: Medium Risk
+        * 51-90: High Risk
+        * 91-100: Critical Risk
+
+        The scoring mechanism provides a comprehensive risk assessment, considering both the severity and frequency of malicious behaviors.
+      scriptName: CommandLineAnalysis
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "80"
+    scriptarguments:
+      command_line:
+        complex:
+          root: TargetMachine.XQL.Activity.results
+          accessor: action_process_image_command_line
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' , '
+      extend-context:
+        simple: FollowingCommads=
+      ignore-outputs:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2117.5,
+          "y": 2684.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: 01f89295-2434-4e3c-8eaf-cd64fddc35ae
+    type: title
+    task:
+      id: 01f89295-2434-4e3c-8eaf-cd64fddc35ae
+      version: -1
+      name: Cant find attacking endpoint
+      description: The attacking endpoint can not be found, either no IP was extracted or the device does not exist anymore.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "122"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -588,
+          "y": 2362
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 60f077d5-4185-4e0d-8ee3-8cb8f49ae352
+    type: regular
+    task:
+      id: 60f077d5-4185-4e0d-8ee3-8cb8f49ae352
+      version: -1
+      name: Check Initiating User Riskiness
+      description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
+      script: '|||core-list-risky-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "95"
+    scriptarguments:
+      extend-context:
+        simple: Attacker.RiskyUser=
+      ignore-outputs:
+        simple: "true"
+      user_id:
+        complex:
+          root: Attacker.XQL.results
+          accessor: action_process_username
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -56.5,
+          "y": 2741
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: c0d7f0c3-ddaa-4b3e-84f5-02607efe68ea
+    type: regular
+    task:
+      id: c0d7f0c3-ddaa-4b3e-84f5-02607efe68ea
+      version: -1
+      name: Initiating Host Riskiness
+      description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
+      script: '|||core-list-risky-hosts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      extend-context:
+        simple: Attacker.RiskyHost=
+      host_id:
+        simple: ${Endpoint.Hostname}
+      ignore-outputs:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 832,
+          "y": -502
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: d29bea4e-a6c4-4b17-86f1-fe665cdee17b
+    type: title
+    task:
+      id: d29bea4e-a6c4-4b17-86f1-fe665cdee17b
+      version: -1
+      name: Get Alert Extra Data
+      description: This will fetch all the extra alert data needed for RPC events.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 832,
+          "y": -1221
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 57357b08-b571-4e63-837f-29832935b899
+    type: title
+    task:
+      id: 57357b08-b571-4e63-837f-29832935b899
+      version: -1
+      name: Get Related Alerts
+      description: Fetching related alerts to check for suspicious flows.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1397.75,
+          "y": -1221
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: 615caa48-9902-4aaf-80f5-fad1fdf4df05
+    type: title
+    task:
+      id: 615caa48-9902-4aaf-80f5-fad1fdf4df05
+      version: -1
+      name: No Risky User\Host Found - check tool prev + tmp paths
+      description: No Risky User or Host found that were related to the command ran.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "85"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -353,
+          "y": 3192
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: 1bf7884a-cffe-4765-878b-bd24a078c619
+    type: condition
+    task:
+      id: 1bf7884a-cffe-4765-878b-bd24a078c619
+      version: -1
+      name: Check for suspicious entailing commands
+      description: Use command line analysis to check if any of the entailing commands has a score equal or greater than 40.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "81"
+      "yes":
+      - "126"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FollowingCommads.score
+                filters:
+                - - operator: greaterThanOrEqual
+                    left:
+                      value:
+                        simple: FollowingCommads.score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "40"
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2117.5,
+          "y": 2891
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 129f251e-9ddd-4e4d-8b62-cd6a32555900
+    type: title
+    task:
+      id: 129f251e-9ddd-4e4d-8b62-cd6a32555900
+      version: -1
+      name: No entailing suspicious commands found
+      description: After checking entailing commands on target no suspicious commands were found.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "130"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1850,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: 3a646344-c253-4cac-8c7a-d299c54fa81f
+    type: title
+    task:
+      id: 3a646344-c253-4cac-8c7a-d299c54fa81f
+      version: -1
+      name: Block newly created files
+      description: Block files that were created as a result of the action.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "156"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1549,
+          "y": 4439
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: 11992b74-a086-41b8-8c95-f2e7eb6873a4
+    type: title
+    task:
+      id: 11992b74-a086-41b8-8c95-f2e7eb6873a4
+      version: -1
+      name: Disable attacking user
+      description: Disable the user used for the attack.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "157"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2090,
+          "y": 4439
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: 6d638a03-c666-46a8-82d4-04541466e251
+    type: title
+    task:
+      id: 6d638a03-c666-46a8-82d4-04541466e251
+      version: -1
+      name: Terminate causality
+      description: Terminate the causality that spawned the action leading to the alert.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "105"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2544,
+          "y": 4439
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: c996dd07-54d9-4f88-839f-3b17ca999eae
+    type: regular
+    task:
+      id: c996dd07-54d9-4f88-839f-3b17ca999eae
+      version: -1
+      name: 'Check Attacking Tool Prevalence'
+      description: Get the prevalence of a file, identified by sha256.
+      script: '|||core-get-hash-analytics-prevalence'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "92"
+    scriptarguments:
+      extend-context:
+        simple: Attacker.Prevalence=
+      ignore-outputs:
+        simple: "true"
+      sha256:
+        complex:
+          root: Attacker.XQL.results
+          accessor: action_process_image_sha256
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -353,
+          "y": 3365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: 7b60652c-0f5f-4070-82ed-f48c8520aff2
+    type: regular
+    task:
+      id: 7b60652c-0f5f-4070-82ed-f48c8520aff2
+      version: -1
+      name: Terminate Actor Process
+      description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4 and above.
+      script: '|||core-terminate-causality'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "103"
+      '#none#':
+      - "90"
+    scriptarguments:
+      agent_id:
+        simple: ${alert.agentid}
+      causality_id:
+        simple: ${alert.actorprocessinstanceid.[0]}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 2737,
+          "y": 4769
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: eff3fef4-ceaf-4c18-8f2c-9408b4be1ac2
+    type: regular
+    task:
+      id: eff3fef4-ceaf-4c18-8f2c-9408b4be1ac2
+      version: -1
+      name: Get Attacked Machine Data
+      description: This script gathers endpoint data from multiple integrations and returns an endpoint entity with consolidated information to the context.
+      scriptName: get-endpoint-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "112"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      brands:
+        simple: Cortex Core - IR
+      endpoint_id:
+        simple: ${alert.agentid}
+      extend-context:
+        simple: AttackedMachine=
+      ignore-outputs:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 928.75,
+          "y": 4564
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: c669272c-0da5-439a-89e3-ce81312d5daa
+    type: regular
+    task:
+      id: c669272c-0da5-439a-89e3-ce81312d5daa
+      version: -1
+      name: Close Alert - True Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "144"
+    scriptarguments:
+      id:
+        simple: ${alert.id}
+      closeNotes:
+        simple: Resolved as True Positive - Handled by the playbook "A remote service with an uncommon name was created via RPC over SMB"
+      closeReason:
+        simple: Resolved - True Positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 928.75,
+          "y": 5934
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: a3eb28c6-e002-4bc4-8971-3e460609a0ba
+    type: regular
+    task:
+      id: a3eb28c6-e002-4bc4-8971-3e460609a0ba
+      version: -1
+      name: Check for suspicious paths
+      description: Extracts regex data from the provided text. The script support groups and looping.
+      scriptName: MatchRegexV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "98"
+    scriptarguments:
+      data:
+        complex:
+          root: Attacker.XQL.results
+          accessor: action_process_image_path
+          transformers:
+          - operator: uniq
+      extend-context:
+        simple: Attacker.Paths=
+      ignore-outputs:
+        simple: "true"
+      regex:
+        simple: (C:\\Users\\|C:\\Windows\\|C:\\)(?:\S+\\)?(Downloads|Desktop|AppData\\Local\\Temp|AppData\\Roaming|Temp|ProgramData|\$Recycle\.Bin|Recycler)
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -353,
+          "y": 3485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: fa1deb9b-ab78-453f-8840-68e3a289b6b0
+    type: condition
+    task:
+      id: fa1deb9b-ab78-453f-8840-68e3a289b6b0
+      version: -1
+      name: Check User and Host Riskiness
+      description: Check if either Host or User risk level is HIGH, if not check if both are MED.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "79"
+      Double Medium:
+      - "97"
+      HIGH:
+      - "96"
+    separatecontext: false
+    conditions:
+    - label: HIGH
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Attacker.RiskyUser.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: HIGH
+    - label: Double Medium
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Attacker.RiskyHost.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: MED
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Attacker.RiskyUser.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: MED
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -56.5,
+          "y": 3021
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: 1436d077-2284-4c4c-81eb-fe42d3f91a88
+    type: title
+    task:
+      id: 1436d077-2284-4c4c-81eb-fe42d3f91a88
+      version: -1
+      name: User Risk Level is High
+      description: User riskiness found to be HIGH.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "128"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 244,
+          "y": 3192
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "97":
+    id: "97"
+    taskid: 1c43b86b-d164-4f15-809b-41086868fd8e
+    type: title
+    task:
+      id: 1c43b86b-d164-4f15-809b-41086868fd8e
+      version: -1
+      name: Both User and Host risk are MED
+      description: Both User and Host risk are MED
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "128"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -56.5,
+          "y": 3280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "98":
+    id: "98"
+    taskid: eaa33fd1-c13f-4ee4-8c15-7f26d74735d0
+    type: condition
+    task:
+      id: eaa33fd1-c13f-4ee4-8c15-7f26d74735d0
+      version: -1
+      name: Is file not prevalent and ran from a suspicious folder
+      description: Check if the file is not prevalent and was executed from a suspicious folder location.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "99"
+      "yes":
+      - "128"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Attacker.Prevalence.value
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Attacker.Prevalence.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "false"
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Attacker.Paths
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -353,
+          "y": 3612.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "99":
+    id: "99"
+    taskid: bd164f1c-2883-4a25-8c35-2447f0265d26
+    type: title
+    task:
+      id: bd164f1c-2883-4a25-8c35-2447f0265d26
+      version: -1
+      name: Either tool is prevalent or no suspicious paths
+      description: No suspicious paths were found or the tool used is prevalent.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "130"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -588,
+          "y": 3802.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: 9232558d-7a9b-47b6-8d6b-69e3c68a4a1b
+    type: title
+    task:
+      id: 9232558d-7a9b-47b6-8d6b-69e3c68a4a1b
+      version: -1
+      name: Check related alerts
+      description: Check if any of the related alerts are suspicious.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "101"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 788,
+          "y": 1732
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "101":
+    id: "101"
+    taskid: c5c42c27-f9b9-451d-8542-885415780e06
+    type: condition
+    task:
+      id: c5c42c27-f9b9-451d-8542-885415780e06
+      version: -1
+      name: Check for suspicious related alerts
+      description: Check if any of the related alerts are suspicious by evaluating incident names against known malicious patterns and indicators.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "102"
+      ABIOC:
+      - "147"
+      "yes":
+      - "129"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          right:
+            value:
+              simple: Malicious Service Creation
+        - operator: isEqualString
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          right:
+            value:
+              simple: Protection Against Security Measures Bypass Techniques
+        - operator: isEqualString
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          right:
+            value:
+              simple: Commonly abused process executed with obfuscated characters
+        - operator: isEqualString
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          right:
+            value:
+              simple: WildFire Malware
+    - label: ABIOC
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious PowerShell Command Line
+          ignorecase: true
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          right:
+            value:
+              simple: Remote service command execution from an uncommon source
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 788,
+          "y": 2042
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "102":
+    id: "102"
+    taskid: 7fe2fde9-324f-40b1-8d39-777c4bfb49f2
+    type: title
+    task:
+      id: 7fe2fde9-324f-40b1-8d39-777c4bfb49f2
+      version: -1
+      name: No relevant alerts found
+      description: No suspicious related alerts.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "130"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1158,
+          "y": 2202.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "103":
+    id: "103"
+    taskid: cbfc41ec-d0de-4751-89e1-d4c7ca109e94
+    type: regular
+    task:
+      id: cbfc41ec-d0de-4751-89e1-d4c7ca109e94
+      version: -1
+      name: Terminate Process Manually
+      description: |-
+        Dear Analyst,
+
+        During the containment phase, the playbook couldn’t terminate the process: ${Core.OriginalAlert.event.action_process_image_name}
+
+        Please terminate the process manually if possible.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2737,
+          "y": 4987
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "105":
+    id: "105"
+    taskid: 033b5943-9072-41c1-8959-98dceca1e9bb
+    type: condition
+    task:
+      id: 033b5943-9072-41c1-8959-98dceca1e9bb
+      version: -1
+      name: Check if the causality was blocked by the agent
+      description: Verifies if the causality chain was blocked by the security agent by checking if the action status is set to BLOCKED.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "88"
+      "yes":
+      - "90"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: foundIncidents.CustomFields
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: foundIncidents.CustomFields.cid
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.cid
+                accessor: action
+            iscontext: true
+          right:
+            value:
+              simple: BLOCKED
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2544,
+          "y": 4609
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "106":
+    id: "106"
+    taskid: 31e4839c-d763-4130-8eec-7ccaf15c56a3
+    type: condition
+    task:
+      id: 31e4839c-d763-4130-8eec-7ccaf15c56a3
+      version: -1
+      name: Check for malicious files
+      description: Evaluates file enrichment data to identify potentially malicious files by checking TIM brand files with a threat score of 2 or higher.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "109"
+      "yes":
+      - "108"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: FileEnrichment.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TIM
+                    ignorecase: true
+                - - operator: greaterThanOrEqual
+                    left:
+                      value:
+                        simple: FileEnrichment.Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "2"
+                accessor: SHA256
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 602
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "108":
+    id: "108"
+    taskid: 585460cf-a33c-46a3-82d2-2107f10f1bf5
+    type: regular
+    task:
+      id: 585460cf-a33c-46a3-82d2-2107f10f1bf5
+      version: -1
+      name: Save suspicious SHA256s to context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: SuspiciousFilesCreated
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: FileEnrichment
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: FileEnrichment.Brand
+                iscontext: true
+              right:
+                value:
+                  simple: TIM
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: FileEnrichment.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "2"
+          accessor: SHA256
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2150,
+          "y": 757.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "109":
+    id: "109"
+    taskid: 069cea3c-372d-4812-8dbd-dcec41296884
+    type: title
+    task:
+      id: 069cea3c-372d-4812-8dbd-dcec41296884
+      version: -1
+      name: No suspicious files created
+      description: No suspicious files were created on the target machine.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1397.75,
+          "y": 757.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "110":
+    id: "110"
+    taskid: 14be0c6a-fca3-4241-8bfd-8cc5436c0827
+    type: regular
+    task:
+      id: 14be0c6a-fca3-4241-8bfd-8cc5436c0827
+      version: -1
+      name: Block suspicious created files
+      description: Block lists requested files which have not already been block listed or added to allow lists.
+      script: '|||core-blocklist-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      hash_list:
+        simple: ${SuspiciousFilesCreated}
+      incident_id:
+        simple: ${alert.parentXDRIncident}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1640,
+          "y": 4854
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "111":
+    id: "111"
+    taskid: b03123db-1677-43d7-8a06-926f52e06780
+    type: regular
+    task:
+      id: b03123db-1677-43d7-8a06-926f52e06780
+      version: -1
+      name: Isolate Attacking Endpoint
+      description: Isolates the specified endpoint.
+      script: '|||core-isolate-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      endpoint_id:
+        simple: ${EndpointData.ID}
+      incident_id:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+      timeout_in_seconds:
+        simple: "180"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -460,
+          "y": 5540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "112":
+    id: "112"
+    taskid: 164687cf-31f7-4a55-80d9-81c037bb100f
+    type: condition
+    task:
+      id: 164687cf-31f7-4a55-80d9-81c037bb100f
+      version: -1
+      name: Verify endpoint isn't isolated, disconnected, or a server
+      description: Determine whether to isolate the endpoint based on its status, isolation state, and OS type.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "113"
+      Already isolated:
+      - "90"
+      Isolate:
+      - "114"
+    separatecontext: false
+    conditions:
+    - label: Isolate
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: EndpointData.AdditionalFields.endpoint_type
+            iscontext: true
+          right:
+            value:
+              simple: WORKSTATION
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EndpointData.AdditionalFields.endpoint_status
+            iscontext: true
+          right:
+            value:
+              simple: CONNECTED
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EndpointData.AdditionalFields.is_isolated
+            iscontext: true
+          right:
+            value:
+              simple: AGENT_UNISOLATED
+          ignorecase: true
+    - label: Already isolated
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EndpointData.AdditionalFields.is_isolated
+            iscontext: true
+          right:
+            value:
+              simple: AGENT_ISOLATED
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 928.75,
+          "y": 4694
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "113":
+    id: "113"
+    taskid: 50921276-096a-4841-836a-ea6f184b926c
+    type: regular
+    task:
+      id: 50921276-096a-4841-836a-ea6f184b926c
+      version: -1
+      name: Manual remediation actions for a server or a disconnected endpoint
+      description: "Dear Analyst,\n\nPlease note that during the remediation process, the playbook didn't isolate the following host: ${alert.hostname} \n\nThis is due to one of the following reasons:\n- The device disconnected.\n- The device has been identified as a server.\n\nPlease take manual action to contain the attack and prevent the attacker from executing lateral movement before closing this alert."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1158,
+          "y": 4854
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "114":
+    id: "114"
+    taskid: 03a91fbd-ee64-4a32-8c3d-65251c6bcfd1
+    type: collection
+    task:
+      id: 03a91fbd-ee64-4a32-8c3d-65251c6bcfd1
+      version: -1
+      name: Manual Task - Analyst approval for remediation
+      description: |-
+        Analyst approval is required for the following remediation actions:
+        - Isolate endpoint and close the alert
+        - Close alert without isolation
+        - No action
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "141"
+      - "33"
+    scriptarguments:
+      key:
+        simple: Message
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 704.75,
+          "y": 4854
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            The host "${EndpointData.Hostname}"  (IP: "${EndpointData.IPAddress}") has accessed a machine ("${AttackedMachine.Hostname}") via RPC over SMB. The action seems suspicious and it is recommended that you isolate the machine.
+
+            **Do you wish to isolate both endpoints, the attacking endpoint "${EndpointData.Hostname}" only, the target endpoint only "${AttackedMachine.Hostname}" or none of them?**
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: Isolate attacking endpoint.
+        - simple: Isolate target endpoint.
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: '**Do you wish to disable admin share on the target machine?** '
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "No"
+        - simple: "Yes"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: '**Do you wish to reboot on the target machine now for the changes to admin share to take effect?** '
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "No"
+        - simple: "Yes"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Isolation Approval
+      description: '### **Select the response actions:**'
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "115":
+    id: "115"
+    taskid: a0ab2c04-2f4a-43e4-8c06-100e4ec7397a
+    type: condition
+    task:
+      id: a0ab2c04-2f4a-43e4-8c06-100e4ec7397a
+      version: -1
+      name: Check Analyst Decision for Next Response Actions
+      description: Evaluate the analyst's decision for the following response actions.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "135"
+      Isolate Both:
+      - "134"
+      attacking:
+      - "111"
+      target:
+      - "120"
+    separatecontext: false
+    conditions:
+    - label: Isolate Both
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: Isolation Approval.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+          ignorecase: true
+    - label: attacking
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Isolation Approval.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: attacking
+          ignorecase: true
+    - label: target
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Isolation Approval.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: target
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -151,
+          "y": 5153
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "120":
+    id: "120"
+    taskid: 39a26739-35ee-4e94-8458-bb479100f6bb
+    type: regular
+    task:
+      id: 39a26739-35ee-4e94-8458-bb479100f6bb
+      version: -1
+      name: Isolate Target Endpoint
+      description: Isolates the specified endpoint.
+      script: '|||core-isolate-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      endpoint_id:
+        simple: ${alert.agentid}
+      incident_id:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+      timeout_in_seconds:
+        simple: "180"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 172,
+          "y": 5540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "121":
+    id: "121"
+    taskid: 31f1403f-e081-4300-8e52-6249168d31be
+    type: title
+    task:
+      id: 31f1403f-e081-4300-8e52-6249168d31be
+      version: -1
+      name: No XQL Results
+      description: No results were found when running the XQL query.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "109"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1397.75,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "122":
+    id: "122"
+    taskid: 6084558d-3b12-41e6-8366-d1603c6c3775
+    type: title
+    task:
+      id: 6084558d-3b12-41e6-8366-d1603c6c3775
+      version: -1
+      name: No XQL Results
+      description: XQL query didn't produce any results.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "99"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -588,
+          "y": 2692
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "126":
+    id: "126"
+    taskid: 0b784870-a5ec-4f54-81ab-c3009c24a131
+    type: regular
+    task:
+      id: 0b784870-a5ec-4f54-81ab-c3009c24a131
+      version: -1
+      name: Set Remediation to True
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "130"
+    scriptarguments:
+      key:
+        simple: Remediation
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2117.5,
+          "y": 3365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "128":
+    id: "128"
+    taskid: 260031c3-0139-47da-85b6-d9c2b64033f6
+    type: regular
+    task:
+      id: 260031c3-0139-47da-85b6-d9c2b64033f6
+      version: -1
+      name: Set Remediation to True
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "130"
+    scriptarguments:
+      key:
+        simple: Remediation
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -56.5,
+          "y": 3795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "129":
+    id: "129"
+    taskid: 57947de4-d69f-491c-84a0-2a909e497279
+    type: regular
+    task:
+      id: 57947de4-d69f-491c-84a0-2a909e497279
+      version: -1
+      name: Set Remediation to True
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "130"
+    scriptarguments:
+      key:
+        simple: Remediation
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 788,
+          "y": 2347
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "130":
+    id: "130"
+    taskid: ff64c23c-fe5a-4634-87fb-72155d72de9a
+    type: condition
+    task:
+      id: ff64c23c-fe5a-4634-87fb-72155d72de9a
+      version: -1
+      name: Remediate?
+      description: Check if remediation should be performed based on the existence of the Remediation context variable.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "131"
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Remediation
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 788,
+          "y": 3980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "131":
+    id: "131"
+    taskid: 602b5a0c-463a-41ed-81ce-70c40c43669c
+    type: regular
+    task:
+      id: 602b5a0c-463a-41ed-81ce-70c40c43669c
+      version: -1
+      name: Close Alert - False Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "146"
+    scriptarguments:
+      id:
+        simple: ${alert.id}
+      closeNotes:
+        simple: Resolved as False Positive - Handled by the playbook "A remote service with an uncommon name was created via RPC over SMB"
+      closeReason:
+        simple: Resolved - False Positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 4176
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "134":
+    id: "134"
+    taskid: e1cdd178-73b5-48f6-8394-c3b5b0e37173
+    type: title
+    task:
+      id: e1cdd178-73b5-48f6-8394-c3b5b0e37173
+      version: -1
+      name: Isolate both
+      description: The user selected to isolate both machines.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "120"
+      - "111"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -151,
+          "y": 5394.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "135":
+    id: "135"
+    taskid: e4055972-9bea-4cf5-898f-46d72a03b89f
+    type: title
+    task:
+      id: e4055972-9bea-4cf5-898f-46d72a03b89f
+      version: -1
+      name: No Isolation
+      description: The user selected to not isolate any of the machines.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -820,
+          "y": 5420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "136":
+    id: "136"
+    taskid: 988b7277-2944-4f67-8077-b4bf792623b0
+    type: title
+    task:
+      id: 988b7277-2944-4f67-8077-b4bf792623b0
+      version: -1
+      name: XQL Queries
+      description: XQL Queries section.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+      - "25"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1015.5,
+          "y": 1890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "137":
+    id: "137"
+    taskid: 308cd083-76c2-410d-84e6-c33c7a42334e
+    type: condition
+    task:
+      id: 308cd083-76c2-410d-84e6-c33c7a42334e
+      version: -1
+      name: Check Attacking Host Riskiness
+      description: Check if either Host or User risk level is HIGH, if not check if both are MED.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "53"
+      HIGH:
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: HIGH
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Attacker.RiskyHost.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: HIGH
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1397.75,
+          "y": 1329
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "138":
+    id: "138"
+    taskid: 40c12ccd-19d4-47d9-87ef-ae8a3725d1cc
+    type: collection
+    task:
+      id: 40c12ccd-19d4-47d9-87ef-ae8a3725d1cc
+      version: -1
+      name: Run XQL Query Manually
+      description: Run XQL query manually due to an error.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "148"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 2510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: "Please Run the following XQL Query:\n\n```\nconfig timeframe between \"${XQL.QueryStartTime}\" and \"${XQL.QueryEndTime}\"\n| dataset = xdr_data\n| filter agent_id = \"${EndpointData.ID}\"\n| filter event_type = ENUM.PROCESS \n| filter actor_process_image_name in (\"cmd.exe\", \"powershell.exe\")\n| filter action_process_image_command_line != null and (action_process_image_command_line contains \"${alert.hostip.[0]}\" or action_process_image_command_line contains \"${alert.hostname} \")\n| fields action_process_username,action_process_image_path,action_process_image_sha256,action_process_image_name,action_process_image_command_line\n```\n\n**Paste the \"Action Process Username\" as a comma separated list**:"
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: '**Paste the "Action Process Image Path" as a comma separated list**:'
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: '**Paste the "Action Process Image SHA256" as a comma separated list (if they are identical you can paste only one)**:'
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Manual Attacker XQL Query
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "141":
+    id: "141"
+    taskid: ae81b79d-bed6-4a31-8f97-4e1e8ac1ddf8
+    type: title
+    task:
+      id: ae81b79d-bed6-4a31-8f97-4e1e8ac1ddf8
+      version: -1
+      name: Isolation
+      description: Handle isolation for both the attacking machine and the target one.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "115"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 114,
+          "y": 5019
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "142":
+    id: "142"
+    taskid: 2ae39de2-d0a8-4848-8776-1b1bf40e6781
+    type: condition
+    task:
+      id: 2ae39de2-d0a8-4848-8776-1b1bf40e6781
+      version: -1
+      name: Check Analyst Answer to Remove Admin Share
+      description: Check if the analyst approved removing admin share from the target machine.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "90"
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Isolation Approval.Answers.1
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 704.75,
+          "y": 5166
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "143":
+    id: "143"
+    taskid: 80c92841-fee2-4dd8-877a-e3eed641e1e0
+    type: condition
+    task:
+      id: 80c92841-fee2-4dd8-877a-e3eed641e1e0
+      version: -1
+      name: Check analyst answer to rebooting target machine
+      description: Check if the analyst approved rebooting the target machine.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "90"
+      "yes":
+      - "145"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Isolation Approval.Answers.2
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 704.75,
+          "y": 5524
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "144":
+    id: "144"
+    taskid: 12f7409c-7eae-4e32-844c-4433f3dd20db
+    type: title
+    task:
+      id: 12f7409c-7eae-4e32-844c-4433f3dd20db
+      version: -1
+      name: Done
+      description: The playbook closed the alert as a TP after the remediation steps has been completed.
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 928.75,
+          "y": 6079
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "145":
+    id: "145"
+    taskid: bda457d6-630e-4c32-83e3-ffb3555514a3
+    type: regular
+    task:
+      id: bda457d6-630e-4c32-83e3-ffb3555514a3
+      version: -1
+      name: Reboot Target Machine
+      description: Initiate a new endpoint script execution of shell commands.
+      script: '|||core-run-script-execute-commands'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      commands:
+        simple: powershell.exe Restart-Computer -Force
+      endpoint_ids:
+        simple: ${alert.agentid}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 704.75,
+          "y": 5745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "146":
+    id: "146"
+    taskid: 02ffaa59-0fb5-4739-87ef-d991d1be5634
+    type: title
+    task:
+      id: 02ffaa59-0fb5-4739-87ef-d991d1be5634
+      version: -1
+      name: Done
+      description: Not enough evidence found to deem the alert as a TP, Closing alert as a FP.
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 4341
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "147":
+    id: "147"
+    taskid: 57cc928e-f0c3-471c-8cdc-5c2ac3605473
+    type: title
+    task:
+      id: 57cc928e-f0c3-471c-8cdc-5c2ac3605473
+      version: -1
+      name: Suspicious PS and Uncommon Source
+      description: The alert has both an uncommon source alert and a suspicious PS command alert related to it.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "129"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 471,
+          "y": 2202.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "148":
+    id: "148"
+    taskid: 54567f63-982b-4978-8219-1dace1ae75f3
+    type: regular
+    task:
+      id: 54567f63-982b-4978-8219-1dace1ae75f3
+      version: -1
+      name: Set action_process_username
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "149"
+    scriptarguments:
+      key:
+        simple: Attacker.XQL.results.action_process_username
+      value:
+        complex:
+          root: Manual Attacker XQL Query.Answers
+          accessor: "0"
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 2628
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "149":
+    id: "149"
+    taskid: c2e1464c-f5ae-41b4-89d7-e44dcc0e969a
+    type: regular
+    task:
+      id: c2e1464c-f5ae-41b4-89d7-e44dcc0e969a
+      version: -1
+      name: Set action process image sha256
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "150"
+    scriptarguments:
+      key:
+        simple: Attacker.XQL.results.action_process_image_sha256
+      value:
+        complex:
+          root: Manual Attacker XQL Query.Answers
+          accessor: "2"
+          transformers:
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 2741
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "150":
+    id: "150"
+    taskid: de5f9fdc-5a83-4cdd-870a-54c9ddc2ed57
+    type: regular
+    task:
+      id: de5f9fdc-5a83-4cdd-870a-54c9ddc2ed57
+      version: -1
+      name: Set action process image path
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "95"
+    scriptarguments:
+      key:
+        simple: Attacker.XQL.results.action_process_image_path
+      value:
+        complex:
+          root: Manual Attacker XQL Query.Answers
+          accessor: "1"
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 2851
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "151":
+    id: "151"
+    taskid: 9cd26caf-a967-4fe0-84ee-4c9838be996c
+    type: collection
+    task:
+      id: 9cd26caf-a967-4fe0-84ee-4c9838be996c
+      version: -1
+      name: Run XQL Query Manually
+      description: Rune the XQL manually due to an error
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "152"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2520,
+          "y": 2337
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: "Please Run the following XQL Query:\n\n```\nconfig timeframe between \"${XQL.QueryStartTime}\" and \"${XQL.QueryEndTime}\"\n| dataset = xdr_data \n| filter agent_id = \"${Core.OriginalAlert.event.agent_id}\"\n| filter event_type = ENUM.PROCESS\n| filter actor_process_image_name in (\"cmd.exe\", \"powershell.exe\")\n| filter action_process_image_command_line != null\n| fields _time, action_process_image_command_line\n```\n\n**Paste the \"Action Process Image Command Line\" as a comma separated list**:"
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Target Machine Suspicious Activity
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "152":
+    id: "152"
+    taskid: 54cbce08-bdad-45a4-841c-f251feeca72a
+    type: regular
+    task:
+      id: 54cbce08-bdad-45a4-841c-f251feeca72a
+      version: -1
+      name: Set action process image command line
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      key:
+        simple: TargetMachine.XQL.Activity.results.action_process_image_command_line
+      value:
+        complex:
+          root: Target Machine Suspicious Activity.Answers
+          accessor: "0"
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2520,
+          "y": 2502.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "153":
+    id: "153"
+    taskid: 1bd48027-425d-49c1-837e-b9bc99cb2560
+    type: collection
+    task:
+      id: 1bd48027-425d-49c1-837e-b9bc99cb2560
+      version: -1
+      name: Target Machine Created Files
+      description: Run XQL query manually due to an error.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "154"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2103.5,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            Please Run the following XQL Query:
+
+            ```
+            config timeframe between "${XQL.QueryStartTime}" and "${XQL.QueryEndTime}"
+            | dataset = xdr_data
+            | filter agent_id = "${Core.OriginalAlert.event.agent_id}" and event_type = ENUM.FILE and event_sub_type = ENUM.FILE_WRITE and action_file_name in ("${DiscoveredFiles.Names=>val.join('\", \"')}") and action_file_sha256 != null
+            | fields action_file_sha256, action_file_path, action_file_name
+            ```
+
+            **Paste the "Action File SHA256" as a comma separated list**:
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Target Machine Created Files
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "154":
+    id: "154"
+    taskid: 2aef6f6c-d951-4044-8a70-42e0fef7af60
+    type: regular
+    task:
+      id: 2aef6f6c-d951-4044-8a70-42e0fef7af60
+      version: -1
+      name: Set manually added sha256
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      key:
+        simple: TargetMachine.XQL.CreatedFiles.results.action_file_sha256
+      value:
+        complex:
+          root: Target Machine Created Files.Answers
+          accessor: "0"
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2103.5,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "155":
+    id: "155"
+    taskid: 63f98e49-053b-4de1-8c72-072465cd41c4
+    type: title
+    task:
+      id: 63f98e49-053b-4de1-8c72-072465cd41c4
+      version: -1
+      name: No XQL Results
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "81"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1850,
+          "y": 2517.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "156":
+    id: "156"
+    taskid: 6a77c347-13a4-4ae8-8414-e673b66b1715
+    type: condition
+    task:
+      id: 6a77c347-13a4-4ae8-8414-e673b66b1715
+      version: -1
+      name: Files to block?
+      description: Checks if there are suspicious files that need to be blocked
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "90"
+      "yes":
+      - "110"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${SuspiciousFilesCreated}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1549,
+          "y": 4569
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "157":
+    id: "157"
+    taskid: 10c801db-8f9e-486f-8b82-4df67e1dd9cf
+    type: regular
+    task:
+      id: 10c801db-8f9e-486f-8b82-4df67e1dd9cf
+      version: -1
+      name: Disable Compromised User
+      description: Disable the compromised user in the AD.
+      scriptName: disable-user
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "158"
+      '#none#':
+      - "90"
+    scriptarguments:
+      brands:
+        simple: Active Directory Query v2
+      user_name:
+        simple: ${Attacker.XQL.results.action_process_username}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 2090,
+          "y": 4854
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "158":
+    id: "158"
+    taskid: ee856256-3639-4396-8c57-3096f81766d5
+    type: regular
+    task:
+      id: ee856256-3639-4396-8c57-3096f81766d5
+      version: -1
+      name: Disable user manually
+      description: Disable attacking user manually.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1750,
+          "y": 5078
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "101_129_yes": 0.53,
+      "101_147_ABIOC": 0.51,
+      "105_88_#default#": 0.55,
+      "106_108_yes": 0.59,
+      "106_109_#default#": 0.55,
+      "10_121_#default#": 0.69,
+      "10_69_yes": 0.52,
+      "112_113_#default#": 0.56,
+      "112_114_Isolate": 0.58,
+      "112_90_Already isolated": 0.17,
+      "115_111_attacking": 0.85,
+      "115_120_target": 0.86,
+      "115_134_Isolate Both": 0.71,
+      "115_135_#default#": 0.51,
+      "130_131_#default#": 0.63,
+      "130_52_yes": 0.6,
+      "142_51_yes": 0.51,
+      "143_145_yes": 0.57,
+      "37_13_yes": 0.43,
+      "4_136_yes": 0.45,
+      "50_52_yes": 0.1,
+      "88_103_#error#": 0.54,
+      "95_79_#default#": 0.4,
+      "95_96_HIGH": 0.4,
+      "95_97_Double Medium": 0.64,
+      "98_128_yes": 0.45
+    },
+    "paper": {
+      "dimensions": {
+        "height": 7733,
+        "width": 5637,
+        "x": -2520,
+        "y": -1594
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 8.9.0
+tests:
+- No tests (auto formatted)
+issilent: true

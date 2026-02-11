@@ -1,0 +1,46 @@
+commonfields:
+  id: SentinelOneMitigateThreat
+  version: -1
+name: SentinelOneMitigateThreat
+display: SentinelOne - Mitigate Threat
+tags:
+ - Endpoint
+category: Endpoint
+description: >
+  Applies a mitigation action to the given threats.
+  The possible mitigation actions are: kill malicious process, quarantine and un-quarantine files.
+args:
+  - description: >
+      Specifies the mitigation action to apply to the threat.
+      Options: kill, quarantine, un-quarantine.
+    name: action
+    required: true
+    type: string
+    underlyingargname: action
+  - description: A comma-separated list of threat IDs.
+    name: threat_ids
+    required: true
+    type: string
+    underlyingargname: threat_ids
+outputs:
+  - underlyingoutputcontextpath: SentinelOne.Threat.ID
+    description: The threat ID.
+    type: string
+    name: SentinelOne.Threat.ID
+  - underlyingoutputcontextpath: SentinelOne.Threat.Mitigated
+    description: Whether the threat was successfully mitigated.
+    type: Boolean
+    name: SentinelOne.Threat.Mitigated
+  - underlyingoutputcontextpath: SentinelOne.Threat.Mitigation.Action
+    description: The mitigation action performed.
+    type: string
+    name: SentinelOne.Threat.Mitigation.Action
+underlyingcontentitem:
+  id: SentinelOne V2
+  name: SentinelOne V2
+  type: command
+  version: -1
+  command: sentinelone-mitigate-threat
+requiresuserapproval: true
+marketplaces:
+- platform

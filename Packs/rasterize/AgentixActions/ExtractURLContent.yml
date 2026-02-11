@@ -1,0 +1,61 @@
+commonfields:
+  id: ExtractURLContent
+  version: -1
+display: Extract URL Content
+name: ExtractURLContent
+tags:
+  - web-scraping
+  - content-extraction
+category: Utilities
+description: >
+  Extract rendered content from web pages using Chrome browser automation.
+  Navigates to the specified URL, waits for full page rendering, and extracts
+  clean text content while preserving structure and converting links to markdown format.
+  Useful for summarization, enrichment, or analysis of external content within playbooks or investigations.
+  Note: This action does not bypass Cloudflare or other anti-bot protections. If access is blocked, content extraction will fail.
+args:
+  - name: url
+    underlyingargname: url
+    description: >
+      The URL to extract content from. Can be a full URL with protocol or a domain name.
+      If no protocol is specified, http:// or https:// will be added automatically.
+    type: string
+    required: true
+  - name: wait_time
+    underlyingargname: wait_time
+    description: >
+      Time in seconds to wait before extracting content after page load completes.
+      Useful for pages with dynamic content that loads after initial page rendering.
+      If content extraction fails or returns incomplete results, try increasing this value
+      (e.g., 5-10 seconds for slow-loading dynamic content).
+    type: number
+    required: false
+    defaultvalue: 0
+  - name: max_page_load_time
+    underlyingargname: max_page_load_time
+    description: >
+      Maximum time in seconds to wait for the page to load before timing out.
+      Prevents hanging on slow or unresponsive pages.
+      If you encounter timeout errors, increase this value (e.g., 300 or 600 seconds)
+      for slow-loading pages or pages with heavy content.
+    type: number
+    required: false
+    defaultvalue: 180
+outputs:
+  - underlyingoutputcontextpath: Rasterize.URL
+    description: The URL that was processed for content extraction.
+    type: string
+    name: Rasterize.URL
+  - underlyingoutputcontextpath: Rasterize.Content
+    description: The extracted and formatted content from the web page.
+    type: string
+    name: Rasterize.Content
+underlyingcontentitem:
+  id: Rasterize
+  name: Rasterize
+  type: command
+  version: -1
+  command: rasterize-extract
+requiresuserapproval: true
+marketplaces:
+  - platform

@@ -1,0 +1,1524 @@
+id: silent-A user created a pfx in a suspicious folder for the first time
+version: -1
+issilent: true
+name: silent-A user created a pfx in a suspicious folder for the first time
+description: "This playbook addresses the following alerts:\n\n- A user created a pfx in a suspicious folder for the first time\n\nPlaybook Stages:\n\nTriage:\n\n- Collect initial alert data regarding the event.\n- Check the user type of the source user.\n- Host enrichment. \n\nInvestigation:\n\n- Check if an admin user initiated the operation and whether the deleted users are disabled. \n- Correlate recent user activity with related security alerts.\n- Assess user's and host's risk level in Cortex XDR.\n- Check the type of the user target. \n\nRemediation:\n\n- Evaluate investigation findings, if TP, the playbook will display the findings to an analyst for review and suggest user/host account disablement.\n\n\nRequirements:\n\nFor response actions, you need the following integrations:\n\n- Cortex Core - Investigation and Response\n- Active Directory Query v2."
+tags:
+- TA0006 - Credential Access
+- Credentials in Files
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 48013397-56cb-4faa-89f4-0acd769223ab
+    type: start
+    task:
+      id: 48013397-56cb-4faa-89f4-0acd769223ab
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 459,
+          "y": -377
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: fbe09417-5e4e-4e5f-8db5-81ca5bccd7bb
+    type: title
+    task:
+      id: fbe09417-5e4e-4e5f-8db5-81ca5bccd7bb
+      version: -1
+      name: Triage
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 459,
+          "y": -255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 8c0c5515-831d-4fbf-8bc0-72449c562e77
+    type: regular
+    task:
+      id: 8c0c5515-831d-4fbf-8bc0-72449c562e77
+      version: -1
+      name: Get event Information
+      description: Returns information about each alert ID.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 459,
+          "y": -122
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 90d2f95a-d128-4a12-833f-06c3dfc3f0fc
+    type: title
+    task:
+      id: 90d2f95a-d128-4a12-833f-06c3dfc3f0fc
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 459,
+          "y": -4
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: adf7ad4d-93fa-4d7e-829f-458d88bbe14b
+    type: regular
+    task:
+      id: adf7ad4d-93fa-4d7e-829f-458d88bbe14b
+      version: -1
+      name: Get endpoint data
+      description: This script gathers endpoint data from multiple integrations and returns an endpoint entity with consolidated information to the context.
+      type: regular
+      iscommand: false
+      brand: ""
+      scriptName: get-endpoint-data
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      endpoint_hostname:
+        simple: ${alert.hostname}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 682,
+          "y": 1322
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 9a2c054d-1f46-4357-8a9e-b69bf285db2d
+    type: regular
+    task:
+      id: 9a2c054d-1f46-4357-8a9e-b69bf285db2d
+      version: -1
+      name: Get user data
+      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
+      type: regular
+      iscommand: false
+      brand: ""
+      scriptName: get-user-data
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      user_name:
+        simple: ${alert.username.[0]}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 682,
+          "y": 1172
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: be5a0055-f294-4ede-8b01-1e32c7c8a626
+    type: title
+    task:
+      id: be5a0055-f294-4ede-8b01-1e32c7c8a626
+      version: -1
+      name: User & Endpoint investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 682,
+          "y": 136
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: d4633a83-1087-4838-88e5-04fe23c7ea2c
+    type: title
+    task:
+      id: d4633a83-1087-4838-88e5-04fe23c7ea2c
+      version: -1
+      name: File Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 228,
+          "y": 136
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 40488b40-4820-4e64-b681-7a6dff251c8b
+    type: regular
+    task:
+      id: 40488b40-4820-4e64-b681-7a6dff251c8b
+      version: -1
+      name: Retrieve PFX file
+      description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the core-action-status-get command with returned action_id, to check the action status.
+      script: '|||core-retrieve-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      endpoint_ids:
+        simple: ${alert.agentid}
+      windows_file_paths:
+        simple: ${Core.OriginalAlert.event.action_file_path}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 228,
+          "y": 264
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: cec4e700-3701-4044-88cb-d6de68c63e20
+    type: regular
+    task:
+      id: cec4e700-3701-4044-88cb-d6de68c63e20
+      version: -1
+      name: FPX Analyzer
+      description: This script is designed to analyze a PFX (Personal Information Exchange) file for various suspicious or noteworthy characteristics from a security perspective.
+      scriptName: PFXAnalyzer
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "21"
+      '#none#':
+      - "16"
+    scriptarguments:
+      fileEntryId:
+        complex:
+          root: File
+          filters:
+          - - operator: endWith
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: .pfx
+              ignorecase: true
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 228,
+          "y": 1167
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 0736ce0c-aa42-4456-80b6-3df3c28730bd
+    type: regular
+    task:
+      id: 0736ce0c-aa42-4456-80b6-3df3c28730bd
+      version: -1
+      name: CommandLine Analysis
+      description: |-
+        This script evaluates command-line threats by analyzing both original and decoded inputs. It assigns weighted scores to detected patterns, such as AMSI bypass or credential dumping, and applies risk combination bonuses for multiple detections. The total score is normalized to a 0-100 scale, with risk levels categorized as follows:
+
+        * 0-25: Low Risk
+        * 26-50: Medium Risk
+        * 51-90: High Risk
+        * 91-100: Critical Risk
+
+        The scoring mechanism provides a comprehensive risk assessment, considering both the severity and frequency of malicious behaviors.
+      scriptName: CommandLineAnalysis
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      command_line:
+        simple: ${Core.OriginalAlert.event.actor_process_command_line}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 682,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 5b9bf3cf-ec15-474b-8b08-351125594f24
+    type: regular
+    task:
+      id: 5b9bf3cf-ec15-474b-8b08-351125594f24
+      version: -1
+      name: Save suspicious command lines
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      key:
+        simple: SuspiciousCommandLines
+      value:
+        complex:
+          root: CommandLineAnalysis
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: CommandLineAnalysis.risk
+                iscontext: true
+              right:
+                value:
+                  simple: High
+              ignorecase: true
+            - operator: containsString
+              left:
+                value:
+                  simple: CommandLineAnalysis.risk
+                iscontext: true
+              right:
+                value:
+                  simple: Critical
+              ignorecase: true
+          accessor: original_command
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 682,
+          "y": 716
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: f9d94d93-fda9-48fa-8b4f-17091b3c3a92
+    type: regular
+    task:
+      id: f9d94d93-fda9-48fa-8b4f-17091b3c3a92
+      version: -1
+      name: Check if the actor process is prevalent
+      description: Get the prevalence of a process, identified by process_name.
+      script: '|||core-get-process-analytics-prevalence'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      process_name:
+        simple: ${Core.OriginalAlert.event.actor_process_file_original_name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 912,
+          "y": 1025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 2a71ed09-b2af-4ff5-87e3-ddd727a1fb64
+    type: title
+    task:
+      id: 2a71ed09-b2af-4ff5-87e3-ddd727a1fb64
+      version: -1
+      name: Verdict
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1477
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 1c3960d1-da9a-4b4c-86cd-5097ffd9edd8
+    type: condition
+    task:
+      id: 1c3960d1-da9a-4b4c-86cd-5097ffd9edd8
+      version: -1
+      name: Evaluate user & host risk analysis
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "40"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EndpointData.RiskLevel
+            iscontext: true
+          right:
+            value:
+              simple: HIGH
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: UserData.RiskLevel
+            iscontext: true
+          right:
+            value:
+              simple: HIGH
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.AnalyticsPrevalence.Process.value
+            iscontext: true
+          right:
+            value:
+              simple: "False"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 783,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 27f3f515-44bc-4ef3-8665-c3dd107ed29a
+    type: condition
+    task:
+      id: 27f3f515-44bc-4ef3-8665-c3dd107ed29a
+      version: -1
+      name: Evaluate malicious behavior
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: PFXAnalysis.is_pfx_suspicious
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: SuspiciousCommandLines
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 9cc7a3d3-4457-4d1a-a90b-f8f5d5503c9f
+    type: condition
+    task:
+      id: 9cc7a3d3-4457-4d1a-a90b-f8f5d5503c9f
+      version: -1
+      name: 'Is the file extracted? '
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExtractedFiles
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 228,
+          "y": 1025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 73e561a2-9f8e-4dc0-a0fa-c7076fb29ef4
+    type: regular
+    task:
+      id: 73e561a2-9f8e-4dc0-a0fa-c7076fb29ef4
+      version: -1
+      name: File details
+      description: View the file retrieved by the core-retrieve-files command according to the action ID. Before running this command, you can use the core-action-status-get command to check if this action completed successfully.
+      script: '|||core-retrieve-file-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      action_id:
+        simple: ${Core.RetrievedFiles.action_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 228,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: c642e1fe-e72f-4df5-8dba-16ba83d0eac9
+    type: condition
+    task:
+      id: c642e1fe-e72f-4df5-8dba-16ba83d0eac9
+      version: -1
+      name: Analysis of the file is not available
+      description: If the PFX file is password-protected, the PFX analyzer cannot process it.
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -55,
+          "y": 1322
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 90fda44c-665c-4205-9497-976a483e70a8
+    type: regular
+    task:
+      id: 90fda44c-665c-4205-9497-976a483e70a8
+      version: -1
+      name: Extract PFX from ZIP using 7zip
+      description: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
+      scriptName: UnzipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "45"
+      '#none#':
+      - "19"
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 228,
+          "y": 716
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 5f3f1700-9a95-4f6b-ad7d-992a51fbcd11
+    type: condition
+    task:
+      id: 5f3f1700-9a95-4f6b-ad7d-992a51fbcd11
+      version: -1
+      name: Analyst review
+      description: |-
+        We found suspicious indicators in this investigation. Review the findings and decide on the next steps:
+
+        ### Alert Information
+        The user that involved: `${alert.username}`
+
+
+        ---
+
+        ### Host & User Risk Levels
+        Host risk level: `${EndpointData.RiskLevel}`
+
+        User risk level: `${UserData.RiskLevel}`
+
+        ---
+
+        ### Suspicious command line executions
+        Additional usage of the PFX file: `${.=val.UsageOfPFXFile || "N/A"}`
+
+        ---
+
+        ### PFX file details
+        File Name: `${Core.OriginalAlert.raw_abioc.event.action_file_name}`
+
+        Directory: `${Core.OriginalAlert.raw_abioc.event.action_file_path}`
+
+        Command line of the creation: `${Core.OriginalAlert.raw_abioc.event.os_actor_process_command_line}`
+
+        ---
+
+        ### PFX analysis results
+        Suspicious indicators of the PFX file: `${PFXAnalysis=val.Reasons.map(r => "- " + r).join("\n")}`
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "40"
+      "Yes":
+      - "46"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 783,
+          "y": 1932
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        complex:
+          root: Core.OriginalAlert.raw_abioc.event
+          accessor: action_file_name
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Would you like to quarantine the following file:'
+              suffix: {}
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 1fa108ff-177b-4400-b15d-1fdd0d714e46
+    type: regular
+    task:
+      id: 1fa108ff-177b-4400-b15d-1fdd0d714e46
+      version: -1
+      name: Isolate endpoint
+      description: Isolates the specified endpoint.
+      script: '|||core-isolate-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      endpoint_id:
+        simple: ${alert.agentid}
+      timeout_in_seconds:
+        simple: "180"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 3001
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 11cfd018-6299-4dff-8200-a3379656891a
+    type: condition
+    task:
+      id: 11cfd018-6299-4dff-8200-a3379656891a
+      version: -1
+      name: Analyst approval for isolation
+      description: |-
+        We found suspicious indicators in this investigation and have taken action by quarantining the pfx file that was created.
+
+        Review the findings and decide on the next steps:
+
+        ### Alert Information
+        The user that involved: `${alert.username}`
+
+
+        ---
+
+        ### Host & User Risk Levels
+        Host risk level: `${EndpointData.RiskLevel}`
+
+        User risk level: `${UserData.RiskLevel}`
+
+        ---
+
+        ### Suspicious command line executions
+        Additional usage of the PFX file: `${.=val.UsageOfPFXFile || "N/A"}`
+
+        ---
+
+        ### PFX file details
+        File Name: `${Core.OriginalAlert.raw_abioc.event.action_file_name}`
+
+        Directory: `${Core.OriginalAlert.raw_abioc.event.action_file_path}`
+
+        Command line of the creation: `${Core.OriginalAlert.raw_abioc.event.os_actor_process_command_line}`
+
+        ---
+
+        ### PFX analysis results
+        Suspicious indicators of the PFX file: ${PFXAnalysis=val.Reasons.length > 0 ? val.Reasons.map(r => "- " + r).join("\n") : "- None found"}
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "38"
+      "Yes":
+      - "33"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2863
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        complex:
+          root: Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Would you like to isolate the following host:'
+              suffix: {}
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 96107279-8424-4ccf-8f78-fdd5cd56a9b4
+    type: condition
+    task:
+      id: 96107279-8424-4ccf-8f78-fdd5cd56a9b4
+      version: -1
+      name: Check if the host is not a server
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "38"
+      NON SERVER:
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "NON SERVER"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: EndpointData
+                filters:
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: EndpointData.AdditionalFields.endpoint_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AGENT_TYPE_SERVER
+                    ignorecase: true
+                accessor: ID
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2707
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 2572b6bc-aab3-48a0-85ab-bb1d31f4041e
+    type: regular
+    task:
+      id: 2572b6bc-aab3-48a0-85ab-bb1d31f4041e
+      version: -1
+      name: Close alert as true positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      closeReason:
+        simple: Resolved - True Positive
+      id:
+        simple: ${alert.id}
+      closeNotes:
+        simple: Handled by the playbook "A user created a PFX in a suspicious folder for the first time".
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 3160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 738900d0-b399-4a96-9e24-af7cadddb7f3
+    type: condition
+    task:
+      id: 738900d0-b399-4a96-9e24-af7cadddb7f3
+      version: -1
+      name: Is the PFX file high-risk malicious?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "38"
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: PFXAnalysis.Reasons
+            iscontext: true
+          right:
+            value:
+              simple: High-risk indicator
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: e63bfe7b-d90a-485a-8c9f-5c6fd8d3aebb
+    type: title
+    task:
+      id: e63bfe7b-d90a-485a-8c9f-5c6fd8d3aebb
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1013,
+          "y": 2108.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 2ce347fb-f4c7-4bdc-860c-8267374e78dd
+    type: title
+    task:
+      id: 2ce347fb-f4c7-4bdc-860c-8267374e78dd
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 3305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: af859419-6a8c-4acf-8e6a-6a889ea23c7e
+    type: condition
+    task:
+      id: af859419-6a8c-4acf-8e6a-6a889ea23c7e
+      version: -1
+      name: 'Is there a command line? '
+      description: 'Check if the command line exists. '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "44"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.OriginalAlert.event.actor_process_command_line
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 682,
+          "y": 264
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 76b8f9ed-d408-4082-82fe-fe627e81460c
+    type: condition
+    task:
+      id: 76b8f9ed-d408-4082-82fe-fe627e81460c
+      version: -1
+      name: Is there actor process?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.OriginalAlert.event.actor_process_file_original_name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 682,
+          "y": 864
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: cf0a0770-6eb6-4970-83fe-c931fd9be4ab
+    type: regular
+    task:
+      id: cf0a0770-6eb6-4970-83fe-c931fd9be4ab
+      version: -1
+      name: Extract PFX from ZIP using zipfile
+      description: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
+      scriptName: UnzipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "21"
+      '#none#':
+      - "19"
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+      zipTool:
+        simple: zipfile
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": -55,
+          "y": 864
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 549b5fbe-5a1a-4825-8bf0-79e766ad7252
+    type: regular
+    task:
+      id: 549b5fbe-5a1a-4825-8bf0-79e766ad7252
+      version: -1
+      name: Increase alert severity
+      description: Optionally increases the alert severity to the new value if it is greater than the existing severity.
+      scriptName: IncreaseAlertSeverity
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      severity:
+        simple: Medium
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2101
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 6aab8b33-0f1d-4452-a2da-16a8fa3bf590
+    type: condition
+    task:
+      id: 6aab8b33-0f1d-4452-a2da-16a8fa3bf590
+      version: -1
+      name: 'Is the file retrieved? '
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: Core.GetActionStatus.status
+            iscontext: true
+          right:
+            value:
+              simple: FAILED
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 228,
+          "y": 415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: a6d81ae5-f4f8-4c0f-bac3-16918214bba7
+    type: regular
+    task:
+      id: a6d81ae5-f4f8-4c0f-bac3-16918214bba7
+      version: -1
+      name: File quarantine
+      description: Quarantines a file on selected endpoints.
+      script: '|||core-quarantine-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "49"
+      '#none#':
+      - "39"
+    scriptarguments:
+      endpoint_id_list:
+        simple: ${alert.agentid}
+      file_hash:
+        simple: ${Core.OriginalAlert.raw_abioc.event.actor_process_image_sha256}
+      file_path:
+        simple: ${Core.OriginalAlert.event.action_file_path}
+      interval_in_seconds:
+        simple: "20"
+      timeout_in_seconds:
+        simple: "180"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2239
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: d549aace-24b3-4689-9728-6238ddf67ca3
+    type: regular
+    task:
+      id: d549aace-24b3-4689-9728-6238ddf67ca3
+      version: -1
+      name: Manual action needed – Suspicious file couldn't be quarantined
+      description: |-
+        Dear Analyst,
+
+        The playbook was unable to quarantine the Suspicious file due to the following possible reasons:
+
+        - The file is not located on the local host.
+        - The endpoint is currently disconnected.
+        - The hash calculation was unsuccessful.
+
+        Please take manual action to quarantine the file.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "17_30_yes": 0.47,
+      "17_40_#default#": 0.78,
+      "18_17_#default#": 0.33,
+      "18_46_yes": 0.41,
+      "19_16_#default#": 0.33,
+      "19_9_yes": 0.44,
+      "22_45_#error#": 0.54,
+      "34_33_Yes": 0.65,
+      "34_38_No": 0.61,
+      "36_38_#default#": 0.45,
+      "39_38_#default#": 0.32,
+      "44_15_yes": 0.55,
+      "44_5_#default#": 0.54,
+      "47_16_#default#": 0.17,
+      "47_20_yes": 0.53,
+      "9_21_#error#": 0.38
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3742,
+        "width": 1448,
+        "x": -55,
+        "y": -377
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.9.0

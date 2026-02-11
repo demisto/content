@@ -1,0 +1,52 @@
+commonfields:
+  id: SetIndicator
+  version: -1
+display: Cortex - Update Indicator
+name: CortexUpdateIndicator
+category: Data Enrichment & Threat Intelligence
+description: Change the properties of an indicator.
+args:
+  - name: value
+    description: Indicator value to set.
+    type: string
+    underlyingargname: value
+    required: true
+  - name: type
+    description: 'Indicator type to set. Options: Account, ASN, Attack Pattern, Campaign, CIDR, CVE, Domain, Email, File, Host, IP, IPv6, IPv6CIDR, Malware, Threat Actor.'
+    type: string
+    underlyingargname: type
+  - name: verdict
+    description: >
+      Sets indicator reputation. Options: Unknown, Benign, Suspicious, Malicious.
+    type: string
+    underlyingargname: verdict
+  - name: tags
+    description: Comma-separated list of tags to set for the indicator.
+    type: string
+    underlyingargname: tags
+  - name: related_issues
+    description: Comma-separated list of issues IDs to associate the indicator with.
+    type: string
+    underlyingargname: related_issues
+outputs:
+  - underlyingoutputcontextpath: SetIndicator.Value
+    name: SetIndicator.Value
+    description: The indicator value that was processed.
+    type: string
+  - underlyingoutputcontextpath: SetIndicator.Result
+    name: SetIndicator.Result
+    description: The result of the indicator setting operation, including success messages and any error information.
+    type: string
+underlyingcontentitem:
+  id: SetIndicatorAgentix
+  name: SetIndicatorAgentix
+  type: script
+  version: -1
+  command: ""
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- agentix
+- xsiam
+- cloud_posture

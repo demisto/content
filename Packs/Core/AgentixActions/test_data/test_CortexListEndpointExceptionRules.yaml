@@ -1,0 +1,195 @@
+tests:
+  - name: Find exception rule by specific ID
+    prompt: "Show me exception rule with ID 12345"
+    agent_id: 034918ea-8b4a-4903-aa0d-178c1d7449cb
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListEndpointExceptionRules
+            arguments:
+              id: "12345"
+
+  - name: Search exception rules by name pattern
+    prompt: "List all exception rules with names containing 'malware' or 'antivirus'"
+    agent_id: 034918ea-8b4a-4903-aa0d-178c1d7449cb
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListEndpointExceptionRules
+            arguments:
+              rule_name: "malware,antivirus"
+
+  - name: Filter exception rules by Windows platform
+    prompt: "Find all exception rules that apply to Windows endpoints"
+    agent_id: 034918ea-8b4a-4903-aa0d-178c1d7449cb
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListEndpointExceptionRules
+            arguments:
+              platform: "AGENT_OS_WINDOWS"
+
+  - name: Search rules created by specific user
+    prompt: "Show me exception rules created by John Smith"
+    agent_id: 034918ea-8b4a-4903-aa0d-178c1d7449cb
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListEndpointExceptionRules
+            arguments:
+              created_by: "John Smith"
+
+  - name: Find rules by user email
+    prompt: "List exception rules created by admin@company.com"
+    agent_id: 034918ea-8b4a-4903-aa0d-178c1d7449cb
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListEndpointExceptionRules
+            arguments:
+              user_email: "admin@company.com"
+
+  - name: Filter by multiple user emails
+    prompt: "Get exception rules created by either security@company.com or analyst@company.com"
+    agent_id: 034918ea-8b4a-4903-aa0d-178c1d7449cb
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListEndpointExceptionRules
+            arguments:
+              user_email: "security@company.com,analyst@company.com"
+
+  - name: Search enabled exception rules only
+    prompt: "Show me all currently enabled exception rules"
+    agent_id: 034918ea-8b4a-4903-aa0d-178c1d7449cb
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListEndpointExceptionRules
+            arguments:
+              status: "ENABLED"
+
+  - name: Filter by XDR rule type
+    prompt: "List all XDR exception rules"
+    agent_id: 034918ea-8b4a-4903-aa0d-178c1d7449cb
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListEndpointExceptionRules
+            arguments:
+              rule_type: "XDR"
+
+  - name: Search rules modified in last 7 days
+    prompt: "Find exception rules that were modified in the last week"
+    agent_id: 034918ea-8b4a-4903-aa0d-178c1d7449cb
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListEndpointExceptionRules
+            arguments:
+              start_modification_time: "7 days ago"
+
+  - name: Filter by specific date range
+    prompt: "Show exception rules modified between 2024-01-01 and 2024-01-31"
+    agent_id: 034918ea-8b4a-4903-aa0d-178c1d7449cb
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListEndpointExceptionRules
+            arguments:
+              start_modification_time: "2024-01-01T00:00:00Z"
+              end_modification_time: "2024-01-31T23:59:59Z"
+
+  - name: Complex filter with multiple criteria
+    prompt: "Find disabled XDR exception rules for Windows and Mac platforms created by security team in the last month"
+    agent_id: 034918ea-8b4a-4903-aa0d-178c1d7449cb
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListEndpointExceptionRules
+            arguments:
+              status: "DISABLED"
+              rule_type: "XDR"
+              platform: "AGENT_OS_WINDOWS,AGENT_OS_MAC"
+              created_by: "security team"
+              start_modification_time: "30 days ago"
+
+  - name: Search with specific conditions
+    prompt: "List exception rules with Signer conditions"
+    agent_id: 034918ea-8b4a-4903-aa0d-178c1d7449cb
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListEndpointExceptionRules
+            arguments:
+              conditions: "Signer"
+
+  - name: Get first 50 rules with pagination
+    prompt: "Show me the first 50 exception rules"
+    agent_id: 034918ea-8b4a-4903-aa0d-178c1d7449cb
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListEndpointExceptionRules
+            arguments:
+              limit: "50"
+
+  - name: Get second page of results
+    prompt: "Show me the next page of exception rules, page 2"
+    agent_id: 034918ea-8b4a-4903-aa0d-178c1d7449cb
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListEndpointExceptionRules
+            arguments:
+              page: "2"
+
+  - name: Filter by legacy agent exceptions type
+    prompt: "Show me only legacy agent exception rules"
+    agent_id: 034918ea-8b4a-4903-aa0d-178c1d7449cb
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListEndpointExceptionRules
+            arguments:
+              type: "legacy_agent_exceptions"
+
+  - name: Search Linux and container platform rules
+    prompt: "Find exception rules for Linux and container environments"
+    agent_id: 034918ea-8b4a-4903-aa0d-178c1d7449cb
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListEndpointExceptionRules
+            arguments:
+              platform: "AGENT_OS_LINUX,AGENT_OS_CAAS_LINUX"
+
+  - name: Invalid platform value error
+    prompt: "Show exception rules for Ubuntu platform"
+    agent_id: 034918ea-8b4a-4903-aa0d-178c1d7449cb
+    expected_outcomes:
+      - expected_error: "Invalid platform value 'Ubuntu'. Valid platform values are: AGENT_OS_WINDOWS, AGENT_OS_MAC, AGENT_OS_LINUX, AGENT_OS_ANDROID, AGENT_OS_IOS, AGENT_OS_CAAS_LINUX, AGENT_OS_SERVERLESS"
+
+  - name: Invalid status value error
+    prompt: "Find exception rules with status 'active'"
+    agent_id: 034918ea-8b4a-4903-aa0d-178c1d7449cb
+    expected_outcomes:
+      - action_id: CortexListEndpointExceptionRules
+        arguments:
+          status: "ENABLED"
+
+  - name: Invalid rule type error
+    prompt: "Show me firewall exception rules"
+    agent_id: 034918ea-8b4a-4903-aa0d-178c1d7449cb
+    expected_outcomes:
+      - action_id: CortexListEndpointExceptionRules
+
+  - name: Retrieve all exception rules
+    prompt: "Export all exception rules from the system"
+    agent_id: 034918ea-8b4a-4903-aa0d-178c1d7449cb
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListEndpointExceptionRules
+            arguments:
+              retrieve_all: "true"

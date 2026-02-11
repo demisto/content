@@ -1,0 +1,29 @@
+{
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+          "OR": [
+            {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Suspicious process spawns MSBuild.exe"
+            }
+          ]
+        },
+        {
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "NEQ",
+          "SEARCH_VALUE": "Correlation"
+        }
+      ]
+    }
+  },
+  "description": "This trigger is responsible for handling the 'Suspicious process spawns MSBuild.exe' alerts via the 'Suspicious process spawns MSBuild' playbook",
+  "fromVersion": "8.9.0",
+  "issilent": true,
+  "playbook_id": "silent-Suspicious process spawns MSBuild",
+  "suggestion_reason": "Recommended for 'Suspicious process spawns MSBuild.exe' alerts",
+  "trigger_id": "c6e8e3ecfdcc6cdd9d3a7782c8b1b11a",
+  "trigger_name": "silent-Suspicious process spawns MSBuild"
+}

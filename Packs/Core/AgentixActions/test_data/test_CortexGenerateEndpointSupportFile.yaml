@@ -1,0 +1,46 @@
+tests:
+  - name: Generate support file for single endpoint
+    prompt: "Generate a technical support file for endpoint ENDPOINT-12345"
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexGenerateEndpointSupportFile
+            arguments:
+              endpoint_ids: "ENDPOINT-12345"
+
+  - name: Create TSF for multiple endpoints
+    prompt: "I need to create technical support files for endpoints WS-001, WS-002, and SERVER-789"
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexGenerateEndpointSupportFile
+            arguments:
+              endpoint_ids: "WS-001,WS-002,SERVER-789"
+
+  - name: Generate support files for incident investigation
+    prompt: "Generate endpoint support files for machines involved in security incident: LAPTOP-456, DESKTOP-789, VM-012"
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexGenerateEndpointSupportFile
+            arguments:
+              endpoint_ids: "LAPTOP-456,DESKTOP-789,VM-012"
+
+  - name: Request TSF with UUID-style endpoint ID
+    prompt: "Create a technical support file for endpoint with ID 5c742ba2-729d-480c-951f-3a1f00eb9bb6"
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexGenerateEndpointSupportFile
+            arguments:
+              endpoint_ids: "5c742ba2-729d-480c-951f-3a1f00eb9bb6"
+
+  - name: Request support files without endpoint ID
+    prompt: "Generate technical support files for troubleshooting"
+    agent_id: test
+    expected_outcomes:
+      - expected_error: "endpoint_ids is required but was not provided"

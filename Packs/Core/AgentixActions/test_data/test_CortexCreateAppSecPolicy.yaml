@@ -1,0 +1,86 @@
+tests:
+  - name: Block Critical Vulnerabilities in Deployed Repositories
+    prompt: I want to block all my critical vulnerabilities in deployed repositories
+    agent_id: AppSecAgent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: AppSecAgent
+            arguments:
+              conditions_finding_type: Vulnerabilities
+              conditions_severity: CRITICAL
+              scope_has_deployed_assets: true
+              triggers_pr_block_pr: true
+              triggers_cicd_block_cicd: true
+
+  - name: Block and Comment on Valid Secrets in Public Repositories
+    prompt: I want to block and have a PR comment on all valid secrets in public repositories
+    agent_id: AppSecAgent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: AppSecAgent
+            arguments:
+              conditions_finding_type: Secrets
+              conditions_secret_validity: VALID,PRIVILEGED
+              scope_is_public_repository: true
+              triggers_pr_block_pr: true
+              triggers_pr_report_pr_comment: true
+
+  - name: Detect Vulnerable Packages in Critical Applications
+    prompt: I want to detect all vulnerable packages with low operational risks packages in use in my critical applciations
+    agent_id: AppSecAgent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: AppSecAgent
+            arguments:
+              conditions_finding_type: Vulnerabilities
+              conditions_package_operational_risk: LOW
+              scope_application_business_criticality: CRITICAL
+              triggers_periodic_report_issue: true
+
+  - name: Block New IaC Misconfigurations in Payment App
+    prompt: I want to block new IaC Misconfiguration risks from rules 1,2,3 in my payment app
+    agent_id: AppSecAgent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: AppSecAgent
+            arguments:
+              conditions_finding_type: IaC Misconfiguration
+              conditions_backlog_status: NEW
+              conditions_appsec_rule_names: 1,2,3
+              scope_business_application_names: Payment
+              triggers_pr_block_pr: true
+              triggers_cicd_block_cicd: true
+
+  - name: Block High CVSS Vulnerabilities with Fix
+    prompt: I want to block vulnerabilities with cvss > 8 that has a fix and can be exploitable and developer didn't suppressed them
+    agent_id: AppSecAgent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: AppSecAgent
+            arguments:
+              conditions_finding_type: Vulnerabilities
+              conditions_has_a_fix: true
+              conditions_is_kev: true
+              conditions_cvss: 8
+              conditions_respect_developer_suppression: true
+              triggers_pr_block_pr: true
+              triggers_cicd_block_cicd: true
+
+  - name: Detect NPM debug@4.4.2 Usage in Internet-Exposed Repositories
+    prompt: I want to detect all my usages of NPM debug@4.4.2 package in repositories with internet exposed deployed assets
+    agent_id: AppSecAgent
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: AppSecAgent
+            arguments:
+              conditions_finding_type: Vulnerabilities
+              conditions_package_name: debug
+              conditions_package_version: 4.4.2
+              scope_has_internet_exposed_deployed_assets: true
+              triggers_periodic_report_issue: true

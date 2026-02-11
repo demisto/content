@@ -1,0 +1,862 @@
+id: silent-Suspicious SaaS Access From a TOR Exit Node Test
+version: -1
+name: silent-Suspicious SaaS Access From a TOR Exit Node Test
+description: "This playbook is designed to handle the following alerts:\n\n- Suspicious SaaS API call from a Tor exit node\n- Suspicious SaaS API call from a Tor exit node via a mobile device\n- Suspicious API call from a Tor exit node\n- Suspicious Kubernetes API call from a Tor exit node\n\nPlaybook Stages:\n\nEarly Containment:\n- To terminate the connection from the Tor exit node, the playbook will clear/revoke the user's sessions and force re-authentication. Depending on the alert source, the playbook will use either MS-Graph or G-Suite to clear the user sessions.\n\nInvestigation:\n- The playbook will assess the risk score of the user connected from the Tor exit node and examine the legitimacy of the user agent.\n\nContainment:\n- If the user's risk score is high or the user agent is detected as suspicious, the playbook will recommend blocking the account connected from the Tor exit node. The playbook will use MS-Graph, G-Suite, or AWS-IAM, depending on the alert source.\n\nEradication:\n- For users with PAN-OS enabled, the playbook will recommend blocking all IPs from the Palo Alto Intelligence-based external dynamic list that contains Tor exit nodes. The goal is to prevent the use of Tor within the organization.\n\nRequirements:\n\nFor any response action, you will need one of the following integrations: \n- Microsoft Graph User\n- G-Suite Admin\n- AWS-IAM."
+tags:
+- T1090 - Proxy
+- TA0011 - Command and Control
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9ce3ec2e-49a5-43c6-8812-1c8724eb4f95
+    type: start
+    task:
+      id: 9ce3ec2e-49a5-43c6-8812-1c8724eb4f95
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 617
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 34b46f03-e24e-463b-8df9-2743ae0df003
+    type: regular
+    task:
+      id: 34b46f03-e24e-463b-8df9-2743ae0df003
+      version: -1
+      name: Get User Identity
+      description: Returns information about each alert ID.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      alert_ids:
+        complex:
+          root: alert
+          accessor: id
+          transformers:
+          - operator: uniq
+      filter_alert_fields:
+        simple: "false"
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 747
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: f9caeafe-1135-44a4-8288-2f6b3196e20a
+    type: title
+    task:
+      id: f9caeafe-1135-44a4-8288-2f6b3196e20a
+      version: -1
+      name: Early Containment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 907
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: c8772496-b9c9-442b-88e1-f5500d700142
+    type: title
+    task:
+      id: c8772496-b9c9-442b-88e1-f5500d700142
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+      - "26"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 2ff5c5ea-6357-4ef6-8c43-8c3c52b6fe33
+    type: title
+    task:
+      id: 2ff5c5ea-6357-4ef6-8c43-8c3c52b6fe33
+      version: -1
+      name: Containment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 0f076c81-4bbc-4f05-8306-4f8c0ac400b3
+    type: regular
+    task:
+      id: 0f076c81-4bbc-4f05-8306-4f8c0ac400b3
+      version: -1
+      name: Close Alert
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      closeReason:
+        simple: Resolved - True Positive
+      closeNotes:
+        simple: Handled by the playbook "Suspicious SaaS Access From a TOR Exit Node"
+      id:
+        complex:
+          root: alert
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 102922e3-2b05-4241-825c-8c4e325be898
+    type: title
+    task:
+      id: 102922e3-2b05-4241-825c-8c4e325be898
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: f939fd39-89a2-4416-8475-6b8fe49537d8
+    type: condition
+    task:
+      id: f939fd39-89a2-4416-8475-6b8fe49537d8
+      version: -1
+      name: Check if risk level is high or user agent is suspicious
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: UserData.RiskLevel
+            iscontext: true
+          right:
+            value:
+              simple: HIGH
+          ignorecase: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: SuspiciousUserAgent
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: f8073e61-3193-43f2-819b-a8f4ea98e87a
+    type: collection
+    task:
+      id: f8073e61-3193-43f2-819b-a8f4ea98e87a
+      version: -1
+      name: Decide if you want to block the account
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Block The Account ${alert.username.[0]} using ${Account.Type}?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Decide if you want to block the account
+      description: You can block the user who created the connection.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: dd1a92cb-c7eb-42c9-8679-429bd572a0b7
+    type: regular
+    task:
+      id: dd1a92cb-c7eb-42c9-8679-429bd572a0b7
+      version: -1
+      name: Check if user agent is suspicious
+      description: Extracts regex data from the provided text. The script supports groups and looping.
+      scriptName: MatchRegexV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      contextKey:
+        simple: SuspiciousUserAgent
+      data:
+        simple: ${alert.useragent.[0]}
+      regex:
+        simple: \b(Python-urllib|libwww-perl|Scrapy|curl|Wget|sqlmap|Nikto|Xrumer|Hydra|JohnTheRipper|LOIC|HOIC|MJ12bot|Baiduspider|BlackWidow|HeadlessChrome|PhantomJS|Selenium|REST)\b
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: d70543c6-1970-4c3d-8c98-d02aaad561fb
+    type: condition
+    task:
+      id: d70543c6-1970-4c3d-8c98-d02aaad561fb
+      version: -1
+      name: disable the user that used TOR?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "21"
+      "Yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Decide if you want to block the account.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: be2a62ff-1113-46b6-8817-0811b761b3a5
+    type: condition
+    task:
+      id: be2a62ff-1113-46b6-8817-0811b761b3a5
+      version: -1
+      name: Block TOR application with PAN-OS?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "10"
+      Block TOR using PAN-OS:
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: Block TOR using PAN-OS
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Choose whether to block TOR using PAN-OS.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Panorama
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 2805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 9032908c-104c-4178-896d-26343b3a9e4f
+    type: title
+    task:
+      id: 9032908c-104c-4178-896d-26343b3a9e4f
+      version: -1
+      name: Eradication
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: fb9aab48-672e-4c9d-8ff4-7b5ab3c9f4d1
+    type: collection
+    task:
+      id: fb9aab48-672e-4c9d-8ff4-7b5ab3c9f4d1
+      version: -1
+      name: Choose whether to block TOR IPs using PAN-OS
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 2640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Block TOR exit nodes using PAN-OS?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Choose whether to block TOR using PAN-OS
+      description: |-
+        You can block traffic from TOR exit node IPs using Palo Alto's built-in External Dynamic List (EDL). For more information on predefined EDLs, visit:
+
+        https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-admin/policy/use-an-external-dynamic-list-in-policy/built-in-edls
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 54c87fa9-5981-42ed-8593-2fe4818214cc
+    type: condition
+    task:
+      id: 54c87fa9-5981-42ed-8593-2fe4818214cc
+      version: -1
+      name: PAN-OS Enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "10"
+      "Yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Panorama
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 34616d1d-37f0-4406-8961-5e59b8de3af9
+    type: playbook
+    task:
+      id: 34616d1d-37f0-4406-8961-5e59b8de3af9
+      version: -1
+      name: PAN-OS - Block IPs From EDL - Custom Block Rule
+      playbookName: PAN-OS - Block IPs From EDL - Custom Block Rule
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      EDLName:
+        simple: panw-torexit-ip-list
+      RuleName:
+        simple: TOR Exit nodes from predefined EDLs was Blocked by XSIAM
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: e8811a40-9ba5-4813-98e8-8acfe7ecc5c5
+    type: regular
+    task:
+      id: e8811a40-9ba5-4813-98e8-8acfe7ecc5c5
+      version: -1
+      name: Get user risk level
+      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
+      scriptName: get-user-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      user_name:
+        simple: ${Core.OriginalAlert.event.identity_name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 658,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: e6b1e529-1800-4626-9fea-a4405737a520
+    type: regular
+    task:
+      id: e6b1e529-1800-4626-9fea-a4405737a520
+      version: -1
+      name: Clear user sessions
+      description: This script clears user sessions across multiple integrations for a list of usernames.
+      scriptName: clear-user-session
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      user_name:
+        simple: ${Core.OriginalAlert.event.identity_name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 699,
+          "y": 1054
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 8b372b9c-6346-4a2e-909f-e67ba82c90f9
+    type: regular
+    task:
+      id: 8b372b9c-6346-4a2e-909f-e67ba82c90f9
+      version: -1
+      name: Disable user
+      description: This script disables users for multiple services.
+      scriptName: disable-user
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      user_name:
+        simple: ${Core.OriginalAlert.event.identity_name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 2104
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_21_#default#": 0.2,
+      "16_21_#default#": 0.35,
+      "19_10_#default#": 0.34,
+      "23_10_#default#": 0.14,
+      "23_22_Yes": 0.44
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2763,
+        "width": 1051,
+        "x": 240,
+        "y": 617
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+issilent: true
+fromversion: 8.9.0

@@ -1,0 +1,2695 @@
+id: silent-Suspicious process spawns MSBuild
+issilent: true
+version: -1
+name: silent-Suspicious process spawns MSBuild
+description: |-
+  This playbook addresses the following alerts:
+
+    - Suspicious process spawns MSBuild.exe
+
+    **Playbook Stages:**
+
+    **Analysis:**
+  **Investigate potential masquerading technique:**
+    - Get target process Reputation
+    - Check target process name mismatch
+    - Check target process for non standard paths
+    - Check target process signature status
+
+  **Investigate potential code execution technique:**
+
+    - Analyze suspicious project file for malicious code
+    - Check the domain reputation when the file is on a remote host domain
+    - Search for any additional processes, files, registry keys created by the code execution
+
+    **Remediation:**
+    - Terminate CGO process
+    - Add hash to blocklist
+    - Quarantine malicious files
+    - Isolates the endpoint (requires analyst approval).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1996a971-fc14-40eb-8ae5-76579f5ae290
+    type: start
+    task:
+      id: 1996a971-fc14-40eb-8ae5-76579f5ae290
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": -320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: d4134512-cdd6-4054-a3cf-9369794ea872
+    type: title
+    task:
+      id: d4134512-cdd6-4054-a3cf-9369794ea872
+      version: -1
+      name: Masquerading Path
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": -170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 84684d7e-adc1-4674-abbf-97667b72f7f3
+    type: regular
+    task:
+      id: 84684d7e-adc1-4674-abbf-97667b72f7f3
+      version: -1
+      name: Check Process Reputation
+      description: This script gathers file reputation data from multiple integrations and returns a "FileEnrichment" object with consolidated information to the context output.
+      scriptName: file-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      external_enrichment:
+        simple: "true"
+      file_hash:
+        simple: ${alert.targetprocesssha256}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: a89e85c7-66c3-4d4f-9561-f23de67a9368
+    type: condition
+    task:
+      id: a89e85c7-66c3-4d4f-9561-f23de67a9368
+      version: -1
+      name: Masquerading Activity Verdict
+      description: Evaluates process characteristics for potential masquerading
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      Masquerading:
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: Masquerading
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OriginalFileNameMatch
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: UnsignedCGO_Non-StandartPath
+            iscontext: true
+        - operator: isEqualNumber
+          left:
+            value:
+              simple: FileEnrichment.TIMScore
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: foundIncidents
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: eb2e7d4e-3c09-40e4-9ba6-bbb6941bc9f8
+    type: title
+    task:
+      id: eb2e7d4e-3c09-40e4-9ba6-bbb6941bc9f8
+      version: -1
+      name: Masquerading Found
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "63"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 4fd995ce-876c-4761-8778-b8dd48b371de
+    type: title
+    task:
+      id: 4fd995ce-876c-4761-8778-b8dd48b371de
+      version: -1
+      name: Malicious Code Execution
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 133053c6-5d21-4f11-9dea-540c4f0f95af
+    type: regular
+    task:
+      id: 133053c6-5d21-4f11-9dea-540c4f0f95af
+      version: -1
+      name: Extract Project File Path
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      key:
+        simple: SuspiciousFilePath
+      value:
+        complex:
+          root: alert
+          accessor: targetprocesscmd
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case:
+                value:
+                  simple: "true"
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (?i)(?:.*msbuild\.exe\"?\s+)(?:(?:-\w+(?:\s+[^\s]+)?\s+)*\"?)([^\s]+\.(?:xml|csproj|vbproj|vcxproj|fsproj|publishproj|proj|sln|targets|props|flirproj))
+              unpack_matches: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 1d3f3822-5a4f-46cd-8531-648c2f79c107
+    type: regular
+    task:
+      id: 1d3f3822-5a4f-46cd-8531-648c2f79c107
+      version: -1
+      name: Get Alert Extra Data
+      description: Returns information about each alert ID.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+      - "15"
+      - "4"
+      - "72"
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": -35
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 2b6abef4-c449-4fd7-a869-d076a5e895e8
+    type: regular
+    task:
+      id: 2b6abef4-c449-4fd7-a869-d076a5e895e8
+      version: -1
+      name: Check MSBuild.exe Original File Name
+      description: This task compares the original file name with msbuild.exe and sets the result to the context in order to detect process file name mismatch as an indication for masquerading.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: OriginalFileNameMatch
+      value:
+        complex:
+          root: Core.OriginalAlert.edrData.action_process_file_info.original_name
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: Core.OriginalAlert.edrData.action_process_file_info.original_name
+                iscontext: true
+              right:
+                value:
+                  simple: alert.targetprocessname.[0]
+                iscontext: true
+              ignorecase: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 4ff67e13-8842-4157-8000-2bea3c74ae48
+    type: regular
+    task:
+      id: 4ff67e13-8842-4157-8000-2bea3c74ae48
+      version: -1
+      name: MSBuild Post Execution Investigation
+      description: |-
+        Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+        When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+        unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+      script: XQL Query Engine|||xdr-xql-generic-query
+      type: regular
+      iscommand: true
+      brand: XQL Query Engine
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      query:
+        simple: "config timeframe = 10m\n| dataset = xdr_data\n| filter agent_id = ${alert.agentid}\n| filter agent_os_type = AGENT_OS_WINDOWS\n| filter event_type in (ENUM.PROCESS, ENUM.FILE, ENUM.REGISTRY)\n| filter (\n    // MSBuild process and its children (using exact match for precision and efficiency)\n    (event_sub_type = ENUM.PROCESS_START and (\n        lowercase(actor_process_image_name) ~= \"msbuild.exe\" or\n        lowercase(causality_actor_process_image_name) ~= \"msbuild.exe\"\n    )) or\n    \n    // Files created by MSBuild or its children\n    (event_type = ENUM.FILE and \n         event_sub_type in (ENUM.FILE_WRITE, ENUM.FILE_CREATE_NEW)  and\n        lowercase(causality_actor_process_image_name) ~= \"msbuild.exe\" and\n        lowercase(action_file_extension) in (\"exe\", \"dll\", \"bat\", \"cmd\", \"ps1\", \"vbs\", \"js\", \"jar\", \"scr\")\n    ) or\n    \n    // Registry modifications for persistence (Logically Grouped and Precise)\n    (event_type = ENUM.REGISTRY and \n        lowercase(causality_actor_process_image_name) ~= \"msbuild.exe\" and\n        (\n            action_registry_key_name contains \"\\\\CurrentVersion\\\\Run\" or // Using contains for path filtering\n            action_registry_key_name contains \"\\\\Winlogon\\\\\" or\n            action_registry_key_name contains \"\\\\Services\\\\\"\n        )\n    ) or\n    \n    // Scheduled tasks creation\n    (event_type = ENUM.PROCESS and\n        lowercase(causality_actor_process_image_name) ~= \"msbuild.exe\"\n    )\n)\n| fields event_timestamp, event_type, agent_hostname, actor_process_image_name, action_process_image_name, action_process_image_path, action_process_image_command_line, action_file_path, action_file_name, action_registry_key_name, action_registry_value_name, causality_actor_process_image_name, causality_actor_process_command_line\n| limit 5000 \n| sort asc event_timestamp"
+      query_name:
+        simple: MSBuild_Post_Execution_Investigation
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 2340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 81e809fc-5011-4b14-8d49-a8afb0273879
+    type: regular
+    task:
+      id: 81e809fc-5011-4b14-8d49-a8afb0273879
+      version: -1
+      name: Check Non standard Process Path & CGO Unsigned
+      description: This task checks the path of the target process and signature status of the cgo process to detect process running from non-standard paths by an unsigned cgo process.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: UnsignedCGO_Non-StandartPath
+      value:
+        complex:
+          root: alert
+          filters:
+          - - operator: notContainsGeneral
+              left:
+                value:
+                  simple: alert.targetprocesscmd
+                iscontext: true
+              right:
+                value:
+                  simple: C:\Program Files (x86)\Microsoft Visual Studio
+              ignorecase: true
+            - operator: notContainsGeneral
+              left:
+                value:
+                  simple: alert.targetprocesscmd
+                iscontext: true
+              right:
+                value:
+                  simple: C:\Program Files\Microsoft Visual Studio
+              ignorecase: true
+            - operator: notContainsGeneral
+              left:
+                value:
+                  simple: alert.targetprocesscmd
+                iscontext: true
+              right:
+                value:
+                  simple: C:\Windows\Microsoft.NET
+              ignorecase: true
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: alert.cgosignature
+                iscontext: true
+              right:
+                value:
+                  simple: SIGNATURE_SIGNED
+              ignorecase: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: alert.cgoname
+                iscontext: true
+          accessor: targetprocesscmd
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 7e82fccc-d436-442f-b0c6-4c801d078844
+    type: condition
+    task:
+      id: 7e82fccc-d436-442f-b0c6-4c801d078844
+      version: -1
+      name: Path is Local or Remote
+      description: Determine if the suspicious file path is local or remote based on path prefix
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      Local:
+      - "21"
+      Remote:
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: Remote
+      condition:
+      - - operator: startWith
+          left:
+            value:
+              simple: SuspiciousFilePath
+            iscontext: true
+          right:
+            value:
+              simple: \\
+    - label: Local
+      condition:
+      - - operator: notStartWith
+          left:
+            value:
+              simple: SuspiciousFilePath
+            iscontext: true
+          right:
+            value:
+              simple: \\
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 9b596346-5775-4497-b787-9c7d851ade1e
+    type: title
+    task:
+      id: 9b596346-5775-4497-b787-9c7d851ade1e
+      version: -1
+      name: File on Remote host
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+      - "33"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 992.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: c83d4fef-7c32-4fb3-bbfd-54267ecad8a7
+    type: title
+    task:
+      id: c83d4fef-7c32-4fb3-bbfd-54267ecad8a7
+      version: -1
+      name: File on Local host
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 992.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 480d4570-4979-4efb-a4c3-b4880eef2338
+    type: title
+    task:
+      id: 480d4570-4979-4efb-a4c3-b4880eef2338
+      version: -1
+      name: Else
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 992.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 92be1994-8999-4fc8-ae84-239b92538b3f
+    type: regular
+    task:
+      id: 92be1994-8999-4fc8-ae84-239b92538b3f
+      version: -1
+      name: Retrieve Suspicious Files
+      description: Retrieves script files from the endpoint.
+      script: '|||core-retrieve-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      endpoint_ids:
+        simple: ${alert.agentid}
+      windows_file_paths:
+        complex:
+          root: SuspiciousFilePath
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '"'
+          - operator: uniq
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 1132.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: c083d3c7-fa2b-4a51-925e-8e7f7473b2d5
+    type: regular
+    task:
+      id: c083d3c7-fa2b-4a51-925e-8e7f7473b2d5
+      version: -1
+      name: Retrieve File Details
+      description: View the file retrieved by the core-retrieve-files command according to the action ID. Before running this command, you can use the core-action-status-get command to check if this action completed successfully.
+      script: '|||core-retrieve-file-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      action_id:
+        simple: ${Core.RetrievedFiles.action_id}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 1279.125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: eb02bea6-7e7c-4e84-a0ef-cc0d925c4104
+    type: regular
+    task:
+      id: eb02bea6-7e7c-4e84-a0ef-cc0d925c4104
+      version: -1
+      name: Unzip Retrieved File
+      description: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
+      scriptName: UnzipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 1429.125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: a8c6efbc-4194-4fe6-aae1-151685fbcc06
+    type: regular
+    task:
+      id: a8c6efbc-4194-4fe6-aae1-151685fbcc06
+      version: -1
+      name: Analyze Suspicious File Content
+      description: |-
+        This script evaluates command-line threats by analyzing both original and decoded inputs. It assigns weighted scores to detected patterns, such as AMSI bypass or credential dumping, and applies risk combination bonuses for multiple detections. The total score is normalized to a 0-100 scale, with risk levels categorized as follows:
+
+        * 0-25: Low Risk
+        * 26-50: Medium Risk
+        * 51-90: High Risk
+        * 91-100: Critical Risk
+
+        The scoring mechanism provides a comprehensive risk assessment, considering both the severity and frequency of malicious behaviors.
+      scriptName: CommandLineAnalysis
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      command_line:
+        simple: ${SuspiciousFileContent}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 2370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 119874cf-8a1f-4404-807e-4b3d32b095b2
+    type: title
+    task:
+      id: 119874cf-8a1f-4404-807e-4b3d32b095b2
+      version: -1
+      name: Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "60"
+      - "28"
+      - "73"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 1c966e24-f3d3-4e2d-a523-7ee066d422ec
+    type: regular
+    task:
+      id: 1c966e24-f3d3-4e2d-a523-7ee066d422ec
+      version: -1
+      name: Read File Content
+      description: Load the contents of a file into context.
+      scriptName: ReadFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: xml
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: csproj
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: vcxproj
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: vbproj
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: fsproj
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: publishproj
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: sln
+              ignorecase: true
+          accessor: EntryID
+      output_data_type:
+        simple: raw
+      output_metadata:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 1744.125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 300941b9-003c-417f-8fbd-ad949cb358c3
+    type: regular
+    task:
+      id: 300941b9-003c-417f-8fbd-ad949cb358c3
+      version: -1
+      name: Get file from remote path
+      description: Run a shell command on a specific endpoint and return its result.
+      script: '|||core-execute-command'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      command:
+        complex:
+          root: SuspiciousFilePath
+          transformers:
+          - operator: JsonUnescape
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'type '
+              suffix: {}
+      endpoint_ids:
+        simple: ${alert.agentid}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 1132.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 7160c1e4-90ae-4039-ae54-babf6dae1d0b
+    type: regular
+    task:
+      id: 7160c1e4-90ae-4039-ae54-babf6dae1d0b
+      version: -1
+      name: Remote Domain Reputation
+      description: This script gathers domain reputation data from multiple integrations and returns a "DomainEnrichment" object with consolidated information to the context output.
+      scriptName: domain-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      domain_list:
+        simple: ${SuspiciousDomain}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1354.125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: de761467-fb15-44ed-b063-e4d57338e741
+    type: regular
+    task:
+      id: de761467-fb15-44ed-b063-e4d57338e741
+      version: -1
+      name: Extract Remote Domain
+      description: Extracts regex data from the provided text. The script support groups and looping.
+      scriptName: MatchRegexV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      contextKey:
+        simple: SuspiciousDomain
+      data:
+        simple: ${SuspiciousFilePath}
+      group:
+        simple: "1"
+      regex:
+        simple: ^\\\\([^\\]+)
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1132.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 57d93ce2-ad3b-4b98-a0f0-bb3e9c276134
+    type: title
+    task:
+      id: 57d93ce2-ad3b-4b98-a0f0-bb3e9c276134
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 2910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: fc07fdb3-3e87-479b-9525-3a1a1ee52071
+    type: regular
+    task:
+      id: fc07fdb3-3e87-479b-9525-3a1a1ee52071
+      version: -1
+      name: Quarantine Malicious Code File
+      description: This script executes the 'quarantine-file' command on a specified file via the appropriate agent. This script is used to isolate files identified as suspicious.
+      scriptName: quarantine-file
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      endpoint_id:
+        simple: ${alert.agentid}
+      file_hash:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: xml
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: csproj
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: vcxproj
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: vbproj
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: fsproj
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: publishproj
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: sln
+              ignorecase: true
+          accessor: SHA256
+      file_path:
+        simple: ${SuspiciousFilePath}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 3765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: bb80474e-f643-40bd-83b6-380f694b2183
+    type: title
+    task:
+      id: bb80474e-f643-40bd-83b6-380f694b2183
+      version: -1
+      name: Quarantine
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "64"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 3197.375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: e328c046-f156-41f2-9f10-54018e821097
+    type: regular
+    task:
+      id: e328c046-f156-41f2-9f10-54018e821097
+      version: -1
+      name: Quarantine Masquerading File
+      description: This script executes the 'quarantine-file' command on a specified file via the appropriate agent. This script is used to isolate files identified as suspicious.
+      scriptName: quarantine-file
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      endpoint_id:
+        simple: ${alert.agentid}
+      file_hash:
+        simple: ${alert.targetprocesssha256}
+      file_path:
+        simple: ${Core.OriginalAlert.edrData.action_process_image_path}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 3615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: c554ad6a-d394-4a25-9311-e5a4efc04443
+    type: condition
+    task:
+      id: c554ad6a-d394-4a25-9311-e5a4efc04443
+      version: -1
+      name: Verdict Decision
+      description: Determine the maliciousness of the detected process based on multiple scoring criteria
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      Malicious:
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CommandLineAnalysis.score
+            iscontext: true
+          right:
+            value:
+              simple: "50"
+        - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: DomainEnrichment.TIMScore
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+        - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: FileEnrichment.TIMScore
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: foundIncidents
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 2750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: ed4c8a27-7c59-402d-b7be-ecb3a5f14d90
+    type: title
+    task:
+      id: ed4c8a27-7c59-402d-b7be-ecb3a5f14d90
+      version: -1
+      name: Inconclusive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "76"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 2910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 12ebf9c1-dc44-4e34-914e-b82ffd8b907c
+    type: regular
+    task:
+      id: 12ebf9c1-dc44-4e34-914e-b82ffd8b907c
+      version: -1
+      name: Terminate Causality Process
+      description: Terminates a process tree by its causality ID. Available only from Cortex XSIAM 2.4.
+      script: '|||core-terminate-causality'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+      - "45"
+    scriptarguments:
+      agent_id:
+        simple: ${alert.agentid}
+      causality_id:
+        simple: ${alert.cid}
+      timeout_in_seconds:
+        simple: "180"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 3050.625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 3a1f7817-32e6-43e8-92f2-1580e5aef7fc
+    type: title
+    task:
+      id: 3a1f7817-32e6-43e8-92f2-1580e5aef7fc
+      version: -1
+      name: Isolate Endpoint
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "51"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -781.6666870117188,
+          "y": 3197.375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 528cc1f2-01c5-4933-9600-2520a3532098
+    type: regular
+    task:
+      id: 528cc1f2-01c5-4933-9600-2520a3532098
+      version: -1
+      name: Add hash to Block list
+      description: Block lists requested files which have not already been block listed or added to allow lists.
+      script: '|||core-blocklist-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      comment:
+        simple: 'The hash was added to the block list by the playbook ''Suspicious process spawns MSBuild'' as part of handling alert ID: ${alert.id}'
+      hash_list:
+        complex:
+          root: alert
+          accessor: targetprocesssha256
+          transformers:
+          - operator: uniq
+      incident_id:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 3615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: bb2dc3f8-1674-4836-9f9c-3cfa236e96bc
+    type: title
+    task:
+      id: bb2dc3f8-1674-4836-9f9c-3cfa236e96bc
+      version: -1
+      name: Block Masquerading Process
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "46"
+      - "39"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 3475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 8b974f29-bd6f-4573-8f80-2592c52fc82b
+    type: regular
+    task:
+      id: 8b974f29-bd6f-4573-8f80-2592c52fc82b
+      version: -1
+      name: Isolate endpoint
+      description: Isolates the specified endpoint.
+      script: '|||core-isolate-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      endpoint_id:
+        simple: ${alert.agentid}
+      incident_id:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -781.6666870117188,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: cb2821a2-32c7-485f-a86e-ec9e4d9a96fd
+    type: collection
+    task:
+      id: cb2821a2-32c7-485f-a86e-ec9e4d9a96fd
+      version: -1
+      name: Approve the endpoint isolation & Block URL
+      description: "Endpoint Isolation is recommended since the following verdicts have been confirmed:\n\n - MSBuild.exe executed code classified as High Risk "
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -781.6666870117188,
+          "y": 3540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Should Isolate the endpoint?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "No"
+        - simple: "Yes"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: RemediationtApproval
+      description: "Endpoint Isolation is recommended since one of the following verdicts have been confirmed:\n\n- MSBuild.exe executed code classified as High Risk \n- Found New Processes, Files or Registry entries created by the malicious code\n"
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 1a07f8f2-cdc0-4cd7-a61f-9d6f9d47ed6b
+    type: condition
+    task:
+      id: 1a07f8f2-cdc0-4cd7-a61f-9d6f9d47ed6b
+      version: -1
+      name: Check analyst answers
+      description: Check the analyst's answers to the early containment approval form and execute the appropriate actions based on the responses.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "65"
+      Isolate Endpoint:
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: Isolate Endpoint
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: RemediationApproval.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -781.6666870117188,
+          "y": 3705.833251953125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 11ca43b8-6781-4d1a-a0b9-e03f6831480b
+    type: condition
+    task:
+      id: 11ca43b8-6781-4d1a-a0b9-e03f6831480b
+      version: -1
+      name: Is Code File Malicious
+      description: Validate if the code file contained malicious code before remediation actions
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "65"
+      "yes":
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CommandLineAnalysis.score
+            iscontext: true
+          right:
+            value:
+              simple: "50"
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXQL.GenericQuery.results
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -781.6666870117188,
+          "y": 3360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: e88f3dbd-1015-47ef-8de9-2a8c9990d3ed
+    type: condition
+    task:
+      id: e88f3dbd-1015-47ef-8de9-2a8c9990d3ed
+      version: -1
+      name: File Successfully Retrieved?
+      description: Checks whether the script was retrieved successfully.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "60"
+      "yes":
+      - "68"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.ScriptResult.results.[0].executed_command.[0].standard_output
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 1354.125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 82df74da-dab1-4c77-a4bb-321538a10f50
+    type: condition
+    task:
+      id: 82df74da-dab1-4c77-a4bb-321538a10f50
+      version: -1
+      name: Found Results
+      description: Checks whether XQL query results were found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "yes":
+      - "62"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXQL.GenericQuery.results
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXQL.GenericQuery.results.action_file_sha256
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 2460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: e989fad2-4072-428e-8519-f150be35a89d
+    type: condition
+    task:
+      id: e989fad2-4072-428e-8519-f150be35a89d
+      version: -1
+      name: Is the integration of 'XQL Query Engine' available?
+      description: Returns 'yes' if integration brand 'XQL Query Engine' is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "yes":
+      - "16"
+    scriptarguments:
+      brandname:
+        simple: XQL Query Engine
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 2192.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 5a320469-8518-4307-bfdd-7b5f675aa2de
+    type: regular
+    task:
+      id: 5a320469-8518-4307-bfdd-7b5f675aa2de
+      version: -1
+      name: Enrich File
+      description: This script gathers file reputation data from multiple integrations and returns a "FileEnrichment" object with consolidated information to the context output.
+      scriptName: file-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      external_enrichment:
+        simple: "true"
+      file_hash:
+        complex:
+          root: PaloAltoNetworksXQL.GenericQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXQL.GenericQuery.query_name
+                iscontext: true
+              right:
+                value:
+                  simple: MSBuild Post Execution Investigation
+          accessor: results.action_file_sha256
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 2595.625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 21268483-dd53-43e3-908a-65ba305cfd03
+    type: regular
+    task:
+      id: 21268483-dd53-43e3-908a-65ba305cfd03
+      version: -1
+      name: Set Masquerading Verdict
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      key:
+        simple: Verdict
+      value:
+        simple: Masquerading
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: a008d3b6-05ca-4014-8264-10fbfab68c14
+    type: condition
+    task:
+      id: a008d3b6-05ca-4014-8264-10fbfab68c14
+      version: -1
+      name: Verdict is Masquerading
+      description: Check if the verdict in context is set to 'Masquerading'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "78"
+      "yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Verdict
+            iscontext: true
+          right:
+            value:
+              simple: Masquerading
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 3320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: f7fd690f-3c64-45ec-b628-4ebb878b8878
+    type: title
+    task:
+      id: f7fd690f-3c64-45ec-b628-4ebb878b8878
+      version: -1
+      name: Close Alert
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "75"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 838.3333129882812,
+          "y": 4030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 212b424f-6748-43b7-88de-333a13649879
+    type: title
+    task:
+      id: 212b424f-6748-43b7-88de-333a13649879
+      version: -1
+      name: Malicious Code File Executed
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "37"
+      - "74"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 848.3333129882812,
+          "y": 3622.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 3b8f4534-0f0f-48f0-85f9-ac0fa25ebc6e
+    type: regular
+    task:
+      id: 3b8f4534-0f0f-48f0-85f9-ac0fa25ebc6e
+      version: -1
+      name: Set File Content to Context
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: SuspiciousFileContent
+      value:
+        simple: ${Core.ScriptResult.results.[0].executed_command.[0].standard_output}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: a44a66a6-e39f-47e9-a5d5-66dde126ebcb
+    type: regular
+    task:
+      id: a44a66a6-e39f-47e9-a5d5-66dde126ebcb
+      version: -1
+      name: Set File Content to Context
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: SuspiciousFileContent
+      value:
+        simple: ${ReadFile.Data}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: 4f45b792-23ad-4b01-ac52-e54de9c743c3
+    type: regular
+    task:
+      id: 4f45b792-23ad-4b01-ac52-e54de9c743c3
+      version: -1
+      name: Search for Related Alerts
+      description: |-
+        This task searches for Cortex XSIAM suspicious alerts related to the current alert by Mitre Technique, indicating that the alert is part of an attack pattern.
+
+        Focus on identifying alerts associated with the following MITRE techniques:
+        - Any Agent Alerts within this alert.
+        - T1059 - Command and Scripting Interpreter.
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      fromdate:
+        simple: 10 minutes ago
+      query:
+        simple: (agentid:${alert.agentid}) and (cid:${alert.cid.[0]} or actorprocessinstanceid:${alert.cid.[0]} or actionprocessinstanceid:${alert.cid.[0]} or actorprocessinstanceid:${alert.actorprocessinstanceid.[0]} or actionprocessinstanceid:${alert.actorprocessinstanceid.[0]}) and (name:*Masquerading*)
+      todate:
+        simple: now
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1356.6666259765625,
+          "y": 120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 2beceec2-2c60-4284-a028-98b376fa3e23
+    type: regular
+    task:
+      id: 2beceec2-2c60-4284-a028-98b376fa3e23
+      version: -1
+      name: Search for Related Alerts
+      description: |-
+        This task searches for Cortex XSIAM suspicious alerts related to the current alert by Mitre Technique, indicating that the alert is part of an attack pattern.
+
+        Focus on identifying alerts associated with the following MITRE techniques:
+        - Any Agent Alerts within this alert.
+        - T1059 - Command and Scripting Interpreter.
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      fromdate:
+        simple: 10 minutes ago
+      query:
+        simple: (agentid:${alert.agentid}) and (cid:${alert.cid.[0]} or actorprocessinstanceid:${alert.cid.[0]} or actionprocessinstanceid:${alert.cid.[0]} or actorprocessinstanceid:${alert.actorprocessinstanceid.[0]} or actionprocessinstanceid:${alert.actorprocessinstanceid.[0]}) OR (name:*WildFire Malware* or name:*Local Analysis Malware* or name:*In-process shellcode Protection*)
+      todate:
+        simple: now
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 2192.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: 761722f9-390a-4865-9274-15f8174a3f24
+    type: regular
+    task:
+      id: 761722f9-390a-4865-9274-15f8174a3f24
+      version: -1
+      name: Add hash to Block list
+      description: Block lists requested files which have not already been block listed or added to allow lists.
+      script: '|||core-blocklist-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      comment:
+        simple: 'The hash was added to the block list by the playbook ''''Suspicious process spawns MSBuild'''' as part of handling alert ID: ${alert.id}'
+      hash_list:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: xml
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: csproj
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: vcxproj
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: vbproj
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: fsproj
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: publishproj
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: sln
+              ignorecase: true
+          accessor: SHA256
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: ExtractedIndicators.File.SHA256
+                iscontext: true
+              raw: {}
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: FileEnrichment(val.Score == 3).SHA256
+                iscontext: true
+              raw: {}
+          - operator: uniq
+      incident_id:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1048.3333129882812,
+          "y": 3765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: d532c825-4553-4a1c-bfd8-ac1a52a2574e
+    type: regular
+    task:
+      id: d532c825-4553-4a1c-bfd8-ac1a52a2574e
+      version: -1
+      name: Close Alert - True Positive
+      description: Close the current alert.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "76"
+    scriptarguments:
+      closeNotes:
+        simple: Malicious process spawned MSBuild.exe - Handled by the playbook "Suspicious process spawns MSBuild"
+      closeReason:
+        simple: Resolved - True Positive
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 838.3333129882812,
+          "y": 4165.625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: e5b10a5b-3348-4b8a-a89d-0e4dbfcef293
+    type: title
+    task:
+      id: e5b10a5b-3348-4b8a-a89d-0e4dbfcef293
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 838.3333129882812,
+          "y": 4310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: f258424d-f129-4779-9895-e5c35f3dabe6
+    type: condition
+    task:
+      id: f258424d-f129-4779-9895-e5c35f3dabe6
+      version: -1
+      name: File Successfully Retrieved?
+      description: Checks whether the script was retrieved successfully.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "60"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExtractedFiles
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File.Extension
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: xml
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: csproj
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: vcxproj
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: vbproj
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: fsproj
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: publishproj
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: sln
+                    ignorecase: true
+                transformers:
+                - operator: uniq
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 5601359f-1286-4144-a7b4-6189e930cc39
+    type: condition
+    task:
+      id: 5601359f-1286-4144-a7b4-6189e930cc39
+      version: -1
+      name: Verify Files to Block Exist
+      description: Checks whether files potentially requiring blocking have been identified
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "65"
+      yes:
+      - "66"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: xml
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: csproj
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: vcxproj
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: vbproj
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: fsproj
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: publishproj
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: sln
+                    ignorecase: true
+                accessor: SHA256
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 848.3333129882812,
+          "y": 3475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "51_49_yes": 0.38,
+      "51_65_#default#": 0.19,
+      "58_60_#default#": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4690,
+        "width": 2741.6666870117188,
+        "x": -781.6666870117188,
+        "y": -320
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.9.0

@@ -1,0 +1,54 @@
+commonfields:
+  id: network-security-agent
+  version: -1
+name: Network Security
+description: |-
+  Manages Palo Alto Networks Panorama and Firewalls, as well as third-party network security products. Streamlines work
+  for network security engineers by performing configuration checks, policy optimization, vulnerability assessment,
+  certificate expiration monitoring as well as log analysis and threat response.
+visibility: public
+color: '#FFE260'
+conversationstarters:
+  - Have any of the SSL certificates on our Panorama and Firewalls expired?
+  - Check our Panorama and Firewall devices for SSL certificates expiring in the next 30 days
+  - Check if any employee accessed any website from the Malware URL category
+  - Show me the system information across our PAN-OS devices
+systeminstructions: "This agent's actions utilize the PAN-OS Cortex Integration, configured with either Panorama management server credentials or an individual Firewall server. The instance configuration dictates the topology for API calls.\nPrimary Principle: Integration Instance Awareness\nAll actions must adapt to the configured integration instance (Panorama or Firewall). The topology from the instance is critical for execution.\nKey Action: PANOSGetSystemInfo\n- Returns the connected server's topology: host ID, IP, hostname.\n- Panorama: Provides details for the Panorama device and all managed firewalls in its topology.\n- Firewall: Provides details for that individual device.\n- PANOSGetSystemInfo is a crucial prerequisite for any action requiring network topology knowledge for inputs or interpretation of outputs.\nFor actions requiring 'target' or 'targetDevice': (i.e., a firewall serial number):\n1. Pre-execution: Always run PANOSGetSystemInfo first to identify the integration instance type (Panorama vs. Firewall) and retrieve available serial numbers from the topology.\n2. Target Selection Logic:\n   - Firewall instance: Execute the action once using that specific device's serial number.\n   - Panorama instance:\n     - If the user explicitly specified a target device by serial number: Execute the action once for that device.\n     - If no target device is specified: The agent MUST iterate the action over ALL managed firewall serial numbers found in the Panorama topology. Do NOT prompt the user for a serial number manually.   \nGenerally, for actions executable on both Panorama and Firewall, the agent must understand operational differences (e.g., log scope for PANOSListLogs) and clearly communicate these to the user (e.g., if no results, suggest checking other instances or direct firewall access). PANOSGetSystemInfo can provide this information."
+builtinactions:
+  - InvokeLLM
+actionids:
+  - SearchIssues
+  - PanOSCustomBlockRule
+  - ServiceNowCreateTicket
+  - jiraCreateIssue
+  - SendNotification
+  - SendMail
+  - TavilyExtract
+  - ExtractURLContent
+  - PANOSCheckCertificateExpiration
+  - PANOSCheckOutdatedDynamicUpdates
+  - PANOSGetSystemInfo
+  - PANOSQueryLogs
+  - PANOSSecurityPolicyMatch
+  - PANOSCheckFWUpgradeReadiness
+  - PANOSCheckSecurityConfigurationHygiene
+  - PANOSDeleteRule
+  - PANOSDisableRule
+  - PANOSDownloadAndInstallDynamicUpdates
+  - PANOSIdentifyUnusedPolicyRules
+  - PANOSCheckVulnerabilities
+  - CiscoASACreateRule
+  - jiraGetIssue
+  - SearchCases
+  - SetIssue
+  - JiraUpdateIssue
+  - ServiceNowGetTicket
+  - ServiceNowUpdateTicket
+  - SCMConfigJobList
+  - CortexRunXQLQuery
+marketplaces:
+  - platform
+supportedModules:
+  - agentix
+  - xsiam
+  - edr

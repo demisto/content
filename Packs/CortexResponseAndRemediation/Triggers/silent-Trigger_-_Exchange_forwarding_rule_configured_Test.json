@@ -1,0 +1,64 @@
+{
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+          "OR": [
+            {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "External Exchange inbox forwarding rule configured"
+            },
+            {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Suspicious Exchange inbox forwarding rule configured"
+            },
+            {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Suspicious Exchange email-hiding inbox rule"
+            },
+            {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Possible BEC Exchange email-hiding inbox rule"
+            },
+            {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Exchange email-hiding transport rule based on message keywords"
+            },
+            {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Suspicious Exchange email-hiding transport rule"
+            },
+            {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Exchange transport forwarding rule configured"
+            },
+            {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Suspicious Exchange transport forwarding rule configured"
+            }
+          ]
+        },
+        {
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "NEQ",
+          "SEARCH_VALUE": "Correlation"
+        }
+      ]
+    }
+  },
+  "description": "This trigger runs the Exchange forwarding rule alerts playbook, which handles the External Exchange inbox forwarding rule configured, Suspicious Exchange inbox forwarding rule configured and Suspicious Exchange email-hiding inbox rule alerts.",
+  "fromVersion": "8.9.0",
+  "issilent": true,
+  "playbook_id": "silent-Exchange forwarding rule configured Test",
+  "suggestion_reason": "Recommended for External Exchange inbox forwarding rule configured, Suspicious Exchange inbox forwarding rule configured and Suspicious Exchange email-hiding inbox rule",
+  "trigger_id": "4402083915accc60f72e10bb59224616",
+  "trigger_name": "silent-Exchange forwarding rule configured Test"
+}

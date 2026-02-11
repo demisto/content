@@ -1,0 +1,166 @@
+commonfields:
+  id: PANOSGetSystemInfo
+  version: -1
+display: PAN-OS - Get System Info
+name: PANOSGetSystemInfo
+tags:
+ - firewall management
+ - panorama device management
+ - Palo Alto Networks Products
+category: Network Security
+description: |-
+  This action retrieves comprehensive system information from all connected PAN-OS devices within the topology.
+  It gathers critical details such as:
+  - Hostname and IP addresses
+  - Software and platform versions
+  - System uptime
+  - Content pack versions (Antivirus, Threat, Application, URL Filtering, WildFire, GlobalProtect)
+
+  Results can be precisely filtered by specifying a hostname or serial number using the `device_filter_string` argument.
+args:
+  - name: device_filter_string
+    description: The string by which to filter the results to only show specific hostnames or serial numbers.
+    type: string
+    underlyingargname: device_filter_string
+  - name: target
+    description: The target number of the firewall. Used only on a Panorama instance.
+    type: string
+    underlyingargname: target
+outputs:
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Summary.hostid
+    type: string
+    description: The ID of the PAN-OS host.
+    name: PANOS.ShowSystemInfo.Summary.hostid
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Summary.ip_address
+    description: The management IP address.
+    type: string
+    name: PANOS.ShowSystemInfo.Summary.ip_address
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Summary.sw_version
+    description: The system software version.
+    type: string
+    name: PANOS.ShowSystemInfo.Summary.sw_version
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Summary.family
+    description: The platform family.
+    type: string
+    name: PANOS.ShowSystemInfo.Summary.family
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Summary.model
+    description: The platform model.
+    type: string
+    name: PANOS.ShowSystemInfo.Summary.model
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Summary.uptime
+    type: string
+    description: The total system uptime.
+    name: PANOS.ShowSystemInfo.Summary.uptime
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Summary.hostname
+    type: string
+    description: The system hostname.
+    name: PANOS.ShowSystemInfo.Summary.hostname
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Result.hostid
+    type: string
+    description: The ID of the PAN-OS host.
+    name: PANOS.ShowSystemInfo.Result.hostid
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Result.ip_address
+    type: string
+    description: The management IP address.
+    name: PANOS.ShowSystemInfo.Result.ip_address
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Result.netmask
+    type: string
+    description: The management netmask.
+    name: PANOS.ShowSystemInfo.Result.netmask
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Result.mac_address
+    type: string
+    description: The management MAC address.
+    name: PANOS.ShowSystemInfo.Result.mac_address
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Result.uptime
+    type: string
+    description: The total system uptime.
+    name: PANOS.ShowSystemInfo.Result.uptime
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Result.family
+    type: string
+    description: The platform family.
+    name: PANOS.ShowSystemInfo.Result.family
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Result.model
+    description: The platform model.
+    type: string
+    name: PANOS.ShowSystemInfo.Result.model
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Result.sw_version
+    description: The system software version.
+    type: string
+    name: PANOS.ShowSystemInfo.Result.sw_version
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Result.operational_mode
+    description: The xurrent operational mode.
+    type: string
+    name: PANOS.ShowSystemInfo.Result.operational_mode
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Result.ipv6_address
+    description: The management IPv6 address.
+    type: string
+    name: PANOS.ShowSystemInfo.Result.ipv6_address
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Result.default_gateway
+    description: The management default gateway.
+    type: string
+    name: PANOS.ShowSystemInfo.Result.default_gateway
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Result.public_ip_address
+    description: The firewall public IP address.
+    type: string
+    name: PANOS.ShowSystemInfo.Result.public_ip_address
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Result.hostname
+    description: The device hostname.
+    type: string
+    name: PANOS.ShowSystemInfo.Result.hostname
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Result.av_version
+    description: The system anti-virus version.
+    type: string
+    name: PANOS.ShowSystemInfo.Result.av_version
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Result.av_release_date
+    description: The release date of the antivirus content.
+    type: string
+    name: PANOS.ShowSystemInfo.Result.av_release_date
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Result.app_version
+    description: The app content version.
+    type: string
+    name: PANOS.ShowSystemInfo.Result.app_version
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Result.app_release_date
+    description: The release date of the application content.
+    type: string
+    name: PANOS.ShowSystemInfo.Result.app_release_date
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Result.threat_version
+    description: The threat content version.
+    type: string
+    name: PANOS.ShowSystemInfo.Result.threat_version
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Result.threat_release_date
+    description: The release date of the threat content.
+    type: string
+    name: PANOS.ShowSystemInfo.Result.threat_release_date
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Result.wildfire_version
+    description: The Wildfire content version.
+    type: string
+    name: PANOS.ShowSystemInfo.Result.wildfire_version
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Result.wildfire_release_date
+    description: The Wildfire release date.
+    type: string
+    name: PANOS.ShowSystemInfo.Result.wildfire_release_date
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Result.url_filtering_version
+    description: The URL filtering content version.
+    type: string
+    name: PANOS.ShowSystemInfo.Result.url_filtering_version
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Result.global_protect_client_package_version
+    description: The GlobalProtect client package version.
+    type: string
+    name: PANOS.ShowSystemInfo.Result.global_protect_client_package_version
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Result.advanced_routing
+    description: Advanced routing feature.
+    type: string
+    name: PANOS.ShowSystemInfo.Result.advanced_routing
+  - underlyingoutputcontextpath: PANOS.ShowSystemInfo.Result.multi_vsys
+    description: Virtual system feature.
+    type: string
+    name: PANOS.ShowSystemInfo.Result.multi_vsys
+underlyingcontentitem:
+  id: Panorama
+  name: Panorama
+  type: command
+  version: -1
+  command: pan-os-platform-get-system-info
+requiresuserapproval: false
+marketplaces:
+- platform

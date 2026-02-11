@@ -1,0 +1,176 @@
+tests:
+- name: Find critical security cases from last week
+  prompt: "Show me all critical security cases from the past 7 days"
+  agent_id: f4ce50f0-8b2a-4450-9bf4-9bfff51db538
+  expected_outcomes:
+  - evaluation_mode: any_of
+    actions:
+    - action_id: CortexListCases
+      arguments:
+        severity: "critical"
+        gte_creation_time: "7 days ago"
+        case_domain: "DOMAIN_SECURITY"
+
+- name: Search cases assigned to security team
+  prompt: "List all open security cases assigned to the hyaffe@paloaltonetworks.com"
+  agent_id: f4ce50f0-8b2a-4450-9bf4-9bfff51db538
+  expected_outcomes:
+  - evaluation_mode: any_of
+    actions:
+    - action_id: CortexListCases
+      arguments:
+        status: "under_investigation"
+        assignee: " hyaffe@paloaltonetworks.com"
+        case_domain: "DOMAIN_SECURITY"
+
+- name: Find starred high-severity cases
+  prompt: "Retrieve all starred cases"
+  agent_id: f4ce50f0-8b2a-4450-9bf4-9bfff51db538
+  expected_outcomes:
+  - evaluation_mode: any_of
+    actions:
+    - action_id: CortexListCases
+      arguments:
+        starred: true
+
+- name: Cases involving specific host
+  prompt: "Show cases related to host ws-security-01"
+  agent_id: f4ce50f0-8b2a-4450-9bf4-9bfff51db538
+  expected_outcomes:
+  - evaluation_mode: any_of
+    actions:
+    - action_id: CortexListCases
+      arguments:
+        hosts: "ws-security-01"
+
+- name: Recent resolved security cases
+  prompt: "List resolved security cases from the last month, sorted by creation time"
+  agent_id: f4ce50f0-8b2a-4450-9bf4-9bfff51db538
+  expected_outcomes:
+  - evaluation_mode: any_of
+    actions:
+    - action_id: CortexListCases
+      arguments:
+        status: "resolved"
+        case_domain: "DOMAIN_SECURITY"
+        gte_creation_time: "30 days ago"
+        sort_by_creation_time: "DESC"
+
+- name: Cases with specific tags
+  prompt: "Find cases tagged with IoT Security"
+  agent_id: f4ce50f0-8b2a-4450-9bf4-9bfff51db538
+  expected_outcomes:
+  - evaluation_mode: any_of
+    actions:
+    - action_id: CortexListCases
+      arguments:
+        tag: "DS:PANW/IoT Security"
+
+- name: Unassigned medium severity cases
+  prompt: "Show me all unassigned medium severity cases"
+  agent_id: f4ce50f0-8b2a-4450-9bf4-9bfff51db538
+  expected_outcomes:
+  - evaluation_mode: any_of
+    actions:
+    - action_id: CortexListCases
+      arguments:
+        assignee: "unassigned"
+        severity: "medium"
+
+- name: Cases in IT domain with specific assets
+  prompt: "List IT domain cases involving asset group finance-servers"
+  agent_id: f4ce50f0-8b2a-4450-9bf4-9bfff51db538
+  expected_outcomes:
+  - evaluation_mode: any_of
+    actions:
+    - action_id: CortexListCases
+      arguments:
+        case_domain: "DOMAIN_IT"
+        asset_groups: "finance-servers"
+
+- name: Recent cases with enriched data
+  prompt: "Get detailed information for recent cases, including extra details"
+  agent_id: f4ce50f0-8b2a-4450-9bf4-9bfff51db538
+  expected_outcomes:
+  - evaluation_mode: any_of
+    actions:
+    - action_id: CortexListCases
+      arguments:
+        gte_creation_time: "14 days ago"
+        get_enriched_case_data: true
+        limit: "10"
+
+- name: Complex multi-filter security case search
+  prompt: "Find critical security cases from the past week involving network artifacts"
+  agent_id: f4ce50f0-8b2a-4450-9bf4-9bfff51db538
+  expected_outcomes:
+  - evaluation_mode: any_of
+    actions:
+    - action_id: CortexListCases
+      arguments:
+        severity: "critical"
+        case_domain: "DOMAIN_SECURITY"
+        gte_creation_time: "7 days ago"
+        get_enriched_case_data: true
+
+- name: Error case - Invalid severity
+  prompt: "Show cases with ultra-high severity"
+  agent_id: f4ce50f0-8b2a-4450-9bf4-9bfff51db538
+  expected_outcomes:
+  - evaluation_mode: any_of
+    actions:
+    - action_id: CortexListCases
+      arguments:
+        severity: "critical"
+
+- name: Error case - Mixing assignee types
+  prompt: "Show cases for user john@example.com and unassigned"
+  agent_id: f4ce50f0-8b2a-4450-9bf4-9bfff51db538
+  expected_outcomes:
+  - evaluation_mode: any_of
+    actions:
+    - action_id: CortexListCases
+      arguments:
+        assignee: "john@example.com"
+
+- name: Case search by description keywords
+  prompt: "Find cases mentioning 'phishing attack'"
+  agent_id: f4ce50f0-8b2a-4450-9bf4-9bfff51db538
+  expected_outcomes:
+  - evaluation_mode: any_of
+    actions:
+    - action_id: CortexListCases
+      arguments:
+        case_description: "phishing attack"
+
+- name: Large volume case retrieval
+  prompt: "Retrieve the first 100 security cases"
+  agent_id: f4ce50f0-8b2a-4450-9bf4-9bfff51db538
+  expected_outcomes:
+  - evaluation_mode: any_of
+    actions:
+    - action_id: CortexListCases
+      arguments:
+        case_domain: "DOMAIN_SECURITY"
+        limit: "100"
+
+- name: Specific case ID lookup
+  prompt: "Get details for case ID CASE-2023-1234"
+  agent_id: f4ce50f0-8b2a-4450-9bf4-9bfff51db538
+  expected_outcomes:
+  - evaluation_mode: any_of
+    actions:
+    - action_id: CortexListCases
+      arguments:
+        case_id_list: "CASE-2023-1234"
+
+- name: Health domain cases
+  prompt: "List all open cases in the health domain"
+  agent_id: f4ce50f0-8b2a-4450-9bf4-9bfff51db538
+  expected_outcomes:
+  - evaluation_mode: any_of
+    actions:
+    - action_id: CortexListCases
+      arguments:
+        case_domain: "DOMAIN_HEALTH"
+        status: "under_investigation"

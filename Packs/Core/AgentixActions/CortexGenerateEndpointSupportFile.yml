@@ -1,0 +1,37 @@
+commonfields:
+  id: CortexGenerateEndpointSupportFile
+  version: -1
+display: Cortex - Generate Endpoint Support File
+name: CortexGenerateEndpointSupportFile
+tags:
+  - endpoint
+  - support
+  - diagnostics
+category: Endpoint
+description: >
+  Generates Technical Support Files (TSF) for the provided list of endpoints.
+args:
+  - name: endpoint_ids
+    underlyingargname: endpoint_ids
+    description: >
+      A comma-separated list of endpoint IDs to retrieve Technical Support Files for.
+    type: string
+    required: true
+outputs:
+  - underlyingoutputcontextpath: Core.EndpointSupportFile.group_action_id
+    description: The unique group action identifier for the support file.
+    type: string
+    name: Core.EndpointSupportFile.group_action_id
+underlyingcontentitem:
+  id: Cortex Core - Platform
+  name: Cortex Core - Platform
+  type: command
+  version: -1
+  command: core-get-endpoint-support-file
+requiresuserapproval: false
+marketplaces:
+  - platform
+supportedModules:
+  - cloud_runtime_security
+  - xsiam
+  - edr

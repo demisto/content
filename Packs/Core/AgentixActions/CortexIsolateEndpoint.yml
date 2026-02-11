@@ -1,0 +1,49 @@
+commonfields:
+  id: CortexIsolateEndpoint
+  version: -1
+name: CortexIsolateEndpoint
+display: Cortex - Isolate Endpoint
+tags:
+ - Endpoint
+category: Endpoint
+description: >
+  Isolates an endpoint through Cortex, restricting all network communication except the required connection to Cortex services.
+
+  Workflow:
+  1. Execute the "GetEndpointData" action with the "Cortex Core - IR" integration brand as input to get the endpoint ID (unless provided or returned from a previous action).
+  2. Use this action to isolate the endpoint.
+args:
+  - description: Links the isolation action to the case (formerly known as incident).
+    name: incident_id
+    type: string
+    underlyingargname: incident_id
+  - description: The ID of the endpoint to isolate.
+    name: endpoint_id
+    required: true
+    type: string
+    underlyingargname: endpoint_id
+  - defaultvalue: 'false'
+    description: |-
+      Suppresses an error when trying to isolate a disconnected endpoint.
+      When set to false, an error is returned.
+    name: suppress_disconnected_endpoint_error
+    type: boolean
+    underlyingargname: suppress_disconnected_endpoint_error
+outputs:
+- name: Core.Isolation.endpoint_id
+  description: The ID of the isolated endpoint.
+  type: String
+  underlyingoutputcontextpath: Core.Isolation.endpoint_id
+underlyingcontentitem:
+  id: CoreIsolateEndpoint
+  name: CoreIsolateEndpoint
+  type: script
+  version: -1
+  command: ''
+requiresuserapproval: true
+marketplaces:
+- platform
+supportedModules:
+- xsiam
+- cloud_runtime_security
+- edr

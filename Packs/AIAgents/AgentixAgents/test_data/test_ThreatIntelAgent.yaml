@@ -1,0 +1,103 @@
+# Prerequisites:
+# - Threat intelligence integrations configured (VirusTotal, AbuseIPDB, etc.)
+# - At least one indicator exists in the system
+# - ServiceNow and/or Jira integrations configured (for ticket tests)
+
+tests:
+  # CONFUSION TESTS - Similar actions where agent must choose correctly
+
+  - name: "Confusion - EnrichIP vs EnrichDomain - IP address context"
+    prompt: "Enrich the IP address 8.8.8.8 and tell me if it's malicious."
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichIP"
+            arguments:
+              ip_list: "8.8.8.8"
+
+  - name: "Confusion - EnrichDomain vs EnrichURL - Domain context"
+    prompt: "Check the reputation of the domain malicious-site.com."
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichDomain"
+            arguments:
+              domain_list: "[\"malicious-site.com\"]"
+
+  - name: "Confusion - EnrichURL vs EnrichDomain - Full URL context"
+    prompt: "Analyze this suspicious URL: https://phishing-example.com/login.php."
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichURL"
+            arguments:
+              url_list: "[\"https://phishing-example.com/login.php\"]"
+
+  - name: "Confusion - SearchIndicators vs EnrichIndicators - Search context"
+    prompt: "Find all malicious IP indicators in our database."
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "CortexListIndicators"
+            arguments:
+              type: "IP"
+              verdict: "Malicious"
+
+  - name: "Confusion - ExtractIndicators vs SearchIndicators - Extraction context"
+    prompt: "Extract all indicators from this text: Contact admin@evil.com at 192.168.1.100 or visit http://malware.net."
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "ExtractIndicators"
+            arguments:
+              text: "Contact admin@evil.com at 192.168.1.100 or visit http://malware.net"
+
+  # OUT-OF-SCOPE TESTS - Actions the agent doesn't have
+
+  - name: "Out of scope - Endpoint isolation"
+    prompt: "Isolate the endpoint with hostname WS-INFECTED-01 immediately."
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions: []
+
+  - name: "Out of scope - User account management"
+    prompt: "Disable the user account john.doe@company.com due to suspicious activity."
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions: []
+
+  - name: "Out of scope - Email deletion"
+    prompt: "Delete all phishing emails with subject 'Urgent: Verify Your Account' from all mailboxes."
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions: []
+
+  # POSITIVE TESTS - Clear requests that should work
+
+  - name: "Positive - Enrich CVE vulnerability"
+    prompt: "Get detailed information about CVE-2021-44228 including CVSS score and affected systems."
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichCVE"
+            arguments:
+              cve_list: "CVE-2021-44228"
+
+  - name: "Positive - Search indicator relationships"
+    prompt: "Find all indicators related to the malicious IP 203.0.113.42."
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "CortexListIndicatorRelationships"
+            arguments:
+              entities: "203.0.113.42"

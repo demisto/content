@@ -1,0 +1,122 @@
+commonfields:
+  id: GetIssueRecommendations
+  version: -1
+display: Cortex - Get Issue Recommendations
+name: CortexGetIssueRecommendations
+tags:
+  - recommendations
+  - remediation
+  - security
+category: Data Enrichment & Threat Intelligence
+description: >
+  Retrieves recommendations for a Cortex issues, including remediation steps, playbook and quick action suggestions.
+  In addition existing and suggested code blocks will return for relevant AppSec issues.
+args:
+  - name: issue_ids
+    underlyingargname: issue_ids
+    description: >
+      Comma-separated list of IDs of the issues to get recommendations for (maximum 10 per request).
+    type: string
+    required: true
+outputs:
+  - underlyingoutputcontextpath: Core.IssueRecommendations.issue_id
+    description: The unique identifier for the issue.
+    type: string
+    name: Core.IssueRecommendations.issue_id
+  - underlyingoutputcontextpath: Core.IssueRecommendations.issue_name
+    description: The name of the issue.
+    type: string
+    name: Core.IssueRecommendations.issue_name
+  - underlyingoutputcontextpath: Core.IssueRecommendations.severity
+    description: The severity of the issue.
+    type: string
+    name: Core.IssueRecommendations.severity
+  - underlyingoutputcontextpath: Core.IssueRecommendations.description
+    description: The description of the issue.
+    type: string
+    name: Core.IssueRecommendations.description
+  - underlyingoutputcontextpath: Core.IssueRecommendations.remediation
+    description: The remediation steps and recommendations for the issue.
+    type: string
+    name: Core.IssueRecommendations.remediation
+  - underlyingoutputcontextpath: Core.IssueRecommendations.playbook_suggestions.playbook_id
+    description: The ID of the suggested playbook.
+    type: string
+    name: Core.IssueRecommendations.playbook_suggestions.playbook_id
+  - underlyingoutputcontextpath: Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id
+    description: The ID of the suggestion rule that generated this recommendation.
+    type: string
+    name: Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id
+  - underlyingoutputcontextpath: Core.IssueRecommendations.playbook_suggestions.name
+    description: The name of the suggested playbook.
+    type: string
+    name: Core.IssueRecommendations.playbook_suggestions.name
+  - underlyingoutputcontextpath: Core.IssueRecommendations.playbook_suggestions.comment
+    description: An explanation of the suggested playbook.
+    type: string
+    name: Core.IssueRecommendations.playbook_suggestions.comment
+  - underlyingoutputcontextpath: Core.IssueRecommendations.quick_action_suggestions.name
+    description: The name of the suggested quick action.
+    type: string
+    name: Core.IssueRecommendations.quick_action_suggestions.name
+  - underlyingoutputcontextpath: Core.IssueRecommendations.quick_action_suggestions.suggestion_rule_id
+    description: The ID of the suggestion quick action rule that generated this recommendation.
+    type: string
+    name: Core.IssueRecommendations.quick_action_suggestions.suggestion_rule_id
+  - underlyingoutputcontextpath: Core.IssueRecommendations.quick_action_suggestions.brand
+    description: The brand of the quick action.
+    type: string
+    name: Core.IssueRecommendations.quick_action_suggestions.brand
+  - underlyingoutputcontextpath: Core.IssueRecommendations.quick_action_suggestions.category
+    description: The category of the quick action.
+    type: string
+    name: Core.IssueRecommendations.quick_action_suggestions.category
+  - underlyingoutputcontextpath: Core.IssueRecommendations.quick_action_suggestions.description
+    description: A description of the quick action.
+    type: string
+    name: Core.IssueRecommendations.quick_action_suggestions.description
+  - underlyingoutputcontextpath: Core.IssueRecommendations.quick_action_suggestions.pretty_name
+    description: The display name of the quick action.
+    type: string
+    name: Core.IssueRecommendations.quick_action_suggestions.pretty_name
+  - underlyingoutputcontextpath: Core.IssueRecommendations.quick_action_suggestions.arguments.name
+    description: The argument name.
+    type: string
+    name: Core.IssueRecommendations.quick_action_suggestions.arguments.name
+  - underlyingoutputcontextpath: Core.IssueRecommendations.quick_action_suggestions.arguments.prettyName
+    description: The argument display name.
+    type: string
+    name: Core.IssueRecommendations.quick_action_suggestions.arguments.prettyName
+  - underlyingoutputcontextpath: Core.IssueRecommendations.quick_action_suggestions.arguments.prettyPredefined
+    description: The argument predefined display value.
+    type: string
+    name: Core.IssueRecommendations.quick_action_suggestions.arguments.prettyPredefined
+  - underlyingoutputcontextpath: Core.IssueRecommendations.quick_action_suggestions.arguments.description
+    description: The argument description.
+    type: string
+    name: Core.IssueRecommendations.quick_action_suggestions.arguments.description
+  - underlyingoutputcontextpath: Core.IssueRecommendations.quick_action_suggestions.arguments.required
+    description: Whether the argument is required.
+    type: string
+    name: Core.IssueRecommendations.quick_action_suggestions.arguments.required
+  - underlyingoutputcontextpath: Core.IssueRecommendations.existing_code_block
+    description: Original vulnerable code.
+    type: String
+    name: Core.IssueRecommendations.existing_code_block
+  - underlyingoutputcontextpath: Core.IssueRecommendations.suggested_code_block
+    description: Code block fix suggestion.
+    type: String
+    name: Core.IssueRecommendations.suggested_code_block
+underlyingcontentitem:
+  id: Cortex Core - Platform
+  name: Cortex Core - Platform
+  type: command
+  version: -1
+  command: core-get-issue-recommendations
+requiresuserapproval: false
+marketplaces:
+  - platform
+supportedModules:
+  - agentix
+  - xsiam
+  - cloud_posture

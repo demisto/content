@@ -1,0 +1,38 @@
+commonfields:
+  id: SentinelOneUnisolateEndpoint
+  version: -1
+name: SentinelOneConnectAgent
+display: SentinelOne - Connect Agent
+tags:
+ - Endpoint
+category: Endpoint
+description: |-
+  Connects (unisolates) the endpoint to the network.
+args:
+  - description: A comma-separated list of agent IDs to connect to the network.
+    name: agent_id
+    required: true
+    type: string
+    underlyingargname: agent_id
+outputs:
+  - underlyingoutputcontextpath: SentinelOne.Agent.AgentsAffected
+    description: The number of affected agents.
+    type: number
+    name: SentinelOne.Agent.AgentsAffected
+  - underlyingoutputcontextpath: SentinelOne.Agent.NetworkStatus
+    description: Agent network status.
+    type: string
+    name: SentinelOne.Agent.NetworkStatus
+  - underlyingoutputcontextpath: SentinelOne.Agent.ID
+    description: Input agents' IDs.
+    type: string
+    name: SentinelOne.Agent.ID
+underlyingcontentitem:
+  id: SentinelOne V2
+  name: SentinelOne V2
+  type: command
+  version: -1
+  command: sentinelone-connect-agent
+requiresuserapproval: true
+marketplaces:
+- platform

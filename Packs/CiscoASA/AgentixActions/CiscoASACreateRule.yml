@@ -1,0 +1,186 @@
+commonfields:
+  id: CiscoASACreateRule
+  version: -1
+display: Cisco ASA - Create Rule
+name: CiscoASACreateRule
+tags:
+  - Firewall-Rule
+  - Cisco-ASA
+category: Network Security
+description: |-
+  Creates a new access control rule on a Cisco ASA (Adaptive Security Appliance) firewall.
+  This command allows you to define traffic filtering policies by specifying parameters such as source and destination IPs,
+   ports, protocols, action (permit or deny), interface, and rule position.
+   It's typically used to manage inbound or outbound traffic and enforce network security policies.
+args:
+  - name: source
+    description: The source. Can be the value of an IPv4, an address block, or the name of a network object.
+    required: true
+    type: string
+    underlyingargname: source
+  - name: destination
+    description: The destination. Can be the value of an IPv4, an address block, or the name of a network object.
+    required: true
+    type: string
+    underlyingargname: destination
+  - name: permit
+    description: Whether the rule is a permit. If True, the rule is a permit. The optional values are "true" and "false".
+    required: true
+    type: boolean
+    underlyingargname: permit
+  - name: remarks
+    description: A list of remarks for the rule.
+    type: string
+    underlyingargname: remarks
+  - name: position
+    description: The position in which to create the rule.
+    type: number
+    underlyingargname: position
+  - name: log_level
+    description: The log level of the rule. Can be "Default", "Emergencies", "Alerts", "Critical", "Errors", "Warnings", "Notifications", "Informational", or "Debugging".
+    type: string
+    underlyingargname: log_level
+  - name: active
+    description: Whether the rule will be active. If True, the rule will be active. The default value is "True", and the optional values are "True" and "False".
+    defaultvalue: 'True'
+    type: boolean
+    underlyingargname: active
+  - name: interface_type
+    description: The interface type. Can be "In", "Out", or "Global".
+    required: true
+    type: string
+    underlyingargname: interface_type
+  - name: interface_name
+    description: The interface name.
+    type: string
+    underlyingargname: interface_name
+  - name: service
+    description: The service of the rule.
+    type: string
+    underlyingargname: service
+  - name: destination_kind
+    description: |-
+      The destination address type in the ace.
+      Can be "AnyIPAddress", "IPv4Address", "IPv4FQDN", "IPv4Network", "IPv4Range", "IPv6Address", "IPv6FQDN",
+      "IPv6Network", "IPv6Range", "SecurityName", "SecurityTag", "interfaceIP", "NetworkObj", "NetworkObjGroup".
+    type: string
+    underlyingargname: destination_kind
+  - name: source_kind
+    description: |-
+      The source address type in the ace.
+      Can be "AnyIPAddress", "IPv4Address", "IPv4FQDN", "IPv4Network", "IPv4Range", "IPv6Address", "IPv6FQDN",
+      "IPv6Network", "IPv6Range", "SecurityName", "SecurityTag", "interfaceIP", "NetworkObj", "NetworkObjGroup".
+    type: string
+    underlyingargname: source_kind
+  - name: service_kind
+    description: |-
+      The source service type.
+      Can be "AnyService", "ICMP6Service", "ICMPService", "NetworkProtocol", "NetworkServiceGroups",
+      "NetworkServiceObjects", "TcpUdpService".
+    type: string
+    underlyingargname: service_kind
+  - name: destination_service
+    description: The destination service value.
+    type: string
+    underlyingargname: destination_service
+  - name: destination_service_kind
+    description: |-
+      The destination service type.
+      Can be "AnyService", "ICMP6Service", "ICMPService", "NetworkProtocol", "NetworkServiceGroups",
+      "NetworkServiceObjects", "TcpUdpService".
+    type: string
+    underlyingargname: destination_service_kind
+  - name: time_range
+    description: Object ID of for the time range object. Can be received with the command cisco-asa-list-time-range.
+    type: string
+    underlyingargname: time_range
+  - name: user
+    description: |-
+      The object ID to the user.
+      Can be one of "LocalUserObjGroup", "UserGroupObj", "UserObj".
+      Can be received with existing commands;
+      cisco-asa-list-local-user-group, cisco-asa-list-local-user, cisco-asa-list-user-object.
+    type: string
+    underlyingargname: user
+  - name: user_kind
+    description: The type of the user. Can be one of "LocalUserObjGroup", "UserGroupObj", "UserObj".
+    type: string
+    underlyingargname: user_kind
+  - name: source_security
+    description: Source security group in the ace. Possible values are SecurityName, SecurityTag and SecurityObjGroup. Can be received with the existing command cisco-asa-list-security-object-group.
+    type: string
+    underlyingargname: source_security
+  - name: source_security_kind
+    description: The source security type. Can be "SecurityName", "SecurityTag" or "SecurityObjGroup".
+    type: string
+    underlyingargname: source_security_kind
+  - name: destination_security
+    description: Destination security group in the ace. Possible values are SecurityName, SecurityTag and SecurityObjGroup. Can be received with the existing command cisco-asa-list-security-object-group.
+    type: string
+    underlyingargname: destination_security
+  - name: destination_security_kind
+    description: The destination security type. Can be "SecurityName", "SecurityTag" or "SecurityObjGroup".
+    type: string
+    underlyingargname: destination_security_kind
+outputs:
+  - underlyingoutputcontextpath: CiscoASA.Rules.Dest
+    description: The rule's destination IP address or network.
+    type: string
+    name: CiscoASA.Rules.Dest
+  - underlyingoutputcontextpath: CiscoASA.Rules.DestKind
+    description: Type of destination (e.g., IPv4Address, IPv6Address).
+    type: string
+    name: CiscoASA.Rules.DestKind
+  - underlyingoutputcontextpath: CiscoASA.Rules.DestService
+    description: The destination service or protocol (e.g., ip, tcp, udp).
+    type: string
+    name: CiscoASA.Rules.DestService
+  - underlyingoutputcontextpath: CiscoASA.Rules.ID
+    description: Unique identifier of the rule.
+    type: string
+    name: CiscoASA.Rules.ID
+  - underlyingoutputcontextpath: CiscoASA.Rules.Interface
+    description: The name of the interface where the rule applies; empty if global.
+    type: string
+    name: CiscoASA.Rules.Interface
+  - underlyingoutputcontextpath: CiscoASA.Rules.InterfaceType
+    description: The interface type, such as "In", "Out", or "Global".
+    type: string
+    name: CiscoASA.Rules.InterfaceType
+  - underlyingoutputcontextpath: CiscoASA.Rules.IsActive
+    description: Whether the rule is active (true) or inactive (false).
+    type: boolean
+    name: CiscoASA.Rules.IsActive
+  - underlyingoutputcontextpath: CiscoASA.Rules.Permit
+    description: Indicates if the rule permits (true) or denies (false) the traffic.
+    type: boolean
+    name: CiscoASA.Rules.Permit
+  - underlyingoutputcontextpath: CiscoASA.Rules.Position
+    description: The position or order of the rule in the rule list.
+    type: number
+    name: CiscoASA.Rules.Position
+  - underlyingoutputcontextpath: CiscoASA.Rules.Remarks
+    description: Additional remarks or notes associated with the rule; null if none.
+    type: unknown
+    name: CiscoASA.Rules.Remarks
+  - underlyingoutputcontextpath: CiscoASA.Rules.Source
+    description: The rule's source IP address or network.
+    type: string
+    name: CiscoASA.Rules.Source
+  - underlyingoutputcontextpath: CiscoASA.Rules.SourceKind
+    description: Type of source (e.g., IPv4Address, IPv6Address).
+    type: string
+    name: CiscoASA.Rules.SourceKind
+  - underlyingoutputcontextpath: CiscoASA.Rules.SourceService
+    description: The source service or protocol (e.g., ip, tcp, udp).
+    type: string
+    name: CiscoASA.Rules.SourceService
+underlyingcontentitem:
+  id: Cisco ASA
+  name: Cisco ASA
+  type: command
+  version: -1
+  command: cisco-asa-create-rule
+requiresuserapproval: false
+marketplaces:
+- platform

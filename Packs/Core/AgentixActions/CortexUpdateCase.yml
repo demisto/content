@@ -1,0 +1,181 @@
+commonfields:
+  id: CortexUpdateCase
+  version: -1
+display: Cortex - Update Case
+name: CortexUpdateCase
+description: |-
+  Updates case properties and returns the updated case information.
+args:
+  - name: case_id
+    type: string
+    description: A comma-separated list of case IDs to update.
+    underlyingargname: case_id
+    required: true
+  - name: case_name
+    type: string
+    description: The new name for the case.
+    underlyingargname: case_name
+  - name: description
+    type: string
+    description: The new description for the case.
+    underlyingargname: description
+  - name: assignee
+    type: string
+    description: The email address of the new assignee. Use "unassigned" to remove an existing assignee.
+    underlyingargname: assignee
+  - name: status
+    type: string
+    description: |-
+      The new status for the case. Options: new, in_progress, resolved.
+    underlyingargname: status
+  - name: notes
+    type: string
+    description: Additional notes for the case.
+    underlyingargname: notes
+  - name: starred
+    type: boolean
+    description: |-
+      Whether the case should be starred. Options: true, false.
+    underlyingargname: starred
+  - name: user_defined_severity
+    type: string
+    description: |-
+      The user-defined severity for the case. Options: low, medium, high, critical.
+    underlyingargname: user_defined_severity
+  - name: resolve_reason
+    type: string
+    description: |-
+      The reason for resolving the case. Only relevant when status is set to resolved. Options: known_issue, duplicate, false_positive, true_positive, security_testing, other.
+    underlyingargname: resolve_reason
+  - name: resolved_comment
+    type: string
+    description: Comment when resolving the case. Only relevant when status is set to resolved.
+    underlyingargname: resolved_comment
+  - name: resolve_all_alerts
+    type: boolean
+    description: |-
+      Whether to resolve all alerts associated with the case. Only relevant when status is set to resolved. Options: true, false.
+    underlyingargname: resolve_all_alerts
+  - name: custom_fields
+    type: string
+    description: |-
+      A JSON encoded string representing a list of custom_field:value pairs to update. (e.g., `[{"field1": "value1"}, {"field2": "value2"}]`).
+    underlyingargname: custom_fields
+outputs:
+  - name: Core.Case.modifiedBy
+    description: User who last modified the case.
+    type: String
+    underlyingoutputcontextpath: Core.Case.modifiedBy
+  - name: Core.Case.notes
+    description: Notes associated with the case.
+    type: String
+    underlyingoutputcontextpath: Core.Case.notes
+  - name: Core.Case.userSeverity
+    description: User-defined severity for the case.
+    type: String
+    underlyingoutputcontextpath: Core.Case.userSeverity
+  - name: Core.Case.name.isUser
+    description: Whether the case name is user-defined.
+    type: Boolean
+    underlyingoutputcontextpath: Core.Case.name.isUser
+  - name: Core.Case.name.value
+    description: The name of the case.
+    type: String
+    underlyingoutputcontextpath: Core.Case.name.value
+  - name: Core.Case.creationTime
+    description: The creation time of the case in milliseconds.
+    type: Number
+    underlyingoutputcontextpath: Core.Case.creationTime
+  - name: Core.Case.lastUpdateTime
+    description: The last update time of the case in milliseconds.
+    type: Number
+    underlyingoutputcontextpath: Core.Case.lastUpdateTime
+  - name: Core.Case.topCounters.HOSTS
+    description: Number of hosts in the case.
+    type: Number
+    underlyingoutputcontextpath: Core.Case.topCounters.HOSTS
+  - name: Core.Case.topCounters.MAL_ARTIFACTS
+    description: Number of malicious artifacts in the case.
+    type: Number
+    underlyingoutputcontextpath: Core.Case.topCounters.MAL_ARTIFACTS
+  - name: Core.Case.topCounters.USERS
+    description: Number of users in the case.
+    type: Number
+    underlyingoutputcontextpath: Core.Case.topCounters.USERS
+  - name: Core.Case.assigned.mail
+    description: Email address of the assigned user.
+    type: String
+    underlyingoutputcontextpath: Core.Case.assigned.mail
+  - name: Core.Case.assigned.pretty
+    description: Display name of the assigned user.
+    type: String
+    underlyingoutputcontextpath: Core.Case.assigned.pretty
+  - name: Core.Case.internalStatus
+    description: Internal status of the case.
+    type: String
+    underlyingoutputcontextpath: Core.Case.internalStatus
+  - name: Core.Case.status.resolveComment
+    description: Comment when resolving the case.
+    type: String
+    underlyingoutputcontextpath: Core.Case.status.resolveComment
+  - name: Core.Case.status.resolve_reason
+    description: Reason for resolving the case.
+    type: String
+    underlyingoutputcontextpath: Core.Case.status.resolve_reason
+  - name: Core.Case.status.value
+    description: Status value of the case.
+    type: String
+    underlyingoutputcontextpath: Core.Case.status.value
+  - name: Core.Case.severityCounters.SEV_020_LOW
+    description: Number of low severity alerts in the case.
+    type: Number
+    underlyingoutputcontextpath: Core.Case.severityCounters.SEV_020_LOW
+  - name: Core.Case.severityCounters.SEV_030_MEDIUM
+    description: Number of medium severity alerts in the case.
+    type: Number
+    underlyingoutputcontextpath: Core.Case.severityCounters.SEV_030_MEDIUM
+  - name: Core.Case.severityCounters.SEV_040_HIGH
+    description: Number of high severity alerts in the case.
+    type: Number
+    underlyingoutputcontextpath: Core.Case.severityCounters.SEV_040_HIGH
+  - name: Core.Case.severityCounters.SEV_050_CRITICAL
+    description: Number of critical severity alerts in the case.
+    type: Number
+    underlyingoutputcontextpath: Core.Case.severityCounters.SEV_050_CRITICAL
+  - name: Core.Case.caseDomain
+    description: Domain of the case.
+    type: String
+    underlyingoutputcontextpath: Core.Case.caseDomain
+  - name: Core.Case.groupingStatus.pretty
+    description: Pretty display of grouping status.
+    type: String
+    underlyingoutputcontextpath: Core.Case.groupingStatus.pretty
+  - name: Core.Case.groupingStatus.raw
+    description: Raw grouping status value.
+    type: String
+    underlyingoutputcontextpath: Core.Case.groupingStatus.raw
+  - name: Core.Case.groupingStatus.reason
+    description: Reason for the grouping status.
+    type: String
+    underlyingoutputcontextpath: Core.Case.groupingStatus.reason
+  - name: Core.Case.tags.tag_id
+    description: Tag ID associated with the case.
+    type: String
+    underlyingoutputcontextpath: Core.Case.tags.tag_id
+  - name: Core.Case.tags.tag_name
+    description: Tag name associated with the case.
+    type: String
+    underlyingoutputcontextpath: Core.Case.tags.tag_name
+underlyingcontentitem:
+  id: Cortex Core - Platform
+  name: Cortex Core - Platform
+  type: command
+  version: -1
+  command: core-update-case
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- agentix
+- xsiam
+- cloud_posture

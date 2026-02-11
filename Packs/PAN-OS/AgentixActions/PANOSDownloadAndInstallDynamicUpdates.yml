@@ -1,0 +1,57 @@
+commonfields:
+  id: PANOSDownloadAndInstallDynamicUpdates
+  version: -1
+display: PAN-OS - Install Dynamic Updates
+name: PANOSInstallDynamicUpdates
+tags:
+  - firewall management
+  - panorama content management
+category: Network Security
+description: |-
+  This action automates the download and installation of the following Dynamic Update types on Palo Alto firewalls:
+  - App/Threat
+  - Anti-Virus
+  - WildFire
+  - GlobalProtect Clientless VPN
+
+  Workflow:
+  1. Use this action to initiate download/install of the requested content types.
+  2. Check the "Result" entry for each update type returned in "DynamicUpdates" for any download failures.  If there are any, note it to the user.
+
+  NOTE: This playbook is intended for use with a single PAN-OS integration instance.
+args:
+  - description: "The serial number of a specific firewall to target (Used when connected to Panorama) [Optional]."
+    name: targetDevice
+    required: false
+    underlyingargname: targetDevice
+    type: string
+  - description: |-
+      Specifies which item types to download and install. Select ONE of the following options:
+      - all
+      - app/threat
+      - anti-virus
+      - wildfire
+      - gp
+    name: itemsToUpdate
+    underlyingargname: itemsToUpdate
+    required: true
+    type: string
+    defaultvalue: all
+outputs:
+  - underlyingoutputcontextpath: DynamicUpdates
+    description: A dictionary containing details of the Dynamic Update type(s) downloaded and installed, including the version number and associated job IDs.
+    type: json
+    name: DynamicUpdates
+underlyingcontentitem:
+  id: PAN-OS - Download and Install Dynamic Content Updates
+  name: PAN-OS - Download and Install Dynamic Content Updates
+  type: playbook
+  command: ''
+  version: -1
+requiresuserapproval: true
+marketplaces:
+- platform
+supportedModules:
+- agentix
+- xsiam
+- cloud_posture

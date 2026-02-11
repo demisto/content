@@ -1,0 +1,38 @@
+commonfields:
+  id: ServiceNowDeleteTicket
+  version: -1
+display: ServiceNow - Delete Ticket
+name: ServiceNowDeleteTicket
+category: Case Management
+description: Deletes the specified ticket from ServiceNow based on ticket ID and type.
+args:
+  - name: id
+    description: >
+      The ID of the ticket to be deleted.
+    type: string
+    required: true
+    underlyingargname: id
+  - name: ticket_type
+    description: >
+      Type of ServiceNow ticket to delete.
+      Options: incident, problem, change_request, sc_request, sc_task.
+    type: string
+    underlyingargname: ticket_type
+outputs:
+  - underlyingoutputcontextpath: ServiceNow.Ticket.ID
+    description: The unique ID of the ServiceNow ticket.
+    type: string
+    name: ServiceNow.Ticket.ID
+  - underlyingoutputcontextpath: ServiceNow.Ticket.DeleteMessage
+    description: The message indicating the result of the ticket deletion operation.
+    type: string
+    name: ServiceNow.Ticket.DeleteMessage
+underlyingcontentitem:
+  id: ServiceNow v2
+  name: ServiceNow v2
+  type: command
+  version: -1
+  command: 'servicenow-delete-ticket'
+requiresuserapproval: true
+marketplaces:
+- platform

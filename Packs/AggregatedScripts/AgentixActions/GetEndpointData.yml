@@ -1,0 +1,91 @@
+commonfields:
+  id: GetEndpointData
+  version: -1
+display: Enrich Endpoint
+name: EnrichEndpoint
+tags:
+ - Utility
+category: Utilities
+description: |-
+  Retrieves detailed information about a specific endpoint by querying multiple integrated security tools
+  (such as EDR, asset management, or vulnerability scanners).
+  The command consolidates the results into a single unified endpoint object and stores it in the context
+  for further analysis or automation.
+args:
+  - name: endpoint_id
+    underlyingargname: endpoint_id
+    description: >
+      A comma-separated string of unique agent IDs used to identify the endpoint across integrated systems.
+      Used to retrieve endpoint data based on agent identifiers. Accepts multiple values.
+    type: string
+  - name: endpoint_ip
+    underlyingargname: endpoint_ip
+    description: >
+      A comma-separated string of IP addresses assigned to the endpoint. Used to locate and collect endpoint
+      data based on IP matching. Accepts multiple values.
+    type: string
+  - name: endpoint_hostname
+    underlyingargname: endpoint_hostname
+    description: >
+      A comma-separated string of hostnames associated with the endpoint. Enables retrieval of endpoint
+      data by matching against known hostnames. Accepts multiple values.
+    type: string
+  - name: brands
+    underlyingargname: brands
+    description: >
+      Optional. A comma-separated list of integration brand names to limit which integrations are queried.
+      If omitted, the command queries all available integrations.
+      Useful for targeting specific data sources.
+      Optional values are: 'Active Directory Query v2', 'Cylance Protect v2', 'McAfee ePO v2',
+      'VMware Carbon Black EDR v2', 'ExtraHop v2', 'CrowdstrikeFalcon', 'Cortex Core - IR'.
+    type: string
+  - name: verbose
+    underlyingargname: verbose
+    description: >
+      Optional. When set to `true`, the command outputs detailed, step-by-step results from
+      each integration. When set to `false` (default), only the final, consolidated result
+      is returned.
+      Optional values: True, False.
+    type: boolean
+outputs:
+- underlyingoutputcontextpath: EndpointData.Brand
+  name: EndpointData.Brand
+  description: The brand/vendor from which the endpoint data was retrieved.
+  type: string
+- underlyingoutputcontextpath: EndpointData.ID
+  name: EndpointData.ID
+  description: The unique identifier of the endpoint.
+  type: string
+- underlyingoutputcontextpath: EndpointData.Hostname
+  name: EndpointData.Hostname
+  description: The hostname of the endpoint.
+  type: string
+- underlyingoutputcontextpath: EndpointData.IPAddress
+  name: EndpointData.IPAddress
+  description: The IP address of the endpoint.
+  type: string
+- underlyingoutputcontextpath: EndpointData.Status
+  name: EndpointData.Status
+  description: The current operational status of the endpoint.
+  type: string
+- underlyingoutputcontextpath: EndpointData.isIsolated
+  name: EndpointData.isIsolated
+  description: Indicates whether the endpoint is currently isolated from the network.
+  type: string
+- underlyingoutputcontextpath: EndpointData.Message
+  name: EndpointData.Message
+  description: A message containing information about whether the command was successful.
+  type: string
+- underlyingoutputcontextpath: EndpointData.AdditionalFields
+  name: EndpointData.AdditionalFields
+  description: Additional endpoint-specific fields retrieved from various brands.
+  type: string
+underlyingcontentitem:
+  id: get-endpoint-data
+  name: get-endpoint-data
+  type: script
+  version: -1
+  command: ''
+requiresuserapproval: false
+marketplaces:
+- platform

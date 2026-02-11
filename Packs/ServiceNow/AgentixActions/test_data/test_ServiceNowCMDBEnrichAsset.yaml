@@ -1,0 +1,179 @@
+tests:
+  - name: "IPv4 address enrichment for incident investigation"
+    prompt: "I need to find the owner of the network adapter with IP 192.168.1.100 for this security incident"
+    agent_id: "240de744-9c53-490d-baa7-c1a7617b0ced"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "ServiceNowCMDBEnrichAsset"
+            arguments:
+              ip_address: "192.168.1.100"
+
+  - name: "IPv6 address ownership lookup"
+    prompt: "Check ServiceNow for ownership details of network adapter 2001:0db8:85a3:0000:0000:8a2e:0370:7334"
+    agent_id: "240de744-9c53-490d-baa7-c1a7617b0ced"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "ServiceNowCMDBEnrichAsset"
+            arguments:
+              ip_address: "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
+
+  - name: "CIDR notation subnet investigation"
+    prompt: "Enrich ownership information for all network adapters in subnet 10.0.1.0/24"
+    agent_id: "240de744-9c53-490d-baa7-c1a7617b0ced"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "ServiceNowCMDBEnrichAsset"
+            arguments:
+              ip_address: "10.0.1.0/24"
+
+  - name: "Threat hunting network adapter lookup"
+    prompt: "Get ServiceNow details for network adapter 172.16.254.1 to identify asset owner"
+    agent_id: "240de744-9c53-490d-baa7-c1a7617b0ced"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "ServiceNowCMDBEnrichAsset"
+            arguments:
+              ip_address: "172.16.254.1"
+
+  - name: "Public IP address investigation"
+    prompt: "Find configuration item and ownership details for IP address 203.0.113.5"
+    agent_id: "240de744-9c53-490d-baa7-c1a7617b0ced"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "ServiceNowCMDBEnrichAsset"
+            arguments:
+              ip_address: "203.0.113.5"
+
+  - name: "Shortened IPv6 format"
+    prompt: "Lookup network adapter ownership for IPv6 address 2001:db8::1"
+    agent_id: "240de744-9c53-490d-baa7-c1a7617b0ced"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "ServiceNowCMDBEnrichAsset"
+            arguments:
+              ip_address: "2001:db8::1"
+
+  - name: "Asset discovery with IP enrichment"
+    prompt: "Enrich 192.168.50.25 with ServiceNow network adapter and CI information"
+    agent_id: "240de744-9c53-490d-baa7-c1a7617b0ced"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "ServiceNowCMDBEnrichAsset"
+            arguments:
+              ip_address: "192.168.50.25"
+
+  - name: "Security assessment network mapping"
+    prompt: "Pull ServiceNow ownership data for network range 10.10.0.0/16"
+    agent_id: "240de744-9c53-490d-baa7-c1a7617b0ced"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "ServiceNowCMDBEnrichAsset"
+            arguments:
+              ip_address: "10.10.0.0/16"
+
+  - name: "Compliance audit IP lookup"
+    prompt: "I need ServiceNow enrichment for network adapter at 172.31.100.50 for compliance reporting"
+    agent_id: "240de744-9c53-490d-baa7-c1a7617b0ced"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "ServiceNowCMDBEnrichAsset"
+            arguments:
+              ip_address: "172.31.100.50"
+
+  - name: "Localhost address enrichment"
+    prompt: "Check ownership details for network adapter 127.0.0.1"
+    agent_id: "240de744-9c53-490d-baa7-c1a7617b0ced"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "ServiceNowCMDBEnrichAsset"
+            arguments:
+              ip_address: "127.0.0.1"
+
+  - name: "IPv6 localhost enrichment"
+    prompt: "Enrich network adapter ownership for IPv6 localhost ::1"
+    agent_id: "240de744-9c53-490d-baa7-c1a7617b0ced"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "ServiceNowCMDBEnrichAsset"
+            arguments:
+              ip_address: "::1"
+
+  - name: "Small subnet investigation"
+    prompt: "Get ServiceNow details for all adapters in 192.168.1.0/30 subnet"
+    agent_id: "240de744-9c53-490d-baa7-c1a7617b0ced"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "ServiceNowCMDBEnrichAsset"
+            arguments:
+              ip_address: "192.168.1.0/30"
+
+
+  - name: "Empty IP address error"
+    prompt: "Get ServiceNow enrichment for network adapter with empty IP address"
+    agent_id: "240de744-9c53-490d-baa7-c1a7617b0ced"
+    expected_outcomes:
+      - expected_error: "IP address cannot be empty"
+
+  - name: "Malformed IPv6 error"
+    prompt: "Lookup ownership for malformed IPv6 address 2001:0db8:85a3::gggg"
+    agent_id: "240de744-9c53-490d-baa7-c1a7617b0ced"
+    expected_outcomes:
+      - expected_error: "Invalid IPv6 address format: 2001:0db8:85a3::gggg"
+
+  - name: "Invalid CIDR notation error"
+    prompt: "Enrich network adapters in subnet 192.168.1.0/99"
+    agent_id: "240de744-9c53-490d-baa7-c1a7617b0ced"
+    expected_outcomes:
+      - expected_error: "Invalid CIDR notation: subnet mask /99 is not valid"
+
+  - name: "Incident response IP enrichment"
+    prompt: "For this security incident, I need to identify who owns the network adapter at 10.20.30.40"
+    agent_id: "240de744-9c53-490d-baa7-c1a7617b0ced"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "ServiceNowCMDBEnrichAsset"
+            arguments:
+              ip_address: "10.20.30.40"
+
+  - name: "Vulnerability management asset lookup"
+    prompt: "Pull configuration item details from ServiceNow for vulnerable host 172.20.1.100"
+    agent_id: "240de744-9c53-490d-baa7-c1a7617b0ced"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "ServiceNowCMDBEnrichAsset"
+            arguments:
+              ip_address: "172.20.1.100"
+
+  - name: "Network forensics enrichment"
+    prompt: "Enrich suspicious network activity from IP 198.51.100.42 with ServiceNow asset data"
+    agent_id: "240de744-9c53-490d-baa7-c1a7617b0ced"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "ServiceNowCMDBEnrichAsset"
+            arguments:
+              ip_address: "198.51.100.42"
+
+  - name: "Zero IP address edge case"
+    prompt: "Check ServiceNow for network adapter ownership of IP 0.0.0.0"
+    agent_id: "240de744-9c53-490d-baa7-c1a7617b0ced"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "ServiceNowCMDBEnrichAsset"
+            arguments:
+              ip_address: "0.0.0.0"

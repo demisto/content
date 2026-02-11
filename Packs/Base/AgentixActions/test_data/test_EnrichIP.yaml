@@ -1,0 +1,216 @@
+tests:
+  - name: "Single suspicious IP enrichment"
+    prompt: "Enrich this suspicious IP address: 192.168.1.100"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichIP"
+            arguments:
+              ip_list: "192.168.1.100"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Multiple IPs from security incident"
+    prompt: "I need threat intelligence on these IPs from the security incident: 8.8.8.8, 1.1.1.1, 203.0.113.5"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichIP"
+            arguments:
+              ip_list: "8.8.8.8, 1.1.1.1, 203.0.113.5"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "IPv6 address enrichment"
+    prompt: "Get enrichment data for IPv6 address 2001:db8::1"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichIP"
+            arguments:
+              ip_list: "2001:db8::1"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "IOC analysis for multiple IP indicators"
+    prompt: "Analyze these IP indicators of compromise: 10.0.0.1, 172.16.0.1, 2001:db8:85a3::1"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichIP"
+            arguments:
+              ip_list: "10.0.0.1, 172.16.0.1, 2001:db8:85a3::1"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Threat hunting IP reputation check"
+    prompt: "Check reputation and get intelligence on IP 198.51.100.42 for threat hunting"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichIP"
+            arguments:
+              ip_list: "198.51.100.42"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "External enrichment disabled"
+    prompt: "Enrich IP 192.0.2.1 using only internal TIM data, no external sources"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichIP"
+            arguments:
+              ip_list: "192.0.2.1"
+              external_enrichment: "false"
+              additional_fields: "true"
+
+  - name: "Basic fields only enrichment"
+    prompt: "Get basic IP enrichment for 203.0.113.10 without additional fields"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichIP"
+            arguments:
+              ip_list: "203.0.113.10"
+              external_enrichment: "true"
+              additional_fields: "false"
+
+  - name: "Minimal enrichment configuration"
+    prompt: "Do minimal IP lookup for 10.1.1.1 with internal data only and basic fields"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichIP"
+            arguments:
+              ip_list: "10.1.1.1"
+              external_enrichment: "false"
+              additional_fields: "false"
+
+  - name: "Malware campaign IP analysis"
+    prompt: "Investigate these IPs associated with malware campaign: 198.51.100.100, 203.0.113.200"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichIP"
+            arguments:
+              ip_list: "198.51.100.100, 203.0.113.200"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "C2 infrastructure analysis"
+    prompt: "Enrich suspected C2 IP addresses: 185.220.100.240, 45.33.32.156"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichIP"
+            arguments:
+              ip_list: "185.220.100.240, 45.33.32.156"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Single private IP investigation"
+    prompt: "Get intel on private IP 172.31.255.254"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichIP"
+            arguments:
+              ip_list: "172.31.255.254"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "APT group IP indicators"
+    prompt: "Analyze these IP indicators linked to APT activity: 104.244.42.1, 167.88.7.134, 185.220.100.241"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichIP"
+            arguments:
+              ip_list: "104.244.42.1, 167.88.7.134, 185.220.100.241"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Network scanning source analysis"
+    prompt: "Enrich the IP 94.102.49.190 that's been scanning our network"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichIP"
+            arguments:
+              ip_list: "94.102.49.190"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Phishing campaign IP lookup"
+    prompt: "Check threat intel for phishing campaign IP: 198.51.100.50"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichIP"
+            arguments:
+              ip_list: "198.51.100.50"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Invalid IP address error"
+    prompt: "Enrich this IP address: 999.999.999.999"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - expected_error: "Invalid IP address format: 999.999.999.999 is not a valid IPv4 or IPv6 address"
+
+  - name: "Empty IP list error"
+    prompt: "Enrich these IPs: "
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - expected_error: "IP list cannot be empty. Please provide at least one valid IP address"
+
+  - name: "Malformed IP request"
+    prompt: "Get intelligence on this malformed IP: 192.168.1"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - expected_error: "Invalid IP address format: 192.168.1 is not a valid IPv4 or IPv6 address"
+
+  - name: "Mixed valid and invalid IPs"
+    prompt: "Enrich these mixed IPs: 8.8.8.8, invalid-ip, 1.1.1.1"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - expected_error: "Invalid IP address format: invalid-ip is not a valid IPv4 or IPv6 address"
+
+  - name: "SIEM alert IP enrichment"
+    prompt: "SIEM triggered alert for IP 51.68.175.8 - need full enrichment with geolocation data"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichIP"
+            arguments:
+              ip_list: "51.68.175.8"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Incident response IP batch"
+    prompt: "IR team needs enrichment on these incident IPs: 77.81.247.144, 2a01:4f8:c2c:123f::1, 195.123.245.178"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichIP"
+            arguments:
+              ip_list: "77.81.247.144, 2a01:4f8:c2c:123f::1, 195.123.245.178"
+              external_enrichment: "true"
+              additional_fields: "true"

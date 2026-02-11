@@ -1,0 +1,23 @@
+commonfields:
+  id: help-center-agent
+  version: -1
+name: Help Center
+description: 'Manages Palo Alto Networks products information for additional product support '
+visibility: public
+color: '#FFE260'
+conversationstarters: []
+systeminstructions: ''
+builtinactions:
+  - HelpCenter
+actionids: []
+marketplaces:
+  - platform
+supportedModules:
+  - asm
+  - cloud
+  - cloud_appsec
+  - cloud_posture
+  - cloud_runtime_security
+  - email_security
+  - exposure_management
+  - xsiam

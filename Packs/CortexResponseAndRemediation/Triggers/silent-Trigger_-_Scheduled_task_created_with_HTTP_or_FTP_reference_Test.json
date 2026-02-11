@@ -1,0 +1,25 @@
+{
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "Scheduled task created with HTTP or FTP reference"
+        },
+        {
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "NEQ",
+          "SEARCH_VALUE": "Correlation"
+        }
+      ]
+    }
+  },
+  "description": "This trigger is responsible for handling 'Scheduled task created with HTTP or FTP reference' alert",
+  "fromVersion": "8.9.0",
+  "issilent": true,
+  "playbook_id": "silent-Scheduled task created with HTTP or FTP reference Test",
+  "suggestion_reason": "Recommended for the 'Scheduled task created with HTTP or FTP reference' alert",
+  "trigger_id": "36c302a212aa8edc87468e6b214b5f4e",
+  "trigger_name": "silent-Scheduled task created with HTTP or FTP reference Test"
+}

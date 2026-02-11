@@ -1,0 +1,62 @@
+commonfields:
+  id: CortexGetCaseResolutionStatuses
+  version: -1
+display: Cortex - Get Case Resolution Statuses
+name: CortexGetCaseResolutionStatuses
+description: Retrieves resolution status information for a specific case, including pending playbook tasks, active playbooks, completed playbooks, and recommended playbooks.
+args:
+  - name: case_id
+    type: string
+    description: The unique identifier of the case to retrieve resolution statuses for. Accepts a comma separated list.
+    required: true
+    underlyingargname: case_id
+outputs:
+  - name: Core.CaseResolutionStatus.category
+    description: "The resolution status of the item. Options are \"done\", \"inProgress\", \"pending\", \"recommended\". Note: The \"pending\" status is relevant only for tasks within a playbook. A task is considered pending primarily when the playbook is stopped and waiting for user input on a manual task. It can also be considered pending if the playbook is new and has not yet started, is paused, or is stopped. In a broader sense, tasks within an in-progress playbook might also be considered pending if they are awaiting completion."
+    underlyingoutputcontextpath: Core.CaseResolutionStatus.category
+    type: string
+  - name: Core.CaseResolutionStatus.itemType
+    description: "The type of item.  Options are: \"playbook\" or \"playbookTask\"."
+    underlyingoutputcontextpath: Core.CaseResolutionStatus.itemType
+    type: string
+  - name: Core.CaseResolutionStatus.id
+    description: The unique identifier of the playbook or task.
+    underlyingoutputcontextpath: Core.CaseResolutionStatus.id
+    type: string
+  - name: Core.CaseResolutionStatus.name
+    description: The name of the playbook or task.
+    underlyingoutputcontextpath: Core.CaseResolutionStatus.name
+    type: string
+  - name: Core.CaseResolutionStatus.description
+    description: The description of the playbook explaining its purpose and functionality.
+    underlyingoutputcontextpath: Core.CaseResolutionStatus.description
+    type: string
+  - name: Core.CaseResolutionStatus.status
+    description: "The completion status of the item. Note: A task is considered pending if it is waiting for user input or external action, polling an external system, blocked by another task or condition, awaiting loop condition evaluation, or halted at a breakpoint."
+    underlyingoutputcontextpath: Core.CaseResolutionStatus.status
+    type: string
+  - name: Core.CaseResolutionStatus.type
+    description: 'The type of the pending playbook task. Examples: "regular", "condition", "collection".'
+    underlyingoutputcontextpath: Core.CaseResolutionStatus.type
+    type: string
+  - name: Core.CaseResolutionStatus.userInput
+    description: 'Required user input parameters (for pending playbookTask items).'
+    underlyingoutputcontextpath: Core.CaseResolutionStatus.userInput
+    type: string
+  - name: Core.CaseResolutionStatus.issueIDs
+    description: The issue IDs associated with the playbook or task.
+    underlyingoutputcontextpath: Core.CaseResolutionStatus.issueIDs
+    type: string
+underlyingcontentitem:
+  id: Cortex Core - Platform
+  name: Cortex Core - Platform
+  type: command
+  version: -1
+  command: core-get-case-resolution-statuses
+requiresuserapproval: false
+marketplaces:
+  - platform
+supportedModules:
+  - agentix
+  - xsiam
+  - cloud_posture

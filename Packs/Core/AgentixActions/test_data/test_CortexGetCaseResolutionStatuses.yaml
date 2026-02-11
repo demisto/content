@@ -1,0 +1,134 @@
+tests:
+  - name: Get resolution statuses for active case
+    prompt: "Show me the resolution status for case 123"
+    agent_id: e7ca6d69-f1aa-4dc4-bdf2-58f824830455
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexGetCaseResolutionStatuses
+            arguments:
+              case_id: "123"
+
+  - name: Check resolution status with case ID in natural language
+    prompt: "What's the resolution status of case ID 456?"
+    agent_id: e7ca6d69-f1aa-4dc4-bdf2-58f824830455
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexGetCaseResolutionStatuses
+            arguments:
+              case_id: "456"
+
+  - name: Get case resolution details with verbose request
+    prompt: "I need to see the resolution statuses including pending tasks and active playbooks for case 789"
+    agent_id: e7ca6d69-f1aa-4dc4-bdf2-58f824830455
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexGetCaseResolutionStatuses
+            arguments:
+              case_id: "789"
+
+  - name: Check playbook status for case
+    prompt: "What playbooks are running for case 1001?"
+    agent_id: e7ca6d69-f1aa-4dc4-bdf2-58f824830455
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexGetCaseResolutionStatuses
+            arguments:
+              case_id: "1001"
+
+  - name: Get pending tasks for case
+    prompt: "Show pending playbook tasks for case 2002"
+    agent_id: e7ca6d69-f1aa-4dc4-bdf2-58f824830455
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexGetCaseResolutionStatuses
+            arguments:
+              case_id: "2002"
+
+  - name: Check completed playbooks for case
+    prompt: "List completed playbooks for case 3003"
+    agent_id: e7ca6d69-f1aa-4dc4-bdf2-58f824830455
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexGetCaseResolutionStatuses
+            arguments:
+              case_id: "3003"
+
+  - name: Get recommended playbooks for case
+    prompt: "What playbooks are recommended for case 4004?"
+    agent_id: e7ca6d69-f1aa-4dc4-bdf2-58f824830455
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexGetCaseResolutionStatuses
+            arguments:
+              case_id: "4004"
+
+  - name: Check case resolution progress
+    prompt: "How is the resolution progressing for case 5005?"
+    agent_id: e7ca6d69-f1aa-4dc4-bdf2-58f824830455
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexGetCaseResolutionStatuses
+            arguments:
+              case_id: "5005"
+
+  - name: Get all resolution information for case
+    prompt: "Give me all resolution information for case 6006"
+    agent_id: e7ca6d69-f1aa-4dc4-bdf2-58f824830455
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexGetCaseResolutionStatuses
+            arguments:
+              case_id: "6006"
+
+  - name: Case resolution with specific playbook mention
+    prompt: "For case 7007, show me the status of the incident response playbook"
+    agent_id: e7ca6d69-f1aa-4dc4-bdf2-58f824830455
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexGetCaseResolutionStatuses
+            arguments:
+              case_id: "7007"
+
+  - name: Large case ID number
+    prompt: "Get resolution status for case 999999"
+    agent_id: e7ca6d69-f1aa-4dc4-bdf2-58f824830455
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexGetCaseResolutionStatuses
+            arguments:
+              case_id: "999999"
+
+  - name: Single digit case ID
+    prompt: "Show resolution status for case 1"
+    agent_id: e7ca6d69-f1aa-4dc4-bdf2-58f824830455
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexGetCaseResolutionStatuses
+            arguments:
+              case_id: "1"
+
+  - name: Missing case ID - clarification needed
+    prompt: "Show me the resolution status"
+    agent_id: e7ca6d69-f1aa-4dc4-bdf2-58f824830455
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions: []
+
+  - name: Ambiguous request without case identifier
+    prompt: "What's the resolution status?"
+    agent_id: e7ca6d69-f1aa-4dc4-bdf2-58f824830455
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions: []

@@ -1,0 +1,167 @@
+commonfields:
+  id: PANOSIdentifyUnusedPolicyRules
+  version: -1
+display: PAN-OS - List Unused Policy Rules
+name: PANOSListUnusedPolicyRules
+tags:
+  - firewall management
+  - panorama management
+  - security policy management
+category: Network Security
+description: |-
+  This action collects and analyzes Palo Alto Networks NGFW policy rule hitcount information and generates a summary of unused rules for potential clean-up. Policy rules are classified into three categories:
+  1. Unused Local Rules - Rules configured locally on Firewalls.
+  2. Unused Panorama Rules - Rules pushed to one or more Firewalls from Panorama that have zero hits on all Firewalls.
+  3. Used Panorama Rules - Rules pushed to one or more Firewalls from Panorama that have hits on some Firewalls but not all.
+      i. These rules may be pushed to firewalls where they are not needed and should be considered for clean-up.
+
+  For Firewalls in HA pairs, rules are only considered unused if all members of the HA group have zero hits for it.
+
+  Workflow:
+  1. Run the action to collect & analyze rule hitcount data.
+    - Set the Rulebase parameter to "security" unless the user provides a specific rulebase to check.
+  2. Summarize and format information for the user:
+    - Present UnusedLocalRules, UnusedPanoramaRules, and UsedPanoramaRules as separate groups, with rule details shown as a table.
+    - Important details to include for each rule include name, hit_count, hostid, is_from_panorama.
+    - For UnusedLocalRules, consolidate entries with the same rule name and vsys into one line, listing the hostname of all firewalls where the rule is unused together.
+args:
+  - description: |-
+      The Firewall rulebase to analyze. Must be one of the following:
+      - security
+      - nat
+      - decryption
+      - application-override
+      - authentication
+      - dos
+      - network-packet-broker
+      - pbf
+      - qos
+      - sdwan
+      - tunnel-inspect
+    name: Rulebase
+    underlyingargname: Rulebase
+    type: string
+    required: true
+    defaultvalue: security
+outputs:
+  - underlyingoutputcontextpath: PANOS.UnusedRules.TotalLocalRulesAnalyzed
+    description: The total number of local rules analyzed.
+    type: number
+    name: PANOS.UnusedRules.TotalLocalRulesAnalyzed
+  - underlyingoutputcontextpath: PANOS.UnusedRules.TotalPanoramaRulesAnalyzed
+    description: The total number of rules pushed from Panorama analyzed.
+    type: number
+    name: PANOS.UnusedRules.TotalPanoramaRulesAnalyzed
+  - underlyingoutputcontextpath: PANOS.UnusedRules.UnusedLocalRules
+    description: List of Unused Local Rules.
+    type: unknown
+    name: PANOS.UnusedRules.UnusedLocalRules
+  - underlyingoutputcontextpath: PANOS.UnusedRules.UnusedLocalRules.activeHAPeer
+    description: If the firewall where this rule data comes from is in an HA pair, contains the hostid of the active device in the pair.
+    type: unknown
+    name: PANOS.UnusedRules.UnusedLocalRules.activeHAPeer
+  - underlyingoutputcontextpath: PANOS.UnusedRules.UnusedLocalRules.hostid
+    description: Host ID of the firewall where the rule is configured.
+    type: string
+    name: PANOS.UnusedRules.UnusedLocalRules.hostid
+  - underlyingoutputcontextpath: PANOS.UnusedRules.UnusedLocalRules.hostname
+    description: Hostname of the firewall where this rule is configured.
+    type: string
+    name: PANOS.UnusedRules.UnusedLocalRules.hostname
+  - underlyingoutputcontextpath: PANOS.UnusedRules.UnusedLocalRules.vsys
+    description: The virtual system (vsys) where the rule is configured.
+    type: string
+    name: PANOS.UnusedRules.UnusedLocalRules.vsys
+  - underlyingoutputcontextpath: PANOS.UnusedRules.UnusedLocalRules.instanceName
+    description: Name of the PAN-OS Integration Instance used to collect rule hitcount data.
+    type: string
+    name: PANOS.UnusedRules.UnusedLocalRules.instanceName
+  - underlyingoutputcontextpath: PANOS.UnusedRules.UnusedLocalRules.name
+    description: The name of the rule.
+    type: string
+    name: PANOS.UnusedRules.UnusedLocalRules.name
+  - underlyingoutputcontextpath: PANOS.UnusedRules.UnusedLocalRules.position
+    description: The position of the rule within the Panorama device-group rulebase (pre-rulebase or post-rulebase).
+    type: string
+    name: PANOS.UnusedRules.UnusedLocalRules.position
+  - underlyingoutputcontextpath: PANOS.UnusedRules.UnusedLocalRules.rulebase
+    description: The rulebase where the rule is configured (e.g. "Security", "NAT", etc).
+    type: string
+    name: PANOS.UnusedRules.UnusedLocalRules.rulebase
+  - underlyingoutputcontextpath: PANOS.UnusedRules.UnusedPanoramaRules
+    description: List of Unused Rules Pushed from Panorama.
+    type: unknown
+    name: PANOS.UnusedRules.UnusedPanoramaRules
+  - underlyingoutputcontextpath: PANOS.UnusedRules.UnusedPanoramaRules.from_dg_name
+    description: The rulebase where the rule is configured (e.g. "Security", "NAT", etc).
+    type: string
+    name: PANOS.UnusedRules.UnusedPanoramaRules.from_dg_name
+  - underlyingoutputcontextpath: PANOS.UnusedRules.UnusedPanoramaRules.instanceName
+    description: Name of the PAN-OS Integration Instance used to collect rule hitcount data.
+    type: string
+    name: PANOS.UnusedRules.UnusedPanoramaRules.instanceName
+  - underlyingoutputcontextpath: PANOS.UnusedRules.UnusedPanoramaRules.name
+    description: The name of the rule.
+    type: string
+    name: PANOS.UnusedRules.UnusedPanoramaRules.name
+  - underlyingoutputcontextpath: PANOS.UnusedRules.UnusedPanoramaRules.position
+    description: The position of the rule within the Panorama device-group rulebase (pre-rulebase or post-rulebase).
+    type: string
+    name: PANOS.UnusedRules.UnusedPanoramaRules.position
+  - underlyingoutputcontextpath: PANOS.UnusedRules.UnusedPanoramaRules.rulebase
+    description: The rulebase where the rule is configured (e.g. "Security", "NAT", etc).
+    type: string
+    name: PANOS.UnusedRules.UnusedPanoramaRules.rulebase
+  - underlyingoutputcontextpath: PANOS.UnusedRules.UsedPanoramaRules
+    description: List of Rules Pushed from Panorama that are used on some firewalls but not all.
+    type: unknown
+    name: PANOS.UnusedRules.UsedPanoramaRules
+  - underlyingoutputcontextpath: PANOS.UnusedRules.UsedPanoramaRules.from_dg_name
+    description: Name of the Device Group the rule is inherited from.
+    type: string
+    name: PANOS.UnusedRules.UsedPanoramaRules.from_dg_name
+  - underlyingoutputcontextpath: PANOS.UnusedRules.UsedPanoramaRules.hostids_with_hits
+    description: Host IDs of firewalls where this rule has hits.
+    type: string
+    name: PANOS.UnusedRules.UsedPanoramaRules.hostids_with_hits
+  - underlyingoutputcontextpath: PANOS.UnusedRules.UsedPanoramaRules.hostnames_with_hits
+    description: Hostnames of firewalls where this rule has hits.
+    type: string
+    name: PANOS.UnusedRules.UsedPanoramaRules.hostnames_with_hits
+  - underlyingoutputcontextpath: PANOS.UnusedRules.UsedPanoramaRules.hostids_with_zero_hits
+    description: Host IDs of firewalls where this rule has zero hits.
+    type: unknown
+    name: PANOS.UnusedRules.UsedPanoramaRules.hostids_with_zero_hits
+  - underlyingoutputcontextpath: PANOS.UnusedRules.UsedPanoramaRules.hostnames_with_zero_hits
+    description: Hostnames of firewalls where this rule has zero hits.
+    type: unknown
+    name: PANOS.UnusedRules.UsedPanoramaRules.hostnames_with_zero_hits
+  - underlyingoutputcontextpath: PANOS.UnusedRules.UsedPanoramaRules.instanceName
+    description: Name of the PAN-OS Integration Instance used to collect rule hitcount data.
+    type: string
+    name: PANOS.UnusedRules.UsedPanoramaRules.instanceName
+  - underlyingoutputcontextpath: PANOS.UnusedRules.UsedPanoramaRules.name
+    description: The name of the rule.
+    type: string
+    name: PANOS.UnusedRules.UsedPanoramaRules.name
+  - underlyingoutputcontextpath: PANOS.UnusedRules.UsedPanoramaRules.position
+    description: The position of the rule within the Panorama device-group rulebase (pre-rulebase or post-rulebase).
+    type: string
+    name: PANOS.UnusedRules.UsedPanoramaRules.position
+  - underlyingoutputcontextpath: PANOS.UnusedRules.UsedPanoramaRules.rulebase
+    description: The rulebase where the rule is configured (e.g. "Security", "NAT", etc).
+    type: string
+    name: PANOS.UnusedRules.UsedPanoramaRules.rulebase
+underlyingcontentitem:
+  id: PAN-OS - Identify Unused Policy Rules
+  name: PAN-OS - Identify Unused Policy Rules
+  type: playbook
+  command: ''
+  version: -1
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- agentix
+- xsiam
+- cloud_posture

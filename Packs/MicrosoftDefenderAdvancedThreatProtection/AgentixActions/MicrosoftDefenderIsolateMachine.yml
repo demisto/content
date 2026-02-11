@@ -1,0 +1,59 @@
+commonfields:
+  id: MicrosoftDefenderIsolateMachine
+  version: -1
+display: Microsoft Defender - Isolate Machine
+name: MicrosoftDefenderIsolateMachine
+tags:
+ - Endpoint
+category: Endpoint
+description: >
+  Isolates a specific machine from the network.
+  Isolation is a critical response action that aims to contain potential threats by restricting the machine's ability to communicate with other devices or systems.
+  There are typically two types of isolation that can be specified:
+  - **Full Isolation**: Use when the threat level is critical. It completely blocks all network traffic to and from the machine.
+  - **Selective Isolation**: Suitable when some connectivity is necessary for business continuity, while still minimizing the risk.
+args:
+  - description: A comma-separated string of machine IDs to be used for isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
+    type: string
+    name: machine_id
+    required: true
+    underlyingargname: machine_id
+  - description: A comment to associate with the isolation action.
+    name: comment
+    required: true
+    isgeneratable: true
+    type: string
+    underlyingargname: comment
+  - description: >
+      Either the isolation is of type Full isolation (choose Full) or type selective isolation (Choose Selective).
+      Valid values are: Full or Selective.
+    name: isolation_type
+    required: true
+    type: string
+    underlyingargname: isolation_type
+outputs:
+  - underlyingoutputcontextpath: MicrosoftATP.MachineAction.Status
+    description: Represents the current progress or outcome of the machine action, such as 'Pending', 'InProgress', 'Succeeded', or 'Failed'. Indicates whether the action is completed or ongoing.
+    type: string
+    name: MicrosoftATP.MachineAction.Status
+  - underlyingoutputcontextpath: MicrosoftATP.MachineAction.ComputerDNSName
+    description: The DNS name (domain name) of the machine on which the action was executed, used for network identification and resolution.
+    type: string
+    name: MicrosoftATP.MachineAction.ComputerDNSName
+  - underlyingoutputcontextpath: MicrosoftATP.MachineAction.CreationDateTimeUtc
+    description: The exact date and time (in UTC format) when the machine action was created or initiated, represented in the format 'YYYY-MM-DDTHH:MM:SS.SSSSSSSZ' (e.g., 2025-05-08T08:28:47.3412034Z). Useful for tracking the timeline of incident response.
+    type: date
+    name: MicrosoftATP.MachineAction.CreationDateTimeUtc
+  - underlyingoutputcontextpath: MicrosoftATP.MachineAction.LastUpdateTimeUtc
+    description: The most recent date and time (in UTC format) when the status of the machine action was updated, represented in the format 'YYYY-MM-DDTHH:MM:SS.SSSSSSSZ' (e.g., 2025-05-08T08:28:47.3412034Z). Reflects the latest progress or change in state.
+    type: date
+    name: MicrosoftATP.MachineAction.LastUpdateTimeUtc
+underlyingcontentitem:
+  id: MicrosoftAtpIsolateMachine
+  name: MicrosoftAtpIsolateMachine
+  type: script
+  version: -1
+  command: ''
+requiresuserapproval: true
+marketplaces:
+- platform

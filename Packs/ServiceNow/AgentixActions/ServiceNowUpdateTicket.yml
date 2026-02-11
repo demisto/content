@@ -1,0 +1,163 @@
+commonfields:
+  id: ServiceNowUpdateTicket
+  version: -1
+display: ServiceNow - Update Ticket
+category: Case Management
+description: Updates a ServiceNow ticket based on the specified ticket ID and field values.
+args:
+  - name: id
+    required: true
+    description: The ID of the ticket to be updated.
+    type: string
+    underlyingargname: id
+  - name: short_description
+    description: A brief summary of the issue.
+    type: string
+    underlyingargname: short_description
+  - name: description
+    description: Full description of the issue or request.
+    type: string
+    underlyingargname: description
+  - name: ticket_type
+    description: |
+      Type of ServiceNow ticket to update.
+      Options: incident, problem, change_request, sc_request, sc_task.
+    type: string
+    underlyingargname: ticket_type
+  - name: urgency
+    description: |
+      Urgency level of the ticket. It can be selected or entered manually.
+      Options: 1 - High, 2 - Medium, 3 - Low.
+    type: number
+    underlyingargname: urgency
+  - name: severity
+    description: |
+      Severity level of the issue. It can be selected or entered manually.
+      Options: 1 - High, 2 - Medium, 3 - Low.
+      Note: The priority field is automatically calculated based on impact and severity. To modify it, update one or both of those two fields.
+    type: number
+    underlyingargname: severity
+  - name: impact
+    description: |
+      Business impact of the issue.
+      Options: 1 - High, 2 - Medium, 3 - Low.
+      Note: The priority field is automatically calculated based on impact and severity. To modify it, update one or both of those two fields.
+    type: number
+    underlyingargname: impact
+  - name: active
+    description: |
+      Set the ticket as active.
+      Options: true, false.
+    type: boolean
+    underlyingargname: active
+  - name: assigned_to
+    description: The user assigned to work on the ticket.
+    type: string
+    underlyingargname: assigned_to
+  - name: caller
+    description: Caller name.
+    type: string
+    underlyingargname: caller
+  - name: category
+    description: The category assigned to the ticket.
+    type: string
+    underlyingargname: category
+  - name: subcategory
+    description: Subcategory of the ticket.
+    type: string
+    underlyingargname: subcategory
+  - name: caused_by
+    description: The ID of a related ticket that has been identified as the root cause of the current issue.
+    type: string
+    underlyingargname: caused_by
+  - name: state
+    description: |
+      Ticket state. For example: "1 - New", "2 - In Progress", "3 - On Hold", "6 - Resolved", "7 - Closed", "8 - Canceled".
+      Note: To change a ticket's state to Resolved or Closed, you must also provide a close_code and close_notes.
+    type: string
+    underlyingargname: state
+  - name: comments
+    description: Public, customer-facing comments shown to the requester/end user, for example, updates or questions.
+    type: string
+    underlyingargname: comments
+  - name: company
+    description: The company associated with the ticket.
+    type: string
+    underlyingargname: company
+  - name: due_date
+    description: |
+      When the ticket is due. Format: YYYY-MM-DD HH:MM:SS.
+    type: string
+    underlyingargname: due_date
+  - name: work_end
+    description: |
+      Time work was completed. Format: YYYY-MM-DD HH:MM:SS.
+    type: string
+    underlyingargname: work_end
+  - name: work_notes
+    description: Internal work notes for IT/support staff, not visible to the requester.
+    type: string
+    underlyingargname: work_notes
+  - name: work_start
+    description: Time when work began.
+    type: string
+    underlyingargname: work_start
+  - name: assignment_group
+    description: ID of the group to assign the ticket to.
+    type: string
+    underlyingargname: assignment_group
+  - name: watch_list
+    description: Comma-separated list of users watching the ticket.
+    type: string
+    underlyingargname: watch_list
+  - name: approval
+    description: Approval status of the ticket.
+    type: string
+    underlyingargname: approval
+  - name: notify
+    description: |
+      Whether to send notifications to stakeholders.
+      Options: 1 - No, 0 - Yes.
+    type: number
+    underlyingargname: notify
+  - name: close_code
+    description: |
+      Reason for closing the ticket.
+      For example: "Solved (Work Around)", "Solved (Permanently)", "Solved Remotely (Work Around)", "Solved Remotely (Permanently)", "Not Solved (Not Reproducible)", "Not Solved (Too Costly)", "Closed/Resolved by Caller".
+    type: string
+    underlyingargname: close_code
+  - name: close_notes
+    description: Additional notes when closing the ticket.
+    type: string
+    underlyingargname: close_notes
+  - name: parent
+    description: Parent ticket ID.
+    type: string
+    underlyingargname: parent
+  - name: risk_score
+    description: Risk score assigned to the incident.
+    type: number
+    underlyingargname: risk_score
+outputs:
+  - underlyingoutputcontextpath: ServiceNow.Ticket.ID
+    description: The unique ID of the ServiceNow ticket.
+    type: string
+    name: ServiceNow.Ticket.ID
+  - underlyingoutputcontextpath: ServiceNow.Ticket.Assignee
+    description: The assignee of the ServiceNow ticket.
+    type: string
+    name: ServiceNow.Ticket.Assignee
+  - underlyingoutputcontextpath: ServiceNow.Ticket
+    description: The ServiceNow ticket fields.
+    type: string
+    name: ServiceNow.Ticket
+name: ServiceNowUpdateTicket
+underlyingcontentitem:
+  id: ServiceNow v2
+  name: ServiceNow v2
+  type: command
+  version: -1
+  command: 'servicenow-update-ticket'
+requiresuserapproval: false
+marketplaces:
+- platform

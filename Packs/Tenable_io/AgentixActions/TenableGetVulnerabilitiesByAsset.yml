@@ -1,0 +1,68 @@
+commonfields:
+  id: TenableGetVulnerabilitiesByAsset
+  version: -1
+display: Tenable - List Vulnerabilities
+name: TenableListVulnerabilities
+tags:
+  - Tenable
+  - Vulnerability Management
+category: Vulnerability Management
+description: |-
+  Retrieves up to 5000 vulnerabilities recorded for a specified asset in Tenable.io,
+  based on the hostname or IP address provided.
+args:
+  - name: hostname
+    description: The hostname of the asset to retrieve vulnerabilities for.
+    type: string
+    underlyingargname: hostname
+  - name: ip
+    description: The IP address of the asset to retrieve vulnerabilities for.
+    type: string
+    underlyingargname: ip
+  - name: dateRange
+    description: The number of days of historical data to retrieve, including today. For example 1.
+    type: number
+    underlyingargname: dateRange
+outputs:
+  - underlyingoutputcontextpath: TenableIO.Assets.Hostname
+    description: The hostname of the asset.
+    type: string
+    name: TenableIO.Assets.Hostname
+  - underlyingoutputcontextpath: TenableIO.Assets.Vulnerabilities
+    description: A list of vulnerability IDs associated with the asset.
+    type: number
+    name: TenableIO.Assets.Vulnerabilities
+  - underlyingoutputcontextpath: TenableIO.Vulnerabilities.Id
+    description: The unique identifier of the vulnerability.
+    type: string
+    name: TenableIO.Vulnerabilities.Id
+  - underlyingoutputcontextpath: TenableIO.Vulnerabilities.Name
+    description: The name or title of the vulnerability.
+    type: string
+    name: TenableIO.Vulnerabilities.Name
+  - underlyingoutputcontextpath: TenableIO.Vulnerabilities.Severity
+    description: The severity level of the vulnerability on a scale from 0 (Info) to
+      4 (Critical).
+    type: number
+    name: TenableIO.Vulnerabilities.Severity
+  - underlyingoutputcontextpath: TenableIO.Vulnerabilities.Family
+    description: The plugin family or category to which the vulnerability belongs.
+    type: string
+    name: TenableIO.Vulnerabilities.Family
+  - underlyingoutputcontextpath: TenableIO.Vulnerabilities.VulnerabilityOccurences
+    description: The number of times this vulnerability was detected on the asset.
+    type: number
+    name: TenableIO.Vulnerabilities.VulnerabilityOccurences
+  - underlyingoutputcontextpath: TenableIO.Vulnerabilities.VulnerabilityState
+    description: The current state of the vulnerability (e.g., "Active", "Fixed", "New").
+    type: string
+    name: TenableIO.Vulnerabilities.VulnerabilityState
+underlyingcontentitem:
+  id: Tenable.io
+  name: Tenable.io
+  type: command
+  version: -1
+  command: 'tenable-io-get-vulnerabilities-by-asset'
+requiresuserapproval: false
+marketplaces:
+- platform

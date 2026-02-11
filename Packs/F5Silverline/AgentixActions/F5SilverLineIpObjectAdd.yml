@@ -1,0 +1,60 @@
+commonfields:
+  id: F5SilverLineIpObjectAdd
+  version: -1
+display: F5 Silverline - Create IP Object
+tags:
+  - Network-Security
+  - Blocked-IP
+category: Network Security
+description: |-
+  Adds a new IP object to the F5 Silverline cloud-based security platform.
+  This command is used to define and register an IP address or range within Silverline,
+  typically for use in security policies such as DDoS protection or traffic filtering.
+  Parameters may include IP type (IPv4/IPv6), object name, and optional metadata for categorization or policy assignment.
+name: F5SilverlineCreateIPObject
+args:
+  - description: 'The dynamic lists type of threatening IP addresses. Valid values are: "allowlist" or "denylist". Note: Allowlists are named DDOS IP Allowlists in the F5 Silverline portal.'
+    name: list_type
+    required: true
+    defaultvalue: denylist
+    type: string
+    underlyingargname: list_type
+  - description: >
+      'This argument can be supplied to target either the proxy or routed denylist.
+      If list_target is not specified it will assume both proxy and routed are requested (i.e., proxy-routed).
+      Valid values are: "proxy", "routed", or "proxy-routed". This argument limits the denylist type but is ignored for allowlist.'
+    name: list_target
+    type: string
+    underlyingargname: list_target
+  - description: The CIDR range of a potentially threatening IP address. object (i.e IP address/ mask) in comma-separated format. For example, "1.2.3.4/32,2.3.4.5". In case only IP address is given, the default mask is 32.
+    name: cidr_range
+    required: true
+    type: string
+    underlyingargname: cidr_range
+  - description: The duration (in seconds) of a new particular threatening IP address object where the list type is 'denylist'. Setting the duration to 0 (default) means the new IP address object will never expire. This feature has been removed for allowlist.
+    name: duration
+    type: number
+    underlyingargname: duration
+  - description: The note of a new particular threatening IP address object. Default is empty.
+    name: note
+    type: string
+    underlyingargname: note
+  - description: >
+      A comma-separated string of tags of a new particular threatening IP address object. For example: a,b
+    name: tags
+    type: string
+    underlyingargname: tags
+outputs:
+  - underlyingoutputcontextpath: IP.Address
+    description: The IP address that was added.
+    type: string
+    name: IP.Address
+underlyingcontentitem:
+  id: F5Silverline
+  name: F5Silverline
+  type: command
+  version: -1
+  command: 'f5-silverline-ip-object-add'
+requiresuserapproval: false
+marketplaces:
+- platform

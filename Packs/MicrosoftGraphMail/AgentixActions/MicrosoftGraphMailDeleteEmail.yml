@@ -1,0 +1,36 @@
+commonfields:
+  id: MicrosoftGraphMailDeleteEmail
+  version: -1
+display: Microsoft Graph - Delete Email
+name: MicrosoftGraphDeleteEmail
+tags:
+ - Messaging and Conferencing
+category: Messaging and Conferencing
+description: >
+  Deletes a specified email message from a user's mailbox using the Microsoft Graph Mail API.
+  The email can be identified by its message ID and optionally by the folder it's located in (e.g., Inbox, Deleted Items).
+  This action cannot be undone.
+args:
+  - name: user_id
+    underlyingargname: user_id
+    description: The unique identifier of the user whose mailbox contains the email to delete. Typically, this is the user's email address (e.g., someuser@example.com), but it can also be the user's principal ID.
+    required: true
+    type: string
+  - name: message_id
+    underlyingargname: message_id
+    description: The unique identifier of the email message to delete. This ID must be obtained from the `MSGraphMail.ID` in the context. Do not use the `MessageID` (RFC822-style) in angle brackets (e.g., <message-id>).
+    required: true
+    type: string
+  - name: folder_id
+    underlyingargname: folder_id
+    description: (Optional) A comma-separated string of folder's path IDs that define the email's location within the mailbox folder hierarchy (e.g., `mailFolders,childFolders,childFolders`). Use this if the message is nested within subfolders.
+    type: string
+underlyingcontentitem:
+  id: MsGraphMailDeleteEmail
+  name: MsGraphMailDeleteEmail
+  type: script
+  version: -1
+  command: ''
+requiresuserapproval: true
+marketplaces:
+- platform

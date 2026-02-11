@@ -1,0 +1,45 @@
+commonfields:
+  id: CortexListSystemUsers
+  version: -1
+display: Cortex - List System Users
+name: CortexListSystemUsers
+description: >
+  This action returns a list of users and their core properties within the system based on a provided filters. When searched by email - if a user does not appear in the results, or no results are returned, they are considered an external or non-existent user.
+  Note: Due to a value constraint of 50 on the result size, the data returned may be partial and not reflect the complete set of matching results.
+args:
+  - name: email
+    underlyingargname: email
+    description: >
+      The user email addresses used for unique identification to filter by. Accepts a comma-separated list of max length 50.
+    type: string
+    required: false
+outputs:
+  - underlyingoutputcontextpath: Core.User.user_email
+    description: The user's email address used for unique identification.
+    type: String
+    name: Core.User.user_email
+  - underlyingoutputcontextpath: Core.User.user_first_name
+    description: The user's first name.
+    type: String
+    name: Core.User.user_first_name
+  - underlyingoutputcontextpath: Core.User.user_last_name
+    description: The user's last name.
+    type: String
+    name: Core.User.user_last_name
+  - underlyingoutputcontextpath: Core.User.role_name
+    description: The specific role assigned to the user within the system cortex instance (e.g., Instance Administrator, AI Security Administrator, No-Role).
+    type: String
+    name: Core.User.role_name
+underlyingcontentitem:
+  id: Cortex Core - Platform
+  name: Cortex Core - Platform
+  type: command
+  version: -1
+  command: core-list-system-users
+requiresuserapproval: false
+marketplaces:
+  - platform
+supportedModules:
+  - xsiam
+  - cloud_runtime_security
+  - edr

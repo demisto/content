@@ -1,0 +1,166 @@
+commonfields:
+  id: CortexListEndpointExceptionRules
+  version: -1
+display: Cortex - List Endpoint Exception Rules
+name: CortexListEndpointExceptionRules
+description: >
+  Retrieves a list of exception rules applied to endpoints (also known as XDR agents) based on provided filters.
+  Note: Due to a value constraint on the result size, the data returned may be partial and not reflect the complete set of matching results.
+args:
+  - name: id
+    underlyingargname: id
+    description: "Exception rule ID. Accepts a comma seperated list."
+    type: string
+    required: false
+  - name: rule_name
+    underlyingargname: rule_name
+    description: "The rule name. Accepts a comma-separated list."
+    type: string
+    required: false
+  - name: platform
+    underlyingargname: platform
+    description: >
+      Platforms the rule applies to. Accepts a comma-separated list.
+      Options: AGENT_OS_WINDOWS, AGENT_OS_MAC, AGENT_OS_LINUX, AGENT_OS_ANDROID, AGENT_OS_IOS, AGENT_OS_CAAS_LINUX, AGENT_OS_SERVERLESS.
+    type: string
+    required: false
+  - name: conditions
+    underlyingargname: conditions
+    description: "Filter results by the provided value within the rule conditions. These conditions define the specific criteria required for an exception to apply. They act as a filter to narrow the scope, identifying specific entities—such as processes, files, IP addresses, hashes, or other relevant attributes—to be excluded from the affected module. Accepts a comma-separated list."
+    type: string
+    required: false
+  - name: user_email
+    underlyingargname: user_email
+    description: "The email address of the user that created the rule. Accepts a comma-separated list."
+    type: string
+    required: false
+  - name: start_modification_time
+    underlyingargname: start_modification_time
+    description: >
+      The start time for filtering according to rule modification time. Supports free-text relative and absolute times.
+      For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025.
+      If start_modification_time is provided but not end_modification_time - end_modification_time will be set to current time.
+    type: string
+    required: false
+  - name: end_modification_time
+    underlyingargname: end_modification_time
+    description: >
+      The end time for filtering according to rule modification time. Supports free-text relative and absolute times.
+      For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025.
+      Must be used in conjunction with start_modification_time.
+      If end_modification_time is provided but not start_modification_time - start_modification_time is set to 0.
+    type: string
+    required: false
+  - name: status
+    underlyingargname: status
+    description: >
+      The status of the exception rule.
+      Options: ENABLED, DISABLED.
+    type: string
+    required: false
+  - name: rule_type
+    underlyingargname: rule_type
+    description: >
+      The type of the disable prevention rule. Accepts a comma-separated list.
+      Options: XDR, WAAS.
+    type: string
+    required: false
+  - name: type
+    underlyingargname: type
+    description: >
+      The type of the exception rule. If not specified, both are returned.
+      Options: legacy_agent_exceptions, disable_prevention_rules.
+    type: string
+    required: false
+  - name: page_size
+    underlyingargname: page_size
+    description: "Number of exception rules to return. Default is 100. Ignored if 'retrieve_all' is set to true."
+    type: string
+    required: false
+    defaultvalue: "100"
+  - name: page
+    underlyingargname: page
+    description: "Page number to return. Default is 0. Ignored if 'retrieve_all' is set to true."
+    type: string
+    required: false
+    defaultvalue: "0"
+  - name: retrieve_all
+    underlyingargname: retrieve_all
+    description: "Return all exception rules. Default is true."
+    type: string
+    required: false
+    defaultvalue: "true"
+outputs:
+  - underlyingoutputcontextpath: Core.ExceptionRules.NAME
+    description: The user-defined name of the exception rule.
+    type: String
+    name: Core.ExceptionRules.NAME
+  - underlyingoutputcontextpath: Core.ExceptionRules.PLATFORM
+    description: The operating system platform the rule targets (e.g., AGENT_OS_MAC).
+    type: String
+    name: Core.ExceptionRules.PLATFORM
+  - underlyingoutputcontextpath: Core.ExceptionRules.CONDITIONS
+    description: The rule conditions (e.g., "Signer = ...").
+    type: String
+    name: Core.ExceptionRules.CONDITIONS
+  - underlyingoutputcontextpath: Core.ExceptionRules.MODULES
+    description: A specific security module the rule applies to.
+    type: String
+    name: Core.ExceptionRules.MODULES
+  - underlyingoutputcontextpath: Core.ExceptionRules.CREATED_BY
+    description: The full name of the user who created the rule.
+    type: String
+    name: Core.ExceptionRules.CREATED_BY
+  - underlyingoutputcontextpath: Core.ExceptionRules.MODIFICATION_TIME
+    description: The last modification time of the rule (ISO 8601 string).
+    type: String
+    name: Core.ExceptionRules.MODIFICATION_TIME
+  - underlyingoutputcontextpath: Core.ExceptionRules.USER_EMAIL
+    description: The email address of the user who created the rule.
+    type: String
+    name: Core.ExceptionRules.USER_EMAIL
+  - underlyingoutputcontextpath: Core.ExceptionRules.STATUS
+    description: The current status of the rule (ENABLED, DISABLED).
+    type: String
+    name: Core.ExceptionRules.STATUS
+  - underlyingoutputcontextpath: Core.ExceptionRules.PROFILE_IDS
+    description: A specific profile the rule is associated with.
+    type: String
+    name: Core.ExceptionRules.PROFILE_IDS
+  - underlyingoutputcontextpath: Core.ExceptionRules.ASSOCIATED_TARGETS
+    description: A specific target (e.g., endpoint, group) the rule is applied to.
+    type: String
+    name: Core.ExceptionRules.ASSOCIATED_TARGETS
+  - underlyingoutputcontextpath: Core.ExceptionRules.RULE_TYPE
+    description: The specific rule category (XDR, WAAS).
+    type: String
+    name: Core.ExceptionRules.RULE_TYPE
+  - underlyingoutputcontextpath: Core.ExceptionRules.TYPE
+    description: The general type of the rule (legacy_agent_exceptions, disable_prevention_rules).
+    type: String
+    name: Core.ExceptionRules.TYPE
+  - underlyingoutputcontextpath: Core.ExceptionRules.ID
+    description: The unique identifier of the exception rule.
+    type: String
+    name: Core.ExceptionRules.ID
+  - name: Core.ExceptionRulesMetadata.returned_count
+    description: The actual number of exception rules that match all filter criteria and returned in this specific response.
+    type: String
+    underlyingoutputcontextpath: Core.ExceptionRulesMetadata.returned_count
+  - name: Core.ExceptionRulesMetadata.filtered_count
+    description: The total number of exception rules in the system that match all filter criteria.
+    type: String
+    underlyingoutputcontextpath: Core.ExceptionRulesMetadata.filtered_count
+underlyingcontentitem:
+  id: Cortex Core - Platform
+  name: Cortex Core - Platform
+  type: command
+  version: -1
+  command: core-list-exception-rules
+requiresuserapproval: false
+marketplaces:
+  - platform
+supportedModules:
+  - xsiam
+  - cloud_runtime_security
+  - edr

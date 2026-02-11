@@ -1,0 +1,94 @@
+commonfields:
+  id: MicrosoftDefenderStopAndQuarantineFile
+  version: -1
+display: Microsoft Defender - Quarantine File
+name: MicrosoftDefenderQuarantineFile
+tags:
+ - File
+ - Microsoft
+ - Defender
+category: Endpoint
+description: |-
+  Stops the execution of a file and quarantines it on a specified machine using Microsoft Defender for Endpoint.
+  This command is used to remotely contain a malicious or suspicious file that has been detected on an endpoint.
+  It prevents the file from being executed and moves it to quarantine,
+  helping to mitigate active threats and limit the spread of malware.
+args:
+  - name: machine_id
+    description: >
+      The ID of the machine where the file will be stopped and quarantined.
+      You can provide multiple machine IDs; each will be checked for the specified file hash.
+    required: true
+    type: string
+    underlyingargname: machine_id
+  - name: file_hash
+    description: >
+      The SHA1 hash of the file to stop and quarantine.
+      You can provide multiple hashes; each will be checked on the specified machine(s).
+    required: true
+    type: string
+    underlyingargname: file_hash
+  - name: comment
+    description: A comment describing the reason or context for taking this action.
+    required: true
+    isgeneratable: true
+    type: string
+    underlyingargname: comment
+outputs:
+  - underlyingoutputcontextpath: MicrosoftATP.MachineAction.ID
+    description: Unique ID of the machine action.
+    type: string
+    name: MicrosoftATP.MachineAction.ID
+  - underlyingoutputcontextpath: MicrosoftATP.MachineAction.Type
+    description: Type of the action performed (e.g., StopAndQuarantineFile).
+    type: string
+    name: MicrosoftATP.MachineAction.Type
+  - underlyingoutputcontextpath: MicrosoftATP.MachineAction.Scope
+    description: Scope of the action, such as whether it's applied globally or to a specific resource.
+    type: string
+    name: MicrosoftATP.MachineAction.Scope
+  - underlyingoutputcontextpath: MicrosoftATP.MachineAction.Requestor
+    description: ID of the user who initiated the action.
+    type: string
+    name: MicrosoftATP.MachineAction.Requestor
+  - underlyingoutputcontextpath: MicrosoftATP.MachineAction.RequestorComment
+    description: Comment provided by the requestor when issuing the action.
+    type: string
+    name: MicrosoftATP.MachineAction.RequestorComment
+  - underlyingoutputcontextpath: MicrosoftATP.MachineAction.Status
+    description: Current status of the action (e.g., Pending, Succeeded, Failed).
+    type: string
+    name: MicrosoftATP.MachineAction.Status
+  - underlyingoutputcontextpath: MicrosoftATP.MachineAction.MachineID
+    description: ID of the machine where the action was executed.
+    type: string
+    name: MicrosoftATP.MachineAction.MachineID
+  - underlyingoutputcontextpath: MicrosoftATP.MachineAction.ComputerDNSName
+    description: DNS name of the machine where the action was executed.
+    type: string
+    name: MicrosoftATP.MachineAction.ComputerDNSName
+  - underlyingoutputcontextpath: MicrosoftATP.MachineAction.CreationDateTimeUtc
+    description: Date and time the action was created (in UTC, ISO 8601 format).
+    type: date
+    name: MicrosoftATP.MachineAction.CreationDateTimeUtc
+  - underlyingoutputcontextpath: MicrosoftATP.MachineAction.LastUpdateTimeUtc
+    description: Date and time the action status was last updated (in UTC, ISO 8601 format).
+    type: date
+    name: MicrosoftATP.MachineAction.LastUpdateTimeUtc
+  - underlyingoutputcontextpath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier
+    description: Identifier of the related file (e.g., hash value).
+    type: string
+    name: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier
+  - underlyingoutputcontextpath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
+    description: Type of the file identifier. Possible values, "SHA1", "SHA256", or "MD5".
+    type: string
+    name: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
+underlyingcontentitem:
+  id: MicrosoftAtpStopAndQuarantineFile
+  name: MicrosoftAtpStopAndQuarantineFile
+  type: script
+  version: -1
+  command: ''
+requiresuserapproval: false
+marketplaces:
+- platform

@@ -1,0 +1,125 @@
+commonfields:
+  id: SCMConfigJobList
+  version: -1
+display: Strata Cloud Manager - List Config Jobs
+name: StrataCloudManagerListConfigJobs
+tags:
+ - firewall management
+ - Palo Alto Networks Products
+category: Network Security
+description: |-
+  This action gets a list of Config Jobs from Strata Cloud Manager and returns details about each job.
+
+  Critical Understanding - Related Job Grouping
+  - Strata Cloud Manager represents related Jobs, with the "Parent" job being the top level, and each "Child" job referencing the "Parent" using the "parent_id" field
+  - Each Job has an "id" and "parent_id" property.  If "parent_id" is 0, that indicates a "Parent" Job
+  - Child Jobs should be shown under related Parent Jobs when the response is grouped and organized
+
+  Input Args: limit, page, page_size represent standard REST API pagination/filtering parameters
+
+  Workflow:
+  1. Configure results limit (up to 200 maximum)
+  2. Count the number of results returned.  If the total number of job results matches the requested limit, indicate that there are more results and suggest rerunning the action with different pagination parameters.
+  3. Group and sort the jobs by the parent job and child job relationship using the "parent_id" field.
+  4. Format the response to the user
+    - If the job is a Parent job, show it's job ID as a text heading, and include details of all child jobs underneath in table format
+    - Make sure to include these critical fields at a minimum:
+      - Job ID ("id")
+      - Username ("uname")
+      - Status ("status_str")
+      - Device Name ("device_name")
+  5. Suggest retrieving more details about a specific job ID, and re-run this action with the appropriate "job_id" parameter.
+
+  This action provides details of the Strata Cloud Manager configuration push history for your deployments, allowing you to understand who made changes, what changes were made, and the push result.
+args:
+  - description: A specific config job to return. If not specified, all config jobs will be returned.
+    name: job_id
+    type: string
+    underlyingargname: job_id
+    required: false
+  - description: The maximum number of results to return.
+    name: limit
+    type: number
+    underlyingargname: limit
+    required: false
+  - name: page
+    description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
+    type: number
+    underlyingargname: page
+    required: false
+  - name: page_size
+    description: Number of results per page to display.
+    type: number
+    underlyingargname: page_size
+    required: false
+  - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+    name: tsg_id
+    type: string
+    underlyingargname: tsg_id
+    required: false
+outputs:
+  - underlyingoutputcontextpath: PrismaSase.ConfigJob.description
+    description: Configuration job description.
+    type: String
+    name: PrismaSase.ConfigJob.description
+  - underlyingoutputcontextpath: PrismaSase.ConfigJob.end_ts
+    description: Configuration job end timestamp.
+    type: Date
+    name: PrismaSase.ConfigJob.end_ts
+  - underlyingoutputcontextpath: PrismaSase.ConfigJob.id
+    description: Configuration job ID.
+    type: String
+    name: PrismaSase.ConfigJob.id
+  - underlyingoutputcontextpath: PrismaSase.ConfigJob.job_result
+    description: Configuration job result.
+    type: String
+    name: PrismaSase.ConfigJob.job_result
+  - underlyingoutputcontextpath: PrismaSase.ConfigJob.job_status
+    description: Configuration job status.
+    type: String
+    name: PrismaSase.ConfigJob.job_status
+  - underlyingoutputcontextpath: PrismaSase.ConfigJob.job_type
+    description: Configuration job type.
+    type: String
+    name: PrismaSase.ConfigJob.job_type
+  - underlyingoutputcontextpath: PrismaSase.ConfigJob.parent_id
+    description: Configuration job parent ID.  If this is 0 or empty, this is a root job, and any other jobs whose "parent_id" match this job's "id" are child jobs and should be nested when displayed to the user.
+    type: String
+    name: PrismaSase.ConfigJob.parent_id
+  - underlyingoutputcontextpath: PrismaSase.ConfigJob.percent
+    description: Configuration job percent.
+    type: String
+    name: PrismaSase.ConfigJob.percent
+  - underlyingoutputcontextpath: PrismaSase.ConfigJob.result_str
+    description: Configuration job result string.
+    type: String
+    name: PrismaSase.ConfigJob.result_str
+  - underlyingoutputcontextpath: PrismaSase.ConfigJob.start_ts
+    description: Configuration job start timestamp.
+    type: Date
+    name: PrismaSase.ConfigJob.start_ts
+  - underlyingoutputcontextpath: PrismaSase.ConfigJob.status_str
+    description: Configuration job status string.
+    type: String
+    name: PrismaSase.ConfigJob.status_str
+  - underlyingoutputcontextpath: PrismaSase.ConfigJob.summary
+    description: Configuration job summary.
+    type: String
+    name: PrismaSase.ConfigJob.summary
+  - underlyingoutputcontextpath: PrismaSase.ConfigJob.type_str
+    description: Configuration job type string.
+    type: String
+    name: PrismaSase.ConfigJob.type_str
+  - underlyingoutputcontextpath: PrismaSase.ConfigJob.uname
+    description: Configuration job uname.
+    type: String
+    name: PrismaSase.ConfigJob.uname
+underlyingcontentitem:
+  id: Palo Alto Networks - Prisma SASE
+  name: Palo Alto Networks - Prisma SASE
+  type: command
+  version: -1
+  command: prisma-sase-config-job-list
+requiresuserapproval: false
+marketplaces:
+- platform

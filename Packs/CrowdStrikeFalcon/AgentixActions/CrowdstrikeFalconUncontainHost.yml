@@ -1,0 +1,25 @@
+commonfields:
+  id: CrowdstrikeFalconUncontainHost
+  version: -1
+display: Crowdstrike Falcon - Uncontain Host
+name: CrowdstrikeFalconUncontainHost
+tags:
+  - Unisolated
+category: Endpoint
+description: |-
+  Removes the containment status from a specified host, allowing it to resume normal network communication. This action reverses the 'cs-falcon-contain-host' command.
+args:
+ - description: A comma-separated string of host agent IDs (AIDs) of the hosts to contain.
+   name: ids
+   required: true
+   underlyingargname: ids
+   type: string
+underlyingcontentitem:
+  id: CsFalconLiftHostContainment
+  name: CsFalconLiftHostContainment
+  type: script
+  version: -1
+  command: ''
+requiresuserapproval: true
+marketplaces:
+- platform

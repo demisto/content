@@ -1,0 +1,342 @@
+commonfields:
+  id: PANOSQueryLogs
+  version: -1
+display: PAN-OS - List Logs
+name: PANOSListLogs
+tags:
+ - firewall management
+ - log search
+ - Palo Alto Networks Products
+category: Network Security
+description: |-
+  This action searches and retrieves Palo Alto Networks logs across different log types (threat, traffic, wildfire, URL, data, correlation, system, and decryption). The type of logs you can access depends on your integration instance configuration.
+
+  Log Access Rules:
+  - IF connected to Panorama integration instance: You can ONLY query Panorama centralized logs (logs collected and stored on the Panorama management server)
+  - IF connected to Firewall integration instance: You can ONLY query that specific firewall's local logs
+  - IMPORTANT: You CANNOT query individual firewall logs through a Panorama integration instance - Panorama integration only accesses centralized Panorama logs
+
+  Filtering Restrictions:
+  1. Apply flexible filtering with these restrictions:
+    - General filters: IP addresses, time ranges, zones, rules, ports, URLs, file hashes
+    - url_category filter: Can ONLY be used when log_type is set to "url"
+    - url_category filter CANNOT be combined with: time-generated, time-generated-after, addr-src, addr-dst, zone-src, zone-dst, action, port-dst, rule, url, filedigest
+    - url_category filter accepts values from a strict list of options
+    - If log type is url and a url_category filter is supplied, filtering by time cannot be done in the same step. Use LLM to filter logs after retrieval
+  2. Configure result limits (up to 5,000 logs maximum.
+
+  If No Logs Retrieved:
+  When no logs are found, clearly inform the user which integration instance type was queried (Panorama or Firewall) and explain that logs were not found on that specific device. The user may need to:
+  - Check the other integration instance type if available
+  - Verify log retention settings
+  - Confirm the time range and filter criteria
+  - Ensure proper licensing for specific log types (e.g., URL logs require Advanced URL Filtering license)
+
+  This action enables efficient network investigation, traffic pattern analysis, and forensic analysis through automated log retrieval from your PAN-OS infrastructure.
+args:
+  - description: The log type. Optional values are threat, traffic, wildfire, url, data, corr, system, and decryption.
+    name: log_type
+    required: true
+    underlyingargname: log_type
+    type: string
+  - description: |-
+      Filters logs by a specific URL category. Optional values are:
+        1. Malware
+        2. Phishing
+        3. Command and Control
+        4. Dynamic DNS
+        5. Encrypted DNS
+        6. Parked
+        7. Unknown
+        8. Newly Registered Domains
+        9. Grayware
+        10. Hacking
+        11. Proxy Avoidance And Anonymizers
+        12. Ransomware
+        13. Scanning Activity
+        14. Artificial Intelligence
+        15. High Risk
+        16. Compromised Website
+
+      This argument cannot be used in combination with the following arguments: time-generated, time-generated-after, addr-src, addr-dst, zone-src, zone-dst, action, port-dst, rule, url, filedigest. It can only be used with log_type set to "url". For all other log_type values, this argument is ignored.
+    name: url_category
+    underlyingargname: url_category
+    type: string
+  - description: |-
+      The time the log was generated from the timestamp and prior to it.
+      For example "2019/08/11 01:10:44, will get logs before the specified date.".
+    name: time_generated
+    underlyingargname: time_generated
+    type: string
+  - description: |-
+      The time the log was generated from the timestamp and prior to it.
+      For example "2019/08/11 01:10:44", will get logs after the specified date.
+    name: time_generated_after
+    underlyingargname: time_generated_after
+    type: string
+  - description: The source address.
+    name: addr_src
+    underlyingargname: addr_src
+    type: string
+  - description: The destination address.
+    name: addr_dst
+    underlyingargname: addr_dst
+    type: string
+  - description: The source or destination IP address.
+    name: ip
+    underlyingargname: ip
+    type: string
+  - description: The source zone.
+    name: zone_src
+    underlyingargname: zone_src
+    type: string
+  - description: The destination source.
+    name: zone_dst
+    underlyingargname: zone_dst
+    type: string
+  - description: The rule action.
+    name: action
+    underlyingargname: action
+    type: string
+  - description: The destination port.
+    name: port_dst
+    underlyingargname: port_dst
+    type: string
+  - description: The rule name, for example "Allow all outbound".
+    name: rule
+    underlyingargname: rule
+    type: string
+  - description: The URL, for example "safebrowsing.googleapis.com".
+    name: url
+    underlyingargname: url
+    type: string
+  - description: The file hash (for WildFire logs only).
+    name: filedigest
+    underlyingargname: filedigest
+    type: string
+  - defaultvalue: '100'
+    description: The maximum number of logs to retrieve. If empty, the default is 100. The maximum is 5,000.
+    name: number_of_logs
+    underlyingargname: number_of_logs
+    type: number
+  - description: Whether to show only `after-change-preview`, and `before-change-preview`, or get full data for it.  The full data are under the fields `after-change-detail`, and `before-change-detail`. Optional values are yes/no.
+    name: show_detail
+    defaultvalue: no
+    underlyingargname: show_detail
+    type: string
+outputs:
+    - underlyingoutputcontextpath: Panorama.Monitor.JobID
+      description: The job ID of the logs query.
+      type: string
+      name: Panorama.Monitor.JobID
+    - underlyingoutputcontextpath: Panorama.Monitor.Status
+      description: The status of the logs query.
+      type: string
+      name: Panorama.Monitor.Status
+    - underlyingoutputcontextpath: Panorama.Monitor.Message
+      description: The message of the logs query.
+      type: string
+      name: Panorama.Monitor.Message
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.Action
+      description: The action taken for the session. Can be "alert", "allow", "deny", "drop", "drop-all-packets", "reset-client", "reset-server", "reset-both", or "block-url".
+      type: string
+      name: Panorama.Monitor.Logs.Action
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.Application
+      description: The application associated with the session.
+      type: string
+      name: Panorama.Monitor.Logs.Application
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.Category
+      description: The URL category of the URL subtype. For WildFire subtype, it is the verdict on the file, and can be either "malicious", "phishing", "grayware", or "benign". For other subtypes, the value is "any".
+      type: string
+      name: Panorama.Monitor.Logs.Category
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.DeviceName
+      description: The hostname of the firewall on which the session was logged.
+      type: string
+      name: Panorama.Monitor.Logs.DeviceName
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.DestinationAddress
+      description: The original session destination IP address.
+      type: string
+      name: Panorama.Monitor.Logs.DestinationAddress
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.DestinationUser
+      description: The username of the user to which the session was destined.
+      type: string
+      name: Panorama.Monitor.Logs.DestinationUser
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.DestinationCountry
+      description: The destination country or internal region for private addresses. Maximum length is 32 bytes.
+      type: string
+      name: Panorama.Monitor.Logs.DestinationCountry
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.DestinationPort
+      description: The destination port utilized by the session.
+      type: string
+      name: Panorama.Monitor.Logs.DestinationPort
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.FileDigest
+      description: Only for the WildFire subtype, all other types do not use this field. The filedigest string shows the binary hash of the file sent to be analyzed by the WildFire service.
+      type: string
+      name: Panorama.Monitor.Logs.FileDigest
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.FileName
+      description: |-
+        File name or file type when the subtype is file.
+        File name when the subtype is virus.
+        File name when the subtype is wildfire-virus.
+        File name when the subtype is wildfire.
+      type: string
+      name: Panorama.Monitor.Logs.FileName
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.FileType
+      description: |-
+        Only for the WildFire subtype, all other types do not use this field.
+        Specifies the type of file that the firewall forwarded for WildFire analysis.
+      type: string
+      name: Panorama.Monitor.Logs.FileType
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.FromZone
+      description: The zone from which the session was sourced.
+      type: string
+      name: Panorama.Monitor.Logs.FromZone
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.URLOrFilename
+      description: |-
+        The actual URL when the subtype is url.
+        The file name or file type when the subtype is file.
+        The file name when the subtype is virus.
+        The file name when the subtype is wildfire-virus.
+        The file name when the subtype is wildfire.
+        The URL or file name when the subtype is vulnerability (if applicable).
+      type: string
+      name: Panorama.Monitor.Logs.URLOrFilename
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.NATDestinationIP
+      description: The post-NAT destination IP address if destination NAT was performed.
+      type: string
+      name: Panorama.Monitor.Logs.NATDestinationIP
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.NATDestinationPort
+      description: The post-NAT destination port.
+      type: string
+      name: Panorama.Monitor.Logs.NATDestinationPort
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.NATSourceIP
+      description: The post-NAT source IP address if source NAT was performed.
+      type: string
+      name: Panorama.Monitor.Logs.NATSourceIP
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.NATSourcePort
+      description: The post-NAT source port.
+      type: string
+      name: Panorama.Monitor.Logs.NATSourcePort
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.PCAPid
+      description: |-
+        The packet capture (pcap) ID is a 64 bit unsigned integral denoting
+        an ID to correlate threat pcap files with extended pcaps taken as a part of
+        that flow. All threat logs will contain either a pcap_id of 0 (no associated
+        pcap), or an ID referencing the extended pcap file.
+      type: string
+      name: Panorama.Monitor.Logs.PCAPid
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.IPProtocol
+      description: The IP protocol associated with the session.
+      type: string
+      name: Panorama.Monitor.Logs.IPProtocol
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.Recipient
+      description: |-
+        Only for the WildFire subtype, all other types do not use this field.
+        Specifies the name of the receiver of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall.
+      type: string
+      name: Panorama.Monitor.Logs.Recipient
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.Rule
+      description: The name of the rule that the session matched.
+      type: string
+      name: Panorama.Monitor.Logs.Rule
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.RuleID
+      description: The ID of the rule that the session matched.
+      type: string
+      name: Panorama.Monitor.Logs.RuleID
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.ReceiveTime
+      description: The time the log was received at the management plane.
+      type: string
+      name: Panorama.Monitor.Logs.ReceiveTime
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.Sender
+      description: |-
+        Only for the WildFire subtype; all other types do not use this field.
+        Specifies the name of the sender of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall.
+      type: string
+      name: Panorama.Monitor.Logs.Sender
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.SessionID
+      description: An internal numerical identifier applied to each session.
+      type: string
+      name: Panorama.Monitor.Logs.SessionID
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.DeviceSN
+      description: The serial number of the firewall on which the session was logged.
+      type: string
+      name: Panorama.Monitor.Logs.DeviceSN
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.Severity
+      description: |-
+        The severity associated with the threat. Can be "informational", "low",
+        "medium", "high", or "critical".
+      type: string
+      name: Panorama.Monitor.Logs.Severity
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.SourceAddress
+      description: The original session source IP address.
+      type: string
+      name: Panorama.Monitor.Logs.SourceAddress
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.SourceCountry
+      description: |-
+        The source country or internal region for private addresses. Maximum
+        length is 32 bytes.
+      type: string
+      name: Panorama.Monitor.Logs.SourceCountry
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.SourceUser
+      description: The username of the user who initiated the session.
+      type: string
+      name: Panorama.Monitor.Logs.SourceUser
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.SourcePort
+      description: The source port utilized by the session.
+      type: string
+      name: Panorama.Monitor.Logs.SourcePort
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.ThreatCategory
+      description: |-
+        The threat categories used to classify different types of
+        threat signatures.
+      type: string
+      name: Panorama.Monitor.Logs.ThreatCategory
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.Name
+      description: |-
+        The Palo Alto Networks identifier for the threat. A description
+        string followed by a 64-bit numerical identifier.
+      type: string
+      name: Panorama.Monitor.Logs.Name
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.ID
+      description: The Palo Alto Networks ID for the threat.
+      type: string
+      name: Panorama.Monitor.Logs.ID
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.ToZone
+      description: The zone to which the session was destined.
+      type: string
+      name: Panorama.Monitor.Logs.ToZone
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.TimeGenerated
+      description: The time the log was generated on the data plane.
+      type: string
+      name: Panorama.Monitor.Logs.TimeGenerated
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.URLCategoryList
+      description: |-
+        A list of the URL filtering categories the firewall used to
+        enforce the policy.
+      type: string
+      name: Panorama.Monitor.Logs.URLCategoryList
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.Bytes
+      description: The total log bytes.
+      type: string
+      name: Panorama.Monitor.Logs.Bytes
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.BytesReceived
+      description: The log bytes received.
+      type: string
+      name: Panorama.Monitor.Logs.BytesReceived
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.BytesSent
+      description: The log bytes sent.
+      type: string
+      name: Panorama.Monitor.Logs.BytesSent
+    - underlyingoutputcontextpath: Panorama.Monitor.Logs.Vsys
+      description: The VSYS on the firewall that generated the log.
+      type: string
+      name: Panorama.Monitor.Logs.Vsys
+underlyingcontentitem:
+  id: PANOSQueryLogs
+  name: PANOSQueryLogs
+  type: script
+  version: -1
+  command: ''
+requiresuserapproval: false
+marketplaces:
+- platform

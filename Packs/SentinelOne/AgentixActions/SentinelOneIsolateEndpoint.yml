@@ -1,0 +1,34 @@
+commonfields:
+  id: SentinelOneIsolateEndpoint
+  version: -1
+name: SentinelOneDisconnectAgent
+display: SentinelOne - Disconnect Agent
+tags:
+ - Endpoint
+category: Endpoint
+description: >
+  Disconnects (isolates) the endpoint from the network.
+args:
+  - description: A comma-separated list of agent IDs to isolate from the network (i.e., disconnect the endpoints).
+    name: agent_id
+    required: true
+    type: string
+    underlyingargname: agent_id
+outputs:
+  - underlyingoutputcontextpath: SentinelOne.Agent.NetworkStatus
+    description: Agent network status.
+    type: string
+    name: SentinelOne.Agent.NetworkStatus
+  - underlyingoutputcontextpath: SentinelOne.Agent.ID
+    description: Input agents' IDs.
+    type: string
+    name: SentinelOne.Agent.ID
+underlyingcontentitem:
+  id: SentinelOne V2
+  name: SentinelOne V2
+  type: command
+  version: -1
+  command: sentinelone-disconnect-agent
+requiresuserapproval: true
+marketplaces:
+- platform

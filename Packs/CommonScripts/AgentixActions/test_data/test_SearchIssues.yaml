@@ -1,0 +1,160 @@
+tests:
+  - name: Search critical severity issues from last 24 hours
+    prompt: "Show me all critical severity issues from the last 24 hours"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListIssues
+            arguments:
+              severity: "critical"
+              start_time: "24 hours ago"
+
+  - name: Search high and critical issues in Security domain
+    prompt: "Find all high and critical severity issues in the Security domain"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListIssues
+            arguments:
+              severity: "high,critical"
+              issue_domain: "Security"
+
+  - name: Search unassigned new issues
+    prompt: "Show me all new unassigned issues"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListIssues
+            arguments:
+              status: "New"
+              assignee: "unassigned"
+
+  - name: Search issues by multiple IDs
+    prompt: "Get details for issues with IDs 12345, 67890, and 11111"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListIssues
+            arguments:
+              issue_id: "12345,67890,11111"
+
+  - name: Complex search with multiple filters
+    prompt: "Show me critical and high severity issues in the Security domain from the last 7 days that are in progress and assigned"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListIssues
+            arguments:
+              severity: "critical,high"
+              issue_domain: "Security"
+              start_time: "7 days ago"
+              status: "In Progress"
+              assignee: "assigned"
+
+  - name: Search issues from multiple sources
+    prompt: "Find all issues from XDR Agent, Prisma Cloud, and Threat Intelligence sources"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListIssues
+            arguments:
+              issue_source: "XDR Agent,Prisma Cloud,Threat Intelligence"
+
+  - name: Search issues by asset ID
+    prompt: "Find all issues related to asset a1b2c3d4e5f6"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListIssues
+            arguments:
+              asset_ids: "a1b2c3d4e5f6"
+
+  - name: Search issues in date range
+    prompt: "Find all issues between January 1, 2024 and January 31, 2024"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListIssues
+            arguments:
+              start_time: "2024-01-01"
+              end_time: "2024-01-31"
+
+  - name: Invalid severity value
+    prompt: "Find issues with severity level 'super-critical'"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - expected_error: "Invalid severity value. Valid options are: low, medium, high, critical"
+
+  - name: Invalid status value
+    prompt: "Show me issues with status 'pending'"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - expected_error: "Invalid status value. Valid options are: New, In Progress, Resolved"
+
+  - name: Search issues with agent_id in output
+    prompt: "Show me all critical issues from the last hour and include the agent ID"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListIssues
+            arguments:
+              severity: "critical"
+              start_time: "1 hour ago"
+
+  - name: Search issues with case_id in output
+    prompt: "Find all high severity issues in Security domain from today and show me the case IDs"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListIssues
+            arguments:
+              severity: "high"
+              issue_domain: "Security"
+              start_time: "today"
+
+  - name: Search issues requesting both agent_id and case_id
+    prompt: "Get issue details for ID 99999 including agent ID and case ID"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListIssues
+            arguments:
+              issue_id: "99999"
+
+  - name: Search new issues with agent and case details
+    prompt: "Show me all new issues from XDR Analytics in the last 6 hours including agent ID and case ID"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListIssues
+            arguments:
+              status: "New"
+              issue_source: "XDR Analytics"
+              start_time: "6 hours ago"
+
+  - name: Sequence - Search critical issues and assign one
+    prompt: "Find all critical severity issues from the last 24 hours, then assign issue 12345 to analyst@company.com"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: sequence
+        actions:
+          - action_id: CortexListIssues
+            arguments:
+              severity: "critical"
+              start_time: "24 hours ago"
+          - action_id: CortexUpdateIssue
+            arguments:
+              id: "12345"
+              assigned_user_mail: "analyst@company.com"

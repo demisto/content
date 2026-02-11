@@ -1,0 +1,103 @@
+commonfields:
+  id: EnrichFile
+  version: -1
+display: Enrich File
+name: EnrichFile
+tags:
+ - threat-intelligence
+ - file
+ - reputation
+category: Data Enrichment & Threat Intelligence
+description: |
+  A comprehensive action to enrich the provided file indicator and retrieve all available data.
+  The results include both tenant-specific internal information (from the Threat Intelligence Management (TIM) brand) and global threat intelligence.
+  Global threat intelligence is retrieved using configured integrations to identify potential threats.
+  ACTION REDUNDANCY WARNING: Due to its comprehensive nature, DO NOT use 'EnrichIndicator' or 'CortexListIndicators' in parallel with this action, as the data is already included in the output.
+  PREREQUISITE: Ensure that one or more of these external integrations are configured in your environment.
+args:
+  - name: file_hash
+    description: |
+      A comma-separated list of hashes of the files to enrich.
+      Supported hash types are: MD5, SHA1, SHA256, and SHA512.
+    required: true
+    type: string
+    underlyingargname: file_hash
+  - name: external_enrichment
+    required: false
+    description: Always set to true.
+    type: string
+    defaultvalue: "true"
+    underlyingargname: external_enrichment
+  - name: additional_fields
+    required: false
+    description: When set to true, the output will include additional fields about the file. Default is true.
+    type: string
+    defaultvalue: "true"
+    underlyingargname: additional_fields
+outputs:
+- underlyingoutputcontextpath: FileEnrichment.Results.Score
+  description: "The numerical risk assessment score of the indicator, ranging from 0 to 3. Options are: 0 - Unknown, 1 - Benign, 2 - Suspicious, 3 - Malicious."
+  type: Number
+  name: FileEnrichment.Results.Score
+- underlyingoutputcontextpath: FileEnrichment.Results.Brand
+  description: The security vendor or source used to calculate the verdict score for the indicator.
+  type: String
+  name: FileEnrichment.Results.Brand
+- underlyingoutputcontextpath: FileEnrichment.Results.Size
+  description: The size of the file, expressed in bytes.
+  type: string
+  name: FileEnrichment.Results.Size
+- underlyingoutputcontextpath: FileEnrichment.Results.Reliability
+  description: "The reliability score of the reporting Brand. Options: \"A+ - Completely reliable\", \"A - Reliable\", \"B - Usually reliable\", \"C - Fairly reliable\", \"D - Not usually reliable\", \"E - Unreliable\", \"F - Reliability cannot be judged\"."
+  type: String
+  name: FileEnrichment.Results.Reliability
+- underlyingoutputcontextpath: FileEnrichment.Hashes.MD5
+  description: The MD5 cryptographic hash calculated for the file.
+  type: String
+  name: FileEnrichment.Hashes.MD5
+- underlyingoutputcontextpath: FileEnrichment.Hashes.SHA1
+  description: The SHA1 cryptographic hash calculated for the file.
+  type: String
+  name: FileEnrichment.Hashes.SHA1
+- underlyingoutputcontextpath: FileEnrichment.Hashes.SHA256
+  description: The SHA256 cryptographic hash calculated for the file.
+  type: String
+  name: FileEnrichment.Hashes.SHA256
+- underlyingoutputcontextpath: FileEnrichment.Results.AdditionalFields.Name
+  description: The original file name retrieved during enrichment.
+  type: String
+  name: FileEnrichment.Results.AdditionalFields.Name
+- underlyingoutputcontextpath: FileEnrichment.Hashes.SSDeep
+  description: The SSDeep fuzzy hash (context-triggered piecewise hash) used for file similarity matching.
+  type: String
+  name: FileEnrichment.Hashes.SSDeep
+- underlyingoutputcontextpath: FileEnrichment.Results.AdditionalFields.Type
+  description: The detected file type. Example, Portable Executable, PDF document.
+  type: String
+  name: FileEnrichment.Results.AdditionalFields.Type
+- underlyingoutputcontextpath: FileEnrichment.Results.AdditionalFields.Extension
+  description: The file extension. Example, .exe, .pdf, .zip.
+  type: String
+  name: FileEnrichment.Results.AdditionalFields.Extension
+- underlyingoutputcontextpath: FileEnrichment.Value
+  description: The actual file hash value of the file indicator that was enriched.
+  type: String
+  name: FileEnrichment.Value
+- underlyingoutputcontextpath: FileEnrichment.MaxVerdict
+  description: "The highest risk classification (maximum verdict) aggregated from all brands verdicts found for this file. Options include: Unknown, Benign, Suspicious, Malicious."
+  type: String
+  name: FileEnrichment.MaxVerdict
+underlyingcontentitem:
+  id: file-enrichment
+  name: file-enrichment
+  type: script
+  version: -1
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- agentix
+- xsiam
+- cloud
+- cloud_runtime_security
+- edr

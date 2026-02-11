@@ -1,0 +1,192 @@
+
+tests:
+  - name: Basic vulnerability search with limit
+    prompt: Show me the top 10 vulnerabilities
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: SearchVulnerabilities
+            arguments:
+              limit: "10"
+
+  - name: Search for specific CVE
+    prompt: Find vulnerability CVE-2023-12345
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: SearchVulnerabilities
+            arguments:
+              cve_id: "CVE-2023-12345"
+
+  - name: Filter by CVSS score threshold
+    prompt: Get vulnerabilities with CVSS score 7.0 or higher
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: SearchVulnerabilities
+            arguments:
+              cvss_score_gte: "7.0"
+
+  - name: Search internet-exposed vulnerabilities
+    prompt: Show me vulnerabilities on internet-facing assets
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: SearchVulnerabilities
+            arguments:
+              internet_exposed: "true"
+
+  - name: Find exploitable vulnerabilities only
+    prompt: List all exploitable vulnerabilities
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: SearchVulnerabilities
+            arguments:
+              exploitable: "true"
+
+  - name: Search KEV vulnerabilities
+    prompt: Find known exploited vulnerabilities
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: SearchVulnerabilities
+            arguments:
+              has_kev: "true"
+
+  - name: Filter by affected software
+    prompt: Show vulnerabilities affecting Apache HTTP Server
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: SearchVulnerabilities
+            arguments:
+              affected_software: "Apache HTTP Server"
+
+  - name: Get unassigned vulnerabilities
+    prompt: Show me vulnerabilities that haven't been assigned to anyone
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: SearchVulnerabilities
+            arguments:
+              not_assigned: "true"
+
+  - name: Multiple CVEs search
+    prompt: Find vulnerabilities CVE-2023-1234 and CVE-2023-5678
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: SearchVulnerabilities
+            arguments:
+              cve_id: "CVE-2023-1234,CVE-2023-5678"
+
+  - name: Complex filtering with multiple criteria
+    prompt: Show 25 critical exploitable vulnerabilities with CVSS score above 8.5 that are internet-exposed
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: SearchVulnerabilities
+            arguments:
+              limit: "25"
+              cvss_score_gte: "8.5"
+              exploitable: "true"
+              internet_exposed: "true"
+
+  - name: Sort vulnerabilities ascending by severity
+    prompt: List vulnerabilities sorted by severity from low to high
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: SearchVulnerabilities
+            arguments:
+              sort_field: "PLATFORM_SEVERITY"
+              sort_order: "ASC"
+
+  - name: EPSS score filtering
+    prompt: Find vulnerabilities with EPSS score 0.7 or higher
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: SearchVulnerabilities
+            arguments:
+              epss_score_gte: "0.7"
+
+  - name: Multiple software products
+    prompt: Show vulnerabilities affecting Windows Server, Apache, and MySQL
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: SearchVulnerabilities
+            arguments:
+              affected_software: "Windows Server,Apache,MySQL"
+
+  - name: Request additional fields
+    prompt: Get vulnerability details including asset IDs and fix versions
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: SearchVulnerabilities
+            arguments:
+              on_demand_fields: "ASSET_ID,FIX_VERSIONS"
+
+  - name: Edge case - zero limit
+    prompt: Show me 0 vulnerabilities
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: SearchVulnerabilities
+            arguments:
+              limit: "0"
+
+  - name: Invalid CVE format
+    prompt: Find vulnerability CVE-INVALID-123
+    agent_id: test
+    expected_outcomes:
+      - expected_error: "Invalid CVE format"
+
+  - name: Invalid CVSS score
+    prompt: Get vulnerabilities with CVSS score 15.0 or higher
+    agent_id: test
+    expected_outcomes:
+      - expected_error: "CVSS score must be between 0 and 10"
+
+  - name: Invalid boolean value
+    prompt: Show vulnerabilities where internet_exposed is maybe
+    agent_id: test
+    expected_outcomes:
+      - expected_error: "Invalid boolean value"
+
+  - name: Conversational style vulnerability search
+    prompt: I need to see what vulnerabilities we have that are really dangerous and exposed to the internet
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: SearchVulnerabilities
+            arguments:
+              internet_exposed: "true"
+              cvss_score_gte: "7.0"
+
+  - name: Ambiguous vulnerability request
+    prompt: Show me some security stuff
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: SearchVulnerabilities

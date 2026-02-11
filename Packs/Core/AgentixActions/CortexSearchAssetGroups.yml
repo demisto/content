@@ -1,0 +1,77 @@
+commonfields:
+  id: SearchAssetGroups
+  version: -1
+name: CortexListAssetGroups
+display: Cortex - List Asset Groups
+category: Data Enrichment & Threat Intelligence
+description: >
+  Searches for asset groups from the Cortex platform using one or more filter criteria.
+args:
+  - name: name
+    type: string
+    description: |
+      A JSON-encoded string of asset group names to search for. Supports substring matching. (e.g., `["group1", "group2"]`.
+    underlyingargname: name
+  - name: type
+    type: string
+    description: |
+      Filter asset groups by type. Options: DYNAMIC, STATIC.
+      When not specified, both types are used.
+    underlyingargname: type
+  - name: description
+    type: string
+    description: |
+      A JSON-encoded string of asset group descriptions to search for. Supports substring matching. (e.g., `["description1", "description2"]`).
+    underlyingargname: description
+  - name: id
+    description: A comma-separated list of asset group IDs to search for.
+    type: string
+    underlyingargname: id
+  - name: limit
+    type: string
+    defaultvalue: 50
+    description: |
+      The maximum number of groups to return.
+    underlyingargname: limit
+outputs:
+    - underlyingoutputcontextpath: Core.AssetGroups.name
+      description: The name of the asset group.
+      type: String
+      name: Core.AssetGroups.name
+    - underlyingoutputcontextpath: Core.AssetGroups.filter
+      description: The filter criteria for the asset group.
+      type: String
+      name: Core.AssetGroups.filter
+    - underlyingoutputcontextpath: Core.AssetGroups.membership_predicate
+      description: The predicate used to create the asset group.
+      type: String
+      name: Core.AssetGroups.membership_predicate
+    - underlyingoutputcontextpath: Core.AssetGroups.type
+      description: The type of the asset group.
+      type: String
+      name: Core.AssetGroups.type
+    - underlyingoutputcontextpath: Core.AssetGroups.description
+      description: The description of the asset group.
+      type: String
+      name: Core.AssetGroups.description
+    - underlyingoutputcontextpath: Core.AssetGroups.modified_by_pretty
+      description: The formatted name of the user who modified the group.
+      type: String
+      name: Core.AssetGroups.modified_by_pretty
+    - underlyingoutputcontextpath: Core.AssetGroups.created_by_pretty
+      description: The formatted name of the user who created the group.
+      type: String
+      name: Core.AssetGroups.created_by_pretty
+underlyingcontentitem:
+  id: Cortex Core - Platform
+  name: Cortex Core - Platform
+  type: command
+  version: -1
+  command: core-search-asset-groups
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+  - agentix
+  - xsiam
+  - cloud_posture

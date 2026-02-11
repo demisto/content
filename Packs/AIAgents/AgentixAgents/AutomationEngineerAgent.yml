@@ -1,0 +1,16 @@
+commonfields:
+  id: automation-engineer-agent
+  version: -1
+name: Automation Engineer
+description: |-
+  Streamlines automation by generating and updating Python scripts from natural-language prompts,
+  applying security best practices, and letting you explore or explain any part of the code.
+visibility: public
+color: '#FFE275'
+conversationstarters: []
+systeminstructions: ''
+builtinactions:
+  - InvokeLLM
+actionids: []
+marketplaces:
+  - platform

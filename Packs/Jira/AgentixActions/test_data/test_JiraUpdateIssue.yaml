@@ -1,0 +1,219 @@
+tests:
+  - name: Basic issue edit with summary
+    prompt: Update the Jira issue DEM-10798 to change the summary to "New updated summary"
+    agent_id: c2aa500d-ba2b-472c-bf22-ce55a4fefce2
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: JiraUpdateIssue
+            arguments:
+              issue_key: DEM-10798
+              summary: New updated summary
+
+  - name: Edit issue with multiple fields
+    prompt: I need to update Jira ticket DEM-10798 with a new description "Bug found in login module", set priority to High, and add labels "urgent,security"
+    agent_id: c2aa500d-ba2b-472c-bf22-ce55a4fefce2
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: JiraUpdateIssue
+            arguments:
+              issue_key: DEM-10798
+              description: Bug found in login module
+              priority: High
+              labels: urgent,security
+
+  - name: Edit using issue ID instead of key
+    prompt: Change the assignee of issue 21394 to john.doe
+    agent_id: c2aa500d-ba2b-472c-bf22-ce55a4fefce2
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: JiraUpdateIssue
+            arguments:
+              issue_id: "21394"
+              assignee: john.doe
+
+  - name: Status transition request
+    prompt: Move ticket DEM-10798 to "In Progress" status
+    agent_id: c2aa500d-ba2b-472c-bf22-ce55a4fefce2
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: JiraUpdateIssue
+            arguments:
+              issue_key: DEM-10798
+              status: In Progress
+
+  - name: Due date setting with specific format
+    prompt: Set the due date for DEM-10798 to 2024-12-31
+    agent_id: c2aa500d-ba2b-472c-bf22-ce55a4fefce2
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: JiraUpdateIssue
+            arguments:
+              issue_key: DEM-10798
+              due_date: "2024-12-31"
+
+  - name: Append action for labels
+    prompt: Add the label "hotfix" to existing labels on issue DEM-10798 without removing current ones
+    agent_id: c2aa500d-ba2b-472c-bf22-ce55a4fefce2
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: JiraUpdateIssue
+            arguments:
+              issue_key: DEM-10798
+              labels: hotfix
+              action: append
+
+  - name: Cloud assignee by ID
+    prompt: Assign issue DEM-10798 to user with account ID "5b10a2844c20165700ede21g"
+    agent_id: c2aa500d-ba2b-472c-bf22-ce55a4fefce2
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: JiraUpdateIssue
+            arguments:
+              issue_key: DEM-10798
+              assignee_id: "5b10a2844c20165700ede21g"
+
+  - name: Environment and security level update
+    prompt: Update ticket DEM-10798 to set environment as "Production Ubuntu 22.04" and security level to "Anyone"
+    agent_id: c2aa500d-ba2b-472c-bf22-ce55a4fefce2
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: JiraUpdateIssue
+            arguments:
+              issue_key: DEM-10798
+              environment: Production Ubuntu 22.04
+              security: Anyone
+
+  - name: Components addition
+    prompt: Add components "backend" and "api" to issue DEM-10798
+    agent_id: c2aa500d-ba2b-472c-bf22-ce55a4fefce2
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: JiraUpdateIssue
+            arguments:
+              issue_key: DEM-10798
+              components: backend,api
+              action: append
+
+  - name: Parent issue linkage for subtask
+    prompt: Link subtask DEM-10798 to parent issue DEM-10811
+    agent_id: c2aa500d-ba2b-472c-bf22-ce55a4fefce2
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: JiraUpdateIssue
+            arguments:
+              issue_key: DEM-10798
+              parent_issue_key: DEM-10811
+
+  - name: Transition by name instead of status
+    prompt: Execute the "Start Progress" transition on ticket DEM-10798
+    agent_id: c2aa500d-ba2b-472c-bf22-ce55a4fefce2
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: JiraUpdateIssue
+            arguments:
+              issue_key: DEM-10798
+              transition: Start Progress
+
+  - name: Rewrite action explicitly specified
+    prompt: Replace the description of DEM-10798 with "Completely new description" using rewrite mode
+    agent_id: c2aa500d-ba2b-472c-bf22-ce55a4fefce2
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: JiraUpdateIssue
+            arguments:
+              issue_key: DEM-10798
+              description: Completely new description
+              action: rewrite
+
+  - name: Multiple labels with spaces
+    prompt: Set labels on issue DEM-10798 to "needs review, high priority, customer facing"
+    agent_id: c2aa500d-ba2b-472c-bf22-ce55a4fefce2
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: JiraUpdateIssue
+            arguments:
+              issue_key: DEM-10798
+              labels: "needs_review,high_priority,customer_facing"
+
+  - name: Casual language for priority change
+    prompt: Can you bump up the priority of DEM-10798 to Critical?
+    agent_id: c2aa500d-ba2b-472c-bf22-ce55a4fefce2
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: JiraUpdateIssue
+            arguments:
+              issue_key: DEM-10798
+              priority: Critical
+
+  - name: Numerical issue ID with quotes
+    prompt: Modify issue "21394" to have summary "Updated via ID" and priority Medium
+    agent_id: c2aa500d-ba2b-472c-bf22-ce55a4fefce2
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: JiraUpdateIssue
+            arguments:
+              issue_id: "21394"
+              summary: Updated via ID
+              priority: Medium
+
+  - name: Ambiguous but clear parent reference
+    prompt: Make issue DEM-10798 a subtask under DEM-10811
+    agent_id: c2aa500d-ba2b-472c-bf22-ce55a4fefce2
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: JiraUpdateIssue
+            arguments:
+              issue_key: DEM-10798
+              parent_issue_key: DEM-10811
+
+  - name: Long description with special characters
+    prompt: |
+      Update description of DEM-10798 to "This issue involves special chars: @#$% and needs immediate attention. Steps: 1) Check logs 2) Fix bug 3) Test"
+    agent_id: c2aa500d-ba2b-472c-bf22-ce55a4fefce2
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: JiraUpdateIssue
+            arguments:
+              issue_key: DEM-10798
+              description: "This issue involves special chars: @#$% and needs immediate attention. Steps: 1) Check logs 2) Fix bug 3) Test"
+
+  - name: Combined append and regular updates
+    prompt: For issue DEM-10798, append "additional" to existing labels and also update the summary to "Combined Update"
+    agent_id: c2aa500d-ba2b-472c-bf22-ce55a4fefce2
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: JiraUpdateIssue
+            arguments:
+              issue_key: DEM-10798
+              labels: additional
+              summary: Combined Update
+              action: append
+
+  - name: Minimal but complete request
+    prompt: Edit DEM-10798 summary to "Fixed"
+    agent_id: c2aa500d-ba2b-472c-bf22-ce55a4fefce2
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: JiraUpdateIssue
+            arguments:
+              issue_key: DEM-10798
+              summary: Fixed

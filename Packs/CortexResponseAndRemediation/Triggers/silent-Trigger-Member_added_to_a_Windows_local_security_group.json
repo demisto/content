@@ -1,0 +1,20 @@
+{
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "User added to the Windows local Administrator group"
+        }
+      ]
+    }
+  },
+  "description": "This trigger is responsible for handling alerts where a user was added to the Windows local Administrator group.",
+  "fromVersion": "8.9.0",
+  "issilent": true,
+  "playbook_id": "silent-Member added to a Windows local security group",
+  "suggestion_reason": "Recommended for User added to the Windows local Administrator group alerts.",
+  "trigger_id": "169229a87c501635846a20afd3057bfb",
+  "trigger_name": "silent-Member added to a Windows local security group"
+}

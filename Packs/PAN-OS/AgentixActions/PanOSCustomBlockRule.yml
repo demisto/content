@@ -1,0 +1,115 @@
+commonfields:
+  id: PanOSCustomBlockRule
+  version: -1
+display: PAN-OS - Create Custom Block Rule
+name: PANOSCreateCustomBlockRule
+tags:
+ - firewall management
+ - threat prevention
+ - policy control
+ - Palo Alto Networks Products
+category: Network Security
+description: |-
+  Creates a custom security policy rule in a Palo Alto Networks firewall or Panorama to block specified objects
+  such as IP addresses, address groups, applications, URL categories, or external dynamic lists (EDLs).
+  You can define the direction of traffic to block, assign the rule to a specific device group,
+  set log forwarding profiles, and control rule placement within the rulebase (pre/post-rulebase for Panorama).
+args:
+  - name: rulename
+    description: The name to assign to the new custom block policy rule.
+    type: string
+    underlyingargname: rulename
+  - name: object_type
+    required: true
+    description: >
+      Type of object in the policy rule to block. Choose from IP address, address group, application, URL category, or external dynamic list (EDL).
+      Optional values are: ip, address-group, application, url-category, edl
+    type: string
+    underlyingargname: object_type
+  - name: object_value
+    required: true
+    description: A comma-separated string of object values to block, based on the selected `object_type`. For example, IP addresses or URL categories.
+    type: string
+    underlyingargname: object_value
+  - name: direction
+    defaultvalue: both
+    description: >
+      Traffic direction to block. Not applicable when `object_type` is "custom-url-category".
+      Optional values are: to, from, both.
+    type: string
+    underlyingargname: direction
+  - name: pre_post
+    description: >
+      The pre-rule or post-rule (Panorama instances).
+      Optional values are: pre-rulebase, post-rulebase.
+    type: string
+    underlyingargname: pre_post
+  - name: target
+    description: The specific firewall device on which to apply the rule (Panorama only).
+    type: string
+    underlyingargname: target
+  - name: log_forwarding
+    description: The log forwarding profile to associate with the rule.
+    type: string
+    underlyingargname: log_forwarding
+  - name: device-group
+    description: The device group for which to return addresses for the rule (Panorama instances).
+    type: string
+    underlyingargname: device-group
+  - name: tags
+    description: A comma-separated string of tags to associate with the rule for identification or filtering purposes.
+    type: string
+    underlyingargname: tags
+  - name: where
+    defaultvalue: bottom
+    description: >
+      Placement of the rule in the rulebase. If "before" or "after" is selected, the `dst` argument must be provided.
+      Optional values are: before, after, top, bottom.
+    type: string
+    underlyingargname: where
+  - name: dst
+    description: The destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument.
+    type: string
+    underlyingargname: dst
+outputs:
+  - underlyingoutputcontextpath: Panorama.SecurityRule.Name
+    description: The name of the custom block rule created.
+    type: string
+    name: Panorama.SecurityRule.Name
+  - underlyingoutputcontextpath: Panorama.SecurityRule.Object
+    description: The object(s) blocked by the rule, such as IPs, applications, or URL categories.
+    type: string
+    name: Panorama.SecurityRule.Object
+  - underlyingoutputcontextpath: Panorama.SecurityRule.Direction
+    description: The direction in which traffic is blocked (to, from, or both).
+    type: string
+    name: Panorama.SecurityRule.Direction
+  - underlyingoutputcontextpath: Panorama.SecurityRule.Target
+    description: The target firewall where the rule is applied (Panorama only).
+    type: string
+    name: Panorama.SecurityRule.Target
+  - underlyingoutputcontextpath: Panorama.SecurityRule.LogForwarding
+    description: The name of the log forwarding profile associated with the rule.
+    type: string
+    name: Panorama.SecurityRule.LogForwarding
+  - underlyingoutputcontextpath: Panorama.SecurityRule.DeviceGroup
+    description: The Panorama device group in which the rule resides.
+    type: string
+    name: Panorama.SecurityRule.DeviceGroup
+  - underlyingoutputcontextpath: Panorama.SecurityRule.Tags
+    description: The tags assigned to the rule.
+    type: string
+    name: Panorama.SecurityRule.Tags
+  - underlyingoutputcontextpath: Panorama.SecurityRules.ProfileSetting
+    description: The profile settings applied to the rule, such as security profiles or inspection settings.
+    type: string
+    name: Panorama.SecurityRules.ProfileSetting
+underlyingcontentitem:
+  id: Panorama
+  name: Panorama
+  type: command
+  version: -1
+  command: pan-os-custom-block-rule
+requiresuserapproval: true
+marketplaces:
+- platform

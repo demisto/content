@@ -1,0 +1,80 @@
+commonfields:
+  id: SearchIndicators
+  version: -1
+display: Cortex - List Indicators
+name: CortexListIndicators
+tags:
+ - TIM
+category: Data Enrichment & Threat Intelligence
+description: >
+  Searches for indicators within the tenant's indicator database based on arguments provided by the user.
+  This command can be used to retrieve indicators such as IPs, domains, URLs, file hashes, and emails, and supports filtering and result enrichment options.
+args:
+  - name: value
+    description: |
+      A JSON-encoded string representing an array of indicator values, for example: '[\"1.1.1.1\", \"8.8.8.8\"]' , '[\"https://unit42.paloaltonetworks.com\", \"https://t.co/i/adsct\"]'.
+    type: string
+    underlyingargname: value
+  - name: expirationStatus
+    description: "The expiration status of the indicator. Options: active, expired."
+    type: string
+    underlyingargname: expirationStatus
+  - name: type
+    description: 'A comma-separated list of types of indicators to search. Options: Account, ASN, Attack Pattern, Campaign, CIDR, CVE, Domain, Email, File, Host, IP, IPv6, IPv6CIDR, Malware, Threat Actor.'
+    type: string
+    underlyingargname: type
+  - name: IssuesIDs
+    description: 'A comma-separated list of IDs of issues linked to the indicator.'
+    type: string
+    underlyingargname: IssuesIDs
+  - name: size
+    description: The number of indicators to return, defaults to a max of 25 records.
+    type: string
+    underlyingargname: size
+  - description: 'A comma-separated list of indicator verdicts to filter the search results. Options: Malicious, Suspicious, Good, or Unknown.'
+    name: verdict
+    type: string
+    underlyingargname: verdict
+
+outputs:
+  - underlyingoutputcontextpath: foundIndicators.id
+    description: The internal ID of each indicator found in the tenant's database.
+    type: string
+    name: foundIndicators.id
+  - underlyingoutputcontextpath: foundIndicators.indicator_type
+    description: The type of the indicator (e.g., IP, Domain, URL, File, Email).
+    type: string
+    name: foundIndicators.indicator_type
+  - underlyingoutputcontextpath: foundIndicators.value
+    description: The value of the indicator.
+    type: string
+    name: foundIndicators.value
+  - underlyingoutputcontextpath: foundIndicators.verdict
+    description: The verdict or classification assigned to the indicator, if available (e.g., Malicious, Suspicious, Benign).
+    type: string
+    name: foundIndicators.verdict
+  - underlyingoutputcontextpath: foundIndicators.IssueIDs
+    description: The Issue IDs related to the indicator.
+    type: string
+    name: foundIndicators.IssueIDs
+  - underlyingoutputcontextpath: foundIndicators.expirationStatus
+    description: The expiration status of the indicator.
+    type: string
+    name: foundIndicators.expirationStatus
+  - underlyingoutputcontextpath: foundIndicators.lastSeen
+    description: The timestamp of the last time the indicator was seen.
+    type: string
+    name: foundIndicators.lastSeen
+underlyingcontentitem:
+  id: SearchIndicatorAgentix
+  name: SearchIndicatorAgentix
+  type: script
+  version: -1
+  command: ""
+requiresuserapproval: false
+marketplaces:
+  - platform
+supportedModules:
+  - agentix
+  - xsiam
+  - cloud_posture

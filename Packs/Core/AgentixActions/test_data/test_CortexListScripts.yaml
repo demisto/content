@@ -1,0 +1,39 @@
+tests:
+  - name: List all available scripts
+    prompt: "Show me all scripts in the library"
+    agent_id: bf38cca4-3865-4fb0-aa1a-9be6779fda74
+    expected_outcomes:
+    - evaluation_mode: any_of
+      actions:
+      - action_id: CortexListScripts
+        arguments: {}
+
+  - name: Filter scripts by Windows platform
+    prompt: "Find all scripts that support Windows"
+    agent_id: bf38cca4-3865-4fb0-aa1a-9be6779fda74
+    expected_outcomes:
+    - evaluation_mode: any_of
+      actions:
+      - action_id: CortexListScripts
+        arguments:
+          script_platform: "windows"
+
+  - name: Search for specific script by name
+    prompt: "List details for the 'file_exists' script"
+    agent_id: bf38cca4-3865-4fb0-aa1a-9be6779fda74
+    expected_outcomes:
+    - evaluation_mode: any_of
+      actions:
+      - action_id: CortexListScripts
+        arguments:
+          script_name: "file_exists"
+
+  - name: Multi-platform script search
+    prompt: "Show me scripts that work on Linux and macOS"
+    agent_id: bf38cca4-3865-4fb0-aa1a-9be6779fda74
+    expected_outcomes:
+    - evaluation_mode: any_of
+      actions:
+      - action_id: CortexListScripts
+        arguments:
+          script_platform: "linux,macos"

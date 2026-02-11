@@ -1,0 +1,6100 @@
+id: silent-Member added to a Windows local security group
+version: -1
+name: silent-Member added to a Windows local security group
+description: |-
+  This playbook addresses the following alerts:
+
+  - User added to the Windows local Administrator group
+
+  Playbook Stages:
+
+  Triage:
+
+  - Retrieve alert extra data and set member origin as domain
+
+  Early Containment:
+
+  - Automatically remove the added member from the local Administrators group (soft remediation)
+
+  Investigation:
+
+  - Enrich subject user information from Active Directory, host (via PowerShell), or DSS (Directory Sync Service)
+  - Analyze subject user attributes including creation date, group memberships, risk level, and process executions
+  - Enrich added member information from Active Directory, host (via PowerShell), or DSS
+  - Analyze added member attributes including password expiration status, creation date, and risk level
+  - Assess host risk level
+  - Search for related alerts in the case indicating persistence, privilege escalation, initial access, or credential access tactics
+  - Evaluate evidence to determine if the activity is malicious, including:
+  - Whether the subject user is new and rarely adds users to groups
+  - Whether the subject user is an IT user based on privileged group memberships
+  - Whether the subject user has a high risk score
+  - Whether the subject user executed suspicious command-lines
+  - Whether the added member is new and rarely added to groups
+  - Whether the added member's password is set to never expire
+  - Whether the added member has a high risk score
+  - Whether the host has a high risk level
+
+  Containment:
+
+  - If malicious activity is detected:
+  - Increase alert severity to Medium
+  - Present analyst with remediation options:
+    - Expire subject user's password and force password change on next login (for local users)
+    - Disable the added member's account in Active Directory
+    - Both actions
+    - Skip remediation
+
+  Requirements:
+
+  For any response action, you need the following integrations:
+
+  - Cortex XDR - IR
+  - Active Directory Query v2.
+tags:
+- T1098 - Account Manipulation
+- T1078 - Valid Accounts
+- TA0003 - Persistence
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d77f6f80-63a8-4a28-8dad-a7f464071638
+    type: start
+    task:
+      id: d77f6f80-63a8-4a28-8dad-a7f464071638
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 35528805-25ee-4c17-9d3e-8c114636bf50
+    type: regular
+    task:
+      id: 35528805-25ee-4c17-9d3e-8c114636bf50
+      version: -1
+      name: Get alert extra data
+      description: Returns information about each alert ID.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: faf6adbc-8e80-4b77-994f-59339eea1651
+    type: title
+    task:
+      id: faf6adbc-8e80-4b77-994f-59339eea1651
+      version: -1
+      name: Triage
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "59"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 48cfba89-d640-4ea6-affb-2bf220dbfec7
+    type: title
+    task:
+      id: 48cfba89-d640-4ea6-affb-2bf220dbfec7
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+      - "23"
+      - "33"
+      - "98"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 6102889e-8d47-4e32-b17a-c0e66c6eca02
+    type: regular
+    task:
+      id: 6102889e-8d47-4e32-b17a-c0e66c6eca02
+      version: -1
+      name: Retrieve subject user information
+      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
+      scriptName: get-user-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      attributes:
+        simple: whenCreated
+      user_name:
+        simple: ${alert.username.[0]}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 206d689d-7172-429f-907f-ed90238de3c4
+    type: title
+    task:
+      id: 206d689d-7172-429f-907f-ed90238de3c4
+      version: -1
+      name: Subject User Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+      - "32"
+      - "39"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: e3903a88-8b36-4131-84ce-43013ad31adc
+    type: regular
+    task:
+      id: e3903a88-8b36-4131-84ce-43013ad31adc
+      version: -1
+      name: Search related alerts in the case
+      description: Searches for additional alerts in the case that may further indicate user attempts to enumerate Active Directory.
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "108"
+    scriptarguments:
+      fromdate:
+        simple: 1 days ago
+      ignore-outputs:
+        simple: "false"
+      query:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'caseid:'
+              suffix:
+                value:
+                  simple: ' and (severity:MEDIUM OR severity:HIGH) and (mitreattcktactic:*TA0006* OR mitreattcktactic:*TA0004* OR mitreattcktactic:*TA0001* OR mitreattcktactic:*TA0003* OR mitreattcktechnique:*T1098* OR mitreattcktechnique:*T1078.002*) and -id:'
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: SanitizedIssueID
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2330,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: da89ae28-4c4f-4ea5-b12e-028ce618bd82
+    type: condition
+    task:
+      id: da89ae28-4c4f-4ea5-b12e-028ce618bd82
+      version: -1
+      name: Check if subject was found in Active Directory
+      description: Checks if the subject user was found in Active Directory.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      "Yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: UserData
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: UserData.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                    ignorecase: true
+                accessor: Username
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 37bbba83-d576-487d-bd9d-9270b3a35a44
+    type: regular
+    task:
+      id: 37bbba83-d576-487d-bd9d-9270b3a35a44
+      version: -1
+      name: Set subject user origin as domain
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+      - "34"
+    scriptarguments:
+      key:
+        simple: SubjectUserOrigin
+      value:
+        simple: Domain
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 644fed01-dd90-4634-8f4c-6ea1823806f1
+    type: regular
+    task:
+      id: 644fed01-dd90-4634-8f4c-6ea1823806f1
+      version: -1
+      name: Save subject user recently created and does not usually add users to groups
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      key:
+        simple: Evidence.SubjectUserIsNewAndDoesNotAddToGroups
+      value:
+        complex:
+          root: UserData
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: UserData.Username
+                iscontext: true
+              right:
+                value:
+                  simple: Core.OriginalAlert.event.evtlog_subject_username
+                iscontext: true
+              ignorecase: true
+          accessor: AdditionalFields.whenCreated
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 629e02f3-e766-4a36-b92c-5c43eb29db5c
+    type: regular
+    task:
+      id: 629e02f3-e766-4a36-b92c-5c43eb29db5c
+      version: -1
+      name: Convert user creation date to epoch
+      description: Converts the user creation date to epoch to find relative time of creation.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key:
+        simple: SubjectCreationDateInEpoch
+      value:
+        complex:
+          root: UserData
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: UserData.Username
+                iscontext: true
+              right:
+                value:
+                  simple: Core.OriginalAlert.event.evtlog_subject_username
+                iscontext: true
+              ignorecase: true
+          accessor: AdditionalFields.whenCreated
+          transformers:
+          - operator: toUnix
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 17ac5fc7-7a4c-4e95-a5ac-c5fb739c9f0f
+    type: condition
+    task:
+      id: 17ac5fc7-7a4c-4e95-a5ac-c5fb739c9f0f
+      version: -1
+      name: Check subject creation date & previous group modifications
+      description: Checks if the user's creation date in AD happened 24 hours or less since the time that this alert occurred.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      New user / behavior:
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: New user / behavior
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: Core.OriginalAlert
+                accessor: alert_generated_time
+                transformers:
+                - operator: toUnix
+                - operator: subtraction
+                  args:
+                    by:
+                      value:
+                        simple: SubjectCreationDateInEpoch
+                      iscontext: true
+                - operator: abs
+            iscontext: true
+          right:
+            value:
+              simple: "86400"
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              simple: Core.OriginalAlert.event.evtlog_subject_user_count_distinct_member_added_security_group
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 199f60cb-152f-4c01-860d-47259298cf87
+    type: title
+    task:
+      id: 199f60cb-152f-4c01-860d-47259298cf87
+      version: -1
+      name: Verdict
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "105"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 3620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 214103d9-8b9e-4ac8-91ed-d1495aa3ff00
+    type: regular
+    task:
+      id: 214103d9-8b9e-4ac8-91ed-d1495aa3ff00
+      version: -1
+      name: Set subject origin as undetermined
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      key:
+        simple: SubjectUserOrigin
+      value:
+        simple: Undetermined
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1850,
+          "y": 2620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 5e1ca638-88b7-49af-84b0-2b940d4b3b16
+    type: title
+    task:
+      id: 5e1ca638-88b7-49af-84b0-2b940d4b3b16
+      version: -1
+      name: Host Risk
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1893.1513671875,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: a27c8a48-99be-4402-883b-1efb353bca9d
+    type: regular
+    task:
+      id: a27c8a48-99be-4402-883b-1efb353bca9d
+      version: -1
+      name: Get host risk level
+      description: This script gathers endpoint data from multiple integrations and returns an endpoint entity with consolidated information to the context.
+      scriptName: get-endpoint-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      endpoint_id:
+        simple: ${alert.agentid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1893.1513671875,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 5e3d1885-837a-40fc-b460-a0ed023c70b3
+    type: condition
+    task:
+      id: 5e3d1885-837a-40fc-b460-a0ed023c70b3
+      version: -1
+      name: Check host risk level
+      description: Checks if the client host's risk level is high.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      High:
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: High
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: EndpointData.RiskLevel
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: EndpointData.RiskLevel
+                      iscontext: true
+                    right:
+                      value:
+                        simple: HIGH
+                    ignorecase: true
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1893.1513671875,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: bb038d5b-9eed-489b-9274-c9aded854472
+    type: regular
+    task:
+      id: bb038d5b-9eed-489b-9274-c9aded854472
+      version: -1
+      name: Save host risk to evidence
+      description: Saves the host risk level as evidence.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      key:
+        simple: Evidence.RiskyHost
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1893.1513671875,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 9704f833-a24a-4e5e-b481-0e75e0e4f3d5
+    type: title
+    task:
+      id: 9704f833-a24a-4e5e-b481-0e75e0e4f3d5
+      version: -1
+      name: User Creation Date & Behavior
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 1217.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 2de20194-db2b-43c2-941a-ca1928e39cbe
+    type: title
+    task:
+      id: 2de20194-db2b-43c2-941a-ca1928e39cbe
+      version: -1
+      name: Subject Enrichment via Host
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "165"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 1077.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 72529263-b666-427b-9b6b-58dc5d15efa8
+    type: title
+    task:
+      id: 72529263-b666-427b-9b6b-58dc5d15efa8
+      version: -1
+      name: Subject User Process Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "95"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1250,
+          "y": 1217.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: f1cde570-a485-4674-bceb-d42efc3f0cde
+    type: title
+    task:
+      id: f1cde570-a485-4674-bceb-d42efc3f0cde
+      version: -1
+      name: Added Member Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "44"
+      - "157"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4290,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 118a3a39-989d-4c34-952d-b95913bfe09f
+    type: title
+    task:
+      id: 118a3a39-989d-4c34-952d-b95913bfe09f
+      version: -1
+      name: User Department Identification
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 1217.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 3a250253-f09c-4617-abb8-a94e130bcd95
+    type: condition
+    task:
+      id: 3a250253-f09c-4617-abb8-a94e130bcd95
+      version: -1
+      name: Verify existence of creation date attribute
+      description: Checks if the subject user's whenCreated (creation date) field was retrieved from Active Directory.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: UserData
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: UserData.Username
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Core.OriginalAlert.event.evtlog_subject_username
+                      iscontext: true
+                    ignorecase: true
+                accessor: AdditionalFields.whenCreated
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 93254a10-1fe6-4778-852c-bf3e1bf9ca39
+    type: regular
+    task:
+      id: 93254a10-1fe6-4778-852c-bf3e1bf9ca39
+      version: -1
+      name: Count privileged group memberships
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      key:
+        simple: SubjectUserPrivilegedGroupCount
+      value:
+        complex:
+          root: UserData.AdditionalFields
+          accessor: memberOf
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (?i)\b(?:Administrators|Device Owners|(?:Domain|Enterprise) Admins|(?:Remote Desktop|Power) Users|(?:Backup|Account|Server|Print) Operators)\b
+              unpack_matches: {}
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys: {}
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: c91108e9-f75f-437a-8906-65323fa48ee1
+    type: condition
+    task:
+      id: c91108e9-f75f-437a-8906-65323fa48ee1
+      version: -1
+      name: Check if user is IT user
+      description: Checks if the subject user is likely an IT user.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: SubjectUserPrivilegedGroupCount
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: Core.OriginalAlert.event.evtlog_subject_user_count_distinct_member_added_security_group
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 476eba67-53ed-4477-924d-8037b0e0d8eb
+    type: regular
+    task:
+      id: 476eba67-53ed-4477-924d-8037b0e0d8eb
+      version: -1
+      name: Save subject user as IT user
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      key:
+        simple: SubjectUserIsIT
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 3515c810-e95f-4d8e-af08-38eb8b595e60
+    type: title
+    task:
+      id: 3515c810-e95f-4d8e-af08-38eb8b595e60
+      version: -1
+      name: User Risk
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -720,
+          "y": 1205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 042a1038-53d4-48bf-a767-c3a1ffb2f54e
+    type: regular
+    task:
+      id: 042a1038-53d4-48bf-a767-c3a1ffb2f54e
+      version: -1
+      name: Save subject user risk to evidence
+      description: Extracts and saves the PASSWORDEXPIRES value of the locally created user from the results of the Powershell script execution.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      key:
+        simple: Evidence.SubjectUserIsRisky
+      value:
+        complex:
+          root: UserData
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: UserData.Username
+                iscontext: true
+              right:
+                value:
+                  simple: Core.OriginalAlert.event.normalized_evtlog_subject_user
+                iscontext: true
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: UserData.RiskLevel
+                iscontext: true
+              right:
+                value:
+                  simple: HIGH
+              ignorecase: true
+          accessor: AdditionalFields.reasons.description
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -720,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 85e1e157-fbc9-4430-88f8-570861d27efc
+    type: condition
+    task:
+      id: 85e1e157-fbc9-4430-88f8-570861d27efc
+      version: -1
+      name: Check subject user's risk level
+      description: Checks if the client host's risk level is high.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      High:
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: High
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: UserData
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: UserData.RiskLevel
+                      iscontext: true
+                    right:
+                      value:
+                        simple: HIGH
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: UserData.Username
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Core.OriginalAlert.event.normalized_evtlog_subject_user
+                      iscontext: true
+                    ignorecase: true
+                accessor: ID
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -720,
+          "y": 1345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 10abde8c-f8db-41c3-ba84-acfb2b615706
+    type: title
+    task:
+      id: 10abde8c-f8db-41c3-ba84-acfb2b615706
+      version: -1
+      name: User Info Retrieval by SID
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4290,
+          "y": 757.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: eec0cae2-d3d1-4ff3-9aa6-d26b291c8816
+    type: condition
+    task:
+      id: eec0cae2-d3d1-4ff3-9aa6-d26b291c8816
+      version: -1
+      name: Check if Active Directory is available
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "66"
+      "yes":
+      - "65"
+    scriptarguments:
+      brandname:
+        simple: Active Directory Query v2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4290,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: ed3f60b9-7134-42f2-bd89-eaa341627665
+    type: regular
+    task:
+      id: ed3f60b9-7134-42f2-bd89-eaa341627665
+      version: -1
+      name: Get added member info by SID from AD
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
+      script: '|||ad-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "66"
+      '#none#':
+      - "57"
+    scriptarguments:
+      attributes:
+        simple: objectSid,msDS-PrincipalName,whenCreated
+      custom-field-data:
+        simple: ${Core.OriginalAlert.event.evtlog_member_sid}
+      custom-field-type:
+        simple: objectSid
+      user-account-control-out:
+        simple: "true"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 4070,
+          "y": 1202.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: c1c72548-b2c6-4468-89af-faf5608cbed1
+    type: regular
+    task:
+      id: c1c72548-b2c6-4468-89af-faf5608cbed1
+      version: -1
+      name: Could not gather full evidence for verdict
+      description: |-
+        The playbook failed  to gather all the evidence needed to reach a verdict in this alert, for any of the following reasons:
+
+        - Basic information about the added member could not be obtained from Active Directory, from the affected host using Powershell, and from DSS (Directory Sync Service).
+
+        - Basic information about the added member was obtained but could not be parsed. This can happen due to missing licenses, host missing the .NET framework or other reasons.
+
+
+        Please resolve these issues manually.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6040,
+          "y": 3370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: b8f70fc5-8b04-4313-8742-1f253fb9c2d6
+    type: condition
+    task:
+      id: b8f70fc5-8b04-4313-8742-1f253fb9c2d6
+      version: -1
+      name: Check if added member was found in AD
+      description: Checks if the added member's user account was found in Active Directory.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "66"
+      "yes":
+      - "71"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ActiveDirectory.Users
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: ActiveDirectory.Users.objectSid
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Core.OriginalAlert.event.evtlog_member_sid
+                      iscontext: true
+                    ignorecase: true
+                accessor: sAMAccountName
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3960,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: b6173a64-1f38-4c8c-b135-48ecf7ae4294
+    type: regular
+    task:
+      id: b6173a64-1f38-4c8c-b135-48ecf7ae4294
+      version: -1
+      name: Set member origin as domain
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: MemberUserOrigin
+      value:
+        simple: Domain
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 1477bbae-5b47-4b55-8c30-421f3db81779
+    type: regular
+    task:
+      id: 1477bbae-5b47-4b55-8c30-421f3db81779
+      version: -1
+      name: Save member's password never expires to evidence
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      key:
+        simple: Evidence.MemberPasswordNeverExpires
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4040,
+          "y": 1875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: d5aa3f49-11de-4618-b506-8afa4d93326e
+    type: title
+    task:
+      id: d5aa3f49-11de-4618-b506-8afa4d93326e
+      version: -1
+      name: Member Retrieval - Active Directory
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4070,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: cc7a801d-dd8c-4b0f-835e-ab88fd2ec3ca
+    type: title
+    task:
+      id: cc7a801d-dd8c-4b0f-835e-ab88fd2ec3ca
+      version: -1
+      name: Member Retrieval - Host (Powershell)
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "101"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4520,
+          "y": 1575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 133618ed-4c55-4ecb-9271-6505c978ca67
+    type: condition
+    task:
+      id: 133618ed-4c55-4ecb-9271-6505c978ca67
+      version: -1
+      name: Check if member's password never expires (in AD)
+      description: Checks the Password Never Expires attribute of the user, retrieved from Active Directory.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "70"
+      Never Expires:
+      - "64"
+    separatecontext: false
+    conditions:
+    - label: Never Expires
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ActiveDirectory.Users
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: ActiveDirectory.Users.objectSid
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Core.OriginalAlert.event.evtlog_member_sid
+                      iscontext: true
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: ActiveDirectory.Users.userAccountControlFields.DONT_EXPIRE_PASSWORD
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "true"
+                    ignorecase: true
+                accessor: sAMAccountName
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4040,
+          "y": 1715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 79c03d06-84d4-4f4f-9171-1feb07c88b27
+    type: title
+    task:
+      id: 79c03d06-84d4-4f4f-9171-1feb07c88b27
+      version: -1
+      name: Continue
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4520,
+          "y": 3460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: 28df649a-27e4-4be4-8df9-33f018d26f19
+    type: title
+    task:
+      id: 28df649a-27e4-4be4-8df9-33f018d26f19
+      version: -1
+      name: Member Attribute Analysis (AD)
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "69"
+      - "80"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3960,
+          "y": 1575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: 51b4d6e0-9972-4259-bc30-a2222cd2929e
+    type: title
+    task:
+      id: 51b4d6e0-9972-4259-bc30-a2222cd2929e
+      version: -1
+      name: Member Attribute Analysis (Host)
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "87"
+      - "152"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4520,
+          "y": 2371.426513671875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: 7a769732-1fa3-49f7-ae45-a0cedc01bdb0
+    type: regular
+    task:
+      id: 7a769732-1fa3-49f7-ae45-a0cedc01bdb0
+      version: -1
+      name: Convert added member's creation date to epoch
+      description: Converts the user creation date to epoch to find relative time of creation.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "78"
+    scriptarguments:
+      key:
+        simple: MemberCreationDateInEpoch
+      value:
+        complex:
+          root: ActiveDirectory.Users
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: ActiveDirectory.Users.objectSid
+                iscontext: true
+              right:
+                value:
+                  simple: Core.OriginalAlert.event.evtlog_member_sid
+                iscontext: true
+              ignorecase: true
+          accessor: whenCreated
+          transformers:
+          - operator: toUnix
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3570,
+          "y": 1890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 6536c994-1601-473b-a873-8ed0a36335ed
+    type: condition
+    task:
+      id: 6536c994-1601-473b-a873-8ed0a36335ed
+      version: -1
+      name: Check if the added member was created recently
+      description: Checks if the user's creation date in AD happened 24 hours or less since the time that this alert occurred.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "70"
+      Recent Creation:
+      - "81"
+    separatecontext: false
+    conditions:
+    - label: Recent Creation
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: Core.OriginalAlert
+                accessor: alert_generated_time
+                transformers:
+                - operator: toUnix
+                - operator: subtraction
+                  args:
+                    by:
+                      value:
+                        simple: MemberCreationDateInEpoch
+                      iscontext: true
+                - operator: abs
+            iscontext: true
+          right:
+            value:
+              simple: "86400"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3570,
+          "y": 2050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: e483bf32-9b2f-4ac7-8bcb-137e507b8c16
+    type: condition
+    task:
+      id: e483bf32-9b2f-4ac7-8bcb-137e507b8c16
+      version: -1
+      name: Verify member creation date exists
+      description: Verifies that the member's creation date was retrieved from Active Directory.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "70"
+      Exists:
+      - "77"
+    separatecontext: false
+    conditions:
+    - label: Exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ActiveDirectory.Users
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: ActiveDirectory.Users.objectSid
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Core.OriginalAlert.event.evtlog_member_sid
+                      iscontext: true
+                    ignorecase: true
+                accessor: whenCreated
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3570,
+          "y": 1715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 092b5efe-6417-426b-914f-b9bcd94634ef
+    type: regular
+    task:
+      id: 092b5efe-6417-426b-914f-b9bcd94634ef
+      version: -1
+      name: Save member created recently flag
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "85"
+    scriptarguments:
+      key:
+        simple: MemberCreatedRecently
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3570,
+          "y": 2220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: 490f4c06-0e72-4009-97cb-fff13c3e4594
+    type: condition
+    task:
+      id: 490f4c06-0e72-4009-97cb-fff13c3e4594
+      version: -1
+      name: Check if member is also rarely added to groups
+      description: Checks if the added member was never seen being added to local security groups before.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "70"
+      Rarely added:
+      - "86"
+    separatecontext: false
+    conditions:
+    - label: Rarely added
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              simple: Core.OriginalAlert.raw_abioc.event.evtlog_member_subject_user_days_seen_count_member_added_security_group
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3570,
+          "y": 2370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: 616f2637-209b-4ae2-a523-eda1dd481e1a
+    type: regular
+    task:
+      id: 616f2637-209b-4ae2-a523-eda1dd481e1a
+      version: -1
+      name: Save rare member to evidence
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      key:
+        simple: Evidence.MemberIsNewAndRarelyAddedToGroups
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3570,
+          "y": 2530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: 3fcbce69-5d14-4688-a25f-9d53632f551f
+    type: condition
+    task:
+      id: 3fcbce69-5d14-4688-a25f-9d53632f551f
+      version: -1
+      name: Check member info for password expiration status
+      description: ' Checks the password expiration time of the added member, retrieved from the affected host.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "70"
+      Never:
+      - "88"
+    separatecontext: false
+    conditions:
+    - label: Never
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: MemberInfoFromHost.PasswordNeverExpires
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4260,
+          "y": 2517.4998779296875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: d07946b9-7dd0-4b6f-b6f6-3acc359cc23f
+    type: regular
+    task:
+      id: d07946b9-7dd0-4b6f-b6f6-3acc359cc23f
+      version: -1
+      name: Save member's password never expires to evidence
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      key:
+        simple: Evidence.MemberPasswordNeverExpires
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4260,
+          "y": 2660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: 52ae76fb-6778-4f49-b43b-59fb327cf059
+    type: regular
+    task:
+      id: 52ae76fb-6778-4f49-b43b-59fb327cf059
+      version: -1
+      name: Analyze subject command-lines around alert time
+      description: |-
+        This script evaluates command-line threats by analyzing both original and decoded inputs. It assigns weighted scores to detected patterns, such as AMSI bypass or credential dumping, and applies risk combination bonuses for multiple detections. The total score is normalized to a 0-100 scale, with risk levels categorized as follows:
+
+        * 0-25: Low Risk
+        * 26-50: Medium Risk
+        * 51-90: High Risk
+        * 91-100: Critical Risk
+
+        The scoring mechanism provides a comprehensive risk assessment, considering both the severity and frequency of malicious behaviors.
+      scriptName: CommandLineAnalysis
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "96"
+    scriptarguments:
+      command_line:
+        complex:
+          root: PaloAltoNetworksXQL.GenericQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXQL.GenericQuery.query_name
+                iscontext: true
+              right:
+                value:
+                  simple: Get subject user process command lines
+              ignorecase: true
+          accessor: results.action_process_image_command_line
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1250,
+          "y": 1910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: 53df0242-3224-44e1-864f-c5fb4e7589fa
+    type: regular
+    task:
+      id: 53df0242-3224-44e1-864f-c5fb4e7589fa
+      version: -1
+      name: 'Search processes executed by Subject on host '
+      description: |-
+        Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+        When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+        unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "18"
+      '#none#':
+      - "93"
+    scriptarguments:
+      query:
+        simple: |-
+          dataset = xdr_data
+          | filter event_type = ENUM.PROCESS and event_sub_type = ENUM.PROCESS_START
+              and lowercase(actor_effective_username) = lowercase("${Core.OriginalAlert.event.normalized_evtlog_subject_user}")
+              and lowercase(agent_hostname) = lowercase("${alert.hostname}")
+          | filter action_process_image_command_line != null
+          | dedup actor_effective_username, action_process_image_command_line
+          | fields
+              _time,
+              agent_hostname,
+              actor_effective_username,
+              action_process_image_command_line
+          | limit 100
+      query_name:
+        simple: Get subject user process command lines
+      time_frame:
+        simple: between ${SubjectUserProcessQueryStartTime} and ${SubjectUserProcessQueryEndTime}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": -1250,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "91":
+    id: "91"
+    taskid: a43093f8-36b6-4927-ad0b-06954fb4fb3d
+    type: regular
+    task:
+      id: a43093f8-36b6-4927-ad0b-06954fb4fb3d
+      version: -1
+      name: Save suspicious commandlines list
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      key:
+        simple: SubjectSuspiciousCommandlinesList
+      value:
+        complex:
+          root: CommandLineAnalysis
+          filters:
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: CommandLineAnalysis.score
+                iscontext: true
+              right:
+                value:
+                  simple: "50"
+          accessor: original_command
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1043.1492919921875,
+          "y": 2240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: b81858bf-f9ca-4d66-b417-cf4409596b0b
+    type: condition
+    task:
+      id: b81858bf-f9ca-4d66-b417-cf4409596b0b
+      version: -1
+      name: Check process command line results
+      description: Check if any results were retrivied.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      Exist:
+      - "89"
+    separatecontext: false
+    conditions:
+    - label: Exist
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXQL.GenericQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXQL.GenericQuery.query_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Get subject user process command lines
+                accessor: results.action_process_image_command_line
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1250,
+          "y": 1750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: 1f7c94fa-18db-4782-88e1-1e78409f0b90
+    type: regular
+    task:
+      id: 1f7c94fa-18db-4782-88e1-1e78409f0b90
+      version: -1
+      name: Set subject query end time - 5 minutes after alert
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      key:
+        simple: SubjectUserProcessQueryEndTime
+      value:
+        complex:
+          root: alert
+          accessor: timestamp
+          transformers:
+          - operator: ModifyDateTime
+            args:
+              variation:
+                value:
+                  simple: 5 min after
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1250,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: 10139932-ebd0-4c5a-8f1c-54da61baf672
+    type: regular
+    task:
+      id: 10139932-ebd0-4c5a-8f1c-54da61baf672
+      version: -1
+      name: Set subject query start time - 5 minutes before alert
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "94"
+    scriptarguments:
+      key:
+        simple: SubjectUserProcessQueryStartTime
+      value:
+        complex:
+          root: alert
+          accessor: timestamp
+          transformers:
+          - operator: ModifyDateTime
+            args:
+              variation:
+                value:
+                  simple: 1 month ago
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1250,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: 08f3eae7-c779-43ff-8a9b-ffc0e5ebc4f2
+    type: condition
+    task:
+      id: 08f3eae7-c779-43ff-8a9b-ffc0e5ebc4f2
+      version: -1
+      name: Check if any command line is suspicious
+      description: Checks if any command line executed by the subject user received a suspicious score by the CommandlineAnalysis script.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "91"
+      - "97"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: CommandLineAnalysis
+                filters:
+                - - operator: greaterThanOrEqual
+                    left:
+                      value:
+                        simple: CommandLineAnalysis.score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "50"
+                accessor: original_command
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1250,
+          "y": 2070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "97":
+    id: "97"
+    taskid: 2932fe69-f594-4aa0-8be0-5bee3af64dfc
+    type: regular
+    task:
+      id: 2932fe69-f594-4aa0-8be0-5bee3af64dfc
+      version: -1
+      name: Save suspicious subject executions to evidence
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      key:
+        simple: Evidence.SubjectSuspiciousExecutions
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1453.1492919921875,
+          "y": 2235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "98":
+    id: "98"
+    taskid: 922321cc-f5e0-4f35-bac5-c2f98ced6f07
+    type: title
+    task:
+      id: 922321cc-f5e0-4f35-bac5-c2f98ced6f07
+      version: -1
+      name: Related Alerts
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "199"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2330,
+          "y": 637.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "101":
+    id: "101"
+    taskid: 77870e8c-8315-4f70-941a-dae5ecf09269
+    type: regular
+    task:
+      id: 77870e8c-8315-4f70-941a-dae5ecf09269
+      version: -1
+      name: Retrieve member creation date and password expiration status
+      description: |-
+        Description: Queries Active Directory using the target SID via ADSI direct binding to retrieve account metadata without requiring the Active Directory PowerShell module. It extracts the account creation timestamp (converted to Unix milliseconds) and determines if the "Password Never Expires" flag is set, returning the results as a JSON object.
+
+        Note on Direct Binding: We utilize ADSI Direct Binding (LDAP://<SID=...>) rather than a standard search query because standard LDAP filters often fail to correctly match the string representation of a SID against the binary objectSid attribute stored in Active Directory. Direct binding bypasses this conversion mismatch.
+      script: '|||core-execute-command'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "159"
+      '#none#':
+      - "200"
+    scriptarguments:
+      command:
+        simple: powershell -Command "'MemberBasicInfoIdentifier'; $s='${Core.OriginalAlert.event.evtlog_member_sid}'; try{ $u=[ADSI]('LDAP://<SID='+$s+'>'); $d=[datetime]$u.whenCreated[0]; $z=$d.ToUniversalTime(); $ms=[int64](($z.Ticks - 621355968000000000)/10000); $o=@{PasswordNeverExpires=(($u.userAccountControl[0] -band 65536) -eq 65536); WhenCreated=$ms}; New-Object PSObject -Property $o | ConvertTo-Json -Compress } catch { Write-Output 'User Not Found or Access Denied' }"
+      command_type:
+        simple: native
+      endpoint_ids:
+        simple: ${alert.agentid}
+      is_raw_command:
+        simple: "true"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 4520,
+          "y": 1715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "102":
+    id: "102"
+    taskid: 102ed7de-7ecd-4da5-8445-7d0e21caf042
+    type: regular
+    task:
+      id: 102ed7de-7ecd-4da5-8445-7d0e21caf042
+      version: -1
+      name: Extract and save member info
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "159"
+      '#none#':
+      - "103"
+    scriptarguments:
+      key:
+        simple: MemberInfoFromHost
+      value:
+        complex:
+          root: Core.ScriptResult.results.executed_command
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: Core.ScriptResult.results.executed_command.command_output
+                iscontext: true
+              right:
+                value:
+                  simple: MemberBasicInfoIdentifier
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: command_output
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys: {}
+          - operator: LastArrayElement
+          - operator: ParseJSON
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 4520,
+          "y": 2035
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "103":
+    id: "103"
+    taskid: f4746d8a-0ebc-4724-99a0-10df1815e3a4
+    type: condition
+    task:
+      id: f4746d8a-0ebc-4724-99a0-10df1815e3a4
+      version: -1
+      name: Verify member info structure
+      description: |-
+        Checks if the info for the added member was retrieved successfully from the host using ADSI Searcher.
+        Note: for local users, the WhenCreated field will be empty. However, the added member is confirmed to be a domain user and should have this information.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "159"
+      Valid:
+      - "72"
+    separatecontext: false
+    conditions:
+    - label: Valid
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MemberInfoFromHost.PasswordNeverExpires
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MemberInfoFromHost.WhenCreated
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4520,
+          "y": 2185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "105":
+    id: "105"
+    taskid: 76437203-fada-4f0f-b233-dcd53f7ce4e4
+    type: condition
+    task:
+      id: 76437203-fada-4f0f-b233-dcd53f7ce4e4
+      version: -1
+      name: Evaluate evidence to make a verdict
+      description: Determines whether the alert is a true positive and requires containment.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "107"
+      Malicious:
+      - "106"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: Evidence
+                transformers:
+                - operator: jmespath
+                  args:
+                    expression:
+                      value:
+                        simple: '*'
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 3747.61328125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "106":
+    id: "106"
+    taskid: 0c89323b-bab4-4fe1-8578-e5eeec7f1928
+    type: regular
+    task:
+      id: 0c89323b-bab4-4fe1-8578-e5eeec7f1928
+      version: -1
+      name: Increase alert severity
+      description: Optionally increases the alert severity to the new value if it is greater than the existing severity.
+      scriptName: IncreaseAlertSeverity
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "112"
+    scriptarguments:
+      severity:
+        simple: Medium
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 4100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "107":
+    id: "107"
+    taskid: b211c2dc-9576-4a8e-bae2-604d4961193c
+    type: condition
+    task:
+      id: b211c2dc-9576-4a8e-bae2-604d4961193c
+      version: -1
+      name: Check for strong evidence findings
+      description: Determines whether the alert is a true positive and requires containment.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "110"
+      Malicious:
+      - "106"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: Evidence
+                transformers:
+                - operator: jmespath
+                  args:
+                    expression:
+                      value:
+                        simple: '*'
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Evidence.RelatedAlerts
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Evidence.SubjectSuspiciousExecutions
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 3910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "108":
+    id: "108"
+    taskid: 27d7329d-e11b-4589-83b7-6eb05807b24f
+    type: condition
+    task:
+      id: 27d7329d-e11b-4589-83b7-6eb05807b24f
+      version: -1
+      name: Check related alerts
+      description: Checks for specific related alerts in the same case.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "Yes":
+      - "109"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2330,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "109":
+    id: "109"
+    taskid: 57dc212f-d930-4d39-bbbc-dfc2ee10a35f
+    type: regular
+    task:
+      id: 57dc212f-d930-4d39-bbbc-dfc2ee10a35f
+      version: -1
+      name: Save related alerts to evidence
+      description: ' Saves the related alerts to evidence.'
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      key:
+        simple: Evidence.RelatedAlerts
+      value:
+        complex:
+          root: foundIncidents
+          accessor: name
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2330,
+          "y": 1252.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "110":
+    id: "110"
+    taskid: 7bfda0ca-604f-4ef4-8313-64c5341d3024
+    type: condition
+    task:
+      id: 7bfda0ca-604f-4ef4-8313-64c5341d3024
+      version: -1
+      name: Check if evidence points to a false positive
+      description: Determines whether the alert is a true positive and requires containment.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "113"
+      False Positive:
+      - "111"
+    separatecontext: false
+    conditions:
+    - label: False Positive
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: Evidence
+                transformers:
+                - operator: jmespath
+                  args:
+                    expression:
+                      value:
+                        simple: '*'
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isEmpty
+          left:
+            value:
+              simple: Evidence.RelatedAlerts
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: UsedAddedAndRemovedAlertFound
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: SubjectUserIsIT
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+        - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: Core.OriginalAlert.event.subject_user_local_admins_ratio
+            iscontext: true
+          right:
+            value:
+              simple: "0.1"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 4100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "111":
+    id: "111"
+    taskid: 4569f7ac-d68a-4319-a73c-b45200b26055
+    type: title
+    task:
+      id: 4569f7ac-d68a-4319-a73c-b45200b26055
+      version: -1
+      name: False Positive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "198"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1420,
+          "y": 4290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "112":
+    id: "112"
+    taskid: 8a7b1c81-7826-4daa-b67c-127174636670
+    type: title
+    task:
+      id: 8a7b1c81-7826-4daa-b67c-127174636670
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "117"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 4290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "113":
+    id: "113"
+    taskid: bc516524-f107-4f76-8a4c-cc78af5eeeb9
+    type: title
+    task:
+      id: bc516524-f107-4f76-8a4c-cc78af5eeeb9
+      version: -1
+      name: Inconclusive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 4290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "114":
+    id: "114"
+    taskid: abb91aaa-19fd-4d97-89dd-9332b0e92432
+    type: regular
+    task:
+      id: abb91aaa-19fd-4d97-89dd-9332b0e92432
+      version: -1
+      name: Search for related user removal alert
+      description: Searches for additional alerts in the alert that may further indicate user attempts to enumerate Active Directory.
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "115"
+    scriptarguments:
+      extend-context:
+        simple: UserAddedAndRemovedAlert=
+      fromdate:
+        simple: 1 days ago
+      ignore-outputs:
+        simple: "true"
+      query:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'caseid:'
+              suffix:
+                value:
+                  simple: ' and (name:"User added to a privileged group and removed") and -id:'
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: SanitizedIssueID
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2740,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "115":
+    id: "115"
+    taskid: 0198aa95-37f9-4226-83af-7bc7b041dbc2
+    type: condition
+    task:
+      id: 0198aa95-37f9-4226-83af-7bc7b041dbc2
+      version: -1
+      name: Check if related removal alert was found
+      description: Checks for specific related alerts in the same case.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "Yes":
+      - "116"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: UserAddedAndRemovedAlert
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: UserAddedAndRemovedAlert
+            iscontext: true
+          right:
+            value:
+              simple: '{}'
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2740,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "116":
+    id: "116"
+    taskid: 528fa7ad-2193-46c0-a0f0-b9e613f854ea
+    type: regular
+    task:
+      id: 528fa7ad-2193-46c0-a0f0-b9e613f854ea
+      version: -1
+      name: Save potential FP flag for related removal alert
+      description: ' Saves the related alert showing the user was also removed from the privileged group. This can indicate FP alerts if no malicious evidence is found.'
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      key:
+        simple: UsedAddedAndRemovedAlertFound
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2740,
+          "y": 1252.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "117":
+    id: "117"
+    taskid: c4b5f6af-509c-456d-a241-bac005a3a6c0
+    type: regular
+    task:
+      id: c4b5f6af-509c-456d-a241-bac005a3a6c0
+      version: -1
+      name: Remove the added member from the local Administrators group
+      description: Run Powershell code to check if the user is a local user on the endpoint.
+      script: '|||core-execute-command'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "119"
+      '#none#':
+      - "118"
+    scriptarguments:
+      command:
+        simple: powershell -Command "'RemoveAddedMemberCommandIdentifier'; Remove-LocalGroupMember -Group 'Administrators' -Member '${Core.OriginalAlert.event.evtlog_member_sid}'"
+      command_type:
+        simple: native
+      endpoint_ids:
+        simple: ${alert.agentid}
+      is_raw_command:
+        simple: "true"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 4430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "118":
+    id: "118"
+    taskid: 2d29bbb1-19a0-461b-b928-831a5f057963
+    type: condition
+    task:
+      id: 2d29bbb1-19a0-461b-b928-831a5f057963
+      version: -1
+      name: Manual - analyst review & approval
+      description: "The investigation shows a combination of suspicious indicators that requires your attention.\n\n`${.=val.SoftRemediationFailed && val.SoftRemediationFailed == \"True\" ? \"Soft remediation failed to execute, and the newly added member still needs to be removed manually from the local Administrators group.\" : \"Soft remediation was executed automatically, removing the new member from the local Administrators group.\"}`\n\n\nReview the following findings and decide whether you want to perform any of the suggested hard remediation actions.\n\n## User Information\n\nSubject user: `${alert.username.[0]}`\n\nOrigin of Subject user: `${SubjectUserOrigin}`\n\nAdded member: `${Core.OriginalAlert.event.netbios_and_sam_account_name_by_evtlog_member_sid}`\n\nOrigin of the added member: `${MemberUserOrigin}`\n\n---\n\n## Investigation Findings\n### Subject User\nThe subject user is the user who added the new member to the local Administrators group.\n- The subject user `${.=val.SubjectUserIsIT ? \"looks\" : \"does not look\"}` like an IT user.\n\n- The subject user is `${.=val.SubjectUserIsNewAndDoesNotAddToGroups ? \"new and has not added many users to local groups\" : \"not new, or has added many users to local groups\"}` in the past.\n\n- The subject user is `${.=val.Evidence && val.Evidence.SubjectUserIsRisky ? \"risky\" : \"not risky\"}`. \nRisk reasons (if risky): `${Evidence.SubjectUserIsRisky}`.\n\n- The subject user was `${.=val.Evidence && val.Evidence.SubjectSuspiciousExecutions ? \"seen\" : \"not seen\"}` executing processes with suspicious command-lines.\n\n### Added Member\nThe added member is the user who was added to the local Administrators group by the subject.\n- The added member is `${.=val.Evidence && val.Evidence.MemberIsNewAndRarelyAddedToGroups ? \"new and rarely added to groups\" : \"not new, or was added to groups in the past\"}`.\n\n- The added member is `${.=val.Evidence && val.Evidence.AddedMemberIsRisky ? \"risky\" : \"not risky\"}`. \nRisk reasons (if risky): `${AddedMemberRiskReasons}`.\n\n- The added member's password `${.=val.Evidence && val.Evidence.MemberPasswordNeverExpires ? \"never expires\" : \"has an expiration date\"}`.\n\n\n### Host & Related Alerts\n- The host in which the alert took place is `${.=val.Evidence && val.Evidence.RiskyHost ? \"risky\" : \"not risky\"}`.\n\n- Suspicious related alerts were `${.=val.Evidence && val.Evidence.RelatedAlerts ? \"found\" : \"not found\"}` in the case.\nRelated alerts (if found): ${foundIncidents.name}\n"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Do not remediate (Skip):
+      - "126"
+      Expire subject user's password and disable added member's account:
+      - "123"
+      Only disable the added member's account:
+      - "125"
+      Only expire the subject user's password:
+      - "124"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 4752.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: 'Select the most appropriate automatic remediation action to perform:'
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Expire subject user's password and disable added member's account
+      - Only expire the subject user's password
+      - Only disable the added member's account
+      - Do not remediate (Skip)
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "119":
+    id: "119"
+    taskid: c2196581-75d0-4957-a731-597c724d8db1
+    type: regular
+    task:
+      id: c2196581-75d0-4957-a731-597c724d8db1
+      version: -1
+      name: Set flag indicating soft remediation failed
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "118"
+    scriptarguments:
+      key:
+        simple: SoftRemediationFailed
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 4590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "122":
+    id: "122"
+    taskid: 6ecc6e8c-086e-4db8-8d55-edff910ddd9d
+    type: regular
+    task:
+      id: 6ecc6e8c-086e-4db8-8d55-edff910ddd9d
+      version: -1
+      name: Close the alert
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      closeNotes:
+        simple: Handled by the playbook "Member added to a Windows local security group".
+      closeReason:
+        complex:
+          root: CloseReason
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Resolved - True Positive
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1650,
+          "y": 5870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "123":
+    id: "123"
+    taskid: c59cdb1e-19a6-430d-9aa8-10e8964c2985
+    type: title
+    task:
+      id: c59cdb1e-19a6-430d-9aa8-10e8964c2985
+      version: -1
+      name: Execute both remediation actions
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "124"
+      - "125"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 4950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "124":
+    id: "124"
+    taskid: 6cd9fc7a-bad9-48f3-af4f-e78cabe95d05
+    type: title
+    task:
+      id: 6cd9fc7a-bad9-48f3-af4f-e78cabe95d05
+      version: -1
+      name: Subject Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "193"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 5110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "125":
+    id: "125"
+    taskid: 155dc481-b8f0-44ba-9338-ba89d0828edd
+    type: title
+    task:
+      id: 155dc481-b8f0-44ba-9338-ba89d0828edd
+      version: -1
+      name: Added Member Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "128"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 5110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "126":
+    id: "126"
+    taskid: ef42307f-2a4b-4837-ba43-5117dd5e96ee
+    type: title
+    task:
+      id: ef42307f-2a4b-4837-ba43-5117dd5e96ee
+      version: -1
+      name: Skip Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "122"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1430,
+          "y": 5110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "128":
+    id: "128"
+    taskid: 026e9c49-9d12-4006-b668-ced11c542818
+    type: regular
+    task:
+      id: 026e9c49-9d12-4006-b668-ced11c542818
+      version: -1
+      name: Disable the added member in Active Directory
+      description: This script disables users for multiple services.
+      scriptName: disable-user
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "137"
+      '#none#':
+      - "122"
+    scriptarguments:
+      brands:
+        simple: Active Directory Query v2
+      user_name:
+        simple: ${Core.OriginalAlert.event.evtlog_subject_username}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 5244.5830078125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "130":
+    id: "130"
+    taskid: 2aba339f-792f-4ccd-bfc9-c37151e1b93e
+    type: regular
+    task:
+      id: 2aba339f-792f-4ccd-bfc9-c37151e1b93e
+      version: -1
+      name: Expire subject user's password in Active Directory
+      description: Expires the password of an Active Directory user.
+      script: '|||ad-expire-password'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "131"
+      '#none#':
+      - "139"
+    scriptarguments:
+      username:
+        simple: ${Core.OriginalAlert.event.evtlog_subject_username}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 5400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "131":
+    id: "131"
+    taskid: eb08dfc1-9a84-4d82-9842-ebe0585d1e14
+    type: regular
+    task:
+      id: eb08dfc1-9a84-4d82-9842-ebe0585d1e14
+      version: -1
+      name: Subject user remediation could not be completed
+      description: "Remediation could not be completed for one of the following reasons:\n1. The Active Directory Query v2 integration returned an error when attempting to expire the user's password or modify the \"Password Never Expires\" attribute (for domain users).\n2. The domain controller (DC) is unreachable.\n3. The host where the alert occurred was unreachable (for local users).\n4. A valid license subscription is missing to run remediation on the host (for local users). \n\nRefer to the failing tasks for details and manually complete the remediation."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "122"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -420,
+          "y": 5710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "137":
+    id: "137"
+    taskid: 90296e27-febf-48c5-807d-4cf41cbbe7f2
+    type: regular
+    task:
+      id: 90296e27-febf-48c5-807d-4cf41cbbe7f2
+      version: -1
+      name: Added member remediation could not be completed
+      description: |-
+        Remediation could not be completed for one of the following reasons:
+        1. The Active Directory Query v2 integration returned an error when attempting to disable the added member.
+        2. The domain controller (DC) is unreachable.
+
+        Refer to the failing tasks for details and manually complete the remediation.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "122"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 5710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "139":
+    id: "139"
+    taskid: 52a1dfd8-8b12-4592-aa02-ab3935698173
+    type: regular
+    task:
+      id: 52a1dfd8-8b12-4592-aa02-ab3935698173
+      version: -1
+      name: Modify "Password Never Expires" attribute to False
+      description: Modifies the AD account attribute "Password Never Expire".
+      script: '|||ad-modify-password-never-expire'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "131"
+      '#none#':
+      - "122"
+    scriptarguments:
+      username:
+        simple: ${Core.OriginalAlert.event.evtlog_subject_username}
+      value:
+        simple: "false"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 5550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "140":
+    id: "140"
+    taskid: 12e312dd-4a21-4799-a19a-144c62fe9865
+    type: title
+    task:
+      id: 12e312dd-4a21-4799-a19a-144c62fe9865
+      version: -1
+      name: Subject Enrichment via DSS
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "142"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2260,
+          "y": 1860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "142":
+    id: "142"
+    taskid: f979aea6-0c70-41c1-8f88-771899cb701f
+    type: regular
+    task:
+      id: f979aea6-0c70-41c1-8f88-771899cb701f
+      version: -1
+      name: Query DSS for info related to the subject user
+      description: |-
+        Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+        When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+        unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "19"
+      '#none#':
+      - "186"
+    scriptarguments:
+      query:
+        simple: "preset = ad_users \n| filter security_identifier = \"${Core.OriginalAlert.event.action_evtlog_data_fields.SubjectUserSid}\"\n| fields member_of"
+      query_name:
+        simple: Get subject user groups
+      time_frame:
+        simple: 1 day
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 2260,
+          "y": 1995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "143":
+    id: "143"
+    taskid: f08baa2a-fe0f-495a-8c30-740fd817143c
+    type: condition
+    task:
+      id: f08baa2a-fe0f-495a-8c30-740fd817143c
+      version: -1
+      name: Check if subject user groups were retrieved
+      description: Check if any results were retrivied.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      Exist:
+      - "147"
+      - "189"
+    separatecontext: false
+    conditions:
+    - label: Exist
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXQL.GenericQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXQL.GenericQuery.query_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Get subject user groups and creation date
+                accessor: results.member_of
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2484.4442138671875,
+          "y": 2465
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "146":
+    id: "146"
+    taskid: 78dc303e-1165-4f72-80e6-537e25cafa17
+    type: regular
+    task:
+      id: 78dc303e-1165-4f72-80e6-537e25cafa17
+      version: -1
+      name: Set subject user origin as domain (AD unavailable)
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "143"
+    scriptarguments:
+      key:
+        simple: SubjectUserOrigin
+      value:
+        simple: Domain
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2260,
+          "y": 2300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "147":
+    id: "147"
+    taskid: 7ee3a843-50c4-4783-8bc7-e566d8b7e965
+    type: title
+    task:
+      id: 7ee3a843-50c4-4783-8bc7-e566d8b7e965
+      version: -1
+      name: User Department Identification
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "148"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2684.4442138671875,
+          "y": 2617.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "148":
+    id: "148"
+    taskid: 2e5abde1-6503-483c-9e9e-904823a8609b
+    type: regular
+    task:
+      id: 2e5abde1-6503-483c-9e9e-904823a8609b
+      version: -1
+      name: Count privileged group memberships
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "149"
+    scriptarguments:
+      key:
+        simple: SubjectUserPrivilegedGroupCount
+      value:
+        complex:
+          root: PaloAltoNetworksXQL.GenericQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXQL.GenericQuery.query_name
+                iscontext: true
+              right:
+                value:
+                  simple: Get subject user groups and creation date
+              ignorecase: true
+          accessor: results.member_of
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (?i)\b(?:Administrators|Device Owners|(?:Domain|Enterprise) Admins|(?:Remote Desktop|Power) Users|(?:Backup|Account|Server|Print) Operators)\b
+              unpack_matches: {}
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys: {}
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2684.4442138671875,
+          "y": 2757.4998779296875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "149":
+    id: "149"
+    taskid: 4c112462-5e49-4172-8964-0e62388858e4
+    type: condition
+    task:
+      id: 4c112462-5e49-4172-8964-0e62388858e4
+      version: -1
+      name: Check if user is IT user
+      description: Checks if the user is likely to be an IT user.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "150"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: SubjectUserPrivilegedGroupCount
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: Core.OriginalAlert.event.evtlog_subject_user_count_distinct_member_added_security_group
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2684.4442138671875,
+          "y": 2917.4998779296875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "150":
+    id: "150"
+    taskid: e48c9586-da64-4daf-b95b-f2c95b1bd891
+    type: regular
+    task:
+      id: e48c9586-da64-4daf-b95b-f2c95b1bd891
+      version: -1
+      name: Save subject user as IT user
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      key:
+        simple: SubjectUserIsIT
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2684.4442138671875,
+          "y": 3085
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "152":
+    id: "152"
+    taskid: 50d9a56b-2266-4cdd-9b6f-a798a6793634
+    type: condition
+    task:
+      id: 50d9a56b-2266-4cdd-9b6f-a798a6793634
+      version: -1
+      name: Check member info for recent creation timestamp
+      description: Checks if the user's creation date in AD happened 24 hours or less since the time that this alert occurred.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "70"
+      Recent Creation:
+      - "153"
+    separatecontext: false
+    conditions:
+    - label: Recent Creation
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: Core.OriginalAlert
+                accessor: alert_generated_time
+                transformers:
+                - operator: toUnix
+                - operator: multiply
+                  args:
+                    by:
+                      value:
+                        simple: "1000"
+                - operator: subtraction
+                  args:
+                    by:
+                      value:
+                        simple: MemberInfoFromHost.WhenCreated
+                      iscontext: true
+                - operator: abs
+            iscontext: true
+          right:
+            value:
+              simple: "86400000"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4650,
+          "y": 2517.4998779296875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "153":
+    id: "153"
+    taskid: ef377d49-940c-495c-a7aa-0dc34ac02486
+    type: regular
+    task:
+      id: ef377d49-940c-495c-a7aa-0dc34ac02486
+      version: -1
+      name: Save member created recently flag
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "195"
+    scriptarguments:
+      key:
+        simple: MemberCreatedRecently
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4650,
+          "y": 2660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "154":
+    id: "154"
+    taskid: 8dade058-c0b9-4ed6-8a91-ded6b685ec4e
+    type: regular
+    task:
+      id: 8dade058-c0b9-4ed6-8a91-ded6b685ec4e
+      version: -1
+      name: Get member user info & risk level
+      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
+      scriptName: get-user-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "156"
+    scriptarguments:
+      brands:
+        simple: Cortex XDR - IR
+      user_name:
+        simple: ${Core.OriginalAlert.raw_abioc.event.netbios_and_sam_account_name_by_evtlog_member_sid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5519.99951171875,
+          "y": 912.777587890625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "155":
+    id: "155"
+    taskid: 5fc2311e-8056-4129-87c9-497cc062604d
+    type: regular
+    task:
+      id: 5fc2311e-8056-4129-87c9-497cc062604d
+      version: -1
+      name: Save member user risk to evidence
+      description: Extracts and saves the PASSWORDEXPIRES value of the locally created user from the results of the Powershell script execution.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      key:
+        simple: Evidence.AddedMemberIsRisky
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5519.99951171875,
+          "y": 1247.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "156":
+    id: "156"
+    taskid: 3670cbd1-c21f-4ea6-99ff-dcb7663603c2
+    type: condition
+    task:
+      id: 3670cbd1-c21f-4ea6-99ff-dcb7663603c2
+      version: -1
+      name: Check member's risk level
+      description: Checks if the client host's risk level is high.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "70"
+      High:
+      - "155"
+      - "158"
+    separatecontext: false
+    conditions:
+    - label: High
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: UserData
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: UserData.RiskLevel
+                      iscontext: true
+                    right:
+                      value:
+                        simple: HIGH
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: UserData.Username
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Core.OriginalAlert.raw_abioc.event.netbios_and_sam_account_name_by_evtlog_member_sid
+                      iscontext: true
+                    ignorecase: true
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5519.99951171875,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "157":
+    id: "157"
+    taskid: 9b75bc7b-619c-460b-9046-fe3281bd5da8
+    type: title
+    task:
+      id: 9b75bc7b-619c-460b-9046-fe3281bd5da8
+      version: -1
+      name: Member Risk Score
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "154"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5519.99951171875,
+          "y": 765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "158":
+    id: "158"
+    taskid: d9b469c6-b1d5-45b1-a006-8e7548acc499
+    type: regular
+    task:
+      id: d9b469c6-b1d5-45b1-a006-8e7548acc499
+      version: -1
+      name: Save member risk reasons
+      description: Extracts and saves the PASSWORDEXPIRES value of the locally created user from the results of the Powershell script execution.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      key:
+        simple: AddedMemberRiskReasons
+      value:
+        complex:
+          root: UserData
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: UserData.Username
+                iscontext: true
+              right:
+                value:
+                  simple: Core.OriginalAlert.raw_abioc.event.netbios_and_sam_account_name_by_evtlog_member_sid
+                iscontext: true
+              ignorecase: true
+          accessor: AdditionalFields.reasons.description
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5919.99951171875,
+          "y": 1247.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "159":
+    id: "159"
+    taskid: 2a6fd832-6d4c-49b0-8143-4972983e295f
+    type: title
+    task:
+      id: 2a6fd832-6d4c-49b0-8143-4972983e295f
+      version: -1
+      name: Member Enrichment via DSS
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "160"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5597.777587890625,
+          "y": 2481.426513671875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "160":
+    id: "160"
+    taskid: a23ba0ab-7439-4fbb-bb3a-5a2b1240bfa2
+    type: regular
+    task:
+      id: a23ba0ab-7439-4fbb-bb3a-5a2b1240bfa2
+      version: -1
+      name: Query DSS for info related to the added member
+      description: |-
+        Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+        When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+        unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "50"
+      '#none#':
+      - "161"
+    scriptarguments:
+      query:
+        simple: "preset = ad_users \n| filter security_identifier = \"${Core.OriginalAlert.event.evtlog_member_sid}\"\n| fields user_account_control"
+      query_name:
+        simple: Get added member creation time and password expiration status
+      time_frame:
+        simple: 1 day
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 5597.777587890625,
+          "y": 2620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "161":
+    id: "161"
+    taskid: 3b2aee93-864a-4164-8e74-3e560a9fcef8
+    type: condition
+    task:
+      id: 3b2aee93-864a-4164-8e74-3e560a9fcef8
+      version: -1
+      name: Check if member UAC value was returned
+      description: Check if any results were retrivied.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "50"
+      "Yes":
+      - "190"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXQL.GenericQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXQL.GenericQuery.query_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Get added member creation time and password expiration status
+                    ignorecase: true
+                accessor: results.user_account_control
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5597.777587890625,
+          "y": 2770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "162":
+    id: "162"
+    taskid: 323437c1-e1be-44fc-9ce8-5bbf6bcba4f1
+    type: condition
+    task:
+      id: 323437c1-e1be-44fc-9ce8-5bbf6bcba4f1
+      version: -1
+      name: Check if UAC value corresponds to password never expires
+      description: Check if any results were retrivied.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "70"
+      "Yes":
+      - "163"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXQL.GenericQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXQL.GenericQuery.query_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Get added member creation time and password expiration status
+                    ignorecase: true
+                accessor: results.user_account_control
+            iscontext: true
+          right:
+            value:
+              simple: "66048"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5597.777587890625,
+          "y": 3090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "163":
+    id: "163"
+    taskid: 0370968d-b440-4523-8ac3-e4d984795cbc
+    type: regular
+    task:
+      id: 0370968d-b440-4523-8ac3-e4d984795cbc
+      version: -1
+      name: Save member's password never expires to evidence
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      key:
+        simple: Evidence.MemberPasswordNeverExpires
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5597.777587890625,
+          "y": 3250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "165":
+    id: "165"
+    taskid: a737ca9e-3878-4196-8419-99d2e223b44b
+    type: regular
+    task:
+      id: a737ca9e-3878-4196-8419-99d2e223b44b
+      version: -1
+      name: Retrieve Subject info to determine user origin
+      description: Run Powershell code to check if the user is a local user on the endpoint.
+      script: '|||core-execute-command'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "140"
+      '#none#':
+      - "201"
+    scriptarguments:
+      command:
+        simple: powershell -Command "'SubjectUserInfoIdentifier';$s='${Core.OriginalAlert.event.action_evtlog_data_fields.SubjectUserSid}'; $o=@{SID=$s;Type='Not Found';WhenCreated=$null;Groups=@()}; try{ $l=Get-WmiObject Win32_UserAccount -Filter ('SID='''+$s+''' AND LocalAccount=True') -ErrorAction Stop; if($l){ $o.Type='Local'; try{ $lu=[ADSI]('WinNT://./'+$l.Name); $o.Groups=@($lu.Groups() | ForEach-Object {$_.Name}) }catch{$o.Groups=@('Error')} } } catch {}; if($o.Type -eq 'Not Found'){ try{ $d=[ADSI]('LDAP://<SID='+$s+'>'); if($d.Path){ $o.Type='Domain'; $dt=[datetime]$d.whenCreated[0]; $z=$dt.ToUniversalTime(); $o.WhenCreated=[int64](($z.Ticks - 621355968000000000)/10000); $o.Groups=@($d.memberOf | ForEach-Object {[regex]::Match($_, 'CN=([^,]+)').Groups[1].Value}) } } catch {} }; New-Object PSObject -Property $o | ConvertTo-Json -Compress"
+      command_type:
+        simple: native
+      endpoint_ids:
+        simple: ${alert.agentid}
+      is_raw_command:
+        simple: "true"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 1202.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "166":
+    id: "166"
+    taskid: cb4dc875-6058-4664-9398-41121e89dc6d
+    type: condition
+    task:
+      id: cb4dc875-6058-4664-9398-41121e89dc6d
+      version: -1
+      name: Check subject user origin
+      description: Checks the origin of the user (local or domain user).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Domain user:
+      - "175"
+      Local user:
+      - "176"
+    separatecontext: false
+    conditions:
+    - label: Domain user
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SubjectInfoFromHost.Type
+            iscontext: true
+          right:
+            value:
+              simple: Domain
+    - label: Local user
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SubjectInfoFromHost.Type
+            iscontext: true
+          right:
+            value:
+              simple: Local
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 2035
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "169":
+    id: "169"
+    taskid: 5016288b-e4fe-4471-8e73-4599b2e7bbe7
+    type: regular
+    task:
+      id: 5016288b-e4fe-4471-8e73-4599b2e7bbe7
+      version: -1
+      name: Parse and save the subject user info
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "170"
+    scriptarguments:
+      key:
+        simple: SubjectInfoFromHost
+      value:
+        complex:
+          root: Core.ScriptResult.results.executed_command
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: Core.ScriptResult.results.executed_command.command_output
+                iscontext: true
+              right:
+                value:
+                  simple: SubjectUserInfoIdentifier
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: command_output
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys: {}
+          - operator: LastArrayElement
+          - operator: ParseJSON
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "170":
+    id: "170"
+    taskid: 152568fd-95c9-476e-b0c5-58990ae9b102
+    type: condition
+    task:
+      id: 152568fd-95c9-476e-b0c5-58990ae9b102
+      version: -1
+      name: Ensure validity of retrieved subject user information
+      description: Checks if subject user information was returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "140"
+      Valid:
+      - "171"
+    separatecontext: false
+    conditions:
+    - label: Valid
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SubjectInfoFromHost
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SubjectInfoFromHost.SID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SubjectInfoFromHost.Type
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 1690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "171":
+    id: "171"
+    taskid: aa9ada13-483d-4a2f-a586-9ea1a2886193
+    type: title
+    task:
+      id: aa9ada13-483d-4a2f-a586-9ea1a2886193
+      version: -1
+      name: Subject User Attribute Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "166"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "174":
+    id: "174"
+    taskid: a1e31533-1253-4f5d-84d2-3729ac2a3773
+    type: title
+    task:
+      id: a1e31533-1253-4f5d-84d2-3729ac2a3773
+      version: -1
+      name: Local User - No 'whenCreated' Field
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 2345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "175":
+    id: "175"
+    taskid: 5aaf239c-b816-41a5-a06b-9ee12659f64f
+    type: regular
+    task:
+      id: 5aaf239c-b816-41a5-a06b-9ee12659f64f
+      version: -1
+      name: Set subject user origin as domain
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "185"
+      - "184"
+    scriptarguments:
+      key:
+        simple: SubjectUserOrigin
+      value:
+        simple: Domain
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1300,
+          "y": 2210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "176":
+    id: "176"
+    taskid: ec1dfd8f-04af-4297-a96c-bf9173d7462f
+    type: regular
+    task:
+      id: ec1dfd8f-04af-4297-a96c-bf9173d7462f
+      version: -1
+      name: Set subject user origin as local
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "174"
+    scriptarguments:
+      key:
+        simple: SubjectUserOrigin
+      value:
+        simple: Local
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 2195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "177":
+    id: "177"
+    taskid: b602d7a2-af78-47c0-9e54-96b415ebc989
+    type: regular
+    task:
+      id: b602d7a2-af78-47c0-9e54-96b415ebc989
+      version: -1
+      name: Count privileged domain group memberships of subject
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "178"
+    scriptarguments:
+      key:
+        simple: SubjectUserPrivilegedGroupCount
+      value:
+        complex:
+          root: SubjectInfoFromHost
+          accessor: Groups
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (?i)\b(?:Administrators|Device Owners|(?:Domain|Enterprise) Admins|(?:Remote Desktop|Power) Users|(?:Backup|Account|Server|Print) Operators)\b
+              unpack_matches: {}
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys: {}
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "178":
+    id: "178"
+    taskid: f24629ab-d0b9-4f1d-ab23-6319346a7fa1
+    type: condition
+    task:
+      id: f24629ab-d0b9-4f1d-ab23-6319346a7fa1
+      version: -1
+      name: Check if user is IT user
+      description: Checks if the user is likely to be an IT user.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "179"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: SubjectUserPrivilegedGroupCount
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: Core.OriginalAlert.event.evtlog_subject_user_count_distinct_member_added_security_group
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": 2970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "179":
+    id: "179"
+    taskid: aaf88d00-909c-478c-a763-b89467f3aa50
+    type: regular
+    task:
+      id: aaf88d00-909c-478c-a763-b89467f3aa50
+      version: -1
+      name: Save subject user as IT user
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      key:
+        simple: SubjectUserIsIT
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": 3130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "180":
+    id: "180"
+    taskid: f6448e86-a213-47ba-83c9-d50ca7588d90
+    type: condition
+    task:
+      id: f6448e86-a213-47ba-83c9-d50ca7588d90
+      version: -1
+      name: Analyze subject creation date & previous group modifications
+      description: Checks if the user's creation date in AD happened 24 hours or less since the time that this alert occurred.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      New user / behavior:
+      - "181"
+    separatecontext: false
+    conditions:
+    - label: New user / behavior
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: Core.OriginalAlert
+                accessor: alert_generated_time
+                transformers:
+                - operator: toUnix
+                - operator: multiply
+                  args:
+                    by:
+                      value:
+                        simple: "1000"
+                - operator: subtraction
+                  args:
+                    by:
+                      value:
+                        simple: SubjectInfoFromHost.WhenCreated
+                      iscontext: true
+                - operator: abs
+            iscontext: true
+          right:
+            value:
+              simple: "86400000"
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              simple: Core.OriginalAlert.event.evtlog_subject_user_count_distinct_member_added_security_group
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 975.833251953125,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "181":
+    id: "181"
+    taskid: 8873c111-99f6-47d6-ace7-116574bd8b2f
+    type: regular
+    task:
+      id: 8873c111-99f6-47d6-ace7-116574bd8b2f
+      version: -1
+      name: Save subject user recently created and does not usually add users to groups
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      key:
+        simple: Evidence.SubjectUserIsNewAndDoesNotAddToGroups
+      value:
+        complex:
+          root: UserData
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: UserData.Username
+                iscontext: true
+              right:
+                value:
+                  simple: Core.OriginalAlert.event.evtlog_subject_username
+                iscontext: true
+              ignorecase: true
+          accessor: AdditionalFields.whenCreated
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 975.833251953125,
+          "y": 2970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "184":
+    id: "184"
+    taskid: 3937bc36-1f09-4db3-844d-db4a15221bf9
+    type: title
+    task:
+      id: 3937bc36-1f09-4db3-844d-db4a15221bf9
+      version: -1
+      name: User Creation Date & Behavior
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "188"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 975.833251953125,
+          "y": 2481.426513671875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "185":
+    id: "185"
+    taskid: a710075f-05bc-4b73-8288-89aa8af6a9c4
+    type: title
+    task:
+      id: a710075f-05bc-4b73-8288-89aa8af6a9c4
+      version: -1
+      name: User Department Identification
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "194"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": 2481.426513671875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "186":
+    id: "186"
+    taskid: dc4f8c35-d323-4dbc-b8b6-82431d5f3ade
+    type: condition
+    task:
+      id: dc4f8c35-d323-4dbc-b8b6-82431d5f3ade
+      version: -1
+      name: Check if the subject user was found in DSS
+      description: Check if any results were retrivied.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "Yes":
+      - "146"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXQL.GenericQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXQL.GenericQuery.query_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Get subject user groups
+                    ignorecase: true
+                accessor: results.member_of
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2260,
+          "y": 2145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "188":
+    id: "188"
+    taskid: e660f0d0-a1b1-457a-a277-69c8e6edde16
+    type: condition
+    task:
+      id: e660f0d0-a1b1-457a-a277-69c8e6edde16
+      version: -1
+      name: Ensure subject creation date is not empty
+      description: Checks if subject user information was returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      Exists:
+      - "180"
+    separatecontext: false
+    conditions:
+    - label: Exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SubjectInfoFromHost.WhenCreated
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 975.833251953125,
+          "y": 2620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "189":
+    id: "189"
+    taskid: 42d8ea6b-f9ba-4660-86c6-e9c738946411
+    type: title
+    task:
+      id: 42d8ea6b-f9ba-4660-86c6-e9c738946411
+      version: -1
+      name: WhenCreated field unavailable in DSS
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2260,
+          "y": 2617.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "190":
+    id: "190"
+    taskid: c7d68de4-e929-4874-9290-8c3712ad3795
+    type: title
+    task:
+      id: c7d68de4-e929-4874-9290-8c3712ad3795
+      version: -1
+      name: Member Attribute Analysis (DSS)
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "162"
+      - "191"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5597.777587890625,
+          "y": 2944.9998779296875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "191":
+    id: "191"
+    taskid: 3bd807f4-2c88-422b-8713-2748fd477fee
+    type: title
+    task:
+      id: 3bd807f4-2c88-422b-8713-2748fd477fee
+      version: -1
+      name: WhenCreated field unavailable in DSS
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "70"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5136.666259765625,
+          "y": 3105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "192":
+    id: "192"
+    taskid: cbd2730a-8a53-4706-a6a6-cde4afbf004f
+    type: regular
+    task:
+      id: cbd2730a-8a53-4706-a6a6-cde4afbf004f
+      version: -1
+      name: Expire subject user's password locally, ensure not set as 'never'
+      description: Resets the status of a password that is currently set to never expire, and forces the user to change their password on next login.
+      script: '|||core-execute-command'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "131"
+      '#none#':
+      - "122"
+    scriptarguments:
+      command:
+        simple: powershell -Command "$n='${Core.OriginalAlert.event.evtlog_subject_username}'; Set-LocalUser -Name $n -PasswordNeverExpires $false; $u=[ADSI]('WinNT://./'+$n); $u.PasswordExpired=1; $u.SetInfo()"
+      command_type:
+        simple: native
+      endpoint_ids:
+        simple: ${alert.agentid}
+      is_raw_command:
+        simple: "true"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 5400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "193":
+    id: "193"
+    taskid: 396ab891-d8b3-4565-909d-7cb7138171b4
+    type: condition
+    task:
+      id: 396ab891-d8b3-4565-909d-7cb7138171b4
+      version: -1
+      name: Check subject user origin
+      description: Checks the origin of the subject user account (local user or domain user).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "131"
+      Domain User:
+      - "130"
+      Local User:
+      - "192"
+    separatecontext: false
+    conditions:
+    - label: Local User
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SubjectUserOrigin
+            iscontext: true
+          right:
+            value:
+              simple: Local
+          ignorecase: true
+    - label: Domain User
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SubjectUserOrigin
+            iscontext: true
+          right:
+            value:
+              simple: Domain
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 5244.5830078125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "194":
+    id: "194"
+    taskid: cff3366e-93ad-410e-918c-a4d9829dc7ed
+    type: condition
+    task:
+      id: cff3366e-93ad-410e-918c-a4d9829dc7ed
+      version: -1
+      name: Ensure subject domain groups were retrieved from the host
+      description: Checks if subject user information was returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      Exists:
+      - "177"
+    separatecontext: false
+    conditions:
+    - label: Exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SubjectInfoFromHost.Groups
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": 2625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "195":
+    id: "195"
+    taskid: a2743a19-9969-4034-9be6-707382450832
+    type: condition
+    task:
+      id: a2743a19-9969-4034-9be6-707382450832
+      version: -1
+      name: Check if member is also rarely added to groups
+      description: Checks if the added member was never seen being added to local security groups before.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "70"
+      Rarely added:
+      - "196"
+    separatecontext: false
+    conditions:
+    - label: Rarely added
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              simple: Core.OriginalAlert.raw_abioc.event.evtlog_member_subject_user_days_seen_count_member_added_security_group
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4650,
+          "y": 2799.9998779296875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "196":
+    id: "196"
+    taskid: 74191ef8-0895-4937-87f2-963d449e2c67
+    type: regular
+    task:
+      id: 74191ef8-0895-4937-87f2-963d449e2c67
+      version: -1
+      name: Save rare member to evidence
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      key:
+        simple: Evidence.MemberIsNewAndRarelyAddedToGroups
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4646.2607421875,
+          "y": 2955.353271484375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "198":
+    id: "198"
+    taskid: 313ec4ad-5a76-4a88-9881-785231b8f9d8
+    type: regular
+    task:
+      id: 313ec4ad-5a76-4a88-9881-785231b8f9d8
+      version: -1
+      name: Save close reason - false positive
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "122"
+    scriptarguments:
+      key:
+        simple: CloseReason
+      value:
+        simple: Resolved - False Positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1420,
+          "y": 4430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "199":
+    id: "199"
+    taskid: f167a884-d438-4672-84d4-819c7c4d92b4
+    type: regular
+    task:
+      id: f167a884-d438-4672-84d4-819c7c4d92b4
+      version: -1
+      name: Sanitize issue ID
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+      - "114"
+    scriptarguments:
+      key:
+        simple: SanitizedIssueID
+      value:
+        complex:
+          root: alert
+          accessor: id
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: silent_
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2330,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "200":
+    id: "200"
+    taskid: 14e8ced8-c007-4bca-9d25-91a02ad2b861
+    type: condition
+    task:
+      id: 14e8ced8-c007-4bca-9d25-91a02ad2b861
+      version: -1
+      name: Verify that member info was retrieved from host
+      description: |-
+        Checks if the info for the added member was retrieved successfully from the host using ADSI Searcher.
+        Note: for local users, the WhenCreated field will be empty. However, the added member is confirmed to be a domain user and should have this information.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "159"
+      "Yes":
+      - "102"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Core.ScriptResult.results.executed_command
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: Core.ScriptResult.results.executed_command.command_output
+                      iscontext: true
+                    right:
+                      value:
+                        simple: MemberBasicInfoIdentifier
+                    ignorecase: true
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: command_output
+                - operator: RemoveEmpty
+                  args:
+                    empty_values: {}
+                    remove_keys: {}
+                - operator: LastArrayElement
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4520,
+          "y": 1875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "201":
+    id: "201"
+    taskid: 3fef493f-efbc-4ce1-a976-fbb38bc29cf5
+    type: condition
+    task:
+      id: 3fef493f-efbc-4ce1-a976-fbb38bc29cf5
+      version: -1
+      name: Verify that subject info was retrieved from host
+      description: |-
+        Checks if the info for the added member was retrieved successfully from the host using ADSI Searcher.
+        Note: for local users, the WhenCreated field will be empty. However, the added member is confirmed to be a domain user and should have this information.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "140"
+      "Yes":
+      - "169"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Core.ScriptResult.results.executed_command
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: Core.ScriptResult.results.executed_command.command_output
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SubjectUserInfoIdentifier
+                    ignorecase: true
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: command_output
+                - operator: RemoveEmpty
+                  args:
+                    empty_values: {}
+                    remove_keys: {}
+                - operator: LastArrayElement
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "101_159_#error#": 0.3,
+      "102_159_#error#": 0.29,
+      "103_159_#default#": 0.1,
+      "105_106_Malicious": 0.26,
+      "107_106_Malicious": 0.34,
+      "108_18_#default#": 0.15,
+      "110_113_#default#": 0.55,
+      "115_18_#default#": 0.38,
+      "118_123_Expire subject user's password and disable added member's account": 0.42,
+      "118_124_Only expire the subject user's password": 0.85,
+      "118_125_Only disable the added member's account": 0.86,
+      "118_126_Do not remediate (Skip)": 0.9,
+      "130_131_#error#": 0.51,
+      "139_131_#error#": 0.32,
+      "13_10_New user / behavior": 0.37,
+      "13_18_#default#": 0.1,
+      "142_19_#error#": 0.42,
+      "143_19_#default#": 0.16,
+      "149_18_#default#": 0.11,
+      "152_153_Recent Creation": 0.22,
+      "152_70_#default#": 0.15,
+      "156_70_#default#": 0.12,
+      "160_50_#error#": 0.31,
+      "162_163_Yes": 0.36,
+      "162_70_#default#": 0.31,
+      "165_140_#error#": 0.3,
+      "166_175_Domain user": 0.54,
+      "166_176_Local user": 0.58,
+      "170_140_#default#": 0.25,
+      "178_179_yes": 0.52,
+      "178_18_#default#": 0.15,
+      "180_181_New user / behavior": 0.27,
+      "180_18_#default#": 0.19,
+      "186_19_#default#": 0.42,
+      "188_180_Exists": 0.66,
+      "188_18_#default#": 0.16,
+      "192_131_#error#": 0.1,
+      "194_177_Exists": 0.53,
+      "195_70_#default#": 0.25,
+      "200_102_Yes": 0.27,
+      "200_159_#default#": 0.22,
+      "201_140_#default#": 0.26,
+      "25_18_#default#": 0.1,
+      "35_18_#default#": 0.19,
+      "37_18_#default#": 0.1,
+      "43_18_#default#": 0.11,
+      "45_66_#default#": 0.13,
+      "46_66_#error#": 0.23,
+      "57_66_#default#": 0.3,
+      "57_71_yes": 0.28,
+      "69_70_#default#": 0.12,
+      "78_70_#default#": 0.21,
+      "80_70_#default#": 0.17,
+      "80_77_Exists": 0.4,
+      "85_70_#default#": 0.19,
+      "87_70_#default#": 0.16,
+      "87_88_Never": 0.53,
+      "8_31_#default#": 0.32,
+      "8_9_Yes": 0.51,
+      "90_18_#error#": 0.12,
+      "93_18_#default#": 0.13,
+      "93_89_Exist": 0.57,
+      "96_18_#default#": 0.12
+    },
+    "paper": {
+      "dimensions": {
+        "height": 5955,
+        "width": 9160,
+        "x": -2740,
+        "y": -10
+      }
+    }
+  }
+inputs: []
+outputs: []
+issilent: true
+tests:
+- No tests (auto formatted)
+fromversion: 8.9.0

@@ -1,0 +1,30 @@
+commonfields:
+  id: ActiveDirectoryQueryDisableAccount
+  version: -1
+name: ActiveDirectoryDisableUser
+display: Active Directory - Disable User
+tags:
+  - Active Directory
+category: Authentication & Identity Management
+description: |-
+  Disables a specified user account in Active Directory, preventing the user from logging in or accessing domain resources.
+  This action is typically used to restrict access when an account is no longer in use, compromised, or under investigation.
+args:
+  - name: username
+    type: string
+    required: true
+    description: The sAMAccountName of the user account to disable. This is the unique username used to identify the account within Active Directory.
+    underlyingargname: username
+  - name: base-dn
+    type: string
+    description: The Base Distinguished Name (Base DN) that defines the starting point in the directory from which to search for the user (e.g., DC=example,DC=com). If not provided, the default Base DN configured in the instance settings will be used.
+    underlyingargname: base-dn
+underlyingcontentitem:
+  id: Active Directory Query v2
+  name: Active Directory Query v2
+  type: command
+  version: -1
+  command: ad-disable-account
+requiresuserapproval: true
+marketplaces:
+- platform

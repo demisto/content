@@ -1,0 +1,37 @@
+commonfields:
+  id: TavilyExtract
+  version: -1
+display: Tavily - Extract URL Content
+name: TavilyExtractURLContent
+tags:
+ - Scraping
+category: Utilities
+description: |-
+  Extracts and returns the main content from a web page, given its URL.
+  This command uses Tavily's intelligent content extraction to retrieve readable text from articles, blogs,
+  and other web pages—removing ads, navigation elements, and other non-essential content.
+  Useful for summarization, enrichment, or analysis of external content within playbooks or investigations.
+args:
+  - description: The web page URL to extract content from.
+    name: url
+    required: true
+    type: string
+    underlyingargname: url
+outputs:
+- underlyingoutputcontextpath: Tavily.URL
+  description: The URL of the web page where the content was extracted from.
+  type: string
+  name: Tavily.URL
+- underlyingoutputcontextpath: Tavily.Content
+  description: The content extracted from the specified web page URL.
+  type: string
+  name: Tavily.Content
+underlyingcontentitem:
+  id: Tavily
+  name: Tavily
+  type: command
+  version: -1
+  command: tavily-extract
+requiresuserapproval: true
+marketplaces:
+- platform

@@ -1,0 +1,79 @@
+commonfields:
+  id: CortexListComplianceStandards
+  version: -1
+display: Cortex - List Compliance Standards
+name: CortexListComplianceStandards
+category: Cloud Security
+description: >
+  Lists compliance standards from Cortex based on specified filter criteria.
+  Note: Due to a default value constraint on the result size, the data returned may be partial and not reflect the complete set of matching results.
+args:
+  - name: name
+    type: string
+    description: The name of the compliance standard to filter by.
+    underlyingargname: name
+  - name: created_by
+    type: string
+    description: |-
+      Filter compliance standards by who created them. Options: Custom, System.
+    underlyingargname: created_by
+  - name: page_size
+    type: string
+    description: The number of standards to return per page. Default is 100.
+    underlyingargname: page_size
+  - name: page_number
+    type: string
+    description: The page number for the standards to return for pagination. Default is 0.
+    underlyingargname: page_number
+  - name: labels
+    type: string
+    description: |-
+      A comma-separated list of labels to filter compliance standards. Options: Aws, Azure, GCP, GKE, K8S, Windows, Linux, EKS, AKS, OCI, Alibaba Cloud, On Prem, LLM, Docker, Openshift.
+    underlyingargname: labels
+outputs:
+  - underlyingoutputcontextpath: Core.ComplianceStandards.id
+    description: The unique identifier of the standard.
+    type: String
+    name: Core.ComplianceStandards.id
+  - underlyingoutputcontextpath: Core.ComplianceStandards.name
+    description: The name of the standard.
+    type: String
+    name: Core.ComplianceStandards.name
+  - underlyingoutputcontextpath: Core.ComplianceStandards.description
+    description: The description of the standard.
+    type: String
+    name: Core.ComplianceStandards.description
+  - underlyingoutputcontextpath: Core.ComplianceStandards.labels
+    description: The labels associated with the compliance standard.
+    type: String
+    name: Core.ComplianceStandards.labels
+  - underlyingoutputcontextpath: Core.ComplianceStandards.controls_count
+    description: The number of controls in the standard.
+    type: Number
+    name: Core.ComplianceStandards.controls_count
+  - underlyingoutputcontextpath: Core.ComplianceStandards.assessments_profiles_count
+    description: The number of assessment profiles associated with the standard.
+    type: Number
+    name: Core.ComplianceStandards.assessments_profiles_count
+  - underlyingoutputcontextpath: Core.ComplianceStandardsMetadata.returned_count
+    description: |-
+      IMPORTANT: returned count must always be part of the response displayed to the user. This field must be accompanied by its definition: The actual number of results returned in this specific execution.
+    type: Number
+    name: Core.ComplianceStandardsMetadata.returned_count
+  - underlyingoutputcontextpath: Core.ComplianceStandardsMetadata.filtered_count
+    description: |-
+      IMPORTANT: filtered count must always be part of the response displayed to the user. This field must be accompanied by its definition: The total number of results in the system that match the filter criteria.
+    type: Number
+    name: Core.ComplianceStandardsMetadata.filtered_count
+underlyingcontentitem:
+  id: Cortex Core - Platform
+  name: Cortex Core - Platform
+  type: command
+  version: -1
+  command: core-list-compliance-standards
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- cloud_runtime_security
+- cloud_posture

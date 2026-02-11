@@ -1,0 +1,1638 @@
+id: Successful guest user invitation
+version: -1
+description: |-
+  **This playbook addresses the following alert**:
+  - Rare successful guest invitation in the organization
+
+  **Playbook Stages**:
+
+  **Triage**:
+  - Gather initial information about the invited user and associated alerts.
+
+  **Investigation**:
+  - **Check IOCs Reputation**:
+    - Analyze the reputation of IP addresses, email addresses, and domains related to the incident.
+  - **Check for Azure Alerts**:
+    - Retrieve user Principal Name (UPN).
+    - Extract recent Azure security alerts for the inviting user.
+  - **Check if User is Risky**:
+    - Assess the risk score of the inviting user based on Core and Azure risk indicators.
+    - Investigate reasons behind any identified risks, including recent detections.
+
+  **Containment**:
+  - Provide a manual task for an analyst to review the findings and decide the next steps.
+  - Possible actions:
+    - Disable the invited user.
+    - Disable the inviting user.
+    - Disable both users.
+    - Take no action.
+  - If users are disabled, revoke their active sessions to ensure immediate containment.
+
+  **Requirements**:
+  For the best results, it's recommended to ensure these integrations are configured and working:
+  - `Cortex Core - Investigation and Response` for Core user risk evaluation.
+  - `Azure Risky Users` for retrieving user risk scores.
+  - `Microsoft 365 Defender` for advanced hunting queries and Azure security alerts.
+  - `Microsoft Graph User` for disabling accounts and revoking sessions.
+tags:
+- TA0003 - Persistence
+- T1078 - Valid Accounts
+name: Successful guest user invitation
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 07b33dc7-7c45-4015-8fb0-88610cc13344
+    type: start
+    task:
+      id: 07b33dc7-7c45-4015-8fb0-88610cc13344
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 47d3e8dd-23e1-4a8a-85df-9f34472dedbd
+    type: regular
+    task:
+      id: 47d3e8dd-23e1-4a8a-85df-9f34472dedbd
+      version: -1
+      name: Collect invited user information
+      description: Returns information about each alert ID.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: "false"
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: d84de096-d4c8-4579-a7d1-bf08a9a901cb
+    type: regular
+    task:
+      id: d84de096-d4c8-4579-a7d1-bf08a9a901cb
+      version: -1
+      name: Check IP Reputation
+      description: This script gathers IP reputation data from multiple integrations and returns an IP entity with consolidated information in the context.
+      type: regular
+      iscommand: false
+      brand: ""
+      scriptName: ip-enrichment
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      external_enrichment:
+        simple: "true"
+      ip_list:
+        complex:
+          root: Core.OriginalAlert.event.raw_log.additionalDetails
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Core.OriginalAlert.event.raw_log.additionalDetails.key
+                iscontext: true
+              right:
+                value:
+                  simple: ipaddr
+              ignorecase: true
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -610,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: d8a94fe6-1e10-454b-82c7-2c02d15a4b88
+    type: regular
+    task:
+      id: d8a94fe6-1e10-454b-82c7-2c02d15a4b88
+      version: -1
+      name: Check Email Reputation
+      description: Return email information and reputation.
+      script: '|||email'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      email:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: azure_ad_invited_user_email
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 25c07722-d6ed-49ff-a5dd-26424a8236b6
+    type: regular
+    task:
+      id: 25c07722-d6ed-49ff-a5dd-26424a8236b6
+      version: -1
+      name: Check Domain Reputation
+      description: This script enriches Domains data with information from multiple integrations and returns a "DomainEnrichment" object with consolidated information in the context output.
+      type: regular
+      iscommand: false
+      brand: ""
+      scriptName: domain-enrichment
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      domain_list:
+        complex:
+          root: Core.OriginalAlert.event.raw_log.additionalDetails
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Core.OriginalAlert.event.raw_log.additionalDetails.key
+                iscontext: true
+              right:
+                value:
+                  simple: invitedUserEmailAddress
+              ignorecase: true
+          accessor: value
+          transformers:
+          - operator: uniq
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '@'
+              fields:
+                value:
+                  simple: "2"
+      external_enrichment:
+        simple: "true"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: e4ef2d93-b0d7-47b6-8acf-290d0e201d05
+    type: title
+    task:
+      id: e4ef2d93-b0d7-47b6-8acf-290d0e201d05
+      version: -1
+      name: Check IOCs Reputation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: b10ef4bb-65d5-47cd-85a4-cda7005ac9de
+    type: title
+    task:
+      id: b10ef4bb-65d5-47cd-85a4-cda7005ac9de
+      version: -1
+      name: Check If User Is Risky
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 47771b8e-ab76-4335-b533-31f03f06ddde
+    type: regular
+    task:
+      id: 47771b8e-ab76-4335-b533-31f03f06ddde
+      version: -1
+      name: Get core user risk score
+      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
+      type: regular
+      iscommand: false
+      brand: ""
+      scriptName: get-user-data
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      user_name:
+        simple: ${alert.username}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: e8347d5b-0c71-4d41-848a-29df568f5829
+    type: regular
+    task:
+      id: e8347d5b-0c71-4d41-848a-29df568f5829
+      version: -1
+      name: Get Azure user risk score
+      description: Returns a list of all risky users and their properties.
+      script: '|||azure-risky-users-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      updated_after:
+        simple: 1 days
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1530,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 4e687ae0-d019-47b2-899e-df1662cd2050
+    type: title
+    task:
+      id: 4e687ae0-d019-47b2-899e-df1662cd2050
+      version: -1
+      name: Check For Azure Alerts
+      description: Returns a list of all risky users and their properties.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 83b80459-2d9b-499b-8d28-91ba40c8354a
+    type: regular
+    task:
+      id: 83b80459-2d9b-499b-8d28-91ba40c8354a
+      version: -1
+      name: Get Azure alerts
+      description: 'Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft 365 Defender. Details on how to write queries: https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide.'
+      script: '|||microsoft-365-defender-advanced-hunting'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      query:
+        simple: let _start = now(-1d); AlertEvidence | where Timestamp >= _start | where AccountUpn == "${UserUPN}"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 6202d0d9-5595-4173-8662-db01083b78a3
+    type: collection
+    task:
+      id: 6202d0d9-5595-4173-8662-db01083b78a3
+      version: -1
+      name: Manual Task - User Account Disablement Decision
+      description: ""
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      key:
+        simple: Message
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1603
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: |
+            #### Invited User:
+            `${Core.OriginalAlert.event.azure_ad_invited_user_email}`
+
+            #### Inviting User:
+            `${Core.OriginalAlert.event.identity_invoked_by_name}`
+
+            ---
+
+            ### Malicious Indicators Found:
+            - **Malicious IP**: `${.=val.MaliciousIP || "None"}`
+            - **Malicious Domain**: `${.=val.MaliciousDomain || "None"}`
+            - **Malicious Email**: `${.=val.MaliciousEmail || "None"}`
+
+            ---
+
+            ### Inviting User Risk Analysis:
+            - **User is risky (Core)**: `${.=val.UserRiskyCoreReason ? "Yes, Reason: " + val.UserRiskyCoreReason : "N/A"}`
+            - **User is risky (Azure)**: `${.=val.UserRiskyAzureDetections ? "Yes, Risk Types: " + val.UserRiskyAzureDetections : "N/A"}`
+
+            ---
+
+            ### Inviting User Azure Security Alerts:
+            - **Alerts titles from last day**: `${.=val.AzureSecurityAlerts || "N/A"}`
+
+            ---
+
+            ### Action Required:
+            Please choose the action you want to perform.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: No Action
+        - simple: Disable Invited User
+        - simple: Disable Inviting User
+        - simple: Disable Both Users
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Analyst Action
+      description: Analyst review
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 365bcf85-94e1-4694-8fb9-d2b80a8072d0
+    type: regular
+    task:
+      id: 365bcf85-94e1-4694-8fb9-d2b80a8072d0
+      version: -1
+      name: Get malicious Email value
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        - For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8 On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      key:
+        simple: MaliciousEmail
+      value:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: email
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 97006dc9-55e1-4b5d-b85b-308631997f9e
+    type: condition
+    task:
+      id: 97006dc9-55e1-4b5d-b85b-308631997f9e
+      version: -1
+      name: Check user risk level
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        - For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8 On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      HIGH:
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: HIGH
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: UserData.RiskLevel
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: UserData.RiskLevel
+                      iscontext: true
+                    right:
+                      value:
+                        simple: HIGH
+                    ignorecase: true
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 5a9deb23-3f5f-47b4-877d-b954303f1135
+    type: regular
+    task:
+      id: 5a9deb23-3f5f-47b4-877d-b954303f1135
+      version: -1
+      name: Get Azure risky user detections
+      description: Returns a comma-separated list of the Risk Detection objects and their properties.
+      script: '|||azure-risky-users-risk-detections-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      detected_date_time_after:
+        simple: ${TimeNow}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1530,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: c72ad6ba-501b-4615-bdfc-05e6da17c06f
+    type: regular
+    task:
+      id: c72ad6ba-501b-4615-bdfc-05e6da17c06f
+      version: -1
+      name: Save risk reasons to evidence
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        - For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8 On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      key:
+        simple: UserRiskyCoreReason
+      value:
+        complex:
+          root: UserData.AdditionalFields.reasons
+          accessor: description
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 09abc1ea-4aea-48c8-865f-5c5d3f076342
+    type: condition
+    task:
+      id: 09abc1ea-4aea-48c8-865f-5c5d3f076342
+      version: -1
+      name: Check if inviting user is risky
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: AzureRiskyUsers.RiskyUser.userPrincipalName
+                filters:
+                - - operator: in
+                    left:
+                      value:
+                        simple: AzureRiskyUsers.RiskyUser.userPrincipalName
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Core.OriginalAlert.event.identity_orig.user.userPrincipalName
+                      iscontext: true
+                transformers:
+                - operator: toUpperCase
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: Core.OriginalAlert.event.identity_orig.user
+                accessor: userPrincipalName
+                transformers:
+                - operator: uniq
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1530,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 6ff99991-187e-42b2-8237-49c3b9dc7925
+    type: regular
+    task:
+      id: 6ff99991-187e-42b2-8237-49c3b9dc7925
+      version: -1
+      name: Extract Azure user detections
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        - For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8 On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      key:
+        simple: UserRiskyAzureDetections
+      value:
+        complex:
+          root: AzureRiskyUsers.RiskDetection
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskDetection.userPrincipalName
+                iscontext: true
+              right:
+                value:
+                  simple: Core.OriginalAlert.event.identity_orig.user.userPrincipalName
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskDetection.riskState
+                iscontext: true
+              right:
+                value:
+                  simple: atRisk
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskDetection.riskState
+                iscontext: true
+              right:
+                value:
+                  simple: confirmedCompromised
+              ignorecase: true
+          accessor: riskEventType
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1530,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 43ca83a5-869d-4139-8370-e81f7544215d
+    type: regular
+    task:
+      id: 43ca83a5-869d-4139-8370-e81f7544215d
+      version: -1
+      name: Extract Azure user alerts
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        - For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8 On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      key:
+        simple: AzureSecurityAlerts
+      value:
+        complex:
+          root: Microsoft365Defender.Hunt.results
+          accessor: Title
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 727d70de-b1f4-4c85-8107-573c55a5990b
+    type: regular
+    task:
+      id: 727d70de-b1f4-4c85-8107-573c55a5990b
+      version: -1
+      name: Get user UPN
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        - For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8 On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: UserUPN
+      value:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: identity_invoked_by_name
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: a8f36df7-35b4-404e-8385-ed836da73dd7
+    type: regular
+    task:
+      id: a8f36df7-35b4-404e-8385-ed836da73dd7
+      version: -1
+      name: Get malicious Domain value
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        - For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8 On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      key:
+        simple: MaliciousDomain
+      value:
+        complex:
+          root: DomainEnrichment
+          filters:
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DomainEnrichment.TIMScore
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Value
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: ccc6f246-f126-47aa-8079-e7b733f9bd2f
+    type: regular
+    task:
+      id: ccc6f246-f126-47aa-8079-e7b733f9bd2f
+      version: -1
+      name: Get timestamp for Azure detections
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      dateFormat:
+        simple: ISO
+      daysAgo:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1530,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: b39c7247-dc79-47b1-8bc0-552c163c4131
+    type: title
+    task:
+      id: b39c7247-dc79-47b1-8bc0-552c163c4131
+      version: -1
+      name: 'Triage '
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 4d3e92f0-4ab4-4b05-86cf-44b854294a14
+    type: title
+    task:
+      id: 4d3e92f0-4ab4-4b05-86cf-44b854294a14
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+      - "9"
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: fe8ba8a3-0db1-465b-adf6-ae09a3cee966
+    type: regular
+    task:
+      id: fe8ba8a3-0db1-465b-adf6-ae09a3cee966
+      version: -1
+      name: Get malicious IP value
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        - For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8 On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      key:
+        simple: MaliciousIP
+      value:
+        complex:
+          root: IPEnrichment
+          filters:
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: IPEnrichment.TIMScore
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Value
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -610,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 94d49600-4c69-4b17-8fc8-44069f98310f
+    type: title
+    task:
+      id: 94d49600-4c69-4b17-8fc8-44069f98310f
+      version: -1
+      name: Containment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 0d46636d-dfb6-433e-86ac-f154e168a772
+    type: condition
+    task:
+      id: 0d46636d-dfb6-433e-86ac-f154e168a772
+      version: -1
+      name: Evaluate Analyst Response for Next Action
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Disable Both:
+      - "36"
+      Disable Invited User:
+      - "34"
+      Disable Inviting User:
+      - "35"
+      No Action:
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: No Action
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Analyst Action.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: No Action
+          ignorecase: true
+    - label: Disable Invited User
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Analyst Action.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Disable Invited User
+          ignorecase: true
+    - label: Disable Inviting User
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Analyst Action.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Disable Inviting User
+          ignorecase: true
+    - label: Disable Both
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Analyst Action.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Disable Both Users
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 5ee2e274-517f-4c00-87a8-934bfa4dbb6d
+    type: title
+    task:
+      id: 5ee2e274-517f-4c00-87a8-934bfa4dbb6d
+      version: -1
+      name: Close Alert
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: d587ff50-6de0-4e67-b44c-6a209091d8cb
+    type: regular
+    task:
+      id: d587ff50-6de0-4e67-b44c-6a209091d8cb
+      version: -1
+      name: Close Alert
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      closeNotes:
+        simple: Handled by the playbook “Successful guest user invitation”.
+      closeReason:
+        complex:
+          root: .
+          transformers:
+          - operator: If-Elif
+            args:
+              conditions:
+                value:
+                  simple: |-
+                    [
+                        {
+                          "condition": "#{Analyst Action.Answers.0} in ['Disable Invited User','Disable Inviting User','Disable Both Users']",
+                          "return": "Resolved - True Positive"
+                        },
+                        {
+                          "condition": "#{MaliciousIP} != null or #{MaliciousEmail} != null or #{MaliciousDomain} != null or #{AzureSecurityAlerts} != null or #{UserRiskyCoreReason} != null or #{UserRiskyAzureDetections} != null",
+                          "return": "Resolved - Other"
+                        },
+                        {
+                          "default": "Resolved - False Positive"
+                        }
+                    ]
+              flags: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: fbf2f214-1b0d-4cd4-9767-6079b4b7f519
+    type: regular
+    task:
+      id: fbf2f214-1b0d-4cd4-9767-6079b4b7f519
+      version: -1
+      name: Disable invited user
+      description: |-
+        This script disables users for multiple services.
+      type: regular
+      iscommand: false
+      brand: ""
+      scriptName: disable-user
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      user_name:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: referenced_resource_name
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 1960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 2f064ec1-7579-43bc-80ad-39accf4b60fa
+    type: regular
+    task:
+      id: 2f064ec1-7579-43bc-80ad-39accf4b60fa
+      version: -1
+      name: Disable inviting user
+      description: |-
+        This script disables users for multiple services.
+      type: regular
+      iscommand: false
+      brand: ""
+      scriptName: disable-user
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      user_name:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: identity_name
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 43def796-929a-4e7e-99d2-c0f6bc5c8767
+    type: regular
+    task:
+      id: 43def796-929a-4e7e-99d2-c0f6bc5c8767
+      version: -1
+      name: Disable both users
+      description: |-
+        This script disables users for multiple services.
+      type: regular
+      iscommand: false
+      brand: ""
+      scriptName: disable-user
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      user_name:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: identity_name
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Core.OriginalAlert.event.referenced_resource_name
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 1960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 2cea59a6-753a-4495-8619-72ca82280e39
+    type: title
+    task:
+      id: 2cea59a6-753a-4495-8619-72ca82280e39
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: f3ff2821-30c2-42d5-8f8b-7836e5195944
+    type: regular
+    task:
+      id: f3ff2821-30c2-42d5-8f8b-7836e5195944
+      version: -1
+      name: Revoke user session
+      description: |-
+        This script clears user sessions across multiple integrations for a list of usernames.
+      type: regular
+      iscommand: false
+      brand: ""
+      scriptName: clear-user-session
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      user_name:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: identity_name
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "15_18_HIGH": 0.43,
+      "15_29_#default#": 0.16,
+      "19_24_yes": 0.45,
+      "19_29_#default#": 0.11,
+      "31_32_No Action": 0.55
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2720,
+        "width": 2521,
+        "x": -610,
+        "y": -70
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

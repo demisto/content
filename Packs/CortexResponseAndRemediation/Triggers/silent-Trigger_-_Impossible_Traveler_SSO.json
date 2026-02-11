@@ -1,0 +1,24 @@
+{
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+          "OR": [
+            {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Impossible traveler - SSO"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "description": "This trigger is responsible for handling the 'Impossible traveler - SSO' alert",
+  "fromVersion": "8.9.0",
+  "issilent": true,
+  "playbook_id": "silent-Impossible Traveler SSO",
+  "suggestion_reason": "Recommended for 'Impossible traveler - SSO' alert",
+  "trigger_id": "d837a1e5ab05c9b9f756a819f8c23aff",
+  "trigger_name": "silent-Impossible Traveler SSO"
+}

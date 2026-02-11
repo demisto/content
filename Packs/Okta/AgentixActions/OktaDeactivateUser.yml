@@ -1,0 +1,26 @@
+commonfields:
+  id: OktaDeactivateUser
+  version: -1
+display: Okta - Disable User
+name: OktaDisableUser
+tags:
+ - Okta
+ - User Management
+category: Identity and Access Management
+description: |-
+  Deactivates a user in Okta. A deactivated user can no longer log in and loses access to their assigned applications.
+args:
+  - description: The username (typically an email address) of the user to deactivate.
+    name: username
+    required: true
+    type: string
+    underlyingargname: username
+underlyingcontentitem:
+  id: Okta v2
+  name: Okta v2
+  type: command
+  version: -1
+  command: okta-deactivate-user
+requiresuserapproval: true
+marketplaces:
+- platform

@@ -1,0 +1,118 @@
+commonfields:
+  id: GmailSearchEmails
+  version: -1
+display: Gmail - Search Emails
+name: GmailSearchEmails
+category: Email
+description: >
+  Searches emails in a Gmail account based on specified filters.
+args:
+  - name: user-id
+    type: string
+    required: true
+    defaultvalue: "me"
+    description: >
+      The user's ID or email address, or "me" to represent the current authenticated user.
+    underlyingargname: user-id
+  - name: query
+    type: string
+    description: >
+      A search query string using the same syntax as the Gmail search bar.
+      For example:
+        from:someuser@example.com
+        is:unread
+        has: attachments
+        subject:"security alert"
+        filename:pdf
+        in:trash
+        after:2018/05/06 before:2018/05/09
+    underlyingargname: query
+  - name: max-results
+    type: number
+    description: >
+      Maximum number of results to return. Maximum is 500.
+    underlyingargname: max-results
+  - name: fields
+    type: string
+    description: >
+      A comma-separated list of fields to return for partial responses.
+      Options:
+        Type, Mailbox, Labels, Headers, RawData, Format,
+        Subject, From, To, Body, Cc, Bcc, Date, Html, Attachments.
+    underlyingargname: fields
+  - name: page-token
+    type: string
+    description: The page token used to retrieve a specific page of results.
+    underlyingargname: page-token
+  - name: include-spam-trash
+    type: boolean
+    description: >
+      Whether to include messages from SPAM and TRASH folders.
+    defaultvalue: false
+    underlyingargname: include-spam-trash
+outputs:
+  - underlyingoutputcontextpath: Gmail.ID
+    description: The internal ID of the message.
+    type: string
+    name: Gmail.ID
+  - underlyingoutputcontextpath: Gmail.ThreadId
+    description: The thread ID of the message.
+    type: string
+    name: Gmail.ThreadId
+  - underlyingoutputcontextpath: Gmail.Format
+    description: The MIME type of the email.
+    type: string
+    name: Gmail.Format
+  - underlyingoutputcontextpath: Gmail.Labels
+    description: The labels associated with the specific email.
+    type: string
+    name: Gmail.Labels
+  - underlyingoutputcontextpath: Gmail.To
+    description: The email address of the recipient.
+    type: string
+    name: Gmail.To
+  - underlyingoutputcontextpath: Gmail.From
+    description: The email address of the sender.
+    type: string
+    name: Gmail.From
+  - underlyingoutputcontextpath: Gmail.Cc
+    description: The additional recipient email address.
+    type: string
+    name: Gmail.Cc
+  - underlyingoutputcontextpath: Gmail.Bcc
+    description: The additional recipient email address.
+    type: string
+    name: Gmail.Bcc
+  - underlyingoutputcontextpath: Gmail.Subject
+    description: The subject line of the specific email.
+    type: string
+    name: Gmail.Subject
+  - underlyingoutputcontextpath: Gmail.Body
+    description: The content of the email body.
+    type: string
+    name: Gmail.Body
+  - underlyingoutputcontextpath: Gmail.Attachments.ID
+    description: The ID of the email attachment.
+    type: string
+    name: Gmail.Attachments.ID
+  - underlyingoutputcontextpath: Gmail.Attachments.Name
+    description: The name of the email attachment.
+    type: string
+    name: Gmail.Attachments.Name
+  - underlyingoutputcontextpath: Gmail.Headers
+    description: The headers of the specific email.
+    type: string
+    name: Gmail.Headers
+  - underlyingoutputcontextpath: Gmail.Mailbox
+    description: The mailbox containing the email.
+    type: string
+    name: Gmail.Mailbox
+underlyingcontentitem:
+  id: Gmail
+  name: Gmail
+  type: command
+  version: -1
+  command: 'gmail-search'
+requiresuserapproval: false
+marketplaces:
+  - platform

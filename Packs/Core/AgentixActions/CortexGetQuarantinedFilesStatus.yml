@@ -1,0 +1,45 @@
+commonfields:
+  id: CortexGetQuarantinedFilesStatus
+  version: -1
+name: CortexGetQuarantinedFileStatus
+display: Cortex - Get Quarantined File Status
+tags:
+ - Endpoint
+category: Endpoint
+description: >
+  Retrieves the quarantine action status for a specified file.
+  The ID of the endpoint can be retrieved from the "GetEndpointData" action when using the "Cortex Core - IR" integration brand as input.
+args:
+  - name: endpoint_id
+    description: The unique identifier of the target endpoint (device) on which the action will be performed.
+    required: true
+    underlyingargname: endpoint_id
+    type: string
+  - name: file_hash
+    description: The hash of the target file on the specified endpoint. Must be a valid SHA256 value.
+    required: true
+    underlyingargname: file_hash
+    type: string
+  - name: file_path
+    description: The file path to the target file on the specified endpoint.
+    required: true
+    underlyingargname: file_path
+    type: string
+outputs:
+  - underlyingoutputcontextpath: Core.quarantineFiles.status
+    type: string
+    description: The status of the quarantine action.
+    name: Core.quarantineFiles.status
+underlyingcontentitem:
+  id: Cortex Core - IR
+  name: Cortex Core - IR
+  type: command
+  version: -1
+  command: core-get-quarantine-status
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- xsiam
+- cloud_runtime_security
+- edr

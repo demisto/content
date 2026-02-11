@@ -1,0 +1,94 @@
+commonfields:
+  id: ServiceNowGetTicket
+  version: -1
+display: ServiceNow - Get Ticket
+name: ServiceNowGetTicket
+category: Case Management
+description: Retrieves a ServiceNow ticket from ServiceNow based on the specified ID or number.
+args:
+  - name: id
+    description: System ID of the ServiceNow ticket to retrieve.
+    type: string
+    underlyingargname: id
+  - name: number
+    description: |
+      ticket number to retrieve. For example:  INC0010001.
+    type: string
+    underlyingargname: number
+  - name: ticket_type
+    description: |
+      Type of ServiceNow ticket to retrieve.
+      Options: incident, problem, change_request, sc_request, sc_task.
+    type: string
+    underlyingargname: ticket_type
+  - name: get_attachments
+    description: Whether to retrieve attachments associated with the ticket.
+    type: boolean
+    underlyingargname: get_attachments
+  - name: additional_fields
+    description: |
+      List of additional ticket fields to retrieve, separated by commas (e.g., field1,field2).
+    type: string
+    underlyingargname: additional_fields
+outputs:
+  - underlyingoutputcontextpath: ServiceNow.Ticket.ID
+    description: The unique ID of the ServiceNow ticket.
+    type: string
+    name: ServiceNow.Ticket.ID
+  - underlyingoutputcontextpath: ServiceNow.Ticket.Assignee
+    description: The assignee of the ServiceNow ticket.
+    type: string
+    name: ServiceNow.Ticket.Assignee
+  - underlyingoutputcontextpath: ServiceNow.Ticket.OpenedBy
+    description: ServiceNow ticket opener ID.
+    type: string
+    name: ServiceNow.Ticket.OpenedBy
+  - underlyingoutputcontextpath: ServiceNow.Ticket.CreatedOn
+    description: ServiceNow ticket creation date.
+    type: date
+    name: ServiceNow.Ticket.CreatedOn
+  - underlyingoutputcontextpath: ServiceNow.Ticket.State
+    description: ServiceNow ticket state.
+    type: string
+    name: ServiceNow.Ticket.State
+  - underlyingoutputcontextpath: ServiceNow.Ticket.Summary
+    description: ServiceNow ticket short summary.
+    type: string
+    name: ServiceNow.Ticket.Summary
+  - underlyingoutputcontextpath: ServiceNow.Ticket.Number
+    description: ServiceNow ticket number.
+    type: string
+    name: ServiceNow.Ticket.Number
+  - underlyingoutputcontextpath: ServiceNow.Ticket.Active
+    description: ServiceNow ticket active status.
+    type: boolean
+    name: ServiceNow.Ticket.Active
+  - underlyingoutputcontextpath: ServiceNow.Ticket.AdditionalComments
+    description: ServiceNow ticket comments.
+    type: string
+    name: ServiceNow.Ticket.AdditionalComments
+  - underlyingoutputcontextpath: ServiceNow.Ticket.Priority
+    description: ServiceNow ticket priority.
+    type: string
+    name: ServiceNow.Ticket.Priority
+  - underlyingoutputcontextpath: ServiceNow.Ticket.OpenedAt
+    description: ServiceNow ticket opening time.
+    type: date
+    name: ServiceNow.Ticket.OpenedAt
+  - underlyingoutputcontextpath: ServiceNow.Ticket.ResolvedBy
+    description: ServiceNow ticket resolver ID.
+    type: string
+    name: ServiceNow.Ticket.ResolvedBy
+  - underlyingoutputcontextpath: ServiceNow.Ticket.CloseCode
+    description: ServiceNow ticket close code.
+    type: string
+    name: ServiceNow.Ticket.CloseCode
+underlyingcontentitem:
+  id: ServiceNow v2
+  name: ServiceNow v2
+  type: command
+  version: -1
+  command: 'servicenow-get-ticket'
+requiresuserapproval: false
+marketplaces:
+- platform

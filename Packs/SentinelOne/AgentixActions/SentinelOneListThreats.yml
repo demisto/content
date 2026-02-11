@@ -1,0 +1,138 @@
+commonfields:
+  id: SentinelOneListThreats
+  version: -1
+name: SentinelOneListThreats
+display: SentinelOne - List Threats
+tags:
+ - Endpoint
+category: Endpoint
+description: >
+  Returns a list of threats according to the specified filters.
+args:
+  - description: A comma-separated list of content hashes of the threat.
+    name: content_hash
+    type: string
+    underlyingargname: content_hash
+  - description: >
+      A comma-separated list of mitigation statuses. Options: mitigated, blocked, suspicious, pending, suspicious_resolved.
+    name: mitigation_status
+    type: string
+    underlyingargname: mitigation_status
+  - description: >
+      Searches for threats created before this timestamp, for example: "2018-02-27T04:49:26.257525Z", "10 days", "5 months", "2 hours".
+    name: created_before
+    type: string
+    underlyingargname: created_before
+  - description: >
+      Searches for threats created after this timestamp, for example: "2018-02-27T04:49:26.257525Z", "10 days", "5 months", "2 hours".
+    name: created_after
+    type: string
+    underlyingargname: created_after
+  - description: >
+      Searches for threats created on or before this timestamp, for example: "2018-02-27T04:49:26.257525Z", "10 days", "5 months", "2 hours".
+    name: created_until
+    type: string
+    underlyingargname: created_until
+  - description: >
+      Searches for threats created on or after this timestamp, for example: "2018-02-27T04:49:26.257525Z", "10 days", "5 months", "2 hours".
+    name: created_from
+    type: string
+    underlyingargname: created_from
+  - description: >
+      Whether to only return resolved threats. Options: false, true.
+    name: resolved
+    defaultvalue: "false"
+    type: boolean
+    underlyingargname: resolved
+  - description: Threat display name. It can be a partial display name.
+    name: display_name
+    type: string
+    underlyingargname: display_name
+  - description: The maximum number of threats to return.
+    name: limit
+    defaultvalue: "20"
+    type: number
+    underlyingargname: limit
+  - description: >
+      A comma-separated list of threat IDs, for example: "225494730938493804,225494730938493915".
+    name: threat_ids
+    type: string
+    underlyingargname: threat_ids
+  - description: >
+      A comma-separated list of threat classifications to search. Options: Engine, Static, Cloud, Behavioral.
+    name: classifications
+    type: string
+    underlyingargname: classifications
+  - description: Risk level threshold to retrieve (1-10).
+    name: rank
+    type: number
+    underlyingargname: rank
+  - description: >
+      A comma-separated list of site IDs to search for threats, for example: "225494730938493804,225494730938493915".
+    name: site_ids
+    type: string
+    underlyingargname: site_ids
+  - description: >
+      Whether to include the resolved parameter in the query. Options: false, true.
+    name: include_resolved_param
+    defaultvalue: "false"
+    type: boolean
+    underlyingargname: include_resolved_param
+outputs:
+  - underlyingoutputcontextpath: SentinelOne.Threat.ID
+    description: The threat ID.
+    type: string
+    name: SentinelOne.Threat.ID
+  - underlyingoutputcontextpath: SentinelOne.Threat.AgentComputerName
+    description: The agent computer name.
+    type: string
+    name: SentinelOne.Threat.AgentComputerName
+  - underlyingoutputcontextpath: SentinelOne.Threat.CreatedDate
+    description: The threat creation date.
+    type: Date
+    name: SentinelOne.Threat.CreatedDate
+  - underlyingoutputcontextpath: SentinelOne.Threat.SiteID
+    description: The site ID.
+    type: string
+    name: SentinelOne.Threat.SiteID
+  - underlyingoutputcontextpath: SentinelOne.Threat.Classification
+    description: The threat classification.
+    type: string
+    name: SentinelOne.Threat.Classification
+  - underlyingoutputcontextpath: SentinelOne.Threat.ClassificationSource
+    description: Source of the threat classification.
+    type: string
+    name: SentinelOne.Threat.ClassificationSource
+  - underlyingoutputcontextpath: SentinelOne.Threat.ConfidenceLevel
+    description: SentinelOne threat confidence level.
+    type: string
+    name: SentinelOne.Threat.ConfidenceLevel
+  - underlyingoutputcontextpath: SentinelOne.Threat.FileSha256
+    description: SHA256 hash of the file content.
+    type: string
+    name: SentinelOne.Threat.FileSha256
+  - underlyingoutputcontextpath: SentinelOne.Threat.MitigationStatus
+    description: The threat mitigation status.
+    type: string
+    name: SentinelOne.Threat.MitigationStatus
+  - underlyingoutputcontextpath: SentinelOne.Threat.AgentID
+    description: The agent IDs associated with the threat.
+    type: string
+    name: SentinelOne.Threat.AgentID
+  - underlyingoutputcontextpath: SentinelOne.Threat.Rank
+    description: The number representing the cloud reputation (1-10).
+    type: number
+    name: SentinelOne.Threat.Rank
+  - underlyingoutputcontextpath: SentinelOne.Threat.MarkedAsBenign
+    description: Whether the threat is marked as benign.
+    type: Boolean
+    name: SentinelOne.Threat.MarkedAsBenign
+underlyingcontentitem:
+  id: SentinelOne V2
+  name: SentinelOne V2
+  type: command
+  version: -1
+  command: sentinelone-get-threats
+requiresuserapproval: false
+marketplaces:
+- platform

@@ -1,0 +1,105 @@
+commonfields:
+  id: EnrichDomain
+  version: -1
+display: Enrich Domain
+name: EnrichDomain
+tags:
+ - domain
+ - threat-intelligence
+ - reputation
+category: Data Enrichment & Threat Intelligence
+description: |
+  A comprehensive action to enrich the provided domain indicator and retrieve all available data.
+  The results include both tenant-specific internal information (from the Threat Intelligence Management (TIM) brand) and global threat intelligence.
+  Global threat intelligence is retrieved using configured integrations to identify potential threats.
+  ACTION REDUNDANCY WARNING: Due to its comprehensive nature, DO NOT use 'EnrichIndicator' or 'CortexListIndicators' in parallel with this action, as the data is already included in the output.
+  PREREQUISITE: Ensure that one or more of these external integrations are configured in your environment.
+args:
+  - name: domain_list
+    description: "A JSON-encoded string representing an array of domain values to enrich, for example: '[\"https://example.com\", \"https://malicious.com\"]'"
+    required: true
+    type: string
+    underlyingargname: domain_list
+  - name: external_enrichment
+    required: false
+    description: Always set to true.
+    type: string
+    defaultvalue: "true"
+    underlyingargname: external_enrichment
+  - name: additional_fields
+    required: false
+    description: When set to true, the output will include additional fields about the domain. Default is true.
+    type: string
+    defaultvalue: "true"
+    underlyingargname: additional_fields
+outputs:
+- underlyingoutputcontextpath: DomainEnrichment.Results.Brand
+  description: The brand that provided the enrichment information for this domain indicator.
+  type: string
+  name: DomainEnrichment.Results.Brand
+- underlyingoutputcontextpath: DomainEnrichment.Value
+  description: The actual domain name or indicator that was enriched.
+  type: string
+  name: DomainEnrichment.Value
+- underlyingoutputcontextpath: DomainEnrichment.Results.Name
+  description: The canonical domain name derived from the enrichment results.
+  type: string
+  name: DomainEnrichment.Results.Name
+- underlyingoutputcontextpath: DomainEnrichment.Results.AdditionalFields.DNS
+  description: A list of DNS records (e.g., A, MX, NS) currently associated with the domain.
+  type: string
+  name: DomainEnrichment.Results.AdditionalFields.DNS
+- underlyingoutputcontextpath: DomainEnrichment.Results.AdditionalFields.Malicious.Vendor
+  description: The vendor or source that reported this domain as malicious.
+  type: string
+  name: DomainEnrichment.Results.AdditionalFields.Malicious.Vendor
+- underlyingoutputcontextpath: DomainEnrichment.Results.AdditionalFields.Malicious.Description
+  description: A detailed explanation or rationale provided by the vendor regarding why the domain was flagged as malicious.
+  type: string
+  name: DomainEnrichment.Results.AdditionalFields.Malicious.Description
+- underlyingoutputcontextpath: DomainEnrichment.Results.Verdict
+  description: "The risk classification (verdict) for this specific domain indicator, based on a single brand's analysis. Options include: Unknown, Benign, Suspicious, Malicious."
+  type: string
+  name: DomainEnrichment.Results.Verdict
+- underlyingoutputcontextpath: DomainEnrichment.MaxVerdict
+  description: "The highest risk classification (maximum verdict) aggregated from all brands' verdicts found for this domain. Options include: Unknown, Benign, Suspicious, Malicious."
+  type: string
+  name: DomainEnrichment.MaxVerdict
+- underlyingoutputcontextpath: DomainEnrichment.Results.Reliability
+  description: "The reliability score of the reporting Brand. Options: A+ - Completely reliable, A - Reliable, B - Usually reliable, C - Fairly reliable, D - Not usually reliable, E - Unreliable, F - Reliability cannot be judged."
+  type: string
+  name: DomainEnrichment.Results.Reliability
+- underlyingoutputcontextpath: DomainEnrichment.Results.AdditionalFields.NameServers
+  description: The name servers (NS records) responsible for managing the domain's zone file.
+  type: string
+  name: DomainEnrichment.Results.AdditionalFields.NameServers
+- underlyingoutputcontextpath: DomainEnrichment.Results.AdditionalFields.UpdatedDate
+  description: The timestamp or date when the domain registration details were last modified (e.g., in WHOIS records).
+  type: date
+  name: DomainEnrichment.Results.AdditionalFields.UpdatedDate
+- underlyingoutputcontextpath: DomainEnrichment.Results.AdditionalFields.CreationDate
+  description: The timestamp or date when the domain was originally registered.
+  type: date
+  name: DomainEnrichment.Results.AdditionalFields.CreationDate
+- underlyingoutputcontextpath: DomainEnrichment.Results.AdditionalFields.Admin.Email
+  description: The email address listed for the domain's administrative contact (Admin).
+  type: string
+  name: DomainEnrichment.Results.AdditionalFields.Admin.Email
+- underlyingoutputcontextpath: DomainEnrichment.Results.AdditionalFields.Admin.Name
+  description: The full name listed for the domain's administrative contact (Admin).
+  type: string
+  name: DomainEnrichment.Results.AdditionalFields.Admin.Name
+underlyingcontentitem:
+  id: domain-enrichment
+  name: domain-enrichment
+  type: script
+  version: -1
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- agentix
+- cloud
+- cloud_runtime_security
+- edr
+- xsiam

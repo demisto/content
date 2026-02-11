@@ -1,0 +1,55 @@
+commonfields:
+  id: CortexCreateAssessmentProfile
+  version: -1
+name: CortexCreateAssessmentProfile
+display: Cortex - Create Assessment Profile
+description: Creates a new assessment profile with specified parameters.
+category: Cloud Security
+args:
+  - name: profile_name
+    description: The name of the assessment profile to create.
+    type: string
+    required: true
+    underlyingargname: profile_name
+  - name: profile_description
+    description: The description of the assessment profile to create.
+    type: string
+    underlyingargname: profile_description
+  - name: standard_name
+    description: The name of the compliance standard to associate with the profile.
+    type: string
+    required: true
+    underlyingargname: standard_name
+  - name: asset_group_name
+    description: The name of the asset group to apply the assessment profile to.
+    type: string
+    required: true
+    underlyingargname: asset_group_name
+  - name: day
+    description: |-
+      The day of the week to schedule the assessment. Options include sunday, monday, tuesday, wednesday, thursday, friday, saturday.
+      If left empty, assessment runs daily.
+    type: string
+    underlyingargname: day
+  - name: time
+    description: The time of day to run the assessment in HH:MM format.
+    type: string
+    defaultvalue: "12:00"
+    underlyingargname: time
+outputs:
+  - name: Core.AssessmentProfile.assessment_profile_id
+    description: The unique identifier of the newly created assessment profile.
+    type: string
+    underlyingoutputcontextpath: Core.AssessmentProfile.assessment_profile_id
+underlyingcontentitem:
+  id: Cortex Core - Platform
+  name: Cortex Core - Platform
+  type: command
+  version: -1
+  command: core-add-assessment-profile
+requiresuserapproval: false
+marketplaces:
+  - platform
+supportedModules:
+  - cloud_runtime_security
+  - cloud_posture

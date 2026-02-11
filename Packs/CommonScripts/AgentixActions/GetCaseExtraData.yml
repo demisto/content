@@ -1,0 +1,239 @@
+commonfields:
+  id: GetCaseExtraData
+  version: -1
+display: Get Case
+name: GetCase
+category: Data Enrichment & Threat Intelligence
+description: Retrieves extra data fields of a specific case, including related issues, key artifacts, and network artifacts.
+args:
+  - name: case_id
+    type: string
+    description: A comma-separated list of case IDs to retrieve extra data. Use up to 10 IDs.
+    underlyingargname: case_id
+    required: true
+  - name: issues_limit
+    type: number
+    defaultvalue: "1000"
+    description: Maximum number of issues to return per case.
+    underlyingargname: issues_limit
+outputs:
+  - name: Core.CaseExtraData.case_id
+    description: The unique identifier for the case.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.case_id
+  - name: Core.CaseExtraData.case_name
+    description: The name assigned to the case.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.case_name
+  - name: Core.CaseExtraData.creation_time
+    description: The timestamp (in epoch format) when the case was created.
+    type: Number
+    underlyingoutputcontextpath: Core.CaseExtraData.creation_time
+  - name: Core.CaseExtraData.modification_time
+    description: The timestamp (in epoch format) when the case was last modified.
+    type: Number
+    underlyingoutputcontextpath: Core.CaseExtraData.modification_time
+  - name: Core.CaseExtraData.detection_time
+    description: The timestamp when the activity related to the case was first detected.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.detection_time
+  - name: Core.CaseExtraData.status
+    description: The current status of the case.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.status
+  - name: Core.CaseExtraData.severity
+    description: The severity level of the case.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.severity
+  - name: Core.CaseExtraData.description
+    description: A detailed textual description of the case.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.description
+  - name: Core.CaseExtraData.assigned_user_mail
+    description: The email address of the user assigned to the case.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.assigned_user_mail
+  - name: Core.CaseExtraData.assigned_user_pretty_name
+    description: The display name of the user assigned to the case.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.assigned_user_pretty_name
+  - name: Core.CaseExtraData.issue_count
+    description: The total number of issues associated with the case.
+    type: Number
+    underlyingoutputcontextpath: Core.CaseExtraData.issue_count
+  - name: Core.CaseExtraData.low_severity_issue_count
+    description: The total number of low-severity issues within the case.
+    type: Number
+    underlyingoutputcontextpath: Core.CaseExtraData.low_severity_issue_count
+  - name: Core.CaseExtraData.med_severity_issue_count
+    description: The total number of medium-severity issues within the case.
+    type: Number
+    underlyingoutputcontextpath: Core.CaseExtraData.med_severity_issue_count
+  - name: Core.CaseExtraData.high_severity_issue_count
+    description: The total number of high-severity issues within the case.
+    type: Number
+    underlyingoutputcontextpath: Core.CaseExtraData.high_severity_issue_count
+  - name: Core.CaseExtraData.critical_severity_issue_count
+    description: The total number of critical-severity issues within the case.
+    type: Number
+    underlyingoutputcontextpath: Core.CaseExtraData.critical_severity_issue_count
+  - name: Core.CaseExtraData.user_count
+    description: The number of unique users involved in the case.
+    type: Number
+    underlyingoutputcontextpath: Core.CaseExtraData.user_count
+  - name: Core.CaseExtraData.host_count
+    description: The number of unique hosts involved in the case.
+    type: Number
+    underlyingoutputcontextpath: Core.CaseExtraData.host_count
+  - name: Core.CaseExtraData.notes
+    description: A collection of notes or comments added to the case by analysts.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.notes
+  - name: Core.CaseExtraData.resolve_comment
+    description: The comment entered by a user when resolving the case.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.resolve_comment
+  - name: Core.CaseExtraData.manual_severity
+    description: The severity level manually set by a user, which may override the calculated severity for the case.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.manual_severity
+  - name: Core.CaseExtraData.manual_description
+    description: A description of the case that was manually entered by a user.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.manual_description
+  - name: Core.CaseExtraData.xdr_url
+    description: The direct URL to view the case in the XDR platform.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.xdr_url
+  - name: Core.CaseExtraData.starred
+    description: A flag indicating whether the case has been starred or marked as a favorite.
+    type: Boolean
+    underlyingoutputcontextpath: Core.CaseExtraData.starred
+  - name: Core.CaseExtraData.hosts
+    description: A comma-separated list of hostnames involved in the case.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.hosts
+  - name: Core.CaseExtraData.case_sources
+    description: The products or sources that contributed issues to this case.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.case_sources
+  - name: Core.CaseExtraData.rule_based_score
+    description: The case's risk score as calculated by automated detection rules.
+    type: Number
+    underlyingoutputcontextpath: Core.CaseExtraData.rule_based_score
+  - name: Core.CaseExtraData.manual_score
+    description: A risk score manually assigned to the case by a user.
+    type: Number
+    underlyingoutputcontextpath: Core.CaseExtraData.manual_score
+  - name: Core.CaseExtraData.wildfire_hits
+    description: The number of times a file associated with this case was identified as malicious by WildFire.
+    type: Number
+    underlyingoutputcontextpath: Core.CaseExtraData.wildfire_hits
+  - name: Core.CaseExtraData.issues_grouping_status
+    description: The current status of the issue grouping or clustering process for this case.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.issues_grouping_status
+  - name: Core.CaseExtraData.mitre_techniques_ids_and_names
+    description: A list of MITRE ATT&CK technique IDs and names observed in the case.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.mitre_techniques_ids_and_names
+  - name: Core.CaseExtraData.mitre_tactics_ids_and_names
+    description: A list of MITRE ATT&CK tactic IDs and names observed in the case.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.mitre_tactics_ids_and_names
+  - name: Core.CaseExtraData.issue_categories
+    description: A comma-separated list of categories for the issues included in the case.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.issue_categories
+  - name: Core.CaseExtraData.issue_ids
+    description: IDs of related issues.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.issue_ids
+  - name: Core.CaseExtraData.network_artifacts.total_count
+    description: The total number of network artifacts associated with the case.
+    type: Number
+    underlyingoutputcontextpath: Core.CaseExtraData.network_artifacts.total_count
+  - name: Core.CaseExtraData.network_artifacts.data.type
+    description: The type of network artifact.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.network_artifacts.data.type
+  - name: Core.CaseExtraData.network_artifacts.data.issue_count
+    description: The number of issues in the case that involve this network artifact.
+    type: Number
+    underlyingoutputcontextpath: Core.CaseExtraData.network_artifacts.data.issue_count
+  - name: Core.CaseExtraData.network_artifacts.data.is_manual
+    description: A flag indicating if the network artifact was added manually by a user.
+    type: Boolean
+    underlyingoutputcontextpath: Core.CaseExtraData.network_artifacts.data.is_manual
+  - name: Core.CaseExtraData.network_artifacts.data.network_domain
+    description: The domain name of the network artifact.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.network_artifacts.data.network_domain
+  - name: Core.CaseExtraData.network_artifacts.data.network_remote_ip
+    description: The remote IP address of the network artifact.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.network_artifacts.data.network_remote_ip
+  - name: Core.CaseExtraData.network_artifacts.data.network_remote_port
+    description: The remote port number of the network artifact.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.network_artifacts.data.network_remote_port
+  - name: Core.CaseExtraData.network_artifacts.data.network_country
+    description: The country associated with the network artifact's IP address.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.network_artifacts.data.network_country
+  - name: Core.CaseExtraData.file_artifacts.total_count
+    description: The total number of file artifacts associated with the case.
+    type: Number
+    underlyingoutputcontextpath: Core.CaseExtraData.file_artifacts.total_count
+  - name: Core.CaseExtraData.file_artifacts.data.issue_count
+    description: The number of issues in the case that involve this file artifact.
+    type: Number
+    underlyingoutputcontextpath: Core.CaseExtraData.file_artifacts.data.issue_count
+  - name: Core.CaseExtraData.file_artifacts.data.file_name
+    description: The name of the file artifact.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.file_artifacts.data.file_name
+  - name: Core.CaseExtraData.file_artifacts.data.File_sha256
+    description: The SHA256 hash of the file artifact.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.file_artifacts.data.File_sha256
+  - name: Core.CaseExtraData.file_artifacts.data.file_signature_status
+    description: The digital signature status of the file artifact.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.file_artifacts.data.file_signature_status
+  - name: Core.CaseExtraData.file_artifacts.data.file_wildfire_verdict
+    description: The verdict from WildFire for this file.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.file_artifacts.data.file_wildfire_verdict
+  - name: Core.CaseExtraData.file_artifacts.data.is_malicous
+    description: A flag indicating whether the file artifact is considered malicious.
+    type: Boolean
+    underlyingoutputcontextpath: Core.CaseExtraData.file_artifacts.data.is_malicous
+  - name: Core.CaseExtraData.file_artifacts.data.is_manual
+    description: A flag indicating if the file artifact was added manually by a user.
+    type: Boolean
+    underlyingoutputcontextpath: Core.CaseExtraData.file_artifacts.data.is_manual
+  - name: Core.CaseExtraData.file_artifacts.data.is_process
+    description: A flag indicating if the file artifact is a process executable.
+    type: Boolean
+    underlyingoutputcontextpath: Core.CaseExtraData.file_artifacts.data.is_process
+  - name: Core.CaseExtraData.file_artifacts.data.low_confidence
+    description: A flag indicating if the verdict on the file artifact has low confidence.
+    type: Boolean
+    underlyingoutputcontextpath: Core.CaseExtraData.file_artifacts.data.low_confidence
+  - name: Core.CaseExtraData.file_artifacts.data.type
+    description: The type of the file artifact.
+    type: String
+    underlyingoutputcontextpath: Core.CaseExtraData.file_artifacts.data.type
+underlyingcontentitem:
+  id: GetCaseExtraData
+  name: GetCaseExtraData
+  type: script
+  version: -1
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- agentix
+- xsiam
+- cloud_posture

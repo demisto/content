@@ -1,0 +1,24 @@
+{
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+          "OR": [
+            {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "A user deleted multiple users for the first time"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "description": "This trigger is responsible for handling A user deleted multiple users for the first time alert.",
+  "fromVersion": "8.9.0",
+  "issilent": true,
+  "playbook_id": "silent-A user deleted multiple users for the first time",
+  "suggestion_reason": "Recommended for A user deleted multiple users for the first time alert.",
+  "trigger_id": "39815518f81756fd12a0b7ee55ba3dbb",
+  "trigger_name": "silent-A user deleted multiple users for the first time"
+}

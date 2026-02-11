@@ -1,0 +1,3620 @@
+id: silent-User moved Exchange sent messages to deleted items
+version: -1
+name: silent-User moved Exchange sent messages to deleted items
+description: |-
+  This playbook addresses the following alerts:
+
+  - User moved Exchange sent messages to deleted items
+
+  Playbook Stages:
+
+  Triage:
+
+  - Retrieve additional data about the email movement activity including user details and message information
+
+  Investigation:
+
+  - Analyze the reputation of the source IP address
+  - Examine user risk level in Cortex Core and Azure AD risk detections
+  - Check for related security alerts (phishing, DLP violations)
+  - Retrieve and analyze recently sent email content and recipients
+  - Perform URL and domain reputation analysis on email content
+  - Assess user agent patterns for suspicious behavior
+  - Determine attacker motive based on email content and recipient analysis
+
+  Containment:
+
+  - For alerts determined to be true positives, automatically revoke the user's session
+  - Upon analyst approval, disable the compromised user account
+  - Provide manual verification options for inconclusive cases
+  - Manual actions are suggested for alerts indicative of Phishing/fraud or Exfiltration
+
+  Requirements: For response actions, you need the following integrations:
+
+  - Microsoft Graph User
+  - Microsoft Graph Mail.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 561bd4dc-c98b-405a-8be1-b75b93c84f77
+    type: start
+    task:
+      id: 561bd4dc-c98b-405a-8be1-b75b93c84f77
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: fc3b3221-e2d3-4bb1-8465-2bae4aece35a
+    type: regular
+    task:
+      id: fc3b3221-e2d3-4bb1-8465-2bae4aece35a
+      version: -1
+      name: Get additional alert information
+      description: Returns information about each alert ID.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+      - "43"
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 15b06095-7316-4f71-810a-7b8ffd1391f7
+    type: title
+    task:
+      id: 15b06095-7316-4f71-810a-7b8ffd1391f7
+      version: -1
+      name: Triage
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "38"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 167
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: c1e3b800-5bea-4ea9-8497-3b2cebe47aa0
+    type: title
+    task:
+      id: c1e3b800-5bea-4ea9-8497-3b2cebe47aa0
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+      - "21"
+      - "28"
+      - "8"
+      - "35"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 723
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: bffaa40f-1303-4e93-8400-2b58941e6151
+    type: regular
+    task:
+      id: bffaa40f-1303-4e93-8400-2b58941e6151
+      version: -1
+      name: Enrich source IP
+      description: This script gathers ip reputation data from multiple integrations and returns an ip entity with consolidated information to the context.
+      scriptName: ip-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      additional_fields:
+        simple: "false"
+      external_enrichment:
+        simple: "true"
+      ip_list:
+        simple: ${Core.OriginalAlert.event.caller_ip}
+    reputationcalc: 2
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1948,
+          "y": 972
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 5165c786-7dbf-4fe3-8e23-5e14d018f992
+    type: title
+    task:
+      id: 5165c786-7dbf-4fe3-8e23-5e14d018f992
+      version: -1
+      name: IP Reputation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1948,
+          "y": 855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 211d9051-a30b-445e-8182-538b360725e1
+    type: condition
+    task:
+      id: 211d9051-a30b-445e-8182-538b360725e1
+      version: -1
+      name: Check IP reputation
+      description: Checks if the external Source IP is malicious (DBotScore above 2).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      Malicious:
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: greaterThanOrEqual
+                    left:
+                      value:
+                        simple: IPEnrichment.TIMScore
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "3"
+                accessor: Value
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1946,
+          "y": 1112
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 98f58b0f-2aec-414c-b65e-da246847e275
+    type: regular
+    task:
+      id: 98f58b0f-2aec-414c-b65e-da246847e275
+      version: -1
+      name: Save malicious IP result to evidence
+      description: Saves a key indicating that the IP is malicious.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence.MaliciousIP
+      value:
+        simple: ${IPEnrichment.Value}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2068,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 5d84d12a-b9a2-4677-83fa-9091a7212fb6
+    type: regular
+    task:
+      id: 5d84d12a-b9a2-4677-83fa-9091a7212fb6
+      version: -1
+      name: Get risky user detections
+      description: Returns a comma-separated list of the Risk Detection objects and their properties.
+      script: '|||azure-risky-users-risk-detections-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      detected_date_time_after:
+        simple: ${TimeNow}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1020.5,
+          "y": 1243
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 03808f38-de7e-4f8b-8463-ea5465dc1773
+    type: regular
+    task:
+      id: 03808f38-de7e-4f8b-8463-ea5465dc1773
+      version: -1
+      name: Generate search timestamp
+      description: Retrieves the current date and time for use in the search.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      dateFormat:
+        simple: ISO
+      daysAgo:
+        simple: "2"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1020.5,
+          "y": 1123
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: ae4af7e0-6cb7-4a4f-a37e-f6656bbc5b63
+    type: regular
+    task:
+      id: ae4af7e0-6cb7-4a4f-a37e-f6656bbc5b63
+      version: -1
+      name: Save detection results
+      description: Saves a context key with a value of 1 if the user is risky in Azure AD, 0 otherwise.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "95"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: AzureRiskyUserDetectionResults
+      value:
+        complex:
+          root: AzureRiskyUsers.RiskDetection
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskDetection.userPrincipalName
+                iscontext: true
+              right:
+                value:
+                  simple: Core.OriginalAlert.stateful_raw_data.saas_best_identity_match
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskDetection.riskState
+                iscontext: true
+              right:
+                value:
+                  simple: atRisk
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskDetection.riskState
+                iscontext: true
+              right:
+                value:
+                  simple: confirmedCompromised
+              ignorecase: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1020.5,
+          "y": 1391
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 41e73bd7-f803-458f-8987-4a9014f1e7ad
+    type: title
+    task:
+      id: 41e73bd7-f803-458f-8987-4a9014f1e7ad
+      version: -1
+      name: User Risk Assessment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -694,
+          "y": 855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 8fa7e087-cbc2-4f05-8f2a-8d590dcdfd9d
+    type: title
+    task:
+      id: 8fa7e087-cbc2-4f05-8f2a-8d590dcdfd9d
+      version: -1
+      name: Azure AD Risk
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1020.5,
+          "y": 1007
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 5b758239-c05d-4960-866d-c0b8cc9c8c24
+    type: title
+    task:
+      id: 5b758239-c05d-4960-866d-c0b8cc9c8c24
+      version: -1
+      name: Core IR Risk
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -499.75,
+          "y": 997
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: c62d29e6-6764-48fd-8d8b-28d6620e85a3
+    type: regular
+    task:
+      id: c62d29e6-6764-48fd-8d8b-28d6620e85a3
+      version: -1
+      name: Get user risk score
+      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
+      scriptName: get-user-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      user_name:
+        complex:
+          root: alert
+          accessor: username
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Core.OriginalAlert.event.identity_name
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -499.75,
+          "y": 1113
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 67f17651-9999-451c-a3a9-0816305d8d3a
+    type: regular
+    task:
+      id: 67f17651-9999-451c-a3a9-0816305d8d3a
+      version: -1
+      name: Save risk score result
+      description: Saves a context key with a value of 1 if the user is risky in Core IR, 0 otherwise.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+      - "96"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: CoreRiskyUserResults
+      value:
+        complex:
+          root: UserData
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: UserData.RiskLevel
+                iscontext: true
+              right:
+                value:
+                  simple: HIGH
+              ignorecase: true
+          accessor: AdditionalFields.reasons.description
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -499.75,
+          "y": 1231
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 3b99bbe3-70b8-4f8e-87ea-c3f949438ae3
+    type: title
+    task:
+      id: 3b99bbe3-70b8-4f8e-87ea-c3f949438ae3
+      version: -1
+      name: Email - Audit Log Search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 918,
+          "y": 856
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 4e1753bc-bb57-4634-8da2-a9ba597b58c1
+    type: title
+    task:
+      id: 4e1753bc-bb57-4634-8da2-a9ba597b58c1
+      version: -1
+      name: Email Retrieval
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "87"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1215,
+          "y": 1409
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 69e8211d-82f2-4962-8583-b225055b97bd
+    type: regular
+    task:
+      id: 69e8211d-82f2-4962-8583-b225055b97bd
+      version: -1
+      name: Search timestamps of sent emails
+      description: |-
+        Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+        When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+        unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "29"
+      '#none#':
+      - "39"
+    scriptarguments:
+      query:
+        simple: "dataset = saas_audit_logs\n| filter identity_name = \"${Core.OriginalAlert.event.identity_name}\" and vendor = \"MSFT\" and operation_name_orig = \"Send\"\n| alter MsgID = raw_log -> Item.InternetMessageId\n| filter MsgID in ${MessageIDsQuery}\n\n// --- Time Proximity Logic Starts Here ---\n\n// // 1. Define and convert alert timestamp to timestamp in milliseconds (alert timestamps are in seconds). Convert event timestamps to timestamp objects as well.\n| alter EventTimestampObj = to_timestamp(event_timestamp , \"MILLIS\")\n| alter AlertEpochTime = multiply(${AlertTimestampEpochSeconds}, 1000)  // not in Milliseconds, need to multiply\n| alter AlertTimestampObj = to_timestamp(AlertEpochTime, \"MILLIS\")\n\n\n// 2. Calculate the difference between the event time and the target time in MINUTES.\n// We use the event's event_timestamp field. The result can be positive (event is later) or negative (event is earlier).\n| alter time_diff_minutes = timestamp_diff(EventTimestampObj, AlertTimestampObj, \"MINUTE\")\n\n| fields MsgID, EventTimestampObj, AlertTimestampObj, time_diff_minutes \n\n// 3. Filter for records where the absolute difference is 60 minutes (1 hour) or less.\n| filter time_diff_minutes <= 60 and time_diff_minutes >= -60\n\n// 4. Aggregate to count the results that passed the time proximity filter.\n| comp count() as count_within_1_hour, values(MsgID) as message_id_list"
+      query_name:
+        simple: Search for emails sent within 1 hour from the time of the alert.
+      time_frame:
+        simple: 1 day
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 918,
+          "y": 972
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 35db71a0-9164-42e1-8c7f-6f783bc6d3c6
+    type: regular
+    task:
+      id: 35db71a0-9164-42e1-8c7f-6f783bc6d3c6
+      version: -1
+      name: Save unique internet message IDs
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      key:
+        simple: AffectedMessageIDs
+      value:
+        complex:
+          root: Core.OriginalAlert._all_events.raw_log.AffectedItems
+          accessor: InternetMessageId
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: f03a7075-6eb2-4388-8033-33aea48fc031
+    type: regular
+    task:
+      id: f03a7075-6eb2-4388-8033-33aea48fc031
+      version: -1
+      name: Prepare Message IDs for search query
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: MessageIDsQuery
+      value:
+        complex:
+          root: AffectedMessageIDs
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '"'
+              suffix:
+                value:
+                  simple: '"'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: (
+              suffix:
+                value:
+                  simple: )
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 586
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 0282f531-c9b5-408c-8a69-b85f8998efb4
+    type: regular
+    task:
+      id: 0282f531-c9b5-408c-8a69-b85f8998efb4
+      version: -1
+      name: Search security policy bypass / phishing alerts
+      description: |-
+        Searches for alerts regarding Kerberos ticket requests using spoofed sAMAccountNames.
+        A general search of these alerts is first executed, after which another check is done to identify whether the hostname of the alert is the name of the DC (the current alert's agent hostname in the case of SPNs cleared alerts).
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "98"
+    scriptarguments:
+      fromdate:
+        simple: 3 hours ago
+      ignore-outputs:
+        simple: "false"
+      includeinformational:
+        simple: "false"
+      query:
+        simple: username:"${alert.username.[0]}" and (name:"Sensitive Exchange mail sent to external users" or name:"Exchange anti-phish policy disabled or removed" or name:"Exchange mail to external account matching high severity DLP rules")
+      todate:
+        simple: now
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 972
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: f4b958e7-304b-49e7-8171-185b2eda0037
+    type: title
+    task:
+      id: f4b958e7-304b-49e7-8171-185b2eda0037
+      version: -1
+      name: Related User Alerts
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 857
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: ff769242-8039-4ed4-8742-2e85dd21e513
+    type: regular
+    task:
+      id: ff769242-8039-4ed4-8742-2e85dd21e513
+      version: -1
+      name: Could not complete investigation
+      description: |-
+        Investigation for the deleted emails could not be completed. Possible reasons for this:
+        - XQL search was unavailable or returned unexpected results.
+        - Missing permissions to retrieve emails using Microsoft Graph Mail.
+        - The emails were deleted permanently from the user's mailbox.
+
+
+
+        Please follow the execution path taken by the playbook and complete any necessary steps manually.
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1848,
+          "y": 3504
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: d3780d69-83cd-41bd-86df-2afc17f03291
+    type: title
+    task:
+      id: d3780d69-83cd-41bd-86df-2afc17f03291
+      version: -1
+      name: Verdict
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 3519
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: a7571487-ce12-4329-8f3b-f7988c146ac4
+    type: condition
+    task:
+      id: a7571487-ce12-4329-8f3b-f7988c146ac4
+      version: -1
+      name: Evaluate evidence to make a verdict
+      description: Determines whether the alert is a true positive and requires containment.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "79"
+      Malicious:
+      - "34"
+      Malicious - Possible Exfiltration:
+      - "62"
+      Malicious - possible phishing:
+      - "61"
+    separatecontext: false
+    conditions:
+    - label: Malicious - possible phishing
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: RecentlySentEmailCount
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AssociatedThreatType
+            iscontext: true
+          right:
+            value:
+              simple: Phishing
+          ignorecase: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: Evidence
+                transformers:
+                - operator: jmespath
+                  args:
+                    expression:
+                      value:
+                        simple: '*'
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    - label: Malicious - Possible Exfiltration
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: RecentlySentEmailCount
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AssociatedThreatType
+            iscontext: true
+          right:
+            value:
+              simple: Exfiltration
+          ignorecase: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: Evidence
+                transformers:
+                - operator: jmespath
+                  args:
+                    expression:
+                      value:
+                        simple: '*'
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    - label: Malicious
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: Evidence
+                transformers:
+                - operator: jmespath
+                  args:
+                    expression:
+                      value:
+                        simple: '*'
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: RecentlySentEmailCount
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+        - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: Evidence
+                transformers:
+                - operator: jmespath
+                  args:
+                    expression:
+                      value:
+                        simple: '*'
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 3659
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: a7f1a57b-b62f-45b0-8081-0a86655f231b
+    type: title
+    task:
+      id: a7f1a57b-b62f-45b0-8081-0a86655f231b
+      version: -1
+      name: Soft Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 441,
+          "y": 4742
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: a09c6ad2-a26d-4eab-8d64-782104e4a4db
+    type: regular
+    task:
+      id: a09c6ad2-a26d-4eab-8d64-782104e4a4db
+      version: -1
+      name: Terminate user session
+      description: This script clears user sessions across multiple integrations for a list of usernames.
+      scriptName: clear-user-session
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      user_name:
+        simple: ${Core.OriginalAlert.event.identity_name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 441,
+          "y": 4870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 9b553fdd-007a-43f1-82f4-1bd8f7ca8d29
+    type: regular
+    task:
+      id: 9b553fdd-007a-43f1-82f4-1bd8f7ca8d29
+      version: -1
+      name: Increase alert severity
+      description: Optionally increases the alert severity to the new value if it is greater than the existing severity.
+      scriptName: IncreaseAlertSeverity
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      severity:
+        simple: Medium
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 4620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 8a24972e-8246-47f6-8bf7-2608c5c3222e
+    type: title
+    task:
+      id: 8a24972e-8246-47f6-8bf7-2608c5c3222e
+      version: -1
+      name: User Agent
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2481,
+          "y": 855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 37491ee3-8d0b-493c-8fed-a5f46222cc9c
+    type: regular
+    task:
+      id: 37491ee3-8d0b-493c-8fed-a5f46222cc9c
+      version: -1
+      name: Check for suspicious user agent
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "91"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: SuspiciousUserAgentResult
+      value:
+        complex:
+          root: alert.useragent
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: alert.useragent
+                iscontext: true
+              right:
+                value:
+                  simple: \b(Python-urllib|libwww-perl|Scrapy|curl|Wget|sqlmap|Nikto|Xrumer|Hydra|JohnTheRipper|LOIC|HOIC|MJ12bot|Baiduspider|BlackWidow|HeadlessChrome|PhantomJS|Selenium|python-requests|node-fetch|PostmanRuntime|GuzzleHttp)\b
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2481,
+          "y": 975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 65e43657-2548-4b7a-8800-af83d9eb75d0
+    type: regular
+    task:
+      id: 65e43657-2548-4b7a-8800-af83d9eb75d0
+      version: -1
+      name: Save alert timestamp in Unix format
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: AlertTimestampEpochSeconds
+      value:
+        complex:
+          root: alert
+          accessor: timestamp
+          transformers:
+          - operator: toUnix
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: d3bc7531-481b-42d9-8355-55d4381bd25a
+    type: regular
+    task:
+      id: d3bc7531-481b-42d9-8355-55d4381bd25a
+      version: -1
+      name: Save number of recently sent emails
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      key:
+        simple: RecentlySentEmailCount
+      value:
+        complex:
+          root: PaloAltoNetworksXQL.GenericQuery.results
+          accessor: count_within_1_hour
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 918,
+          "y": 1112
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 6fb64b47-faca-47a9-8027-53816540ab09
+    type: title
+    task:
+      id: 6fb64b47-faca-47a9-8027-53816540ab09
+      version: -1
+      name: Hard Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "69"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 441,
+          "y": 5005
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: ea406b8e-036e-4533-89e1-ffca57177f76
+    type: condition
+    task:
+      id: ea406b8e-036e-4533-89e1-ffca57177f76
+      version: -1
+      name: Determine the email scope
+      description: Uses the domain of the sender and the extracted domain of the recipient/s to determine whether the email was sent internally or externally.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      External:
+      - "45"
+      Internal:
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: Internal
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: UniqueEmailRecipients
+                filters:
+                - - operator: endWith
+                    left:
+                      value:
+                        simple: UniqueEmailRecipients
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SenderDomain
+                      iscontext: true
+                    ignorecase: true
+            iscontext: true
+          right:
+            value: {}
+    - label: External
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: UniqueEmailRecipients
+                filters:
+                - - operator: notEndWith
+                    left:
+                      value:
+                        simple: UniqueEmailRecipients
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SenderDomain
+                      iscontext: true
+                    ignorecase: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1215,
+          "y": 2071
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 32b35d8f-dae0-4af5-89c6-f119fd64d392
+    type: regular
+    task:
+      id: 32b35d8f-dae0-4af5-89c6-f119fd64d392
+      version: -1
+      name: Extract sender domain name
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: SenderDomain
+      value:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: identity_name
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '@'
+              fields:
+                value:
+                  simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: e6046c47-a8cc-4dab-8a40-bad0d7c91a5e
+    type: condition
+    task:
+      id: e6046c47-a8cc-4dab-8a40-bad0d7c91a5e
+      version: -1
+      name: Check if any emails were sent recently
+      description: Checks if any of the emails were sent recently (within 1 hour).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              simple: RecentlySentEmailCount
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 918,
+          "y": 1248
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: c108693c-3b8e-4b0a-8034-70728e876584
+    type: condition
+    task:
+      id: c108693c-3b8e-4b0a-8034-70728e876584
+      version: -1
+      name: Check recipients address type
+      description: Checks whether the email had one or multiple recipients.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      Multiple Addresses:
+      - "49"
+      Single Address:
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: Single Address
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: UniqueEmailRecipients
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    - label: Multiple Addresses
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              complex:
+                root: UniqueEmailRecipients
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1026,
+          "y": 2245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 2da9cc93-7c72-41f0-8f23-204cedb37e21
+    type: title
+    task:
+      id: 2da9cc93-7c72-41f0-8f23-204cedb37e21
+      version: -1
+      name: Possible Exfiltration
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "90"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 805,
+          "y": 2446
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 960c112e-19a2-46bc-82b9-548df7417335
+    type: condition
+    task:
+      id: 960c112e-19a2-46bc-82b9-548df7417335
+      version: -1
+      name: Check if emails were retrieved
+      description: Checks whether emails were retrieved from Microsoft Graph.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MSGraphMail.ID
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1215,
+          "y": 1787
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: e48858a7-5457-4128-8139-879b27ab6bab
+    type: title
+    task:
+      id: e48858a7-5457-4128-8139-879b27ab6bab
+      version: -1
+      name: Possible Phishing/Fraud
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "51"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1407,
+          "y": 2446
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 437158f7-68f7-482f-831d-da32d702aa38
+    type: regular
+    task:
+      id: 437158f7-68f7-482f-831d-da32d702aa38
+      version: -1
+      name: Extract indicators from email body
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      text:
+        simple: ${MSGraphMail.Body}
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1407,
+          "y": 2705
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: e47c115b-e779-41e1-8af6-797a77b0a08f
+    type: condition
+    task:
+      id: e47c115b-e779-41e1-8af6-797a77b0a08f
+      version: -1
+      name: Check if email body is not empty
+      description: commands.local.cmd.extract.indicators
+      type: condition
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "50"
+    scriptarguments:
+      text:
+        simple: ${MSGraphMail.Body}
+    reputationcalc: 1
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MSGraphMail.Body
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1407,
+          "y": 2562
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: bca356fb-ce96-4f36-86a9-eddc0a265be4
+    type: condition
+    task:
+      id: bca356fb-ce96-4f36-86a9-eddc0a265be4
+      version: -1
+      name: Check if URLs were extracted
+      description: Checks if URLs were extracted from the email.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExtractedIndicators.URL
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1407,
+          "y": 2825
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: c50a9c54-b083-468d-8b18-dff5a3382402
+    type: regular
+    task:
+      id: c50a9c54-b083-468d-8b18-dff5a3382402
+      version: -1
+      name: Enrich extracted URLs
+      description: This script gathers URL reputation data from multiple integrations and returns a "URLEnrichment" object with consolidated information in the context output.
+      scriptName: url-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "75"
+    scriptarguments:
+      external_enrichment:
+        simple: "true"
+      url_list:
+        complex:
+          root: ExtractedIndicators
+          accessor: URL
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1407,
+          "y": 2964
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 0fcb1261-8a9a-466d-8fcc-edcb0cca9ac1
+    type: regular
+    task:
+      id: 0fcb1261-8a9a-466d-8fcc-edcb0cca9ac1
+      version: -1
+      name: Save URL reputation as evidence
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      key:
+        simple: Evidence.MaliciousURLInEmail
+      value:
+        complex:
+          root: URLEnrichment
+          filters:
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: URLEnrichment.TIMScore
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Value
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1406,
+          "y": 3257
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: aab3c9f5-4071-4bb0-8227-e413b14ea8d4
+    type: regular
+    task:
+      id: aab3c9f5-4071-4bb0-8227-e413b14ea8d4
+      version: -1
+      name: Save email recipients as unique list
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      key:
+        simple: UniqueEmailRecipients
+      value:
+        complex:
+          root: MSGraphMail.Recipients
+          accessor: Address
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: MSGraphMail.CCRecipients.Address
+                iscontext: true
+              raw: {}
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: MSGraphMail.BCCRecipients.Address
+                iscontext: true
+              raw: {}
+          - operator: toLowerCase
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1215,
+          "y": 1931
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: bcdd1338-bbb8-46ed-86ad-fe5699a989aa
+    type: regular
+    task:
+      id: bcdd1338-bbb8-46ed-86ad-fe5699a989aa
+      version: -1
+      name: Save associated threat type - Phishing
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      key:
+        simple: AssociatedThreatType
+      value:
+        simple: Phishing
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1406,
+          "y": 3366
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 9b58be5c-744a-4bb9-8446-ca132fb349a5
+    type: regular
+    task:
+      id: 9b58be5c-744a-4bb9-8446-ca132fb349a5
+      version: -1
+      name: Save associated threat type - Exfiltration
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      key:
+        simple: AssociatedThreatType
+      value:
+        simple: Exfiltration
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 805,
+          "y": 3346
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: e46edf7f-b6ff-43a9-806e-b7f5f7b31ab1
+    type: title
+    task:
+      id: e46edf7f-b6ff-43a9-806e-b7f5f7b31ab1
+      version: -1
+      name: Phishing Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "34"
+      - "66"
+      - "65"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 3808
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 79a28f3f-1d28-43fa-8576-1951ad2533d5
+    type: title
+    task:
+      id: 79a28f3f-1d28-43fa-8576-1951ad2533d5
+      version: -1
+      name: Exfiltration Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "34"
+      - "64"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 131.25,
+          "y": 3808
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: bb6fd195-158a-49d5-8199-ec8a821a8687
+    type: regular
+    task:
+      id: bb6fd195-158a-49d5-8199-ec8a821a8687
+      version: -1
+      name: Manual - place the mailbox on Legal Hold
+      description: |-
+        Our investigation concluded that the user activity is malicious.
+        The reason for this is that the emails were sent externally to a malicious email address, among other factors.
+
+        We recommend placing the user's mailbox on legal hold to prevent recoverable items from being permanently deleted until the incident is resolved.
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 131.25,
+          "y": 3928
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 0a16c063-e9fe-43c1-8052-6553512975a9
+    type: regular
+    task:
+      id: 0a16c063-e9fe-43c1-8052-6553512975a9
+      version: -1
+      name: Manual - search & delete emails
+      description: |+
+        Our investigation concluded that the user activity is malicious.
+        This can due to one or a combination of the following reasons: The user risk is high, the IP is malicious, the emails contained malicious links or the user agent used by the user is suspicious.
+
+        We recommend searching and deleting the emails with the following Internet Message IDs from all user mailboxes:
+
+        `AffectedMessageIDs`
+
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -764,
+          "y": 4279
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: d196e25c-6165-4b9f-8cf1-74e57769e620
+    type: condition
+    task:
+      id: d196e25c-6165-4b9f-8cf1-74e57769e620
+      version: -1
+      name: Check malicious URLs in email body
+      description: Checks if any URLs extracted from the email body have bad reputation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "65"
+      "yes":
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: URLEnrichment.TIMScore
+                filters:
+                - - operator: greaterThanOrEqual
+                    left:
+                      value:
+                        simple: URLEnrichment.TIMScore
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "3"
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -546,
+          "y": 3946
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: c470bf48-5e56-470f-802c-5332d211ccca
+    type: regular
+    task:
+      id: c470bf48-5e56-470f-802c-5332d211ccca
+      version: -1
+      name: Manual - recommend blocking URL
+      description: |-
+        Our investigation concluded that email/s containing malicious URLs were sent. This can indicate a phishing attempt.
+
+        We recommend blocking the following URL(s): `${Evidence.MaliciousURLInEmail}` in your firewall.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -546,
+          "y": 4126
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 4dfd4f6e-c1fa-470c-8dbb-cad1e7bfe4db
+    type: condition
+    task:
+      id: 4dfd4f6e-c1fa-470c-8dbb-cad1e7bfe4db
+      version: -1
+      name: Manual - analyst review & approval
+      description: "The investigation shows a combination of suspicious indicators which requires your attention.\n\nReview the following findings and decide whether you want to disable the user who moved the emails from the Sent Items folder to Deleted Items.\n\n#### User Information\nUsername: `${alert.username.[0]}`\n\nIdentity Name (from Exchange): `${Core.OriginalAlert.event.identity_name}`\n\n---\n\n#### Investigation Evidence\n\n- The user agent `${Core.OriginalAlert.event.user_agent}` is `${.=val.Evidence && val.Evidence.SuspiciousUserAgent ? \"suspicious.\" : \"not suspicious.\"}`\n\n- The source IP `${Core.OriginalAlert.event.caller_ip}` is `${.=val.Evidence && val.Evidence.MaliciousIP ? \"Malicious.\" : \"Not malicious.\"}`\n\n- User risk level: `${UserData.RiskLevel}`\nReasons for risk (if high risk): `${.=val.Evidence && val.Evidence.CoreRiskyUser ? val.Evidence.CoreRiskyUser : \"N/A.\"}`\n\n- Azure AD user risk detections: `${.= val.Evidence && val.Evidence.AzureRiskyUserDetections ? val.Evidence.AzureRiskyUserDetections : \"No risk detections found in Azure AD.\"}`\n\n- Related alerts for the user: `${.=val.Evidence && val.Evidence.RelatedAlerts && val.Evidence.RelatedAlerts != \"{}\" ? val.Evidence.RelatedAlerts : \"No suspicious related alerts were found.\"}`\n\n---\n\n#### Email Analysis\n\nDuring the investigation the playbook uses XQL to search SAAS Audit Logs and find the time of sending of the emails. In addition, it attempts to retrieve the email metadata using Microsoft Graph Mail. If the email is retrieved successfully, additional evidence is gathered and is included below:\n\n- Suspected threat: ${.=val.AssociatedThreatType ? val.AssociatedThreatType : \"Phishing/fraud or data exfiltration\"}\n\n- Domain of the recipient(s): `${Evidence.MaliciousDomainName}`.\nReputation: `${.=val.Evidence && val.Evidence.MaliciousDomainName ? \"Malicious.\" : \"Not malicious.\"}`\n\n- ${.=val.RecentlySentEmailCount ? val.RecentlySentEmailCount : \"0\"} out of ${Core.OriginalAlert.stateful_raw_data.sum_saas_affected_items_subject_array_length} emails are emails that were deleted within 1 hour of being sent.\n\n- Emails retrieved from Microsoft Graph: `${.=val.MSGraphMail && val.MSGraphMail.length > 0 && val.MSGraphMail[0].InternetMessageID ? \"Retrieved successfully.\" : \"Not retrieved.\"}`\n\n- Extracted email URLs: `${ExtractedIndicators.URL}`. \nReputation: `${.=val.Evidence && val.Evidence.MaliciousURLInEmail ? \"Malicious.\" : \"Not malicious.\"}`\n"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Disable user:
+      - "70"
+      Do not disable user:
+      - "71"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 5121
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body: {}
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Disable user
+      - Do not disable user
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 48c4ebe1-1a7c-4816-8f9d-7cca8275ae64
+    type: regular
+    task:
+      id: 48c4ebe1-1a7c-4816-8f9d-7cca8275ae64
+      version: -1
+      name: Disable user in MS Graph
+      description: This script disables users for multiple services.
+      scriptName: disable-user
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      brands:
+        simple: Microsoft Graph User
+      user_email:
+        simple: ${Core.OriginalAlert.event.identity_name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 441,
+          "y": 5274
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: fae4e7fe-f5f6-486d-84ee-2b0daef18182
+    type: title
+    task:
+      id: fae4e7fe-f5f6-486d-84ee-2b0daef18182
+      version: -1
+      name: No Action
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 918,
+          "y": 5281.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: 986a8b79-6111-4004-af96-2d2260e44796
+    type: regular
+    task:
+      id: 986a8b79-6111-4004-af96-2d2260e44796
+      version: -1
+      name: Save related alerts as evidence
+      description: Saves a context key with a value of 1 if the user is risky in Core IR, 0 otherwise.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence.RelatedAlerts
+      value:
+        complex:
+          root: foundIncidents
+          accessor: name
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: aef72c85-fa4d-4380-834d-6e0aa5cd9994
+    type: regular
+    task:
+      id: aef72c85-fa4d-4380-834d-6e0aa5cd9994
+      version: -1
+      name: Enrich recipient domain
+      description: This script enriches Domains data with information from multiple integrations and returns a "DomainEnrichment" object with consolidated information in the context output.
+      scriptName: domain-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "74"
+    scriptarguments:
+      domain_list:
+        simple: ${RecipientDomain}
+      external_enrichment:
+        simple: "true"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 805,
+          "y": 2845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: 8538081d-64cc-47b4-86f8-ec5f9303da66
+    type: condition
+    task:
+      id: 8538081d-64cc-47b4-86f8-ec5f9303da66
+      version: -1
+      name: Check recipient domain reputation
+      description: Checks the reputation of the recipient's domain name.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      Malicious:
+      - "76"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DomainEnrichment
+                filters:
+                - - operator: greaterThanOrEqual
+                    left:
+                      value:
+                        simple: DomainEnrichment.TIMScore
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "3"
+                accessor: Value
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 805,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 83f963c1-f78a-415d-811d-a7778716b996
+    type: condition
+    task:
+      id: 83f963c1-f78a-415d-811d-a7778716b996
+      version: -1
+      name: Check URL reputation
+      description: Checks the reputation of the URLs extracted from the email.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      Malicious:
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: URLEnrichment
+                filters:
+                - - operator: greaterThanOrEqual
+                    left:
+                      value:
+                        simple: URLEnrichment.TIMScore
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "3"
+                accessor: Value
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1406,
+          "y": 3095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 8813498e-13a2-4568-8209-19a498c13bf7
+    type: regular
+    task:
+      id: 8813498e-13a2-4568-8209-19a498c13bf7
+      version: -1
+      name: Save domain reputation as evidence
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      key:
+        simple: Evidence.MaliciousDomainName
+      value:
+        complex:
+          root: DomainEnrichment
+          filters:
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DomainEnrichment.TIMScore
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 805,
+          "y": 3207
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: 0cfe8890-0255-4723-892b-edaa8be05e8b
+    type: regular
+    task:
+      id: 0cfe8890-0255-4723-892b-edaa8be05e8b
+      version: -1
+      name: Close the alert
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      closeNotes:
+        simple: Handled by the playbook "User moved Exchange sent messages to deleted items".
+      closeReason:
+        complex:
+          root: CloseReason
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Resolved - True Positive
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 918,
+          "y": 5520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 9059004d-0c74-4a1a-86f2-e5e58580e27f
+    type: regular
+    task:
+      id: 9059004d-0c74-4a1a-86f2-e5e58580e27f
+      version: -1
+      name: Retrieve Slack user details
+      description: Get details about a specified user.
+      script: '|||slack-get-user-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "80"
+    scriptarguments:
+      user:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: identity_name
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1201,
+          "y": 4064
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: 5cc7d596-e88f-48fc-83dc-a191aa015c82
+    type: title
+    task:
+      id: 5cc7d596-e88f-48fc-83dc-a191aa015c82
+      version: -1
+      name: Inconclusive - User Verification
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "85"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1201,
+          "y": 3808
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: cc1589cc-7e80-419e-8f8f-b8e480ed170a
+    type: condition
+    task:
+      id: cc1589cc-7e80-419e-8f8f-b8e480ed170a
+      version: -1
+      name: Check if Slack user was retrieved
+      description: Checks if a Slack user exists with the email found for the user.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "71"
+      "yes":
+      - "81"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Slack.User.Email
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1201,
+          "y": 4204
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: cc361e2d-ff5d-4e98-85a5-60b05280aa1d
+    type: collection
+    task:
+      id: cc361e2d-ff5d-4e98-85a5-60b05280aa1d
+      version: -1
+      name: Confirm alert details with user
+      description: ""
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "82"
+    separatecontext: false
+    sla:
+      minutes: 0
+      hours: 1
+      days: 0
+      weeks: 0
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1201,
+          "y": 4340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        complex:
+          root: Slack.User
+          accessor: Email
+          transformers:
+          - operator: uniq
+      subject:
+        simple: Security Alert – Action Required
+      body:
+        simple: |+
+          We've detected suspicious email deletion activity involving your account.
+
+          Please review the alert details and let us know whether any of this activity was performed by you.
+
+          Emails with the following subjects were moved from Sent Items to the Deleted Items folder:
+
+          `${Core.OriginalAlert.raw_abioc.event.saas_affected_items_subject_array}`
+
+      methods:
+      - SlackV3
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 15
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: true
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Was this activity done by you?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: Yes - it was me
+        - simple: No - it was not me
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: This will help us verify your identity to keep you safe. If you recognize the email subjects, please select "Yes, it was me"
+        readonly: false
+      title: Emails sent and deleted
+      description: We have received an alert showing unusual activity involving the deletion of several sent emails and need to verify whether it was you.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: 253e330e-e79c-4e05-80f3-fb6f5ed37143
+    type: condition
+    task:
+      id: 253e330e-e79c-4e05-80f3-fb6f5ed37143
+      version: -1
+      name: Check user reply
+      description: ' '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      False Positive:
+      - "86"
+      True Positive:
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: False Positive
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Emails sent and deleted.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: yes -
+          ignorecase: true
+    - label: True Positive
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Emails sent and deleted.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: no -
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1201,
+          "y": 4472
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: dddf5db2-ca19-4dc8-81be-62e2327608bf
+    type: condition
+    task:
+      id: dddf5db2-ca19-4dc8-81be-62e2327608bf
+      version: -1
+      name: Check Slack availability
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "71"
+      "yes":
+      - "78"
+    scriptarguments:
+      brandname:
+        simple: SlackV3
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1201,
+          "y": 3928
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: 905ed61e-4e29-415a-85ff-9cdeaa4c37df
+    type: regular
+    task:
+      id: 905ed61e-4e29-415a-85ff-9cdeaa4c37df
+      version: -1
+      name: Set close reason as False Positive
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      key:
+        simple: CloseReason
+      value:
+        simple: Resolved - False Positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1204,
+          "y": 4608
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: 8699c272-9779-4add-8f2c-8c9809a17241
+    type: regular
+    task:
+      id: 8699c272-9779-4add-8f2c-8c9809a17241
+      version: -1
+      name: Encode message IDs & build query
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "88"
+    scriptarguments:
+      key:
+        simple: EncodedInternetMessageIDsQuery
+      value:
+        complex:
+          root: AffectedMessageIDs
+          transformers:
+          - operator: URLEncode
+            args:
+              ignore_safe_character: {}
+              safe_character: {}
+          - operator: uniq
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ''''
+              suffix:
+                value:
+                  simple: ''''
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'internetMessageId eq '
+              suffix: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' or '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1215,
+          "y": 1528
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: ae212574-1acf-4fc3-86e2-98e26831217a
+    type: regular
+    task:
+      id: ae212574-1acf-4fc3-86e2-98e26831217a
+      version: -1
+      name: Get email metadata (using Graph)
+      description: Gets the properties of returned emails. Typically shows partial results. Use the "page_size" and "pages_to_pull" arguments to get all results.
+      script: MicrosoftGraphMail|||msgraph-mail-list-emails
+      type: regular
+      iscommand: true
+      brand: MicrosoftGraphMail
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      odata:
+        simple: $filter=${EncodedInternetMessageIDsQuery}
+      pages_to_pull:
+        simple: "10"
+      user_id:
+        simple: ${Core.OriginalAlert.event.identity_name}
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1215,
+          "y": 1656
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: 41e21708-2f94-4175-83b2-27e71049b8a9
+    type: condition
+    task:
+      id: 41e21708-2f94-4175-83b2-27e71049b8a9
+      version: -1
+      name: Verify recipient domain name context
+      description: Verify that the recipient domain name was extracted successfully.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      Exists:
+      - "73"
+    separatecontext: false
+    conditions:
+    - label: Exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecipientDomain
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 805,
+          "y": 2685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: 2f01bfd6-58c2-4cfe-8608-ac3afc8713bc
+    type: regular
+    task:
+      id: 2f01bfd6-58c2-4cfe-8608-ac3afc8713bc
+      version: -1
+      name: Extract recipient domain name
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "89"
+    scriptarguments:
+      key:
+        simple: RecipientDomain
+      value:
+        complex:
+          root: UniqueEmailRecipients
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '@'
+              fields:
+                value:
+                  simple: "2"
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 805,
+          "y": 2562
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "91":
+    id: "91"
+    taskid: 81246fb4-4844-4877-863e-030ac699921c
+    type: condition
+    task:
+      id: 81246fb4-4844-4877-863e-030ac699921c
+      version: -1
+      name: Check user agent result
+      description: ' '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      Malicious:
+      - "93"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SuspiciousUserAgentResult
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2481,
+          "y": 1113
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: f9f7e058-bdde-4430-9a72-a71b9482d19a
+    type: regular
+    task:
+      id: f9f7e058-bdde-4430-9a72-a71b9482d19a
+      version: -1
+      name: Save suspicious user agent to evidence
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence.SuspiciousUserAgent
+      value:
+        simple: ${SuspiciousUserAgentResult}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2750,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: 66598c41-cdd3-485f-b212-e052c93883b7
+    type: regular
+    task:
+      id: 66598c41-cdd3-485f-b212-e052c93883b7
+      version: -1
+      name: Save Azure risky user detection results to evidence
+      description: Saves a context key with a value of 1 if the user is risky in Azure AD, 0 otherwise.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence.AzureRiskyUserDetections
+      value:
+        simple: ${AzureRiskyUserDetectionResults}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1180,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: 06bdf349-11e3-4f02-a958-78f0758b863a
+    type: condition
+    task:
+      id: 06bdf349-11e3-4f02-a958-78f0758b863a
+      version: -1
+      name: Check Azure risky user detection results
+      description: ' '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      Found:
+      - "94"
+    separatecontext: false
+    conditions:
+    - label: Found
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUserDetectionResults
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1020.5,
+          "y": 1538
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: ede19ebd-5920-4e83-8249-0e99c8817c72
+    type: condition
+    task:
+      id: ede19ebd-5920-4e83-8249-0e99c8817c72
+      version: -1
+      name: Check core risky user results
+      description: ' '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      Found:
+      - "97"
+    separatecontext: false
+    conditions:
+    - label: Found
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CoreRiskyUserResults
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -499.75,
+          "y": 1381
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "97":
+    id: "97"
+    taskid: a712f339-d45e-46c5-91b4-9dfb2ed1398e
+    type: regular
+    task:
+      id: a712f339-d45e-46c5-91b4-9dfb2ed1398e
+      version: -1
+      name: Save core risk result to evidence
+      description: Saves a context key with a value of 1 if the user is risky in Core IR, 0 otherwise.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence.CoreRiskyUser
+      value:
+        simple: ${CoreRiskyUserResults}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -600,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "98":
+    id: "98"
+    taskid: 176c9091-d8c0-4aed-8c04-38fd6f6daff8
+    type: condition
+    task:
+      id: 176c9091-d8c0-4aed-8c04-38fd6f6daff8
+      version: -1
+      name: Check related alerts results
+      description: ' '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      Found:
+      - "72"
+    separatecontext: false
+    conditions:
+    - label: Found
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1112
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "23_29_#error#": 0.17,
+      "31_34_Malicious": 0.16,
+      "31_61_Malicious - possible phishing": 0.82,
+      "42_29_#default#": 0.41,
+      "42_45_External": 0.51,
+      "42_49_Internal": 0.28,
+      "44_30_#default#": 0.12,
+      "45_29_#default#": 0.12,
+      "45_46_Single Address": 0.55,
+      "45_49_Multiple Addresses": 0.53,
+      "48_29_#default#": 0.26,
+      "51_29_#default#": 0.37,
+      "51_50_yes": 0.55,
+      "52_29_#default#": 0.39,
+      "66_65_#default#": 0.39,
+      "69_71_Do not disable user": 0.51,
+      "74_30_#default#": 0.33,
+      "80_71_#default#": 0.11,
+      "82_34_True Positive": 0.42,
+      "85_71_#default#": 0.66,
+      "89_29_#default#": 0.2,
+      "91_30_#default#": 0.11,
+      "95_30_#default#": 0.2,
+      "96_30_#default#": 0.1,
+      "98_30_#default#": 0.1,
+      "9_30_#default#": 0.13
+    },
+    "paper": {
+      "dimensions": {
+        "height": 5545,
+        "width": 4978,
+        "x": -2750,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+issilent: true
+tests:
+- No tests (auto formatted)
+fromversion: 8.9.0

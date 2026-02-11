@@ -1,0 +1,80 @@
+commonfields:
+  id: EnrichCVE
+  version: -1
+display: Enrich CVE
+name: EnrichCVE
+tags:
+  - cve
+  - vulnerability
+  - threat intelligence
+  - security
+  - enrichment
+  - indicators
+category: Data Enrichment & Threat Intelligence
+description: |
+  A comprehensive action to enrich the provided CVE indicator and retrieve all available data.
+  The results include both tenant-specific internal information (from the Threat Intelligence Management (TIM) brand) and global threat intelligence.
+  Global threat intelligence is retrieved using configured integrations to identify potential threats.
+  ACTION REDUNDANCY WARNING: Due to its comprehensive nature, DO NOT use 'EnrichIndicator' or 'CortexListIndicators' in parallel with this action, as the data is already included in the output.
+  PREREQUISITE: Ensure that one or more of these external integrations are configured in your environment.
+args:
+  - name: cve_list
+    required: true
+    description: A comma-separated list of CVE identifiers to enrich. For example "CVE-2014-1234, CVE-2020-0601".
+    type: string
+    underlyingargname: cve_list
+  - name: external_enrichment
+    required: false
+    description: Always set to true.
+    type: string
+    defaultvalue: "true"
+    underlyingargname: external_enrichment
+  - name: additional_fields
+    required: false
+    description: When set to true, the output will include additional fields about the CVE. Default is true.
+    type: string
+    defaultvalue: "true"
+    underlyingargname: additional_fields
+outputs:
+- underlyingoutputcontextpath: CVEEnrichment.Value
+  description: The Common Vulnerabilities and Exposures (CVE) ID itself.
+  type: string
+  name: CVEEnrichment.Value
+- underlyingoutputcontextpath: CVEEnrichment.Results.Brand
+  description: The security vendor or brand that provided the contextual information for this specific CVE indicator.
+  type: string
+  name: CVEEnrichment.Results.Brand
+- underlyingoutputcontextpath: CVEEnrichment.Results.Description
+  description: A detailed description of the specific vulnerability identified by the CVE indicator.
+  type: string
+  name: CVEEnrichment.Results.Description
+- underlyingoutputcontextpath: CVEEnrichment.Results.CVSS
+  description: The Common Vulnerability Scoring System (CVSS) score associated with this specific CVE indicator and brand.
+  type: number
+  name: CVEEnrichment.Results.CVSS
+- underlyingoutputcontextpath: CVEEnrichment.TIMCVSS
+  description: The maximum CVSS score found across all brands providing information for this CVE. This represents the most severe reported score.
+  type: number
+  name: CVEEnrichment.TIMCVSS
+- underlyingoutputcontextpath: CVEEnrichment.Results.Published
+  description: The date when the CVE was officially published (initially disclosed).
+  type: date
+  name: CVEEnrichment.Results.Published
+- underlyingoutputcontextpath: CVEEnrichment.Results.AdditionalFields.Modified
+  description: The date when the CVE entry was last modified or updated.
+  type: date
+  name: CVEEnrichment.Results.AdditionalFields.Modified
+underlyingcontentitem:
+  id: cve-enrichment
+  name: cve-enrichment
+  type: script
+  version: -1
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- agentix
+- cloud
+- cloud_runtime_security
+- edr
+- xsiam

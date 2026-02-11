@@ -1,0 +1,54 @@
+commonfields:
+  id: endpoint-investigation-agent
+  version: -1
+name: Endpoint Investigation
+description: |-
+  Unifies host-level containment, forensic collection, and remediation across all major EDR/XDR platforms while feeding
+  evidence and status into the SOC's ticketing and collaboration stack
+visibility: public
+color: '#C95DFF'
+conversationstarters: []
+systeminstructions: ''
+builtinactions:
+  - InvokeLLM
+actionids:
+  - SearchIssues
+  - CrowdstrikeFalconContainHost
+  - MicrosoftDefenderIsolateMachine
+  - CrowdstrikeFalconUncontainHost
+  - MicrosoftDefenderUnisolateMachine
+  - MicrosoftDefenderStopAndQuarantineFile
+  - CrowdstrikeFalconSearchDevice
+  - MicrosoftDefenderListMachines
+  - Microsoft365DefenderAdvancedHunting
+  - GetEndpointData
+  - ServiceNowCreateTicket
+  - jiraCreateIssue
+  - jiraGetIssue
+  - SendNotification
+  - SendMail
+  - TavilyExtract
+  - ExtractURLContent
+  - CortexBlocklistFiles
+  - CortexIsolateEndpoint
+  - CortexSearchForIndicatorInEvents
+  - CortexTerminateProcess
+  - CortexGetQuarantinedFilesStatus
+  - CortexQuarantineFiles
+  - CortexTerminateCausality
+  - CortexUnisolateEndpoint
+  - SearchCases
+  - SetIssue
+  - JiraUpdateIssue
+  - ServiceNowGetTicket
+  - ServiceNowUpdateTicket
+  - CortexRunPlaybook
+  - CortexRunXQLQuery
+marketplaces:
+  - platform
+supportedModules:
+  - agentix
+  - cloud
+  - cloud_runtime_security
+  - edr
+  - xsiam

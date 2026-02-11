@@ -1,0 +1,3586 @@
+id: silent-Impossible Traveler SSO
+name: silent-Impossible Traveler SSO
+version: -1
+fromversion: 8.9.0
+issilent: true
+description: |-
+  This playbook addresses the following alert:
+  - Impossible traveler - SSO
+
+  # Playbook Stages:
+
+  ## Triage:
+  - Gather **extended alert data** (e.g., source IPs, timestamps, associated events).
+  - Classify the gathered events into two distinct groups: **Normal Activity and Suspicious Activity**.
+
+  ## Investigation:
+  - Check for switch to **mobile/VPN**.
+  - Analyze network context, such as a switch to **a mobile network or a VPN**.
+  - Validate the reputation of involved **IP addresses**.
+  - Assess the user's **risk level** in Cortex.
+  - Search for medium or high **Azure Risk Detections and Defender Alerts**.
+  - Search for suspicious **Okta activity**.
+  - Look for **suspicious new cloud provider**.
+
+  ## Verdict:
+  - At least **1 piece of evidence**.
+  - User verification (*only when a switch to mobile/VPN is detected*)
+
+  ## Remediation:
+  - Clear user sessions (*immediately*).
+  - Expire password (*approval needed*).
+
+  # Requirements:
+
+  ## Investigation:
+  - `Azure Risky Users` or `MSGraph Identity and Access` for retrieving **Azure Risk Detections**.
+  - `Microsoft 365 Defender` for retrieving **Defender Alerts**.
+  - `Okta V2` for retrieving Okta activity.
+  - `XQL Query Engine` to count past events.
+  - `Slack` for user verification.
+
+  ## Remediation:
+  - `Microsoft Graph User`/`Okta V2` for clearing user sessions & expiring password.
+tags:
+- T1586 - Compromise Accounts
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 62a736f6-a165-429b-8e52-ea2227847a3d
+    type: start
+    task:
+      id: 62a736f6-a165-429b-8e52-ea2227847a3d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: bf78c206-59da-4f5b-987f-4b83481364e3
+    type: title
+    task:
+      id: bf78c206-59da-4f5b-987f-4b83481364e3
+      version: -1
+      name: Triage
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: bd29069f-75ad-4b37-9278-71ef4f5b3fd8
+    type: regular
+    task:
+      id: bd29069f-75ad-4b37-9278-71ef4f5b3fd8
+      version: -1
+      name: Get Extended Alert Data
+      description: Provides additional information about the alert, such as **source IPs, timestamps, associated events, etc.**.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "4"
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 409.6679382324219
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 428c9b5a-3431-48bd-a13a-e47c378a28af
+    type: regular
+    task:
+      id: 428c9b5a-3431-48bd-a13a-e47c378a28af
+      version: -1
+      name: Group Normal Events
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: NormalEvents
+      value:
+        complex:
+          root: Core.OriginalAlert._all_events
+          filters:
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: Core.OriginalAlert._all_events.norm_auth_user_identity_action_country_successful_days_seen_count_sso
+                iscontext: true
+              right:
+                value:
+                  simple: "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 284fa11f-cab6-4be7-b174-b05f4a6bfd0a
+    type: regular
+    task:
+      id: 284fa11f-cab6-4be7-b174-b05f4a6bfd0a
+      version: -1
+      name: Group Suspicious Events
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: SuspiciousEvents
+      value:
+        complex:
+          root: Core.OriginalAlert._all_events
+          filters:
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: Core.OriginalAlert._all_events.norm_auth_user_identity_action_country_successful_days_seen_count_sso
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 325e5e9e-a45a-425c-a9d7-1ad24ce9d510
+    type: title
+    task:
+      id: 325e5e9e-a45a-425c-a9d7-1ad24ce9d510
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 880c2a3e-1519-49e9-aa65-a6ba9e36bafb
+    type: title
+    task:
+      id: 880c2a3e-1519-49e9-aa65-a6ba9e36bafb
+      version: -1
+      name: Switch to Mobile
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -710,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: e1ba061e-2a61-4aac-868c-537c9776a3ed
+    type: regular
+    task:
+      id: e1ba061e-2a61-4aac-868c-537c9776a3ed
+      version: -1
+      name: Filter Mobile Activity in Normal Events
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: NormalEventsBehavior.MobileActivity
+      value:
+        complex:
+          root: NormalEvents
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: NormalEvents.actor_process_image_name
+                iscontext: true
+              right:
+                value:
+                  simple: \b(Mobile|iPhone|Android)\b
+            - operator: match
+              left:
+                value:
+                  simple: NormalEvents.action_user_agent
+                iscontext: true
+              right:
+                value:
+                  simple: \b(Mobile|iPhone|Android)\b
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -710,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 8ae313ed-794d-434a-8bef-cde72ac385ab
+    type: condition
+    task:
+      id: 8ae313ed-794d-434a-8bef-cde72ac385ab
+      version: -1
+      name: Check if Grouping
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: NormalEvents
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SuspiciousEvents
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 932.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: ca8ea6ca-77e3-493f-9fd6-8add0459a8ae
+    type: regular
+    task:
+      id: ca8ea6ca-77e3-493f-9fd6-8add0459a8ae
+      version: -1
+      name: Filter Mobile Activity in Suspicious Events
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: SuspiciousEventsBehavior.MobileActivity
+      value:
+        complex:
+          root: SuspiciousEvents
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: SuspiciousEvents.actor_process_image_name
+                iscontext: true
+              right:
+                value:
+                  simple: \b(Mobile|iPhone|Android)\b
+              ignorecase: true
+            - operator: match
+              left:
+                value:
+                  simple: SuspiciousEvents.action_user_agent
+                iscontext: true
+              right:
+                value:
+                  simple: \b(Mobile|iPhone|Android)\b
+              ignorecase: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: a8050cfb-5b75-438b-b2ca-cfc7b5fe1448
+    type: condition
+    task:
+      id: a8050cfb-5b75-438b-b2ca-cfc7b5fe1448
+      version: -1
+      name: Check if Switch to Mobile
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: NormalEventsBehavior.MobileActivity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SuspiciousEventsBehavior.MobileActivity
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -710,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: a4c5513d-b203-4396-b5fa-a3638f944d48
+    type: regular
+    task:
+      id: a4c5513d-b203-4396-b5fa-a3638f944d48
+      version: -1
+      name: Search for Prior Mobile Usage
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      query:
+        simple: |-
+          config timeframe between "4d" and "6h" |
+          dataset = xdr_data
+          | filter event_type = ENUM.STORY
+            and auth_outcome = "success"
+            and auth_normalized_user != null
+            and action_local_ip != null
+            and auth_identity = "${Core.OriginalAlert.event.auth_identity}"
+            and json_extract_scalar(action_as_data, "$.as_number") in (${SuspiciousEventsBehavior.MobileActivity.as_data_as_number=>val.toString()})
+            and (
+              action_user_agent in (${SuspiciousEventsBehavior.MobileActivity.action_user_agent=>val.filter(v => v).map(v=>`"${v}"`).toString()})
+              or
+              actor_process_image_name in (${SuspiciousEventsBehavior.MobileActivity.actor_process_image_name=>val.filter(v => v).map(v=>`"${v}"`).toString()})
+            )
+          | fields event_id
+          | comp count_distinct(event_id) as count_asn_identity_ua_success
+      query_name:
+        simple: count_asn_identity_ua_success
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -710,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: b4ad31f7-c8ab-421b-b87c-951766e2c4fd
+    type: condition
+    task:
+      id: b4ad31f7-c8ab-421b-b87c-951766e2c4fd
+      version: -1
+      name: Check for Mobile Usage Count
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXQL.GenericQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXQL.GenericQuery.query_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: count_asn_identity_ua_success
+                    ignorecase: true
+                accessor: results.count_asn_identity_ua_success
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -710,
+          "y": 1850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: ed0a4d83-2ed6-4024-819e-8ed983bc15aa
+    type: title
+    task:
+      id: ed0a4d83-2ed6-4024-819e-8ed983bc15aa
+      version: -1
+      name: Switch to VPN
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 2040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 51d9fbd2-3555-4c39-8991-dab416c52d89
+    type: condition
+    task:
+      id: 51d9fbd2-3555-4c39-8991-dab416c52d89
+      version: -1
+      name: Check Authentication Target
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: SuspiciousEvents.auth_target
+                filters:
+                - - operator: inList
+                    left:
+                      value:
+                        simple: SuspiciousEvents.auth_target
+                      iscontext: true
+                    right:
+                      value:
+                        simple: NormalEvents.auth_target
+                      iscontext: true
+                    ignorecase: true
+                transformers:
+                - operator: RemoveEmpty
+                  args:
+                    empty_values: {}
+                    remove_keys: {}
+                - operator: uniq
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: SuspiciousEvents
+                accessor: auth_target
+                transformers:
+                - operator: RemoveEmpty
+                  args:
+                    empty_values: {}
+                    remove_keys: {}
+                - operator: uniq
+                - operator: count
+            iscontext: true
+      - - operator: greaterThan
+          left:
+            value:
+              complex:
+                root: SuspiciousEvents
+                accessor: auth_target
+                transformers:
+                - operator: RemoveEmpty
+                  args:
+                    empty_values: {}
+                    remove_keys: {}
+                - operator: uniq
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 2220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: b6b11fe7-a453-4d5e-93e0-3e215b3b9a2f
+    type: condition
+    task:
+      id: b6b11fe7-a453-4d5e-93e0-3e215b3b9a2f
+      version: -1
+      name: Check User Agents
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "58"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: SuspiciousEvents.action_user_agent
+                filters:
+                - - operator: inList
+                    left:
+                      value:
+                        simple: SuspiciousEvents.action_user_agent
+                      iscontext: true
+                    right:
+                      value:
+                        simple: NormalEvents.action_user_agent
+                      iscontext: true
+                    ignorecase: true
+                transformers:
+                - operator: RemoveEmpty
+                  args:
+                    empty_values: {}
+                    remove_keys: {}
+                - operator: uniq
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: SuspiciousEvents
+                accessor: action_user_agent
+                transformers:
+                - operator: RemoveEmpty
+                  args:
+                    empty_values: {}
+                    remove_keys: {}
+                - operator: uniq
+                - operator: count
+            iscontext: true
+      - - operator: greaterThan
+          left:
+            value:
+              complex:
+                root: SuspiciousEvents
+                accessor: action_user_agent
+                transformers:
+                - operator: RemoveEmpty
+                  args:
+                    empty_values: {}
+                    remove_keys: {}
+                - operator: uniq
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 2400d9ec-9fb6-43c8-b774-74b13cbfe1b1
+    type: condition
+    task:
+      id: 2400d9ec-9fb6-43c8-b774-74b13cbfe1b1
+      version: -1
+      name: Check Image Names
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "58"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: SuspiciousEvents.actor_process_image_name
+                filters:
+                - - operator: inList
+                    left:
+                      value:
+                        simple: SuspiciousEvents.actor_process_image_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: NormalEvents.actor_process_image_name
+                      iscontext: true
+                    ignorecase: true
+                transformers:
+                - operator: RemoveEmpty
+                  args:
+                    empty_values: {}
+                    remove_keys: {}
+                - operator: uniq
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: SuspiciousEvents
+                accessor: actor_process_image_name
+                transformers:
+                - operator: RemoveEmpty
+                  args:
+                    empty_values: {}
+                    remove_keys: {}
+                - operator: uniq
+                - operator: count
+            iscontext: true
+      - - operator: greaterThan
+          left:
+            value:
+              complex:
+                root: SuspiciousEvents
+                accessor: actor_process_image_name
+                transformers:
+                - operator: RemoveEmpty
+                  args:
+                    empty_values: {}
+                    remove_keys: {}
+                - operator: uniq
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 2610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 8dc7b89b-68f3-409d-b5d4-29b9c45fc8bb
+    type: title
+    task:
+      id: 8dc7b89b-68f3-409d-b5d4-29b9c45fc8bb
+      version: -1
+      name: TP Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+      - "23"
+      - "34"
+      - "39"
+      - "42"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 4f471bdc-84fc-4da4-8d15-f8599b729149
+    type: condition
+    task:
+      id: 4f471bdc-84fc-4da4-8d15-f8599b729149
+      version: -1
+      name: Check IPs from Suspicious Events
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "46"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: SuspiciousEvents
+                accessor: action_local_ip
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3171.265869140625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 6e1f7c03-83ad-4f9a-93ba-cbb0ea32b5d2
+    type: regular
+    task:
+      id: 6e1f7c03-83ad-4f9a-93ba-cbb0ea32b5d2
+      version: -1
+      name: Enrich IPs
+      description: This script gathers IP reputation data from multiple integrations and returns an IP entity with consolidated information to the context.
+      scriptName: ip-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      external_enrichment:
+        simple: "true"
+      ip_list:
+        complex:
+          root: SuspiciousEvents
+          accessor: action_local_ip
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3359.265869140625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 8738d3c9-5c82-4869-a82b-edc3ed327f6c
+    type: regular
+    task:
+      id: 8738d3c9-5c82-4869-a82b-edc3ed327f6c
+      version: -1
+      name: Save Malicious IPs
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      key:
+        simple: Evidence.MaliciousIPs
+      value:
+        complex:
+          root: IPEnrichment
+          filters:
+          - - operator: greaterThan
+              left:
+                value:
+                  simple: IPEnrichment.TIMScore
+                iscontext: true
+              right:
+                value:
+                  simple: "2"
+          accessor: Value
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: c1f94cac-d8bb-409d-ac46-e803a157a3a8
+    type: condition
+    task:
+      id: c1f94cac-d8bb-409d-ac46-e803a157a3a8
+      version: -1
+      name: Check if Malicious IPs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "46"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IPEnrichment.TIMScore
+                filters:
+                - - operator: greaterThan
+                    left:
+                      value:
+                        simple: IPEnrichment.TIMScore
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "2"
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3539.265869140625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 139f187f-ae68-4c5b-b593-6e030e9798c5
+    type: title
+    task:
+      id: 139f187f-ae68-4c5b-b593-6e030e9798c5
+      version: -1
+      name: IPs Reputation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: d22e5824-0460-4010-b094-c58546f97927
+    type: title
+    task:
+      id: d22e5824-0460-4010-b094-c58546f97927
+      version: -1
+      name: User Risk
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: dc3aa618-89aa-4285-9f21-dc54c853244f
+    type: regular
+    task:
+      id: dc3aa618-89aa-4285-9f21-dc54c853244f
+      version: -1
+      name: Save High-Risk User
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      key:
+        simple: Evidence.HighRiskUser
+      value:
+        complex:
+          root: UserData
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: UserData.RiskLevel
+                iscontext: true
+              right:
+                value:
+                  simple: HIGH
+              ignorecase: true
+          accessor: ID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 3720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 4c9a3d01-8595-4278-b402-5697c61596af
+    type: regular
+    task:
+      id: 4c9a3d01-8595-4278-b402-5697c61596af
+      version: -1
+      name: Get User Data
+      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
+      scriptName: get-user-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      user_email:
+        simple: ${Core.OriginalAlert.event.auth_identity}
+      user_name:
+        simple: ${alert.username.[0]}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 3359.265869140625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: d46b4498-075f-4d4a-9469-454da6537019
+    type: condition
+    task:
+      id: d46b4498-075f-4d4a-9469-454da6537019
+      version: -1
+      name: Check if High-Risk User
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "46"
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: UserData.RiskLevel
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: UserData.RiskLevel
+                      iscontext: true
+                    right:
+                      value:
+                        simple: High
+                    ignorecase: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 3539.265869140625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 33b03e56-02aa-4016-8911-f77ab602a9af
+    type: regular
+    task:
+      id: 33b03e56-02aa-4016-8911-f77ab602a9af
+      version: -1
+      name: Get Azure Risk Detections
+      description: Returns a list of the **Risk Detection** objects and their properties from the **past day**.
+      script: AzureRiskyUsers|||azure-risky-users-risk-detections-list
+      type: regular
+      iscommand: true
+      brand: AzureRiskyUsers
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      detected_date_time_after:
+        simple: ${.=new Date(Date.now()-(1000*60*60*24)).toISOString()}
+      limit:
+        simple: "100"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1444.5596923828125,
+          "y": 3359.265869140625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 8679c055-c08b-4e86-a6e6-337607d475b3
+    type: regular
+    task:
+      id: 8679c055-c08b-4e86-a6e6-337607d475b3
+      version: -1
+      name: Save Azure Detections
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      key:
+        simple: Evidence.AzureRiskDetections
+      value:
+        complex:
+          root: AzureRiskyUsers.RiskDetection
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskDetection.userPrincipalName
+                iscontext: true
+              right:
+                value:
+                  simple: Core.OriginalAlert.event.auth_identity
+                iscontext: true
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskDetection.riskState
+                iscontext: true
+              right:
+                value:
+                  simple: atRisk
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskDetection.riskState
+                iscontext: true
+              right:
+                value:
+                  simple: confirmedCompromised
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskDetection.riskLevel
+                iscontext: true
+              right:
+                value:
+                  simple: medium
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskDetection.riskLevel
+                iscontext: true
+              right:
+                value:
+                  simple: high
+              ignorecase: true
+          accessor: riskEventType
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' | '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1444.5596923828125,
+          "y": 3720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 31dccdde-9cfa-4093-b327-777a5fdfa2cd
+    type: regular
+    task:
+      id: 31dccdde-9cfa-4093-b327-777a5fdfa2cd
+      version: -1
+      name: Get Identity Risk Detections
+      description: Retrieves **Risk Detections** from the **past day** where the **risk state** is either *atRisk* or *confirmedCompromised* and the **risk level** is *medium* or *high*.
+      script: '|||msgraph-identity-protection-risks-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      odata_query:
+        simple: $filter=(userPrincipalName eq '${Core.OriginalAlert.event.auth_identity}') and (riskState eq 'atRisk' or riskState eq 'confirmedCompromised') and (riskLevel eq 'medium' or riskLevel eq 'high') and (detectedDateTime ge ${.=new Date(Date.now()-(1000*60*60*24)).toISOString()})
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1898.5596923828125,
+          "y": 3359.265869140625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 8b02ffb3-f37c-4051-a27c-dbb1d5ba6199
+    type: regular
+    task:
+      id: 8b02ffb3-f37c-4051-a27c-dbb1d5ba6199
+      version: -1
+      name: Save Identity Detections
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      key:
+        simple: Evidence.AzureRiskDetections
+      value:
+        complex:
+          root: MSGraph.identityProtection.risks.riskDetections
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: MSGraph.identityProtection.risks.riskDetections.userPrincipalName
+                iscontext: true
+              right:
+                value:
+                  simple: Core.OriginalAlert.event.auth_identity
+                iscontext: true
+              ignorecase: true
+          accessor: riskEventType
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' | '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1898.5596923828125,
+          "y": 3720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 148c75e5-39b5-4572-948b-4fa2b5356f1b
+    type: condition
+    task:
+      id: 148c75e5-39b5-4572-948b-4fa2b5356f1b
+      version: -1
+      name: Check Available Integrations
+      description: Integration with *MSGraph Identity and Access* or with *Azure Risky Users* is required to retrieve **Azure Risk Detections**.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "46"
+      Azure Risky Users:
+      - "27"
+      MSGraph Identity and Access:
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: Azure Risky Users
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AzureRiskyUsers
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          right:
+            value: {}
+    - label: MSGraph Identity and Access
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: MicrosoftGraphIdentityandAccess
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1670,
+          "y": 3171.265869140625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: e4531870-23b2-4173-b390-d5ba6706e33a
+    type: regular
+    task:
+      id: e4531870-23b2-4173-b390-d5ba6706e33a
+      version: -1
+      name: Get Defender Alerts
+      description: |
+        Retrieves alerts from **the past day** for owner user, excluding those with **Info** severity status.
+      script: Microsoft 365 Defender|||microsoft-365-defender-advanced-hunting
+      type: regular
+      iscommand: true
+      brand: Microsoft 365 Defender
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      query:
+        simple: AlertEvidence | where Timestamp >= ago(1d) | where AccountUpn in ("${Core.OriginalAlert.event.auth_identity}") | where Severity != "Informational"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2358.5596923828125,
+          "y": 3359.265869140625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 959f1376-a8cd-4c79-9a47-ca7a833a4726
+    type: regular
+    task:
+      id: 959f1376-a8cd-4c79-9a47-ca7a833a4726
+      version: -1
+      name: Save Owner-Triggered Alerts
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      key:
+        simple: Evidence.DefenderAlerts
+      value:
+        complex:
+          root: Microsoft365Defender.Hunt.results
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Microsoft365Defender.Hunt.results.AccountUpn
+                iscontext: true
+              right:
+                value:
+                  simple: Core.OriginalAlert.event.auth_identity
+                iscontext: true
+              ignorecase: true
+          accessor: Title
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' | '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2358.5596923828125,
+          "y": 3720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 9410e279-6135-47d9-889a-a2957f10d3e1
+    type: title
+    task:
+      id: 9410e279-6135-47d9-889a-a2957f10d3e1
+      version: -1
+      name: MS Detections & Alerts
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1888.5596923828125,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 507d0dea-c432-4181-9b86-426c60073ada
+    type: condition
+    task:
+      id: 507d0dea-c432-4181-9b86-426c60073ada
+      version: -1
+      name: Check if Azure Detections Found
+      description: Where the detections **risk state** is either *atRisk* or *confirmedCompromised* and the **risk level** is *medium* or *high*.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "46"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AzureRiskyUsers.RiskDetection
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureRiskyUsers.RiskDetection.userPrincipalName
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Core.OriginalAlert.event.auth_identity
+                      iscontext: true
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureRiskyUsers.RiskDetection.riskState
+                      iscontext: true
+                    right:
+                      value:
+                        simple: atRisk
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureRiskyUsers.RiskDetection.riskState
+                      iscontext: true
+                    right:
+                      value:
+                        simple: confirmedCompromised
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureRiskyUsers.RiskDetection.riskLevel
+                      iscontext: true
+                    right:
+                      value:
+                        simple: medium
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureRiskyUsers.RiskDetection.riskLevel
+                      iscontext: true
+                    right:
+                      value:
+                        simple: high
+                    ignorecase: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1444.5596923828125,
+          "y": 3539.265869140625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: f2d35e07-9cf9-485c-85cd-35a7da718489
+    type: condition
+    task:
+      id: f2d35e07-9cf9-485c-85cd-35a7da718489
+      version: -1
+      name: Check if Identity Detections Found
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "46"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MSGraph.identityProtection.risks.riskDetections
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: MSGraph.identityProtection.risks.riskDetections.userPrincipalName
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Core.OriginalAlert.event.auth_identity
+                      iscontext: true
+                    ignorecase: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1898.5596923828125,
+          "y": 3539.265869140625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: a115a3bb-cf45-4832-b022-e7d8a8d6b328
+    type: condition
+    task:
+      id: a115a3bb-cf45-4832-b022-e7d8a8d6b328
+      version: -1
+      name: Check if Defender Alerts Found
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "46"
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Microsoft365Defender.Hunt.results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Microsoft365Defender.Hunt.results.AccountUpn
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Core.OriginalAlert.event.auth_identity
+                      iscontext: true
+                    ignorecase: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2358.5596923828125,
+          "y": 3539.265869140625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 6de08263-90ad-4554-bd63-6fb6c696e6e0
+    type: regular
+    task:
+      id: 6de08263-90ad-4554-bd63-6fb6c696e6e0
+      version: -1
+      name: Search for Suspicious User Activity
+      script: '|||okta-get-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      extend-context:
+        simple: OktaSuspiciousActivityLogs=
+      filter:
+        simple: (outcome.result eq "SUCCESS" AND (eventType eq "app.oauth2.client_id_rate_limit_warning" OR eventType eq "user.mfa.attempt_bypass")) OR (outcome.result eq "FAILURE" AND (eventType eq "user.account.lock" OR eventType eq "user.authentication.auth_via_social" OR eventType eq "user.account.unlock" OR eventType eq "user.account.use_token" OR eventType eq "app.oauth2.token.grant" OR eventType eq "app.oauth2.as.evaluate.claim" OR eventType eq "app.oauth2.as.token.revoke")) AND actor.alternateId eq "${Core.OriginalAlert.event.auth_identity}"
+      ignore-outputs:
+        simple: "true"
+      since:
+        complex:
+          root: alert
+          accessor: created
+          transformers:
+          - operator: ModifyDateTime
+            args:
+              variation:
+                value:
+                  simple: 5 hours ago
+      until:
+        simple: ${alert.created}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2811.150390625,
+          "y": 3359.265869140625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: cbe41941-3e6d-44d2-91d6-120b123e6252
+    type: title
+    task:
+      id: cbe41941-3e6d-44d2-91d6-120b123e6252
+      version: -1
+      name: Okta Suspicious Activity
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2811.150390625,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 8bb1e832-6b36-46b2-a8fa-aa01b6a4be80
+    type: regular
+    task:
+      id: 8bb1e832-6b36-46b2-a8fa-aa01b6a4be80
+      version: -1
+      name: Save Okta Suspicious Activity
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      key:
+        simple: Evidence.OktaSuspiciousActivity
+      value:
+        simple: ${OktaSuspiciousActivityLogs}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2811.150390625,
+          "y": 3720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 79f6f40b-0e0f-4bcd-8be0-da8902593d65
+    type: condition
+    task:
+      id: 79f6f40b-0e0f-4bcd-8be0-da8902593d65
+      version: -1
+      name: Check if Logs were Returned
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "46"
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OktaSuspiciousActivityLogs
+            iscontext: true
+          right:
+            value: {}
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: OktaSuspiciousActivityLogs
+            iscontext: true
+          right:
+            value:
+              simple: No logs found
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2811.150390625,
+          "y": 3539.265869140625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 355bd9f1-a42c-44ad-b842-6f8a20555127
+    type: title
+    task:
+      id: 355bd9f1-a42c-44ad-b842-6f8a20555127
+      version: -1
+      name: Suspicious New Cloud Provider
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "69"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3290,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 964ce1f9-d4ed-475c-867c-71b2a7198119
+    type: regular
+    task:
+      id: 964ce1f9-d4ed-475c-867c-71b2a7198119
+      version: -1
+      name: Search for Non-Suspicious Homogeneous Cloud Provider
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      query:
+        simple: |-
+          config timeframe between "4d" and "6h" |
+          dataset = xdr_data
+          | filter event_type = ENUM.STORY
+            and auth_outcome = "success"
+            and auth_normalized_user != null
+            and action_local_ip != null
+            and auth_identity != null
+            and json_extract_scalar(action_as_data, "$.organization") not in (${SuspiciousEvents.action_as_data.organization=>val.map(v=>`"${v}"`).toString()})
+            and json_extract_scalar(action_as_data, "$.organization") ~= ".*[Aa]mazon.*|.*[Mm]icrosoft.*|.*[Gg]oogle.*|.*[Gg][Cc][Pp].*"
+          | fields event_id
+          | comp count_distinct(event_id) as count_not_suspicious_cloud_provider_success
+      query_name:
+        simple: count_not_suspicious_cloud_provider_success
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3290,
+          "y": 3539.265869140625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 4baef050-d783-43b5-8bf4-56212d8eb5c3
+    type: condition
+    task:
+      id: 4baef050-d783-43b5-8bf4-56212d8eb5c3
+      version: -1
+      name: Validate Cloud Provider Homogeneity
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "46"
+      "no":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "no"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXQL.GenericQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXQL.GenericQuery.query_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: count_not_suspicious_cloud_provider_success
+                    ignorecase: true
+                accessor: results.count_not_suspicious_cloud_provider_success
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3290,
+          "y": 3720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 15a1ebec-3ddb-4d59-9751-35945d0bb3b6
+    type: regular
+    task:
+      id: 15a1ebec-3ddb-4d59-9751-35945d0bb3b6
+      version: -1
+      name: Save Suspicious Cloud Provider
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      key:
+        simple: Evidence.SuspiciousCloudProvider
+      value:
+        complex:
+          root: SuspiciousEventsBehavior.CloudActivity.action_as_data
+          accessor: organization
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' | '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3290,
+          "y": 3890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: aea0068d-6194-4374-bfbb-f105533e63cb
+    type: title
+    task:
+      id: aea0068d-6194-4374-bfbb-f105533e63cb
+      version: -1
+      name: Verdict
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1898.5596923828125,
+          "y": 3950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 2cc6efea-9eae-461e-adb6-f954f8758495
+    type: condition
+    task:
+      id: 2cc6efea-9eae-461e-adb6-f954f8758495
+      version: -1
+      name: Check Evidence
+      description: If there are at least **1 piece of evidence**.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "54"
+      True Positive:
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: True Positive
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: Evidence
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: '{}'
+                - operator: jmespath
+                  args:
+                    expression:
+                      value:
+                        simple: '*'
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1898.5596923828125,
+          "y": 4121.265625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 041ada43-82d1-47a0-8855-5c174ce6c694
+    type: title
+    task:
+      id: 041ada43-82d1-47a0-8855-5c174ce6c694
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "50"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1898.5596923828125,
+          "y": 4516.265625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 86669fd9-1ca7-4286-a817-37520a50f479
+    type: regular
+    task:
+      id: 86669fd9-1ca7-4286-a817-37520a50f479
+      version: -1
+      name: Increase Alert Severity to Medium
+      scriptName: IncreaseAlertSeverity
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      severity:
+        simple: Medium
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1898.5596923828125,
+          "y": 4322.265625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: cba8f7d8-b47b-4091-bdbc-ac599c61fc58
+    type: regular
+    task:
+      id: cba8f7d8-b47b-4091-bdbc-ac599c61fc58
+      version: -1
+      name: Clear User Sessions
+      description: This script clears user sessions across multiple integrations for a list of usernames.
+      scriptName: clear-user-session
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      user_name:
+        simple: ${Core.OriginalAlert.event.auth_identity}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1898.5596923828125,
+          "y": 4696.265625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 47ee435e-48c7-4d8d-a217-d21dbbc10e54
+    type: collection
+    task:
+      id: 47ee435e-48c7-4d8d-a217-d21dbbc10e54
+      version: -1
+      name: Manual Task | Analyst Action Decision
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      key:
+        simple: Message
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1898.5596923828125,
+          "y": 4876.265625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: "--- ### **The Affected Identity** `${Core.OriginalAlert.event.auth_identity}` --- ### **🚥 Evidence 🚥** ${Evidence=Object.entries(val).map(([k, v]) => '- '+k+': `'+v+'`').join('')} --- Based on the evidence, we revoked the user sessions. We recommend also expire the user password."
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: Confirm
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          complex:
+            root: modules
+            filters:
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: modules.brand
+                  iscontext: true
+                right:
+                  value:
+                    simple: Okta v2
+                ignorecase: true
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: modules.state
+                  iscontext: true
+                right:
+                  value:
+                    simple: active
+                ignorecase: true
+            transformers:
+            - operator: count
+            - operator: If-Elif
+              args:
+                conditions:
+                  value:
+                    simple: |-
+                      [{
+                        "condition": "#{.} > 0",
+                        "return": "You may also **expire the user password** by selecting `Expire Password` below."
+                      }, {
+                        "default": "You may need to **manually expire the user password** directly in your IAM service."
+                      }]
+                flags: {}
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: modules
+            filters:
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: modules.brand
+                  iscontext: true
+                right:
+                  value:
+                    simple: Okta v2
+                ignorecase: true
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: modules.state
+                  iscontext: true
+                right:
+                  value:
+                    simple: active
+                ignorecase: true
+            transformers:
+            - operator: count
+            - operator: If-Elif
+              args:
+                conditions:
+                  value:
+                    simple: |-
+                      [{
+                        "condition": "#{.} > 0",
+                        "return": "Expire password"
+                      }, {
+                        "default": "Confirm"
+                      }]
+                flags: {}
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: "🔍 Analyst Action Required 🔍"
+      description: '**Review and take action if needed:**'
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: c5b47185-92b7-404f-bdd4-5bce7c798a4b
+    type: condition
+    task:
+      id: c5b47185-92b7-404f-bdd4-5bce7c798a4b
+      version: -1
+      name: Check if Expire Password is Needed
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "55"
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: "🔍 Analyst Action Required 🔍.Answers.0"
+            iscontext: true
+          right:
+            value:
+              simple: Expire Password
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1898.5596923828125,
+          "y": 5080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 9fe0c3e5-12ab-4064-88fb-725c7708e9d1
+    type: regular
+    task:
+      id: 9fe0c3e5-12ab-4064-88fb-725c7708e9d1
+      version: -1
+      name: Okta Expire Password
+      description: Expires a password for an existing Okta user.
+      script: '|||okta-expire-password'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      username:
+        simple: ${Core.OriginalAlert.event.auth_identity}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1530,
+          "y": 5240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 88646122-670a-436c-9e8c-2ad04bd95cf4
+    type: regular
+    task:
+      id: 88646122-670a-436c-9e8c-2ad04bd95cf4
+      version: -1
+      name: Inconclusive | No Suspicious Evidence
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      key:
+        simple: Inconclusive
+      value:
+        simple: No Suspicious Evidence
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2278.5596923828125,
+          "y": 5414.22021484375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: a6521e4a-e6a3-40e0-b69f-7f8ece5a96c6
+    type: regular
+    task:
+      id: a6521e4a-e6a3-40e0-b69f-7f8ece5a96c6
+      version: -1
+      name: Close Alert | True Positive
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+      description: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      closeNotes:
+        simple: Handled by the playbook "Impossible Traveler SSO"
+      closeReason:
+        simple: Resolved - True Positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1530,
+          "y": 5414.22021484375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 4871aed9-e069-4e61-8b69-cef527675031
+    type: title
+    task:
+      id: 4871aed9-e069-4e61-8b69-cef527675031
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1300,
+          "y": 5590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 14be70c1-cd57-403d-9d4a-42221795a170
+    type: regular
+    task:
+      id: 14be70c1-cd57-403d-9d4a-42221795a170
+      version: -1
+      name: Inconclusive | Switch to Mobile
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      key:
+        simple: Inconclusive
+      value:
+        complex:
+          root: SuspiciousEventsBehavior
+          accessor: MobileActivity
+          transformers:
+          - operator: LastArrayElement
+          - operator: jmespath
+            args:
+              expression:
+                value:
+                  simple: '[insert_timestamp, action_local_ip, auth_target, action_country, action_user_agent, actor_process_image_name]'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' | '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: |
+                    Switch to Mobile.
+                    Last attempt was:
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -710,
+          "y": 2812.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 859016ab-a754-4d92-8e35-cf50cd4f5c03
+    type: regular
+    task:
+      id: 859016ab-a754-4d92-8e35-cf50cd4f5c03
+      version: -1
+      name: Inconclusive | Switch to VPN
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      key:
+        simple: Inconclusive
+      value:
+        complex:
+          root: SuspiciousEvents
+          transformers:
+          - operator: LastArrayElement
+          - operator: jmespath
+            args:
+              expression:
+                value:
+                  simple: '[insert_timestamp, action_local_ip, auth_target, action_country, action_user_agent, actor_process_image_name]'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' | '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: |
+                    Switch to VPN.
+                    Last attempt was:
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 2812.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: edad74d8-491c-4eb2-9f8a-983eab52973c
+    type: regular
+    task:
+      id: edad74d8-491c-4eb2-9f8a-983eab52973c
+      version: -1
+      name: Retrieve Slack User Details
+      script: '|||slack-get-user-details'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      user:
+        simple: ${Core.OriginalAlert.event.auth_identity}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -460,
+          "y": 3359.265869140625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 17c68cf3-aabc-4fba-a08e-4bfdf94a0655
+    type: title
+    task:
+      id: 17c68cf3-aabc-4fba-a08e-4bfdf94a0655
+      version: -1
+      name: Inconclusive | User Verification
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "64"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -710,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 6f2c6a60-a97a-418c-82d6-0974908e2006
+    type: condition
+    task:
+      id: 6f2c6a60-a97a-418c-82d6-0974908e2006
+      version: -1
+      name: Check if Slack User was Retrieved
+      description: Checks if a Slack user exists with the email found for the user.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "65"
+      "yes":
+      - "62"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Slack.User.Email
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -460,
+          "y": 3539.265869140625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: c3177a38-e314-4e98-8096-b75d0b8ba794
+    type: collection
+    task:
+      id: c3177a38-e314-4e98-8096-b75d0b8ba794
+      version: -1
+      name: Confirm Alert Details with User
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    separatecontext: false
+    sla:
+      minutes: 0
+      hours: 1
+      days: 0
+      weeks: 0
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 3720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        complex:
+          root: Slack.User
+          accessor: Email
+          transformers:
+          - operator: uniq
+      subject:
+        simple: Security Alert – Action Required
+      body:
+        simple: |-
+          We've detected suspicious successfully authentication.
+          This activity seems geographically distant from your last known location, but it seems like ${Inconclusive}
+      methods:
+      - SlackV3
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 15
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: true
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            We've detected suspicious successfully authentication.
+            This activity seems geographically distant from your last known location, but it seems like ${Inconclusive}
+            Was this action performed by you?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: Yes, that was me
+        - simple: No, that wasn't me
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Unusual Activity on Your Account
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: a2d87b93-d5a4-4497-b09e-a1e673919d7d
+    type: condition
+    task:
+      id: a2d87b93-d5a4-4497-b09e-a1e673919d7d
+      version: -1
+      name: Check User Reply
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "65"
+      False Positive:
+      - "66"
+      True Positive:
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: False Positive
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Unusual Activity on Your Account.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Yes, that was me
+          ignorecase: true
+    - label: True Positive
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Unusual Activity on Your Account.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: No, that wasn't me
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 3875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 037bad97-541c-493e-86cd-55fd18d57f58
+    type: condition
+    task:
+      id: 037bad97-541c-493e-86cd-55fd18d57f58
+      version: -1
+      name: Check Slack Availability
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "65"
+      "yes":
+      - "59"
+    scriptarguments:
+      brandname:
+        simple: SlackV3
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -710,
+          "y": 3171.265869140625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 9f56ee95-cce2-4f83-bff4-badc4b17367d
+    type: title
+    task:
+      id: 9f56ee95-cce2-4f83-bff4-badc4b17367d
+      version: -1
+      name: ' Inconclusive '
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "56"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -710,
+          "y": 4128.765625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 5a43b6d2-9789-49ed-a572-2f3923585675
+    type: title
+    task:
+      id: 5a43b6d2-9789-49ed-a572-2f3923585675
+      version: -1
+      name: False Positive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "68"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 4128.765625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 8b00c9a0-f138-4a96-a1b8-0b02f86e6c5f
+    type: title
+    task:
+      id: 8b00c9a0-f138-4a96-a1b8-0b02f86e6c5f
+      version: -1
+      name: True Positive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "71"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 272.0561218261719,
+          "y": 4128.765625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: e6f23f34-886c-4db5-a360-afddb729637f
+    type: regular
+    task:
+      id: e6f23f34-886c-4db5-a360-afddb729637f
+      version: -1
+      name: Close Alert | False Positive
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+      description: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      closeNotes:
+        simple: Handled by the playbook "Impossible Traveler SSO"
+      closeReason:
+        simple: Resolved - False Positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 5414.22021484375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 8007b1e9-4286-4a94-9345-8baf8bb1efef
+    type: regular
+    task:
+      id: 8007b1e9-4286-4a94-9345-8baf8bb1efef
+      version: -1
+      name: Filter Cloud Activity in Suspicious Events
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      key:
+        simple: SuspiciousEventsBehavior.CloudActivity
+      value:
+        complex:
+          root: SuspiciousEvents
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: SuspiciousEvents.action_as_data.organization
+                iscontext: true
+              right:
+                value:
+                  simple: \b(Microsoft|Amazon|Google|GCP)\b
+              ignorecase: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3290,
+          "y": 3171.265869140625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: baceff92-2cfb-44ac-9166-11e6fe2e0ef7
+    type: condition
+    task:
+      id: baceff92-2cfb-44ac-9166-11e6fe2e0ef7
+      version: -1
+      name: Check for Cloud Activity
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "46"
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SuspiciousEventsBehavior.CloudActivity
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3290,
+          "y": 3359.265869140625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: 7559304b-ce59-4fe0-8475-a43853cd3c7c
+    type: regular
+    task:
+      id: 7559304b-ce59-4fe0-8475-a43853cd3c7c
+      version: -1
+      name: Clear User Sessions | User Verification
+      description: This script clears user sessions across multiple integrations for a list of usernames.
+      scriptName: clear-user-session
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "72"
+    scriptarguments:
+      user_name:
+        simple: ${Core.OriginalAlert.event.auth_identity}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 4876.265625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: cbc11cbb-8da7-41d0-9c2b-88327a7ce8c2
+    type: condition
+    task:
+      id: cbc11cbb-8da7-41d0-9c2b-88327a7ce8c2
+      version: -1
+      name: Check Okta Availability
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "55"
+      "yes":
+      - "53"
+    scriptarguments:
+      brandname:
+        simple: Okta v2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 5080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "18_46_#default#": 0.14,
+      "21_46_#default#": 0.16,
+      "26_46_#default#": 0.23,
+      "31_46_#default#": 0.15,
+      "35_46_#default#": 0.39,
+      "36_46_#default#": 0.34,
+      "37_46_#default#": 0.37,
+      "41_46_#default#": 0.22,
+      "44_46_#default#": 0.15,
+      "47_54_#default#": 0.2,
+      "52_55_#default#": 0.31,
+      "61_65_#default#": 0.23,
+      "64_65_#default#": 0.18,
+      "70_46_#default#": 0.14,
+      "72_55_#default#": 0.31,
+      "8_6_yes": 0.31
+    },
+    "paper": {
+      "dimensions": {
+        "height": 5600,
+        "width": 4380,
+        "x": -710,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)

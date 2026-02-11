@@ -1,0 +1,34 @@
+tests:
+  - name: Remove tags from multiple endpoints
+    prompt: "Remove compromised and legacy tags from dev endpoints 3bf3396e181f49418ad934ffc1f1a3d5,89076c9804484f85ac29c5f8755074f6"
+    agent_id: bf38cca4-3865-4fb0-aa1a-9be6779fda74
+    expected_outcomes:
+    - evaluation_mode: any_of
+      actions:
+      - action_id: CortexUpdateEndpointTags
+        arguments:
+          endpoint_ids: "3bf3396e181f49418ad934ffc1f1a3d5,89076c9804484f85ac29c5f8755074f6"
+          tags_to_remove: "compromised,legacy"
+
+  - name: Add tags to multiple endpoints
+    prompt: "List all 'Ubuntu 22.04' endpoints, Tagged them with Ubuntu and send them to my email."
+    agent_id: bf38cca4-3865-4fb0-aa1a-9be6779fda74
+    expected_outcomes:
+    - evaluation_mode: any_of
+      actions:
+      - action_id: CortexUpdateEndpointTags
+        arguments:
+          endpoint_ids: "3bf3396e181f49418ad934ffc1f1a3d5,89076c9804484f85ac29c5f8755074f6,cedc2b29906f4fffa5ea32b0e781324b"
+          tags_to_add: "Ubuntu"
+
+  - name: Add and remove tags simultaneously
+    prompt: "Update endpoint cedc2b29906f4fffa5ea32b0e781324b - remove outdated tag and add monitoring tag"
+    agent_id: bf38cca4-3865-4fb0-aa1a-9be6779fda74
+    expected_outcomes:
+    - evaluation_mode: any_of
+      actions:
+      - action_id: CortexUpdateEndpointTags
+        arguments:
+          endpoint_ids: "cedc2b29906f4fffa5ea32b0e781324b"
+          tags_to_add: "monitoring"
+          tags_to_remove: "outdated"

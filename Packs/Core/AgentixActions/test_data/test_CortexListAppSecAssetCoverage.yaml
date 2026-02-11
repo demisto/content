@@ -1,0 +1,340 @@
+tests:
+  - name: Get ASPM coverage (Overall)
+    prompt: "What's my Appsec assets coverage status?"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments: { } # No filters implies a request for all assets
+
+  - name: Get ASPM coverage by Asset Type (Repositories)
+    prompt: "Show me the Appsec coverage for my Repositories."
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              asset_type: "REPOSITORY"
+
+  - name: Get ASPM coverage by Asset Type (Container Images)
+    prompt: "What's the coverage for my Container Image repositories?"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              asset_type: "CONTAINER IMAGE REPOSITORY"
+
+  - name: Get ASPM coverage by Asset Type (Pipelines)
+    prompt: "How are my Pipelines covered?"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              asset_type: "CICD PIPELINE"
+
+  - name: Get ASPM coverage for specific provider and status (GitHub)
+    prompt: "How many GitHub Repos are partially or not covered?"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              asset_type: "REPOSITORY"
+              asset_provider: "GITHUB"
+              status_coverage: "PARTIALLY SCANNED,NOT SCANNED"
+
+  - name: Get ASPM coverage for Code Repos missing IaC scan
+    prompt: "Which Code repos aren't being covered for IaC Misconfiguration?"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              asset_type: "REPOSITORY"
+              is_scanned_by_iac: "DISABLED"
+
+  - name: Get ASPM coverage for Code Repos missing Vulnerabilities scan
+    prompt: "Which Code repos aren't being covered for Vulnerabilities?"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              asset_type: "REPOSITORY"
+              is_scanned_by_vulnerabilities: "DISABLED"
+
+  - name: Get ASPM coverage for Image Repos missing Malware scan
+    prompt: "Which Image repos aren't being covered for Malware?"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              asset_type: "CONTAINER IMAGE REPOSITORY"
+              is_scanned_by_malware: "DISABLED"
+
+  - name: Get ASPM coverage for a specific Business Application
+    prompt: "What's the coverage status for assets in the 'test-app' application?"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              business_application_names: "test-app"
+
+  - name: Get ASPM coverage for a specific asset by name
+    prompt: "What's the coverage status of “Asafhenig1/my_first_repository” Repository?"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              asset_name: "Asafhenig1/my_first_repository"
+              asset_type: "REPOSITORY"
+
+  - name: Get ASPM coverage for multiple assets by name
+    prompt: "What's the coverage status of “Cortex”, “Xpanse” and “PAB” Repositories?"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              asset_name: "Cortex,Xpanse,PAB"
+              asset_type: "REPOSITORY"
+  - name: Get ASPM coverage for Not Scanned assets
+    prompt: "Show me the list of uncovered assets"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              status_coverage: "NOT SCANNED"
+
+  - name: Get ASPM coverage for Code Repos missing Secrets scan
+    prompt: "Which Code repos aren't being covered for secrets?"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              asset_type: "REPOSITORY"
+              is_scanned_by_secrets: "DISABLED" #pragma: allowlist secret
+
+  - name: Get ASPM coverage for specific asset by ID
+    prompt: "Show me the ASPM coverage for asset ID 959df8e5372b28d8c9cb97cf48276eef72531ece7a6cb3120bb94c8265c73749"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              asset_id: "959df8e5372b28d8c9cb97cf48276eef72531ece7a6cb3120bb94c8265c73749"
+
+  - name: Get ASPM coverage for multiple assets by namen2
+    prompt: "I need the security scanning coverage for assets named web-server-01 and web-server-02"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              asset_name: "web-server-01,web-server-02"
+
+  - name: Find assets with partial name match
+    prompt: "Show me ASPM coverage for all assets containing 'database' in their name"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              asset_name_contains: "database"
+
+  - name: Get coverage for fully scanned assets only
+    prompt: "Display ASPM coverage statistics for assets that are fully scanned"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              status_coverage: "FULLY SCANNED"
+
+  - name: Find assets not scanned for vulnerabilities
+    prompt: "Which assets in our environment are not being scanned for vulnerabilities?"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              is_scanned_by_vulnerabilities: "DISABLED"
+
+  - name: Get coverage for assets with secrets scanning enabled
+    prompt: "Show me all assets that have secrets scanning enabled"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              is_scanned_by_secrets: "ENABLED" #pragma: allowlist secret
+
+  - name: Find repositories with code weakness scanning
+    prompt: "Get ASPM coverage for repositories that are being scanned for code weaknesses"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              asset_type: "REPOSITORY"
+              is_scanned_by_code_weakness: "ENABLED"
+
+  - name: Get coverage for IaC scanning across CI/CD pipelines
+    prompt: "Show infrastructure-as-code scanning coverage for all CI/CD pipelines"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              asset_type: "CICD PIPELINE"
+              is_scanned_by_iac: "ENABLED"
+
+  - name: Find container repositories with malware scanning
+    prompt: "Which container image repositories have malware scanning enabled?"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              asset_type: "CONTAINER IMAGE REPOSITORY"
+              is_scanned_by_malware: "ENABLED"
+
+  - name: Get ASPM coverage for GitHub assets
+    prompt: "Show me security scanning coverage for all GitHub repositories and pipelines"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              asset_provider: "GITHUB,GITHUB_ACTIONS"
+
+  - name: Get coverage for AWS cloud assets
+    prompt: "Display ASPM coverage for assets hosted on AWS platform"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              asset_provider: "AWS,AWS_CODE_BUILD,AWS_CODE_COMMIT"
+
+  - name: Get coverage for specific business applications
+    prompt: "Show me ASPM coverage for assets belonging to CustomerPortal and PaymentService business applications"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              business_application_names: "CustomerPortal,PaymentService"
+
+  - name: Find assets with comprehensive scanning gaps
+    prompt: "Identify assets that are not scanned and show me only the first 50 results"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              status_coverage: "NOT SCANNED"
+              limit: 50
+
+  - name: Get limited coverage report for investigation
+    prompt: "Give me a quick overview of ASPM coverage, limit results to 25 assets"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              limit: 25
+
+  - name: Complex filtering for security audit
+    prompt: "Find all Docker container repositories that are partially scanned and have vulnerability scanning enabled but secrets scanning disabled"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              asset_provider: "DOCKER"
+              asset_type: "CONTAINER IMAGE REPOSITORY"
+              status_coverage: "PARTIALLY SCANNED"
+              is_scanned_by_vulnerabilities: "ENABLED"
+              is_scanned_by_secrets: "DISABLED" #pragma: allowlist secret
+
+  - name: Multi-asset name search with coverage filter
+    prompt: "Get ASPM coverage for assets named prod-api, staging-api, and dev-api that are not being scanned"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              asset_name: "prod-api,staging-api,dev-api"
+              status_coverage: "NOT SCANNED"
+
+  - name: Find assets by partial names with scanning status
+    prompt: "Show me assets containing 'microservice' or 'api' that have IaC scanning irrelevant"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              asset_name_contains: "microservice,api"
+              is_scanned_by_iac: "IRRELEVANT"
+
+  - name: Get comprehensive GitLab coverage analysis
+    prompt: "Analyze ASPM coverage for all GitLab repositories and CI pipelines, show top 100 assets"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListAppSecAssetCoverage
+            arguments:
+              asset_provider: "GITLAB,GITLAB_CI"
+              limit: 100
+
+#  - name: Invalid coverage status value
+#    prompt: "Show me assets with coverage status of COMPLETELY SCANNED"
+#    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+#    expected_outcomes:
+#      - expected_error: "Invalid status_coverage value. Valid options are: FULLY SCANNED, NOT SCANNED, PARTIALLY SCANNED"
+
+  - name: General ASPM information request
+    prompt: "What is ASPM coverage and how does it work?"
+    agent_id: "0a4537f7-5966-4bf5-9d0f-82831a10f17e"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions: []

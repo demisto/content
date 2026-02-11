@@ -1,0 +1,25 @@
+{
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "Regsvr32 may have run code from an untrusted source"
+        },
+        {
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "NEQ",
+          "SEARCH_VALUE": "Correlation"
+        }
+      ]
+    }
+  },
+  "description": "This trigger is responsible for handling the 'Regsvr32 may have run code from an untrusted source' alert",
+  "fromVersion": "8.9.0",
+  "issilent": true,
+  "playbook_id": "silent-Regsvr32 may have run code from an untrusted source",
+  "suggestion_reason": "Recommended for 'Regsvr32 may have run code from an untrusted source' alerts",
+  "trigger_id": "c75078a5006cbbcd91d589f04f956a87",
+  "trigger_name": "silent-Regsvr32 may have run code from an untrusted source"
+}

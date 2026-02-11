@@ -1,0 +1,39 @@
+{
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+          "OR": [
+            {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "NTDS.dit file written by a rare executable"
+            },
+            {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "NTDS.dit file written by a rare executable to a suspicious path"
+            },
+            {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "NTDS.dit file written by a remote actor"
+            }
+          ]
+        },
+        {
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "NEQ",
+          "SEARCH_VALUE": "Correlation"
+        }
+      ]
+    }
+  },
+  "description": "This trigger is responsible for handling the 'NTDS.dit file written by an uncommon executable' alerts",
+  "fromVersion": "8.9.0",
+  "issilent": true,
+  "playbook_id": "silent-NTDS.dit file written by an uncommon executable",
+  "suggestion_reason": "Recommended for 'NTDS.dit file written by an uncommon executable' alerts",
+  "trigger_id": "25bd9d9d6dccd201fbf288cfbe3e17f8",
+  "trigger_name": "silent-NTDS.dit file written by an uncommon executable"
+}

@@ -1,0 +1,234 @@
+tests:
+  - name: "Simple domain reputation check"
+    prompt: "Check the reputation of suspicious-domain.com"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichDomain"
+            arguments:
+              domain_list: "[\"suspicious-domain.com\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Investigate multiple domains from phishing email"
+    prompt: "I found these domains in a phishing email, please enrich them: malicious-site.net, fake-bank.org, phishing-test.com"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichDomain"
+            arguments:
+              domain_list: "[\"malicious-site.net\", \"fake-bank.org\", \"phishing-test.com\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Quick domain check for incident response"
+    prompt: "Need quick threat intel on command-control.evil for incident INC-2024-001"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichDomain"
+            arguments:
+              domain_list: "[\"command-control.evil\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Enrich domains with full URL format"
+    prompt: "Analyze these suspicious URLs for threat intelligence: https://badactor.com, https://malware-drop.net/payload"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichDomain"
+            arguments:
+              domain_list: "[\"https://badactor.com\", \"https://malware-drop.net/payload\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Domain enrichment for threat hunting"
+    prompt: "Perform comprehensive domain analysis on suspicious-activity.co including all available threat intelligence sources"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichDomain"
+            arguments:
+              domain_list: "[\"suspicious-activity.co\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Bulk domain analysis from network logs"
+    prompt: "Enrich these domains found in suspicious network traffic: c2-server.xyz, data-exfil.info, trojan-host.biz, backdoor.onion"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichDomain"
+            arguments:
+              domain_list: "[\"c2-server.xyz\", \"data-exfil.info\", \"trojan-host.biz\", \"backdoor.onion\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Domain reputation check with subdomain"
+    prompt: "Check threat intelligence for admin.malicious-site.com"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichDomain"
+            arguments:
+              domain_list: "[\"admin.malicious-site.com\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Investigate domain from security alert"
+    prompt: "Security alert triggered by communication to evil-domain.net - need full threat intelligence analysis"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichDomain"
+            arguments:
+              domain_list: "[\"evil-domain.net\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Multiple domain enrichment for IOC analysis"
+    prompt: "Analyze these IOCs from the latest threat report: apt-group.org and data-steal.info"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichDomain"
+            arguments:
+              domain_list: "[\"apt-group.org\", \"data-steal.info\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Domain analysis for forensic investigation"
+    prompt: "Need comprehensive domain intelligence on compromised-site.com for forensic analysis"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichDomain"
+            arguments:
+              domain_list: "[\"compromised-site.com\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Check domain with complex path in URL"
+    prompt: "Analyze this suspicious URL for threat intelligence: https://malware.example.com/download/payload.exe?id=123"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichDomain"
+            arguments:
+              domain_list: "[\"https://malware.example.com/download/payload.exe?id=123\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Domain enrichment with ports specified"
+    prompt: "Get threat intelligence on malicious-server.com:8080"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichDomain"
+            arguments:
+              domain_list: "[\"malicious-server.com:8080\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "International domain analysis"
+    prompt: "Check reputation of this suspicious international domain: xn--malicious-site-123.org"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichDomain"
+            arguments:
+              domain_list: "[\"xn--malicious-site-123.org\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Domain enrichment for APT investigation"
+    prompt: "Investigating APT campaign - need full threat intelligence on these domains: apt29-infra.com, state-actor.net"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichDomain"
+            arguments:
+              domain_list: "[\"apt29-infra.com\", \"state-actor.net\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Single character domain analysis"
+    prompt: "Analyze this suspicious short domain: a.co"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichDomain"
+            arguments:
+              domain_list: "[\"a.co\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Domain with special characters in URL"
+    prompt: "Check threat intelligence for this domain with special chars: https://mal-ware_site.com/path:test"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichDomain"
+            arguments:
+              domain_list: "[\"https://mal-ware_site.com/path:test\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Multiple mixed format domains"
+    prompt: "Enrich these various domain formats: evil.com, https://bad-site.org/malware, sub.domain.net:443"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichDomain"
+            arguments:
+              domain_list: "[\"evil.com\", \"https://bad-site.org/malware\", \"sub.domain.net:443\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Empty domain list error"
+    prompt: "Enrich domains but provide empty list"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - expected_error: "Domain list cannot be empty. Please provide at least one domain to enrich."
+
+  - name: "Malformed domain format error"
+    prompt: "Analyze this invalid domain format: not_a_domain"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichDomain"
+            arguments:
+              domain_list: "[\"not_a_domain\"]"
+              external_enrichment: "true"
+              additional_fields: "true"
+
+  - name: "Large scale domain enrichment"
+    prompt: "Bulk analyze these 10 suspicious domains: mal1.com, mal2.com, mal3.com, mal4.com, mal5.com, mal6.com, mal7.com, mal8.com, mal9.com, mal10.com"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "EnrichDomain"
+            arguments:
+              domain_list: "[\"mal1.com\", \"mal2.com\", \"mal3.com\", \"mal4.com\", \"mal5.com\", \"mal6.com\", \"mal7.com\", \"mal8.com\", \"mal9.com\", \"mal10.com\"]"
+              external_enrichment: "true"
+              additional_fields: "true"

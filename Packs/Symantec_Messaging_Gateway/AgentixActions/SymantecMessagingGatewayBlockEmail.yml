@@ -1,0 +1,33 @@
+commonfields:
+  id: SymantecMessagingGatewayBlockEmail
+  version: -1
+display: Symantec Messaging Gateway - Block Email
+tags:
+  - Email Security
+  - Threat Prevention
+  - Policy Enforcement
+  - Symantec Messaging Gateway
+category: Email
+description: Blocks an email address by adding it to the Local Bad Sender Domains list. This prevents future emails from the specified address from being delivered.
+name: SymantecMessagingGatewayBlockEmail
+args:
+  - name: email
+    required: true
+    description: |
+      The full email address to block (e.g., user@example.com). This address will be added to the Local Bad Sender Domains list to prevent future email delivery from it.
+    type: string
+    underlyingargname: email
+outputs:
+  - underlyingoutputcontextpath: Email.Blocked
+    description: Indicates whether the email address was successfully blocked. Returns `true` if blocked, `false` if not.
+    type: boolean
+    name: Email.Blocked
+underlyingcontentitem:
+  id: Symantec Messaging Gateway
+  name: Symantec Messaging Gateway
+  type: command
+  version: -1
+  command: smg-block-email
+requiresuserapproval: true
+marketplaces:
+- platform

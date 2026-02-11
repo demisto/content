@@ -1,0 +1,61 @@
+commonfields:
+  id: PANOSCheckCertificateExpiration
+  version: -1
+display: PAN-OS - Get Certificate Expiration
+name: PANOSGetCertificateExpiration
+tags:
+ - firewall management
+ - certificate management
+ - Palo Alto Networks Products
+category: Network Security
+description: |-
+  Retrieves certificate information from PAN-OS firewalls and Panorama devices, providing visibility into certificate expiration status for proactive certificate lifecycle management. It queries locally configured certificates as well as those pushed from Panorama, returning details including certificate names, subject, expiration dates, and categorized expiration status (expired, expiring within 30/60/90 days, or valid). The results can be filtered to show only expired certificates and identifies the certificate source (local firewall, Panorama-pushed, or predefined). Note that this action is read-only and limited to certificates under Certificate Management - it does not modify certificate configurations or cover certificates stored in other locations within the PAN-OS system. This action can be executed against either a Firewall device or a Panorama device, depending on the configured integration instance.
+args:
+  - name: show_expired_only
+    description: Show only expired certificates.
+    type: boolean
+    underlyingargname: show_expired_only
+    required: false
+    defaultvalue: false
+outputs:
+  - underlyingoutputcontextpath: Panorama.Certificate.name
+    type: string
+    description: Name of the certificate.
+    name: Panorama.Certificate.name
+  - underlyingoutputcontextpath: Panorama.Certificate.subject
+    type: string
+    description: Subject of the certificate.
+    name: Panorama.Certificate.subject
+  - underlyingoutputcontextpath: Panorama.Certificate.device
+    type: string
+    description: Device where this certificate was found.
+    name: Panorama.Certificate.device
+  - underlyingoutputcontextpath: Panorama.Certificate.location
+    type: string
+    description: Where this certificate was configured - Firewall or Panorama.
+    name: Panorama.Certificate.location
+  - underlyingoutputcontextpath: Panorama.Certificate.cert_type
+    type: string
+    description: If this certificate was Pushed from Panorama, Local to Firewall or Predefined on Panorama or Firewall.
+    name: Panorama.Certificate.cert_type
+  - underlyingoutputcontextpath: Panorama.Certificate.expiration_status
+    type: string
+    description: Status of certificate - Expired, Expiring in 30 days, Expiring in 60 days, Expiring in 90 days or Valid.
+    name: Panorama.Certificate.expiration_status
+  - underlyingoutputcontextpath: Panorama.Certificate.expiration_date
+    type: string
+    description: Expiration date of the certificate.
+    name: Panorama.Certificate.expiration_date
+underlyingcontentitem:
+  id: Panorama
+  name: Panorama
+  type: command
+  version: -1
+  command: pan-os-get-certificate-info
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- agentix
+- xsiam
+- cloud_posture

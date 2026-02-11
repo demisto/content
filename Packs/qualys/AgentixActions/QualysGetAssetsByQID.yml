@@ -1,0 +1,39 @@
+commonfields:
+  id: QualysGetAssetsByQID
+  version: -1
+display: Qualys - List Assets
+tags:
+ - Qualys
+ - Assets
+category: Vulnerability Management
+description: |-
+  Retrieves a list of assets (hosts) affected by a specified Qualys QID.
+  If no QID is provided, all assets with detections will be returned.
+name: QualysListAssets
+args:
+  - defaultvalue: 'false'
+    description: >
+      If true, the command will create assets, otherwise it will only display the amount of available assets.
+      Optional values are: true, false.
+    name: should_push_assets
+    required: true
+    type: string
+    underlyingargname: should_push_assets
+  - description: The Qualys ID (QID) used to identify and retrieve assets affected by the specified vulnerability.
+    name: qid
+    type: string
+    underlyingargname: qid
+outputs:
+  - underlyingoutputcontextpath: Qualys.Assets
+    description: All Qualys assets associated with the specified QID (Qualys ID).
+    type: json
+    name: Qualys.Assets
+underlyingcontentitem:
+  id: QualysV2
+  name: QualysV2
+  type: command
+  version: -1
+  command: qualys-get-assets
+requiresuserapproval: false
+marketplaces:
+- platform

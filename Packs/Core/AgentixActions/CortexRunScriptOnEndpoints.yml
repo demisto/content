@@ -1,0 +1,48 @@
+commonfields:
+  id: CortexRunScriptOnEndpoints
+  version: -1
+name: CortexRunScriptOnEndpoints
+display: Cortex - Run Script On Endpoints
+description: |-
+  Runs a script on selected endpoints through the Cortex Platform.
+  Note: Certain scripts require defined parameters to be provided.
+args:
+  - name: script_uid
+    underlyingargname: script_uid
+    description: The Globally Unique Identifier (UID) of the script to run. Either script_uid or script_name must be provided.
+    type: string
+  - name: script_name
+    underlyingargname: script_name
+    description: The name of the script to run. Either script_uid or script_name must be provided.
+    type: string
+  - name: endpoint_ids
+    underlyingargname: endpoint_ids
+    description: A comma-separated list of endpoint IDs on which to run the script. Either endpoint_ids or endpoint_names must be provided.
+    type: string
+  - name: endpoint_names
+    underlyingargname: endpoint_names
+    description: A comma-separated list of endpoint names on which to run the script. Either endpoint_ids or endpoint_names must be provided.
+    type: string
+  - name: parameters
+    underlyingargname: parameters
+    description: |-
+      A JSON dictionary containing parameter names and values for script execution. This field should only be populated if the targeted script requires specific input parameters. Format example, {"param1":"value1","param2":"value2"}.
+    type: string
+outputs:
+  - name: CoreApiModule.ScriptResult.action_id
+    underlyingoutputcontextpath: CoreApiModule.ScriptResult.action_id
+    description: The unique identifier for the initiated script execution action.
+    type: number
+underlyingcontentitem:
+  id: Cortex Core - Platform
+  name: Cortex Core - Platform
+  type: command
+  version: -1
+  command: core-run-script-agentix
+requiresuserapproval: true
+marketplaces:
+  - platform
+supportedModules:
+- xsiam
+- cloud_runtime_security
+- edr

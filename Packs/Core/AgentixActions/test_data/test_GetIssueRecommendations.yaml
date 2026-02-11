@@ -1,0 +1,185 @@
+tests:
+  - name: Simple issue recommendations request
+    prompt: "Get recommendations for issue 12345"
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: GetIssueRecommendations
+            arguments:
+              issue_id: "12345"
+
+  - name: UUID format issue ID
+    prompt: "I need recommendations for issue 5c742ba2-729d-480c-951f-3a1f00eb9bb6"
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: GetIssueRecommendations
+            arguments:
+              issue_id: "5c742ba2-729d-480c-951f-3a1f00eb9bb6"
+
+  - name: Alphanumeric issue identifier
+    prompt: "Show me recommendations for issue INC-2024-001"
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: GetIssueRecommendations
+            arguments:
+              issue_id: "INC-2024-001"
+
+  - name: Remediation focused request
+    prompt: "What are the remediation steps for issue SEC-789?"
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: GetIssueRecommendations
+            arguments:
+              issue_id: "SEC-789"
+
+  - name: Playbook suggestions request
+    prompt: "Can you suggest playbooks for issue 98765? I need to know what automated responses are available"
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: GetIssueRecommendations
+            arguments:
+              issue_id: "98765"
+
+  - name: Urgent analyst request
+    prompt: "URGENT: Need immediate recommendations for critical issue CRIT-2024-045"
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: GetIssueRecommendations
+            arguments:
+              issue_id: "CRIT-2024-045"
+
+  - name: Formal analyst request
+    prompt: "Please provide comprehensive recommendations and suggested actions for security issue 445566"
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: GetIssueRecommendations
+            arguments:
+              issue_id: "445566"
+
+  - name: Investigation context request
+    prompt: "I'm investigating issue TI-2024-012 and need to understand what remediation options we have"
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: GetIssueRecommendations
+            arguments:
+              issue_id: "TI-2024-012"
+
+  - name: Short numeric issue ID
+    prompt: "Get recommendations for issue 1"
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: GetIssueRecommendations
+            arguments:
+              issue_id: "1"
+
+  - name: Long issue identifier
+    prompt: "What recommendations do you have for issue SECURITY-INCIDENT-2024-Q1-MALWARE-DETECTION-001?"
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: GetIssueRecommendations
+            arguments:
+              issue_id: "SECURITY-INCIDENT-2024-Q1-MALWARE-DETECTION-001"
+
+  - name: Case handling request
+    prompt: "Pull up the recommendations for case ALT-999 so I can review next steps"
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: GetIssueRecommendations
+            arguments:
+              issue_id: "ALT-999"
+
+  - name: Follow-up investigation
+    prompt: "I need to see what actions are recommended for issue 2024-APT-001 based on our analysis"
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: GetIssueRecommendations
+            arguments:
+              issue_id: "2024-APT-001"
+
+  - name: Issue with dashes and numbers
+    prompt: "Show recommendations for issue ID-2024-SEC-4567"
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: GetIssueRecommendations
+            arguments:
+              issue_id: "ID-2024-SEC-4567"
+
+  - name: Casual analyst request
+    prompt: "Can you grab the recommendations for issue 777888? I need to see what we should do next"
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: GetIssueRecommendations
+            arguments:
+              issue_id: "777888"
+
+  - name: Empty issue ID error
+    prompt: "Get recommendations for issue"
+    agent_id: test
+    expected_outcomes:
+      - expected_error: "Issue ID is required but not provided in the request"
+
+  - name: Invalid empty string issue ID
+    prompt: "Show me recommendations for issue ''"
+    agent_id: test
+    expected_outcomes:
+      - expected_error: "Issue ID cannot be empty"
+
+  - name: Multiple issues mentioned
+    prompt: "I need recommendations for issues 123 and 456 to compare our options"
+    agent_id: test
+    expected_outcomes:
+      - expected_error: "Only one issue ID can be processed at a time. Please specify a single issue for recommendations"
+
+  - name: Vague request without issue ID
+    prompt: "What recommendations are available?"
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions: []
+
+  - name: Specific issue format request
+    prompt: "Retrieve all recommendations and remediation guidance for security issue XSIAM-2024-0089"
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: GetIssueRecommendations
+            arguments:
+              issue_id: "XSIAM-2024-0089"
+
+  - name: Complex issue identifier with underscores
+    prompt: "I need the recommendation details for issue THREAT_HUNT_2024_001"
+    agent_id: test
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: GetIssueRecommendations
+            arguments:
+              issue_id: "THREAT_HUNT_2024_001"

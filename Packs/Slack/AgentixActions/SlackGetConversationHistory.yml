@@ -1,0 +1,72 @@
+commonfields:
+  id: SlackGetConversationHistory
+  version: -1
+display: Slack - List Messages
+name: SlackListMessages
+tags:
+  - slack
+category: Messaging and Conferencing
+description: Retrieves the message history of a Slack conversation. Results are returned in descending order.
+args:
+  - name: conversation_id
+    description: >
+      The ID of the conversation, for example: "C012QRSTUW9", "CAA78KABS".
+    type: string
+    underlyingargname: conversation_id
+  - name: conversation_name
+    description: >
+      The name of the conversation, for example: "rnd-innovation" (channel name), "John Doe" (full name), "jdoe" (username), "jdoe@example.com" (user email).
+    type: string
+    underlyingargname: conversation_name
+  - name: limit
+    description: >
+      The maximum number of messages to return.
+    type: number
+    underlyingargname: limit
+  - name: from_time
+    description: |
+      The earliest time from which to retrieve messages.
+    type: string
+    underlyingargname: from_time
+outputs:
+  - underlyingoutputcontextpath: Slack.Messages.Type
+    description: The type of the message (e.g., message, file_share, etc.).
+    type: string
+    name: Slack.Messages.Type
+  - underlyingoutputcontextpath: Slack.Messages.Text
+    description: The text content of the message.
+    type: string
+    name: Slack.Messages.Text
+  - underlyingoutputcontextpath: Slack.Messages.UserId
+    description: The user ID of the message sender.
+    type: string
+    name: Slack.Messages.UserId
+  - underlyingoutputcontextpath: Slack.Messages.Name
+    description: The username of the message sender.
+    type: string
+    name: Slack.Messages.Name
+  - underlyingoutputcontextpath: Slack.Messages.FullName
+    description: The full name of the message sender.
+    type: string
+    name: Slack.Messages.FullName
+  - underlyingoutputcontextpath: Slack.Messages.TimeStamp
+    description: The timestamp of the message.
+    type: string
+    name: Slack.Messages.TimeStamp
+  - underlyingoutputcontextpath: Slack.Messages.HasReplies
+    description: Whether the message has replies.
+    type: boolean
+    name: Slack.Messages.HasReplies
+  - underlyingoutputcontextpath: Slack.Messages.ThreadTimeStamp
+    description: The thread timestamp of the message.
+    type: string
+    name: Slack.Messages.ThreadTimeStamp
+underlyingcontentitem:
+  id: SlackV3
+  name: SlackV3
+  type: command
+  version: -1
+  command: 'slack-get-conversation-history'
+requiresuserapproval: false
+marketplaces:
+- platform

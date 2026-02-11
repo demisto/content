@@ -1,0 +1,44 @@
+commonfields:
+  id: CortexUpdateEndpointTags
+  version: -1
+name: CortexUpdateEndpointTags
+display: Cortex - Update Endpoint Tags
+description: Updates (adds or removes) tags on a list of specified endpoints.
+args:
+  - name: endpoint_ids
+    underlyingargname: endpoint_ids
+    description: A comma-separated list of endpoint IDs to update their tags.
+    type: string
+    required: true
+  - name: tags_to_add
+    underlyingargname: tags_to_add
+    description: A comma-separated list of tags to add to the endpoints.
+    type: string
+  - name: tags_to_remove
+    underlyingargname: tags_to_remove
+    description: A comma-separated list of tags to remove from the endpoints.
+    type: string
+outputs:
+  - name: Core.EndpointTags.SuccessMessage
+    underlyingoutputcontextpath: Core.EndpointTags.SuccessMessage
+    description: |-
+      The success message returned after updating endpoint tags.
+    type: string
+  - name: Core.EndpointTags.FailureMessage
+    underlyingoutputcontextpath: Core.EndpointTags.FailureMessage
+    description: |-
+      The error message returned when endpoint tags failed to update.
+    type: string
+underlyingcontentitem:
+  id: Cortex Core - IR
+  name: Cortex Core - IR
+  type: command
+  version: -1
+  command: core-update-endpoint-tags
+requiresuserapproval: true
+marketplaces:
+  - platform
+supportedModules:
+  - xsiam
+  - cloud_runtime_security
+  - edr

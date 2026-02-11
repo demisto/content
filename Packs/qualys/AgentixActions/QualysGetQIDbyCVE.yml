@@ -1,0 +1,30 @@
+commonfields:
+  id: QualysGetQIDbyCVE
+  version: -1
+display: Qualys - Get Qualys ID
+name: QualysGetQID
+tags:
+ - Qualys
+ - CVE
+category: Vulnerability Management
+description: Retrieves the Qualys QID (Qualys ID) associated with a specified CVE.
+args:
+  - description: The CVE identifier (e.g., CVE-2023-12345) used to look up the corresponding Qualys QID.
+    name: cve
+    required: true
+    type: string
+    underlyingargname: cve
+outputs:
+  - underlyingoutputcontextpath: Qualys.QID
+    description: All the Qualys QID (Qualys ID) associated with a specified CVE.
+    type: string
+    name: Qualys.QID
+underlyingcontentitem:
+  id: QualysV2
+  name: QualysV2
+  type: command
+  version: -1
+  command: qualys-get-quid-by-cve
+requiresuserapproval: false
+marketplaces:
+- platform

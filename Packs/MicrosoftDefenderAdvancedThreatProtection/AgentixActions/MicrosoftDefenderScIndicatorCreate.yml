@@ -1,0 +1,198 @@
+commonfields:
+  id: MicrosoftDefenderScIndicatorCreate
+  version: -1
+display: Microsoft Defender - Create Indicator
+name: MicrosoftDefenderCreateIndicator
+tags:
+ - Indicator
+ - Microsoft
+ - Defender
+category: Endpoint
+description: |-
+  This action allows security analysts to programmatically create or update Indicators of Compromise (IoCs)
+  such as file hashes, IPs, domains, or URLs in Microsoft Defender for Endpoint.
+  Primary use case: Blocking known malicious files across the environment using file hashes (e.g., SHA256).
+  When created with the AlertAndBlock or Block action, Defender will block the file at execution and optionally generate alerts.
+args:
+  - name: indicator_value
+    description: The value of the indicator to create or update.
+    required: true
+    type: string
+    underlyingargname: indicator_value
+  - name: indicator_type
+    description: The type of the indicator. Optional values are FileSha1, FileSha256, FileMd5, IpAddress, DomainName, or Url.
+    required: true
+    type: string
+    underlyingargname: indicator_type
+  - name: action
+    description: The action to take on the indicator. Optional values are Allowed, Audit, Warn, Block or AlertAndBlock.
+    required: true
+    type: string
+    defaultvalue: 'Block'
+    underlyingargname: action
+  - name: indicator_title
+    description: The title of the indicator.
+    required: true
+    type: string
+    isgeneratable: true
+    underlyingargname: indicator_title
+  - name: indicator_description
+    description: A description of the indicator.
+    required: true
+    isgeneratable: true
+    type: string
+    underlyingargname: indicator_description
+  - name: severity
+    description: The severity of the indicator. Optional values are Informational, Low, Medium or High.
+    type: string
+    underlyingargname: severity
+  - name: expiration_time
+    description: Expiration time for the indicator (ISO 8601 format, e.g., 2025-12-31T23:59:59Z).
+    type: string
+    underlyingargname: expiration_time
+  - name: generate_alert
+    description: Whether to generate an alert when the indicator is matched. Optional values are 'true' or 'false'.
+    type: boolean
+    underlyingargname: generate_alert
+  - name: recommended_actions
+    description: Suggested remediation steps.
+    type: string
+    underlyingargname: recommended_actions
+  - name: rbac_group_names
+    description: RBAC group names to restrict indicator visibility.
+    type: string
+    underlyingargname: rbac_group_names
+outputs:
+  - underlyingoutputcontextpath: MicrosoftATP.Indicators.id
+    description: Created by the system when the indicator is ingested. Generated GUID/unique identifier.
+    type: string
+    name: MicrosoftATP.Indicators.id
+  - underlyingoutputcontextpath: MicrosoftATP.Indicators.action
+    description: 'The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are "unknown", "allow", "block", "alert".'
+    type: string
+    name: MicrosoftATP.Indicators.action
+  - underlyingoutputcontextpath: MicrosoftATP.Indicators.description
+    description: Brief description (100 characters or less) of the threat represented by the indicator.
+    type: string
+    name: MicrosoftATP.Indicators.description
+  - underlyingoutputcontextpath: MicrosoftATP.Indicators.expirationTime
+    description: "DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
+    type: date
+    name: MicrosoftATP.Indicators.expirationTime
+  - underlyingoutputcontextpath: MicrosoftATP.Indicators.severity
+    description: 'The severity of the malicious behavior identified by the data within the indicator. Possible values are "Informational", "Low", "Medium", and "High", where High is the most severe and Informational is not severe at all.'
+    type: string
+    name: MicrosoftATP.Indicators.severity
+  - underlyingoutputcontextpath: MicrosoftATP.Indicators.indicatorValue
+    description: The value of the indicator.
+    type: string
+    name: MicrosoftATP.Indicators.indicatorValue
+  - underlyingoutputcontextpath: MicrosoftATP.Indicators.recommendedActions
+    description: Recommended actions for the indicator.
+    type: string
+    name: MicrosoftATP.Indicators.recommendedActions
+  - underlyingoutputcontextpath: MicrosoftATP.Indicators.generateAlert
+    description: Whether an alert was generated.
+    type: boolean
+    name: MicrosoftATP.Indicators.generateAlert
+  - underlyingoutputcontextpath: MicrosoftATP.Indicators.rbacGroupNames
+    description: A list of RBAC device group names where the indicator is exposed and active. Empty list if it is exposed to all devices.
+    type: string
+    name: MicrosoftATP.Indicators.rbacGroupNames
+  - underlyingoutputcontextpath: MicrosoftATP.Indicators.mitreTechniques
+    description: A list of MITRE techniques.
+    type: string
+    name: MicrosoftATP.Indicators.mitreTechniques
+  - underlyingoutputcontextpath: MicrosoftATP.Indicators.indicatorType
+    description: 'Indicator Type. Possible values are "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url".'
+    type: string
+    name: MicrosoftATP.Indicators.indicatorType
+  - underlyingoutputcontextpath: MicrosoftATP.Indicators.lastUpdateTime
+    description: The last time the indicator was updated.
+    type: date
+    name: MicrosoftATP.Indicators.lastUpdateTime
+  - underlyingoutputcontextpath: MicrosoftATP.Indicators.createdByDisplayName
+    description: The display name of the created app.
+    type: string
+    name: MicrosoftATP.Indicators.createdByDisplayName
+  - underlyingoutputcontextpath: MicrosoftATP.Indicators.application
+    description: The application associated with the indicator.
+    type: string
+    name: MicrosoftATP.Indicators.application
+  - underlyingoutputcontextpath: MicrosoftATP.Indicators.title
+    description: The indicator title.
+    type: string
+    name: MicrosoftATP.Indicators.title
+  - underlyingoutputcontextpath: MicrosoftATP.Indicators.createdBySource
+    description: Source of indicator creation. For example, PublicApi.
+    type: string
+    name: MicrosoftATP.Indicators.createdBySource
+  - underlyingoutputcontextpath: MicrosoftATP.Indicators.historicalDetection
+    description: Whether a historical detection exists.
+    type: boolean
+    name: MicrosoftATP.Indicators.historicalDetection
+  - underlyingoutputcontextpath: MicrosoftATP.Indicators.lastUpdatedBy
+    description: The identity of the user/application that last updated the indicator.
+    type: string
+    name: MicrosoftATP.Indicators.lastUpdatedBy
+  - underlyingoutputcontextpath: MicrosoftATP.Indicators.creationTimeDateTimeUtc
+    description: The date and time the indicator was created.
+    type: date
+    name: MicrosoftATP.Indicators.creationTimeDateTimeUtc
+  - underlyingoutputcontextpath: MicrosoftATP.Indicators.category
+    description: An number representing the indicator category.
+    type: number
+    name: MicrosoftATP.Indicators.category
+  - underlyingoutputcontextpath: MicrosoftATP.Indicators.createdBy
+    description: Unique identity of the user/application that submitted the indicator.
+    type: string
+    name: MicrosoftATP.Indicators.createdBy
+  - underlyingoutputcontextpath: File.MD5
+    description: The MD5 hash of the file.
+    type: string
+    name: File.MD5
+  - underlyingoutputcontextpath: File.SHA1
+    description: The SHA1 hash of the file.
+    type: string
+    name: File.SHA1
+  - underlyingoutputcontextpath: File.SHA256
+    description: The SHA256 hash of the file.
+    type: string
+    name: File.SHA256
+  - underlyingoutputcontextpath: Domain.Name
+    description: 'The domain name, for example: "google.com".'
+    type: string
+    name: Domain.Name
+  - underlyingoutputcontextpath: IP.Address
+    description: IP address.
+    type: string
+    name: IP.Address
+  - underlyingoutputcontextpath: URL.Data
+    description: The URL.
+    type: string
+    name: URL.Data
+  - underlyingoutputcontextpath: DBotScore.Indicator
+    description: The indicator that was tested.
+    type: string
+    name: DBotScore.Indicator
+  - underlyingoutputcontextpath: DBotScore.Type
+    description: The indicator type.
+    type: string
+    name: DBotScore.Type
+  - underlyingoutputcontextpath: DBotScore.Vendor
+    description: The vendor used to calculate the score.
+    type: string
+    name: DBotScore.Vendor
+  - underlyingoutputcontextpath: DBotScore.Score
+    description: The actual score.
+    type: number
+    name: DBotScore.Score
+underlyingcontentitem:
+  id: MicrosoftAtpScIndicatorCreate
+  name: MicrosoftAtpScIndicatorCreate
+  type: script
+  version: -1
+  command: ''
+requiresuserapproval: false
+marketplaces:
+- platform

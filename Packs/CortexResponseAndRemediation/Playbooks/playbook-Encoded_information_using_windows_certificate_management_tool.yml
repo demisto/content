@@ -1,0 +1,4097 @@
+id: silent-Encoded information using windows certificate management tool
+version: -1
+issilent: true
+name: silent-Encoded information using windows certificate management tool
+description: |-
+  This playbook addresses the following alerts:
+
+    - Encoded information using windows certificate management tool
+
+    **Playbook Stages:**
+
+    **Analysis:**
+  **Investigate potential encoding/decoding technique:**
+    - Analyze command line for Encode/Decode operations
+    - Extract source and destination files
+    - Retrieve and analyze suspicious files
+    - Check for high-risk directories usage
+    - Check for suspicious file extensions
+    - Detect content appended to certificates
+
+  **Investigate potential malicious activity:**
+    - Check file reputation and prevalence
+    - Analyze CGO reputation and signature
+    - Check user risk score
+    - Search for related alerts
+    - Upload files to sandbox for analysis
+
+    **Remediation:**
+    - Terminate CGO process
+    - Add hash to blocklist
+    - Quarantine malicious files
+    - Isolate the endpoint (requires analyst approval).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 65714cd7-909f-4540-88e3-1b92ee78c5d3
+    type: start
+    task:
+      id: 65714cd7-909f-4540-88e3-1b92ee78c5d3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": -657.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 6eebc37d-289e-4ebb-8d9c-363866a26c9a
+    type: condition
+    task:
+      id: 6eebc37d-289e-4ebb-8d9c-363866a26c9a
+      version: -1
+      name: Command is Encode or Decode
+      description: Checks if the command is encode or decode.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Decode:
+      - "3"
+      Encode:
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: Encode
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: alert.targetprocesscmd
+            iscontext: true
+          right:
+            value:
+              simple: -encode
+          ignorecase: true
+    - label: Decode
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: alert.targetprocesscmd
+            iscontext: true
+          right:
+            value:
+              simple: -decode
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 2080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: bb0c32c3-f941-4fdc-8584-b6ae8d8c430b
+    type: title
+    task:
+      id: bb0c32c3-f941-4fdc-8584-b6ae8d8c430b
+      version: -1
+      name: Encode
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+      - "16"
+      - "93"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2881.25,
+          "y": 2302.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 72294d61-5b77-4948-8306-e8f97285280f
+    type: title
+    task:
+      id: 72294d61-5b77-4948-8306-e8f97285280f
+      version: -1
+      name: Decode
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+      - "34"
+      - "43"
+      - "101"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1590,
+          "y": 2302.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 8880ea6d-0891-4c60-943f-296d344ec4f8
+    type: title
+    task:
+      id: 8880ea6d-0891-4c60-943f-296d344ec4f8
+      version: -1
+      name: Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+      - "17"
+      - "19"
+      - "22"
+      - "23"
+      - "38"
+      - "74"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: d22e26b1-b259-4445-845b-1dbfdccce179
+    type: regular
+    task:
+      id: d22e26b1-b259-4445-845b-1dbfdccce179
+      version: -1
+      name: Get SRC file hash prevalence
+      description: Get the prevalence of a file, identified by sha256.
+      script: '|||core-get-hash-analytics-prevalence'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "81"
+    scriptarguments:
+      sha256:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: SRCFileName
+                iscontext: true
+              ignorecase: true
+          accessor: SHA256
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3130,
+          "y": 2454.75
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 58a0e2e7-b46b-465c-8b9f-4f153646f3fb
+    type: title
+    task:
+      id: 58a0e2e7-b46b-465c-8b9f-4f153646f3fb
+      version: -1
+      name: Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "88"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": -520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: cd295379-27b2-47f9-8c42-5fbb4c836ed7
+    type: title
+    task:
+      id: cd295379-27b2-47f9-8c42-5fbb4c836ed7
+      version: -1
+      name: Retrieve Files
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 236.875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: baa7a025-1ca7-4085-b30c-e5e29dd134d9
+    type: regular
+    task:
+      id: baa7a025-1ca7-4085-b30c-e5e29dd134d9
+      version: -1
+      name: Retrieve Suspicious Files
+      description: Retrieves script files from the endpoint.
+      script: '|||core-retrieve-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      endpoint_ids:
+        simple: ${alert.agentid}
+      windows_file_paths:
+        complex:
+          root: SuspiciousFilePath
+          accessor: Input
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ',${SuspiciousFilePath.Output}'
+          - operator: uniq
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 12f0ab6c-d96d-4678-8cbb-dbe8c5270dd2
+    type: regular
+    task:
+      id: 12f0ab6c-d96d-4678-8cbb-dbe8c5270dd2
+      version: -1
+      name: Retrieve File Details
+      description: View the file retrieved by the core-retrieve-files command according to the action ID. Before running this command, you can use the core-action-status-get command to check if this action completed successfully.
+      script: '|||core-retrieve-file-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      action_id:
+        simple: ${Core.RetrievedFiles.action_id}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 90033ea5-0204-4c6e-8f31-c0ba6eda505d
+    type: regular
+    task:
+      id: 90033ea5-0204-4c6e-8f31-c0ba6eda505d
+      version: -1
+      name: Unzip Retrieved File
+      description: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
+      scriptName: UnzipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 784.75
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 05074cbf-6290-4e93-8c13-7d8e86a6db40
+    type: regular
+    task:
+      id: 05074cbf-6290-4e93-8c13-7d8e86a6db40
+      version: -1
+      name: Read File Content
+      description: Load the contents of a file into context.
+      scriptName: ReadFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "78"
+      '#none#':
+      - "13"
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          filters:
+          - - operator: endWith
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: .zip
+              ignorecase: true
+          - - operator: endWith
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: manifest.json
+              ignorecase: true
+          - - operator: endWith
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: stdout.txt
+              ignorecase: true
+          - - operator: endWith
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: script_output.txt
+              ignorecase: true
+          accessor: EntryID
+      output_data_type:
+        simple: raw
+      output_metadata:
+        simple: "true"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1167.25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: eaa304ec-c492-459e-857e-abb086c65e9e
+    type: regular
+    task:
+      id: eaa304ec-c492-459e-857e-abb086c65e9e
+      version: -1
+      name: Set File Content to Context
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: SuspiciousFileContent
+      value:
+        simple: ${ReadFile.Data}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1325.625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 69bbefa0-b9a9-4f79-8d3b-0f5dfe6e0576
+    type: condition
+    task:
+      id: 69bbefa0-b9a9-4f79-8d3b-0f5dfe6e0576
+      version: -1
+      name: File Successfully Retrieved?
+      description: Checks whether the script was retrieved successfully.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "53"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ExtractedFiles
+                filters:
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: ExtractedFiles
+                      iscontext: true
+                    right:
+                      value:
+                        simple: script_output.txt
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: ExtractedFiles
+                      iscontext: true
+                    right:
+                      value:
+                        simple: stdout.txt
+                    ignorecase: true
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: ExtractedFiles
+                      iscontext: true
+                    right:
+                      value:
+                        simple: manifest.json
+                    ignorecase: true
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: notEndWith
+                    left:
+                      value:
+                        simple: File.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .zip
+                    ignorecase: true
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: script_output.txt
+                    ignorecase: true
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: stdout.txt
+                    ignorecase: true
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: manifest.json
+                    ignorecase: true
+                accessor: Extension
+                transformers:
+                - operator: uniq
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1015.625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 238c8257-2ccd-40ae-8f23-fcc0da9ffcda
+    type: regular
+    task:
+      id: 238c8257-2ccd-40ae-8f23-fcc0da9ffcda
+      version: -1
+      name: Check Input File Create/Write Time
+      description: |-
+        Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+        When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+        unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "100"
+    scriptarguments:
+      query:
+        simple: "config timeframe = 10m\n| dataset = xdr_data \n| filter event_type = ENUM.FILE and event_sub_type = ENUM.FILE_CREATE_NEW // Looking for file creation events\n| filter agent_id = \"${alert.agentid}\" and action_file_path = \"${SuspiciousFilePath.Input}\"\n| fields _time, action_file_name, action_file_create_time, action_file_path"
+      query_name:
+        simple: Check output files create time
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2590,
+          "y": 2454.75
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 8207364b-c532-40c1-82c4-3c4ac9b344d4
+    type: regular
+    task:
+      id: 8207364b-c532-40c1-82c4-3c4ac9b344d4
+      version: -1
+      name: Verify if operation targets high-risk directories
+      description: Extracts regex data from the provided text.
+      scriptName: MatchRegexV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      data:
+        complex:
+          root: SuspiciousFilePath
+          accessor: Input
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: SuspiciousFilePath.Output
+                iscontext: true
+      ignorecase:
+        simple: "true"
+      regex:
+        simple: (\\Temp\\|\\PROGRAMDATA\\|\\Downloads\\|\\AppData\\Local\\Temp\\)
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -110,
+          "y": 229.375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 825f57da-f461-435d-8585-e62f415b0187
+    type: regular
+    task:
+      id: 825f57da-f461-435d-8585-e62f415b0187
+      version: -1
+      name: Set RiskyPath Evidence
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      key:
+        simple: Evidence.HighRiskPath
+      value:
+        simple: "0.5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -110,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 50d60b75-830f-4349-b14b-f8580c279842
+    type: regular
+    task:
+      id: 50d60b75-830f-4349-b14b-f8580c279842
+      version: -1
+      name: Get File Creation Timestamps
+      description: |-
+        Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+        When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+        unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      query:
+        simple: |-
+          config timeframe = 5m
+          | preset = xdr_file
+          | filter event_sub_type = ENUM.FILE_CREATE_NEW
+          | filter agent_hostname = "${alert.hostname}"
+          | filter action_file_path = "${SuspiciousFilePath.Output}"
+          | fields _time, agent_hostname, action_file_path, action_file_name
+          | sort desc _time
+          | limit 100
+      query_name:
+        simple: Check file creation timestamps
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 236.875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 008b8cb2-912f-451e-80c6-f3ca8c6fadd3
+    type: condition
+    task:
+      id: 008b8cb2-912f-451e-80c6-f3ca8c6fadd3
+      version: -1
+      name: Check CGO Signature
+      description: This script gathers file reputation data from multiple integrations and returns a "FileEnrichment" object with consolidated information to the context output.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: issue.cgosignature
+            iscontext: true
+          right:
+            value:
+              simple: SIGNATURE_SIGNED
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 246.875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 767787c1-4e29-4b1f-9829-5cbee8107c72
+    type: regular
+    task:
+      id: 767787c1-4e29-4b1f-9829-5cbee8107c72
+      version: -1
+      name: Get CGO Reputation
+      description: This script gathers file reputation data from multiple integrations and returns a "FileEnrichment" object with consolidated information to the context output.
+      scriptName: file-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      external_enrichment:
+        simple: "true"
+      file_hash:
+        simple: ${alert.cgosha256}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1610,
+          "y": 239.375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: ebb4984c-93eb-4eb4-85d6-26b35816ca0c
+    type: regular
+    task:
+      id: ebb4984c-93eb-4eb4-85d6-26b35816ca0c
+      version: -1
+      name: Set File Creation Timestamps Evidence
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      key:
+        simple: Evidence.RecentlyCreated
+      value:
+        simple: "0.5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 2ef739a7-eb93-4498-80d5-e34d8305d184
+    type: condition
+    task:
+      id: 2ef739a7-eb93-4498-80d5-e34d8305d184
+      version: -1
+      name: Check if File Created Recently
+      description: Checks if the file was created recently.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXQL.GenericQuery.results._time
+            iscontext: true
+      - - operator: AfterRelativeDate
+          left:
+            value:
+              simple: PaloAltoNetworksXQL.GenericQuery.results._time
+            iscontext: true
+          right:
+            value:
+              simple: 1 months ago
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 27969fc6-9181-4d39-8d6b-2dab489e399a
+    type: regular
+    task:
+      id: 27969fc6-9181-4d39-8d6b-2dab489e399a
+      version: -1
+      name: Analyze File Content
+      description: |-
+        This script evaluates command-line threats by analyzing both original and decoded inputs. It assigns weighted scores to detected patterns, such as AMSI bypass or credential dumping, and applies risk combination bonuses for multiple detections. The total score is normalized to a 0-100 scale, with risk levels categorized as follows:
+
+        * 0-25: Low Risk
+        * 26-50: Medium Risk
+        * 51-90: High Risk
+        * 91-100: Critical Risk
+
+        The scoring mechanism provides a comprehensive risk assessment, considering both the severity and frequency of malicious behaviors.
+      scriptName: CommandLineAnalysis
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      command_line:
+        simple: ${ReadFile.Data}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": 2454.75
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 0b57982f-2c4d-4b50-8b46-4dbe62686a37
+    type: regular
+    task:
+      id: 0b57982f-2c4d-4b50-8b46-4dbe62686a37
+      version: -1
+      name: Set UnsignedCGO Evidence
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      key:
+        simple: 'Evidence.UnsignedCGO'
+      value:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: a90131fa-2e55-41f0-8f09-1507e35366a8
+    type: regular
+    task:
+      id: a90131fa-2e55-41f0-8f09-1507e35366a8
+      version: -1
+      name: Set CGOReputation Evidence
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      key:
+        simple: 'Evidence.CGOReputation'
+      value:
+        simple: "1.5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1610,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 5916206c-5f54-47e4-8d68-cb43b9e3ac9f
+    type: condition
+    task:
+      id: 5916206c-5f54-47e4-8d68-cb43b9e3ac9f
+      version: -1
+      name: Check CGO Malicious Reputation
+      description: Checks if the CGO reputation is malicious.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: FileEnrichment.TIMScore
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1610,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 5f4e4b56-a347-4f4f-8a02-894ddfa13d33
+    type: title
+    task:
+      id: 5f4e4b56-a347-4f4f-8a02-894ddfa13d33
+      version: -1
+      name: Else
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -600,
+          "y": 2767.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: a93c93dc-c3c3-435f-8c4d-48503d0c9b84
+    type: regular
+    task:
+      id: a93c93dc-c3c3-435f-8c4d-48503d0c9b84
+      version: -1
+      name: Set Suspicious File Extension Evidence
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      key:
+        simple: Evidence.SuspiciousFileExt
+      value:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1590,
+          "y": 2590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 45316127-fc24-4acc-a21e-764c9ffb2d38
+    type: condition
+    task:
+      id: 45316127-fc24-4acc-a21e-764c9ffb2d38
+      version: -1
+      name: Check DST File Extension
+      description: Checks the destination file extension.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "44"
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: endWith
+          left:
+            value:
+              simple: SuspiciousFilePath.Output
+            iscontext: true
+          right:
+            value:
+              simple: .dll
+        - operator: endWith
+          left:
+            value:
+              simple: SuspiciousFilePath.Output
+            iscontext: true
+          right:
+            value:
+              simple: .cmd
+          ignorecase: true
+        - operator: endWith
+          left:
+            value:
+              simple: SuspiciousFilePath.Output
+            iscontext: true
+          right:
+            value:
+              simple: .ps1
+          ignorecase: true
+        - operator: endWith
+          left:
+            value:
+              simple: SuspiciousFilePath.Output
+            iscontext: true
+          right:
+            value:
+              simple: .bat
+          ignorecase: true
+        - operator: endWith
+          left:
+            value:
+              simple: SuspiciousFilePath.Output
+            iscontext: true
+          right:
+            value:
+              simple: .exe
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1590,
+          "y": 2450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: e87f0831-2249-4abe-806b-346fe62afa98
+    type: condition
+    task:
+      id: e87f0831-2249-4abe-806b-346fe62afa98
+      version: -1
+      name: Check CMD Analysis Results
+      description: Checks the command line analysis results.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "44"
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CommandLineAnalysis.score
+            iscontext: true
+          right:
+            value:
+              simple: "50"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": 2590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 4e67a107-b830-4ea7-8e19-21237880ffc1
+    type: regular
+    task:
+      id: 4e67a107-b830-4ea7-8e19-21237880ffc1
+      version: -1
+      name: Set Suspicious File Content Evidence
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      key:
+        simple: Evidence.SuspiciousFileContent
+      value:
+        simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 1a0072d8-ca02-438e-9682-c721c4b6dcc6
+    type: regular
+    task:
+      id: 1a0072d8-ca02-438e-9682-c721c4b6dcc6
+      version: -1
+      name: Search for suspicious-related alerts by CGO
+      description: |-
+        This task searches for other suspicious alerts from the same causality chain to determine if the current alert is part of a larger attack. It queries for alerts on the same agent that share the same causality ID (cid) and have names matching a list of known suspicious activities.
+
+        The query looks for the following alert names:
+        - "Multiple MITRE tactic alerts within same timeframe"
+        - "Unsigned DLL Hijack into a Microsoft process"
+        - "Suspicious AMSI decode attempt"
+        - "Command-line arguments match Mimikatz execution"
+        - "Scripting engine connected to a rare external host"
+        - "Multiple alerts of different MITRE tactics were seen"
+        - "Rare LOLBIN Process Execution by User"
+        - "Commonly abused process executed with obfuscated characters"
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      fromdate:
+        simple: 5 hours ago
+      query:
+        simple: "cid: ${alert.cid} AND agentid: ${alert.agentid} AND (name: \"Multiple MITRE tactic alerts within same timeframe\" OR name:\n\"Unsigned DLL Hijack into a Microsoft process\" OR name:\n\"Suspicious AMSI decode attempt\" OR name: \n\"Command-line arguments match Mimikatz execution\" OR name:\n\"Scripting engine connected to a rare external host\" OR name:\n\"Multiple alerts of different MITRE tactics were seen\" OR name:\n\"Rare LOLBIN Process Execution by User\" OR name:\n\"Commonly abused process executed with obfuscated characters\")"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -586.6666870117188,
+          "y": 229.375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 1ada7794-058c-4908-8aa1-2be1b5df2209
+    type: regular
+    task:
+      id: 1ada7794-058c-4908-8aa1-2be1b5df2209
+      version: -1
+      name: Set RelatedAlerts Evidence
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      key:
+        simple: 'Evidence.RelatedAlerts'
+      value:
+        simple: "1.5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -586.6666870117188,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 4346280f-6128-432e-8e50-aa039f76f9ef
+    type: condition
+    task:
+      id: 4346280f-6128-432e-8e50-aa039f76f9ef
+      version: -1
+      name: Related Alerts Found
+      description: Checks if related alerts were found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: foundIncidents
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -586.6666870117188,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: f3561067-6319-40d3-86d4-d7be8c5d6cde
+    type: condition
+    task:
+      id: f3561067-6319-40d3-86d4-d7be8c5d6cde
+      version: -1
+      name: High-Risk Directory Found
+      description: Checks if a high-risk directory was found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -110,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: d74d28b0-232a-41b3-85a3-bc257f59604a
+    type: regular
+    task:
+      id: d74d28b0-232a-41b3-85a3-bc257f59604a
+      version: -1
+      name: Get Post-Decode Process Executions
+      description: |-
+        Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+        When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+        unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      query:
+        simple: "config timeframe between \"-5m\" and \"+5m\"\n| preset = xdr_process\n| filter actor_process_image_path ~= \"${DSTFileName}\"\n| fields _time, agent_hostname, causality_actor_process_image_name, causality_actor_process_command_line, causality_actor_process_image_sha256 \n| sort desc _time\n| limit 100"
+      query_name:
+        simple: Get Post-Decode Process Executions
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2040,
+          "y": 2450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 76e8c43d-2c61-4441-8b46-eaa8aeb0a082
+    type: title
+    task:
+      id: 76e8c43d-2c61-4441-8b46-eaa8aeb0a082
+      version: -1
+      name: Verdict Decision
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "92"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1590,
+          "y": 3070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 306cf84d-d383-4f91-803d-62a59cb2c191
+    type: condition
+    task:
+      id: 306cf84d-d383-4f91-803d-62a59cb2c191
+      version: -1
+      name: Calculate Evidence Scores
+      description: Calculates the evidence scores.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      FP:
+      - "58"
+      Inconclusive:
+      - "59"
+      TP:
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: TP
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: Evidence
+                transformers:
+                - operator: jmespath
+                  args:
+                    expression:
+                      value:
+                        simple: sum(values(@))
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    - label: Inconclusive
+      condition:
+      - - operator: InRange
+          left:
+            value:
+              complex:
+                root: Evidence
+                transformers:
+                - operator: jmespath
+                  args:
+                    expression:
+                      value:
+                        simple: sum(values(@))
+            iscontext: true
+          right:
+            value:
+              simple: 2,3
+    - label: FP
+      condition:
+      - - operator: lessThan
+          left:
+            value:
+              complex:
+                root: Evidence
+                transformers:
+                - operator: jmespath
+                  args:
+                    expression:
+                      value:
+                        simple: sum(values(@))
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1590,
+          "y": 3510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 8b9b8ccc-1943-48cf-8f0e-bbf2b4301bd0
+    type: title
+    task:
+      id: 8b9b8ccc-1943-48cf-8f0e-bbf2b4301bd0
+      version: -1
+      name: TP - Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "57"
+      - "85"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 3670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: c39de9f4-ad3c-4ea5-8a11-02115edf626a
+    type: regular
+    task:
+      id: c39de9f4-ad3c-4ea5-8a11-02115edf626a
+      version: -1
+      name: Set Evidence as Human Readable
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      key:
+        simple: EvidenceHumanReadable
+      value:
+        complex:
+          root: .
+          transformers:
+          - operator: jmespath
+            args:
+              expression:
+                value:
+                  simple: keys(Evidence)
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '- '
+              suffix: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: |2+
+
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1590,
+          "y": 3350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 9166ca38-bb41-4b06-add6-85cedee0294e
+    type: regular
+    task:
+      id: 9166ca38-bb41-4b06-add6-85cedee0294e
+      version: -1
+      name: Get file reputation for source and destination files
+      description: 'This script gathers for reputation data from multiple integrations and returns a "FileEnrichment" object with consolidated information in the context output. Note: The script runs core-get-hash-analytics-prevalence on SHA256 values only.'
+      scriptName: file-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      external_enrichment:
+        simple: "true"
+      file_hash:
+        complex:
+          root: File
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: script_output.txt
+              ignorecase: true
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: stdout.txt
+              ignorecase: true
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: manifest.json
+              ignorecase: true
+          - - operator: notEndWith
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: .zip
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 2590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: e7e4a67c-38e5-432c-8564-646342c62dcd
+    type: title
+    task:
+      id: e7e4a67c-38e5-432c-8564-646342c62dcd
+      version: -1
+      name: No Files Retrieved
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1790,
+          "y": 1174.75
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: fe64c6f2-88af-4f21-8fea-a6e7ab7ecd1d
+    type: title
+    task:
+      id: fe64c6f2-88af-4f21-8fea-a6e7ab7ecd1d
+      version: -1
+      name: Evidence Set Successfuly
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 759.75
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 17975fe4-5590-43db-88ea-32bdacd87328
+    type: title
+    task:
+      id: 17975fe4-5590-43db-88ea-32bdacd87328
+      version: -1
+      name: Quarantine suspicious files
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "99"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 4157.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: b5facc73-8f62-4d1f-88b5-17c684965c08
+    type: title
+    task:
+      id: b5facc73-8f62-4d1f-88b5-17c684965c08
+      version: -1
+      name: Isolate the endpoint if active compromise is detected
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "63"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 3807.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 6b14e652-c3c5-49c8-8ced-eabbd7329460
+    type: title
+    task:
+      id: 6b14e652-c3c5-49c8-8ced-eabbd7329460
+      version: -1
+      name: Close as false positive if legitimate certificate operations are confirmed
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "70"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2660,
+          "y": 3670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: b945b730-8a14-4270-829f-905330d406bf
+    type: title
+    task:
+      id: b945b730-8a14-4270-829f-905330d406bf
+      version: -1
+      name: Inconclusive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "105"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2170,
+          "y": 3670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 3913350c-dac6-4af0-846e-cd4c19cd5b6c
+    type: condition
+    task:
+      id: 3913350c-dac6-4af0-846e-cd4c19cd5b6c
+      version: -1
+      name: Check File-Enrichment Results
+      description: Checks the file enrichment results.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "44"
+      "yes":
+      - "61"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: FileEnrichment.TIMScore
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.Hashes.SHA256
+            iscontext: true
+          right:
+            value:
+              simple: ExtractedFileSHA256
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 2740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 7772e6bc-162f-477e-817d-6020569a2d10
+    type: regular
+    task:
+      id: 7772e6bc-162f-477e-817d-6020569a2d10
+      version: -1
+      name: Set MaliciousFileReputation Evidence
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      key:
+        simple: 'Evidence.MaliciousFileReputation'
+      value:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 2910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 040c228e-8957-4762-843b-960cb5dae03e
+    type: regular
+    task:
+      id: 040c228e-8957-4762-843b-960cb5dae03e
+      version: -1
+      name: Isolate endpoint
+      description: Isolates the specified endpoint.
+      script: '|||core-isolate-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      endpoint_id:
+        simple: ${alert.agentid}
+      incident_id:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 4290.67138671875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 5089841c-0859-40cd-8512-6bb89ed130e0
+    type: collection
+    task:
+      id: 5089841c-0859-40cd-8512-6bb89ed130e0
+      version: -1
+      name: Approve the endpoint isolation
+      description: "Endpoint Isolation is recommended since the following verdicts have been confirmed:\n\n - MSBuild.exe executed code classified as High Risk "
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 3970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Should Isolate the endpoint?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "No"
+        - simple: "Yes"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Remediation Approval
+      description: |-
+        Endpoint Isolation is recommended since one of the following verdicts have been confirmed:
+
+        ${Evidence.HumanReadable}
+
+        Endpoint hostname: ${alert.hostname}
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 73339e52-7862-4cb7-81f7-6c7bd1752b08
+    type: condition
+    task:
+      id: 73339e52-7862-4cb7-81f7-6c7bd1752b08
+      version: -1
+      name: Check analyst answers
+      description: Check the analyst's answers to the early containment approval form and execute the appropriate actions based on the responses.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "67"
+      Isolate Endpoint:
+      - "62"
+    separatecontext: false
+    conditions:
+    - label: Isolate Endpoint
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: RemediationApproval.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 4126.504638671875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: c515d1f5-b6b1-4cbf-8444-d94729cb6d83
+    type: regular
+    task:
+      id: c515d1f5-b6b1-4cbf-8444-d94729cb6d83
+      version: -1
+      name: Quarantine Malicious Code File
+      description: This script executes the 'quarantine-file' command on a specified file via the appropriate agent. This script is used to isolate files identified as suspicious.
+      scriptName: quarantine-file
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "102"
+    scriptarguments:
+      endpoint_id:
+        simple: ${alert.agentid}
+      file_hash:
+        complex:
+          root: File
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: SRCFileName
+                iscontext: true
+              ignorecase: true
+            - operator: containsGeneral
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: DSTFileName
+                iscontext: true
+              ignorecase: true
+          accessor: SHA256
+      file_path:
+        complex:
+          root: SuspiciousFilePath
+          accessor: Input
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: SuspiciousFilePath.Output
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 4435.67138671875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 499a64a7-ef20-4fa8-86ba-37bb526f0d0a
+    type: regular
+    task:
+      id: 499a64a7-ef20-4fa8-86ba-37bb526f0d0a
+      version: -1
+      name: Add hash to Block list
+      description: Block lists requested files which have not already been block listed or added to allow lists.
+      script: '|||core-blocklist-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      comment:
+        simple: 'The hash was added to the block list by the playbook "Encoded information using windows certificate management tool" as part of handling alert ID: ${alert.id}'
+      hash_list:
+        complex:
+          root: File
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: SRCFileName
+                iscontext: true
+              ignorecase: true
+            - operator: containsGeneral
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: DSTFileName
+                iscontext: true
+              ignorecase: true
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+      incident_id:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 4435.67138671875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: f46b22ca-4f91-4646-8e7f-4fa3ab6f9ffd
+    type: title
+    task:
+      id: f46b22ca-4f91-4646-8e7f-4fa3ab6f9ffd
+      version: -1
+      name: Close Alert
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "68"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 4972.430908203125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 95184844-78ad-44b8-8b68-11df96e5a1fa
+    type: regular
+    task:
+      id: 95184844-78ad-44b8-8b68-11df96e5a1fa
+      version: -1
+      name: Close Alert - True Positive
+      description: Close the current alert.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      closeNotes:
+        simple: Malicious Encode/Decode was detected - Handled by the playbook "Encoded information using windows certificate management tool"
+      closeReason:
+        simple: Resolved - True Positive
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 5118.055908203125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: fefa8276-1cd8-45dd-8215-16e8d6e13433
+    type: title
+    task:
+      id: fefa8276-1cd8-45dd-8215-16e8d6e13433
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 5282.430908203125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 3aa1fe61-78be-4c1c-8273-da89ab6bbdd0
+    type: regular
+    task:
+      id: 3aa1fe61-78be-4c1c-8273-da89ab6bbdd0
+      version: -1
+      name: Close Alert as False Positive
+      description: Close the investigation as a false positive.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      closeNotes:
+        simple: No evidence of malicious or suspicious activity detected - Resolved as "False Positive". Handled by the playbook "Encoded information using windows certificate management tool"
+      closeReason:
+        simple: Resolved - False Positive
+      id:
+        simple: ${issue.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2660,
+          "y": 4217.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: 9aa30e95-5e13-4486-811a-fe77b2aed95e
+    type: condition
+    task:
+      id: 9aa30e95-5e13-4486-811a-fe77b2aed95e
+      version: -1
+      name: Check Post Execution Results
+      description: Checks the post-execution results.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "44"
+      "yes":
+      - "72"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXQL.GenericQuery
+                filters:
+                - - operator: greaterThan
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXQL.GenericQuery.number_of_results
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "0"
+                accessor: query_name
+            iscontext: true
+          right:
+            value:
+              simple: Check output files create time
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2040,
+          "y": 2590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: 97012c0e-616c-4771-89bf-ce9d23b1f6eb
+    type: regular
+    task:
+      id: 97012c0e-616c-4771-89bf-ce9d23b1f6eb
+      version: -1
+      name: Set Post Decode Executions Evidence
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      key:
+        simple: Evidence.PostDecodeExecutions
+      value:
+        simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2040,
+          "y": 2740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: 6a36a8d0-f77e-40e0-83e4-38638971287b
+    type: regular
+    task:
+      id: 6a36a8d0-f77e-40e0-83e4-38638971287b
+      version: -1
+      name: Get User Risk Score
+      description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
+      script: '|||core-list-risky-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "75"
+    scriptarguments:
+      user_id:
+        simple: ${issue.username}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1060,
+          "y": 229.375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 472ceb24-ff08-4fe9-822d-2075b9f061b0
+    type: condition
+    task:
+      id: 472ceb24-ff08-4fe9-822d-2075b9f061b0
+      version: -1
+      name: Check User Risk Score
+      description: Checks the user risk score.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "76"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.RiskyUser.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: HIGH
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1060,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 41ddd1ff-19eb-43f1-8569-9b1cd1a94b07
+    type: regular
+    task:
+      id: 41ddd1ff-19eb-43f1-8569-9b1cd1a94b07
+      version: -1
+      name: Set User Risk Score Evidence
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      key:
+        simple: Evidence.RiskyUser
+      value:
+        simple: "0.5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1060,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: bebc0c3d-2365-4b59-8df6-d9d4e9f313a7
+    type: regular
+    task:
+      id: bebc0c3d-2365-4b59-8df6-d9d4e9f313a7
+      version: -1
+      name: Set Recently Created Evidence
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    scriptarguments:
+      key:
+        simple: Evidence.RecentlyCreated
+      value:
+        simple: "0.5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2590,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 8ad3dfd8-abb8-48c1-a8b2-73d5e6ddd7c1
+    type: regular
+    task:
+      id: 8ad3dfd8-abb8-48c1-a8b2-73d5e6ddd7c1
+      version: -1
+      name: Upload Files to Sandbox
+      description: 'This script gathers for reputation data from multiple integrations and returns a "FileEnrichment" object with consolidated information in the context output. Note: The script runs core-get-hash-analytics-prevalence on SHA256 values only.'
+      scriptName: file-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "107"
+    scriptarguments:
+      external_enrichment:
+        simple: "true"
+      file_hash:
+        complex:
+          root: File
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: SRCFileName
+                iscontext: true
+              ignorecase: true
+            - operator: containsGeneral
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: DSTFileName
+                iscontext: true
+              ignorecase: true
+          accessor: SHA256
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2780,
+          "y": 1325.625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: 7b79ad2a-6a5b-481b-8d90-5bd383dafd59
+    type: regular
+    task:
+      id: 7b79ad2a-6a5b-481b-8d90-5bd383dafd59
+      version: -1
+      name: Set Malicious File Evidence
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: Evidence.MaliciousFile
+      value:
+        simple: "2.5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2780,
+          "y": 1910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: 37b6b237-a058-4195-8d44-23aa287b13e8
+    type: condition
+    task:
+      id: 37b6b237-a058-4195-8d44-23aa287b13e8
+      version: -1
+      name: Check if File Found Malicious by Sandbox
+      description: Checks if the file was found to be malicious by the sandbox.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "79"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2780,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 31e153d6-1748-4c57-8719-afe28d49fc10
+    type: condition
+    task:
+      id: 31e153d6-1748-4c57-8719-afe28d49fc10
+      version: -1
+      name: Check Prevalence Score
+      description: Checks the prevalence score.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "44"
+      "yes":
+      - "82"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              simple: Core.AnalyticsPrevalence.Hash.data.local_prevalence.value
+            iscontext: true
+          right:
+            value:
+              simple: "0.01"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3130,
+          "y": 2610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: c39fe77a-6311-4da5-8721-b785800c5126
+    type: regular
+    task:
+      id: c39fe77a-6311-4da5-8721-b785800c5126
+      version: -1
+      name: Set Source File Prevalence Evidence
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      key:
+        simple: Evidence.SourceFilePrevalence
+      value:
+        simple: "0.5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3130,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: 2451705f-7619-4e01-8de2-bcda580d1e7c
+    type: regular
+    task:
+      id: 2451705f-7619-4e01-8de2-bcda580d1e7c
+      version: -1
+      name: Terminate Causality Process
+      description: Terminates a process tree by its causality ID. Available only from Cortex XSIAM 2.4.
+      script: '|||core-terminate-causality'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      agent_id:
+        simple: ${alert.agentid}
+      causality_id:
+        simple: ${alert.cid}
+      timeout_in_seconds:
+        simple: "180"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 3980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: 5ae4652f-0497-4b76-afcc-4d6857aafcb0
+    type: condition
+    task:
+      id: 5ae4652f-0497-4b76-afcc-4d6857aafcb0
+      version: -1
+      name: Verify Process is not Windows Process Before Terminate
+      description: Verifies that the process is not a Windows process before termination.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "55"
+      "yes":
+      - "84"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: issue.cgosignature
+            iscontext: true
+          right:
+            value:
+              simple: SIGNATURE_SIGNED
+          ignorecase: true
+        - operator: notStartWith
+          left:
+            value:
+              simple: issue.cgopath
+            iscontext: true
+          right:
+            value:
+              simple: c:\\windows
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 3807.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: 7b3a56d9-bf7f-4c82-a906-cf8e61b698dc
+    type: regular
+    task:
+      id: 7b3a56d9-bf7f-4c82-a906-cf8e61b698dc
+      version: -1
+      name: Get action_process_cwd Field
+      description: Returns information about each alert ID.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "96"
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": -395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: 04d2f909-50c9-4119-a9e1-f1935ceaf272
+    type: condition
+    task:
+      id: 04d2f909-50c9-4119-a9e1-f1935ceaf272
+      version: -1
+      name: Verify Evidence Exist
+      description: Verifies if evidence exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "58"
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Evidence
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1590,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: 024476a7-030b-4f41-9d96-6caab1772a3b
+    type: regular
+    task:
+      id: 024476a7-030b-4f41-9d96-6caab1772a3b
+      version: -1
+      name: Detect Content Appended to Certs
+      description: Extracts regex data from the provided text. The script support groups and looping.
+      scriptName: MatchRegexV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "94"
+    scriptarguments:
+      contextKey:
+        simple: CertAppendedContent
+      data:
+        simple: ${SuspiciousFilePath.Output}
+      regex:
+        simple: (?<=-----END CERTIFICATE-----)[\s\S]+
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3670,
+          "y": 2454.75
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: 81e075d5-d4ec-4da0-b8f4-b40b608f694e
+    type: condition
+    task:
+      id: 81e075d5-d4ec-4da0-b8f4-b40b608f694e
+      version: -1
+      name: Check if Certificate has Appended Content
+      description: Checks if the certificate has appended content.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "44"
+      "yes":
+      - "95"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CertAppendedContent
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3670,
+          "y": 2610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: 4ab1a15b-0c26-4996-b0fc-59ecd81f0bc4
+    type: regular
+    task:
+      id: 4ab1a15b-0c26-4996-b0fc-59ecd81f0bc4
+      version: -1
+      name: Set Cert Appended Content Evidence
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      key:
+        simple: Evidence.CertAppendedContent
+      value:
+        simple: "1.0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3670,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: 6d7d3487-a5aa-46e8-9208-20f2615702b7
+    type: regular
+    task:
+      id: 6d7d3487-a5aa-46e8-9208-20f2615702b7
+      version: -1
+      name: Extract SRC and DST file paths from commandline
+      description: |-
+        Extraction of elements which are contained in all the subgroups of the match to the pattern.
+        For example, extracting from the string "The quick brown fox" the object `{"article":"The","noun":quick"}`
+        (See arguments descriptions for more details).
+      scriptName: RegexGroups
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "97"
+      - "98"
+    scriptarguments:
+      extend-context:
+        simple: SuspiciousFilePath=.
+      groups:
+        simple: 2,3
+      keys:
+        simple: Input,Output
+      regex:
+        simple: (?:encode|decode)\s+(?:-f)?\s*((\".*?\")|(\S+))\s+((\".*?\")|(\S+))
+      value:
+        simple: ${alert.targetprocesscmd}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": -240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "97":
+    id: "97"
+    taskid: 3e01f34f-f15d-4ddb-8855-7239560809a7
+    type: regular
+    task:
+      id: 3e01f34f-f15d-4ddb-8855-7239560809a7
+      version: -1
+      name: Extract SRC file name
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: SRCFileName
+      value:
+        complex:
+          root: SuspiciousFilePath
+          accessor: Input
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: \
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "98":
+    id: "98"
+    taskid: 97238194-968e-44aa-bf3e-5c0273e028a5
+    type: regular
+    task:
+      id: 97238194-968e-44aa-bf3e-5c0273e028a5
+      version: -1
+      name: Extract  DST file name
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: DSTFileName
+      value:
+        complex:
+          root: SuspiciousFilePath
+          accessor: Output
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: \
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1280,
+          "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "99":
+    id: "99"
+    taskid: 7a04dae6-6d73-42d1-bfd1-a78951b612af
+    type: condition
+    task:
+      id: 7a04dae6-6d73-42d1-bfd1-a78951b612af
+      version: -1
+      name: Verify File SHA256 is Not Empty
+      description: Block lists requested files which have not already been block listed or added to allow lists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "67"
+      "yes":
+      - "66"
+      - "65"
+    scriptarguments:
+      comment:
+        simple: 'The hash was added to the block list by the playbook ''''Encoded information using windows certificate management tool'''' as part of handling alert ID: ${alert.id}'
+      hash_list:
+        complex:
+          root: File
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: SRCFileName
+                iscontext: true
+              ignorecase: true
+            - operator: containsGeneral
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: DSTFileName
+                iscontext: true
+              ignorecase: true
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+      incident_id:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: File.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: |
+                          SRCFileName
+                    ignorecase: true
+                  - operator: containsGeneral
+                    left:
+                      value:
+                        simple: File.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: DSTFileName
+                    ignorecase: true
+                accessor: SHA256
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 4290.67138671875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: 469dd6c8-f445-4cb6-8d26-136674c43a29
+    type: condition
+    task:
+      id: 469dd6c8-f445-4cb6-8d26-136674c43a29
+      version: -1
+      name: Check Recently Created Evidence
+      description: Check if any results found for query of recently created files.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "44"
+      "yes":
+      - "77"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXQL.GenericQuery
+                filters:
+                - - operator: greaterThan
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXQL.GenericQuery.number_of_results
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "0"
+                accessor: query_name
+            iscontext: true
+          right:
+            value:
+              simple: Get Post-Decode Process Executions
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2590,
+          "y": 2590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "101":
+    id: "101"
+    taskid: bdd59137-175f-4322-91f1-e1165ca3aadf
+    type: regular
+    task:
+      id: bdd59137-175f-4322-91f1-e1165ca3aadf
+      version: -1
+      name: Set Extracted File SHA256
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      key:
+        simple: ExtractedFileSHA256
+      value:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: manifest.json
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: stdout.txt
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: script_output.txt
+              ignorecase: true
+          - - operator: endWith
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: .zip
+              ignorecase: true
+          accessor: SHA256
+          transformers:
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 2454.75
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "102":
+    id: "102"
+    taskid: db0e960c-8b09-4c06-a27d-1d3930e3a7f2
+    type: condition
+    task:
+      id: db0e960c-8b09-4c06-a27d-1d3930e3a7f2
+      version: -1
+      name: Check if Quarantine Succeeded
+      description: Check if Quarantine Succeeded.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "104"
+      "yes":
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: QuarantineFile.Status
+            iscontext: true
+          right:
+            value:
+              simple: Success
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 4620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "104":
+    id: "104"
+    taskid: b60b866e-358b-4941-b7db-6afe16f09034
+    type: regular
+    task:
+      id: b60b866e-358b-4941-b7db-6afe16f09034
+      version: -1
+      name: Manual Quarantine Malicious file
+      description: |-
+        Dear Analyst,
+
+        Please note that during the remediation process, the playbook did not quarantine the following files: ${SuspiciousFilePath}
+         on the following Host ID: ${issue.agentid}
+
+        This is due to one of the following reasons:
+        - The file was written to a remote host share.
+        - The file was not found in the specified path.
+        - The endpoint is offline or unreachable.
+
+        Please take manual action to contain the attack and prevent potential data exfiltration or credential theft before closing this alert.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "67"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 4815.625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "105":
+    id: "105"
+    taskid: 261086fd-c7b5-438b-ad03-e834a1268c15
+    type: collection
+    task:
+      id: 261086fd-c7b5-438b-ad03-e834a1268c15
+      version: -1
+      name: Analyst Decision
+      description: Manual task for analyst to classify alert as TP or FP.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "106"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2170,
+          "y": 3845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: |
+            During the investigation phase, the playbook identified the following suspicious evidence. Although the combined evidence does not conclusively confirm a true positive, it still warrants suspicion. Please review the evidence below and select the appropriate action.
+
+            ### Evidence found:
+            ${EvidenceHumanReadable}
+
+            File Content:
+            ${SuspiciousFileContent}
+
+            ### Decision Required:
+            Please choose the action you want to perform:
+
+            - **False Positive** - Close the alert as a false positive.
+            - **True Positive** - Handle the alert as a true positive by:
+                   1. Terminating the CGO process
+                   2. Block the related files if it is detected
+                   2. Quarantine the related files if it is detected
+                    3. Isolate the host
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: False Positive
+        - simple: True Positive
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Analyst Decision
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "106":
+    id: "106"
+    taskid: e65f088f-c0b3-48d4-8a30-cbd15dcb1c1f
+    type: condition
+    task:
+      id: e65f088f-c0b3-48d4-8a30-cbd15dcb1c1f
+      version: -1
+      name: Checks Analyst Decision
+      description: Checks the analyst’s decision.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      False Positive:
+      - "70"
+      True Positive:
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: True Positive
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Analyst_Decision.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: True Positive
+          ignorecase: true
+    - label: False Positive
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Analyst_Decision.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: False Positive
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2170,
+          "y": 3995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "107":
+    id: "107"
+    taskid: 1d24339e-4baf-4967-8eaa-44ffac20751d
+    type: regular
+    task:
+      id: 1d24339e-4baf-4967-8eaa-44ffac20751d
+      version: -1
+      name: Upload Files to Sandbox
+      description: Uploads a file to WildFire for analysis.
+      script: '|||wildfire-upload'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "80"
+    scriptarguments:
+      polling:
+        simple: "true"
+      upload:
+        complex:
+          root: File
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: SRCFileName
+                iscontext: true
+              ignorecase: true
+            - operator: containsGeneral
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: DSTFileName
+              ignorecase: true
+          accessor: EntryID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2780,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "34_33_yes": 0.31,
+      "60_61_yes": 0.45,
+      "64_62_Isolate Endpoint": 0.9,
+      "92_48_yes": 0.32
+    },
+    "paper": {
+      "dimensions": {
+        "height": 5999.930908203125,
+        "width": 5110,
+        "x": -1060,
+        "y": -657.5
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.9.0

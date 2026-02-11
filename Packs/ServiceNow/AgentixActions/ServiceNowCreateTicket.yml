@@ -1,0 +1,417 @@
+commonfields:
+  id: ServiceNowCreateTicket
+  version: -1
+display: ServiceNow - Create Ticket
+tags:
+  - ticketing
+  - servicenow
+  - create
+category: Case Management
+description: Creates a new ServiceNow ticket with detailed optional inputs for categorization, workflow, assignment, and more.
+args:
+  - name: short_description
+    description: A brief summary of the issue or request.
+    type: string
+    underlyingargname: short_description
+  - name: ticket_type
+    defaultvalue: incident
+    description: >
+      Type of ServiceNow ticket to create. Defaults to "incident".
+      Valid values are:
+        - incident
+        - problem
+        - change_request
+        - sc_request
+        - sc_task
+        - sc_req_item
+        - sn_si_incident
+        - std_change_template
+    type: string
+    underlyingargname: ticket_type
+  - name: urgency
+    description: >
+      Urgency level of the ticket. Can be selected or entered manually.
+      Valid values are:
+        - 3 - Low
+        - 2 - Medium
+        - 1 - High
+    type: number
+    underlyingargname: urgency
+  - name: severity
+    description: >
+      Severity level of the issue. Can be selected or entered manually.
+      Valid values are:
+        - 3 - Low
+        - 2 - Medium
+        - 1 - High
+    type: number
+    underlyingargname: severity
+  - name: impact
+    description: >
+      Business impact of the issue.
+      Valid values are:
+        - 3 - Low
+        - 2 - Medium
+        - 1 - High
+    type: number
+    underlyingargname: impact
+  - name: active
+    description: >
+      Set the ticket as active. Can be "true" or "false".
+      Valid values are:
+        - 'true'
+        - 'false'
+    type: boolean
+    underlyingargname: active
+  - name: activity_due
+    description: Date/time when ticket activity is due. Format, YYYY-MM-DD HH:MM:SS.
+    type: string
+    underlyingargname: activity_due
+  - name: additional_assignee_list
+    description: List of additional users assigned to the ticket.
+    type: string
+    underlyingargname: additional_assignee_list
+  - name: approval_history
+    description: History of approvals for this ticket.
+    type: string
+    underlyingargname: approval_history
+  - name: approval_set
+    description: Date/time when approval was set. Format, YYYY-MM-DD HH:MM:SS.
+    type: string
+    underlyingargname: approval_set
+  - name: assigned_to
+    description: The user assigned to work on the ticket.
+    type: string
+    underlyingargname: assigned_to
+  - name: business_duration
+    description: Duration spent on the ticket during business hours. Format, YYYY-MM-DD HH:MM:SS.
+    type: string
+    underlyingargname: business_duration
+  - name: business_service
+    description: The business service related to the ticket.
+    type: string
+    underlyingargname: business_service
+  - name: business_stc
+    description: Business source for the ticket.
+    type: string
+    underlyingargname: business_stc
+  - name: calendar_duration
+    description: Total duration (including non-business hours). Format, YYYY-MM-DD HH:MM:SS.
+    type: string
+    underlyingargname: calendar_duration
+  - name: caller_id
+    description: ID of the caller reporting the issue.
+    type: string
+    underlyingargname: caller_id
+  - name: category
+    description: The category assigned to the ticket.
+    type: string
+    underlyingargname: category
+  - name: caused_by
+    description: Identifier for the cause of the issue.
+    type: string
+    underlyingargname: caused_by
+  - name: close_code
+    description: >
+      Reason for closing the ticket.
+      Valid values are:
+        - Solved (Work Around)
+        - Solved (Permanently)
+        - Solved Remotely (Work Around)
+        - Solved Remotely (Permanently)
+        - Not Solved (Not Reproducible)
+        - Not Solved (Too Costly)
+        - Closed/Resolved by Caller
+    type: string
+    underlyingargname: close_code
+  - name: close_notes
+    description: Additional notes when closing the ticket.
+    type: string
+    underlyingargname: close_notes
+  - name: closed_at
+    description: Date/time the ticket was closed. Format, YYYY-MM-DD HH:MM:SS.
+    type: string
+    underlyingargname: closed_at
+  - name: closed_by
+    description: User who closed the ticket.
+    type: string
+    underlyingargname: closed_by
+  - name: cmdb_ci
+    description: Configuration item associated with the ticket.
+    type: string
+    underlyingargname: cmdb_ci
+  - name: comments
+    description: General comments about the ticket.
+    type: string
+    underlyingargname: comments
+  - name: comments_and_work_notes
+    description: Combined field for both comments and work notes.
+    type: string
+    underlyingargname: comments_and_work_notes
+  - name: company
+    description: The company associated with the ticket.
+    type: string
+    underlyingargname: company
+  - name: contact_type
+    description: Type of contact who raised the ticket.
+    type: string
+    underlyingargname: contact_type
+  - name: correlation_display
+    description: Correlation display name.
+    type: string
+    underlyingargname: correlation_display
+  - name: correlation_id
+    description: Correlation ID for matching external systems.
+    type: string
+    underlyingargname: correlation_id
+  - name: delivery_plan
+    description: ID of the associated delivery plan.
+    type: string
+    underlyingargname: delivery_plan
+  - name: description
+    description: Full description of the issue or request.
+    type: string
+    underlyingargname: description
+  - name: due_date
+    description: When the ticket is due. Format, YYYY-MM-DD HH:MM:SS.
+    type: string
+    underlyingargname: due_date
+  - name: expected_start
+    description: Expected start time of the ticket's work. Format, YYYY-MM-DD HH:MM:SS.
+    type: string
+    underlyingargname: expected_start
+  - name: follow_up
+    description: Follow-up date/time. Format, YYYY-MM-DD HH:MM:SS.
+    type: string
+    underlyingargname: follow_up
+  - name: group_list
+    description: List of group IDs associated with the ticket.
+    type: string
+    underlyingargname: group_list
+  - name: knowledge
+    description: >
+      Whether the solution is available in the knowledge base.
+      Valid values are: true or false.
+    type: boolean
+    underlyingargname: knowledge
+  - name: location
+    description: Location related to the ticket.
+    type: string
+    underlyingargname: location
+  - name: made_sla
+    description: Whether the ticket met its SLA.
+    type: string
+    underlyingargname: made_sla
+  - name: notify
+    description: >
+      Whether to notify stakeholders. "1" = Yes, "0" = No.
+      Valid values are: 0 or 1.
+    type: number
+    underlyingargname: notify
+  - name: order
+    description: Related order number.
+    type: number
+    underlyingargname: order
+  - name: parent
+    description: Parent ticket ID.
+    type: string
+    underlyingargname: parent
+  - name: parent_incident
+    description: Parent incident ID.
+    type: string
+    underlyingargname: parent_incident
+  - name: problem_id
+    description: Problem ID associated with the ticket.
+    type: string
+    underlyingargname: problem_id
+  - name: reassignment_count
+    description: How many users were reassigned this ticket.
+    type: number
+    underlyingargname: reassignment_count
+  - name: reopen_count
+    description: Number of times the ticket was reopened.
+    type: number
+    underlyingargname: reopen_count
+  - name: resolved_at
+    description: Date/time the ticket was resolved. Format, YYYY-MM-DD HH:MM:SS.
+    type: string
+    underlyingargname: resolved_at
+  - name: resolved_by
+    description: ID of the user who resolved the ticket.
+    type: string
+    underlyingargname: resolved_by
+  - name: rfc
+    description: Request for change ID.
+    type: string
+    underlyingargname: rfc
+  - name: sla_due
+    description: SLA due time. Format, YYYY-MM-DD HH:MM:SS.
+    type: string
+    underlyingargname: sla_due
+  - name: subcategory
+    description: Subcategory of the ticket.
+    type: string
+    underlyingargname: subcategory
+  - name: sys_updated_by
+    description: User who last updated the ticket.
+    type: string
+    underlyingargname: sys_updated_by
+  - name: sys_updated_on
+    description: Last update time. Format, YYYY-MM-DD HH:MM:SS.
+    type: string
+    underlyingargname: sys_updated_on
+  - name: user_input
+    description: Input provided by the end user.
+    type: string
+    underlyingargname: user_input
+  - name: watch_list
+    description: List of users watching the ticket.
+    type: string
+    underlyingargname: watch_list
+  - name: work_end
+    description: Time work was completed. Format, YYYY-MM-DD HH:MM:SS.
+    type: string
+    underlyingargname: work_end
+  - name: work_notes
+    description: Work-related notes.
+    type: string
+    underlyingargname: work_notes
+  - name: work_notes_list
+    description: List of work note IDs.
+    type: string
+    underlyingargname: work_notes_list
+  - name: work_start
+    description: Time when work began.
+    type: string
+    underlyingargname: work_start
+  - name: assignment_group
+    description: ID of the group to assign the ticket to.
+    type: string
+    underlyingargname: assignment_group
+  - name: incident_state
+    description: State value of the incident.
+    type: string
+    underlyingargname: incident_state
+  - name: number
+    description: Specific ticket number (if known).
+    type: number
+    underlyingargname: number
+  - name: priority
+    description: >
+      Priority level of the ticket.
+      Valid values are:
+        - 5 - Planning
+        - 4 - Low
+        - 3 - Moderate
+        - 2 - High
+        - 1 - Critical
+    type: number
+    underlyingargname: priority
+  - name: template
+    description: Template name to use for ticket creation.
+    type: string
+    underlyingargname: template
+  - name: custom_fields
+    description: Custom fields in format, fieldname1=value;fieldname2=value. Custom fields must start with "u_".
+    type: string
+    underlyingargname: custom_fields
+  - name: change_type
+    defaultvalue: normal
+    description: >
+      Type of change request. Default is "normal".
+      Valid values are:
+        - normal
+        - standard
+        - emergency
+    type: string
+    underlyingargname: change_type
+  - name: state
+    description: Ticket state. Can be a number or string (e.g., "7 - Closed").
+    type: string
+    underlyingargname: state
+  - name: opened_at
+    description: Ticket creation time. Format, YYYY-MM-DD HH:MM:SS.
+    type: string
+    underlyingargname: opened_at
+  - name: caller
+    description: Caller system ID.
+    type: string
+    underlyingargname: caller
+  - name: approval
+    description: Approval status of the ticket.
+    type: string
+    underlyingargname: approval
+  - name: additional_fields
+    description: Additional fields in format, fieldname1=value;fieldname2=value.
+    type: string
+    underlyingargname: additional_fields
+  - name: input_display_value
+    defaultvalue: 'false'
+    description: >
+      Use display values instead of actual values. Default is "false".
+      Valid values are:
+        - 'false'
+        - 'true'
+    type: boolean
+    underlyingargname: input_display_value
+  - name: fields_delimiter
+    defaultvalue: ;
+    description: Delimiter used to separate fields in list arguments. Default is ";".
+    type: string
+    underlyingargname: fields_delimiter
+  - name: business_criticality
+    description: >
+      Business criticality level.
+      Valid values are:
+        - 3 - Non-Critical
+        - 2 - High
+        - 1 - Critical
+    type: number
+    underlyingargname: business_criticality
+  - name: risk_score
+    description: Risk score assigned to the incident.
+    type: number
+    underlyingargname: risk_score
+name: ServiceNowCreateTicket
+outputs:
+  - underlyingoutputcontextpath: ServiceNow.Ticket.ID
+    description: Unique system ID of the newly created ServiceNow ticket.
+    type: string
+    name: ServiceNow.Ticket.ID
+  - underlyingoutputcontextpath: ServiceNow.Ticket.Assignee
+    description: System ID of the user assigned to the ticket.
+    type: string
+    name: ServiceNow.Ticket.Assignee
+  - underlyingoutputcontextpath: ServiceNow.Ticket.State
+    description: Current state of the ticket (e.g., New, In Progress, Resolved).
+    type: string
+    name: ServiceNow.Ticket.State
+  - underlyingoutputcontextpath: ServiceNow.Ticket.Summary
+    description: Short description or summary of the ticket.
+    type: string
+    name: ServiceNow.Ticket.Summary
+  - underlyingoutputcontextpath: ServiceNow.Ticket.Number
+    description: Human-readable ticket number (e.g., INC0010001).
+    type: string
+    name: ServiceNow.Ticket.Number
+  - underlyingoutputcontextpath: ServiceNow.Ticket.Active
+    description: Indicates whether the ticket is active. True if active, false otherwise.
+    type: boolean
+    name: ServiceNow.Ticket.Active
+  - underlyingoutputcontextpath: ServiceNow.Ticket.AdditionalComments
+    description: Additional comments or notes added to the ticket.
+    type: string
+    name: ServiceNow.Ticket.AdditionalComments
+  - underlyingoutputcontextpath: ServiceNow.Ticket.Priority
+    description: Priority level of the ticket (e.g., 1 - Critical, 3 - Moderate).
+    type: string
+    name: ServiceNow.Ticket.Priority
+underlyingcontentitem:
+  id: ServiceNow v2
+  name: ServiceNow v2
+  type: command
+  version: -1
+  command: 'servicenow-create-ticket'
+requiresuserapproval: false
+marketplaces:
+- platform

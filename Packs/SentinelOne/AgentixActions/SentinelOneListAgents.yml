@@ -1,0 +1,119 @@
+commonfields:
+  id: SentinelOneListAgents
+  version: -1
+name: SentinelOneListAgents
+display: SentinelOne - List Agents
+tags:
+ - Endpoint
+category: Endpoint
+description: >
+  Returns a list of agents according to the specified filters.
+args:
+  - description: The hostname by which to filter the results.
+    name: hostname
+    type: string
+    underlyingargname: hostname
+  - description: >
+      A comma-separated list of scan statuses by which to filter the results. Options: started, none, finished, aborted.
+    name: scan_status
+    type: string
+    underlyingargname: scan_status
+  - description: >
+      Included operating system types. Options: windows, windows_legacy, macos, linux.
+    name: os_type
+    type: string
+    underlyingargname: os_type
+  - description: >
+      Endpoint creation timestamp, for example: "2018-02-27T04:49:26.257525Z".
+    name: created_at
+    type: string
+    underlyingargname: created_at
+  - description: Minimum number of threats per agent.
+    name: min_active_threats
+    type: number
+    underlyingargname: min_active_threats
+  - description: The maximum number of agents to return.
+    name: limit
+    type: number
+    underlyingargname: limit
+  - description: The external IP of the agent.
+    name: agent_ip
+    type: string
+    underlyingargname: agent_ip
+outputs:
+  - underlyingoutputcontextpath: SentinelOne.Agents.networkStatus
+    description: The agent network status.
+    type: string
+    name: SentinelOne.Agents.networkStatus
+  - underlyingoutputcontextpath: SentinelOne.Agents.id
+    description: The agent ID.
+    type: string
+    name: SentinelOne.Agents.id
+  - underlyingoutputcontextpath: SentinelOne.Agents.agentVersion
+    description: The agent software version.
+    type: string
+    name: SentinelOne.Agents.agentVersion
+  - underlyingoutputcontextpath: SentinelOne.Agents.isDecommissioned
+    description: Whether the agent is decommissioned.
+    type: boolean
+    name: SentinelOne.Agents.isDecommissioned
+  - underlyingoutputcontextpath: SentinelOne.Agents.isActive
+    description: Whether the agent is active.
+    type: boolean
+    name: SentinelOne.Agents.isActive
+  - underlyingoutputcontextpath: SentinelOne.Agents.lastActiveDate
+    description: When was the agent last active.
+    type: date
+    name: SentinelOne.Agents.lastActiveDate
+  - underlyingoutputcontextpath: SentinelOne.Agents.registeredAt
+    description: The registration date of the agent.
+    type: date
+    name: SentinelOne.Agents.registeredAt
+  - underlyingoutputcontextpath: SentinelOne.Agents.externalIp
+    description: The agent IP address.
+    type: string
+    name: SentinelOne.Agents.externalIp
+  - underlyingoutputcontextpath: SentinelOne.Agents.threatCount
+    description: Number of active threats.
+    type: number
+    name: SentinelOne.Agents.threatCount
+  - underlyingoutputcontextpath: SentinelOne.Agents.encryptedApplications
+    description: Whether disk encryption is enabled.
+    type: boolean
+    name: SentinelOne.Agents.encryptedApplications
+  - underlyingoutputcontextpath: SentinelOne.Agents.osName
+    description: Name of operating system.
+    type: string
+    name: SentinelOne.Agents.osName
+  - underlyingoutputcontextpath: SentinelOne.Agents.computerName
+    description: Name of agent computer.
+    type: string
+    name: SentinelOne.Agents.computerName
+  - underlyingoutputcontextpath: SentinelOne.Agents.machineType
+    description: Machine type.
+    type: string
+    name: SentinelOne.Agents.machineType
+  - underlyingoutputcontextpath: SentinelOne.Agents.domain
+    description: Domain name of the agent.
+    type: string
+    name: SentinelOne.Agents.domain
+  - underlyingoutputcontextpath: SentinelOne.Agents.createdAt
+    description: Creation time of the agent.
+    type: date
+    name: SentinelOne.Agents.createdAt
+  - underlyingoutputcontextpath: SentinelOne.Agents.siteName
+    description: Site name associated with the agent.
+    type: string
+    name: SentinelOne.Agents.siteName
+  - underlyingoutputcontextpath: SentinelOne.Agents.tags
+    description: Tags associated with the agent.
+    type: unknown
+    name: SentinelOne.Agents.tags
+underlyingcontentitem:
+  id: SentinelOneListAgents
+  name: SentinelOneListAgents
+  type: script
+  version: -1
+requiresuserapproval: false
+marketplaces:
+- platform

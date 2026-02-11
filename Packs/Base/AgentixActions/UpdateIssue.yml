@@ -1,0 +1,72 @@
+commonfields:
+  id: SetIssue
+  version: -1
+name: CortexUpdateIssue
+display: Cortex - Update Issue
+description: |-
+  Updates issue properties. This action does not provide an explicit indication of success.
+args:
+  - name: id
+    description: Issue ID to update.
+    type: string
+    required: true
+    underlyingargname: id
+  - name: assigned_user_mail
+    description: change the assignee of an issue.
+    type: string
+    underlyingargname: assigned_user_mail
+  - name: severity
+    description: |-
+      Change the severity of an issue. Options: low, medium, high, critical.
+    type: number
+    underlyingargname: severity
+  - name: name
+    description: Change the issue name.
+    type: string
+    underlyingargname: name
+  - name: occurred
+    description: >
+      Change the occurred time of an issue. Supports different time formats, for example: 3 days ago, 2017-09-27T10:00:00+03:00.
+    type: date
+    underlyingargname: occurred
+  - name: phase
+    description: >
+      Change the phase of an issue. Option: Triage, Containment, Investigation, Response.
+    type: string
+    underlyingargname: phase
+  - name: description
+    description: Change the description of an issue.
+    type: string
+    underlyingargname: description
+  - name: type
+    description: Change the type of an issue.
+    type: string
+    underlyingargname: type
+  - name: status
+    description: |-
+      Change the status of an issue. Options: New, In Progress, Resolved - Known Issue,
+      Resolved - Duplicate Issue, Resolved - False Positive, Resolved - other, Resolved - True Positive,
+      Resolved - Security Testing, Resolved - Dismissed, Resolved - Fixed, Resolved - Risk Accepted.
+    type: string
+    underlyingargname: status
+  - name: unlink_cases
+    description: A comma-separated list of case IDs to unlink from the issue.
+    type: string
+    underlyingargname: unlink_cases
+  - name: link_cases
+    description: A comma-separated list of case IDs to link to the issue.
+    type: string
+    underlyingargname: link_cases
+underlyingcontentitem:
+  id: Cortex Core - Platform
+  name: Cortex Core - Platform
+  type: command
+  version: -1
+  command: 'core-update-issue'
+requiresuserapproval: false
+marketplaces:
+  - platform
+supportedModules:
+  - agentix
+  - xsiam
+  - cloud_posture

@@ -1,0 +1,103 @@
+commonfields:
+  id: CortexTerminateCausality
+  version: -1
+name: CortexTerminateCausalityGroup
+display: Cortex - Terminate Causality Group
+tags:
+ - Endpoint
+ - EDR
+ - Process Management
+category: Endpoint
+description: |-
+  Terminates a full process tree using its causality ID on a specified agent.
+args:
+  - name: agent_id
+    description: The ID of the agent where the process is running.
+    required: true
+    type: string
+    underlyingargname: agent_id
+  - name: causality_id
+    description: A list of causality IDs representing the root processes to terminate.
+    required: true
+    type: string
+    underlyingargname: causality_id
+  - name: process_name
+    description: The name of the process associated with the causality ID. This is optional and used for logging or auditing purposes.
+    required: false
+    type: string
+    underlyingargname: process_name
+  - name: incident_id
+    description: The ID of the case (formerly known as incident) initiating the termination. This is optional and used for context tracking.
+    required: false
+    type: string
+    underlyingargname: incident_id
+outputs:
+  - underlyingoutputcontextpath: Core.TerminateCausality.action_id
+    description: The unique ID of the initiated termination action.
+    type: string
+    name: Core.TerminateCausality.action_id
+  - underlyingoutputcontextpath: Core.GetActionStatus
+    description: The full status object for the termination action.
+    type: Unknown
+    name: Core.GetActionStatus
+  - underlyingoutputcontextpath: Core.GetActionStatus.endpoint_id
+    description: The ID of the endpoint involved in the action.
+    type: string
+    name: Core.GetActionStatus.endpoint_id
+  - underlyingoutputcontextpath: Core.GetActionStatus.status
+    description: The current status of the termination action on the endpoint.
+    type: string
+    name: Core.GetActionStatus.status
+  - underlyingoutputcontextpath: Core.GetActionStatus.action_id
+    description: The action ID associated with the termination request.
+    type: number
+    name: Core.GetActionStatus.action_id
+  - underlyingoutputcontextpath: Core.GetActionStatus.ErrorReasons.bucket
+    description: The internal bucket where the error occurred.
+    type: string
+    name: Core.GetActionStatus.ErrorReasons.bucket
+  - underlyingoutputcontextpath: Core.GetActionStatus.ErrorReasons.file_name
+    description: The name of the file involved in the error.
+    type: string
+    name: Core.GetActionStatus.ErrorReasons.file_name
+  - underlyingoutputcontextpath: Core.GetActionStatus.ErrorReasons.file_path
+    description: The file path of the file involved in the error.
+    type: string
+    name: Core.GetActionStatus.ErrorReasons.file_path
+  - underlyingoutputcontextpath: Core.GetActionStatus.ErrorReasons.file_size
+    description: The size of the file that triggered the error.
+    type: Number
+    name: Core.GetActionStatus.ErrorReasons.file_size
+  - underlyingoutputcontextpath: Core.GetActionStatus.ErrorReasons.missing_files
+    description: A list of files that were expected but not found.
+    type: string
+    name: Core.GetActionStatus.ErrorReasons.missing_files
+  - underlyingoutputcontextpath: Core.GetActionStatus.ErrorReasons.errorData
+    description: Raw error details provided by the action framework.
+    type: string
+    name: Core.GetActionStatus.ErrorReasons.errorData
+  - underlyingoutputcontextpath: Core.GetActionStatus.ErrorReasons.terminated_by
+    description: The instance ID that forcefully terminated the action.
+    type: string
+    name: Core.GetActionStatus.ErrorReasons.terminated_by
+  - underlyingoutputcontextpath: Core.GetActionStatus.ErrorReasons.errorDescription
+    description: A human-readable description of the error.
+    type: string
+    name: Core.GetActionStatus.ErrorReasons.errorDescription
+  - underlyingoutputcontextpath: Core.GetActionStatus.ErrorReasons.terminate_result
+    description: The final result of the termination attempt.
+    type: string
+    name: Core.GetActionStatus.ErrorReasons.terminate_result
+underlyingcontentitem:
+  id: CoreTerminateCausality
+  name: CoreTerminateCausality
+  type: script
+  version: -1
+  command: ''
+requiresuserapproval: true
+marketplaces:
+- platform
+supportedModules:
+- xsiam
+- cloud_runtime_security
+- edr

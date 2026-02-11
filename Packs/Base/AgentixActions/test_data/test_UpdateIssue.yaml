@@ -1,0 +1,82 @@
+tests:
+  - name: "Link cases to issue"
+    prompt: "Link cases 11, 10, 9 to issue 11"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "CortexUpdateIssue"
+            arguments:
+              id: "11"
+              link_cases: "11,10,9"
+
+  - name: "Unlink cases from issue"
+    prompt: "Unlink cases 8 and 3 from issue 10"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "CortexUpdateIssue"
+            arguments:
+              id: "10"
+              unlink_cases: "8,3"
+
+  - name: "Link and unlink cases simultaneously"
+    prompt: "For issue 9, link case 4 and unlink case 11"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "CortexUpdateIssue"
+            arguments:
+              id: "9"
+              link_cases: "4"
+              unlink_cases: "11"
+
+  - name: "Update issue severity to critical"
+    prompt: "Change issue 8 severity to critical"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "CortexUpdateIssue"
+            arguments:
+              id: "8"
+              severity: "4"
+
+  - name: "Assign issue to security analyst"
+    prompt: "Assign issue 7 to analyst@company.com"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "CortexUpdateIssue"
+            arguments:
+              id: "7"
+              assigned_user_mail: "analyst@company.com"
+
+  - name: "Update issue status to resolved"
+    prompt: "Mark issue 6 as Resolved - True Positive"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "CortexUpdateIssue"
+            arguments:
+              id: "6"
+              status: "Resolved - True Positive"
+
+  - name: "Comprehensive update with case management"
+    prompt: "Update issue 5: set severity to critical, assign to lead@company.com, move to Response phase, link cases 10,9, and unlink case 8"
+    agent_id: "threat-intel-agent"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: "CortexUpdateIssue"
+            arguments:
+              id: "5"
+              severity: "critical"
+              assigned_user_mail: "lead@company.com"
+              phase: "Response"
+              link_cases: "10,9"
+              unlink_cases: "8"

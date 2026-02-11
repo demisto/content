@@ -1,0 +1,44 @@
+commonfields:
+  id: it-agent
+  version: -1
+name: IT
+description: |-
+  Automates identity lifecycle enforcement, real-time containment on endpoints and networks, vulnerability and patch
+  governance, asset intelligence upkeep, and end-to-end incident workflow coordination - delivering policy-driven
+  remediation across the enterprise
+visibility: public
+color: '#C33591'
+conversationstarters: []
+systeminstructions: ''
+builtinactions:
+  - InvokeLLM
+actionids:
+  - SearchIssues
+  - ActiveDirectoryQueryDisableAccount
+  - ActiveDirectoryQuerySetNewPassword
+  - GetUserData
+  - CiscoASACreateRule
+  - GetEndpointData
+  - PanOSCustomBlockRule
+  - PANOSGetSystemInfo
+  - PANOSCheckCertificateExpiration
+  - PANOSCheckOutdatedDynamicUpdates
+  - OktaDeactivateUser
+  - ServiceNowCreateTicket
+  - jiraCreateIssue
+  - SendNotification
+  - SendMail
+  - TavilyExtract
+  - ExtractURLContent
+  - jiraGetIssue
+  - SearchCases
+  - SetIssue
+  - JiraUpdateIssue
+  - ServiceNowGetTicket
+  - ServiceNowUpdateTicket
+  - CortexRunXQLQuery
+marketplaces:
+  - platform
+supportedModules:
+  - agentix
+  - xsiam

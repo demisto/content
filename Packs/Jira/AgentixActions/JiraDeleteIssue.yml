@@ -1,0 +1,25 @@
+commonfields:
+  id: JiraDeleteIssue
+  version: -1
+display: Jira - Delete Issue
+name: JiraDeleteIssue
+category: Case Management
+description: >
+  Deletes issues from Jira (Cloud or Server).
+  If the issue has sub-tasks, they will also be deleted.
+args:
+  - name: issue_key
+    description: >
+      The key or ID of the issue to delete. For example: "IT-123", "21394".
+    required: true
+    underlyingargname: issue_key
+    type: string
+underlyingcontentitem:
+  id: Jira V3
+  name: Jira V3
+  type: command
+  version: -1
+  command: jira-delete-issue
+requiresuserapproval: true
+marketplaces:
+  - platform

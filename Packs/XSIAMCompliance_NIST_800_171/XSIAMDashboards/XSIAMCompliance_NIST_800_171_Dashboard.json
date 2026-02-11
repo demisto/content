@@ -1,0 +1,1611 @@
+{
+  "dashboards_data": [
+    {
+      "default_dashboard_id": 1,
+      "description": "Monitor NIST 800-171 controls and produce evidence for audits.",
+      "global_id": "91df98b78101404f9f983daa757b1c97",
+      "layout": [
+        {
+          "data": [
+            {
+              "data": {
+                "height": 54,
+                "style": {
+                  "bgColor": "#ffffff",
+                  "bgColorDark": "#1a1a1a",
+                  "textColor": "#333",
+                  "textColorDark": "#a9a9aa"
+                },
+                "text": "NIST 800-171 Compliance",
+                "type": "Text",
+                "width": 100
+              },
+              "key": "title"
+            }
+          ],
+          "id": "row-2550"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 55,
+                "style": {
+                  "bgColor": "#ffffff",
+                  "bgColorDark": "#1a1a1a",
+                  "textColor": "#333",
+                  "textColorDark": "#a9a9aa"
+                },
+                "text": "NIST 800-171 Section 3.1: Access Control",
+                "type": "Text",
+                "width": 100
+              },
+              "key": "title"
+            }
+          ],
+          "id": "row-8339"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "gridRawStorageInfo": {
+                  "coldefs": {},
+                  "columnWidth": null,
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "sort": null
+                },
+                "height": 400,
+                "params": [
+                  {
+                    "name": "host",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "preset = xdr_login_events \n| filter array_length(assigned_privileges ) > 0 or elevated_token != null\n| filter agent_hostname in($host)\n| comp count() as login_count by agent_hostname, agent_ip_addresses, agent_os_type  \n| sort desc login_count\n| fields agent_hostname, agent_ip_addresses, agent_os_type, login_count\n| limit 100",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "type": "Custom XQL",
+                "viewOptions": {
+                  "commands": [],
+                  "type": "table"
+                },
+                "width": 100
+              },
+              "key": "xql_1692974494975"
+            }
+          ],
+          "id": "row-5889"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 50,
+                "style": {
+                  "bgColor": "#ffffff",
+                  "bgColorDark": "#1a1a1a",
+                  "textColor": "#333",
+                  "textColorDark": "#a9a9aa"
+                },
+                "text": "NIST 800-171 Section 3.5: Identification and Authentication",
+                "type": "Text",
+                "width": 100
+              },
+              "key": "title"
+            }
+          ],
+          "id": "row-3404"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 400,
+                "phrase": "preset = authentication_story\n| alter target_or_domain = coalesce(auth_target , auth_domain)\n| comp count_distinct(auth_client) as unique_clients by associated_products, target_or_domain\n| sort desc unique_clients\n| limit 100\n| alter target_or_domain_with_product = concat(target_or_domain, \" (\", associated_products, \")\")\n|\n view graph type = pie xaxis = target_or_domain_with_product yaxis = unique_clients ",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "type": "Custom XQL",
+                "viewOptions": {
+                  "commands": [
+                    {
+                      "command": {
+                        "name": "xaxis",
+                        "op": "=",
+                        "value": "target_or_domain_with_product"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "yaxis",
+                        "op": "=",
+                        "value": "unique_clients"
+                      }
+                    }
+                  ],
+                  "type": "pie"
+                },
+                "width": 100
+              },
+              "key": "xql_1692974620140"
+            }
+          ],
+          "id": "row-5140"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 50,
+                "style": {
+                  "bgColor": "#ffffff",
+                  "bgColorDark": "#1a1a1a",
+                  "textColor": "#333",
+                  "textColorDark": "#a9a9aa"
+                },
+                "text": "NIST 800-171 Section 3.4: Configuration Management",
+                "type": "Text",
+                "width": 100
+              },
+              "key": "title"
+            }
+          ],
+          "id": "row-6144"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 400,
+                "params": [
+                  {
+                    "name": "policy",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "dataset = endpoints \n| fields endpoint_name, assigned_prevention_policy, assigned_extensions_policy\n| filter assigned_prevention_policy in($policy)\n| dedup endpoint_name \n| comp count(endpoint_name) as PreventionPolicyCount by assigned_prevention_policy\n|\n view graph type = bubble subtype = packed header = \"Prevention policy grouped by endpoint count\" xaxis = assigned_prevention_policy yaxis = PreventionPolicyCount ",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "type": "Custom XQL",
+                "viewOptions": {
+                  "commands": [
+                    {
+                      "command": {
+                        "name": "subtype",
+                        "op": "=",
+                        "value": "packed"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "header",
+                        "op": "=",
+                        "value": "\"Prevention policy grouped by endpoint count\""
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "xaxis",
+                        "op": "=",
+                        "value": "assigned_prevention_policy"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "yaxis",
+                        "op": "=",
+                        "value": "PreventionPolicyCount"
+                      }
+                    }
+                  ],
+                  "type": "bubble"
+                },
+                "width": 100
+              },
+              "key": "xql_1692974738919"
+            }
+          ],
+          "id": "row-1005"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 50,
+                "style": {
+                  "bgColor": "#ffffff",
+                  "bgColorDark": "#1a1a1a",
+                  "textColor": "#333",
+                  "textColorDark": "#a9a9aa"
+                },
+                "text": "NIST 800-171 Section 3.14: System and Information Integrity",
+                "type": "Text",
+                "width": 100
+              },
+              "key": "title"
+            }
+          ],
+          "id": "row-5116"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 400,
+                "params": [
+                  {
+                    "name": "policy",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "dataset = endpoints \n| filter last_upgrade_status = \"FAILED\"\n| filter assigned_prevention_policy in ($policy)\n| comp count () as completed\n|\n view graph type = gauge subtype = radial header = \"Endpoints with failed upgrade status\" yaxis = completed maxscalerange = 10 scale_threshold(\"#38c400\",\"#f59504\",\"5\",\"#e60700\",\"7\") ",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "type": "Custom XQL",
+                "viewOptions": {
+                  "commands": [
+                    {
+                      "command": {
+                        "name": "subtype",
+                        "op": "=",
+                        "value": "radial"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "header",
+                        "op": "=",
+                        "value": "\"Endpoints with failed upgrade status\""
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "yaxis",
+                        "op": "=",
+                        "value": "completed"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "maxscalerange",
+                        "op": "=",
+                        "value": "10"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [
+                          "#38c400",
+                          "#f59504",
+                          5,
+                          "#e60700",
+                          7
+                        ],
+                        "name": "scale_threshold"
+                      }
+                    }
+                  ],
+                  "type": "gauge"
+                },
+                "width": 100
+              },
+              "key": "xql_1692974829321"
+            }
+          ],
+          "id": "row-3589"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 50,
+                "style": {
+                  "bgColor": "#ffffff",
+                  "bgColorDark": "#1a1a1a",
+                  "textColor": "#333",
+                  "textColorDark": "#a9a9aa"
+                },
+                "text": "NIST 800-171 Section 3.7: Maintenance",
+                "type": "Text",
+                "width": 100
+              },
+              "key": "title"
+            }
+          ],
+          "id": "row-7129"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "gridRawStorageInfo": {
+                  "coldefs": {},
+                  "columnWidth": null,
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "sort": null
+                },
+                "height": 400,
+                "params": [
+                  {
+                    "name": "domain",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "dataset = endpoints\n| filter domain in($domain) \n| fields endpoint_name, agent_version, content_version, assigned_prevention_policy",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "type": "Custom XQL",
+                "viewOptions": {
+                  "commands": [],
+                  "type": "table"
+                },
+                "width": 100
+              },
+              "key": "xql_1692974866872"
+            }
+          ],
+          "id": "row-2001"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 50,
+                "style": {
+                  "bgColor": "#ffffff",
+                  "bgColorDark": "#1a1a1a",
+                  "textColor": "#333",
+                  "textColorDark": "#a9a9aa"
+                },
+                "text": "NIST 800-171 Section 3.6: Incident Response",
+                "type": "Text",
+                "width": 100
+              },
+              "key": "title"
+            }
+          ],
+          "id": "row-2788"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 400,
+                "phrase": "dataset = incidents \n| comp count() as the_count by severity \n| sort desc the_count\n| view graph type = column subtype = grouped header = \"Incident count by severity\" xaxis = severity yaxis = the_count legend = `false` xaxistitle = \"Severity\" yaxistitle = \"# of incidents\" ",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "type": "Custom XQL",
+                "viewOptions": {
+                  "commands": [
+                    {
+                      "command": {
+                        "name": "subtype",
+                        "op": "=",
+                        "value": "grouped"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "header",
+                        "op": "=",
+                        "value": "\"Incident count by severity\""
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "xaxis",
+                        "op": "=",
+                        "value": "severity"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "yaxis",
+                        "op": "=",
+                        "value": "the_count"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "legend",
+                        "op": "=",
+                        "value": "`false`"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "xaxistitle",
+                        "op": "=",
+                        "value": "\"Severity\""
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "yaxistitle",
+                        "op": "=",
+                        "value": "\"# of incidents\""
+                      }
+                    }
+                  ],
+                  "type": "column"
+                },
+                "width": 100
+              },
+              "key": "xql_1692974916216"
+            }
+          ],
+          "id": "row-8057"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 50,
+                "style": {
+                  "bgColor": "#ffffff",
+                  "bgColorDark": "#1a1a1a",
+                  "textColor": "#333",
+                  "textColorDark": "#a9a9aa"
+                },
+                "text": "NIST 800-171 Section 3.9: Personnel Security",
+                "type": "Text",
+                "width": 100
+              },
+              "key": "title"
+            }
+          ],
+          "id": "row-7643"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "gridRawStorageInfo": {
+                  "coldefs": {},
+                  "columnWidth": null,
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "sort": null
+                },
+                "height": 400,
+                "params": [
+                  {
+                    "name": "host",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "preset = device_control \n| filter agent_hostname in($host) \n| comp list(agent_hostname) as agent_list, count_distinct(agent_hostname) as  unique_agents by action_device_usb_serial_number\n| sort desc unique_agents \n| limit 1000",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "type": "Custom XQL",
+                "viewOptions": {
+                  "commands": [],
+                  "type": "table"
+                },
+                "width": 100
+              },
+              "key": "xql_1692974946611"
+            }
+          ],
+          "id": "row-2329"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 50,
+                "style": {
+                  "bgColor": "#ffffff",
+                  "bgColorDark": "#1a1a1a",
+                  "textColor": "#333",
+                  "textColorDark": "#a9a9aa"
+                },
+                "text": "NIST 800-171 Section 3.12: Security Assessment",
+                "type": "Text",
+                "width": 100
+              },
+              "key": "title"
+            }
+          ],
+          "id": "row-5470"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "gridRawStorageInfo": {
+                  "coldefs": {},
+                  "columnWidth": null,
+                  "rowHeight": null,
+                  "sort": null
+                },
+                "height": 400,
+                "params": [
+                  {
+                    "name": "host",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "preset = xdr_login_events \n| filter agent_hostname in($host)\n| filter (action_local_port in (22, 23, 445, 3389)) ",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "type": "Custom XQL",
+                "viewOptions": {
+                  "commands": [],
+                  "type": "table"
+                },
+                "width": 100
+              },
+              "key": "xql_1692974975196"
+            }
+          ],
+          "id": "row-109"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 50,
+                "style": {
+                  "bgColor": "#ffffff",
+                  "bgColorDark": "#1a1a1a",
+                  "textColor": "#333",
+                  "textColorDark": "#a9a9aa"
+                },
+                "text": "NIST 800-171 Section 3.3: Audit and Accountability",
+                "type": "Text",
+                "width": 100
+              },
+              "key": "title"
+            }
+          ],
+          "id": "row-2406"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "gridRawStorageInfo": {
+                  "coldefs": {},
+                  "columnWidth": null,
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "sort": null
+                },
+                "height": 400,
+                "params": [
+                  {
+                    "name": "domain",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "preset = ad_users \n| filter member_of contains \"Domain Admins\"\n| filter netbios_domain in($domain)\n| comp count() as admins\n| alter x=\"x\"\n| join conflict_strategy = both( preset = ad_users \n| comp count() as total\n| alter y=\"x\") as a a.y =x \n| fields - x,y\n|\n view graph type = column subtype = grouped layout = horizontal header = \"Domain Admins vs Total AD Users\" xaxis = total yaxis = admins,total xaxistitle = \"Number of users\" yaxistitle = \"User Type\" seriestitle(\"admins\",\"Admin User\") seriestitle(\"total\",\"AD User\") ",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "type": "Custom XQL",
+                "viewOptions": {
+                  "commands": [
+                    {
+                      "command": {
+                        "name": "subtype",
+                        "op": "=",
+                        "value": "grouped"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "layout",
+                        "op": "=",
+                        "value": "horizontal"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "header",
+                        "op": "=",
+                        "value": "\"Domain Admins vs Total AD Users\""
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "xaxis",
+                        "op": "=",
+                        "value": "total"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "yaxis",
+                        "op": "=",
+                        "value": "admins,total"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "xaxistitle",
+                        "op": "=",
+                        "value": "\"Number of users\""
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "yaxistitle",
+                        "op": "=",
+                        "value": "\"User Type\""
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [
+                          "admins",
+                          "Admin User"
+                        ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [
+                          "total",
+                          "AD User"
+                        ],
+                        "name": "seriestitle"
+                      }
+                    }
+                  ],
+                  "type": "column"
+                },
+                "width": 100
+              },
+              "key": "xql_1692975177230"
+            }
+          ],
+          "id": "row-9343"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 50,
+                "style": {
+                  "bgColor": "#ffffff",
+                  "bgColorDark": "#1a1a1a",
+                  "textColor": "#333",
+                  "textColorDark": "#a9a9aa"
+                },
+                "text": "NIST 800-171 Section 3.11: Risk Assessment",
+                "type": "Text",
+                "width": 100
+              },
+              "key": "title"
+            }
+          ],
+          "id": "row-5652"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "gridRawStorageInfo": {
+                  "coldefs": {},
+                  "columnWidth": null,
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "sort": null
+                },
+                "height": 400,
+                "phrase": "preset = host_inventory_applications \n| filter application_name ~= \"Google Chrome|Microsoft Edge|Firefox|Internet Explore\"\n| comp count() as version_counter by version, application_name",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "type": "Custom XQL",
+                "viewOptions": {
+                  "commands": [],
+                  "type": "table"
+                },
+                "width": 100
+              },
+              "key": "xql_1692975232468"
+            }
+          ],
+          "id": "row-9936"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 50,
+                "style": {
+                  "bgColor": "#ffffff",
+                  "bgColorDark": "#1a1a1a",
+                  "textColor": "#333",
+                  "textColorDark": "#a9a9aa"
+                },
+                "text": "NIST 800-171 Section 3.10: Physical Protection",
+                "type": "Text",
+                "width": 100
+              },
+              "key": "title"
+            }
+          ],
+          "id": "row-7919"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 400,
+                "params": [
+                  {
+                    "name": "host",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "preset = device_control \n| filter event_sub_type = ENUM.DEVICE_PLUG \n| filter agent_hostname in($host)\n| comp count() as HOST by agent_hostname\n|\n view graph type = wordcloud header = \"Hosts with USB Plug-in events\" xaxis = agent_hostname yaxis = HOST ",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "type": "Custom XQL",
+                "viewOptions": {
+                  "commands": [
+                    {
+                      "command": {
+                        "name": "header",
+                        "op": "=",
+                        "value": "\"Hosts with USB Plug-in events\""
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "xaxis",
+                        "op": "=",
+                        "value": "agent_hostname"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "yaxis",
+                        "op": "=",
+                        "value": "HOST"
+                      }
+                    }
+                  ],
+                  "type": "wordcloud"
+                },
+                "width": 100
+              },
+              "key": "xql_1692975297636"
+            }
+          ],
+          "id": "row-2861"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 50,
+                "style": {
+                  "bgColor": "#ffffff",
+                  "bgColorDark": "#1a1a1a",
+                  "textColor": "#333",
+                  "textColorDark": "#a9a9aa"
+                },
+                "text": "NIST 800-171 Section 3.13: Systems and Communications Protection",
+                "type": "Text",
+                "width": 100
+              },
+              "key": "title"
+            }
+          ],
+          "id": "row-6078"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 400,
+                "phrase": "preset = network_story \n| filter associated_rules != null and associated_rules != \"\"\n| comp count() by associated_rules\n|\n view graph type = column subtype = grouped header = \"Top triggered network rules in the past 24 hours\" xaxis = associated_rules yaxis = count_1 legend = `false` xaxistitle = \"Triggered Rule Name\" yaxistitle = \"# of events\" ",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "type": "Custom XQL",
+                "viewOptions": {
+                  "commands": [
+                    {
+                      "command": {
+                        "name": "subtype",
+                        "op": "=",
+                        "value": "grouped"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "header",
+                        "op": "=",
+                        "value": "\"Top triggered network rules in the past 24 hours\""
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "xaxis",
+                        "op": "=",
+                        "value": "associated_rules"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "yaxis",
+                        "op": "=",
+                        "value": "count_1"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "legend",
+                        "op": "=",
+                        "value": "false"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "xaxistitle",
+                        "op": "=",
+                        "value": "\"Triggered Rule Name\""
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "yaxistitle",
+                        "op": "=",
+                        "value": "\"# of events\""
+                      }
+                    }
+                  ],
+                  "type": "column"
+                },
+                "width": 100
+              },
+              "key": "xql_1692975320300"
+            }
+          ],
+          "id": "row-8719"
+        }
+      ],
+      "metadata": {
+        "cache_ttl": 30,
+        "params": [
+          {
+            "executionID": "457a1eea06c74c_414353_inv",
+            "filterComponentType": "MULTI_SELECT",
+            "investigation": {
+              "dashboard_id": null,
+              "input_dict": {
+                "notification_link": "xql/xql-search/_EXECUTION_ID_",
+                "query_definition_name": "XQL-QUERY-89250",
+                "query_editor": "xql",
+                "run_in_background": false,
+                "schedule": null,
+                "tenants": [],
+                "xql": "preset = xdr_login_events \n| filter agent_hostname contains \"*\"\n| fields agent_hostname"
+              },
+              "source": "investigation",
+              "timeframe": {
+                "relativeTime": 86400000
+              },
+              "ttl": "0"
+            },
+            "investigationColumn": "agent_hostname",
+            "investigationError": null,
+            "name": "host",
+            "title": "Host",
+            "type": "DYNAMIC",
+            "value": [],
+            "valueOptions": []
+          },
+          {
+            "executionID": "9cd1ed1ec18b42_414347_inv",
+            "filterComponentType": "MULTI_SELECT",
+            "investigation": {
+              "dashboard_id": null,
+              "input_dict": {
+                "notification_link": "xql/xql-search/_EXECUTION_ID_",
+                "query_definition_name": "XQL-QUERY-89251",
+                "query_editor": "xql",
+                "run_in_background": false,
+                "schedule": null,
+                "tenants": [],
+                "xql": "dataset = endpoints\n| filter domain contains \"*\"\n| fields domain"
+              },
+              "source": "investigation",
+              "timeframe": {
+                "relativeTime": 86400000
+              },
+              "ttl": "0"
+            },
+            "investigationColumn": "domain",
+            "investigationError": null,
+            "name": "domain",
+            "title": "Domain",
+            "type": "DYNAMIC",
+            "value": [],
+            "valueOptions": []
+          },
+          {
+            "executionID": "3153ccf8d9824c_414348_inv",
+            "filterComponentType": "MULTI_SELECT",
+            "investigation": {
+              "dashboard_id": null,
+              "input_dict": {
+                "notification_link": "xql/xql-search/_EXECUTION_ID_",
+                "query_definition_name": "XQL-QUERY-89262",
+                "query_editor": "xql",
+                "run_in_background": false,
+                "schedule": null,
+                "tenants": [],
+                "xql": "dataset = endpoints \n| filter last_upgrade_status not contains \"COMPLETED\"\n| filter assigned_prevention_policy contains \"*\"\n| fields assigned_prevention_policy "
+              },
+              "source": "investigation",
+              "timeframe": {
+                "relativeTime": 86400000
+              },
+              "ttl": "0"
+            },
+            "investigationColumn": "assigned_prevention_policy",
+            "investigationError": null,
+            "name": "policy",
+            "title": "Policy",
+            "type": "DYNAMIC",
+            "value": [],
+            "valueOptions": []
+          }
+        ]
+      },
+      "name": "NIST 800-171 Compliance Dashboard",
+      "status": "ENABLED"
+    }
+  ],
+  "fromVersion": "8.4.0",
+  "widgets_data": [
+    {
+      "additional_info": {
+        "query_tables": [
+          "xdr_data"
+        ],
+        "query_uses_library": false
+      },
+      "creation_time": 1696525542609,
+      "data": {
+        "gridRawStorageInfo": {
+          "coldefs": {},
+          "columnWidth": null,
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "sort": null
+        },
+        "params": [
+          {
+            "name": "host",
+            "value": "*"
+          }
+        ],
+        "phrase": "preset = xdr_login_events \n| filter array_length(assigned_privileges ) > 0 or elevated_token != null\n| filter agent_hostname in($host)\n| comp count() as login_count by agent_hostname, agent_ip_addresses, agent_os_type  \n| sort desc login_count\n| fields agent_hostname, agent_ip_addresses, agent_os_type, login_count\n| limit 100",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "commands": [],
+          "type": "table"
+        }
+      },
+      "description": "Implement policies and procedures to monitor access to systems. Use this widget to query XDR login events.",
+      "support_time_range": true,
+      "title": "Compliance: Access Control",
+      "widget_key": "xql_1692974494975"
+    },
+    {
+      "additional_info": {
+        "query_tables": [
+          "xdr_data"
+        ],
+        "query_uses_library": false
+      },
+      "creation_time": 1696525543399,
+      "data": {
+        "phrase": "preset = authentication_story\n| alter target_or_domain = coalesce(auth_target , auth_domain)\n| comp count_distinct(auth_client) as unique_clients by associated_products, target_or_domain\n| sort desc unique_clients\n| limit 100\n| alter target_or_domain_with_product = concat(target_or_domain, \" (\", associated_products, \")\")\n|\n view graph type = pie xaxis = target_or_domain_with_product yaxis = unique_clients ",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "commands": [
+            {
+              "command": {
+                "name": "xaxis",
+                "op": "=",
+                "value": "target_or_domain_with_product"
+              }
+            },
+            {
+              "command": {
+                "name": "yaxis",
+                "op": "=",
+                "value": "unique_clients"
+              }
+            }
+          ],
+          "type": "pie"
+        }
+      },
+      "description": "Implement policies and procedures to monitor the identity of users, devices, and processes. Use this widget to query uniquely targeted clients.",
+      "support_time_range": true,
+      "title": "Compliance: Identify",
+      "widget_key": "xql_1692974620140"
+    },
+    {
+      "additional_info": {
+        "query_tables": [
+          "endpoints"
+        ],
+        "query_uses_library": false
+      },
+      "creation_time": 1696525543917,
+      "data": {
+        "params": [
+          {
+            "name": "policy",
+            "value": "*"
+          }
+        ],
+        "phrase": "dataset = endpoints \n| fields endpoint_name, assigned_prevention_policy, assigned_extensions_policy\n| filter assigned_prevention_policy in($policy)\n| dedup endpoint_name \n| comp count(endpoint_name) as PreventionPolicyCount by assigned_prevention_policy\n|\n view graph type = bubble subtype = packed header = \"Prevention policy grouped by endpoint count\" xaxis = assigned_prevention_policy yaxis = PreventionPolicyCount ",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "commands": [
+            {
+              "command": {
+                "name": "subtype",
+                "op": "=",
+                "value": "packed"
+              }
+            },
+            {
+              "command": {
+                "name": "header",
+                "op": "=",
+                "value": "\"Prevention policy grouped by endpoint count\""
+              }
+            },
+            {
+              "command": {
+                "name": "xaxis",
+                "op": "=",
+                "value": "assigned_prevention_policy"
+              }
+            },
+            {
+              "command": {
+                "name": "yaxis",
+                "op": "=",
+                "value": "PreventionPolicyCount"
+              }
+            }
+          ],
+          "type": "bubble"
+        }
+      },
+      "description": "Implement policies and procedures to monitor and maintain secure configurations. Use this widget to query prevention policy information.",
+      "support_time_range": true,
+      "title": "Compliance: Policy/Configuration Management",
+      "widget_key": "xql_1692974738919"
+    },
+    {
+      "additional_info": {
+        "query_tables": [
+          "endpoints"
+        ],
+        "query_uses_library": false
+      },
+      "creation_time": 1696525544175,
+      "data": {
+        "params": [
+          {
+            "name": "policy",
+            "value": "*"
+          }
+        ],
+        "phrase": "dataset = endpoints \n| filter last_upgrade_status = \"FAILED\"\n| filter assigned_prevention_policy in ($policy)\n| comp count () as completed\n|\n view graph type = gauge subtype = radial header = \"Endpoints with failed upgrade status\" yaxis = completed maxscalerange = 10 scale_threshold(\"#38c400\",\"#f59504\",\"5\",\"#e60700\",\"7\") ",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "commands": [
+            {
+              "command": {
+                "name": "subtype",
+                "op": "=",
+                "value": "radial"
+              }
+            },
+            {
+              "command": {
+                "name": "header",
+                "op": "=",
+                "value": "\"Endpoints with failed upgrade status\""
+              }
+            },
+            {
+              "command": {
+                "name": "yaxis",
+                "op": "=",
+                "value": "completed"
+              }
+            },
+            {
+              "command": {
+                "name": "maxscalerange",
+                "op": "=",
+                "value": "10"
+              }
+            },
+            {
+              "func": {
+                "args": [
+                  "#38c400",
+                  "#f59504",
+                  5,
+                  "#e60700",
+                  7
+                ],
+                "name": "scale_threshold"
+              }
+            }
+          ],
+          "type": "gauge"
+        }
+      },
+      "description": "Implement policies and procedures to ensure the integrity of systems and data. Use this widget to query the endpoints with a failed upgrade status.",
+      "support_time_range": true,
+      "title": "Compliance: System Management",
+      "widget_key": "xql_1692974829321"
+    },
+    {
+      "additional_info": {
+        "query_tables": [
+          "endpoints"
+        ],
+        "query_uses_library": false
+      },
+      "creation_time": 1696525544406,
+      "data": {
+        "gridRawStorageInfo": {
+          "coldefs": {},
+          "columnWidth": null,
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "sort": null
+        },
+        "params": [
+          {
+            "name": "domain",
+            "value": "*"
+          }
+        ],
+        "phrase": "dataset = endpoints\n| filter domain in($domain) \n| fields endpoint_name, agent_version, content_version, assigned_prevention_policy",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "commands": [],
+          "type": "table"
+        }
+      },
+      "description": "Implement policies and procedures to establish processes and controls for ongoing maintenance. Use this widget to endpoint and product information.",
+      "support_time_range": true,
+      "title": "Compliance: Maintenance",
+      "widget_key": "xql_1692974866872"
+    },
+    {
+      "additional_info": {
+        "query_tables": [
+          "incidents"
+        ],
+        "query_uses_library": false
+      },
+      "creation_time": 1696525544635,
+      "data": {
+        "phrase": "dataset = incidents \n| comp count() as the_count by severity \n| sort desc the_count\n| view graph type = column subtype = grouped header = \"Incident count by severity\" xaxis = severity yaxis = the_count legend = `false` xaxistitle = \"Severity\" yaxistitle = \"# of incidents\" ",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "commands": [
+            {
+              "command": {
+                "name": "subtype",
+                "op": "=",
+                "value": "grouped"
+              }
+            },
+            {
+              "command": {
+                "name": "header",
+                "op": "=",
+                "value": "\"Incident count by severity\""
+              }
+            },
+            {
+              "command": {
+                "name": "xaxis",
+                "op": "=",
+                "value": "severity"
+              }
+            },
+            {
+              "command": {
+                "name": "yaxis",
+                "op": "=",
+                "value": "the_count"
+              }
+            },
+            {
+              "command": {
+                "name": "legend",
+                "op": "=",
+                "value": "`false`"
+              }
+            },
+            {
+              "command": {
+                "name": "xaxistitle",
+                "op": "=",
+                "value": "\"Severity\""
+              }
+            },
+            {
+              "command": {
+                "name": "yaxistitle",
+                "op": "=",
+                "value": "\"# of incidents\""
+              }
+            }
+          ],
+          "type": "column"
+        }
+      },
+      "description": "Implement policies and procedures to detect, respond to, and recover from security incidents. Use this widget to query incidents by severity.",
+      "support_time_range": true,
+      "title": "Compliance: Threat Protection/Incident Response",
+      "widget_key": "xql_1692974916216"
+    },
+    {
+      "additional_info": {
+        "query_tables": [
+          "xdr_data"
+        ],
+        "query_uses_library": false
+      },
+      "creation_time": 1696525545333,
+      "data": {
+        "gridRawStorageInfo": {
+          "coldefs": {},
+          "columnWidth": null,
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "sort": null
+        },
+        "params": [
+          {
+            "name": "host",
+            "value": "*"
+          }
+        ],
+        "phrase": "preset = device_control \n| filter agent_hostname in($host) \n| comp list(agent_hostname) as agent_list, count_distinct(agent_hostname) as  unique_agents by action_device_usb_serial_number\n| sort desc unique_agents \n| limit 1000",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "commands": [],
+          "type": "table"
+        }
+      },
+      "description": "Implement policies and procedures to limit access to sensitive data. Use this widget to query the device control preset.",
+      "support_time_range": true,
+      "title": "Compliance: Personnel Security",
+      "widget_key": "xql_1692974946611"
+    },
+    {
+      "additional_info": {
+        "query_tables": [
+          "xdr_data"
+        ],
+        "query_uses_library": false
+      },
+      "creation_time": 1696525546240,
+      "data": {
+        "gridRawStorageInfo": {
+          "coldefs": {},
+          "columnWidth": null,
+          "rowHeight": null,
+          "sort": null
+        },
+        "params": [
+          {
+            "name": "host",
+            "value": "*"
+          }
+        ],
+        "phrase": "preset = xdr_login_events \n| filter agent_hostname in($host)\n| filter (action_local_port in (22, 23, 445, 3389)) ",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "commands": [],
+          "type": "table"
+        }
+      },
+      "description": "Implement policies and procedures to assess, authorize, and monitor systems. Use this widget to query XDR login events.",
+      "support_time_range": true,
+      "title": "Compliance: Continuous Monitoring",
+      "widget_key": "xql_1692974975196"
+    },
+    {
+      "additional_info": {
+        "query_tables": [
+          "pan_dss_raw"
+        ],
+        "query_uses_library": false
+      },
+      "creation_time": 1696525547913,
+      "data": {
+        "gridRawStorageInfo": {
+          "coldefs": {},
+          "columnWidth": null,
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "sort": null
+        },
+        "params": [
+          {
+            "name": "domain",
+            "value": "*"
+          }
+        ],
+        "phrase": "preset = ad_users \n| filter member_of contains \"Domain Admins\"\n| filter netbios_domain in($domain)\n| comp count() as admins\n| alter x=\"x\"\n| join conflict_strategy = both( preset = ad_users \n| comp count() as total\n| alter y=\"x\") as a a.y =x \n| fields - x,y\n|\n view graph type = column subtype = grouped layout = horizontal header = \"Domain Admins vs Total AD Users\" xaxis = total yaxis = admins,total xaxistitle = \"Number of users\" yaxistitle = \"User Type\" seriestitle(\"admins\",\"Admin User\") seriestitle(\"total\",\"AD User\") ",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "commands": [
+            {
+              "command": {
+                "name": "subtype",
+                "op": "=",
+                "value": "grouped"
+              }
+            },
+            {
+              "command": {
+                "name": "layout",
+                "op": "=",
+                "value": "horizontal"
+              }
+            },
+            {
+              "command": {
+                "name": "header",
+                "op": "=",
+                "value": "\"Domain Admins vs Total AD Users\""
+              }
+            },
+            {
+              "command": {
+                "name": "xaxis",
+                "op": "=",
+                "value": "total"
+              }
+            },
+            {
+              "command": {
+                "name": "yaxis",
+                "op": "=",
+                "value": "admins,total"
+              }
+            },
+            {
+              "command": {
+                "name": "xaxistitle",
+                "op": "=",
+                "value": "\"Number of users\""
+              }
+            },
+            {
+              "command": {
+                "name": "yaxistitle",
+                "op": "=",
+                "value": "\"User Type\""
+              }
+            },
+            {
+              "func": {
+                "args": [
+                  "admins",
+                  "Admin User"
+                ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [
+                  "total",
+                  "AD User"
+                ],
+                "name": "seriestitle"
+              }
+            }
+          ],
+          "type": "column"
+        }
+      },
+      "description": "Implement policies and procedures to monitor, record, and review system activities. Use this widget to query Active Directory domain administrators.",
+      "support_time_range": true,
+      "title": "Compliance: Audit Controls",
+      "widget_key": "xql_1692975177230"
+    },
+    {
+      "additional_info": {
+        "query_tables": [
+          "host_inventory"
+        ],
+        "query_uses_library": false
+      },
+      "creation_time": 1696525548448,
+      "data": {
+        "gridRawStorageInfo": {
+          "coldefs": {},
+          "columnWidth": null,
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "sort": null
+        },
+        "phrase": "preset = host_inventory_applications \n| filter application_name ~= \"Google Chrome|Microsoft Edge|Firefox|Internet Explore\"\n| comp count() as version_counter by version, application_name",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "commands": [],
+          "type": "table"
+        }
+      },
+      "description": "Implement policies and procedures to identify, assess, and mitigate risks to data. Use this widget to query host inventory applications.",
+      "support_time_range": true,
+      "title": "Compliance: Risk Assesment",
+      "widget_key": "xql_1692975232468"
+    },
+    {
+      "additional_info": {
+        "query_tables": [
+          "xdr_data"
+        ],
+        "query_uses_library": false
+      },
+      "creation_time": 1696525551021,
+      "data": {
+        "params": [
+          {
+            "name": "host",
+            "value": "*"
+          }
+        ],
+        "phrase": "preset = device_control \n| filter event_sub_type = ENUM.DEVICE_PLUG \n| filter agent_hostname in($host)\n| comp count() as HOST by agent_hostname\n|\n view graph type = wordcloud header = \"Hosts with USB Plug-in events\" xaxis = agent_hostname yaxis = HOST ",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "commands": [
+            {
+              "command": {
+                "name": "header",
+                "op": "=",
+                "value": "\"Hosts with USB Plug-in events\""
+              }
+            },
+            {
+              "command": {
+                "name": "xaxis",
+                "op": "=",
+                "value": "agent_hostname"
+              }
+            },
+            {
+              "command": {
+                "name": "yaxis",
+                "op": "=",
+                "value": "HOST"
+              }
+            }
+          ],
+          "type": "wordcloud"
+        }
+      },
+      "description": "Implement policies and procedures to protect physical assets and facilities. Use this widget to query USB plug-in events.",
+      "support_time_range": true,
+      "title": "Compliance: Physical Protections",
+      "widget_key": "xql_1692975297636"
+    },
+    {
+      "additional_info": {
+        "query_tables": [
+          "xdr_data"
+        ],
+        "query_uses_library": false
+      },
+      "creation_time": 1696525551990,
+      "data": {
+        "phrase": "preset = network_story \n| filter associated_rules != null and associated_rules != \"\"\n| comp count() by associated_rules\n|\n view graph type = column subtype = grouped header = \"Top triggered network rules in the past 24 hours\" xaxis = associated_rules yaxis = count_1 legend = `false` xaxistitle = \"Triggered Rule Name\" yaxistitle = \"# of events\" ",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "commands": [
+            {
+              "command": {
+                "name": "subtype",
+                "op": "=",
+                "value": "grouped"
+              }
+            },
+            {
+              "command": {
+                "name": "header",
+                "op": "=",
+                "value": "\"Top triggered network rules in the past 24 hours\""
+              }
+            },
+            {
+              "command": {
+                "name": "xaxis",
+                "op": "=",
+                "value": "associated_rules"
+              }
+            },
+            {
+              "command": {
+                "name": "yaxis",
+                "op": "=",
+                "value": "count_1"
+              }
+            },
+            {
+              "command": {
+                "name": "legend",
+                "op": "=",
+                "value": "false"
+              }
+            },
+            {
+              "command": {
+                "name": "xaxistitle",
+                "op": "=",
+                "value": "\"Triggered Rule Name\""
+              }
+            },
+            {
+              "command": {
+                "name": "yaxistitle",
+                "op": "=",
+                "value": "\"# of events\""
+              }
+            }
+          ],
+          "type": "column"
+        }
+      },
+      "description": "Implement policies and procedures to protect and monitor communications channels. Use this widget to query triggered network rules.",
+      "support_time_range": true,
+      "title": "Compliance: Transmission/Network Security",
+      "widget_key": "xql_1692975320300"
+    }
+  ]
+}

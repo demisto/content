@@ -1,0 +1,1238 @@
+{
+  "dashboards_data": [
+    {
+      "default_dashboard_id": 1,
+      "description": "Monitor NIST CSF controls and produce evidence for audits.",
+      "global_id": "010ba04f47284d54878ad6079a43d360",
+      "layout": [
+        {
+          "data": [
+            {
+              "data": {
+                "height": 55,
+                "style": {
+                  "bgColor": "#ffffff",
+                  "bgColorDark": "#1a1a1a",
+                  "textColor": "#333",
+                  "textColorDark": "#a9a9aa"
+                },
+                "text": "NIST CSF",
+                "type": "Text",
+                "width": 100
+              },
+              "key": "title"
+            }
+          ],
+          "id": "row-6590"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 56,
+                "style": {
+                  "bgColor": "#ffffff",
+                  "bgColorDark": "#1a1a1a",
+                  "textColor": "#333",
+                  "textColorDark": "#a9a9aa"
+                },
+                "text": "NIST CSF: Identity Management and Access Control",
+                "type": "Text",
+                "width": 100
+              },
+              "key": "title"
+            }
+          ],
+          "id": "row-49"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 400,
+                "phrase": "preset = authentication_story\n| alter target_or_domain = coalesce(auth_target , auth_domain)\n| comp count_distinct(auth_client) as unique_clients by associated_products, target_or_domain\n| sort desc unique_clients\n| limit 100\n| alter target_or_domain_with_product = concat(target_or_domain, \" (\", associated_products, \")\")\n|\n view graph type = pie xaxis = target_or_domain_with_product yaxis = unique_clients ",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "type": "Custom XQL",
+                "viewOptions": {
+                  "commands": [
+                    {
+                      "command": {
+                        "name": "xaxis",
+                        "op": "=",
+                        "value": "target_or_domain_with_product"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "yaxis",
+                        "op": "=",
+                        "value": "unique_clients"
+                      }
+                    }
+                  ],
+                  "type": "pie"
+                },
+                "width": 50
+              },
+              "key": "xql_1692974620140"
+            },
+            {
+              "data": {
+                "gridRawStorageInfo": {
+                  "coldefs": {},
+                  "columnWidth": null,
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "sort": null
+                },
+                "height": 400,
+                "params": [
+                  {
+                    "name": "host",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "preset = xdr_login_events \n| filter array_length(assigned_privileges ) > 0 or elevated_token != null\n| filter agent_hostname in($host)\n| comp count() as login_count by agent_hostname, agent_ip_addresses, agent_os_type  \n| sort desc login_count\n| fields agent_hostname, agent_ip_addresses, agent_os_type, login_count\n| limit 100",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "type": "Custom XQL",
+                "viewOptions": {
+                  "commands": [],
+                  "type": "table"
+                },
+                "width": 50
+              },
+              "key": "xql_1692974494975"
+            }
+          ],
+          "id": "row-2374"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 54,
+                "style": {
+                  "bgColor": "#ffffff",
+                  "bgColorDark": "#1a1a1a",
+                  "textColor": "#333",
+                  "textColorDark": "#a9a9aa"
+                },
+                "text": "NIST CSF: Asset Management",
+                "type": "Text",
+                "width": 100
+              },
+              "key": "title"
+            }
+          ],
+          "id": "row-5651"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 400,
+                "params": [
+                  {
+                    "name": "policy",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "dataset = endpoints \n| filter last_upgrade_status = \"FAILED\"\n| filter assigned_prevention_policy in ($policy)\n| comp count () as completed\n|\n view graph type = gauge subtype = radial header = \"Endpoints with failed upgrade status\" yaxis = completed maxscalerange = 10 scale_threshold(\"#38c400\",\"#f59504\",\"5\",\"#e60700\",\"7\") ",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "type": "Custom XQL",
+                "viewOptions": {
+                  "commands": [
+                    {
+                      "command": {
+                        "name": "subtype",
+                        "op": "=",
+                        "value": "radial"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "header",
+                        "op": "=",
+                        "value": "\"Endpoints with failed upgrade status\""
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "yaxis",
+                        "op": "=",
+                        "value": "completed"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "maxscalerange",
+                        "op": "=",
+                        "value": "10"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [
+                          "#38c400",
+                          "#f59504",
+                          5,
+                          "#e60700",
+                          7
+                        ],
+                        "name": "scale_threshold"
+                      }
+                    }
+                  ],
+                  "type": "gauge"
+                },
+                "width": 100
+              },
+              "key": "xql_1692974829321"
+            }
+          ],
+          "id": "row-3800"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 50,
+                "style": {
+                  "bgColor": "#ffffff",
+                  "bgColorDark": "#1a1a1a",
+                  "textColor": "#333",
+                  "textColorDark": "#a9a9aa"
+                },
+                "text": "NIST CSF: Maintenance",
+                "type": "Text",
+                "width": 100
+              },
+              "key": "title"
+            }
+          ],
+          "id": "row-2057"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "gridRawStorageInfo": {
+                  "coldefs": {},
+                  "columnWidth": null,
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "sort": null
+                },
+                "height": 400,
+                "params": [
+                  {
+                    "name": "domain",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "dataset = endpoints\n| filter domain in($domain) \n| fields endpoint_name, agent_version, content_version, assigned_prevention_policy",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "type": "Custom XQL",
+                "viewOptions": {
+                  "commands": [],
+                  "type": "table"
+                },
+                "width": 100
+              },
+              "key": "xql_1692974866872"
+            }
+          ],
+          "id": "row-6551"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 50,
+                "style": {
+                  "bgColor": "#ffffff",
+                  "bgColorDark": "#1a1a1a",
+                  "textColor": "#333",
+                  "textColorDark": "#a9a9aa"
+                },
+                "text": "NIST CSF: Incident Response",
+                "type": "Text",
+                "width": 100
+              },
+              "key": "title"
+            }
+          ],
+          "id": "row-1734"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 400,
+                "phrase": "dataset = incidents \n| comp count() as the_count by severity \n| sort desc the_count\n| view graph type = column subtype = grouped header = \"Incident count by severity\" xaxis = severity yaxis = the_count legend = `false` xaxistitle = \"Severity\" yaxistitle = \"# of incidents\" ",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "type": "Custom XQL",
+                "viewOptions": {
+                  "commands": [
+                    {
+                      "command": {
+                        "name": "subtype",
+                        "op": "=",
+                        "value": "grouped"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "header",
+                        "op": "=",
+                        "value": "\"Incident count by severity\""
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "xaxis",
+                        "op": "=",
+                        "value": "severity"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "yaxis",
+                        "op": "=",
+                        "value": "the_count"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "legend",
+                        "op": "=",
+                        "value": "`false`"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "xaxistitle",
+                        "op": "=",
+                        "value": "\"Severity\""
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "yaxistitle",
+                        "op": "=",
+                        "value": "\"# of incidents\""
+                      }
+                    }
+                  ],
+                  "type": "column"
+                },
+                "width": 100
+              },
+              "key": "xql_1692974916216"
+            }
+          ],
+          "id": "row-1998"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 50,
+                "style": {
+                  "bgColor": "#ffffff",
+                  "bgColorDark": "#1a1a1a",
+                  "textColor": "#333",
+                  "textColorDark": "#a9a9aa"
+                },
+                "text": "NIST CSF: Intrusion detection and prevention",
+                "type": "Text",
+                "width": 100
+              },
+              "key": "title"
+            }
+          ],
+          "id": "row-6919"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "gridRawStorageInfo": {
+                  "coldefs": {},
+                  "columnWidth": null,
+                  "rowHeight": null,
+                  "sort": null
+                },
+                "height": 400,
+                "params": [
+                  {
+                    "name": "host",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "preset = xdr_login_events \n| filter agent_hostname in($host)\n| filter (action_local_port in (22, 23, 445, 3389)) ",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "type": "Custom XQL",
+                "viewOptions": {
+                  "commands": [],
+                  "type": "table"
+                },
+                "width": 100
+              },
+              "key": "xql_1692974975196"
+            }
+          ],
+          "id": "row-5908"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 50,
+                "style": {
+                  "bgColor": "#ffffff",
+                  "bgColorDark": "#1a1a1a",
+                  "textColor": "#333",
+                  "textColorDark": "#a9a9aa"
+                },
+                "text": "NIST CSF: Vuln Management",
+                "type": "Text",
+                "width": 100
+              },
+              "key": "title"
+            }
+          ],
+          "id": "row-2405"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 400,
+                "phrase": "preset = host_inventory_applications \n| fields install_date, vendor , application_name, raw_version , platform \n| limit 1000",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "type": "Custom XQL",
+                "viewOptions": {
+                  "commands": [],
+                  "type": "table"
+                },
+                "width": 100
+              },
+              "key": "xql_1692975108186"
+            }
+          ],
+          "id": "row-3058"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 50,
+                "style": {
+                  "bgColor": "#ffffff",
+                  "bgColorDark": "#1a1a1a",
+                  "textColor": "#333",
+                  "textColorDark": "#a9a9aa"
+                },
+                "text": "NIST CSF: Planning",
+                "type": "Text",
+                "width": 100
+              },
+              "key": "title"
+            }
+          ],
+          "id": "row-7853"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 400,
+                "phrase": "preset = host_inventory_kbs \n| filter description = \"Security Update\"\n| fields endpoint_name, endpoint_type, name \n| comp count() as kb by name\n| sort desc name\n| view graph type = column subtype = stacked xaxis = name yaxis = kb legend = `false` xaxistitle = \"Security update\" yaxistitle = \"# of endpoints\" ",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "type": "Custom XQL",
+                "viewOptions": {
+                  "commands": [
+                    {
+                      "command": {
+                        "name": "subtype",
+                        "op": "=",
+                        "value": "stacked"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "xaxis",
+                        "op": "=",
+                        "value": "name"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "yaxis",
+                        "op": "=",
+                        "value": "kb"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "legend",
+                        "op": "=",
+                        "value": "`false`"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "xaxistitle",
+                        "op": "=",
+                        "value": "\"Security update\""
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "yaxistitle",
+                        "op": "=",
+                        "value": "\"# of endpoints\""
+                      }
+                    }
+                  ],
+                  "type": "column"
+                },
+                "width": 100
+              },
+              "key": "xql_1692975142008"
+            }
+          ],
+          "id": "row-2632"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 50,
+                "style": {
+                  "bgColor": "#ffffff",
+                  "bgColorDark": "#1a1a1a",
+                  "textColor": "#333",
+                  "textColorDark": "#a9a9aa"
+                },
+                "text": "NIST CSF: Risk Assessment",
+                "type": "Text",
+                "width": 100
+              },
+              "key": "title"
+            }
+          ],
+          "id": "row-4452"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "gridRawStorageInfo": {
+                  "coldefs": {},
+                  "columnWidth": null,
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "sort": null
+                },
+                "height": 400,
+                "phrase": "preset = host_inventory_applications \n| filter application_name ~= \"Google Chrome|Microsoft Edge|Firefox|Internet Explore\"\n| comp count() as version_counter by version, application_name",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "type": "Custom XQL",
+                "viewOptions": {
+                  "commands": [],
+                  "type": "table"
+                },
+                "width": 100
+              },
+              "key": "xql_1692975232468"
+            }
+          ],
+          "id": "row-8357"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 50,
+                "style": {
+                  "bgColor": "#ffffff",
+                  "bgColorDark": "#1a1a1a",
+                  "textColor": "#333",
+                  "textColorDark": "#a9a9aa"
+                },
+                "text": "NIST CSF: Data Security",
+                "type": "Text",
+                "width": 100
+              },
+              "key": "title"
+            }
+          ],
+          "id": "row-1283"
+        },
+        {
+          "data": [
+            {
+              "data": {
+                "height": 400,
+                "phrase": "preset = network_story \n| filter associated_rules != null and associated_rules != \"\"\n| comp count() by associated_rules\n|\n view graph type = column subtype = grouped header = \"Top triggered network rules in the past 24 hours\" xaxis = associated_rules yaxis = count_1 legend = `false` xaxistitle = \"Triggered Rule Name\" yaxistitle = \"# of events\" ",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "type": "Custom XQL",
+                "viewOptions": {
+                  "commands": [
+                    {
+                      "command": {
+                        "name": "subtype",
+                        "op": "=",
+                        "value": "grouped"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "header",
+                        "op": "=",
+                        "value": "\"Top triggered network rules in the past 24 hours\""
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "xaxis",
+                        "op": "=",
+                        "value": "associated_rules"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "yaxis",
+                        "op": "=",
+                        "value": "count_1"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "legend",
+                        "op": "=",
+                        "value": "false"
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "xaxistitle",
+                        "op": "=",
+                        "value": "\"Triggered Rule Name\""
+                      }
+                    },
+                    {
+                      "command": {
+                        "name": "yaxistitle",
+                        "op": "=",
+                        "value": "\"# of events\""
+                      }
+                    }
+                  ],
+                  "type": "column"
+                },
+                "width": 100
+              },
+              "key": "xql_1692975320300"
+            }
+          ],
+          "id": "row-4944"
+        }
+      ],
+      "metadata": {
+        "cache_ttl": 30,
+        "params": [
+          {
+            "executionID": "89156961dee146_414362_inv",
+            "filterComponentType": "MULTI_SELECT",
+            "investigation": {
+              "dashboard_id": null,
+              "input_dict": {
+                "notification_link": "xql/xql-search/_EXECUTION_ID_",
+                "query_definition_name": "XQL-QUERY-89268",
+                "query_editor": "xql",
+                "run_in_background": false,
+                "schedule": null,
+                "tenants": [],
+                "xql": "preset = xdr_login_events \n| filter agent_hostname contains \"*\"\n| fields agent_hostname"
+              },
+              "source": "investigation",
+              "timeframe": {
+                "relativeTime": 86400000
+              },
+              "ttl": "0"
+            },
+            "investigationColumn": "agent_hostname",
+            "investigationError": null,
+            "name": "host",
+            "title": "Host",
+            "type": "DYNAMIC",
+            "value": [
+              "*"
+            ],
+            "valueOptions": []
+          },
+          {
+            "executionID": "28d7aa91856f47_414357_inv",
+            "filterComponentType": "MULTI_SELECT",
+            "investigation": {
+              "dashboard_id": null,
+              "input_dict": {
+                "notification_link": "xql/xql-search/_EXECUTION_ID_",
+                "query_definition_name": "XQL-QUERY-89270",
+                "query_editor": "xql",
+                "run_in_background": false,
+                "schedule": null,
+                "tenants": [],
+                "xql": "dataset = endpoints\n| filter domain contains \"*\"\n| fields domain"
+              },
+              "source": "investigation",
+              "timeframe": {
+                "relativeTime": 86400000
+              },
+              "ttl": "0"
+            },
+            "investigationColumn": "domain",
+            "investigationError": null,
+            "name": "domain",
+            "title": "Domain",
+            "type": "DYNAMIC",
+            "value": [
+              "*"
+            ],
+            "valueOptions": []
+          },
+          {
+            "executionID": "51cae295dcf344_414356_inv",
+            "filterComponentType": "MULTI_SELECT",
+            "investigation": {
+              "dashboard_id": null,
+              "input_dict": {
+                "notification_link": "xql/xql-search/_EXECUTION_ID_",
+                "query_definition_name": "XQL-QUERY-89271",
+                "query_editor": "xql",
+                "run_in_background": false,
+                "schedule": null,
+                "tenants": [],
+                "xql": "dataset = endpoints \n| filter last_upgrade_status not contains \"COMPLETED\"\n| filter assigned_prevention_policy contains \"*\"\n| fields assigned_prevention_policy "
+              },
+              "source": "investigation",
+              "timeframe": {
+                "relativeTime": 86400000
+              },
+              "ttl": "0"
+            },
+            "investigationColumn": "assigned_prevention_policy",
+            "investigationError": null,
+            "name": "policy",
+            "title": "Policy",
+            "type": "DYNAMIC",
+            "value": [],
+            "valueOptions": []
+          }
+        ]
+      },
+      "name": "NIST CSF Compliance Dashboard",
+      "status": "ENABLED"
+    }
+  ],
+  "fromVersion": "8.4.0",
+  "widgets_data": [
+    {
+      "additional_info": {
+        "query_tables": [
+          "xdr_data"
+        ],
+        "query_uses_library": false
+      },
+      "creation_time": 1696525542609,
+      "data": {
+        "gridRawStorageInfo": {
+          "coldefs": {},
+          "columnWidth": null,
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "sort": null
+        },
+        "params": [
+          {
+            "name": "host",
+            "value": "*"
+          }
+        ],
+        "phrase": "preset = xdr_login_events \n| filter array_length(assigned_privileges ) > 0 or elevated_token != null\n| filter agent_hostname in($host)\n| comp count() as login_count by agent_hostname, agent_ip_addresses, agent_os_type  \n| sort desc login_count\n| fields agent_hostname, agent_ip_addresses, agent_os_type, login_count\n| limit 100",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "commands": [],
+          "type": "table"
+        }
+      },
+      "description": "Implement policies and procedures to monitor access to systems. Use this widget to query XDR login events.",
+      "support_time_range": true,
+      "title": "Compliance: Access Control",
+      "widget_key": "xql_1692974494975"
+    },
+    {
+      "additional_info": {
+        "query_tables": [
+          "xdr_data"
+        ],
+        "query_uses_library": false
+      },
+      "creation_time": 1696525543399,
+      "data": {
+        "phrase": "preset = authentication_story\n| alter target_or_domain = coalesce(auth_target , auth_domain)\n| comp count_distinct(auth_client) as unique_clients by associated_products, target_or_domain\n| sort desc unique_clients\n| limit 100\n| alter target_or_domain_with_product = concat(target_or_domain, \" (\", associated_products, \")\")\n|\n view graph type = pie xaxis = target_or_domain_with_product yaxis = unique_clients ",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "commands": [
+            {
+              "command": {
+                "name": "xaxis",
+                "op": "=",
+                "value": "target_or_domain_with_product"
+              }
+            },
+            {
+              "command": {
+                "name": "yaxis",
+                "op": "=",
+                "value": "unique_clients"
+              }
+            }
+          ],
+          "type": "pie"
+        }
+      },
+      "description": "Implement policies and procedures to monitor the identity of users, devices, and processes. Use this widget to query uniquely targeted clients.",
+      "support_time_range": true,
+      "title": "Compliance: Identify",
+      "widget_key": "xql_1692974620140"
+    },
+    {
+      "additional_info": {
+        "query_tables": [
+          "endpoints"
+        ],
+        "query_uses_library": false
+      },
+      "creation_time": 1696525544175,
+      "data": {
+        "params": [
+          {
+            "name": "policy",
+            "value": "*"
+          }
+        ],
+        "phrase": "dataset = endpoints \n| filter last_upgrade_status = \"FAILED\"\n| filter assigned_prevention_policy in ($policy)\n| comp count () as completed\n|\n view graph type = gauge subtype = radial header = \"Endpoints with failed upgrade status\" yaxis = completed maxscalerange = 10 scale_threshold(\"#38c400\",\"#f59504\",\"5\",\"#e60700\",\"7\") ",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "commands": [
+            {
+              "command": {
+                "name": "subtype",
+                "op": "=",
+                "value": "radial"
+              }
+            },
+            {
+              "command": {
+                "name": "header",
+                "op": "=",
+                "value": "\"Endpoints with failed upgrade status\""
+              }
+            },
+            {
+              "command": {
+                "name": "yaxis",
+                "op": "=",
+                "value": "completed"
+              }
+            },
+            {
+              "command": {
+                "name": "maxscalerange",
+                "op": "=",
+                "value": "10"
+              }
+            },
+            {
+              "func": {
+                "args": [
+                  "#38c400",
+                  "#f59504",
+                  5,
+                  "#e60700",
+                  7
+                ],
+                "name": "scale_threshold"
+              }
+            }
+          ],
+          "type": "gauge"
+        }
+      },
+      "description": "Implement policies and procedures to ensure the integrity of systems and data. Use this widget to query the endpoints with a failed upgrade status.",
+      "support_time_range": true,
+      "title": "Compliance: System Management",
+      "widget_key": "xql_1692974829321"
+    },
+    {
+      "additional_info": {
+        "query_tables": [
+          "endpoints"
+        ],
+        "query_uses_library": false
+      },
+      "creation_time": 1696525544406,
+      "data": {
+        "gridRawStorageInfo": {
+          "coldefs": {},
+          "columnWidth": null,
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "sort": null
+        },
+        "params": [
+          {
+            "name": "domain",
+            "value": "*"
+          }
+        ],
+        "phrase": "dataset = endpoints\n| filter domain in($domain) \n| fields endpoint_name, agent_version, content_version, assigned_prevention_policy",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "commands": [],
+          "type": "table"
+        }
+      },
+      "description": "Implement policies and procedures to establish processes and controls for ongoing maintenance. Use this widget to endpoint and product information.",
+      "support_time_range": true,
+      "title": "Compliance: Maintenance",
+      "widget_key": "xql_1692974866872"
+    },
+    {
+      "additional_info": {
+        "query_tables": [
+          "incidents"
+        ],
+        "query_uses_library": false
+      },
+      "creation_time": 1696525544635,
+      "data": {
+        "phrase": "dataset = incidents \n| comp count() as the_count by severity \n| sort desc the_count\n| view graph type = column subtype = grouped header = \"Incident count by severity\" xaxis = severity yaxis = the_count legend = `false` xaxistitle = \"Severity\" yaxistitle = \"# of incidents\" ",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "commands": [
+            {
+              "command": {
+                "name": "subtype",
+                "op": "=",
+                "value": "grouped"
+              }
+            },
+            {
+              "command": {
+                "name": "header",
+                "op": "=",
+                "value": "\"Incident count by severity\""
+              }
+            },
+            {
+              "command": {
+                "name": "xaxis",
+                "op": "=",
+                "value": "severity"
+              }
+            },
+            {
+              "command": {
+                "name": "yaxis",
+                "op": "=",
+                "value": "the_count"
+              }
+            },
+            {
+              "command": {
+                "name": "legend",
+                "op": "=",
+                "value": "`false`"
+              }
+            },
+            {
+              "command": {
+                "name": "xaxistitle",
+                "op": "=",
+                "value": "\"Severity\""
+              }
+            },
+            {
+              "command": {
+                "name": "yaxistitle",
+                "op": "=",
+                "value": "\"# of incidents\""
+              }
+            }
+          ],
+          "type": "column"
+        }
+      },
+      "description": "Implement policies and procedures to detect, respond to, and recover from security incidents. Use this widget to query incidents by severity.",
+      "support_time_range": true,
+      "title": "Compliance: Threat Protection/Incident Response",
+      "widget_key": "xql_1692974916216"
+    },
+    {
+      "additional_info": {
+        "query_tables": [
+          "xdr_data"
+        ],
+        "query_uses_library": false
+      },
+      "creation_time": 1696525546240,
+      "data": {
+        "gridRawStorageInfo": {
+          "coldefs": {},
+          "columnWidth": null,
+          "rowHeight": null,
+          "sort": null
+        },
+        "params": [
+          {
+            "name": "host",
+            "value": "*"
+          }
+        ],
+        "phrase": "preset = xdr_login_events \n| filter agent_hostname in($host)\n| filter (action_local_port in (22, 23, 445, 3389)) ",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "commands": [],
+          "type": "table"
+        }
+      },
+      "description": "Implement policies and procedures to assess, authorize, and monitor systems. Use this widget to query XDR login events.",
+      "support_time_range": true,
+      "title": "Compliance: Continuous Monitoring",
+      "widget_key": "xql_1692974975196"
+    },
+    {
+      "additional_info": {
+        "query_tables": [
+          "host_inventory"
+        ],
+        "query_uses_library": false
+      },
+      "creation_time": 1696525546747,
+      "data": {
+        "phrase": "preset = host_inventory_applications \n| fields install_date, vendor , application_name, raw_version , platform \n| limit 1000",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "commands": [],
+          "type": "table"
+        }
+      },
+      "description": "Implement policies and procedures to monitor systems and services. Use this widget to query host inventory.",
+      "support_time_range": true,
+      "title": "Compliance: Vulnerability Management",
+      "widget_key": "xql_1692975108186"
+    },
+    {
+      "additional_info": {
+        "query_tables": [
+          "host_inventory"
+        ],
+        "query_uses_library": false
+      },
+      "creation_time": 1696525547491,
+      "data": {
+        "phrase": "preset = host_inventory_kbs \n| filter description = \"Security Update\"\n| fields endpoint_name, endpoint_type, name \n| comp count() as kb by name\n| sort desc name\n| view graph type = column subtype = stacked xaxis = name yaxis = kb legend = `false` xaxistitle = \"Security update\" yaxistitle = \"# of endpoints\" ",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "commands": [
+            {
+              "command": {
+                "name": "subtype",
+                "op": "=",
+                "value": "stacked"
+              }
+            },
+            {
+              "command": {
+                "name": "xaxis",
+                "op": "=",
+                "value": "name"
+              }
+            },
+            {
+              "command": {
+                "name": "yaxis",
+                "op": "=",
+                "value": "kb"
+              }
+            },
+            {
+              "command": {
+                "name": "legend",
+                "op": "=",
+                "value": "`false`"
+              }
+            },
+            {
+              "command": {
+                "name": "xaxistitle",
+                "op": "=",
+                "value": "\"Security update\""
+              }
+            },
+            {
+              "command": {
+                "name": "yaxistitle",
+                "op": "=",
+                "value": "\"# of endpoints\""
+              }
+            }
+          ],
+          "type": "column"
+        }
+      },
+      "description": "Implement policies and procedures to manage cybersecurity products. Use this widget to query product data.",
+      "support_time_range": true,
+      "title": "Compliance: Planning",
+      "widget_key": "xql_1692975142008"
+    },
+    {
+      "additional_info": {
+        "query_tables": [
+          "host_inventory"
+        ],
+        "query_uses_library": false
+      },
+      "creation_time": 1696525548448,
+      "data": {
+        "gridRawStorageInfo": {
+          "coldefs": {},
+          "columnWidth": null,
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "sort": null
+        },
+        "phrase": "preset = host_inventory_applications \n| filter application_name ~= \"Google Chrome|Microsoft Edge|Firefox|Internet Explore\"\n| comp count() as version_counter by version, application_name",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "commands": [],
+          "type": "table"
+        }
+      },
+      "description": "Implement policies and procedures to identify, assess, and mitigate risks to data. Use this widget to query host inventory applications.",
+      "support_time_range": true,
+      "title": "Compliance: Risk Assesment",
+      "widget_key": "xql_1692975232468"
+    },
+    {
+      "additional_info": {
+        "query_tables": [
+          "xdr_data"
+        ],
+        "query_uses_library": false
+      },
+      "creation_time": 1696525551990,
+      "data": {
+        "phrase": "preset = network_story \n| filter associated_rules != null and associated_rules != \"\"\n| comp count() by associated_rules\n|\n view graph type = column subtype = grouped header = \"Top triggered network rules in the past 24 hours\" xaxis = associated_rules yaxis = count_1 legend = `false` xaxistitle = \"Triggered Rule Name\" yaxistitle = \"# of events\" ",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "commands": [
+            {
+              "command": {
+                "name": "subtype",
+                "op": "=",
+                "value": "grouped"
+              }
+            },
+            {
+              "command": {
+                "name": "header",
+                "op": "=",
+                "value": "\"Top triggered network rules in the past 24 hours\""
+              }
+            },
+            {
+              "command": {
+                "name": "xaxis",
+                "op": "=",
+                "value": "associated_rules"
+              }
+            },
+            {
+              "command": {
+                "name": "yaxis",
+                "op": "=",
+                "value": "count_1"
+              }
+            },
+            {
+              "command": {
+                "name": "legend",
+                "op": "=",
+                "value": "false"
+              }
+            },
+            {
+              "command": {
+                "name": "xaxistitle",
+                "op": "=",
+                "value": "\"Triggered Rule Name\""
+              }
+            },
+            {
+              "command": {
+                "name": "yaxistitle",
+                "op": "=",
+                "value": "\"# of events\""
+              }
+            }
+          ],
+          "type": "column"
+        }
+      },
+      "description": "Implement policies and procedures to protect and monitor communications channels. Use this widget to query triggered network rules.",
+      "support_time_range": true,
+      "title": "Compliance: Transmission/Network Security",
+      "widget_key": "xql_1692975320300"
+    }
+  ]
+}

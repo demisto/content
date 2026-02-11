@@ -1,0 +1,45 @@
+tests:
+  - name: List all compliance standards
+    prompt: "Show me all compliance standards"
+    agent_id: 54fd9f8d-4177-46a3-8cd0-24b234efe21d
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+        - action_id: 54fd9f8d-4177-46a3-8cd0-24b234efe21dListComplianceStandards
+          arguments:
+            page_size: 100
+            page_number: 0
+
+  - name: Specific page of cloud standards
+    prompt: "Show me the second page of cloud provider compliance standards"
+    agent_id: 54fd9f8d-4177-46a3-8cd0-24b234efe21d
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+        - action_id: 54fd9f8d-4177-46a3-8cd0-24b234efe21dListComplianceStandards
+          arguments:
+            labels: "Aws,Azure,GCP"
+            page_number: 1
+            page_size: 50
+
+
+  - name: Specific named standard search
+    prompt: "Find compliance standards with 'Security' in the name"
+    agent_id: 54fd9f8d-4177-46a3-8cd0-24b234efe21d
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+        - action_id: 54fd9f8d-4177-46a3-8cd0-24b234efe21dListComplianceStandards
+          arguments:
+            name: "Security"
+
+
+  - name: Filter by System created standards
+    prompt: "List all system-created compliance standards"
+    agent_id: 54fd9f8d-4177-46a3-8cd0-24b234efe21d
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+        - action_id: 54fd9f8d-4177-46a3-8cd0-24b234efe21dListComplianceStandards
+          arguments:
+            created_by: "System"

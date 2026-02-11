@@ -1,0 +1,58 @@
+commonfields:
+  id: CortexGetEndpointUpdateVersions
+  version: -1
+name: CortexGetEndpointUpdateVersions
+display: Cortex - Get Endpoint Update Versions
+tags:
+ - Endpoint
+category: Endpoint
+description: >
+  Retrieves endpoints (can also be referred as XDR Agents or Agents) available update versions for the provided endpoint ID.
+args:
+  - name: endpoint_ids
+    description: A comma-separated list of endpoint IDs.
+    required: true
+    type: string
+    underlyingargname: endpoint_ids
+outputs:
+  - underlyingoutputcontextpath: Core.EndpointUpdateVersion.total_count
+    type: string
+    description: Total number of endpoints.
+    name: Core.EndpointUpdateVersion.total_count
+  - underlyingoutputcontextpath: Core.EndpointUpdateVersion.platform_count
+    type: string
+    description: Number of endpoints per platform.
+    name: Core.EndpointUpdateVersion.platform_count
+  - underlyingoutputcontextpath: Core.EndpointUpdateVersion.distributions.platform
+    type: string
+    description: The platform of the endpoint update.
+    name: Core.EndpointUpdateVersion.distributions.platform
+  - underlyingoutputcontextpath: Core.EndpointUpdateVersion.distributions.version
+    type: string
+    description: The version of the endpoint update.
+    name: Core.EndpointUpdateVersion.distributions.version
+  - underlyingoutputcontextpath: Core.EndpointUpdateVersion.distributions.endpoints_with_higher_version_count
+    type: string
+    description: The number of endpoints running a version later than the specified update.
+    name: Core.EndpointUpdateVersion.distributions.endpoints_with_higher_version_count
+  - underlyingoutputcontextpath: Core.EndpointUpdateVersion.distributions.endpoints_with_same_version_count
+    type: string
+    description: The number of endpoints running the same version as the specified update.
+    name: Core.EndpointUpdateVersion.distributions.endpoints_with_same_version_count
+  - underlyingoutputcontextpath: Core.EndpointUpdateVersion.distributions.endpoints_with_lower_version_count
+    type: string
+    description: The number of endpoints running a version earlier than the specified update.
+    name: Core.EndpointUpdateVersion.distributions.endpoints_with_lower_version_count
+underlyingcontentitem:
+  id: Cortex Core - Platform
+  name: Cortex Core - Platform
+  type: command
+  version: -1
+  command: core-get-endpoint-update-version
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- cloud_runtime_security
+- edr
+- xsiam

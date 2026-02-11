@@ -1,0 +1,271 @@
+commonfields:
+  id: CortexListAppSecAssetCoverage
+  version: -1
+name: CortexListAppSecAssetCoverage
+display: Cortex - List AppSec Asset Coverage
+tags:
+  - Utilities
+  - ASPM
+  - Coverage
+category: Utilities
+description: |
+  Retrieves Application Security Posture Management (ASPM) coverage statistics and detailed asset information
+  based on provided filters.
+  Note: Due to a default value constraint on the asset result size, the asset data returned may be partial and not reflect the complete set of matching asset results.
+
+args:
+  - name: asset_id
+    underlyingargname: asset_id
+    description: >
+      A comma-separated list of asset IDs to filter by.
+    type: string
+    required: false
+  - name: asset_name
+    underlyingargname: asset_name
+    description: >
+      A comma-separated list of asset names to filter by.
+    type: string
+    required: false
+  - name: business_application_names
+    underlyingargname: business_application_names
+    description: >
+      A comma-separated list of business application names to filter by.
+    type: string
+    required: false
+  - name: status_coverage
+    underlyingargname: status_coverage
+    description: >
+      A comma-separated list of coverage statuses to filter by.
+      Options: FULLY SCANNED, NOT SCANNED, PARTIALLY SCANNED.
+    type: string
+    required: false
+  - name: is_scanned_by_vulnerabilities
+    underlyingargname: is_scanned_by_vulnerabilities
+    description: >
+      A comma-separated list of vulnerability scanning statuses to filter by.
+      Options: DISABLED, ENABLED, IRRELEVANT.
+    type: string
+    required: false
+  - name: is_scanned_by_code_weakness
+    underlyingargname: is_scanned_by_code_weakness
+    description: >
+      A comma-separated list of code weakness scanning statuses to filter by.
+      Options: DISABLED, ENABLED, IRRELEVANT.
+    type: string
+    required: false
+  - name: is_scanned_by_secrets
+    underlyingargname: is_scanned_by_secrets
+    description: >
+      A comma-separated list of secret scanning statuses to filter by.
+      Options: DISABLED, ENABLED, IRRELEVANT.
+    type: string
+    required: false
+  - name: is_scanned_by_iac
+    underlyingargname: is_scanned_by_iac
+    description: >
+      A comma-separated list of infrastructure-as-code (IaC) scanning statuses to filter by.
+      Options: DISABLED, ENABLED, IRRELEVANT.
+    type: string
+    required: false
+  - name: is_scanned_by_malware
+    underlyingargname: is_scanned_by_malware
+    description: >
+      A comma-separated list of malware scanning statuses to filter by.
+      Options: DISABLED, ENABLED, IRRELEVANT.
+    type: string
+    required: false
+  - name: asset_type
+    underlyingargname: asset_type
+    description: >
+      A comma-separated list of asset types to filter by.
+      Options: CICD PIPELINE, CONTAINER IMAGE REPOSITORY, REPOSITORY.
+    type: string
+    required: false
+  - name: asset_provider
+    underlyingargname: asset_provider
+    description: >
+      A comma-separated list of asset providers to filter by.
+      Options: AWS, AWS_CODE_BUILD, AWS_CODE_COMMIT, AZURE, AZURE_PIPELINES, AZURE_REPOS, BITBUCKET, CIRCLE_CI, DOCKER, GCP, GITHUB, GITHUB_ACTIONS, GITLAB, GITLAB_CI, HCP_TFC_RUN_TASKS, JENKINS, JFROG_ARTIFACTORY, OCI.
+    type: string
+    required: false
+  - name: limit
+    underlyingargname: limit
+    description: >
+      The maximum number of assets to return.
+    type: number
+    required: false
+    defaultvalue: "50"
+outputs:
+  - underlyingoutputcontextpath: Core.Coverage.total_filtered_assets
+    description: |
+      IMPORTANT: total_filtered_assets must always be part of the response displayed to the user. This field must be accompanied by its definition: The total number of asset results in the system that match the filter criteria.
+    type: Number
+    name: Core.Coverage.total_filtered_assets
+  - underlyingoutputcontextpath: Core.Coverage.number_returned_assets
+    description: |
+      IMPORTANT: number_returned_assets must always be part of the response displayed to the user. This field must be accompanied by its definition: The actual number of asset results returned in this specific execution.
+    type: Number
+    name: Core.Coverage.number_returned_assets
+  - underlyingoutputcontextpath: Core.Coverage.Asset.asset_id
+    description: The unique ID of the asset.
+    type: String
+    name: Core.Coverage.Asset.asset_id
+  - name: Core.Coverage.coverage_percentage
+    underlyingoutputcontextpath: Core.Coverage.coverage_percentage
+    description: The ASPM coverage percentage calculated from the scanner coverage histogram.
+    type: Number
+
+  - name: Core.Coverage.Metrics.aspm_status_coverage.partially_scanned_count
+    underlyingoutputcontextpath: Core.Coverage.Metrics.aspm_status_coverage.partially_scanned_count
+    description: The number of assets that are partially scanned according to ASPM coverage.
+    type: Number
+
+  - name: Core.Coverage.Metrics.aspm_status_coverage.fully_scanned_count
+    underlyingoutputcontextpath: Core.Coverage.Metrics.aspm_status_coverage.fully_scanned_count
+    description: The number of assets that are fully scanned according to ASPM coverage.
+    type: Number
+
+  - name: Core.Coverage.Metrics.aspm_status_coverage.not_scanned_count
+    underlyingoutputcontextpath: Core.Coverage.Metrics.aspm_status_coverage.not_scanned_count
+    description: The number of assets that are not scanned according to ASPM coverage.
+    type: Number
+
+  - name: Core.Coverage.Metrics.aspm_status_coverage.partially_scanned_percentage
+    underlyingoutputcontextpath: Core.Coverage.Metrics.aspm_status_coverage.partially_scanned_percentage
+    description: The percentage of assets that are partially scanned according to ASPM coverage.
+    type: Number
+
+  - name: Core.Coverage.Metrics.aspm_status_coverage.fully_scanned_percentage
+    underlyingoutputcontextpath: Core.Coverage.Metrics.aspm_status_coverage.fully_scanned_percentage
+    description: The percentage of assets that are fully scanned according to ASPM coverage.
+    type: Number
+
+  - name: Core.Coverage.Metrics.aspm_status_coverage.not_scanned_percentage
+    underlyingoutputcontextpath: Core.Coverage.Metrics.aspm_status_coverage.not_scanned_percentage
+    description: The percentage of assets that are not scanned according to ASPM coverage.
+    type: Number
+
+  - name: Core.Coverage.Metrics.is_scanned_by_vulnerabilities.coverage_percentage
+    underlyingoutputcontextpath: Core.Coverage.Metrics.is_scanned_by_vulnerabilities.coverage_percentage
+    description: The percentage of assets scanned for vulnerabilities.
+    type: Number
+
+  - name: Core.Coverage.Metrics.is_scanned_by_vulnerabilities.enabled
+    underlyingoutputcontextpath: Core.Coverage.Metrics.is_scanned_by_vulnerabilities.enabled
+    description: The number of assets where vulnerability scanning is enabled.
+    type: Number
+
+  - name: Core.Coverage.Metrics.is_scanned_by_vulnerabilities.disabled
+    underlyingoutputcontextpath: Core.Coverage.Metrics.is_scanned_by_vulnerabilities.disabled
+    description: The number of assets where vulnerability scanning is disabled.
+    type: Number
+
+  - name: Core.Coverage.Metrics.is_scanned_by_code_weakness.coverage_percentage
+    underlyingoutputcontextpath: Core.Coverage.Metrics.is_scanned_by_code_weakness.coverage_percentage
+    description: The percentage of assets scanned for code weaknesses.
+    type: Number
+
+  - name: Core.Coverage.Metrics.is_scanned_by_code_weakness.enabled
+    underlyingoutputcontextpath: Core.Coverage.Metrics.is_scanned_by_code_weakness.enabled
+    description: The number of assets where code weakness scanning is enabled.
+    type: Number
+
+  - name: Core.Coverage.Metrics.is_scanned_by_code_weakness.disabled
+    underlyingoutputcontextpath: Core.Coverage.Metrics.is_scanned_by_code_weakness.disabled
+    description: The number of assets where code weakness scanning is disabled.
+    type: Number
+
+  - name: Core.Coverage.Metrics.is_scanned_by_secrets.coverage_percentage
+    underlyingoutputcontextpath: Core.Coverage.Metrics.is_scanned_by_secrets.coverage_percentage
+    description: The percentage of assets scanned for secrets.
+    type: Number
+
+  - name: Core.Coverage.Metrics.is_scanned_by_secrets.enabled
+    underlyingoutputcontextpath: Core.Coverage.Metrics.is_scanned_by_secrets.enabled
+    description: The number of assets where secret scanning is enabled.
+    type: Number
+
+  - name: Core.Coverage.Metrics.is_scanned_by_secrets.disabled
+    underlyingoutputcontextpath: Core.Coverage.Metrics.is_scanned_by_secrets.disabled
+    description: The number of assets where secret scanning is disabled.
+    type: Number
+
+  - name: Core.Coverage.Metrics.is_scanned_by_iac.coverage_percentage
+    underlyingoutputcontextpath: Core.Coverage.Metrics.is_scanned_by_iac.coverage_percentage
+    description: The percentage of assets scanned for infrastructure-as-code (IaC) issues.
+    type: Number
+
+  - name: Core.Coverage.Metrics.is_scanned_by_iac.enabled
+    underlyingoutputcontextpath: Core.Coverage.Metrics.is_scanned_by_iac.enabled
+    description: The number of assets where infrastructure-as-code (IaC) scanning is enabled.
+    type: Number
+
+  - name: Core.Coverage.Metrics.is_scanned_by_iac.disabled
+    underlyingoutputcontextpath: Core.Coverage.Metrics.is_scanned_by_iac.disabled
+    description: The number of assets where infrastructure-as-code (IaC) scanning is disabled.
+    type: Number
+
+  - name: Core.Coverage.Metrics.is_scanned_by_malware.coverage_percentage
+    underlyingoutputcontextpath: Core.Coverage.Metrics.is_scanned_by_malware.coverage_percentage
+    description: The percentage of assets scanned for malware.
+    type: Number
+
+  - name: Core.Coverage.Metrics.is_scanned_by_malware.enabled
+    underlyingoutputcontextpath: Core.Coverage.Metrics.is_scanned_by_malware.enabled
+    description: The number of assets where malware scanning is enabled.
+    type: Number
+
+  - name: Core.Coverage.Metrics.is_scanned_by_malware.disabled
+    underlyingoutputcontextpath: Core.Coverage.Metrics.is_scanned_by_malware.disabled
+    description: The number of assets where malware scanning is disabled.
+    type: Number
+
+  - underlyingoutputcontextpath: Core.Coverage.Asset.asset_name
+    description: The name of the asset.
+    type: String
+    name: Core.Coverage.Asset.asset_name
+  - underlyingoutputcontextpath: Core.Coverage.Asset.asset_provider
+    description: The vendor or source platform of the asset.
+    type: String
+    name: Core.Coverage.Asset.asset_provider
+  - underlyingoutputcontextpath: Core.Coverage.Asset.asset_type
+    description: The type or category of the asset.
+    type: String
+    name: Core.Coverage.Asset.asset_type
+  - underlyingoutputcontextpath: Core.Coverage.Asset.status_coverage
+    description: The overall scan coverage status of the asset.
+    type: String
+    name: Core.Coverage.Asset.status_coverage
+  - underlyingoutputcontextpath: Core.Coverage.Asset.is_scanned_by_vulnerabilities
+    description: The vulnerability scanning status for the asset.
+    type: String
+    name: Core.Coverage.Asset.is_scanned_by_vulnerabilities
+  - underlyingoutputcontextpath: Core.Coverage.Asset.is_scanned_by_code_weakness
+    description: The code weakness scanning status for the asset.
+    type: String
+    name: Core.Coverage.Asset.is_scanned_by_code_weakness
+  - underlyingoutputcontextpath: Core.Coverage.Asset.is_scanned_by_secrets
+    description: The secret scanning status for the asset.
+    type: String
+    name: Core.Coverage.Asset.is_scanned_by_secrets
+  - underlyingoutputcontextpath: Core.Coverage.Asset.is_scanned_by_iac
+    description: The infrastructure-as-code scanning status for the asset.
+    type: String
+    name: Core.Coverage.Asset.is_scanned_by_iac
+  - underlyingoutputcontextpath: Core.Coverage.Asset.is_scanned_by_malware
+    description: The malware scanning status for the asset.
+    type: String
+    name: Core.Coverage.Asset.is_scanned_by_malware
+underlyingcontentitem:
+  id: CortexListAppSecAssetCoverage
+  name: CortexListAppSecAssetCoverage
+  type: script
+  version: -1
+  command: ""
+requiresuserapproval: false
+marketplaces:
+  - platform
+supportedModules:
+  - cloud
+  - cloud_posture
+  - cloud_runtime_security

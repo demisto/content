@@ -1,0 +1,59 @@
+{
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+          "OR": [
+            {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Multiple discovery commands on a Windows host by the same process"
+            },
+            {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Multiple discovery commands on a Windows host by the same process"
+            },
+            {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Remote Multiple discovery commands on a Windows host by the same IP"
+            },
+            {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Multiple discovery commands on a Windows host by the same process from a web server CGO"
+            },
+            {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Multiple discovery commands on a Windows host by the same process from an SQL server CGO"
+            },
+            {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Multiple discovery commands on a Windows host by the same process from a remote CGO"
+            },
+            {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Rare Multiple discovery commands on a Windows host by the same process"
+            }
+          ]
+        },
+        {
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "NEQ",
+          "SEARCH_VALUE": "Correlation"
+        }
+      ]
+    }
+  },
+  "description": "This trigger is responsible for handling the following alerts:'Multiple discovery commands on a Windows host by the same process','Remote Multiple discovery commands on a Windows host by the same IP','Multiple discovery commands on a Windows host by the same process from a web server CGO','Multiple discovery commands on a Windows host by the same process from an SQL server CGO','Multiple discovery commands on a Windows host by the same process from a remote CGO','Rare Multiple discovery commands on a Windows host by the same process'",
+  "fromVersion": "8.8.0",
+  "issilent": true,
+  "playbook_id": "silent-Multiple discovery commands on a Windows host",
+  "suggestion_reason": "Recommended for the following alerts: 'Multiple discovery commands on a Windows host by the same process','Remote Multiple discovery commands on a Windows host by the same IP','Multiple discovery commands on a Windows host by the same process from a web server CGO','Multiple discovery commands on a Windows host by the same process from an SQL server CGO','Multiple discovery commands on a Windows host by the same process from a remote CGO','Rare Multiple discovery commands on a Windows host by the same process'",
+  "trigger_id": "10047c249a200164131bf7ee3364862a",
+  "trigger_name": "silent-Multiple discovery commands on a Windows host"
+}

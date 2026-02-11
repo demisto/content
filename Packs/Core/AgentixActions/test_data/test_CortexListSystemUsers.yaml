@@ -1,0 +1,185 @@
+tests:
+  - name: "Find specific user by email"
+    prompt: "Look up user john.smith@company.com"
+    agent_id: "034918ea-8b4a-4903-aa0d-178c1d7449cb"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListSystemUsers
+            arguments:
+              email: "john.smith@company.com"
+
+  - name: "Search for multiple users by email"
+    prompt: "Find users admin@company.com and security@company.com"
+    agent_id: "034918ea-8b4a-4903-aa0d-178c1d7449cb"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListSystemUsers
+            arguments:
+              email: "admin@company.com,security@company.com"
+
+  - name: "Check admin accounts during incident investigation"
+    prompt: "I need to verify admin privileges for incident investigation - show me admin@corp.com"
+    agent_id: "034918ea-8b4a-4903-aa0d-178c1d7449cb"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListSystemUsers
+            arguments:
+              email: "admin@corp.com"
+
+  - name: "List users for access review"
+    prompt: "Display all system users for quarterly access review"
+    agent_id: "034918ea-8b4a-4903-aa0d-178c1d7449cb"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListSystemUsers
+            arguments: {}
+
+  - name: "Find security team members"
+    prompt: "Get user details for soc-analyst@company.com and threat-hunter@company.com"
+    agent_id: "034918ea-8b4a-4903-aa0d-178c1d7449cb"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListSystemUsers
+            arguments:
+              email: "soc-analyst@company.com,threat-hunter@company.com"
+
+  - name: "Verify user account exists"
+    prompt: "Check if user account alice.jones@company.com exists in the system"
+    agent_id: "034918ea-8b4a-4903-aa0d-178c1d7449cb"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListSystemUsers
+            arguments:
+              email: "alice.jones@company.com"
+
+  - name: "Show user information for compliance audit"
+    prompt: "I need user account information for compliance - show me compliance@company.com"
+    agent_id: "034918ea-8b4a-4903-aa0d-178c1d7449cb"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListSystemUsers
+            arguments:
+              email: "compliance@company.com"
+
+  - name: "List users with alternative phrasing"
+    prompt: "Retrieve system user accounts"
+    agent_id: "034918ea-8b4a-4903-aa0d-178c1d7449cb"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListSystemUsers
+            arguments: {}
+
+  - name: "Search for incident response team"
+    prompt: "Find IR team members: ir-lead@company.com, ir-analyst@company.com, ir-manager@company.com"
+    agent_id: "034918ea-8b4a-4903-aa0d-178c1d7449cb"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListSystemUsers
+            arguments:
+              email: "ir-lead@company.com,ir-analyst@company.com,ir-manager@company.com"
+
+  - name: "Investigate privileged account access"
+    prompt: "Show me details for privileged account root@company.com during this security investigation"
+    agent_id: "034918ea-8b4a-4903-aa0d-178c1d7449cb"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListSystemUsers
+            arguments:
+              email: "root@company.com"
+
+  - name: "Get all users with different wording"
+    prompt: "What users are configured in the Cortex system?"
+    agent_id: "034918ea-8b4a-4903-aa0d-178c1d7449cb"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListSystemUsers
+            arguments: {}
+
+  - name: "Lookup service account"
+    prompt: "Look up service account service-scanner@company.com"
+    agent_id: "034918ea-8b4a-4903-aa0d-178c1d7449cb"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListSystemUsers
+            arguments:
+              email: "service-scanner@company.com"
+
+  - name: "Find user during threat hunting"
+    prompt: "During threat hunting, I need to check user suspicious-user@company.com"
+    agent_id: "034918ea-8b4a-4903-aa0d-178c1d7449cb"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListSystemUsers
+            arguments:
+              email: "suspicious-user@company.com"
+
+  - name: "Check external user account"
+    prompt: "Verify external contractor account contractor@external.com exists"
+    agent_id: "034918ea-8b4a-4903-aa0d-178c1d7449cb"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListSystemUsers
+            arguments:
+              email: "contractor@external.com"
+
+  - name: "Invalid email format test"
+    prompt: "Find user with email invalid-email-format"
+    agent_id: "034918ea-8b4a-4903-aa0d-178c1d7449cb"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListSystemUsers
+            arguments:
+              email: "invalid-email-format"
+
+  - name: "Empty email filter"
+    prompt: "Show users with empty email filter"
+    agent_id: "034918ea-8b4a-4903-aa0d-178c1d7449cb"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListSystemUsers
+            arguments:
+              email: ""
+
+  - name: "User roles and permissions check"
+    prompt: "Get user roles and permissions for security-admin@company.com"
+    agent_id: "034918ea-8b4a-4903-aa0d-178c1d7449cb"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListSystemUsers
+            arguments:
+              email: "security-admin@company.com"
+
+  - name: "Check user account status"
+    prompt: "Verify account status for user bob.wilson@company.com in the system"
+    agent_id: "034918ea-8b4a-4903-aa0d-178c1d7449cb"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListSystemUsers
+            arguments:
+              email: "bob.wilson@company.com"
+
+  - name: "Ambiguous request for help"
+    prompt: "How do I find users?"
+    agent_id: "034918ea-8b4a-4903-aa0d-178c1d7449cb"
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexListSystemUsers

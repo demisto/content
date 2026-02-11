@@ -1,0 +1,76 @@
+commonfields:
+  id: CortexListEndpointScripts
+  version: -1
+name: CortexListEndpointScripts
+display: Cortex - List Endpoint Scripts
+
+description: Retrieves a list of available endpoint scripts available in CORTEX based on specified filter criteria such as the script's name or its supported operating system.
+  This action returns essential details for each script, including its Globally Unique Identifier (UID), which is required for other script-related actions.
+args:
+  - name: script_name
+    underlyingargname: script_name
+    description: A comma-separated list of the script names to filter by.
+    type: string
+  - name: supported_platforms
+    underlyingargname: supported_platforms
+    description: |-
+      A comma-separated list of the platforms where the script can be executed. Options: windows, macos, linux.
+    type: string
+  - name: page_size
+    description: The number of scripts to return per page. The default is 100.
+    underlyingargname: page_size
+    type: number
+    defaultvalue: 100
+  - name: page_number
+    description: Page number (for pagination). The default is 0 (the first page).
+    underlyingargname: page_number
+    type: number
+    defaultvalue: 0
+outputs:
+  - name: Core.Scripts.name
+    underlyingoutputcontextpath: Core.Scripts.name
+    description: The name of the script.
+    type: string
+  - name: Core.Scripts.script_uid
+    underlyingoutputcontextpath: Core.Scripts.script_uid
+    description: The Globally Unique Identifier of the script, used to identify the script when executing.
+    type: string
+  - name: Core.Scripts.script_inputs
+    underlyingoutputcontextpath: Core.Scripts.script_inputs
+    description: The input parameters accepted by the script.
+    type: json
+  - name: Core.Scripts.windows_supported
+    underlyingoutputcontextpath: Core.Scripts.windows_supported
+    description: The boolean indicating if the script supports the Windows operating system.
+    type: boolean
+  - name: Core.Scripts.linux_supported
+    underlyingoutputcontextpath: Core.Scripts.linux_supported
+    description: The boolean indicating if the script supports the Linux operating system.
+    type: boolean
+  - name: Core.Scripts.macos_supported
+    underlyingoutputcontextpath: Core.Scripts.macos_supported
+    description: The boolean indicating if the script supports the macOS operating system.
+    type: boolean
+  - name: Core.ScriptsMetadata.returned_count
+    underlyingoutputcontextpath: Core.ScriptsMetadata.returned_count
+    description: |-
+      IMPORTANT: returned_count must always be part of the response displayed to the user. This field must be accompanied by its definition: The actual number of script results returned in this specific execution.
+    type: number
+  - name: Core.ScriptsMetadata.filtered_count
+    underlyingoutputcontextpath: Core.ScriptsMetadata.filtered_count
+    description: |-
+      IMPORTANT: filtered_count must always be part of the response displayed to the user. This field must be accompanied by its definition: The total number of script results in the system that match the specified filter criteria.
+    type: number
+underlyingcontentitem:
+  id: Cortex Core - Platform
+  name: Cortex Core - Platform
+  type: command
+  version: -1
+  command: core-list-scripts
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- xsiam
+- cloud_runtime_security
+- edr

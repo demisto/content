@@ -1,0 +1,44 @@
+commonfields:
+  id: threat-intel-agent
+  version: -1
+name: Threat Intel
+description: |-
+  Gathers fresh threat data, enriches indicators and vulnerabilities, links them to past or current incidents, and
+  publishes clear briefings so the whole SOC acts on the latest attacker tactics
+visibility: public
+color: '#00CC66'
+conversationstarters: []
+systeminstructions: ''
+builtinactions:
+  - InvokeLLM
+actionids:
+  - SearchIssues
+  - EnrichCVE
+  - EnrichIP
+  - EnrichURL
+  - EnrichDomain
+  - EnrichFile
+  - EnrichEmail
+  - ExtractIndicators
+  - SearchIndicators
+  - EnrichIndicators
+  - ServiceNowCreateTicket
+  - jiraCreateIssue
+  - SendNotification
+  - SendMail
+  - TavilyExtract
+  - ExtractURLContent
+  - jiraGetIssue
+  - SearchCases
+  - SetIssue
+  - SetIndicator
+  - JiraUpdateIssue
+  - ServiceNowGetTicket
+  - ServiceNowUpdateTicket
+  - CortexListIndicatorRelationships
+  - CortexRunXQLQuery
+marketplaces:
+  - platform
+supportedModules:
+  - agentix
+  - xsiam

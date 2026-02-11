@@ -1,0 +1,165 @@
+commonfields:
+  id: CrowdstrikeFalconSearchDevice
+  version: -1
+display: Crowdstrike Falcon - List Devices
+name: CrowdstrikeFalconListDevices
+tags:
+  - Endpoint
+category: Endpoint
+description: >
+  Searches CrowdStrike Falcon for devices (endpoints) that match the specified query criteria.
+  The query can include filters such as hostname, IP address, device ID, operating system, or other attributes.
+  Returns a list of matching devices based on the search parameters provided.
+args:
+  - name: extended_data
+    underlyingargname: extended_data
+    description: >
+      Indicates whether to include additional device metadata in the response.
+      Set to "Yes" to return extended data fields such as OS version, sensor version, and network information.
+    type: string
+  - name: filter
+    underlyingargname: filter
+    description: >
+      A query string to filter devices using CrowdStrike Falcon's filtering syntax.
+      Format: `filter_parameter_name:'filter_value'` (e.g., `hostname:'host123'`).
+      Use this to search devices by attributes such as hostname, IP, or device ID.
+    type: string
+  - name: limit
+    underlyingargname: limit
+    defaultvalue: 50
+    description: >
+      The maximum number of device records to return in the response.
+      Valid range is from 1 to 5000.
+    type: string
+  - name: offset
+    underlyingargname: offset
+    defaultvalue: 0
+    description: >
+      The number of records to skip before starting to return results.
+      Useful for pagination when retrieving large sets of data.
+    type: string
+  - name: ids
+    underlyingargname: ids
+    description: >
+      A comma-separated string of specific device IDs to retrieve.
+      If specified, filter argument is not needed.
+    type: string
+  - name: status
+    underlyingargname: status
+    description: >
+      Filters results by the current containment status of the device.
+      Valid values include:
+        - normal: Device is not contained.
+        - containment_pending: Containment has been requested but not yet applied.
+        - contained: Device is currently contained.
+        - lift_containment_pending: A request to lift containment is pending.
+    type: string
+  - name: hostname
+    underlyingargname: hostname
+    description: >
+      Filters devices by their hostname.
+      Useful for finding a device when you know its host name.
+    type: string
+  - name: platform_name
+    underlyingargname: platform_name
+    description: >
+      Filters devices by operating system platform.
+      Valid values include "Windows", "Mac", or "Linux".
+    type: string
+  - name: site_name
+    underlyingargname: site_name
+    description: >
+      Filters devices based on the site name assigned to them in the Falcon platform.
+    type: string
+  - name: sort
+    underlyingargname: sort
+    description: >
+      Sorts the results based on a device property.
+      Use the format `property.direction`, such as `status.desc` (descending) or `hostname.asc` (ascending).
+    type: string
+outputs:
+  - underlyingoutputcontextpath: CrowdStrike.Device.ID
+    description: The unique identifier assigned to the device by CrowdStrike Falcon.
+    type: string
+    name: CrowdStrike.Device.ID
+  - underlyingoutputcontextpath: CrowdStrike.Device.LocalIP
+    description: The internal (local network) IP address of the device.
+    type: string
+    name: CrowdStrike.Device.LocalIP
+  - underlyingoutputcontextpath: CrowdStrike.Device.ExternalIP
+    description: The public-facing (external) IP address of the device as seen by Falcon.
+    type: string
+    name: CrowdStrike.Device.ExternalIP
+  - underlyingoutputcontextpath: CrowdStrike.Device.Hostname
+    description: The hostname of the device, typically assigned by the operating system or network configuration.
+    type: string
+    name: CrowdStrike.Device.Hostname
+  - underlyingoutputcontextpath: CrowdStrike.Device.OS
+    description: The name of the operating system installed on the device (e.g., Windows, macOS, Linux).
+    type: string
+    name: CrowdStrike.Device.OS
+  - underlyingoutputcontextpath: CrowdStrike.Device.MacAddress
+    description: The MAC (Media Access Control) address of the device's network interface.
+    type: string
+    name: CrowdStrike.Device.MacAddress
+  - underlyingoutputcontextpath: CrowdStrike.Device.FirstSeen
+    description: The timestamp when the device was first observed by the Falcon platform.
+    type: string
+    name: CrowdStrike.Device.FirstSeen
+  - underlyingoutputcontextpath: CrowdStrike.Device.LastSeen
+    description: The timestamp when the device was last observed by the Falcon platform.
+    type: string
+    name: CrowdStrike.Device.LastSeen
+  - underlyingoutputcontextpath: CrowdStrike.Device.PolicyType
+    description: The type of policy currently applied to the device in Falcon (e.g., prevention, detection).
+    type: string
+    name: CrowdStrike.Device.PolicyType
+  - underlyingoutputcontextpath: CrowdStrike.Device.Status
+    description: The current containment status of the device (e.g., normal, contained).
+    type: string
+    name: CrowdStrike.Device.Status
+  - underlyingoutputcontextpath: Endpoint.Hostname
+    description: The hostname of the endpoint.
+    type: string
+    name: Endpoint.Hostname
+  - underlyingoutputcontextpath: Endpoint.OS
+    description: The operating system name of the endpoint (e.g., Windows, macOS, Linux).
+    type: string
+    name: Endpoint.OS
+  - underlyingoutputcontextpath: Endpoint.IPAddress
+    description: The list of IP addresses assigned to the endpoint, including internal and external.
+    type: string
+    name: Endpoint.IPAddress
+  - underlyingoutputcontextpath: Endpoint.ID
+    description: The unique identifier of the endpoint. Mirrors `CrowdStrike.Device.ID`.
+    type: string
+    name: Endpoint.ID
+  - underlyingoutputcontextpath: Endpoint.Status
+    description: The status of the endpoint, such as normal, contained, or pending containment.
+    type: string
+    name: Endpoint.Status
+  - underlyingoutputcontextpath: Endpoint.IsIsolated
+    description: Indicates whether the endpoint is currently isolated from the network (`true` or `false`).
+    type: string
+    name: Endpoint.IsIsolated
+  - underlyingoutputcontextpath: Endpoint.MACAddress
+    description: The MAC address of the endpoint's network interface.
+    type: string
+    name: Endpoint.MACAddress
+  - underlyingoutputcontextpath: Endpoint.Vendor
+    description: The name of the security vendor or integration that provided the endpoint data (e.g., CrowdStrike).
+    type: string
+    name: Endpoint.Vendor
+  - underlyingoutputcontextpath: Endpoint.OSVersion
+    description: The version of the operating system running on the endpoint (e.g., Windows 10.0.19045).
+    type: string
+    name: Endpoint.OSVersion
+underlyingcontentitem:
+  id: CrowdstrikeFalcon
+  name: CrowdstrikeFalcon
+  type: command
+  version: -1
+  command: 'cs-falcon-search-device'
+requiresuserapproval: false
+marketplaces:
+- platform

@@ -1,0 +1,159 @@
+commonfields:
+  id: MicrosoftDefenderListMachines
+  version: -1
+display: Microsoft Defender - List Machines
+name: MicrosoftDefenderListMachines
+tags:
+ - Endpoint
+category: Endpoint
+description: |-
+    Retrieves information about machines that are communicated with the Microsoft Defender for Endpoint cloud.
+    At least one of the following arguments is required: `id`, `ip`, or `hostname`.
+    If none is provided, an error will be returned.
+args:
+  - name: id
+    description: The unique identifier of the endpoint (Machine ID).
+    type: string
+    underlyingargname: id
+  - name: ip
+    description: The IP address of the endpoint.
+    type: string
+    underlyingargname: ip
+  - name: hostname
+    description: The hostname of the endpoint.
+    type: string
+    underlyingargname: hostname
+outputs:
+  - underlyingoutputcontextpath: Endpoint.ID
+    description: The unique identifier of the endpoint.
+    type: string
+    name: Endpoint.ID
+  - underlyingoutputcontextpath: Endpoint.Hostname
+    description: The hostname of the endpoint.
+    type: string
+    name: Endpoint.Hostname
+  - underlyingoutputcontextpath: Endpoint.OS
+    description: The operating system of the endpoint.
+    type: string
+    name: Endpoint.OS
+  - underlyingoutputcontextpath: Endpoint.OSVersion
+    description: The version of the operating system.
+    type: string
+    name: Endpoint.OSVersion
+  - underlyingoutputcontextpath: Endpoint.IPAddress
+    description: The IP address of the endpoint.
+    type: string
+    name: Endpoint.IPAddress
+  - underlyingoutputcontextpath: Endpoint.Status
+    description: The health status of the endpoint.
+    type: string
+    name: Endpoint.Status
+  - underlyingoutputcontextpath: Endpoint.MACAddress
+    description: The MAC address of the endpoint.
+    type: string
+    name: Endpoint.MACAddress
+  - underlyingoutputcontextpath: Endpoint.Vendor
+    description: The name of the endpoint vendor integration (e.g., Microsoft Defender for Endpoint).
+    type: string
+    name: Endpoint.Vendor
+  - underlyingoutputcontextpath: MicrosoftATP.Machine.ID
+    description: The unique ID of the machine in Microsoft Defender for Endpoint.
+    type: string
+    name: MicrosoftATP.Machine.ID
+  - underlyingoutputcontextpath: MicrosoftATP.Machine.ComputerDNSName
+    description: The DNS name of the machine.
+    type: string
+    name: MicrosoftATP.Machine.ComputerDNSName
+  - underlyingoutputcontextpath: MicrosoftATP.Machine.FirstSeen
+    description: The first date and time the machine was seen by Microsoft Defender for Endpoint.
+    type: date
+    name: MicrosoftATP.Machine.FirstSeen
+  - underlyingoutputcontextpath: MicrosoftATP.Machine.LastSeen
+    description: The last date and time the machine was seen by Microsoft Defender for Endpoint.
+    type: date
+    name: MicrosoftATP.Machine.LastSeen
+  - underlyingoutputcontextpath: MicrosoftATP.Machine.OSPlatform
+    description: The operating system platform of the machine.
+    type: string
+    name: MicrosoftATP.Machine.OSPlatform
+  - underlyingoutputcontextpath: MicrosoftATP.Machine.OSVersion
+    description: The version of the machine's operating system.
+    type: string
+    name: MicrosoftATP.Machine.OSVersion
+  - underlyingoutputcontextpath: MicrosoftATP.Machine.OSProcessor
+    description: The type of processor used by the machine.
+    type: string
+    name: MicrosoftATP.Machine.OSProcessor
+  - underlyingoutputcontextpath: MicrosoftATP.Machine.LastIPAddress
+    description: The last internal IP address assigned to the machine.
+    type: string
+    name: MicrosoftATP.Machine.LastIPAddress
+  - underlyingoutputcontextpath: MicrosoftATP.Machine.LastExternalIPAddress
+    description: The last external (public) IP address used by the machine.
+    type: string
+    name: MicrosoftATP.Machine.LastExternalIPAddress
+  - underlyingoutputcontextpath: MicrosoftATP.Machine.OSBuild
+    description: The build number of the operating system.
+    type: number
+    name: MicrosoftATP.Machine.OSBuild
+  - underlyingoutputcontextpath: MicrosoftATP.Machine.HealthStatus
+    description: The current health status of the machine.
+    type: string
+    name: MicrosoftATP.Machine.HealthStatus
+  - underlyingoutputcontextpath: MicrosoftATP.Machine.RBACGroupID
+    description: The Role-Based Access Control (RBAC) group ID to which the machine belongs.
+    type: number
+    name: MicrosoftATP.Machine.RBACGroupID
+  - underlyingoutputcontextpath: MicrosoftATP.Machine.RBACGroupName
+    description: The name of the RBAC group to which the machine belongs.
+    type: string
+    name: MicrosoftATP.Machine.RBACGroupName
+  - underlyingoutputcontextpath: MicrosoftATP.Machine.RiskScore
+    description: The calculated risk score of the machine.
+    type: string
+    name: MicrosoftATP.Machine.RiskScore
+  - underlyingoutputcontextpath: MicrosoftATP.Machine.ExposureLevel
+    description: The exposure level of the machine based on detected vulnerabilities and risks.
+    type: string
+    name: MicrosoftATP.Machine.ExposureLevel
+  - underlyingoutputcontextpath: MicrosoftATP.Machine.IsAADJoined
+    description: Indicates whether the machine is Azure Active Directory (AAD) joined.
+    type: boolean
+    name: MicrosoftATP.Machine.IsAADJoined
+  - underlyingoutputcontextpath: MicrosoftATP.Machine.AADDeviceID
+    description: The Azure Active Directory (AAD) Device ID.
+    type: string
+    name: MicrosoftATP.Machine.AADDeviceID
+  - underlyingoutputcontextpath: MicrosoftATP.Machine.MachineTags
+    description: A set of tags associated with the machine.
+    type: string
+    name: MicrosoftATP.Machine.MachineTags
+  - underlyingoutputcontextpath: MicrosoftATP.Machine.IPAddresses.ipAddress
+    description: IP address assigned to the machine.
+    type: string
+    name: MicrosoftATP.Machine.IPAddresses.ipAddress
+  - underlyingoutputcontextpath: MicrosoftATP.Machine.IPAddresses.MACAddress
+    description: MAC address associated with the machine IP.
+    type: string
+    name: MicrosoftATP.Machine.IPAddresses.MACAddress
+  - underlyingoutputcontextpath: MicrosoftATP.Machine.IPAddresses.operationalStatus
+    description: Operational status of the machine's IP interface.
+    type: string
+    name: MicrosoftATP.Machine.IPAddresses.operationalStatus
+  - underlyingoutputcontextpath: MicrosoftATP.Machine.IPAddresses.type
+    description: The type of IP address (e.g., IPv4, IPv6).
+    type: string
+    name: MicrosoftATP.Machine.IPAddresses.type
+  - underlyingoutputcontextpath: MicrosoftATP.Machine.AgentVersion
+    description: Version of the Defender for Endpoint agent installed on the machine.
+    type: string
+    name: MicrosoftATP.Machine.AgentVersion
+underlyingcontentitem:
+  id: MicrosoftAtpEndpoint
+  name: MicrosoftAtpEndpoint
+  type: script
+  version: -1
+  command: ''
+requiresuserapproval: false
+marketplaces:
+- platform

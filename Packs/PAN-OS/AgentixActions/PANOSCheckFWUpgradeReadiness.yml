@@ -1,0 +1,63 @@
+commonfields:
+  id: PANOSCheckFWUpgradeReadiness
+  version: -1
+display: PAN-OS - Get Firewall Upgrade Readiness
+name: PANOSGetFirewallUpgradeReadiness
+tags:
+  - firewall management
+  - panorama content management
+category: Network Security
+description: |-
+  DESCRIPTION:
+  This action checks a firewall device's conditions that can affect its readiness to perform a PAN-OS upgrade. Included checks examine the following:
+  1. Available disk space for the target version (base image + release image).
+  2. Presence of any uncommitted configuration changes.
+  3. Whether the device has an active Support license.
+  4. Whether NTP is configured and synced.
+  5. Whether the latest App/Threat dynamic update is installed.
+  6. For devices in HA groups, check that devices in the group have:
+      1. App/Threat, AntiVirus, and the GlobalProtect client are all at the same level and compatible for the HA failover.
+      2. Running configuration synchronized among peers.
+
+  Output Interpretation and Presentation:
+    - Review the "ReadinessChecks" list in the JSON output.
+    - For each check, examine the "CheckResult". A result of "Failed" indicates a problem that needs to be addressed before an upgrade.
+    - Report all failures and their description ("CheckDescription") to the user.
+    - Return the name and serial number of each firewall as a text heading, and show the results of every check for that firewall beneath it as a table.
+
+  NOTE: This action is intended for use with a single PAN-OS integration instance.
+args:
+  - description: Serial Number of the firewall for which to check upgrade readiness.
+    name: targetDevice
+    underlyingargname: targetDevice
+    required: true
+    type: string
+  - description: The target PAN-OS version to check upgrade readiness for.
+    name: targetVersion
+    underlyingargname: targetVersion
+    required: true
+    type: string
+outputs:
+  - underlyingoutputcontextpath: ReadinessChecks
+    description: |-
+      List of upgrade readiness checks performed and the result (Passed/Failed). The JSON output is as follows:
+        {
+          CheckName: A meaningful title for the check that was performed. Includes: "Target Version Already Installed", "Image Storage Disk Space", "Pending Configuration Changes", "Active Support License", "NTP Synchronized", and "Latest Content Major Version Installed",
+          CheckDescription: A detailed description explaining the specific condition being validated during the upgrade readiness assessment,
+          CheckResult: Passed/Failed
+        }
+    type: json
+    name: ReadinessChecks
+underlyingcontentitem:
+  id: PAN-OS - Firewall Upgrade Readiness Checks
+  name: PAN-OS - Firewall Upgrade Readiness Checks
+  type: playbook
+  command: ''
+  version: -1
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- agentix
+- xsiam
+- cloud_posture

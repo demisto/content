@@ -1,0 +1,44 @@
+tests:
+  - name: Basic Playbook Run with Single Issue
+    prompt: "Run the security assessment playbook for issue 1"
+    agent_id: e7ca6d69-f1aa-4dc4-bdf2-58f824830455
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: e7ca6d69-f1aa-4dc4-bdf2-58f824830455RunPlaybook
+            arguments:
+              playbook_id: security-assessment
+              issue_ids: 1
+
+  - name: Multiple Issue Playbook Execution
+    prompt: "Process playbook ABC-investigation for issues 2, 3, and 7"
+    agent_id: e7ca6d69-f1aa-4dc4-bdf2-58f824830455
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: e7ca6d69-f1aa-4dc4-bdf2-58f824830455RunPlaybook
+            arguments:
+              playbook_id: ABC-investigation
+              issue_ids: 2,3,7
+
+  - name: Playbook Execution with Descriptive Language
+    prompt: "I need to run the playbook 34650a68-b97e-46f9-8580-25e76b648f4b on issue 3"
+    agent_id: e7ca6d69-f1aa-4dc4-bdf2-58f824830455
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: e7ca6d69-f1aa-4dc4-bdf2-58f824830455RunPlaybook
+            arguments:
+              playbook_id: 34650a68-b97e-46f9-8580-25e76b648f4b
+              issue_ids: 3
+
+  - name: Verbose Playbook Request
+    prompt: "Could you please run playbook 34650a68-b97e-46f9-8580-25e76b648f4b for the critical security event with tracking number IR-2023-042?"
+    agent_id: e7ca6d69-f1aa-4dc4-bdf2-58f824830455
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: e7ca6d69-f1aa-4dc4-bdf2-58f824830455RunPlaybook
+            arguments:
+              playbook_id: incident-response
+              issue_ids: IR-2023-042

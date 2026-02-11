@@ -1,0 +1,47 @@
+commonfields:
+  id: CortexTriggerFixPullRequest
+  version: -1
+display: Cortex Trigger Fix Pull Request
+name: CortexTriggerFixPullRequest
+tags:
+  - vulnerability
+  - security
+  - scanning
+category: Vulnerability Management
+description: >
+  Create automated pull requests to fix multiple security issues in a single bulk operation.
+  If more than 10 issues are provided, split them into multiple calls.
+args:
+  - name: issue_ids
+    underlyingargname: issue_ids
+    description: >
+      Comma-separated list of issue IDs to fix (maximum 10 per request).
+    type: string
+    required: true
+  - name: title
+    underlyingargname: title
+    description: >
+      Custom title for the pull request.
+    type: string
+outputs:
+  - underlyingoutputcontextpath: Core.TriggeredPRs.issueId
+    description: The issue identifier.
+    type: String
+    name: Core.TriggeredPRs.issueId
+  - underlyingoutputcontextpath: Core.TriggeredPRs.status
+    description: Either "triggered" or "automated_fix_not_available".
+    type: String
+    name: Core.TriggeredPRs.status
+underlyingcontentitem:
+  id: Cortex Core - Platform
+  name: Cortex Core - Platform
+  type: command
+  version: -1
+  command: core-appsec-remediate-issue
+requiresuserapproval: false
+marketplaces:
+  - platform
+supportedModules:
+  - cloud
+  - cloud_posture
+  - cloud_runtime_security

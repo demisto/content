@@ -1,0 +1,45 @@
+commonfields:
+  id: cloud-posture-agent
+  version: -1
+name: Cloud Posture
+description: |-
+  Helps understand, triage, and remediate misconfigurations, attack path, and posture issues across cloud environments.
+  Streamlines work for security analysts by proactively prioritizing risks, enriching identified exposures with ownership
+  information, and automatically taking mitigating or remediating actions, such as blocking network access or updating
+  protection policies, to reduce the organization's exposure footprint.
+visibility: public
+color: '#02A1EB'
+conversationstarters:
+  - What is the latest critical posture risk in my environment?
+  - What are the top 5 most critical misconfiguration issues in my environment?
+systeminstructions: |-
+  When searching for posture-related issues, use the following filters: issue_domain=Posture and
+  issue_category="Configuration,Attack Path".
+builtinactions:
+  - InvokeLLM
+actionids:
+  - jiraCreateIssue
+  - jiraGetIssue
+  - TavilyExtract
+  - ExtractURLContent
+  - ServiceNowCreateTicket
+  - GetUserData
+  - SearchCases
+  - SearchIssues
+  - SendMail
+  - SendNotification
+  - SetIssue
+  - GetIssueRecommendations
+  - SearchAssets
+  - SearchAssetGroups
+  - SearchVulnerabilityIssues
+  - JiraUpdateIssue
+  - ServiceNowGetTicket
+  - ServiceNowUpdateTicket
+  - CortexCreateAppSecPolicy
+  - CortexRunPlaybook
+  - CortexRunXQLQuery
+marketplaces:
+  - platform
+supportedModules:
+  - cloud_posture

@@ -1,0 +1,25 @@
+{
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Encoded information using Windows certificate management tool"
+        },
+        {
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "NEQ",
+          "SEARCH_VALUE": "Correlation"
+        }
+      ]
+    }
+  },
+  "description": "This trigger is responsible for handling the 'Encoded information using Windows certificate management tool' alerts via the 'Encoded information using Windows certificate management tool' playbook",
+  "fromVersion": "8.9.0",
+  "issilent": true,
+  "playbook_id": "silent-Encoded information using Windows certificate management tool",
+  "suggestion_reason": "Recommended for 'Encoded information using Windows certificate management tool' alerts",
+  "trigger_id": "002e40822c7dd141bc8546a02922a4a4",
+  "trigger_name": "silent-Encoded information using Windows certificate management tool"
+}

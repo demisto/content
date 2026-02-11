@@ -1,0 +1,102 @@
+commonfields:
+  id: GetUserData
+  version: -1
+display: Enrich User
+name: EnrichUser
+tags:
+ - Utility
+category: Utilities
+description: >
+  Retrieves user-related data from multiple integrated systems (such as Active Directory, Okta, and others).
+args:
+  - name: user_id
+    description: >
+      A comma-separated string of user IDs to retrieve. Use this to look up users based on their unique identifier in the integrated systems.
+    underlyingargname: user_id
+    type: string
+  - name: user_name
+    description: >
+      A comma-separated string of usernames to retrieve. Use this to search for users by their login or account name.
+    underlyingargname: user_name
+    type: string
+  - name: user_email
+    description: >
+      A comma-separated string of user email addresses to retrieve. Use this to find users based on their email identifiers.
+    underlyingargname: user_email
+    type: string
+  - name: attributes
+    description: >
+      A comma-separated string of specific Active Directory (AD) attributes to retrieve for each user.
+      Only applicable when querying Active Directory based integration.
+    underlyingargname: attributes
+    type: string
+  - name: brands
+    description: >
+      Specifies which integration brand(s) to run the command against. If not set, the command runs across all available integrations.
+      To select multiple integrations, provide a comma-separated list (e.g., "Okta v2,Active Directory Query v2").
+      Optional values: 'Active Directory Query v2', 'Okta v2', 'AWS - IAM', 'Microsoft Graph User',
+      'PrismaCloud v2', 'AzureRiskyUsers', 'GSuiteAdmin', 'Cortex XDR - IR', 'Cortex Core - IR'.
+    underlyingargname: brands
+    type: string
+  - name: list_non_risky_users
+    description: >
+      If true, returns both risky and non-risky users from Cortex, instead of only risky users.
+      Should be set to "true" unless explicitly scoped to risky users.
+    underlyingargname: list_non_risky_users
+    defaultvalue: true
+    type: boolean
+  - name: verbose
+    description: >
+      Controls the level of detail in the human-readable output.
+      Set to true to return human-readable results from each integration. Set to false to return only the final consolidated result.
+      Optional values: True, False.
+    underlyingargname: verbose
+    type: boolean
+  - name: additional_fields
+    required: false
+    description: When set to true, the output will include additional fields about the user. Default is true.
+    type: string
+    defaultvalue: "true"
+    underlyingargname: additional_fields
+outputs:
+- underlyingoutputcontextpath: UserData.Brand
+  description: The name of the integration from which the user data was retrieved.
+  type: string
+  name: UserData.Brand
+- underlyingoutputcontextpath: UserData.Instance
+  description: The instance name of the integration from which the user data was retrieved.
+  type: string
+  name: UserData.Instance
+- underlyingoutputcontextpath: UserData.ID
+  description: The user ID.
+  type: string
+  name: UserData.ID
+- underlyingoutputcontextpath: UserData.Username
+  description: The username in the originating system.
+  type: string
+  name: UserData.Username
+- underlyingoutputcontextpath: UserData.Email
+  description: The email address of the user.
+  type: string
+  name: UserData.Email
+- underlyingoutputcontextpath: UserData.RiskLevel
+  description: The risk level of the user.
+  type: string
+  name: UserData.RiskLevel
+- underlyingoutputcontextpath: UserData.AdditionalFields
+  description: Additional data returned from the integration.
+  type: string
+  name: UserData.AdditionalFields
+- underlyingoutputcontextpath: UserData.Status
+  description: Status of the results returned from the script.
+  type: String
+  name: UserData.Status
+underlyingcontentitem:
+  id: get-user-data
+  name: get-user-data
+  type: script
+  version: -1
+  command: ''
+requiresuserapproval: false
+marketplaces:
+- platform

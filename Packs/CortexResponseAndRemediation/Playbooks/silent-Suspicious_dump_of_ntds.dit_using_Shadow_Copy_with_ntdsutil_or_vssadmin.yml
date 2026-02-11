@@ -1,0 +1,5350 @@
+id: silent-Suspicious dump of ntds.dit using Shadow Copy with ntdsutil or vssadmin
+version: -1
+name: silent-Suspicious dump of ntds.dit using Shadow Copy with ntdsutil or vssadmin
+issilent: true
+description: |-
+  This playbook is designed to handle the "Suspicious dump of ntds.dit using Shadow Copy with ntdsutil/vssadmin" alerts.
+
+  Playbook Stages:
+
+  Analysis:
+
+  - Retrieves the user risk score.
+  - Retrieves the host risk score.
+  - Retrieves the ntds.dit file location
+  - Checks if the shadow copy includes the volume with the ntds.dit file (for VSSAdmin operations).
+  - Checks if ntdsutil accessed the ntds.dit file (for ntdsutil operations).
+
+  Investigation:
+
+  - Checks if the action was performed by a high-risk user.
+  - Checks if the action occurred on DC server with a high risk level.
+  - Checks if the action was performed by a suspicious remote actor.
+  - Searches for related alerts indicating suspicious or malicious activity.
+  - Searches for NTDS.dit file write events.
+  - Determines if the user is highly privileged.
+  - Analyzes the command line in the same causality chain for malicious activity.
+
+  Verdict:
+
+  The verdict is determined as malicious based on the evidence found during the investigation phase.
+
+  Remediation:
+
+  - Terminates the processes.
+  - Quarantines the written NTDS.dit file to prevent exfiltration or credential theft attempts.
+  - Delete the relevant shadow copies and snapshots.
+  - Disables the user (requires analyst approval).
+  - Logs off the user.
+  - Blocks the the connection from the remote actor.
+  - Block the external IP of the remote actor.
+  - Automatically close the alert.
+tags:
+- TA0006 - Credential Access
+- T1003 - OS Credential Dumping
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f47db075-7685-4bd3-813c-9595ca4b9618
+    type: start
+    task:
+      id: f47db075-7685-4bd3-813c-9595ca4b9618
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 66470bd4-e0cf-42a4-ade3-6f7367663919
+    type: regular
+    task:
+      id: 66470bd4-e0cf-42a4-ade3-6f7367663919
+      version: -1
+      name: Get additional alert data
+      description: Returns information about each alert ID.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: a50e678f-fabe-41ed-b6a7-922360416a3b
+    type: condition
+    task:
+      id: a50e678f-fabe-41ed-b6a7-922360416a3b
+      version: -1
+      name: Is the dump commands running via ntdsutil or vssadmin?
+      description: Checks if the dump commands running via ntdsutil or vssadmin.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      ntdsutil:
+      - "142"
+      vssadmin:
+      - "141"
+    separatecontext: false
+    conditions:
+    - label: ntdsutil
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: alert.initiatedby.[0]
+            iscontext: true
+          right:
+            value:
+              simple: ntdsutil.exe
+          ignorecase: true
+    - label: vssadmin
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: alert.initiatedby.[0]
+            iscontext: true
+          right:
+            value:
+              simple: vssadmin.exe
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: f521f0d7-c4d4-4d96-9546-2011ea06faad
+    type: title
+    task:
+      id: f521f0d7-c4d4-4d96-9546-2011ea06faad
+      version: -1
+      name: Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+      - "7"
+      - "133"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 65435c74-8e78-418e-a712-5c8d28e74a51
+    type: title
+    task:
+      id: 65435c74-8e78-418e-a712-5c8d28e74a51
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+      - "22"
+      - "48"
+      - "51"
+      - "160"
+      - "190"
+      - "203"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: f513665e-c94d-498e-9683-1ce0a5dd96ae
+    type: title
+    task:
+      id: f513665e-c94d-498e-9683-1ce0a5dd96ae
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "95"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 5610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: a28bd32e-7d42-4fc4-af56-017cdef00ab4
+    type: regular
+    task:
+      id: a28bd32e-7d42-4fc4-af56-017cdef00ab4
+      version: -1
+      name: Get host risk score
+      description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
+      script: '|||core-list-risky-hosts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      host_id:
+        simple: ${alert.hostname}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 04d8a15b-155c-49b6-87e0-86c0eb0833f2
+    type: regular
+    task:
+      id: 04d8a15b-155c-49b6-87e0-86c0eb0833f2
+      version: -1
+      name: Get user risk score
+      description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
+      script: '|||core-list-risky-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      user_id:
+        simple: ${Core.OriginalAlert.event.actor_primary_username}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 41a780f7-ef22-4c6f-af84-95ef7cb124f5
+    type: condition
+    task:
+      id: 41a780f7-ef22-4c6f-af84-95ef7cb124f5
+      version: -1
+      name: Was the action performed on DC server with a high risk level?
+      description: Checks if the action performed on DC server with a high risk level.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.RiskyHost.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: HIGH
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -290,
+          "y": 1837.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 8ff2de55-3bba-47ab-842b-e8995ac1fbac
+    type: regular
+    task:
+      id: 8ff2de55-3bba-47ab-842b-e8995ac1fbac
+      version: -1
+      name: 'Evidence: DC server with high risk level'
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence
+      value:
+        simple: '{"Name": "high_risk_DC_server", "Score": 1, "Comment": "DC server with high risk level"}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -290,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 5f8249a9-347e-44e7-bc95-8429ddb40cee
+    type: title
+    task:
+      id: 5f8249a9-347e-44e7-bc95-8429ddb40cee
+      version: -1
+      name: Evaluate investigation results
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "252"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 7e0fbec2-0cde-4757-ba2d-2a22136aaba1
+    type: condition
+    task:
+      id: 7e0fbec2-0cde-4757-ba2d-2a22136aaba1
+      version: -1
+      name: Was the action performed by a high-risk user?
+      description: Checks if the action was performed by a high-risk user.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.RiskyUser.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: high
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 1837.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: e1787555-1d01-4a2b-8012-29314e5a3359
+    type: regular
+    task:
+      id: e1787555-1d01-4a2b-8012-29314e5a3359
+      version: -1
+      name: 'Evidence: The action performed by a high risk user'
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence
+      value:
+        simple: '{"Name": "high_risk_user", "Score": 1, "Comment": "The action performed by a high risk user"}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 91e07972-cd46-44f6-81f7-40cc4be75a67
+    type: regular
+    task:
+      id: 91e07972-cd46-44f6-81f7-40cc4be75a67
+      version: -1
+      name: Search related alerts indicating accessing to ntds.dit file
+      description: |+
+        This task searches the following related alerts to identify any indications of a NTDS.dit file write:
+
+        - "Ntdsutil.exe accessing ntds.dit file"
+
+
+
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "143"
+    scriptarguments:
+      fromdate:
+        complex:
+          root: alert
+          accessor: timestamp
+          transformers:
+          - operator: ModifyDateTime
+            args:
+              variation:
+                value:
+                  simple: 1 hour ago
+      query:
+        simple: 'agentid: ${alert.agentid} and name: "*Ntdsutil.exe accessing ntds.dit file*"'
+      todate:
+        simple: now
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: e3b8a34d-cf0d-4faf-8d73-4e9b90f24e43
+    type: regular
+    task:
+      id: e3b8a34d-cf0d-4faf-8d73-4e9b90f24e43
+      version: -1
+      name: Search related alerts indicating a suspicious activity
+      description: |+
+        This task searches the following alerts related to the endpoint for indications of a suspicious NTDS.dit file write:
+
+        - "Ntdsutil.exe accessing ntds.dit file"
+        - "Uncommon creation or access operation of sensitive shadow copy"
+        - "Suspicious SMB connection from domain controller"
+        - "Creation of volume shadow copy using vssadmin.exe"
+
+
+
+
+
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      extend-context:
+        simple: SuspiciousRelatedAlerts=
+      fromdate:
+        simple: 5 hours ago
+      ignore-outputs:
+        simple: "true"
+      includeinformational:
+        simple: "true"
+      query:
+        simple: |+
+          agentid:${alert.agentid} and (name:"Behavioral Threat" or name:"Lateral Movement - 2357622005" or name:"Uncommon creation or access operation of sensitive shadow copy by a high-risk process" or name:"LSASS dump file written to disk" or name:"New Administrative Behavior" or name:"PowerShell suspicious flags" or name:"Windows LOLBIN executable connected to a rare external host" or name:"Uncommon sensitive filesystem registry hive access by a lolbin actor in a shadow copy folder" or name:"Uncommon sensitive registry hive dump by reg.exe lolbin process" or name:"Abnormal RDP User Login to Domain Controller" or name:"Uncommon sensitive registry hive dump" or name:"Uncommon reverse SSH tunnel to external domain/ip using a sensitive port" or name:"Suspicious PowerShell Command Line" or name:"Remote service start from an uncommon source" or name:"Dumping Registry hives with passwords" or name:"SMB Traffic from Non-Standard Process" or name:"Suspicious SMB connection from domain controller" or name:"Abnormal User Login to Domain Controller" or name:"Abnormal User Login to Domain Controller by an Abnormal Department" or name:"Uncommon sensitive registry hive dump by remote actor" or name:"Command-line creation of a RAR archive")
+
+      todate:
+        simple: now
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 1837.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 79e39114-6f77-4dc6-b260-8104fcf79e53
+    type: condition
+    task:
+      id: 79e39114-6f77-4dc6-b260-8104fcf79e53
+      version: -1
+      name: Found related alerts indicating a suspicious activity?
+      description: Checks whether any related alerts indicating a suspicious dump of the NTDS.dit file were found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SuspiciousRelatedAlerts
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: d3f39d9f-37e3-49b2-a2a0-e6277c94974a
+    type: regular
+    task:
+      id: d3f39d9f-37e3-49b2-a2a0-e6277c94974a
+      version: -1
+      name: 'Evidence: Related alerts indicating suspicious activity were found'
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence
+      value:
+        simple: '{"Name": "suspicious_related_alerts", "Score": 1.5, "Comment": "Related alerts indicating suspicious activity were found"}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 2170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 0b1326cf-f0e4-4cdd-a15c-b42d92d8e121
+    type: condition
+    task:
+      id: 0b1326cf-f0e4-4cdd-a15c-b42d92d8e121
+      version: -1
+      name: Is the action performed by a remote actor?
+      description: Checks if the action performed by a remote actor.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.OriginalAlert.event.causality_actor_remote_ip
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1380,
+          "y": 1837.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: a2fa2623-12db-46d9-9177-229de20373fb
+    type: title
+    task:
+      id: a2fa2623-12db-46d9-9177-229de20373fb
+      version: -1
+      name: NTDS.dit written by a remote actor
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "53"
+      - "55"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1380,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 2a18d600-b2f1-40e8-8ee3-aa1a51b3ab29
+    type: regular
+    task:
+      id: 2a18d600-b2f1-40e8-8ee3-aa1a51b3ab29
+      version: -1
+      name: Get endpoint data by remote actor ip
+      description: This script gathers endpoint data from multiple integrations and returns an endpoint entity with consolidated information to the context.
+      scriptName: get-endpoint-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "153"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      endpoint_ip:
+        simple: ${Core.OriginalAlert.event.causality_actor_remote_ip}
+      extend-context:
+        simple: RemoteActorData=
+      ignore-outputs:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1800,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: a7885f56-f588-4d69-b1e0-b6ec3e38d6d5
+    type: condition
+    task:
+      id: a7885f56-f588-4d69-b1e0-b6ec3e38d6d5
+      version: -1
+      name: Is the remote actor’s IP internal?
+      description: Check if the remote IP internal or external.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "58"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: IsInCidrRanges
+          left:
+            value:
+              simple: Core.OriginalAlert.event.causality_actor_remote_ip
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: lists
+                accessor: PrivateIPs
+                transformers:
+                - operator: RegexExtractAll
+                  args:
+                    error_if_no_match: {}
+                    ignore_case: {}
+                    multi_line: {}
+                    period_matches_newline: {}
+                    regex:
+                      value:
+                        simple: (\b(?:\d{1,3}\.){3}\d{1,3}\b/\d{1,2})
+                    unpack_matches: {}
+                - operator: join
+                  args:
+                    separator:
+                      value:
+                        simple: ','
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -946.25,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 3e264aa7-825f-43de-b29e-de34e040803e
+    type: regular
+    task:
+      id: 3e264aa7-825f-43de-b29e-de34e040803e
+      version: -1
+      name: 'Evidence: The action performed by external remote IP'
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence
+      value:
+        simple: '{"Name": "external_remote_actor_ip", "Score": 2.5, "Comment": "The action performed by external remote IP"}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1150,
+          "y": 2300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 0a9fe92c-3f2f-4577-aaaf-2a6bbf7eb367
+    type: regular
+    task:
+      id: 0a9fe92c-3f2f-4577-aaaf-2a6bbf7eb367
+      version: -1
+      name: XQL Query - Check if it's a new IP
+      description: "This task executes the XQL query to check if the IP is new in the system. \nThe query will check for 3-day logs in the XQL data, and deduct the first and last log timeframes. If the difference in hours is less than 48, the IP will be considered as new."
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      extend-context:
+        simple: XQLNewActorRemoteIP=
+      ignore-outputs:
+        simple: "true"
+      max_fields:
+        simple: "100"
+      query:
+        simple: " config timeframe = 3d case_sensitive = false \n| datamodel dataset in(*) \n| filter XDM_ALIAS.ipv4 = \"${Core.OriginalAlert.event.causality_actor_remote_ip}\" \n| fields _time\n| sort asc _time\n| comp earliest(_time) as first_seen\n| alter hours_beetween_logs = timestamp_diff(current_time(),first_seen ,\"HOUR\")\n|alter is_it_new = if((hours_beetween_logs<48) or (hours_beetween_logs = null),\"Yes\",\"No\")\n| fields is_it_new\n"
+      query_name:
+        simple: Check_new_remote_actor_ip
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -723.75,
+          "y": 2300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: d5bd13aa-d7c0-40ab-a265-295b140ae175
+    type: condition
+    task:
+      id: d5bd13aa-d7c0-40ab-a265-295b140ae175
+      version: -1
+      name: Is the remote IP new?
+      description: Checks if the action was performed by a newly observed remote actor IP.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: XQLNewActorRemoteIP.results.is_it_new
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -723.75,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: c0db164f-3dae-46be-b946-2e53db617ac9
+    type: regular
+    task:
+      id: c0db164f-3dae-46be-b946-2e53db617ac9
+      version: -1
+      name: 'Evidence: The action performed by a new remote actor IP address'
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence
+      value:
+        simple: '{"Name": "new_remote_actor_ip", "Score": 1, "Comment": "The action performed by a new remote actor IP address"}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -723.75,
+          "y": 2590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 8817df86-14fe-4125-9ea3-59334141f092
+    type: condition
+    task:
+      id: 8817df86-14fe-4125-9ea3-59334141f092
+      version: -1
+      name: Is the risk level of the remote actor high?
+      description: Checks if the remote actor’s risk level is high.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "62"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RemoteActorData.RiskLevel
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: RemoteActorData.RiskLevel
+            iscontext: true
+          right:
+            value:
+              simple: HIGH
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1570,
+          "y": 2460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: f100f8ea-a86f-465d-9516-ed820c712caf
+    type: regular
+    task:
+      id: f100f8ea-a86f-465d-9516-ed820c712caf
+      version: -1
+      name: 'Evidence: Suspicious remote actor with high risk level'
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence
+      value:
+        simple: '{"Name": "high_risk_remote_actor", "Score": 1, "Comment": "Suspicious remote actor with high risk level"}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1570,
+          "y": 2620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: 06ed81c9-8bfd-43c1-bcd3-fe8e4a0e7bfc
+    type: regular
+    task:
+      id: 06ed81c9-8bfd-43c1-bcd3-fe8e4a0e7bfc
+      version: -1
+      name: Terminate Causality processes
+      description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4 and above.
+      script: '|||core-terminate-causality'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "96"
+      - "100"
+      - "83"
+    scriptarguments:
+      causality_id:
+        simple: ${Core.OriginalAlert.event.causality_actor_process_instance_id}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: dd20093c-4a08-4c57-a397-99aa18117847
+    type: title
+    task:
+      id: dd20093c-4a08-4c57-a397-99aa18117847
+      version: -1
+      name: NTDS.dit and Shadow Copy Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "103"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -570,
+          "y": 6375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: a6be6ef8-76b9-431f-86c5-2fba049859b2
+    type: regular
+    task:
+      id: a6be6ef8-76b9-431f-86c5-2fba049859b2
+      version: -1
+      name: Close Alert
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "87"
+    scriptarguments:
+      closeNotes:
+        simple: Malicious activity detected - Resolved as "True Positive". Handled by the playbook "Suspicious dump of ntds.dit using Shadow Copy with ntdsutil/vssadmin"
+      closeReason:
+        simple: Resolved - True Positive
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 8180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: cb087126-83eb-4bde-88c5-baa30e1ee191
+    type: title
+    task:
+      id: cb087126-83eb-4bde-88c5-baa30e1ee191
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 8360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: 55ac7ea1-dbff-4a0e-9d81-517a00c61802
+    type: title
+    task:
+      id: 55ac7ea1-dbff-4a0e-9d81-517a00c61802
+      version: -1
+      name: Terminate Processes
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "80"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: 9816d696-4fe3-4b8a-babe-2b1b92e4539a
+    type: title
+    task:
+      id: 9816d696-4fe3-4b8a-babe-2b1b92e4539a
+      version: -1
+      name: User Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "169"
+      - "170"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "99":
+    id: "99"
+    taskid: c713c6f1-df15-4434-8155-3df8653326a2
+    type: regular
+    task:
+      id: c713c6f1-df15-4434-8155-3df8653326a2
+      version: -1
+      name: 'Block connection from the remote actor '
+      description: Block malicious or suspicious IP addresses.
+      script: '|||core-block-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "86"
+    scriptarguments:
+      addresses:
+        simple: ${Core.OriginalAlert.event.causality_actor_remote_ip}
+      duration:
+        simple: "60"
+      endpoint_list:
+        simple: ${alert.agentid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1760,
+          "y": 6840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: da4c42aa-a5c8-46d5-a6f2-b15ebee17b6d
+    type: title
+    task:
+      id: da4c42aa-a5c8-46d5-a6f2-b15ebee17b6d
+      version: -1
+      name: Remote Actor Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "107"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1550,
+          "y": 6375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "103":
+    id: "103"
+    taskid: 6a183021-64ca-40a7-a5cd-bebdb3d4b8a5
+    type: condition
+    task:
+      id: 6a183021-64ca-40a7-a5cd-bebdb3d4b8a5
+      version: -1
+      name: Found ntds.dit file written event?
+      description: Verifies whether NTDS.dit file write events were retrieved from the XQL query.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "228"
+      "yes":
+      - "196"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXQL.GenericQuery.results.action_file_path
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXQL.GenericQuery.results.agent_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -570,
+          "y": 6510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "105":
+    id: "105"
+    taskid: b79b8eb3-a358-48a8-bc4d-d77f291f7718
+    type: regular
+    task:
+      id: b79b8eb3-a358-48a8-bc4d-d77f291f7718
+      version: -1
+      name: Disable User
+      description: This script disables users for multiple services.
+      scriptName: disable-user
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "86"
+    scriptarguments:
+      brands:
+        simple: Active Directory Query v2
+      user_name:
+        simple: ${Core.OriginalAlert.event.actor_primary_username}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 7042.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "106":
+    id: "106"
+    taskid: ec1ed496-3d84-4276-9286-7e48526ee28a
+    type: condition
+    task:
+      id: ec1ed496-3d84-4276-9286-7e48526ee28a
+      version: -1
+      name: Analyst approval for disable user
+      description: Analyst approval is required before disabling the involved user.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "86"
+      "Yes":
+      - "105"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 6840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: 'Should the following user be disabled using the ''Active Directory'' integration: ${Core.OriginalAlert.event.actor_primary_username} ?'
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "107":
+    id: "107"
+    taskid: 1903375e-9d10-4b7f-a27d-626697a79732
+    type: condition
+    task:
+      id: 1903375e-9d10-4b7f-a27d-626697a79732
+      version: -1
+      name: Is the action performed by a remote actor?
+      description: Checks if the action performed by a remote actor.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "86"
+      "yes":
+      - "256"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.OriginalAlert.event.causality_actor_remote_ip
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1550,
+          "y": 6510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "109":
+    id: "109"
+    taskid: e6d75995-22ed-45a9-99e7-9a1ca04ad461
+    type: regular
+    task:
+      id: e6d75995-22ed-45a9-99e7-9a1ca04ad461
+      version: -1
+      name: 'Block the external IP of the remote actor '
+      description: The script blocks a list of IP addresses in supported integrations.
+      scriptName: block-external-ip
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "86"
+    scriptarguments:
+      ip_list:
+        simple: ${Core.OriginalAlert.event.causality_actor_remote_ip}
+    results:
+    - push_job_id
+    - commit_job_id
+    - panorama_responses
+    - executed_brands
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 6840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "111":
+    id: "111"
+    taskid: 1cced4b7-7e68-4d70-a829-41817ffce27b
+    type: regular
+    task:
+      id: 1cced4b7-7e68-4d70-a829-41817ffce27b
+      version: -1
+      name: Manually remediate by quarantining or deleting the NTDS.dit file
+      description: |-
+        Dear Analyst,
+
+        Please note that during the remediation process, the playbook did not quarantine the following NTDS.dit file: ${
+        PaloAltoNetworksXQL.GenericQuery.results.action_file_path}
+         on the followin host: ${PaloAltoNetworksXQL.GenericQuery.results.agent_id}
+
+        This is due to one of the following reasons:
+        - The file was written to a remote host share.
+        - The file was not found in the specified path.
+        - The endpoint is offline or unreachable.
+
+        Please take manual action to contain the attack and prevent potential data exfiltration or credential theft before closing this alert.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "86"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 7042.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "131":
+    id: "131"
+    taskid: e7ca123b-28a2-4f8a-ac84-c84f66311484
+    type: title
+    task:
+      id: e7ca123b-28a2-4f8a-ac84-c84f66311484
+      version: -1
+      name: Inconclusive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "254"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 5610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "133":
+    id: "133"
+    taskid: b7077529-a6b1-43be-a9da-aaae8cbf0c82
+    type: regular
+    task:
+      id: b7077529-a6b1-43be-a9da-aaae8cbf0c82
+      version: -1
+      name: Execute command to retrieve the ntds.dit location from the registry
+      description: Run a shell command on a specific endpoint and return its result.
+      script: '|||core-execute-command'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "134"
+    scriptarguments:
+      command:
+        simple: reg query "HKLM\SYSTEM\CurrentControlSet\Services\NTDS\Parameters" /v "DSA Database file"
+      command_type:
+        simple: native
+      endpoint_ids:
+        simple: ${alert.agentid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "134":
+    id: "134"
+    taskid: ccd51ec8-949f-49c1-b0c3-2e35e44f53ce
+    type: regular
+    task:
+      id: ccd51ec8-949f-49c1-b0c3-2e35e44f53ce
+      version: -1
+      name: Extract ntds.dit location from the command results
+      description: Extracts regex data from the provided text. The script support groups and looping.
+      scriptName: MatchRegexV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      contextKey:
+        simple: NtdsFilePath
+      data:
+        simple: ${Core.ScriptResult.results.executed_command.standard_output}
+      group:
+        simple: "1"
+      regex:
+        simple: (?i)\bDSA\s+Database\s+file\b.*?\b([A-Z]:\\[^\r\n]*?ntds\.dit)\b
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "135":
+    id: "135"
+    taskid: ad7607d2-23a2-41fc-9780-91c264614f59
+    type: regular
+    task:
+      id: ad7607d2-23a2-41fc-9780-91c264614f59
+      version: -1
+      name: Extract the Shadow Copy Target Volume from the command line
+      description: Extracts regex data from the provided text. The script support groups and looping.
+      scriptName: MatchRegexV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "136"
+    scriptarguments:
+      contextKey:
+        simple: ShadowCopyTargetVolume
+      data:
+        simple: ${alert.initiatorcmd.[0]}
+      group:
+        simple: "1"
+      regex:
+        simple: (?i)for=(\w:)
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "136":
+    id: "136"
+    taskid: 3d80e2c6-a780-4d3e-ac49-fdf58390b1d0
+    type: condition
+    task:
+      id: 3d80e2c6-a780-4d3e-ac49-fdf58390b1d0
+      version: -1
+      name: Is the shadow copy including the volume containing the ntds.dit?
+      description: Checks if the shadow copy including the volume containing the ntds.dit.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "146"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: NtdsFilePath
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ShadowCopyTargetVolume
+            iscontext: true
+      - - operator: startWith
+          left:
+            value:
+              simple: NtdsFilePath
+            iscontext: true
+          right:
+            value:
+              simple: ShadowCopyTargetVolume
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "141":
+    id: "141"
+    taskid: 89c438ac-8d04-48a7-99bc-9c971fd80acc
+    type: title
+    task:
+      id: 89c438ac-8d04-48a7-99bc-9c971fd80acc
+      version: -1
+      name: vssadmin
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "135"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 992.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "142":
+    id: "142"
+    taskid: 7cad93cb-88da-4612-9d12-48429b567545
+    type: title
+    task:
+      id: 7cad93cb-88da-4612-9d12-48429b567545
+      version: -1
+      name: ntdsutil
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 992.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "143":
+    id: "143"
+    taskid: b2416eaf-8046-41f8-afed-d1afea9ac818
+    type: condition
+    task:
+      id: b2416eaf-8046-41f8-afed-d1afea9ac818
+      version: -1
+      name: Is the Ntdsutil.exe accessing ntds.dit file?
+      description: Checks if the Ntdsutil.exe accessing ntds.dit file.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "Yes":
+      - "144"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          right:
+            value:
+              simple: Ntdsutil.exe accessing ntds.dit file
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "144":
+    id: "144"
+    taskid: 8879251d-6807-4a64-8833-a9028f4fe1ab
+    type: regular
+    task:
+      id: 8879251d-6807-4a64-8833-a9028f4fe1ab
+      version: -1
+      name: 'Evidence: Ntdsutil.exe accessing ntds.dit file'
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence
+      value:
+        simple: '{"Name": "Ntdsutil.exe_accessed_ntds.dit", "Score": 0, "Comment": "Ntdsutil.exe accessing ntds.dit file"}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "146":
+    id: "146"
+    taskid: 9c1d5e09-f3d4-4503-9449-a241ab3ccb11
+    type: regular
+    task:
+      id: 9c1d5e09-f3d4-4503-9449-a241ab3ccb11
+      version: -1
+      name: 'Evidence: Shadow copy including the volume containing the ntds.dit'
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence
+      value:
+        simple: '{"Name": "shadow_copy_includes_ntds.dit_volume", "Score": 0, "Comment": "Shadow copy including the volume containing the ntds.dit"}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "153":
+    id: "153"
+    taskid: 03c61a2a-a457-4f55-96d3-a98cc7076745
+    type: condition
+    task:
+      id: 03c61a2a-a457-4f55-96d3-a98cc7076745
+      version: -1
+      name: Found agent installed on the remote actor?
+      description: Checks whether the agent is installed on the remote host.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "155"
+      "yes":
+      - "61"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RemoteActorData.AdditionalFields.endpoint_id
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1800,
+          "y": 2300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "155":
+    id: "155"
+    taskid: 65571530-3f43-4f36-8aa6-607a1cef07bf
+    type: regular
+    task:
+      id: 65571530-3f43-4f36-8aa6-607a1cef07bf
+      version: -1
+      name: 'Evidence: No agent installed on the remote actor'
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence
+      value:
+        simple: '{"Name": "remote_actor_without_agent", "Score": 1, "Comment": "No agent installed on the remote actor"}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2030,
+          "y": 2460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "158":
+    id: "158"
+    taskid: ce529850-9405-44c4-b7d8-ba224feee034
+    type: condition
+    task:
+      id: ce529850-9405-44c4-b7d8-ba224feee034
+      version: -1
+      name: Found related alerts indicating a malicious activity?
+      description: Checks whether any related alerts indicating a mulicious dump of the NTDS.dit file were found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "159"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MaliciousRelatedAlerts
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1300,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "159":
+    id: "159"
+    taskid: 83dff7e4-1297-47f6-a6de-fad3a6662349
+    type: regular
+    task:
+      id: 83dff7e4-1297-47f6-a6de-fad3a6662349
+      version: -1
+      name: 'Evidence: Related alerts indicating malicious activity were found'
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence
+      value:
+        simple: '{"Name": "malicious_related_alerts", "Score": 2.5, "Comment": "Related alerts indicating malicious activity were found"}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1300,
+          "y": 2170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "160":
+    id: "160"
+    taskid: 33d00564-e82c-43fe-a12d-dba1c12b9e97
+    type: regular
+    task:
+      id: 33d00564-e82c-43fe-a12d-dba1c12b9e97
+      version: -1
+      name: Retrieve user data from the Active Directory
+      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
+      scriptName: get-user-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "161"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      brands:
+        simple: Active Directory Query v2
+      user_name:
+        simple: ${Core.OriginalAlert.event.actor_primary_username}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1811.6666259765625,
+          "y": 1837.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "161":
+    id: "161"
+    taskid: b3c5a011-0472-45c9-a054-3c29c56de3af
+    type: condition
+    task:
+      id: b3c5a011-0472-45c9-a054-3c29c56de3af
+      version: -1
+      name: Check if the user was found in Active Directory
+      description: Checks if the user was found in Active Directory
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "Yes":
+      - "163"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: UserData
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: UserData.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                    ignorecase: true
+                accessor: Username
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1811.6666259765625,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "163":
+    id: "163"
+    taskid: 9441da5f-c610-40d0-a651-59c4f700c14b
+    type: regular
+    task:
+      id: 9441da5f-c610-40d0-a651-59c4f700c14b
+      version: -1
+      name: Count privileged group memberships
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "164"
+    scriptarguments:
+      key:
+        simple: UserPrivilegedGroupCount
+      value:
+        complex:
+          root: UserData.AdditionalFields
+          accessor: memberOf
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (?i)\b(?:Administrators|Device Owners|(?:Domain|Enterprise) Admins|(?:Remote Desktop|Power) Users|(?:Backup|Account|Server|Print) Operators)\b
+              unpack_matches: {}
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys: {}
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1811.6666259765625,
+          "y": 2205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "164":
+    id: "164"
+    taskid: 4918b7ee-d936-47af-a23f-50349507acd0
+    type: condition
+    task:
+      id: 4918b7ee-d936-47af-a23f-50349507acd0
+      version: -1
+      name: Check if user is highly privileged
+      description: Checks if user is highly privileged
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "167"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: UserPrivilegedGroupCount
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1811.6666259765625,
+          "y": 2353.333251953125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "167":
+    id: "167"
+    taskid: c529d869-37dd-40cf-8c86-84f879f760ee
+    type: regular
+    task:
+      id: c529d869-37dd-40cf-8c86-84f879f760ee
+      version: -1
+      name: 'Evidence: The operation performed by non highly privileged user'
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence
+      value:
+        simple: '{"Name": "user_privilege", "Score": 0.5, "Comment": "The operation performed by non highly privileged user"}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1811.6666259765625,
+          "y": 2515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "168":
+    id: "168"
+    taskid: baaed8a9-942d-42cc-ab43-ac0a6fa71633
+    type: regular
+    task:
+      id: baaed8a9-942d-42cc-ab43-ac0a6fa71633
+      version: -1
+      name: Save username without domain prefix
+      description: Saves the username without the domain prefix.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "172"
+    scriptarguments:
+      key:
+        simple: UsernameWithoutPrefix
+      value:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: actor_primary_username
+          transformers:
+          - operator: LastArrayElement
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (?<=\\)[^\\]+$
+              unpack_matches: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 678.333251953125,
+          "y": 6672.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "169":
+    id: "169"
+    taskid: 8f539cf1-8c7d-45cb-9268-568b830e0549
+    type: title
+    task:
+      id: 8f539cf1-8c7d-45cb-9268-568b830e0549
+      version: -1
+      name: Disable User
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "250"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 6540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "170":
+    id: "170"
+    taskid: 47abf839-5e29-41c2-926c-907dda2e976a
+    type: title
+    task:
+      id: 47abf839-5e29-41c2-926c-907dda2e976a
+      version: -1
+      name: User Logoff
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "168"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 678.333251953125,
+          "y": 6527.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "171":
+    id: "171"
+    taskid: f24e3acf-05a5-4fff-8e55-e39904845e89
+    type: regular
+    task:
+      id: f24e3acf-05a5-4fff-8e55-e39904845e89
+      version: -1
+      name: Logoff user from host
+      description: Run a shell command on a specific endpoint and return its result.
+      script: '|||core-execute-command'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "180"
+    scriptarguments:
+      command:
+        complex:
+          root: Core.ScriptResult.results.executed_command.command_output
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: Core.ScriptResult.results.executed_command.command_output
+                iscontext: true
+              right:
+                value:
+                  simple: UsernameWithoutPrefix
+                iscontext: true
+              ignorecase: true
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: Core.ScriptResult.results.executed_command.command_output
+                iscontext: true
+              right:
+                value:
+                  simple: Active
+              ignorecase: true
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (?<=\bconsole\s+)\d+
+              unpack_matches: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'logoff '
+              suffix: {}
+      command_type:
+        simple: powershell
+      endpoint_ids:
+        simple: ${alert.agentid}
+      is_raw_command:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 678.333251953125,
+          "y": 7161.66650390625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "172":
+    id: "172"
+    taskid: f04b7401-3577-42fb-a243-3ddd2bfcb0b8
+    type: regular
+    task:
+      id: f04b7401-3577-42fb-a243-3ddd2bfcb0b8
+      version: -1
+      name: Execute get user sessions
+      description: Run a shell command on a specific endpoint and return its result.
+      script: '|||core-execute-command'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "173"
+    scriptarguments:
+      command:
+        simple: quser ${UsernameWithoutPrefix}
+      endpoint_ids:
+        simple: ${alert.agentid}
+      is_raw_command:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 678.333251953125,
+          "y": 6823.75
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "173":
+    id: "173"
+    taskid: 67d9f70a-6381-4525-835c-391f996fb440
+    type: condition
+    task:
+      id: 67d9f70a-6381-4525-835c-391f996fb440
+      version: -1
+      name: Check for active session of the user
+      description: Checks whether the execution results indicate an active session for the user, confirming the user is currently logged in.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "86"
+      Active:
+      - "171"
+    separatecontext: false
+    conditions:
+    - label: Active
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Core.ScriptResult.results.executed_command.command_output
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: Core.ScriptResult.results.executed_command.command_output
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active
+                    ignorecase: true
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: Core.ScriptResult.results.executed_command.command_output
+                      iscontext: true
+                    right:
+                      value:
+                        simple: UsernameWithoutPrefix
+                      iscontext: true
+                    ignorecase: true
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 678.333251953125,
+          "y": 6967.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "180":
+    id: "180"
+    taskid: bbcac65f-2278-485e-961f-ff75336d9100
+    type: condition
+    task:
+      id: bbcac65f-2278-485e-961f-ff75336d9100
+      version: -1
+      name: Command executed successfully?
+      description: Checks whether the command executed successfully.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "181"
+      "Yes":
+      - "86"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Core.ScriptResult.results.executed_command
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: Core.ScriptResult.results.executed_command.standard_output
+                      iscontext: true
+                    right:
+                      value:
+                        simple: logoff
+                    ignorecase: true
+                accessor: execution_status
+            iscontext: true
+          right:
+            value:
+              simple: COMPLETED_SUCCESSFULLY
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 678.333251953125,
+          "y": 7314
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "181":
+    id: "181"
+    taskid: c12bf0e5-f862-43fd-89f1-1ad2ac972478
+    type: regular
+    task:
+      id: c12bf0e5-f862-43fd-89f1-1ad2ac972478
+      version: -1
+      name: Manual remediation actions required to log off the user
+      description: "Dear Analyst,\n\nPlease note that during the remediation process, the playbook did not log off the user: ${Core.OriginalAlert.event.actor_primary_username} from the following host: ${alert.hostname} \n\nPlease manually log off the user to complete the containment and remediation process."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "86"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 7495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "186":
+    id: "186"
+    taskid: c8ebf58c-d2af-4eb9-a689-0eca06f9b399
+    type: title
+    task:
+      id: c8ebf58c-d2af-4eb9-a689-0eca06f9b399
+      version: -1
+      name: Deep Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "214"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 3230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "187":
+    id: "187"
+    taskid: fb5e63e2-c285-4f27-a70f-6078edc42cfb
+    type: regular
+    task:
+      id: fb5e63e2-c285-4f27-a70f-6078edc42cfb
+      version: -1
+      name: XQL query to retrieve command lines under the same causality
+      description: |-
+        Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+        When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+        unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "209"
+    scriptarguments:
+      query:
+        simple: "dataset  = xdr_data \n| filter agent_id  = \"${alert.agentid}\" and (actor_process_instance_id = \"${alert.actorprocessinstanceid.[0]}\" or os_actor_process_instance_id = \"${Core.OriginalAlert.event.os_actor_process_instance_id}\" or causality_actor_causality_id = \"${alert.cid.[0]}\" or causality_actor_process_instance_id = \"${alert.cid.[0]}\")\n| fields os_actor_process_command_line\n|alter command_lines = os_actor_process_command_line\n| union \n(\ndataset  = xdr_data \n| filter agent_id  = \"${alert.agentid}\" and (actor_process_instance_id = \"${alert.actorprocessinstanceid.[0]}\" or os_actor_process_instance_id = \"${Core.OriginalAlert.event.os_actor_process_instance_id}\" or causality_actor_causality_id = \"${alert.cid.[0]}\" or causality_actor_process_instance_id = \"${alert.cid.[0]}\")\n| fields actor_process_command_line\n|alter command_lines = actor_process_command_line\n)\n|fields command_lines \n|dedup command_lines"
+      query_name:
+        simple: Retrieve_malicious_activitiy_by_process
+      time_frame:
+        simple: between ${QueryStartTime} and ${QueryEndTime}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 4485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "188":
+    id: "188"
+    taskid: 410badbf-5caf-4aa9-b270-769dd40f6a06
+    type: regular
+    task:
+      id: 410badbf-5caf-4aa9-b270-769dd40f6a06
+      version: -1
+      name: Set XQL query start time
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "189"
+    scriptarguments:
+      key:
+        simple: QueryStartTime
+      value:
+        simple: ${alert.timestamp}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 4180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "189":
+    id: "189"
+    taskid: 45a57038-2080-4831-885a-06fa390c01e4
+    type: regular
+    task:
+      id: 45a57038-2080-4831-885a-06fa390c01e4
+      version: -1
+      name: Set XQL query end time
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "187"
+    scriptarguments:
+      key:
+        simple: QueryEndTime
+      value:
+        complex:
+          root: alert
+          accessor: timestamp
+          transformers:
+          - operator: ModifyDateTime
+            args:
+              variation:
+                value:
+                  simple: in 5 min
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 4330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "190":
+    id: "190"
+    taskid: 4fe83c85-56fb-41f0-879e-cc2df32a01fc
+    type: regular
+    task:
+      id: 4fe83c85-56fb-41f0-879e-cc2df32a01fc
+      version: -1
+      name: Search related alerts indicating a malicious activity
+      description: |+
+        This task searches the following related alerts to identify any indications of a malicious NTDS.dit file write:
+
+        - "Credential Gathering Protection"
+        - "Uncommon creation or access operation of sensitive shadow copy by a high-risk process"
+        - "Suspicious dump of ntds.dit using Shadow Copy with ntdsutil/vssadmin"
+        - "WildFire Malware"
+        - "Local Analysis Malware"
+
+
+
+
+
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "158"
+    scriptarguments:
+      extend-context:
+        simple: MaliciousRelatedAlerts=
+      ignore-outputs:
+        simple: "true"
+      query:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '(name:"NTDS.dit file written by a rare executable to a suspicious path" or name:"NTDS.dit file written by a remote actor" or name:"Credential Gathering Protection - 769377214" or name:"Credential Gathering Protection - 791046769" or name:"Credential Gathering Protection - 1428024063" or name:"Credential Gathering Protection - 1525656032" or name:"Credential Gathering Protection - 2177907616" or name:"Credential Gathering Protection - 1876742813" or name:"Credential Gathering Protection - 2288259711" or name:"Credential Gathering Protection - 2616217867" or name:"Credential Gathering Protection - 3598738926" or name:"Credential Gathering Protection - 4277311073" or name:"Credential Gathering Protection - 439618157" or name:"Credential Gathering Protection - 657061549" or name:"Credential Gathering Protection - 797899178" or name:"Credential Gathering Protection - 401793466" or name:"Data Exfiltration - 354362866" or name:"Evasion Technique - 1891897646" or name:"Malicious Registry Operation - 2401089680" or name:"Malicious Registry Operation - 2833283495" or name:"*Staged Malware Activity*" or name:"SYNC - Credential Gathering - 1082701410" or name:"SYNC - Credential Gathering - 2237270456" or name:"SYNC - Credential Gathering - 3406296443" or name:"SYNC - Remote Activity - 152206032" or name:"SYNC - Remote Activity - 3456368549" or name:"*Powershell Activity*" or name:"NTDS.dit file written by a rare executable" or name:"Uncommon sensitive registry hive dump by reg.exe lolbin process" or name:"WildFire Malware" or name:"Local Analysis Malware") and caseid:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1300,
+          "y": 1837.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "196":
+    id: "196"
+    taskid: 1920998e-a73b-4968-bef3-51dae809028b
+    type: regular
+    task:
+      id: 1920998e-a73b-4968-bef3-51dae809028b
+      version: -1
+      name: Calculate  SHA256 of the written ntds.dit file
+      description: Run a shell command on a specific endpoint and return its result.
+      script: '|||core-execute-command'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "111"
+      '#none#':
+      - "197"
+    scriptarguments:
+      command:
+        complex:
+          root: PaloAltoNetworksXQL.GenericQuery.results
+          accessor: action_file_path
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: certutil -hashfile  "
+              suffix:
+                value:
+                  simple: '" sha256'
+      endpoint_ids:
+        simple: ${PaloAltoNetworksXQL.GenericQuery.results.agent_id}
+      timeout:
+        simple: "180"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": -570,
+          "y": 6693.75
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "197":
+    id: "197"
+    taskid: 46aaaa05-283a-4ce2-840e-382beddf5b97
+    type: regular
+    task:
+      id: 46aaaa05-283a-4ce2-840e-382beddf5b97
+      version: -1
+      name: Quarantine the written NTDS.dit file
+      description: This script executes the 'quarantine-file' command on a specified file via the appropriate agent. This script is used to isolate files identified as suspicious.
+      scriptName: quarantine-file
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "111"
+      '#none#':
+      - "86"
+    scriptarguments:
+      brands:
+        simple: Cortex Core - IR
+      endpoint_id:
+        simple: ${PaloAltoNetworksXQL.GenericQuery.results.agent_id}
+      file_hash:
+        complex:
+          root: Core.ScriptResult.results.executed_command.command_output
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: Core.ScriptResult.results.executed_command.command_output
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+      file_path:
+        complex:
+          root: PaloAltoNetworksXQL.GenericQuery.results
+          accessor: action_file_path
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix: {}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": -570,
+          "y": 6870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "198":
+    id: "198"
+    taskid: ae01dd7f-679c-4abf-bc37-bfdc11ddf093
+    type: regular
+    task:
+      id: ae01dd7f-679c-4abf-bc37-bfdc11ddf093
+      version: -1
+      name: XQL query to retrieve NTDS.dit file written events
+      description: |-
+        Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+        When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+        unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "201"
+    scriptarguments:
+      query:
+        simple: "dataset  = xdr_data | filter agent_id  = \"${alert.agentid}\" and lowercase(action_file_name) =\"ntds.dit\" and event_type = FILE and event_sub_type = FILE_WRITE and action_file_path != \"${NtdsFilePath}\"\n| filter actor_process_image_name != \"VSSVC.exe\" and action_file_path not contains \"\\Device\\HarddiskVolumeShadowCopy\"\n| fields action_file_name, action_file_path , action_file_sha256, agent_id , actor_process_image_name ,causality_actor_process_image_name , event_type , event_sub_type\n| dedup action_file_path , agent_id "
+      query_name:
+        simple: Retrieve_NTDS_file_written
+      time_frame:
+        simple: between ${FileHashQueryStartTime} and ${FileHashQueryEndTime}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2336.6666259765625,
+          "y": 2323.3330078125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "199":
+    id: "199"
+    taskid: 9dcd059a-1d90-42fa-bd87-486405d5e179
+    type: regular
+    task:
+      id: 9dcd059a-1d90-42fa-bd87-486405d5e179
+      version: -1
+      name: Set XQL query start time
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "200"
+    scriptarguments:
+      key:
+        simple: FileHashQueryStartTime
+      value:
+        complex:
+          root: alert
+          accessor: timestamp
+          transformers:
+          - operator: ModifyDateTime
+            args:
+              variation:
+                value:
+                  simple: 5 min ago
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2336.6666259765625,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "200":
+    id: "200"
+    taskid: 68fb7e39-2e11-449f-ba79-b9c27a798c13
+    type: regular
+    task:
+      id: 68fb7e39-2e11-449f-ba79-b9c27a798c13
+      version: -1
+      name: Set XQL query end time
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "198"
+    scriptarguments:
+      key:
+        simple: FileHashQueryEndTime
+      value:
+        complex:
+          root: alert
+          accessor: timestamp
+          transformers:
+          - operator: ModifyDateTime
+            args:
+              variation:
+                value:
+                  simple: in 5 min
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2336.6666259765625,
+          "y": 2170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "201":
+    id: "201"
+    taskid: 2304986b-c9c6-4a4c-808a-a1812385e7f5
+    type: condition
+    task:
+      id: 2304986b-c9c6-4a4c-808a-a1812385e7f5
+      version: -1
+      name: Found ntds.dit file written event?
+      description: Verifies whether NTDS.dit file write events were retrieved from the XQL query.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "202"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXQL.GenericQuery.results.action_file_path
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXQL.GenericQuery.results.agent_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2336.6666259765625,
+          "y": 2473.3330078125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "202":
+    id: "202"
+    taskid: 8d07397f-a89b-4c93-9779-b5ef0488c206
+    type: regular
+    task:
+      id: 8d07397f-a89b-4c93-9779-b5ef0488c206
+      version: -1
+      name: 'Evidence: ntds.dit file write events were found'
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence
+      value:
+        simple: '{"Name": "ntds.dit_file_write_evets_found", "Score": 0, "Comment": "ntds.dit file write events were found"}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2336.6666259765625,
+          "y": 2660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "203":
+    id: "203"
+    taskid: dfd73375-2039-4342-93da-d092be02f9e0
+    type: condition
+    task:
+      id: dfd73375-2039-4342-93da-d092be02f9e0
+      version: -1
+      name: Is the original path of the ntds.dit retrieved?
+      description: Checks if the original path of the NTDS.dit file was retrieved.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "199"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: NtdsFilePath
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2336.6666259765625,
+          "y": 1837.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "204":
+    id: "204"
+    taskid: be1a5c47-5149-44e1-a83a-5da0277af680
+    type: condition
+    task:
+      id: be1a5c47-5149-44e1-a83a-5da0277af680
+      version: -1
+      name: Any evidence found requiring remediation?
+      description: Checks whether any malicious or suspicious evidence was found during the investigation. If malicious evidence is identified, the playbook proceeds to remediation; if suspicious evidence is found, it proceeds to analyst decision; and if no evidence is found, it is marked as a false positive.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "131"
+      False Positive:
+      - "206"
+      Remediation for ntdsutil:
+      - "251"
+      Remediation for vssadmin:
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: Remediation for vssadmin
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: Evidence
+                accessor: Score
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: "0"
+                - operator: SumList
+            iscontext: true
+          right:
+            value:
+              simple: "2.5"
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: alert.initiatedby.[0]
+            iscontext: true
+          right:
+            value:
+              simple: vssadmin.exe
+          ignorecase: true
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Evidence.Comment
+            iscontext: true
+          right:
+            value:
+              simple: Shadow copy including the volume containing the ntds.dit
+          ignorecase: true
+    - label: Remediation for ntdsutil
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: Evidence
+                accessor: Score
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: "0"
+                - operator: SumList
+            iscontext: true
+          right:
+            value:
+              simple: "2.5"
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: alert.initiatedby.[0]
+            iscontext: true
+          right:
+            value:
+              simple: ntdsutil.exe
+          ignorecase: true
+    - label: False Positive
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: Evidence.Name
+            iscontext: true
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXQL.GenericQuery
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXQL.GenericQuery.query_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Retrieve_NTDS_file_written
+                    ignorecase: true
+                accessor: status
+            iscontext: true
+          right:
+            value:
+              simple: SUCCESS
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: NtdsFilePath
+            iscontext: true
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXQL.GenericQuery
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXQL.GenericQuery.query_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Retrieve_malicious_activitiy_by_process
+                    ignorecase: true
+                accessor: status
+            iscontext: true
+          right:
+            value:
+              simple: SUCCESS
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 5450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "205":
+    id: "205"
+    taskid: 70909a55-8ceb-42f0-ae95-e60155df0436
+    type: regular
+    task:
+      id: 70909a55-8ceb-42f0-ae95-e60155df0436
+      version: -1
+      name: Close Alert as False Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "87"
+    scriptarguments:
+      closeNotes:
+        simple: No evidence of malicious or suspicious activity detected - Resolved as "False Positive". Handled by the playbook "Suspicious dump of ntds.dit using Shadow Copy with ntdsutil/vssadmin"
+      closeReason:
+        simple: Resolved - False Positive
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2590,
+          "y": 6260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "206":
+    id: "206"
+    taskid: e3a4651f-d1f1-4605-a7dc-ca1e87d9f6f2
+    type: title
+    task:
+      id: e3a4651f-d1f1-4605-a7dc-ca1e87d9f6f2
+      version: -1
+      name: False Positive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "205"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2590,
+          "y": 6070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "207":
+    id: "207"
+    taskid: 1ee15a33-0181-487a-8a9a-b10be785490c
+    type: regular
+    task:
+      id: 1ee15a33-0181-487a-8a9a-b10be785490c
+      version: -1
+      name: 'Evidence: Malicious command line detected in the causality chain'
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "204"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence
+      value:
+        simple: '{"Name": "malicious_command_line", "Score": 2.5, "Comment": "Malicious command line detected in the causality chain"}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 5130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "209":
+    id: "209"
+    taskid: 5f829e59-ef57-4f80-b226-df2c22f43415
+    type: condition
+    task:
+      id: 5f829e59-ef57-4f80-b226-df2c22f43415
+      version: -1
+      name: Found command lines under the same causality?
+      description: Verifies whether the command lines under the same causality were retrieved from the XQL query.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "204"
+      "yes":
+      - "220"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXQL.GenericQuery.results.command_lines
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 4630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "213":
+    id: "213"
+    taskid: 85d406dc-2b79-45f3-8de9-2c7d43c01a6d
+    type: regular
+    task:
+      id: 85d406dc-2b79-45f3-8de9-2c7d43c01a6d
+      version: -1
+      name: Calculate Time Difference
+      description: Calculate the time difference, in minutes.
+      scriptName: CalculateTimeDifference
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "215"
+    scriptarguments:
+      end_time:
+        complex:
+          root: TimeNow
+          transformers:
+          - operator: Stringify
+      start_time:
+        complex:
+          root: alert
+          accessor: timestamp
+          transformers:
+          - operator: Stringify
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 3510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "214":
+    id: "214"
+    taskid: ad9dc474-9c1f-436b-b5bb-148d61f83466
+    type: regular
+    task:
+      id: ad9dc474-9c1f-436b-b5bb-148d61f83466
+      version: -1
+      name: Get TIme Now
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "213"
+    scriptarguments:
+      dateFormat:
+        simple: ISO
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 3365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "215":
+    id: "215"
+    taskid: 84cfbd06-c514-414e-a248-287b313697a6
+    type: regular
+    task:
+      id: 84cfbd06-c514-414e-a248-287b313697a6
+      version: -1
+      name: Set Time Difference in seconds
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "216"
+    scriptarguments:
+      key:
+        simple: TimeDiffSeconds
+      value:
+        complex:
+          root: Time
+          accessor: Difference
+          transformers:
+          - operator: multiply
+            args:
+              by:
+                value:
+                  simple: "60"
+          - operator: floor
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 3660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "216":
+    id: "216"
+    taskid: e080c6da-55d1-4df7-b350-1d7a134c76ed
+    type: condition
+    task:
+      id: e080c6da-55d1-4df7-b350-1d7a134c76ed
+      version: -1
+      name: Was the alert generated 5 minutes ago or earlier?
+      description: Checks whether the alert was generated 5 minutes ago or earlier.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "218"
+      "yes":
+      - "188"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: TimeDiffSeconds
+            iscontext: true
+          right:
+            value:
+              simple: "300"
+        - operator: lessThan
+          left:
+            value:
+              simple: TimeDiffSeconds
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 3805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "218":
+    id: "218"
+    taskid: 1ab87284-0a51-45d9-854d-2e7f90101088
+    type: regular
+    task:
+      id: 1ab87284-0a51-45d9-854d-2e7f90101088
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "188"
+    scriptarguments:
+      seconds:
+        complex:
+          root: TimeDiffSeconds
+          transformers:
+          - operator: addition
+            args:
+              by:
+                value:
+                  simple: "-300"
+          - operator: abs
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1720,
+          "y": 3990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "220":
+    id: "220"
+    taskid: 38aca4d1-9fb7-4589-9e95-4db62d72bb1e
+    type: regular
+    task:
+      id: 38aca4d1-9fb7-4589-9e95-4db62d72bb1e
+      version: -1
+      name: Command Line Analysis
+      description: |-
+        This script evaluates command-line threats by analyzing both original and decoded inputs. It assigns weighted scores to detected patterns, such as AMSI bypass or credential dumping, and applies risk combination bonuses for multiple detections. The total score is normalized to a 0-100 scale, with risk levels categorized as follows:
+
+        * 0-25: Low Risk
+        * 26-50: Medium Risk
+        * 51-90: High Risk
+        * 91-100: Critical Risk
+
+        The scoring mechanism provides a comprehensive risk assessment, considering both the severity and frequency of malicious behaviors.
+      scriptName: CommandLineAnalysis
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "221"
+    scriptarguments:
+      command_line:
+        simple: ${PaloAltoNetworksXQL.GenericQuery.results.command_lines}
+      custom_patterns:
+        simple: (?i)ADMIN\$|VolumeShadowCopy.+\.hiv|zip|127\.0\.0\.1|list shadows|reg save|curl|expose|7z|rar|mount|mklink|GLOBALROOT|copy.\\\\\?\\|Copy-Item
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 4790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "221":
+    id: "221"
+    taskid: 872f9b88-b1d2-4e42-b3b5-090c27f50359
+    type: condition
+    task:
+      id: 872f9b88-b1d2-4e42-b3b5-090c27f50359
+      version: -1
+      name: Found Malicious Command line?
+      description: Checks if the command line analysis detected high-risk patterns or scored above the risk threshold.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "204"
+      "yes":
+      - "207"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CommandLineAnalysis.score
+            iscontext: true
+          right:
+            value:
+              simple: "50"
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: CommandLineAnalysis.analysis.original.custom_patterns
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 4940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "228":
+    id: "228"
+    taskid: c2bdde46-ef14-467f-ac7b-7b3afca35c5a
+    type: condition
+    task:
+      id: c2bdde46-ef14-467f-ac7b-7b3afca35c5a
+      version: -1
+      name: Is the dump commands running via ntdsutil or vssadmin?
+      description: Checks if the dump commands running via ntdsutil or vssadmin.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "86"
+      ntdsutil:
+      - "249"
+      vssadmin:
+      - "231"
+    separatecontext: false
+    conditions:
+    - label: ntdsutil
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: alert.initiatedby.[0]
+            iscontext: true
+          right:
+            value:
+              simple: ntdsutil.exe
+          ignorecase: true
+    - label: vssadmin
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: alert.initiatedby.[0]
+            iscontext: true
+          right:
+            value:
+              simple: vssadmin.exe
+          ignorecase: true
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Evidence.Comment
+            iscontext: true
+          right:
+            value:
+              simple: Shadow copy including the volume containing the ntds.dit
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1390,
+          "y": 6693.75
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "229":
+    id: "229"
+    taskid: 8f90ae61-d85c-44d0-98b3-c721b5178cf2
+    type: regular
+    task:
+      id: 8f90ae61-d85c-44d0-98b3-c721b5178cf2
+      version: -1
+      name: Set ntdsutil snapshot list
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "233"
+    scriptarguments:
+      key:
+        simple: NtdsutilSnapshotCommandOutput
+      value:
+        complex:
+          root: Core.ScriptResult.results.executed_command
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: Core.ScriptResult.results.executed_command.command
+                iscontext: true
+              right:
+                value:
+                  simple: ntdsutil snapshot "list all" q q
+          accessor: command_output
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1020,
+          "y": 7170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "231":
+    id: "231"
+    taskid: 8e74a9e8-e742-4175-a518-b8c47021ed8b
+    type: regular
+    task:
+      id: 8e74a9e8-e742-4175-a518-b8c47021ed8b
+      version: -1
+      name: Execute command to retrieve the vssadmin shadow copy list
+      description: Run a shell command on a specific endpoint and return its result.
+      script: '|||core-execute-command'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "236"
+      '#none#':
+      - "245"
+    scriptarguments:
+      command:
+        simple: vssadmin list shadows
+      command_type:
+        simple: native
+      endpoint_ids:
+        simple: ${alert.agentid}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": -1740,
+          "y": 6860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "232":
+    id: "232"
+    taskid: b5c643f4-2699-4ace-8724-3bdaab4d3637
+    type: regular
+    task:
+      id: b5c643f4-2699-4ace-8724-3bdaab4d3637
+      version: -1
+      name: Calculate alert generated date
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "229"
+    scriptarguments:
+      key:
+        simple: CurrentDate
+      value:
+        complex:
+          root: alert
+          accessor: timestamp
+          transformers:
+          - operator: Stringify
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: \d{4}-\d{2}-\d{2}
+              unpack_matches: {}
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: /
+              toReplace:
+                value:
+                  simple: '-'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1020,
+          "y": 7020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "233":
+    id: "233"
+    taskid: 7d1ec999-6344-44db-9090-19accaee1d46
+    type: regular
+    task:
+      id: 7d1ec999-6344-44db-9090-19accaee1d46
+      version: -1
+      name: Set ntdsutil snapshot to delete
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "234"
+    scriptarguments:
+      key:
+        simple: NtdsutilSnapshotToDelete
+      value:
+        complex:
+          root: NtdsutilSnapshotCommandOutput
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: NtdsutilSnapshotCommandOutput
+                iscontext: true
+              right:
+                value:
+                  simple: CurrentDate
+                iscontext: true
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: .*({.*?})
+              unpack_matches: {}
+          - operator: uniq
+          - operator: split
+            args:
+              delimiter: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1020,
+          "y": 7321.66650390625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "234":
+    id: "234"
+    taskid: 24567def-68fd-4c25-97ad-4ffac05471a6
+    type: condition
+    task:
+      id: 24567def-68fd-4c25-97ad-4ffac05471a6
+      version: -1
+      name: Are there any ntdsutil snapshots that need to be deleted?
+      description: Checks if there are any ntdsutil snapshots that need to be deleted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "86"
+      "yes":
+      - "235"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: NtdsutilSnapshotToDelete
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1020,
+          "y": 7474
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "235":
+    id: "235"
+    taskid: bd619300-d392-4757-939d-7a847aee3bad
+    type: regular
+    task:
+      id: bd619300-d392-4757-939d-7a847aee3bad
+      version: -1
+      name: Execute command to delete the ntdsutil snapshot
+      description: Run a shell command on a specific endpoint and return its result.
+      script: '|||core-execute-command'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "236"
+      '#none#':
+      - "86"
+    scriptarguments:
+      command:
+        complex:
+          root: NtdsutilSnapshotToDelete
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'ntdsutil snapshot "delete '
+              suffix:
+                value:
+                  simple: '" q q'
+      command_type:
+        simple: native
+      endpoint_ids:
+        simple: ${alert.agentid}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": -1020,
+          "y": 7655
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "236":
+    id: "236"
+    taskid: 90a49535-a681-4ad8-8e53-51128d2c5edd
+    type: regular
+    task:
+      id: 90a49535-a681-4ad8-8e53-51128d2c5edd
+      version: -1
+      name: Manually remediate by deleting the shadow copies or snapshots
+      description: |-
+        Dear Analyst,
+
+        Please note that during the remediation process, the playbook did not delete the  shadow copies or snapshots,
+
+        Please take manual action to contain the attack and prevent potential data exfiltration or credential theft before closing this alert.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "86"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1390,
+          "y": 8000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "238":
+    id: "238"
+    taskid: de053e5c-ec1a-42c1-9371-0109eb7cdd9d
+    type: regular
+    task:
+      id: de053e5c-ec1a-42c1-9371-0109eb7cdd9d
+      version: -1
+      name: Set the shadow copy list
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "244"
+    scriptarguments:
+      key:
+        simple: ShadowsCopyList
+      value:
+        complex:
+          root: Core.ScriptResult.results.executed_command
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: Core.ScriptResult.results.executed_command..command
+                iscontext: true
+              right:
+                value:
+                  simple: vssadmin list shadows
+              ignorecase: true
+          accessor: standard_output
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: 'creation time: (\d{1,2}\/\d{1,2}\/\d{4})[^}]+Shadow Copy ID: ({[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}})'
+              unpack_matches: {}
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys:
+                value:
+                  simple: "true"
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1740,
+          "y": 7321.66650390625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "244":
+    id: "244"
+    taskid: 4c4e4434-8162-4401-8037-b769001621e7
+    type: regular
+    task:
+      id: 4c4e4434-8162-4401-8037-b769001621e7
+      version: -1
+      name: Set vssadmin shadow copy to delete
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "247"
+    scriptarguments:
+      key:
+        simple: ShadowCopyToDelete
+      value:
+        complex:
+          root: ShadowsCopyList
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: ShadowsCopyList
+                iscontext: true
+              right:
+                value:
+                  simple: DateForShadows
+                iscontext: true
+              ignorecase: true
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: .*({.*?})
+              unpack_matches: {}
+          - operator: uniq
+          - operator: split
+            args:
+              delimiter: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1740,
+          "y": 7474
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "245":
+    id: "245"
+    taskid: a188f42d-5b93-4da2-b151-fad4c1d8cb54
+    type: regular
+    task:
+      id: a188f42d-5b93-4da2-b151-fad4c1d8cb54
+      version: -1
+      name: Calculate alert generated date
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "246"
+    scriptarguments:
+      key:
+        simple: CurrentDateForShadows
+      value:
+        complex:
+          root: alert
+          accessor: timestamp
+          transformers:
+          - operator: Stringify
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: \d{4}-\d{2}-\d{2}
+              unpack_matches: {}
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: /
+              toReplace:
+                value:
+                  simple: '-'
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: /
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: \b0*(\d+)\b
+              unpack_matches: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1740,
+          "y": 7020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "246":
+    id: "246"
+    taskid: ee472489-a751-4a8a-b6cd-0f1ede9f310f
+    type: regular
+    task:
+      id: ee472489-a751-4a8a-b6cd-0f1ede9f310f
+      version: -1
+      name: Adjust the alert time to comply with VSSAdmin formatting
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "238"
+    scriptarguments:
+      key:
+        simple: DateForShadows
+      value:
+        simple: ${CurrentDateForShadows.[1]}/${CurrentDateForShadows.[2]}/${CurrentDateForShadows.[0]}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1740,
+          "y": 7161.66650390625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "247":
+    id: "247"
+    taskid: e5bed87b-5a75-4b3d-a590-7cd693c52ecf
+    type: condition
+    task:
+      id: e5bed87b-5a75-4b3d-a590-7cd693c52ecf
+      version: -1
+      name: Are there any VSSAdmin shadow copies that need to be deleted?
+      description: Checks if there are any VSSAdmin shadow copies that need to be deleted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "86"
+      "yes":
+      - "248"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ShadowCopyToDelete
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1740,
+          "y": 7655
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "248":
+    id: "248"
+    taskid: 5925e228-9fd2-46c1-b4d5-9762fa437670
+    type: regular
+    task:
+      id: 5925e228-9fd2-46c1-b4d5-9762fa437670
+      version: -1
+      name: Execute command to delete the vssadmin shadow copies
+      description: Run a shell command on a specific endpoint and return its result.
+      script: '|||core-execute-command'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "236"
+      '#none#':
+      - "86"
+    scriptarguments:
+      command:
+        complex:
+          root: ShadowCopyToDelete
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: vssadmin delete shadows /Shadow=
+              suffix:
+                value:
+                  simple: ' /quiet'
+      command_type:
+        simple: native
+      endpoint_ids:
+        simple: ${alert.agentid}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": -1740,
+          "y": 7826.25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "249":
+    id: "249"
+    taskid: 789bdeab-f976-4624-a9cd-a91579ad2851
+    type: regular
+    task:
+      id: 789bdeab-f976-4624-a9cd-a91579ad2851
+      version: -1
+      name: Execute command to retrieve the ntdsutil snapshot list
+      description: Run a shell command on a specific endpoint and return its result.
+      script: '|||core-execute-command'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "236"
+      '#none#':
+      - "232"
+    scriptarguments:
+      command:
+        simple: ntdsutil snapshot "list all" q q
+      command_type:
+        simple: native
+      endpoint_ids:
+        simple: ${alert.agentid}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": -1020,
+          "y": 6860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "250":
+    id: "250"
+    taskid: f1202210-fac7-4c57-9e07-774fae66ea51
+    type: condition
+    task:
+      id: f1202210-fac7-4c57-9e07-774fae66ea51
+      version: -1
+      name: Check if User Is a Non-System Account
+      description: Validates that the user is a non-system account.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "86"
+      "yes":
+      - "106"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.OriginalAlert.event.actor_primary_username
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: Core.OriginalAlert.event.actor_primary_username
+            iscontext: true
+          right:
+            value:
+              simple: NT AUTHORITY\SYSTEM
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 6675
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "251":
+    id: "251"
+    taskid: 7a782ead-54d8-42c5-a3b5-7824750d00d1
+    type: title
+    task:
+      id: 7a782ead-54d8-42c5-a3b5-7824750d00d1
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "95"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 678.333251953125,
+          "y": 5610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "252":
+    id: "252"
+    taskid: 7fbc89c3-283e-4b6a-9a00-94f6093451ff
+    type: condition
+    task:
+      id: 7fbc89c3-283e-4b6a-9a00-94f6093451ff
+      version: -1
+      name: Any evidence found requiring remediation?
+      description: Checks whether any malicious or suspicious evidence was found during the investigation. If malicious evidence is identified, the playbook proceeds to remediation; otherwise, it continues with deeper investigation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "186"
+      Remediation for ntdsutil:
+      - "251"
+      Remediation for vssadmin:
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: Remediation for vssadmin
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: Evidence
+                accessor: Score
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: "0"
+                - operator: SumList
+            iscontext: true
+          right:
+            value:
+              simple: "2.5"
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: alert.initiatedby.[0]
+            iscontext: true
+          right:
+            value:
+              simple: vssadmin.exe
+          ignorecase: true
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Evidence.Comment
+            iscontext: true
+          right:
+            value:
+              simple: Shadow copy including the volume containing the ntds.dit
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: Evidence.Comment
+            iscontext: true
+          right:
+            value:
+              simple: The action performed by external remote IP
+          ignorecase: true
+    - label: Remediation for ntdsutil
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: Evidence
+                accessor: Score
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: "0"
+                - operator: SumList
+            iscontext: true
+          right:
+            value:
+              simple: "2.5"
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: alert.initiatedby.[0]
+            iscontext: true
+          right:
+            value:
+              simple: ntdsutil.exe
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "254":
+    id: "254"
+    taskid: 093a58b1-4ba8-4ac1-884f-a9ddb3ad6723
+    type: collection
+    task:
+      id: 093a58b1-4ba8-4ac1-884f-a9ddb3ad6723
+      version: -1
+      name: Analyst Decision
+      description: ""
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "255"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 5745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: "During the investigation phase, the playbook identified the following suspicious evidence.Although the combined evidence does not conclusively confirm a true positive, it still warrants suspicion. Please review the evidence below and select the appropriate action.\n\n### Evidence found:\n${Evidence.Comment(val.length > 0) =>\"- \" + val.join(\"\\n - \")} \n\n### Decision Required:\nPlease choose the action you want to perform:\n\n- **False Positive** - Close the alert as a false positive.\n- **True Positive** - Handle the alert as a true positive by:\n       1. Terminating the CGO process\n       2. Logging off and disabling the user\n       3. Quarantining the ntds.dit file if found\n       4. Deleting the relevant ntdsutil snapshot or shadow copies\n        5. Temporarily blocking the attacker’s remote IP if it is internal\n        6. Blocking the attacker’s remote IP if it is external\n**(Note: During the remediation stage, you will need to approve actions that affect the user)**"
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: False Positive
+        - simple: True Positive
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Analyst Decision
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "255":
+    id: "255"
+    taskid: 9853694f-1ff2-446e-b177-b43e747cfac6
+    type: condition
+    task:
+      id: 9853694f-1ff2-446e-b177-b43e747cfac6
+      version: -1
+      name: Checks Analyst Decision
+      description: Checks the analyst’s decision.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "87"
+      False Positive:
+      - "206"
+      True Positive:
+      - "95"
+    separatecontext: false
+    conditions:
+    - label: True Positive
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Analyst Decision.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: True Positive
+          ignorecase: true
+    - label: False Positive
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Analyst Decision.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: False Positive
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 5890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "256":
+    id: "256"
+    taskid: 57799708-f679-45a1-af94-d168f2fb16d0
+    type: condition
+    task:
+      id: 57799708-f679-45a1-af94-d168f2fb16d0
+      version: -1
+      name: Is the remote actor’s IP internal?
+      description: Check if the remote IP internal or external.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "109"
+      "yes":
+      - "99"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: IsInCidrRanges
+          left:
+            value:
+              simple: Core.OriginalAlert.event.causality_actor_remote_ip
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: lists
+                accessor: PrivateIPs
+                transformers:
+                - operator: RegexExtractAll
+                  args:
+                    error_if_no_match: {}
+                    ignore_case: {}
+                    multi_line: {}
+                    period_matches_newline: {}
+                    regex:
+                      value:
+                        simple: (\b(?:\d{1,3}\.){3}\d{1,3}\b/\d{1,2})
+                    unpack_matches: {}
+                - operator: join
+                  args:
+                    separator:
+                      value:
+                        simple: ','
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1550,
+          "y": 6672.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "103_196_yes": 0.51,
+      "106_105_Yes": 0.47,
+      "106_86_#default#": 0.24,
+      "107_86_#default#": 0.13,
+      "136_146_yes": 0.51,
+      "143_144_Yes": 0.53,
+      "158_10_#default#": 0.19,
+      "158_159_yes": 0.43,
+      "161_10_#default#": 0.19,
+      "161_163_Yes": 0.5,
+      "164_10_yes": 0.17,
+      "173_171_Active": 0.49,
+      "173_86_#default#": 0.13,
+      "180_86_Yes": 0.1,
+      "196_111_#error#": 0.67,
+      "197_111_#error#": 0.49,
+      "201_10_#default#": 0.13,
+      "201_202_yes": 0.45,
+      "203_10_#default#": 0.13,
+      "203_199_yes": 0.38,
+      "204_206_False Positive": 0.3,
+      "209_204_#default#": 0.23,
+      "216_188_yes": 0.43,
+      "221_204_#default#": 0.38,
+      "221_207_yes": 0.46,
+      "228_86_#default#": 0.43,
+      "22_10_#default#": 0.12,
+      "22_23_yes": 0.47,
+      "231_236_#error#": 0.26,
+      "234_235_yes": 0.58,
+      "234_86_#default#": 0.18,
+      "247_86_#default#": 0.12,
+      "249_236_#error#": 0.25,
+      "250_106_yes": 0.41,
+      "252_251_Remediation for ntdsutil": 0.19,
+      "252_5_Remediation for vssadmin": 0.19,
+      "255_206_False Positive": 0.27,
+      "2_4_#default#": 0.5,
+      "49_10_#default#": 0.14,
+      "49_50_yes": 0.41,
+      "51_10_#default#": 0.1,
+      "51_52_yes": 0.51,
+      "55_56_#default#": 0.62,
+      "59_10_#default#": 0.11,
+      "59_60_yes": 0.38,
+      "61_10_#default#": 0.11,
+      "61_62_yes": 0.24,
+      "8_10_#default#": 0.1,
+      "8_9_yes": 0.5
+    },
+    "paper": {
+      "dimensions": {
+        "height": 8370,
+        "width": 5000,
+        "x": -2030,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.9.0

@@ -1,0 +1,90 @@
+tests:
+  # Test 1: Standard Not Found
+  - name: "Error - Standard Not Found"
+    prompt: "Create a security assessment profile called NIST Compliance Profile with description 'NIST framework compliance assessment for cloud infrastructure' for asset group 'Asset group for AWS, Azure & GCP' using NIST Cybersecurity Framework standard"
+    agent_id: 54fd9f8d-4177-46a3-8cd0-24b234efe21d
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexCreateAssessmentProfile
+            arguments:
+              profile_name: "NIST Compliance Profile"
+              profile_description: "NIST framework compliance assessment for cloud infrastructure"
+              standard_name: "NIST Cybersecurity Framework"
+              asset_group_name: "Asset group for AWS, Azure & GCP"
+            expected_error: "No compliance standards found matching the provided name."
+
+  # Test 2: Ambiguous Standard (Multiple Matches)
+  - name: "Error - Ambiguous Standard Name"
+    prompt: "Create a security assessment profile called ISO Security Assessment with description 'ISO compliance security assessment' for asset group 'Asset group for AWS, Azure & GCP' using ISO standard"
+    agent_id: 54fd9f8d-4177-46a3-8cd0-24b234efe21d
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexCreateAssessmentProfile
+            arguments:
+              profile_name: "ISO Security Assessment"
+              profile_description: "ISO compliance security assessment"
+              standard_name: "ISO"
+              asset_group_name: "Asset group for AWS, Azure & GCP"
+            expected_error: "The name you provided matches more than one standard"
+
+  # Test 3: Unambiguous Standard, Unambiguous Asset Group, No Schedule
+  - name: "Success - Exact Names Without Schedule"
+    prompt: "Create a security assessment profile called ACSC Essential Eight Baseline with description 'Australian Cyber Security Centre Essential Eight compliance baseline assessment' for asset group 'Asset group for AWS, Azure & GCP' using Australian Cyber Security Centre (ACSC) Essential Eight standard"
+    agent_id: 54fd9f8d-4177-46a3-8cd0-24b234efe21d
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexCreateAssessmentProfile
+            arguments:
+              profile_name: "ACSC Essential Eight Baseline"
+              profile_description: "Australian Cyber Security Centre Essential Eight compliance baseline assessment"
+              standard_name: "Australian Cyber Security Centre (ACSC) Essential Eight"
+              asset_group_name: "Asset group for AWS, Azure & GCP"
+
+  # Test 4: Unambiguous Standard, Unambiguous Asset Group, With Schedule
+  - name: "Success - Exact Names With Schedule"
+    prompt: "Create a security assessment profile called ISO Cloud Security Weekly Check with description 'Weekly ISO 27017 cloud security compliance assessment' for asset group 'Asset group for CIS GitHub Benchmark v1.0.0' using ISO/IEC 27017:2015 standard, scheduled for Wednesday at 09:30"
+    agent_id: 54fd9f8d-4177-46a3-8cd0-24b234efe21d
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexCreateAssessmentProfile
+            arguments:
+              profile_name: "ISO Cloud Security Weekly Check"
+              profile_description: "Weekly ISO 27017 cloud security compliance assessment"
+              standard_name: "ISO/IEC 27017:2015"
+              asset_group_name: "Asset group for CIS GitHub Benchmark v1.0.0"
+              day: "wednesday"
+              time: "09:30"
+
+  # Test 5: Asset Group Not Found
+  - name: "Error - Asset Group Not Found"
+    prompt: "Create a security assessment profile called Production Environment Security with description 'Production environment security compliance assessment' for asset group 'Production Servers Group' using AWS Well-Architected Framework standard"
+    agent_id: 54fd9f8d-4177-46a3-8cd0-24b234efe21d
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexCreateAssessmentProfile
+            arguments:
+              profile_name: "Production Environment Security"
+              profile_description: "Production environment security compliance assessment"
+              standard_name: "AWS Well-Architected Framework"
+              asset_group_name: "Production Servers Group"
+            expected_error: "No asset group found matching the provided name."
+
+  # Test 6: Ambiguous Asset Group (Multiple Matches)
+  - name: "Error - Ambiguous Asset Group Name"
+    prompt: "Create a security assessment profile called Multi-Cloud Compliance Check with description 'Multi-cloud infrastructure compliance assessment' for asset group 'Asset group' using Australian Cyber Security Centre (ACSC) Essential Eight standard"
+    agent_id: 54fd9f8d-4177-46a3-8cd0-24b234efe21d
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexCreateAssessmentProfile
+            arguments:
+              profile_name: "Multi-Cloud Compliance Check"
+              profile_description: "Multi-cloud infrastructure compliance assessment"
+              standard_name: "Australian Cyber Security Centre (ACSC) Essential Eight"
+              asset_group_name: "Asset group"
+            expected_error: "The name you provided matches more than one asset group"

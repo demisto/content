@@ -1,0 +1,51 @@
+commonfields:
+  id: CortexUnisolateEndpoint
+  version: -1
+name: CortexUnisolateEndpoint
+display: Cortex - Unisolate Endpoint
+tags:
+ - Endpoint
+ - EDR
+ - Containment
+category: Endpoint
+description: |-
+  Reverses the network isolation of an endpoint. This action is typically used after the threat has been mitigated.
+
+  Workflow:
+  1. Execute the "GetEndpointData" action with the "Cortex Core - IR" integration brand as input to get the endpoint ID (unless provided or returned from a previous action).
+  2. Use this action to unisolate the endpoint.
+args:
+  - name: incident_id
+    description: Links the unisolation action to the case (formerly known as incident).
+    type: string
+    underlyingargname: incident_id
+  - name: endpoint_id
+    description: The ID of the endpoint to unisolate.
+    required: true
+    type: string
+    underlyingargname: endpoint_id
+  - name: suppress_disconnected_endpoint_error
+    defaultvalue: 'false'
+    description: |
+      Suppresses an error when trying to unisolate a disconnected endpoint.
+      When set to false, an error is returned.
+    type: boolean
+    underlyingargname: suppress_disconnected_endpoint_error
+outputs:
+  - underlyingoutputcontextpath: Core.UnIsolation.endpoint_id
+    description: The ID of the endpoint that was unisolated.
+    type: string
+    name: Core.UnIsolation.endpoint_id
+underlyingcontentitem:
+  id: CoreUnisolateEndpoint
+  name: CoreUnisolateEndpoint
+  type: script
+  version: -1
+  command: ''
+requiresuserapproval: true
+marketplaces:
+- platform
+supportedModules:
+- xsiam
+- cloud_runtime_security
+- edr

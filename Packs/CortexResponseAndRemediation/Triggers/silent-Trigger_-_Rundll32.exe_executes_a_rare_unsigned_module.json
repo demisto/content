@@ -1,0 +1,25 @@
+{
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Rundll32.exe executes a rare unsigned module"
+        },
+        {
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "NEQ",
+          "SEARCH_VALUE": "Correlation"
+        }
+      ]
+    }
+  },
+  "description": "This trigger runs the silent-Rundll32.exe executes a rare unsigned module playbok",
+  "fromVersion": "8.9.0",
+  "issilent": true,
+  "playbook_id": "silent-Rundll32.exe executes a rare unsigned module",
+  "suggestion_reason": "Recommended for 'Rundll32.exe executes a rare unsigned module' alert",
+  "trigger_id": "9bb429ab1a0a2f230ce69e21f87f9c01",
+  "trigger_name": "silent-Rundll32.exe executes a rare unsigned module"
+}

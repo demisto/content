@@ -1,0 +1,147 @@
+commonfields:
+  id: PANOSDeleteRule
+  version: -1
+display: PAN-OS - Delete Rule
+name: PANOSDeleteRule
+tags:
+ - firewall management
+ - panorama management
+ - Security policy rules management
+category: Network Security
+description: |-
+  This action permanently removes firewall security policy rules from PAN-OS devices or Panorama management systems, primarily used for cleaning unused rules. The action supports deletion across multiple rule types, including security, NAT, decryption, authentication, and policy-based forwarding rules. This action requires explicit user approval before execution due to its destructive nature - deleting the wrong rule can create security gaps, disrupt network traffic, or inadvertently expose critical systems. Extreme caution must be exercised when using this action, as deleted rules cannot be easily recovered without proper backups, and incorrect rule deletion could result in network outages or compromise organizational security policies. This action can be executed on a firewall or a Panorama device, depending on the integration instance configuration.
+args:
+  - name: rulename
+    description: The exact name of the firewall rule to delete. This must match the rule name as it appears in the PAN-OS configuration. Rule names are case-sensitive and must be specified exactly as configured.
+    required: true
+    type: string
+    underlyingargname: rulename
+  - name: pre_post
+    description: |-
+      Specifies whether to delete from the pre-rulebase or the post-rulebase (Panorama instances only). In Panorama, rules are organized in hierarchical rulebases. Optional values are:
+      - pre-rulebase (Rules processed before device group rules, typically for organization-wide policies)
+      - post-rulebase (Rules processed after device group rules, typically for cleanup or final enforcement policies)
+    underlyingargname: pre_post
+    type: string
+  - name: device-group
+    description: The device group where the rule is configured (Panorama instances).
+    type: string
+    underlyingargname: device-group
+  - name: target
+    description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
+    type: string
+    underlyingargname: target
+  - name: rulebase
+    defaultvalue: security
+    description: |-
+      The rulebase from which to delete the rule. Select ONE of the following options:
+      - security
+      - application-override
+      - authentication
+      - decryption
+      - nat
+      - pbf
+    required: true
+    type: string
+    underlyingargname: rulebase
+  - name: vsys
+    defaultvalue: vsys1
+    description: |-
+      The Virtual System (VSYS) identifier where the rule is configured. In PAN-OS, a VSYS is a logical partitioning mechanism that creates isolated firewall instances within a single physical device. Each VSYS maintains its own:
+      - Security policies and rules
+      - Network interfaces and zones
+      - Routing tables and objects
+      - Administrative domains and permissions
+      Use for deleting local rules from a firewall through Panorama or specifying a different VSYS than configured in the integration.
+    underlyingargname: vsys
+    type: string
+outputs:
+  - underlyingoutputcontextpath: Panorama.SecurityRule.Name
+    description: The name of the deleted rule from the Security rulebase.
+    type: string
+    name: Panorama.SecurityRule.Name
+  - underlyingoutputcontextpath: Panorama.SecurityRule.DeviceGroup
+    description: The device group for the rule (Panorama instances).
+    type: string
+    name: Panorama.SecurityRule.DeviceGroup
+  - underlyingoutputcontextpath: Panorama.NAT.Name
+    description: The name of the deleted rule from the NAT rulebase.
+    type: string
+    name: Panorama.NAT.Name
+  - underlyingoutputcontextpath: Panorama.NAT.DeviceGroup
+    description: The device group for the rule (Panorama instances).
+    type: string
+    name: Panorama.NAT.DeviceGroup
+  - underlyingoutputcontextpath: Panorama.SSLRule.Name
+    description: The name of the deleted rule from the SSL rulebase.
+    type: string
+    name: Panorama.SSLRule.Name
+  - underlyingoutputcontextpath: Panorama.SSLRule.DeviceGroup
+    description: The device group for the rule (Panorama instances).
+    type: string
+    name: Panorama.SSLRule.DeviceGroup
+  - underlyingoutputcontextpath: Panorama.PBF.Name
+    description: The name of the deleted rule from the PBF rulebase.
+    type: string
+    name: Panorama.PBF.Name
+  - underlyingoutputcontextpath: Panorama.PBF.DeviceGroup
+    description: The device group for the rule (Panorama instances).
+    type: string
+    name: Panorama.PBF.DeviceGroup
+  - underlyingoutputcontextpath: Panorama.AuthRule.Name
+    description: The name of the deleted rule from the Authentication rulebase.
+    type: string
+    name: Panorama.AuthRule.Name
+  - underlyingoutputcontextpath: Panorama.AuthRule.DeviceGroup
+    description: The device group for the rule (Panorama instances).
+    type: string
+    name: Panorama.AuthRule.DeviceGroup
+  - underlyingoutputcontextpath: Panorama.AppOverride.Name
+    description: The name of the deleted rule from the Application-Override rulebase.
+    type: string
+    name: Panorama.AppOverride.Name
+  - underlyingoutputcontextpath: Panorama.AppOverride.DeviceGroup
+    description: The device group for the rule (Panorama instances).
+    type: string
+    name: Panorama.AppOverride.DeviceGroup
+  - underlyingoutputcontextpath: Panorama.CleanedUpRules.Category
+    description: The category of rule cleaned up (Local or Panorama).
+    type: string
+    name: Panorama.CleanedUpRules.Category
+  - underlyingoutputcontextpath: Panorama.CleanedUpRules.AppliedAction
+    description: The applied cleanup action (Disabled or Deleted).
+    type: string
+    name: Panorama.CleanedUpRules.AppliedAction
+  - underlyingoutputcontextpath: Panorama.CleanedUpRules.DeviceGroup
+    description: The device group where the rule was cleaned up from (Panorama instances).
+    type: string
+    name: Panorama.CleanedUpRules.DeviceGroup
+  - underlyingoutputcontextpath: Panorama.CleanedUpRules.PrePost
+    description: The location where the rule was cleaned up from (Panorama instances).
+    type: string
+    name: Panorama.CleanedUpRules.PrePost
+  - underlyingoutputcontextpath: Panorama.CleanedUpRules.RuleName
+    description: The name of the rule that was cleaned up.
+    type: string
+    name: Panorama.CleanedUpRules.RuleName
+  - underlyingoutputcontextpath: Panorama.CleanedUpRules.Rulebase
+    description: The rulebase where the rule was cleaned up from (e.g. 'security', 'nat').
+    type: string
+    name: Panorama.CleanedUpRules.Rulebase
+  - underlyingoutputcontextpath: Panorama.CleanedUpRules.Target
+    description: The target firewall serial number, if provided.
+    type: string
+    name: Panorama.CleanedUpRules.Target
+  - underlyingoutputcontextpath: Panorama.CleanedUpRules.Vsys
+    description: The VSYS where the rule was cleaned up from.
+    type: string
+    name: Panorama.CleanedUpRules.Vsys
+underlyingcontentitem:
+  id: Panorama
+  name: Panorama
+  type: command
+  version: -1
+  command: pan-os-delete-rule
+requiresuserapproval: true
+marketplaces:
+- platform

@@ -1,0 +1,118 @@
+commonfields:
+  id: CortexListIndicatorRelationships
+  version: -1
+display: Cortex - List Indicator Relationships
+name: CortexListIndicatorRelationships
+category: Data Enrichment & Threat Intelligence
+description: >
+  Searches the threat intelligence database for relationships between indicators based on specified criteria.
+  Returns relationships where at least one side of the relationship matches a value in entities or matches a type in entities_types.
+  The search can be narrowed to return only specific relationship types between the entities.
+  All filters use AND logic between different filter types, while multiple values within a single filter use OR logic.
+args:
+  - name: entities
+    description: >
+      A comma-separated list of indicators to search for in relationships.
+    underlyingargname: entities
+    type: string
+  - name: entities_types
+    description: >
+      A comma-separated list of indicator types to filter relationships by.
+      Options: Account, ASN, Attack Pattern, Campaign, CIDR, CVE, Domain, Email, File, Host, IP, IPv6, IPv6CIDR, Malware, Threat Actor.
+    underlyingargname: entities_types
+    type: string
+  - name: relationships
+    description: >
+      A comma-separated list of relationship types to filter relationships by.
+      Options: attributed-by, communicated-with, compromises, delivered-by, detects, downloads, dropped-by, executed, exploits, hosted-on, indicator-of, is-also, mitigated-by, related-to, remediates, resolved-by, targeted-by, used-by, variant-of.
+    underlyingargname: relationships
+    type: string
+  - name: limit
+    defaultvalue: "20"
+    description: |
+      Maximum number of results to return.
+    underlyingargname: limit
+    type: number
+  - name: verbose
+    defaultvalue: "false"
+    description: >
+      Return detailed relationship attributes when true.
+      When false, returns basic fields: name, Entity A/B values and types, relationship type.
+    underlyingargname: verbose
+    type: boolean
+  - name: revoked
+    defaultvalue: "false"
+    description: >
+      Include revoked relationships when true.
+      When false, returns only active (non-revoked) relationships.
+    underlyingargname: revoked
+    type: boolean
+outputs:
+  - underlyingoutputcontextpath: Relationships.EntityA
+    description: The source entity of the relationship.
+    type: string
+    name: Relationships.EntityA
+  - underlyingoutputcontextpath: Relationships.EntityB
+    description: The destination entity of the relationship.
+    type: string
+    name: Relationships.EntityB
+  - underlyingoutputcontextpath: Relationships.Relationship
+    description: The relationship type name.
+    type: string
+    name: Relationships.Relationship
+  - underlyingoutputcontextpath: Relationships.Reverse
+    description: The reverse relationship type name.
+    type: string
+    name: Relationships.Reverse
+  - underlyingoutputcontextpath: Relationships.EntityAType
+    description: The type of the source entity.
+    type: string
+    name: Relationships.EntityAType
+  - underlyingoutputcontextpath: Relationships.EntityBType
+    description: The type of the destination entity.
+    type: string
+    name: Relationships.EntityBType
+  - underlyingoutputcontextpath: Relationships.ID
+    description: Unique identifier for the relationship.
+    type: string
+    name: Relationships.ID
+  - underlyingoutputcontextpath: Relationships.Reliability
+    description: The confidence rating of the relationship from the source.
+    type: string
+    name: Relationships.Reliability
+  - underlyingoutputcontextpath: Relationships.Brand
+    description: The source that provided the relationship (integration/feed/vendor name).
+    type: string
+    name: Relationships.Brand
+  - underlyingoutputcontextpath: Relationships.Revoked
+    description: Whether the relationship has been revoked by the source.
+    type: boolean
+    name: Relationships.Revoked
+  - underlyingoutputcontextpath: Relationships.FirstSeenBySource
+    description: The timestamp when the relationship was first observed by the source.
+    type: date
+    name: Relationships.FirstSeenBySource
+  - underlyingoutputcontextpath: Relationships.LastSeenBySource
+    description: The timestamp when the relationship was last observed by the source.
+    type: date
+    name: Relationships.LastSeenBySource
+  - underlyingoutputcontextpath: Relationships.Description
+    description: The detailed description of the relationship.
+    type: string
+    name: Relationships.Description
+  - underlyingoutputcontextpath: Relationships.Type
+    description: The relationship type classification.
+    type: string
+    name: Relationships.Type
+underlyingcontentitem:
+  id: SearchIndicatorRelationshipsAgentix
+  name: SearchIndicatorRelationshipsAgentix
+  type: script
+  version: -1
+requiresuserapproval: false
+marketplaces:
+  - platform
+supportedModules:
+  - agentix
+  - xsiam
+  - cloud_posture

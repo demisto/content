@@ -1,0 +1,63 @@
+tests:
+  - name: Run script on multiple endpoints
+    prompt: "Please run the script 'clean_old_log_files' on the following endpoint IDs: 89076c9804484f85ac29c5f8755074f6 and cedc2b29906f4fffa5ea32b0e781324b"
+    agent_id: bf38cca4-3865-4fb0-aa1a-9be6779fda74
+    expected_outcomes:
+    - evaluation_mode: any_of
+      actions:
+      - action_id: CortexRunScriptOnEndpoints
+        arguments:
+          endpoint_ids: "89076c9804484f85ac29c5f8755074f6,cedc2b29906f4fffa5ea32b0e781324b"
+          script_name: "clean_old_log_files"
+
+  - name: Run script on specific endpoint(name)
+    prompt: "Please run the script 'clean_old_log_files' on the following endpoint cortex-agent-jen-ubu2204-0712t090714"
+    agent_id: bf38cca4-3865-4fb0-aa1a-9be6779fda74
+    expected_outcomes:
+    - evaluation_mode: any_of
+      actions:
+      - action_id: CortexRunScriptOnEndpoints
+        arguments:
+          endpoint_name: "cortex-agent-jen-ubu2204-0712t090714"
+          script_name: "clean_old_log_files"
+
+  - name: Run script using unique script identifier
+    prompt: "Execute script with UID 9528e3309c5544649292d31526a9431d on the endpoint: cortex-agent-jen-ubu2204-0712t090714"
+    agent_id: bf38cca4-3865-4fb0-aa1a-9be6779fda74
+    expected_outcomes:
+      - evaluation_mode: any_of
+        actions:
+          - action_id: CortexRunScriptOnEndpoints
+            arguments:
+              script_uid: "9528e3309c5544649292d31526a9431d"
+              endpoint_names: "cortex-agent-jen-ubu2204-0712t090714"
+
+  - name: Run script with missing required parameters
+    prompt: "Execute the file_exists script on endpoint cortex-agent-jen-ubu2204-0712t090709"
+    agent_id: bf38cca4-3865-4fb0-aa1a-9be6779fda74
+    expected_outcomes:
+      - expected_error: {}
+
+  - name: Attempt script run with invalid endpoint
+    prompt: "Run clean_old_log_files script on endpoint XYZ-999"
+    agent_id: bf38cca4-3865-4fb0-aa1a-9be6779fda74
+    expected_outcomes:
+      - expected_error: "No endpoints found with the specified names: XYZ-999"
+
+  - name: Run script without specifying endpoints
+    prompt: "Run file_exists script"
+    agent_id: bf38cca4-3865-4fb0-aa1a-9be6779fda74
+    expected_outcomes:
+      - expected_error: "You must specify either endpoint_ids or endpoint_names."
+
+  - name: Run script without specifying script_uid or name
+    prompt: "Run security script on all available endpoints"
+    agent_id: bf38cca4-3865-4fb0-aa1a-9be6779fda74
+    expected_outcomes:
+      - expected_error: "You must specify either script_uid or script_name."
+
+  - name: Couple of scripts with the same name
+    prompt: "Run system_health_check script in order to create the file example.txt on all available endpoints"
+    agent_id: bf38cca4-3865-4fb0-aa1a-9be6779fda74
+    expected_outcomes:
+      - expected_error: "Multiple scripts found. Please specify the exact script by providing one of the following script_uid"

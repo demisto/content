@@ -1,0 +1,82 @@
+commonfields:
+  id: EnrichURL
+  version: -1
+display: Enrich URL
+name: EnrichURL
+tags:
+ - threat-intelligence
+ - url
+ - reputation
+category: Data Enrichment & Threat Intelligence
+description: |
+  A comprehensive action to enrich the provided URL indicator and retrieve all available data.
+  The results include both tenant-specific internal information (from the Threat Intelligence Management (TIM) brand) and global threat intelligence.
+  Global threat intelligence is retrieved using configured integrations to identify potential malicious activity.
+  ACTION REDUNDANCY WARNING: Due to its comprehensive nature, DO NOT use 'EnrichIndicator' or 'CortexListIndicators' in parallel with this action, as the data is already included in the output.
+  PREREQUISITE: Ensure that one or more of these external integrations are configured in your environment.
+args:
+  - description: |
+      A JSON-encoded string representing an array of URL values to enrich, for example: '[\"https://example.com\", \"https://malicious.com\"]'.
+    name: url_list
+    required: true
+    type: string
+    underlyingargname: url_list
+  - name: external_enrichment
+    required: false
+    description: Always set to true.
+    type: string
+    defaultvalue: "true"
+    underlyingargname: external_enrichment
+  - name: additional_fields
+    required: false
+    description: When set to true, the output will include additional fields about the URL. Default is true.
+    type: string
+    defaultvalue: "true"
+    underlyingargname: additional_fields
+outputs:
+- underlyingoutputcontextpath: URLEnrichment.Value
+  description: The actual URL (Uniform Resource Locator) indicator that was enriched.
+  type: string
+  name: URLEnrichment.Value
+- underlyingoutputcontextpath: URLEnrichment.Results.Reliability
+  description: "The reliability score of the reporting Brand. Options: A+ - Completely reliable, A - Reliable, B - Usually reliable, C - Fairly reliable, D - Not usually reliable, E - Unreliable, F - Reliability cannot be judged."
+  type: string
+  name: URLEnrichment.Results.Reliability
+- underlyingoutputcontextpath: URLEnrichment.Results.AdditionalFields.Malicious.Vendor
+  description: The vendor or source that reported this URL as malicious.
+  type: string
+  name: URLEnrichment.Results.AdditionalFields.Malicious.Vendor
+- underlyingoutputcontextpath: URLEnrichment.Results.AdditionalFields.Malicious.Description
+  description: A detailed explanation or rationale provided by the vendor regarding why the URL was flagged as malicious.
+  type: string
+  name: URLEnrichment.Results.AdditionalFields.Malicious.Description
+- underlyingoutputcontextpath: URLEnrichment.Results.AdditionalFields.Tags
+  description: Descriptive tags or categories associated with the URL (e.g., 'phishing', 'spam', 'adware').
+  type: string
+  name: URLEnrichment.Results.AdditionalFields.Tags
+- underlyingoutputcontextpath: URLEnrichment.Results.Brand
+  description: The brand that provided the enrichment information for this URL indicator.
+  type: string
+  name: URLEnrichment.Results.Brand
+- underlyingoutputcontextpath: URLEnrichment.Results.Verdict
+  description: "The risk classification (verdict) for this specific URL indicator, based on a single brand's analysis. Options: Unknown, Benign, Suspicious, Malicious."
+  type: string
+  name: URLEnrichment.Results.Verdict
+- underlyingoutputcontextpath: URLEnrichment.MaxVerdict
+  description: "The highest risk classification (maximum verdict) aggregated from all brands' verdicts found for this URL. Options: Unknown, Benign, Suspicious, Malicious."
+  type: string
+  name: URLEnrichment.MaxVerdict
+underlyingcontentitem:
+  id: url-enrichment
+  name: url-enrichment
+  type: script
+  version: -1
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- agentix
+- cloud
+- cloud_runtime_security
+- edr
+- xsiam

@@ -1,0 +1,152 @@
+commonfields:
+  id: JiraUpdateIssue
+  version: -1
+display: Jira - Update Issue
+name: JiraUpdateIssue
+category: Case Management
+description: >
+  Updates an existing issue from Jira (Cloud or Server).
+args:
+  - name: issue_key
+    description: >
+      The key of the issue to edit. For example: "IT-123".
+    required: true
+    underlyingargname: issue_key
+    type: string
+  - name: action
+    defaultvalue: rewrite
+    description: >
+      Whether to append or rewrite values. Only string and array fields support appending.
+      For string fields, appending produces: "old value, new value". Options: append, rewrite.
+    underlyingargname: action
+    type: string
+  - name: status
+    description: >
+      Target issue status. For example: "In Progress", "Done".
+    underlyingargname: status
+    type: string
+  - name: transition
+    description: >
+      Exact workflow action to execute (ID or name). For example: "31", "Start Progress".
+    underlyingargname: transition
+    type: string
+  - name: parent_issue_key
+    description: >
+      The parent issue key when editing a sub-task. Jira Cloud only.
+    underlyingargname: parent_issue_key
+    type: string
+  - name: summary
+    description: The issue summary.
+    underlyingargname: summary
+    type: string
+  - name: description
+    description: The issue description.
+    underlyingargname: description
+    type: string
+  - name: labels
+    description: A comma-separated list of labels. Label cannot contain spaces.
+    underlyingargname: labels
+    type: string
+  - name: priority
+    description: The issue priority. For example "High", "Medium".
+    underlyingargname: priority
+    type: string
+  - name: due_date
+    description: The due date in YYYY-MM-DD format.
+    underlyingargname: due_date
+    type: date
+  - name: assignee
+    description: >
+      The assignee's username. Jira Server only.
+    underlyingargname: assignee
+    type: string
+  - name: assignee_id
+    description: >
+      The assignee's account ID. Jira Cloud only.
+    underlyingargname: assignee_id
+    type: string
+  - name: environment
+    description: >
+      Text describing the environment where the issue occurred. For example "IE9 on Windows 7".
+    underlyingargname: environment
+    type: string
+  - name: components
+    description: >
+      A comma-separated list of components. For example: "backend,api".
+    underlyingargname: components
+    type: string
+  - name: security
+    description: >
+      Security level name for the issue. For example: "Anyone".
+    underlyingargname: security
+    type: string
+outputs:
+  - underlyingoutputcontextpath: Ticket.Id
+    description: The ticket ID.
+    type: string
+    name: Ticket.Id
+  - underlyingoutputcontextpath: Ticket.Key
+    description: The ticket key.
+    type: string
+    name: Ticket.Key
+  - underlyingoutputcontextpath: Ticket.Assignee
+    description: The user assigned to the ticket.
+    type: string
+    name: Ticket.Assignee
+  - underlyingoutputcontextpath: Ticket.Creator
+    description: The user who created the ticket.
+    type: string
+    name: Ticket.Creator
+  - underlyingoutputcontextpath: Ticket.Summary
+    description: The ticket summary.
+    type: string
+    name: Ticket.Summary
+  - underlyingoutputcontextpath: Ticket.Description
+    description: The ticket description.
+    type: string
+    name: Ticket.Description
+  - underlyingoutputcontextpath: Ticket.RawDescription
+    description: The ticket raw description.
+    type: string
+    name: Ticket.RawDescription
+  - underlyingoutputcontextpath: Ticket.Labels
+    description: The ticket labels.
+    type: string
+    name: Ticket.Labels
+  - underlyingoutputcontextpath: Ticket.Status
+    description: The ticket status.
+    type: string
+    name: Ticket.Status
+  - underlyingoutputcontextpath: Ticket.Priority
+    description: The ticket priority.
+    type: string
+    name: Ticket.Priority
+  - underlyingoutputcontextpath: Ticket.ProjectName
+    description: The ticket project name.
+    type: string
+    name: Ticket.ProjectName
+  - underlyingoutputcontextpath: Ticket.DueDate
+    description: The ticket due date.
+    type: date
+    name: Ticket.DueDate
+  - underlyingoutputcontextpath: Ticket.Created
+    description: The ticket creation time.
+    type: date
+    name: Ticket.Created
+  - underlyingoutputcontextpath: Ticket.LastSeen
+    description: The ticket last viewed time.
+    type: date
+    name: Ticket.LastSeen
+  - underlyingoutputcontextpath: Ticket.LastUpdate
+    description: The ticket last update time.
+    type: date
+    name: Ticket.LastUpdate
+underlyingcontentitem:
+  id: Jira V3
+  name: Jira V3
+  type: command
+  version: -1
+  command: jira-edit-issue
+requiresuserapproval: false
+marketplaces:
+  - platform

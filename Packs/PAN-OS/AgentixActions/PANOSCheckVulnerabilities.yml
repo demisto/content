@@ -1,0 +1,120 @@
+commonfields:
+  id: PANOSCheckVulnerabilities
+  version: -1
+display: PAN-OS - Find Vulnerable Firewalls
+name: PANOSFindVulnerableFirewalls
+tags:
+ - PANW Advisory
+ - vulnerability assessment
+ - Palo Alto Networks Products
+category: Network Security
+description: |-
+  Checks if any Palo Alto Networks firewalls in your environment have PAN-OS software versions or GlobalProtect client package versions that are vulnerable to a given CVE published to the Palo Alto Networks Security Advisories page. Non-Palo Alto Networks CVEs are out of scope for this action. The action accepts an optional target parameter to check a specific firewall by serial number. The PANOSGetSystemInfo action can be used to identify such a serial number in the topology of the connected Panorama or Firewall devices.
+args:
+  - name: cve_id
+    description: The CVE ID as published on the Palo Alto Networks Security Advisories page to check if any firewalls are impacted by it.
+    type: string
+    underlyingargname: cve_id
+    required: true
+  - name: target
+    required: false
+    description: >
+      The serial number of a specific firewall to check for impact by the above mentioned CVE.
+    type: string
+    underlyingargname: target
+outputs:
+  - underlyingoutputcontextpath: CVE_Check.CVE_ID
+    description: ID of the CVE checked.
+    type: string
+    name: CVE_Check.CVE_ID
+  - underlyingoutputcontextpath: CVE_Check.Result
+    description: |-
+      Result of the assessment for the input CVE with details about the firewall in the following
+      json format:
+      {
+      Hostname : string,
+      IPAddress : string,
+      SWVersion : string,
+      IsFirewallVersionAffected : True/False,
+      GlobalProtectVersion : string,
+      IsGlobalProtectVersionAffected: True/False
+      }.
+    type: json
+    name: CVE_Check.Result
+  - underlyingoutputcontextpath: CVE_Check.Severity
+    description: Severity of the CVE checked.
+    type: string
+    name: CVE_Check.Severity
+  - underlyingoutputcontextpath: PANOSSecurityAdvisories.Advisory.cve_url
+    description: Link to the [Palo Alto Networks Security Advisories](https://security.paloaltonetworks.com/) page for that CVE.
+    type: string
+    name: PANOSSecurityAdvisories.Advisory.cve_url
+  - underlyingoutputcontextpath: PANOSSecurityAdvisories.Advisory.configurations
+    description: The configurations required for the exploit to be successful. This means that an attack can exploit this vulnerability only if certain features are configured or enabled on the device. This is a crucial detail in addition to the version and product details to confirm if the CVE affects the device.
+    type: string
+    name: PANOSSecurityAdvisories.Advisory.configurations
+  - underlyingoutputcontextpath: PANOSSecurityAdvisories.Advisory.cpes
+    description: Affected products defined by CPE (Common Platform Enumeration). Think of CPE as the "address" that precisely identifies WHERE a CVE vulnerability can be found - it tells you exactly which product, version, and configuration is vulnerable. CVE databases use CPEs to map vulnerabilities to affected systems, enabling automated vulnerability scanning and management.
+    type: json
+    name: PANOSSecurityAdvisories.Advisory.cpes
+  - underlyingoutputcontextpath: PANOSSecurityAdvisories.Advisory.cveproductstatus
+    description: List of affected products with platform information and fixed versions. This tells you exactly which product, platform and version has the fix for the CVE.
+    type: json
+    name: PANOSSecurityAdvisories.Advisory.cveproductstatus
+  - underlyingoutputcontextpath: PANOSSecurityAdvisories.Advisory.cvethreatscore
+    description: Threat Score of the CVE. This is different from the CVE's base score because it represents the active threat landscape and potential real-world impact.
+    type: number
+    name: PANOSSecurityAdvisories.Advisory.cvethreatscore
+  - underlyingoutputcontextpath: PANOSSecurityAdvisories.Advisory.cvethreatseverity
+    description: Threat Severity of CVE - LOW, MEDIUM, HIGH or CRITICAL. This is different from the CVE's base severity because it represents the active threat landscape and potential real-world impact.
+    type: string
+    name: PANOSSecurityAdvisories.Advisory.cvethreatseverity
+  - underlyingoutputcontextpath: PANOSSecurityAdvisories.Advisory.cvss_score
+    description: Base score of the CVE.
+    type: number
+    name: PANOSSecurityAdvisories.Advisory.cvss_score
+  - underlyingoutputcontextpath: PANOSSecurityAdvisories.Advisory.cvss_severity
+    description: Base severity of CVE - LOW, MEDIUM, HIGH or CRITICAL.
+    type: string
+    name: PANOSSecurityAdvisories.Advisory.cvss_severity
+  - underlyingoutputcontextpath: PANOSSecurityAdvisories.Advisory.cvss_table
+    description: Metrics of the vulnerability. This provides individual attack vector scores and complexity details of the CVE.
+    type: json
+    name: PANOSSecurityAdvisories.Advisory.cvss_table
+  - underlyingoutputcontextpath: PANOSSecurityAdvisories.Advisory.description
+    description: Vulnerability description.
+    type: string
+    name: PANOSSecurityAdvisories.Advisory.description
+  - underlyingoutputcontextpath: PANOSSecurityAdvisories.Advisory.exploits
+    description: Known exploits of this vulnerability in the real world.
+    type: string
+    name: PANOSSecurityAdvisories.Advisory.exploits
+  - underlyingoutputcontextpath: PANOSSecurityAdvisories.Advisory.external_cve_list
+    description: If the specified CVE is a PAN-SA advisory, an array of related external CVEs. PAN-SA advisories are typically informational security bulletins that detail how vulnerabilities in third-party open source components or libraries could potentially be exploited on Palo Alto Networks devices when those vulnerable components are utilized by the device's software stack. This provides comprehensive visibility into both direct product vulnerabilities and indirect exposure through dependency chains.
+    type: json
+    name: PANOSSecurityAdvisories.Advisory.external_cve_list
+  - underlyingoutputcontextpath: PANOSSecurityAdvisories.Advisory.solution
+    description: Solution provided for the CVE.
+    type: string
+    name: PANOSSecurityAdvisories.Advisory.solution
+  - underlyingoutputcontextpath: PANOSSecurityAdvisories.Advisory.title
+    description: CVE title.
+    type: string
+    name: PANOSSecurityAdvisories.Advisory.title
+  - underlyingoutputcontextpath: PANOSSecurityAdvisories.Advisory.workaround
+    description: Workaround for the CVE.
+    type: string
+    name: PANOSSecurityAdvisories.Advisory.workaround
+underlyingcontentitem:
+  id: PAN-OS - Security Advisories Vulnerability Check
+  name: PAN-OS - Security Advisories Vulnerability Check
+  type: playbook
+  command: ''
+  version: -1
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- agentix
+- xsiam
+- cloud_posture

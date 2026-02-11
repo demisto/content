@@ -1,0 +1,275 @@
+commonfields:
+  id: CortexCreateAppSecPolicy
+  version: -1
+display: Cortex - Create AppSec Policy
+name: CortexCreateAppSecPolicy
+tags:
+  - security
+  - policy
+  - appsec
+category: Cloud Security
+description: >
+  Creates a new Application Security policy in Cortex Platform. An AppSec policy defines how the system responds to security threats, including the conditions that trigger the policy, its scope, and the actions taken when conditions are met. When a threat is detected, the policy generates an issue for remediation.
+args:
+  - name: policy_name
+    underlyingargname: policy_name
+    description: >
+      A unique name for the AppSec policy following the organization's naming conventions.
+    type: string
+    required: true
+  - name: description
+    underlyingargname: description
+    description: >
+      A descriptive summary of the policy's objective and expected outcomes.
+    type: string
+    required: false
+  - name: asset_group_names
+    underlyingargname: asset_group_names
+    description: >
+      A comma-separated list of Asset Group names to apply the policy to.
+    type: string
+    required: false
+  - name: conditions_finding_type
+    underlyingargname: conditions_finding_type
+    description: >
+      A comma-separated list of specific finding types to target policy enforcement.
+      Options: Vulnerabilities, IaC Misconfiguration, Licenses, Operational Risk, Secrets, Code Weaknesses, CI/CD Risks.
+    type: string
+    required: false
+  - name: conditions_severity
+    underlyingargname: conditions_severity
+    description: >
+      Filter findings based on their severity level.
+      Options: CRITICAL, HIGH, MEDIUM, LOW.
+    type: string
+    required: false
+  - name: conditions_respect_developer_suppression
+    underlyingargname: conditions_respect_developer_suppression
+    description: >
+      Determines whether the policy should honor developer-suppressed findings.
+      Set to 'true' to EXCLUDE vulnerabilities that were suppressed by a developer.
+      Set to 'false' to IGNORE developer suppression and evaluate all findings,
+      even if a developer has suppressed them.
+    type: boolean
+    required: false
+  - name: conditions_backlog_status
+    underlyingargname: conditions_backlog_status
+    description: >
+      Filter findings based on their backlog workflow status.
+      Options: NEW, BACKLOG.
+    type: string
+    required: false
+  - name: conditions_package_name
+    underlyingargname: conditions_package_name
+    description: >
+      Filter findings by specific software package names.
+    type: string
+    required: false
+  - name: conditions_package_version
+    underlyingargname: conditions_package_version
+    description: >
+      Filter findings by software package version.
+    type: string
+    required: false
+  - name: conditions_package_operational_risk
+    underlyingargname: conditions_package_operational_risk
+    description: >
+      Filter packages by their operational risk assessment level.
+      Options: LOW, MEDIUM, HIGH
+    type: string
+    required: false
+  - name: conditions_appsec_rule_names
+    underlyingargname: conditions_appsec_rule_names
+    description: >
+      A comma-separated list of AppSec rule names to include in policy evaluation.
+    type: string
+    required: false
+  - name: conditions_cvss
+    underlyingargname: conditions_cvss
+    description: >
+      CVSS base score threshold for vulnerability findings (0.0-10.0). Only vulnerabilities meeting or exceeding this score will trigger the policy.
+    type: number
+    required: false
+  - name: conditions_epss
+    underlyingargname: conditions_epss
+    description: >
+      Exploit Prediction Scoring System (EPSS) score threshold (0–100). Filters
+      vulnerabilities based on their predicted likelihood of exploitation. This
+      filter is applied only when an explicit request to evaluate by EPSS or exploit
+      probability is provided.
+    type: number
+    required: false
+  - name: conditions_has_a_fix
+    underlyingargname: conditions_has_a_fix
+    description: >
+      Filter findings based on whether a remediation fix or patch is available.
+      Options: true, false.
+    type: boolean
+    required: false
+  - name: conditions_is_kev
+    underlyingargname: conditions_is_kev
+    description: >
+      Targets findings listed in the Known Exploited Vulnerabilities (KEV)
+      catalog, indicating confirmed real-world exploitation. Suitable when filtering
+      for exploitable or known-exploited vulnerabilities.
+    type: boolean
+    required: false
+  - name: conditions_secret_validity
+    underlyingargname: conditions_secret_validity
+    description: >
+      A comma-separated list of validity statuses to filter exposed secrets.
+      Options: VALID, PRIVILEGED, INVALID, UNAVAILABLE.
+    type: string
+    required: false
+  - name: conditions_license_type
+    underlyingargname: conditions_license_type
+    description: >
+      A comma-separated list of specific software license types for compliance and legal risk management.
+    type: string
+    required: false
+  - name: scope_category
+    underlyingargname: scope_category
+    description: >
+      A comma-separated list of asset categories to include in policy scope.
+      Options: Application, Repository, CI/CD Instance, CI/CD Pipeline, VCS Collaborator, VCS Organization.
+    type: string
+    required: false
+  - name: scope_business_application_names
+    underlyingargname: scope_business_application_names
+    description: >
+      A comma-separated list of specific business applications by name for focused policy enforcement.
+    type: string
+    required: false
+  - name: scope_application_business_criticality
+    underlyingargname: scope_application_business_criticality
+    description: >
+      Filter applications by business criticality.
+      Options: CRITICAL, HIGH, MEDIUM, LOW.
+    type: string
+    required: false
+  - name: scope_repository_name
+    underlyingargname: scope_repository_name
+    description: >
+      Target specific code repositories by name for repository-focused policies.
+    type: string
+    required: false
+  - name: scope_is_public_repository
+    underlyingargname: scope_is_public_repository
+    description: >
+      Include repositories based on visibility:
+      `true` = public repositories only,
+      `false` = private repositories only.
+      Options: true, false.
+    type: boolean
+    required: false
+  - name: scope_has_deployed_assets
+    underlyingargname: scope_has_deployed_assets
+    description: >
+      Target repositories or applications that have associated deployed infrastructure or runtime assets.
+      Options: true, false.
+    type: boolean
+    required: false
+  - name: scope_has_internet_exposed_deployed_assets
+    underlyingargname: scope_has_internet_exposed_deployed_assets
+    description: >
+      Filter assets based on whether the deployed components are exposed to internet traffic for external attack surface management.
+      Options: true, false.
+    type: boolean
+    required: false
+  - name: scope_has_sensitive_data_access
+    underlyingargname: scope_has_sensitive_data_access
+    description: >
+      Target deployed assets that have access to sensitive data stores, databases, or classified information.
+      Options: true, false.
+    type: boolean
+    required: false
+  - name: scope_has_privileged_capabilities
+    underlyingargname: scope_has_privileged_capabilities
+    description: >
+      Filter deployed assets with elevated privileges, admin access, or high-impact system capabilities.
+      Options: true, false.
+    type: boolean
+    required: false
+  - name: triggers_periodic_report_issue
+    underlyingargname: triggers_periodic_report_issue
+    description: >
+      Enables detection during scheduled scans. When a violation is found in a periodic scan, an issue will be created ("Detect").
+      Options: true, false.
+    type: boolean
+    required: false
+  - name: triggers_periodic_override_severity
+    underlyingargname: triggers_periodic_override_severity
+    description: >
+      Override the default severity level for issues created by periodic scan detections.
+      Options: Critical, High, Medium, Low.
+    type: string
+    required: false
+  - name: triggers_pr_report_issue
+    underlyingargname: triggers_pr_report_issue
+    description: >
+      Enables detection during pull request scans. When a violation is found in a PR, an issue is created. Required for PR-based detection.
+      Options: true, false.
+    type: boolean
+    required: false
+  - name: triggers_pr_block_pr
+    underlyingargname: triggers_pr_block_pr
+    description: >
+      Blocks Pull Requests (PRs) if policy violations are detected during a PR scan.
+      Options: true, false.
+    type: boolean
+    required: false
+  - name: triggers_pr_report_pr_comment
+    underlyingargname: triggers_pr_report_pr_comment
+    description: >
+      Adds an automated comment to pull requests summarizing detected violations and guidance.
+      Options: true, false.
+    type: boolean
+    required: false
+  - name: triggers_pr_override_severity
+    underlyingargname: triggers_pr_override_severity
+    description: >
+      Override the default severity level for issues created by pull request detections.
+      Options: Critical, High, Medium, Low.
+    type: string
+    required: false
+  - name: triggers_cicd_report_issue
+    underlyingargname: triggers_cicd_report_issue
+    description: >
+      Enables detection during CI/CD pipeline scans. When a violation is found in a pipeline run, an issue is created.
+      Options: true, false.
+    type: boolean
+    required: false
+  - name: triggers_cicd_block_cicd
+    underlyingargname: triggers_cicd_block_cicd
+    description: >
+      Blocks CI/CD pipeline execution if policy violations are detected during a CI/CD scan.
+      Options: true, false.
+    type: boolean
+    required: false
+  - name: triggers_cicd_report_cicd
+    underlyingargname: triggers_cicd_report_cicd
+    description: >
+      Soft-fails the CI/CD pipeline when this policy is triggered. The pipeline continues, but the violation is reported. Use for non-critical violations where reporting is enough.
+      Options: true, false.
+    type: boolean
+    required: false
+  - name: triggers_cicd_override_severity
+    underlyingargname: triggers_cicd_override_severity
+    description: >
+      Override the default severity level for issues created by CI/CD pipeline detections.
+      Options: Critical, High, Medium, Low.
+    type: string
+    required: false
+underlyingcontentitem:
+  id: Cortex Core - Platform
+  name: Cortex Core - Platform
+  type: command
+  version: -1
+  command: core-create-appsec-policy
+requiresuserapproval: true
+marketplaces:
+  - platform
+supportedModules:
+  - cloud
+  - cloud_posture
+  - cloud_runtime_security

@@ -1,0 +1,1024 @@
+id: silent-Process attempts to kill a known security or AV tool
+version: -1
+issilent: true
+contentitemexportablefields:
+  contentitemfields: {}
+name: silent-Process attempts to kill a known security or AV tool
+description: "This playbook is designed to handle the 'Process attempts to kill a known security/AV tool' alert.\n\nThe playbook executes the following stages:\n\nEarly Containment:\n- The playbook will perform early containment actions by terminating the causality chain processes. \n\nInvestigation:\nDuring the alert investigation, the playbook will perform the following:\n- Checks the endpoint's risk level.\n- Searches for related alerts to identify any malicious activity.\n\nRemediation:\n- Remediation actions will be taken if the user’s risk score is high or a related alert is found.\nIn such cases, the playbook will wait for an analyst’s decision before isolating the endpoint\nBy default, endpoint isolation requires analyst approval."
+tags:
+- TA0005 - Defense Evasion
+- T1562 - Impair Defenses
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6b3d7719-ea27-4c67-8a38-2df81d9c920d
+    type: start
+    task:
+      id: 6b3d7719-ea27-4c67-8a38-2df81d9c920d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": -307
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 17bba4cd-e7fd-4c14-8db6-b952e2113604
+    type: title
+    task:
+      id: 17bba4cd-e7fd-4c14-8db6-b952e2113604
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "54"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 1017
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 0cf597f4-3a6c-4020-88af-e8c0b29e5606
+    type: title
+    task:
+      id: 0cf597f4-3a6c-4020-88af-e8c0b29e5606
+      version: -1
+      name: Early Containment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": -185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 742e4917-88c2-4711-bcff-dd54bdb308de
+    type: regular
+    task:
+      id: 742e4917-88c2-4711-bcff-dd54bdb308de
+      version: -1
+      name: Get Host Risk Level
+      description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
+      script: '|||core-list-risky-hosts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      host_id:
+        simple: ${alert.hostname}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 344
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 99b56c83-2667-4359-8d0c-72ee7119c91e
+    type: condition
+    task:
+      id: 99b56c83-2667-4359-8d0c-72ee7119c91e
+      version: -1
+      name: Found related alerts indicating malicious activity?
+      description: Checks whether found related alerts indicating malicious activity.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "49"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 761,
+          "y": 739
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: ed7584b7-7a5d-4347-8e42-66d1651af01f
+    type: regular
+    task:
+      id: ed7584b7-7a5d-4347-8e42-66d1651af01f
+      version: -1
+      name: Close Alert as True Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      closeNotes:
+        simple: Resolved as True Positive - Handled by the playbook "Process attempts to kill a known security or AV tool"
+      closeReason:
+        simple: Resolved - True Positive
+      id:
+        complex:
+          root: alert
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 2220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: b1e77e68-7d8a-46ee-8098-656e282f6345
+    type: title
+    task:
+      id: b1e77e68-7d8a-46ee-8098-656e282f6345
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 227
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: dbaedd9f-d40d-4ff0-bd7a-081349607692
+    type: condition
+    task:
+      id: dbaedd9f-d40d-4ff0-bd7a-081349607692
+      version: -1
+      name: Is the endpoint risk score high?
+      description: |
+        Determines the appropriate remediation action based on the endpoint’s risk level.
+
+        If the risk level is high, ask the analyst for approval to isolate the endpoint;
+        otherwise, continue with the investigation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.RiskyHost.risk_level
+            iscontext: true
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.RiskyHost.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: HIGH
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 467
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 0f685d2d-7074-493c-8133-9fd4ca42ea31
+    type: title
+    task:
+      id: 0f685d2d-7074-493c-8133-9fd4ca42ea31
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -78,
+          "y": 2355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: eb992417-3881-4b4e-81fc-d5ac1224bc89
+    type: regular
+    task:
+      id: eb992417-3881-4b4e-81fc-d5ac1224bc89
+      version: -1
+      name: Searches for related alerts in the case
+      description: |
+        This task searches for suspicious alerts related to the incident, with a severity of medium or higher, to identify any additional indicators of malicious activity on the endpoint.
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      query:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '((severity:"MEDIUM" or severity:"HIGH" or severity:"CRITICAL") ) and -name:"Process attempts to kill a known security/AV tool" and caseid:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 761,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 3b214e10-667b-4e2a-8ec4-edc30db2176a
+    type: regular
+    task:
+      id: 3b214e10-667b-4e2a-8ec4-edc30db2176a
+      version: -1
+      name: Terminate Causality (CGO)
+      description: Terminate a process tree by its causality ID.
+      script: '|||core-terminate-causality'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "39"
+      '#none#':
+      - "24"
+    scriptarguments:
+      agent_id:
+        simple: ${alert.agentid}
+      causality_id:
+        simple: ${alert.cid}
+      incident_id:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+      timeout_in_seconds:
+        simple: "180"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": -51.25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: abe3e29a-fdb4-4853-8ceb-db2f15ee7f76
+    type: regular
+    task:
+      id: abe3e29a-fdb4-4853-8ceb-db2f15ee7f76
+      version: -1
+      name: Terminate Causality Process Manually
+      description: |
+        Dear Analyst,
+
+        During the remediation process, the playbook failed to terminate the causality process: ${alert.cgoname}
+        Please terminate the process manually.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 164,
+          "y": 92
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 3e97f2be-019c-4463-8c5c-274b9cb8cde9
+    type: regular
+    task:
+      id: 3e97f2be-019c-4463-8c5c-274b9cb8cde9
+      version: -1
+      name: Isolate Endpoint
+      description: Isolates the specified endpoint.
+      script: '|||core-isolate-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      endpoint_id:
+        simple: ${alert.agentid}
+      incident_id:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+      timeout_in_seconds:
+        simple: "180"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 138,
+          "y": 1991.25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 754a3e8f-22db-4f9b-89e1-c54765c37b2d
+    type: condition
+    task:
+      id: 754a3e8f-22db-4f9b-89e1-c54765c37b2d
+      version: -1
+      name: Check Endpoint Status
+      description: Determine whether to isolate the endpoint based on its status, isolation state, and OS type.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "48"
+      Already isolated:
+      - "22"
+      Isolate:
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: Isolate
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: EndpointData.AdditionalFields.endpoint_type
+            iscontext: true
+          right:
+            value:
+              simple: WORKSTATION
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EndpointData.AdditionalFields.endpoint_status
+            iscontext: true
+          right:
+            value:
+              simple: CONNECTED
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EndpointData.AdditionalFields.is_isolated
+            iscontext: true
+          right:
+            value:
+              simple: AGENT_UNISOLATED
+          ignorecase: true
+    - label: Already isolated
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EndpointData.AdditionalFields.is_isolated
+            iscontext: true
+          right:
+            value:
+              simple: AGENT_ISOLATED
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 1532
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 66234787-13e2-4d2f-8b0b-a6bf7f011c62
+    type: regular
+    task:
+      id: 66234787-13e2-4d2f-8b0b-a6bf7f011c62
+      version: -1
+      name: Manual remediation actions for a server or a disconnected endpoint
+      description: "Dear Analyst,\n\nPlease note that during the remediation process, the playbook didn't isolate the following host: ${alert.hostname} \n\nThis is due to one of the following reasons:\n- The device disconnected.\n- The device has been identified as a server.\n\nPlease take manual action to contain the attack and prevent the attacker from executing lateral movement before closing this alert."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 1677
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 3d6fef86-6107-40bb-8eb4-2ad256a121e3
+    type: regular
+    task:
+      id: 3d6fef86-6107-40bb-8eb4-2ad256a121e3
+      version: -1
+      name: Close Alert as True Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      closeNotes:
+        simple: Resolved as True Positive - Causality processes were terminated  by the playbook "Process attempts to kill a known security or AV tool"
+      closeReason:
+        simple: Resolved - True Positive
+      id:
+        complex:
+          root: alert
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 886
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 86a7182a-dba4-4ba4-82f6-6222f3331121
+    type: title
+    task:
+      id: 86a7182a-dba4-4ba4-82f6-6222f3331121
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 1017
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 858631fa-52cc-4420-8229-de2f4bc2fd55
+    type: regular
+    task:
+      id: 858631fa-52cc-4420-8229-de2f4bc2fd55
+      version: -1
+      name: Get Endpoint Data
+      description: This script gathers endpoint data from multiple integrations and returns an endpoint entity with consolidated information to the context.
+      scriptName: get-endpoint-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      brands:
+        simple: Cortex Core - IR
+      endpoint_id:
+        simple: ${alert.agentid}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 1405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 52b38953-0d8e-46c3-9b6f-862808de6334
+    type: collection
+    task:
+      id: 52b38953-0d8e-46c3-9b6f-862808de6334
+      version: -1
+      name: Manual Task - Analyst approval for isolation
+      description: |-
+        Analyst approval is required for the following remediation actions:
+        - Isolate endpoint and close the alert
+        - Close alert without isolation
+        - No action
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      key:
+        simple: Message
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 138,
+          "y": 1677
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: "### **Select the response actions:**\n\nThe following findings were identified during the investigation:\n\n--- \n \n**Host Risk level:**\n${EndpointRiskLevel}\n\n **Related Alerts:**\n- ${RelatedAlerts=>val.filter((v,i,a)=>a.indexOf(v)==i).join(\"\\n - \")}\n\n**Should perform isolation on the endpoint \"${alert.hostname}\" and close the alert?**"
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: Isolate endpoint and close the alert
+        - simple: Close alert without isolation
+        - simple: No Action
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Remediation Approval
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 89b89436-a364-4496-a8d7-4d8489966292
+    type: condition
+    task:
+      id: 89b89436-a364-4496-a8d7-4d8489966292
+      version: -1
+      name: Check Analyst Decision for Next Response Actions
+      description: Evaluate the analyst's decision for the following response actions.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Close alert:
+      - "22"
+      Isolate and close alert:
+      - "45"
+      No Action:
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: Isolate and close alert
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Remediation Approval.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Isolate endpoint and close the alert
+          ignorecase: true
+    - label: Close alert
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Remediation Approval.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Close alert without isolation
+          ignorecase: true
+    - label: No Action
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Remediation Approval.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: No Action
+          ignorecase: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Remediation Approval.Answers.0
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 138,
+          "y": 1816
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 86c183fc-c81d-46d9-bc4e-e6561289aaa1
+    type: regular
+    task:
+      id: 86c183fc-c81d-46d9-bc4e-e6561289aaa1
+      version: -1
+      name: Set endpoint risk level
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      key:
+        simple: EndpointRiskLevel
+      value:
+        complex:
+          root: Core.RiskyHost
+          accessor: risk_level
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: No risk level found for this endpoint.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 1147
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: e24c3dd0-5164-464f-b875-dd02c6e6009d
+    type: regular
+    task:
+      id: e24c3dd0-5164-464f-b875-dd02c6e6009d
+      version: -1
+      name: Set related alerts
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      key:
+        simple: RelatedAlerts
+      value:
+        complex:
+          root: foundIncidents
+          accessor: name
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: No related alerts found.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 1281
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "20_11_yes": 0.21,
+      "31_11_yes": 0.35,
+      "31_37_#default#": 0.37,
+      "38_39_#error#": 0.57,
+      "47_22_Already isolated": 0.34,
+      "47_48_#default#": 0.66,
+      "47_52_Isolate": 0.61,
+      "53_45_Isolate and close alert": 0.43
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2722,
+        "width": 1479,
+        "x": -78,
+        "y": -307
+      }
+    }
+  }
+inputs: []
+inputSections:
+- inputs: []
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs.
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.9.0
