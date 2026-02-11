@@ -76,6 +76,15 @@ configuration:
     defaultvalue: "24"
     required: false
     additionalinfo: How long to keep unanswered entitlements before cleanup (default 24 hours)
+  - display: Reply Code Mode
+    name: replyCodeMode
+    type: 15
+    required: false
+    defaultvalue: random
+    options:
+    - random
+    - sequential
+    additionalinfo: "Reply code style: 'random' generates 4-digit codes (e.g., 1234), 'sequential' uses simple incrementing numbers (1, 2, 3...) for simpler UX"
   - display: Enable Success Feedback SMS
     name: successFeedbackEnabled
     type: 8
@@ -195,7 +204,7 @@ script:
       description: Phone number to simulate reply from (must match an active entitlement)
       required: true
     - name: reply_code
-      description: 4-digit reply code from the SMS (e.g., 1234)
+      description: Reply code from the SMS (e.g., 1234 in random mode, or 1 in sequential mode)
       required: true
     outputs:
     - contextPath: AWS.SNS.SMS.TestReply.Success

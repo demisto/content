@@ -15,6 +15,7 @@ from datetime import datetime, timedelta
 from unittest.mock import MagicMock
 from AWSSNSSMSCommunication import (
     generate_reply_code,
+    generate_sequential_codes,
     extract_entitlement_from_message,
     parse_entitlement_string,
     clean_ask_task_message_and_generate_codes,
@@ -35,6 +36,8 @@ from AWSSNSSMSCommunication import (
     DEFAULT_SUCCESS_MESSAGE,
     DEFAULT_FAILURE_MESSAGE,
     DATE_FORMAT,
+    REPLY_CODE_MODE_RANDOM,
+    REPLY_CODE_MODE_SEQUENTIAL,
 )
 
 
@@ -163,6 +166,21 @@ class TestHelperFunctions:
         codes = {generate_reply_code() for _ in range(50)}
         assert len(codes) > 1
 
+    def test_generate_sequential_codes_basic(self):
+        """Sequential codes start from 1 when no existing codes."""
+        codes = generate_sequential_codes(3, set())
+        assert codes == ["1", "2", "3"]
+
+    def test_generate_sequential_codes_skips_existing(self):
+        """Sequential codes skip numbers already in use."""
+        codes = generate_sequential_codes(2, {"1", "2"})
+        assert codes == ["3", "4"]
+
+    def test_generate_sequential_codes_gaps(self):
+        """Sequential codes fill gaps in existing codes."""
+        codes = generate_sequential_codes(2, {"2", "4"})
+        assert codes == ["1", "3"]
+
     def test_extract_entitlement_with_task(self):
         """Extract GUID@incident|task from SMSAskUser format."""
         msg = f"Approve? - Reply Yes or No: {SAMPLE_GUID}@123|45"
@@ -263,6 +281,42 @@ class TestCleanAskTaskMessage:
         assert len(codes) == 2
         assert "Line1" in cleaned
         assert "Line3" in cleaned
+
+    def test_sequential_mode_two_options(self):
+        """Sequential mode generates codes 1, 2 for first question."""
+        msg = f"Approve? - Reply Yes or No: {SAMPLE_GUID}@123|45"
+        cleaned, codes = clean_ask_task_message_and_generate_codes(
+            msg, set(), reply_code_mode=REPLY_CODE_MODE_SEQUENTIAL
+        )
+
+        assert len(codes) == 2
+        assert set(codes.keys()) == {"1", "2"}
+        assert codes["1"] == "Yes"
+        assert codes["2"] == "No"
+        assert "Yes (1)" in cleaned
+        assert "No (2)" in cleaned
+
+    def test_sequential_mode_skips_existing(self):
+        """Sequential mode continues numbering past existing codes."""
+        msg = f"Another question? - Reply Yes or No: {SAMPLE_GUID}@123|45"
+        cleaned, codes = clean_ask_task_message_and_generate_codes(
+            msg, {"1", "2"}, reply_code_mode=REPLY_CODE_MODE_SEQUENTIAL
+        )
+
+        assert len(codes) == 2
+        assert set(codes.keys()) == {"3", "4"}
+        assert codes["3"] == "Yes"
+        assert codes["4"] == "No"
+
+    def test_sequential_mode_three_options(self):
+        """Sequential mode with 3 options."""
+        msg = f"Action? - Reply Approve or Deny or Escalate: {SAMPLE_GUID}@1|4"
+        cleaned, codes = clean_ask_task_message_and_generate_codes(
+            msg, set(), reply_code_mode=REPLY_CODE_MODE_SEQUENTIAL
+        )
+
+        assert len(codes) == 3
+        assert codes == {"1": "Approve", "2": "Deny", "3": "Escalate"}
 
 
 # ===== 3. TestEntitlementManagement =====
@@ -430,6 +484,25 @@ class TestSendNotificationCommand:
         with pytest.raises(ValueError, match="Both 'to' and 'message'"):
             send_notification_command({"message": "hi"}, mock_params)
 
+    def test_with_sequential_mode(
+        self, mocker, mock_sns_client, mock_params, integration_context
+    ):
+        """Sequential mode generates simple 1, 2 codes instead of 4-digit random."""
+        mocker.patch("AWSSNSSMSCommunication.get_aws_client", return_value=mock_sns_client)
+        mock_params["replyCodeMode"] = "sequential"
+
+        msg = f"Approve? - Reply Yes or No: {SAMPLE_GUID}@123|45"
+        result = send_notification_command(
+            {"to": SAMPLE_PHONE, "message": msg}, mock_params
+        )
+
+        codes = result.outputs["CodesToOptions"]
+        assert codes == {"1": "Yes", "2": "No"}
+        # Verify the sent message contains sequential codes
+        sent_message = mock_sns_client.publish.call_args[1]["Message"]
+        assert "Yes (1)" in sent_message
+        assert "No (2)" in sent_message
+
     def test_fallback_when_no_options(
         self, mocker, mock_sns_client, mock_params, integration_context
     ):
@@ -514,13 +587,26 @@ class TestInjectReplyCommand:
         assert integration_context["entitlements"][0]["answered"] is True
 
     def test_invalid_code_format(self, integration_context, mock_params):
-        """Non-4-digit code returns error output."""
+        """Non-numeric code returns error output."""
         result = inject_reply_command(
-            {"phone_number": SAMPLE_PHONE, "reply_code": "12"}, mock_params
+            {"phone_number": SAMPLE_PHONE, "reply_code": "abc"}, mock_params
         )
 
         assert result.outputs["Success"] is False
         assert "Invalid reply code format" in result.outputs["Error"]
+
+    def test_sequential_code_injection(self, mocker, integration_context, mock_params):
+        """Sequential mode single-digit codes work with inject-reply."""
+        integration_context["entitlements"] = [
+            _make_entitlement(codes_to_options={"1": "Yes", "2": "No"}),
+        ]
+
+        result = inject_reply_command(
+            {"phone_number": SAMPLE_PHONE, "reply_code": "1"}, mock_params
+        )
+
+        assert result.outputs["Success"] is True
+        assert result.outputs["ChosenOption"] == "Yes"
 
     def test_no_matching_entitlement(self, integration_context, mock_params):
         """Valid code format but no matching entitlement returns error with active codes."""
@@ -603,7 +689,7 @@ class TestProcessSmsReply:
     def test_invalid_code_format(
         self, mocker, integration_context, mock_sns_client, mock_params
     ):
-        """Non-4-digit text -> failure feedback when active entitlements exist."""
+        """Non-numeric text -> failure feedback when active entitlements exist."""
         mocker.patch("AWSSNSSMSCommunication.get_aws_client", return_value=mock_sns_client)
         integration_context["entitlements"] = [
             _make_entitlement(codes_to_options={"1234": "Yes"}),
@@ -615,6 +701,24 @@ class TestProcessSmsReply:
 
         AWSSNSSMSCommunication.demisto.handleEntitlementForUser.assert_not_called()
         mock_sns_client.publish.assert_called_once()
+
+    def test_sequential_code_reply(
+        self, mocker, integration_context, mock_sns_client, mock_params
+    ):
+        """Single-digit sequential codes are accepted and processed correctly."""
+        mocker.patch("AWSSNSSMSCommunication.get_aws_client", return_value=mock_sns_client)
+        integration_context["entitlements"] = [
+            _make_entitlement(codes_to_options={"1": "Yes", "2": "No"}),
+        ]
+
+        process_sms_reply(self._make_sqs_message(body_text="2"), mock_params)
+
+        import AWSSNSSMSCommunication
+
+        AWSSNSSMSCommunication.demisto.handleEntitlementForUser.assert_called_once_with(
+            "123", SAMPLE_GUID, SAMPLE_PHONE, "No", "45"
+        )
+        assert integration_context["entitlements"][0]["answered"] is True
 
     def test_success_feedback_disabled(
         self, mocker, integration_context, mock_sns_client, mock_params
