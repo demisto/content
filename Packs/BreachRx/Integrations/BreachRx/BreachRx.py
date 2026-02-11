@@ -110,7 +110,7 @@ class BreachRxClient:
 
         transport = RequestsHTTPTransport(url=base_url, auth=auth, headers={"orgname": org_name}, timeout=60, verify=verify)
 
-        self.client = Client(transport=transport, fetch_schema_from_transport=False)
+        self.client = Client(transport=transport, fetch_schema_from_transport=True)
 
     def get_incident_severities(self):
         return self.client.execute(get_incident_severities)["incidentSeverities"]

@@ -79,8 +79,7 @@ def main() -> None:
 
         demisto.debug(f"Command being called is {command}")
         if command == "test-module":
-            with client as session:
-                session.fetch_schema()
+            client.fetch_schema()
             return_results("ok")
         elif command == "graphql-query":
             return_results(execute_query(client, demisto.args()))
