@@ -76,7 +76,6 @@ configuration:
   type: 13
   required: false
 defaultmapperin: GravityZone - Incoming Mapper
-defaultmapperout: GravityZone - Outgoing Mapper
 defaultclassifier: GravityZone - Classifier
 description: GravityZone provides secure access to incident and endpoint data and enables remediation actions through its APIs.
 display: GravityZone
