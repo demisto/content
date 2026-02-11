@@ -356,6 +356,74 @@ Return a list of all existing users in the vault that meet the filter and search
 | CyberArkPAS.Users.personalDetails.lastName | String | The last name of the users. | 
 | CyberArkPAS.Users.vaultAuthorization | String | The permissions of the users. | 
 
+### Command Example
+
+```!cyberark-pas-users-list```
+
+#### Context Example
+
+```
+{
+    "CyberArkPAS": {
+        "Users": [
+            {
+                "componentUser": false,
+                "id": 2,
+                "location": "\\",
+                "personalDetails": {
+                    "firstName": "",
+                    "lastName": "",
+                    "middleName": ""
+                },
+                "source": "CyberArk",
+                "userType": "Built-InAdmins",
+                "username": "Administrator",
+                "enableUser": true,
+                "suspended": false,
+                "vaultAuthorization": [
+                    "AddUpdateUsers",
+                    "AddSafes",
+                    "AddNetworkAreas",
+                    "ManageDirectoryMapping",
+                    "ManageServerFileCategories",
+                    "AuditUsers",
+                    "BackupAllSafes",
+                    "RestoreAllSafes",
+                    "ResetUsersPasswords",
+                    "ActivateUsers"
+                ]
+            },
+            {
+                "componentUser": false,
+                "id": 3,
+                "location": "\\",
+                "personalDetails": {
+                    "firstName": "",
+                    "lastName": "",
+                    "middleName": ""
+                },
+                "source": "CyberArk",
+                "userType": "Built-InAdmins",
+                "username": "Auditor",
+                "enableUser": true,
+                "suspended": false,
+                "vaultAuthorization": [
+                    "AuditUsers"
+                ]
+            }
+}
+```
+
+#### Human Readable Output
+
+>### There are 2 users
+>
+>|componentUser|id|location|personalDetails|source|userType|username|vaultAuthorization|
+>|---|---|---|---|---|---|---|---|
+>| false | 2 | \ | firstName: <br/>middleName: <br/>lastName:  | CyberArk | Built-InAdmins | Administrator | AddUpdateUsers,<br/>AddSafes,<br/>AddNetworkAreas,<br/>ManageDirectoryMapping,<br/>ManageServerFileCategories,<br/>AuditUsers,<br/>BackupAllSafes,<br/>RestoreAllSafes,<br/>ResetUsersPasswords,<br/>ActivateUsers |
+>| false | 3 | \ | firstName: <br/>middleName: <br/>lastName:  | CyberArk | Built-InAdmins | Auditor | AuditUsers |
+
+
 ### cyberark-pas-user-activate
 
 ***
