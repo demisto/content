@@ -20,6 +20,8 @@ MAX_SCRIPTS_LIMIT = 100
 MAX_GET_ENDPOINTS_LIMIT = 100
 MAX_COMPLIANCE_STANDARDS = 100
 AGENTS_TABLE = "AGENTS_TABLE"
+AGENT_POLICY_TABLE = "AGENT_POLICY_TABLE"
+AGENT_PROFILES_TABLE = "AGENT_PROFILES_TABLE"
 SECONDS_IN_DAY = 86400  # Number of seconds in one day
 MIN_DIFF_SECONDS = 2 * 3600  # Minimum allowed difference = 2 hours
 MAX_GET_SYSTEM_USERS_LIMIT = 50
@@ -68,6 +70,7 @@ WEBAPP_COMMANDS = [
     "core-list-exception-rules",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
+    "core-create-endpoint-policy",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -172,6 +175,7 @@ class Endpoints:
         "windows": "AGENT_OS_WINDOWS",
         "mac": "AGENT_OS_MAC",
         "linux": "AGENT_OS_LINUX",
+        "caas_linux": "AGENT_OS_CAAS_LINUX",
         "android": "AGENT_OS_ANDROID",
         "ios": "AGENT_OS_IOS",
         "serverless": "AGENT_OS_SERVERLESS",
@@ -957,6 +961,38 @@ class Client(CoreClient):
             method="POST",
             url_suffix="/cases/get_ai_case_details",
             json_data={"case_id": case_id},
+        )
+
+    def get_agent_policy_table(self) -> dict:
+        """
+        Retrieves the current agent policy table with policy hash.
+
+        Returns:
+            dict: API response containing policy table data and hash.
+        """
+        request_data = {
+            "type": "grid",
+            "table_name": AGENT_POLICY_TABLE,
+            "filter_data": {"filter": {}},
+        }
+        return self.get_webapp_data(request_data)
+
+    def update_agent_policy(self, update_data: dict) -> dict:
+        """
+        Updates the agent policy table with new or modified policies.
+
+        Args:
+            update_data (dict): The update payload containing policy data and hash.
+
+        Returns:
+            dict: API response from the policy update.
+        """
+        
+        demisto.debug({"update_data": update_data})
+        return self._http_request(
+            method="POST",
+            url_suffix="/agent/policy/update",
+            json_data={"update_data": update_data},
         )
 
 
@@ -4533,6 +4569,442 @@ def get_case_resolution_statuses(client, args):
     )
 
 
+def build_target_filter_from_endpoint_names(endpoint_names: list[str]) -> dict:
+    """
+    Build a TARGET_FILTER object from endpoint names.
+    
+    Args:
+        endpoint_names: List of endpoint names to target.
+    
+    Returns:
+        dict: Filter object for targeting specific endpoints.
+    """
+    if len(endpoint_names) == 1:
+        # Single endpoint
+        return {
+            'filter': {
+                'AND': [
+                    {
+                        'SEARCH_FIELD': 'HOST_NAME',
+                        'SEARCH_TYPE': 'EQ',
+                        'SEARCH_VALUE': endpoint_names[0]
+                    }
+                ]
+            }
+        }
+    else:
+        # Multiple endpoints - use OR logic
+        or_conditions = [
+            {
+                'SEARCH_FIELD': 'HOST_NAME',
+                'SEARCH_TYPE': 'EQ',
+                'SEARCH_VALUE': endpoint_name
+            }
+            for endpoint_name in endpoint_names
+        ]
+        return {
+            'filter': {
+                'AND': [
+                    {'OR': or_conditions}
+                ]
+            }
+        }
+
+
+def build_target_array_from_endpoint_names(endpoint_names: list[str]) -> list[dict]:
+    """
+    Build a TARGET array representation from endpoint names.
+    
+    Args:
+        endpoint_names: List of endpoint names to target.
+    
+    Returns:
+        list: Array of objects representing the target expression.
+    """
+    target_array = []
+    
+    for i, endpoint_name in enumerate(endpoint_names):
+        if i > 0:
+            # Add OR operator between endpoints
+            target_array.append({
+                'pretty_name': 'OR',
+                'data_type': None,
+                'render_type': 'operator',
+                'entity_map': None
+            })
+        
+        # Add: endpoint = <name>
+        target_array.extend([
+            {
+                'pretty_name': 'endpoint',
+                'data_type': 'TEXT',
+                'render_type': 'attribute',
+                'entity_map': None,
+                'dml_type': None
+            },
+            {
+                'pretty_name': '=',
+                'data_type': None,
+                'render_type': 'operator',
+                'entity_map': None,
+            },
+            {
+                'pretty_name': endpoint_name,
+                'data_type': None,
+                'render_type': 'value',
+                'entity_map': None,
+            }
+        ])
+    
+    return target_array
+
+
+def validate_profile_platform_compatibility(platform: str, profile_args: dict[str, str]) -> None:
+    """
+    Validate that the provided profiles are supported by the specified platform.
+    
+    Platform-specific profile restrictions:
+    - serverless: Only 'restrictions' profile allowed
+    - Android, iOS: Only 'malware' and 'agent_settings' profiles allowed
+    - Linux, macOS, Windows: All profiles allowed
+    
+    Args:
+        platform: The platform type (e.g., AGENT_OS_WINDOWS, AGENT_OS_SERVERLESS).
+        profile_args: Dictionary of profile argument names to their values.
+                     Keys should be profile types (e.g., 'exploit_profile', 'malware_profile').
+    
+    Raises:
+        DemistoException: If a profile is provided that is not supported by the platform.
+    """
+    # Define allowed profiles per platform
+    PLATFORM_ALLOWED_PROFILES: dict[str, list[str]] = {
+        'serverless': ['restrictions'],
+        'android': ['malware', 'agent_settings'],
+        'ios': ['malware', 'agent_settings'],
+        'linux': ['exploit', 'malware', 'agent_settings', 'restrictions', 'exceptions'],
+        'mac': ['exploit', 'malware', 'agent_settings', 'restrictions', 'exceptions'],
+        'windows': ['exploit', 'malware', 'agent_settings', 'restrictions', 'exceptions'],
+    }
+    
+    allowed_profiles: list[str] = PLATFORM_ALLOWED_PROFILES.get(platform) or []
+    
+    # Check each provided profile
+    unsupported_profiles = []
+    for profile_name, profile_value in profile_args.items():
+        # Skip if profile is not provided
+        if not profile_value:
+            continue
+        
+        # profile_name is the key like 'exploit', 'malware', etc.
+        if profile_name not in allowed_profiles:
+            unsupported_profiles.append(f"{profile_name} (value: {profile_value})")
+    
+    if unsupported_profiles:
+        allowed_list = ', '.join(sorted(allowed_profiles))
+        unsupported_list = ', '.join(unsupported_profiles)
+        
+        raise DemistoException(
+            f"The following profiles are not supported for platform '{platform}': {unsupported_list}. "
+            f"Allowed profiles for this platform: {allowed_list}."
+        )
+
+
+def get_profile_ids(client: Client, platform: str, profile_args: dict[str, str]) -> dict[str, int]:
+    """
+    Get profile IDs for multiple profiles from AGENT_PROFILES_TABLE using OR filters.
+    
+    Args:
+        client: The Cortex Platform client instance.
+        platform: The platform type (e.g., AGENT_OS_WINDOWS, AGENT_OS_LINUX).
+        profile_args: Dictionary mapping profile type (lowercase) to profile name.
+                     Example: {'exploit': 'Default', 'malware': 'Default'}
+    
+    Returns:
+        dict: Dictionary mapping 'PROFILE_TYPE' (uppercase) to profile_id.
+              Example: {'EXPLOIT': 11, 'MALWARE': 10}
+    """
+    # Build OR filters for all profiles
+    or_filters = []
+    for profile_type_lower, profile_name in profile_args.items():
+        if not profile_name:  # Skip profiles without values
+            continue
+        
+        # Convert profile type to uppercase for PROFILE_TYPE field
+        profile_type = profile_type_lower.upper()
+        
+        # Create AND condition for each profile (name + type)
+        and_condition = [
+            {
+                'SEARCH_FIELD': 'PROFILE_NAME',
+                'SEARCH_TYPE': 'EQ',
+                'SEARCH_VALUE': profile_name
+            },
+            {
+                'SEARCH_FIELD': 'PROFILE_TYPE',
+                'SEARCH_TYPE': 'EQ',
+                'SEARCH_VALUE': profile_type
+            }
+        ]
+        or_filters.append({'AND': and_condition})
+    
+    # Build the complete filter structure with platform at the top level
+    combined_filter = {
+        'AND': [
+            {
+                'SEARCH_FIELD': 'PROFILE_PLATFORM',
+                'SEARCH_TYPE': 'EQ',
+                'SEARCH_VALUE': Endpoints.ENDPOINT_PLATFORM[platform]
+            },
+            {
+                'OR': or_filters
+            }
+        ]
+    }
+    
+    request_data = {
+        'type': 'grid',
+        'table_name': AGENT_PROFILES_TABLE,
+        'filter_data': {
+            'sort': [],
+            'filter': combined_filter,
+        },
+    }
+    
+    demisto.debug(f"Querying profiles with filter: {combined_filter}")
+    
+    response = client.get_webapp_data(request_data)
+    profiles_data = response.get('reply', {})
+    
+    # Build mapping: {profile_type: profile_id}
+    profile_map: dict[str, int] = {}
+    
+    for profile in profiles_data:
+        profile_type = profile.get('PROFILE_TYPE')
+        profile_id = profile.get('PROFILE_ID')
+        
+        if profile_type and profile_id is not None:
+            profile_map[profile_type] = profile_id
+    
+    demisto.debug(f"Retrieved profile IDs for platform {platform}: {profile_map}")
+    return profile_map
+
+
+def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults:
+    """
+    Creates a new endpoint policy and applies it to specified endpoints.
+    
+    This command handles the complex logic of:
+    1. Fetching the current policy table and hash
+    2. Managing priority conflicts (shifting existing policies if needed)
+    3. Creating the new policy with proper schema (TARGET, TARGET_FILTER, profile IDs, etc.)
+    4. Updating the policy table with the complete data
+    
+    Args:
+        client: The Cortex Platform client instance.
+        args: Dictionary containing policy configuration parameters:
+            - policy_name (required): Name for the new policy
+            - target_endpoint (required): Comma-separated list of endpoint names
+            - platform (required): Platform type (AGENT_OS_WINDOWS, AGENT_OS_MAC, etc.)
+            - description (optional): Policy description
+            - priority (optional): Policy priority (default: auto-assigned)
+            - exploit_profile (optional): Exploit protection profile name
+            - malware_profile (optional): Malware protection profile name
+            - agent_settings_profile (optional): Agent settings profile name
+    
+    Returns:
+        CommandResults: Results object with success message and created policy details.
+    
+    Raises:
+        DemistoException: If required parameters are missing or policy creation fails.
+    """
+    # Parse required arguments
+    policy_name = args.get('policy_name')
+    target_endpoints = argToList(args.get('target_endpoint'))
+    platform = args.get('platform', '')
+    
+    # Parse optional arguments
+    description = args.get('description', '')
+    priority = arg_to_number(args.get('priority'))
+
+    # Fetch current policy table
+    demisto.debug("Fetching current agent policy table")
+    policy_response = client.get_agent_policy_table()
+    reply = policy_response.get('reply', {})
+    current_policies = reply.get('DATA', [])
+    policy_hash = reply.get('POLICY_HASH', '')
+    
+    if not policy_hash:
+        raise DemistoException('Failed to retrieve policy hash from the current policy table.')
+    
+    demisto.debug(f"Current policy hash: {policy_hash}")
+    demisto.debug(f"Current policies count: {len(current_policies)}")
+    
+    # Filter policies for the same platform
+    platform_policies = [p for p in current_policies if p.get('PLATFORM') == platform]
+    
+    # Determine priority for new policy
+    if priority is None:
+        # Auto-assign priority: find the highest priority for this platform and add 1
+        if platform_policies:
+            max_priority = max(p.get('PRIORITY', 0) for p in platform_policies)
+            priority = max_priority + 1
+        else:
+            priority = 1
+        demisto.debug(f"Auto-assigned priority: {priority}")
+    else:
+        # Check if priority already exists for this platform
+        existing_priority_policy = next(
+            (p for p in platform_policies if p.get('PRIORITY') == priority),
+            None
+        )
+        
+        if existing_priority_policy:
+            demisto.debug(f"Priority {priority} already exists for platform {platform}. Shifting existing policies.")
+            # Shift all policies with priority >= new priority up by 1
+            for policy in platform_policies:
+                current_priority = policy.get('PRIORITY', 0)
+                if current_priority >= priority:
+                    policy['PRIORITY'] = current_priority + 1
+                    demisto.debug(f"Shifted policy '{policy.get('NAME')}' from priority {current_priority} to {current_priority + 1}")
+    
+    # Build TARGET array and TARGET_FILTER
+    target_array = build_target_array_from_endpoint_names(target_endpoints)
+    target_filter = build_target_filter_from_endpoint_names(target_endpoints)
+    
+    # Parse profile arguments
+    exploit_profile = args.get('exploit_profile', 'Default')
+    malware_profile = args.get('malware_profile', 'Default')
+    agent_settings_profile = args.get('agent_settings_profile', 'Default')
+    restrictions_profile = args.get('restrictions_profile', 'Default')
+    exceptions_profile = args.get('exceptions_profile', 'Default (No Exceptions)')
+    #web_and_api_profile = args.get('web_and_api_profile', 'Default')
+    #identity_profile = args.get('identity_profile', 'Default')
+    
+    # Validate profile-platform compatibility
+    profile_args = {
+        'exploit': exploit_profile,
+        'malware': malware_profile,
+        'agent_settings': agent_settings_profile,
+        'restrictions': restrictions_profile,
+        'exceptions': exceptions_profile,
+        #'web_and_api_profile': web_and_api_profile,
+        #'identity_profile': identity_profile,
+    }
+    validate_profile_platform_compatibility(platform, profile_args)
+    
+    # Add platform-specific profiles
+    # if platform in ['AGENT_OS_LINUX', 'AGENT_OS_CAAS_LINUX']:
+    #     profiles_to_query.append((web_and_api_profile, 'WEB_AND_API'))
+    # elif platform in ['AGENT_OS_WINDOWS']:
+    #     profiles_to_query.append((identity_profile, 'IDENTITY'))
+    
+    # Get all profile IDs in a single query with OR filters
+    profile_map = get_profile_ids(client, platform, profile_args)
+    
+    # Extract profile IDs from the map
+    exploit_id = profile_map.get('EXPLOIT')
+    malware_id = profile_map.get('MALWARE')
+    agent_settings_id = profile_map.get('AGENT_SETTINGS')
+    restrictions_id = profile_map.get('RESTRICTIONS')
+    exceptions_id = profile_map.get('EXCEPTIONS')
+    web_and_api_id = profile_map.get('WEB_AND_API')
+    identity_id = profile_map.get('IDENTITY')
+        
+    # Create new policy object with complete schema
+    new_policy = {
+        'IS_ANY': False,  # Not targeting "Any" - targeting specific endpoints
+        'PLATFORM': Endpoints.ENDPOINT_PLATFORM[platform],
+        'NAME': policy_name,
+        'IS_ENABLED': True,
+        'TARGET_FILTER': target_filter,
+        'TARGET_GROUP_TYPE': 'STATIC',
+        'EXPLOIT': exploit_profile,
+        'MALWARE': malware_profile,
+        'AGENT_SETTINGS': agent_settings_profile,
+        'RESTRICTIONS': restrictions_profile,
+        'EXCEPTIONS': exceptions_profile,
+        'TARGET': target_array,
+        'PRIORITY': priority,
+        "IDENTITY_ID": 17,
+        "IDENTITY": "Default",
+        "WEB_AND_API_ID": None,
+        "WEB_AND_API": None,
+        "DESCRIPTION": description,
+    }
+        
+    # Add profile IDs
+    if exploit_id is not None:
+        new_policy['EXPLOIT_ID'] = exploit_id
+    if malware_id is not None:
+        new_policy['MALWARE_ID'] = malware_id
+    if agent_settings_id is not None:
+        new_policy['AGENT_SETTINGS_ID'] = agent_settings_id
+    if restrictions_id is not None:
+        new_policy['RESTRICTIONS_ID'] = restrictions_id
+    if exceptions_id is not None:
+        new_policy['EXCEPTIONS_ID'] = exceptions_id
+    
+    # Add platform-specific fields based on the valid schema
+    # if platform in ['AGENT_OS_WINDOWS']:
+    #     new_policy['IDENTITY'] = identity_profile
+    #     if identity_id is not None:
+    #         new_policy['IDENTITY_ID'] = identity_id
+    #     new_policy['WEB_AND_API'] = 'N/A'
+    #     new_policy['WEB_AND_API_ID'] = None
+    # elif platform in ['AGENT_OS_LINUX', 'AGENT_OS_CAAS_LINUX']:
+    #     new_policy['WEB_AND_API'] = web_and_api_profile
+    #     if web_and_api_id is not None:
+    #         new_policy['WEB_AND_API_ID'] = web_and_api_id
+    #     new_policy['IDENTITY'] = None
+    #     new_policy['IDENTITY_ID'] = None
+    # elif platform in ['AGENT_OS_MAC']:
+    #     new_policy['WEB_AND_API'] = 'N/A'
+    #     new_policy['WEB_AND_API_ID'] = None
+    #     new_policy['IDENTITY'] = 'N/A'
+    #     new_policy['IDENTITY_ID'] = None
+    
+    demisto.debug(f"New policy to be created: {new_policy}")
+    
+    # Build complete policy data (existing + new)
+    updated_policies = current_policies + [new_policy]
+    
+    # Prepare update payload
+    update_payload = {
+        'DATA': updated_policies,
+        'POLICY_HASH': policy_hash,
+    }
+    
+    # Update policy table
+    demisto.debug("Updating agent policy table")
+    response = client.update_agent_policy(update_payload)
+
+    # Build readable output
+    readable_output = f"Successfully created endpoint policy '{policy_name}' with priority {priority} for platform {platform}.\n"
+    readable_output += f"Target endpoints: {', '.join(target_endpoints)}\n"
+    readable_output += f"Exploit Profile: {exploit_profile}\n"
+    readable_output += f"Malware Profile: {malware_profile}\n"
+    readable_output += f"Agent Settings Profile: {agent_settings_profile}"
+    
+    outputs = {
+        'PolicyName': policy_name,
+        'Platform': platform,
+        'Priority': priority,
+        'TargetEndpoints': target_endpoints,
+        'ExploitProfile': exploit_profile,
+        'MalwareProfile': malware_profile,
+        'AgentSettingsProfile': agent_settings_profile,
+        'Description': description,
+    }
+    
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.EndpointPolicy',
+        outputs_key_field='PolicyName',
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
 def verify_platform_version(version: str = "8.13.0"):
     if not is_demisto_version_ge(version):
         raise DemistoException("This command is not available for this platform version")
@@ -4671,6 +5143,9 @@ def main():  # pragma: no cover
         elif command == "core-xql-generic-query-platform":
             verify_platform_version()
             return_results(xql_query_platform_command(client, args))
+
+        elif command == "core-create-endpoint-policy":
+            return_results(create_endpoint_policy_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())

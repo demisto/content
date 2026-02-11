@@ -3351,6 +3351,91 @@ script:
         - contextPath: Core.CaseResolutionStatus.userInput
           description: User input parameters (for pending playbookTask items).
           type: Unknown
+    - name: core-create-endpoint-policy
+      description: Creates a new endpoint policy and applies it to specified endpoints. Automatically handles priority conflicts by shifting existing policies when needed.
+      hidden: false
+      arguments:
+        - name: policy_name
+          description: The name for the new endpoint policy. Must be unique and descriptive.
+          required: true
+          type: String
+        - name: target_endpoint
+          description: A comma-separated list of endpoint names to apply the policy to. The policy will target these specific endpoints.
+          required: true
+          isArray: true
+          type: String
+        - name: platform
+          description: The platform type for the policy. Determines which operating system the policy applies to.
+          required: true
+          auto: PREDEFINED
+          predefined:
+            - windows
+            - mac
+            - linux
+            - android
+            - ios
+            - caas_linux
+            - serverless
+          type: String
+        - name: description
+          description: Optional description of the policy's purpose and scope.
+          type: String
+        - name: priority
+          description: The priority level for the policy (higher numbers = higher priority). If not specified, automatically assigns the next available priority for the platform. If the specified priority already exists for this platform, existing policies will be shifted up automatically.
+          type: Number
+        - name: exploit_profile
+          description: The name of the exploit protection profile to use. Default is "Default".
+          defaultValue: "Default"
+          type: String
+        - name: malware_profile
+          description: The name of the malware protection profile to use. Default is "Default".
+          defaultValue: "Default"
+          type: String
+        - name: agent_settings_profile
+          description: The name of the agent settings profile to use. Default is "Default".
+          defaultValue: "Default"
+          type: String
+        - name: restrictions_profile
+          description: The name of the restrictions profile to use. Default is "Default".
+          defaultValue: "Default"
+          type: String
+        - name: exceptions_profile
+          description: The name of the exceptions profile to use. Default is "Default (No Exceptions)".
+          defaultValue: "Default (No Exceptions)"
+          type: String
+        - name: web_and_api_profile
+          description: The name of the web and API protection profile to use. Default is "Default". Only applicable for Linux and CaaS Linux platforms.
+          defaultValue: "Default"
+          type: String
+        - name: identity_profile
+          description: The name of the identity protection profile to use. Default is "Default". Only applicable for Windows platform.
+          defaultValue: "Default"
+          type: String
+      outputs:
+        - contextPath: Core.EndpointPolicy.PolicyName
+          description: The name of the created policy.
+          type: String
+        - contextPath: Core.EndpointPolicy.Platform
+          description: The platform type of the policy.
+          type: String
+        - contextPath: Core.EndpointPolicy.Priority
+          description: The priority level assigned to the policy.
+          type: Number
+        - contextPath: Core.EndpointPolicy.TargetEndpoints
+          description: The list of endpoint names targeted by the policy.
+          type: Array
+        - contextPath: Core.EndpointPolicy.ExploitProfile
+          description: The exploit protection profile name.
+          type: String
+        - contextPath: Core.EndpointPolicy.MalwareProfile
+          description: The malware protection profile name.
+          type: String
+        - contextPath: Core.EndpointPolicy.AgentSettingsProfile
+          description: The agent settings profile name.
+          type: String
+        - contextPath: Core.EndpointPolicy.Description
+          description: The policy description.
+          type: String
   runonce: false
   script: "-"
   subtype: python3
