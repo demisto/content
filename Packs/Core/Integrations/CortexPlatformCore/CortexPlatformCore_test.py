@@ -9471,3 +9471,387 @@ def test_get_sme_areas_and_sub_groups_command_single_area_no_sub_groups(mocker: 
     assert len(result.outputs) == 1
     assert result.outputs[0]["value"] == "Posture Management"
     assert result.outputs[0]["suggestedValues"] == []
+
+
+def test_get_questionnaire_by_sme_command_specific_combination(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mock API response with questionnaire items for a given SME area and sub-group.
+    WHEN:
+        The get_questionnaire_by_sme_command function is called with valid sme_area and sub_group.
+    THEN:
+        The response contains the correct questionnaire data with sme_area and sub_group enriched.
+    """
+    from CortexPlatformCore import get_questionnaire_by_sme_command, Client
+
+    mock_response = {
+        "reply": [
+            {
+                "key": "1",
+                "label": "Is the issue replicable? If yes, please provide the steps",
+                "required": True,
+                "type": "text",
+                "questionType": "question",
+            },
+            {
+                "key": "2",
+                "label": "Has anything changed in the environment?",
+                "required": True,
+                "type": "text",
+                "questionType": "question",
+            },
+            {
+                "key": "3",
+                "label": "Upload Agent Tech Support Logs",
+                "required": False,
+                "type": "file",
+                "questionType": "log",
+            },
+        ]
+    }
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "get_questionnaire_by_sme", return_value=mock_response)
+
+    result = get_questionnaire_by_sme_command(mock_client, {"issue_category": "XDR Agent", "problem_concentration": "Communication"})
+
+    assert result.outputs_prefix == "Core.Questionnaire"
+    assert result.outputs_key_field == ["issue_category", "problem_concentration", "key"]
+    assert len(result.outputs) == 3
+    assert result.outputs[0]["key"] == "1"
+    assert result.outputs[0]["issue_category"] == "XDR Agent"
+    assert result.outputs[0]["problem_concentration"] == "Communication"
+    assert result.outputs[0]["questionType"] == "question"
+    assert result.outputs[2]["type"] == "file"
+    assert result.outputs[2]["questionType"] == "log"
+    assert "Questionnaire Mappings" in result.readable_output
+
+
+def test_get_questionnaire_by_sme_command_fetch_all(mocker: MockerFixture):
+    """
+    GIVEN:
+        No sme_area/sub_group arguments provided, and the SME areas API returns multiple areas with sub-groups.
+    WHEN:
+        The get_questionnaire_by_sme_command function is called without arguments.
+    THEN:
+        It fetches all SME areas, iterates over all combinations, and returns aggregated questionnaire data.
+    """
+    from CortexPlatformCore import get_questionnaire_by_sme_command, Client
+
+    areas_response = {
+        "reply": [
+            {
+                "value": "Agent",
+                "label": "Agent",
+                "suggestedValues": [
+                    {"value": "Communication", "label": "Communication"},
+                    {"value": "Performance", "label": "Performance"},
+                ],
+            },
+            {
+                "value": "Server",
+                "label": "Server",
+                "suggestedValues": [
+                    {"value": "Automation", "label": "Automation"},
+                ],
+            },
+        ]
+    }
+
+    questionnaire_responses = {
+        ("Agent", "Communication"): {
+            "reply": [
+                {"key": "1", "label": "Q1 for Agent/Communication", "required": True, "type": "text", "questionType": "question"},
+            ]
+        },
+        ("Agent", "Performance"): {
+            "reply": [
+                {"key": "1", "label": "Q1 for Agent/Performance", "required": False, "type": "text", "questionType": "question"},
+            ]
+        },
+        ("Server", "Automation"): {
+            "reply": [
+                {"key": "1", "label": "Q1 for Server/Automation", "required": True, "type": "file", "questionType": "log"},
+            ]
+        },
+    }
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "get_sme_areas_and_sub_groups", return_value=areas_response)
+    mocker.patch.object(
+        mock_client,
+        "get_questionnaire_by_sme",
+        side_effect=lambda area, sg: questionnaire_responses[(area, sg)],
+    )
+
+    result = get_questionnaire_by_sme_command(mock_client, {})
+
+    assert result.outputs_prefix == "Core.Questionnaire"
+    assert len(result.outputs) == 3
+    assert result.outputs[0]["issue_category"] == "Agent"
+    assert result.outputs[0]["problem_concentration"] == "Communication"
+    assert result.outputs[1]["issue_category"] == "Agent"
+    assert result.outputs[1]["problem_concentration"] == "Performance"
+    assert result.outputs[2]["issue_category"] == "Server"
+    assert result.outputs[2]["problem_concentration"] == "Automation"
+    assert mock_client.get_sme_areas_and_sub_groups.call_count == 1
+    assert mock_client.get_questionnaire_by_sme.call_count == 3
+
+
+def test_get_questionnaire_by_sme_command_fetch_all_empty_areas(mocker: MockerFixture):
+    """
+    GIVEN:
+        No arguments provided and the SME areas API returns an empty list.
+    WHEN:
+        The get_questionnaire_by_sme_command function is called.
+    THEN:
+        The response contains an empty list and no questionnaire calls are made.
+    """
+    from CortexPlatformCore import get_questionnaire_by_sme_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "get_sme_areas_and_sub_groups", return_value={"reply": []})
+    mock_get_q = mocker.patch.object(mock_client, "get_questionnaire_by_sme")
+
+    result = get_questionnaire_by_sme_command(mock_client, {})
+
+    assert result.outputs == []
+    mock_get_q.assert_not_called()
+
+
+def test_get_questionnaire_by_sme_command_fetch_all_skips_errors(mocker: MockerFixture):
+    """
+    GIVEN:
+        No arguments provided and one of the questionnaire API calls fails.
+    WHEN:
+        The get_questionnaire_by_sme_command function is called.
+    THEN:
+        The failing combination is skipped and the rest are returned successfully.
+    """
+    from CortexPlatformCore import get_questionnaire_by_sme_command, Client
+
+    areas_response = {
+        "reply": [
+            {
+                "value": "Agent",
+                "label": "Agent",
+                "suggestedValues": [
+                    {"value": "Communication", "label": "Communication"},
+                    {"value": "BadSubGroup", "label": "BadSubGroup"},
+                ],
+            },
+        ]
+    }
+
+    def mock_get_questionnaire(area, sg):
+        if sg == "BadSubGroup":
+            raise Exception("API error")
+        return {"reply": [{"key": "1", "label": "Q1", "required": True, "type": "text", "questionType": "question"}]}
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "get_sme_areas_and_sub_groups", return_value=areas_response)
+    mocker.patch.object(mock_client, "get_questionnaire_by_sme", side_effect=mock_get_questionnaire)
+
+    result = get_questionnaire_by_sme_command(mock_client, {})
+
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["issue_category"] == "Agent"
+    assert result.outputs[0]["problem_concentration"] == "Communication"
+
+
+def test_get_questionnaire_by_sme_command_specific_empty_response(mocker: MockerFixture):
+    """
+    GIVEN:
+        An empty API response for a specific combination.
+    WHEN:
+        The get_questionnaire_by_sme_command function is called with sme_area and sub_group.
+    THEN:
+        The response contains an empty list and no errors are raised.
+    """
+    from CortexPlatformCore import get_questionnaire_by_sme_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "get_questionnaire_by_sme", return_value={"reply": []})
+
+    result = get_questionnaire_by_sme_command(mock_client, {"issue_category": "Agent", "problem_concentration": "Communication"})
+
+    assert result.outputs_prefix == "Core.Questionnaire"
+    assert result.outputs == []
+    assert "Questionnaire Mappings" in result.readable_output
+
+
+def test_get_questionnaire_by_sme_command_non_list_reply(mocker: MockerFixture):
+    """
+    GIVEN:
+        An API response where reply is not a list (e.g., a dict).
+    WHEN:
+        The get_questionnaire_by_sme_command function is called with specific args.
+    THEN:
+        The response gracefully returns an empty list.
+    """
+    from CortexPlatformCore import get_questionnaire_by_sme_command, Client
+
+    mock_response = {"reply": {"error": "unexpected format"}}
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "get_questionnaire_by_sme", return_value=mock_response)
+
+    result = get_questionnaire_by_sme_command(mock_client, {"issue_category": "Agent", "problem_concentration": "Communication"})
+
+    assert result.outputs == []
+
+
+def test_get_support_ticket_taxonomy_command_success(mocker: MockerFixture):
+    """
+    GIVEN:
+        Mock API responses with SME areas, sub-groups, and questionnaire items.
+    WHEN:
+        The get_support_ticket_taxonomy_command function is called.
+    THEN:
+        It fetches all SME areas, iterates over all combinations, and returns the full aggregated taxonomy.
+    """
+    from CortexPlatformCore import get_support_ticket_taxonomy_command, Client
+
+    areas_response = {
+        "reply": [
+            {
+                "value": "Agent",
+                "label": "Agent",
+                "suggestedValues": [
+                    {"value": "Communication", "label": "Communication"},
+                    {"value": "Performance", "label": "Performance"},
+                ],
+            },
+            {
+                "value": "Server",
+                "label": "Server",
+                "suggestedValues": [
+                    {"value": "Automation", "label": "Automation"},
+                ],
+            },
+        ]
+    }
+
+    questionnaire_responses = {
+        ("Agent", "Communication"): {
+            "reply": [
+                {"key": "1", "label": "Q1", "required": True, "type": "text", "questionType": "question"},
+            ]
+        },
+        ("Agent", "Performance"): {
+            "reply": [
+                {"key": "1", "label": "Q2", "required": False, "type": "text", "questionType": "question"},
+                {"key": "2", "label": "Upload logs", "required": False, "type": "file", "questionType": "log"},
+            ]
+        },
+        ("Server", "Automation"): {
+            "reply": [
+                {"key": "1", "label": "Q3", "required": True, "type": "text", "questionType": "question"},
+            ]
+        },
+    }
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "get_sme_areas_and_sub_groups", return_value=areas_response)
+    mocker.patch.object(
+        mock_client,
+        "get_questionnaire_by_sme",
+        side_effect=lambda area, sg: questionnaire_responses[(area, sg)],
+    )
+
+    result = get_support_ticket_taxonomy_command(mock_client, {})
+
+    assert result.outputs_prefix == "Core.SupportTicketTaxonomy"
+    assert result.outputs_key_field == "issue_category"
+    # Nested structure: 2 issue categories
+    assert len(result.outputs) == 2
+
+    # First category: Agent with 2 problem concentrations
+    agent = result.outputs[0]
+    assert agent["issue_category"] == "Agent"
+    assert len(agent["problem_concentrations"]) == 2
+    assert agent["problem_concentrations"][0]["problem_concentration"] == "Communication"
+    assert len(agent["problem_concentrations"][0]["questions"]) == 1
+    assert agent["problem_concentrations"][1]["problem_concentration"] == "Performance"
+    assert len(agent["problem_concentrations"][1]["questions"]) == 2
+
+    # Second category: Server with 1 problem concentration
+    server = result.outputs[1]
+    assert server["issue_category"] == "Server"
+    assert len(server["problem_concentrations"]) == 1
+    assert server["problem_concentrations"][0]["problem_concentration"] == "Automation"
+    assert len(server["problem_concentrations"][0]["questions"]) == 1
+
+    assert mock_client.get_sme_areas_and_sub_groups.call_count == 1
+    assert mock_client.get_questionnaire_by_sme.call_count == 3
+    assert "Support Ticket Taxonomy" in result.readable_output
+
+
+def test_get_support_ticket_taxonomy_command_empty_areas(mocker: MockerFixture):
+    """
+    GIVEN:
+        The SME areas API returns an empty list.
+    WHEN:
+        The get_support_ticket_taxonomy_command function is called.
+    THEN:
+        The response contains an empty list and no questionnaire calls are made.
+    """
+    from CortexPlatformCore import get_support_ticket_taxonomy_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "get_sme_areas_and_sub_groups", return_value={"reply": []})
+    mock_get_q = mocker.patch.object(mock_client, "get_questionnaire_by_sme")
+
+    result = get_support_ticket_taxonomy_command(mock_client, {})
+
+    assert result.outputs == []
+    assert result.outputs_prefix == "Core.SupportTicketTaxonomy"
+    mock_get_q.assert_not_called()
+
+
+def test_get_support_ticket_taxonomy_command_skips_errors(mocker: MockerFixture):
+    """
+    GIVEN:
+        One of the questionnaire API calls fails.
+    WHEN:
+        The get_support_ticket_taxonomy_command function is called.
+    THEN:
+        The failing combination is skipped and the rest are returned successfully.
+    """
+    from CortexPlatformCore import get_support_ticket_taxonomy_command, Client
+
+    areas_response = {
+        "reply": [
+            {
+                "value": "Agent",
+                "label": "Agent",
+                "suggestedValues": [
+                    {"value": "Good", "label": "Good"},
+                    {"value": "Bad", "label": "Bad"},
+                ],
+            },
+        ]
+    }
+
+    def mock_get_questionnaire(area, sg):
+        if sg == "Bad":
+            raise Exception("API error")
+        return {"reply": [{"key": "1", "label": "Q1", "required": True, "type": "text", "questionType": "question"}]}
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "get_sme_areas_and_sub_groups", return_value=areas_response)
+    mocker.patch.object(mock_client, "get_questionnaire_by_sme", side_effect=mock_get_questionnaire)
+
+    result = get_support_ticket_taxonomy_command(mock_client, {})
+
+    # 1 category with 2 problem concentrations
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["issue_category"] == "Agent"
+    concentrations = result.outputs[0]["problem_concentrations"]
+    assert len(concentrations) == 2
+    # Good has questions
+    assert concentrations[0]["problem_concentration"] == "Good"
+    assert len(concentrations[0]["questions"]) == 1
+    # Bad has empty questions (error was skipped)
+    assert concentrations[1]["problem_concentration"] == "Bad"
+    assert len(concentrations[1]["questions"]) == 0

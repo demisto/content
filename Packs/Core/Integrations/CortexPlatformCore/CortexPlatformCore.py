@@ -67,6 +67,8 @@ WEBAPP_COMMANDS = [
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
     "core-get-sme-areas-and-sub-groups",
+    "core-get-questionnaire-by-sme",
+    "core-get-support-ticket-taxonomy",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -911,6 +913,24 @@ class Client(CoreClient):
             method="GET",
             headers=self._headers,
             url_suffix="/sfdc_support/get_sme_areas_and_sub_groups/",
+        )
+
+    def get_questionnaire_by_sme(self, sme_area: str, sub_group: str) -> dict:
+        """
+        Retrieve questionnaire mappings by SME area and sub-group for the tenant's product type.
+
+        Args:
+            sme_area (str): The SME area (issue category) to fetch questions for.
+            sub_group (str): The sub-group (problem concentration) within the SME area.
+
+        Returns:
+            dict: The response containing questionnaire items (questions and log upload fields).
+        """
+        return self._http_request(
+            method="POST",
+            headers=self._headers,
+            url_suffix="/sfdc_support/get_questions_by_sme_area_and_sub_group/",
+            json_data={"smeArea": sme_area, "subGroupName": sub_group},
         )
 
     def get_custom_fields_metadata(self) -> dict[str, Any]:
@@ -4564,6 +4584,157 @@ def get_sme_areas_and_sub_groups_command(client: Client, args: Dict[str, Any]) -
     )
 
 
+def get_questionnaire_by_sme_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieves questionnaire mappings (questions and log upload fields) for all SME area / sub-group
+    combinations by first calling get_sme_areas_and_sub_groups, then iterating over every
+    (issue_category, problem_concentration) pair to fetch the corresponding questionnaire.
+
+    Optionally, if issue_category and problem_concentration are provided, fetches only that specific combination.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Command arguments. Optional:
+            - issue_category (str): A specific issue category (SME area) to fetch questions for.
+            - problem_concentration (str): A specific problem concentration (sub-group).
+
+    Returns:
+        CommandResults: Object containing the aggregated questionnaire data for all combinations.
+    """
+    issue_category = args.get("issue_category", "")
+    problem_concentration = args.get("problem_concentration", "")
+
+    all_results: list[dict] = []
+
+    if issue_category and problem_concentration:
+        # Fetch for a single specific combination
+        response = client.get_questionnaire_by_sme(issue_category, problem_concentration)
+        reply = response.get("reply", response)
+        questions = reply if isinstance(reply, list) else []
+        for q in questions:
+            q["issue_category"] = issue_category
+            q["problem_concentration"] = problem_concentration
+        all_results.extend(questions)
+    else:
+        # Fetch all combinations: first get all SME areas and sub-groups
+        areas_response = client.get_sme_areas_and_sub_groups()
+        areas_reply = areas_response.get("reply", areas_response)
+        areas = areas_reply if isinstance(areas_reply, list) else []
+
+        for area in areas:
+            area_value = area.get("value", "")
+            suggested_values = area.get("suggestedValues", [])
+            if not suggested_values:
+                continue
+            for sg in suggested_values:
+                sg_value = sg.get("value", "")
+                if not sg_value:
+                    continue
+                try:
+                    response = client.get_questionnaire_by_sme(area_value, sg_value)
+                    reply = response.get("reply", response)
+                    questions = reply if isinstance(reply, list) else []
+                    for q in questions:
+                        q["issue_category"] = area_value
+                        q["problem_concentration"] = sg_value
+                    all_results.extend(questions)
+                except Exception as e:
+                    demisto.debug(f"Failed to fetch questionnaire for {area_value}/{sg_value}: {e}")
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Questionnaire Mappings",
+            all_results,
+            headerTransform=string_to_table_header,
+            headers=["issue_category", "problem_concentration", "key", "label", "required", "type", "questionType"],
+        ),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Questionnaire",
+        outputs_key_field=["issue_category", "problem_concentration", "key"],
+        outputs=all_results,
+        raw_response=all_results,
+    )
+
+
+def get_support_ticket_taxonomy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the complete support ticket taxonomy: all issue categories, their problem concentrations,
+    and the questionnaire items for every combination.
+
+    This is a single command that aggregates data from:
+      1. /sfdc_support/get_sme_areas_and_sub_groups/
+      2. /sfdc_support/get_questions_by_sme_area_and_sub_group/ (for each combination)
+
+    Returns a nested structure grouped by issue_category → problem_concentration → questions.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Command arguments (none required).
+
+    Returns:
+        CommandResults: Object containing the full nested taxonomy data.
+    """
+    areas_response = client.get_sme_areas_and_sub_groups()
+    areas_reply = areas_response.get("reply", areas_response)
+    areas = areas_reply if isinstance(areas_reply, list) else []
+
+    taxonomy: list[dict] = []
+
+    for area in areas:
+        area_value = area.get("value", "")
+        suggested_values = area.get("suggestedValues", [])
+
+        category_entry: dict[str, Any] = {
+            "issue_category": area_value,
+            "problem_concentrations": [],
+        }
+
+        for sg in suggested_values:
+            sg_value = sg.get("value", "")
+            if not sg_value:
+                continue
+
+            concentration_entry: dict[str, Any] = {
+                "problem_concentration": sg_value,
+                "questions": [],
+            }
+
+            try:
+                response = client.get_questionnaire_by_sme(area_value, sg_value)
+                reply = response.get("reply", response)
+                questions = reply if isinstance(reply, list) else []
+                concentration_entry["questions"] = questions
+            except Exception as e:
+                demisto.debug(f"Failed to fetch questionnaire for {area_value}/{sg_value}: {e}")
+
+            category_entry["problem_concentrations"].append(concentration_entry)
+
+        taxonomy.append(category_entry)
+
+    # Build a flat readable table for human-readable output
+    flat_rows = []
+    for cat in taxonomy:
+        for conc in cat.get("problem_concentrations", []):
+            for q in conc.get("questions", []):
+                flat_rows.append({
+                    "issue_category": cat["issue_category"],
+                    "problem_concentration": conc["problem_concentration"],
+                    **q,
+                })
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Support Ticket Taxonomy",
+            flat_rows,
+            headerTransform=string_to_table_header,
+            headers=["issue_category", "problem_concentration", "key", "label", "required", "type", "questionType"],
+        ),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.SupportTicketTaxonomy",
+        outputs_key_field="issue_category",
+        outputs=taxonomy,
+        raw_response=taxonomy,
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -4721,6 +4892,12 @@ def main():  # pragma: no cover
 
         elif command == "core-get-sme-areas-and-sub-groups":
             return_results(get_sme_areas_and_sub_groups_command(client, args))
+
+        elif command == "core-get-questionnaire-by-sme":
+            return_results(get_questionnaire_by_sme_command(client, args))
+
+        elif command == "core-get-support-ticket-taxonomy":
+            return_results(get_support_ticket_taxonomy_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())

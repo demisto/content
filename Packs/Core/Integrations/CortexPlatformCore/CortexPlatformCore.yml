@@ -3324,13 +3324,6 @@ script:
       description: Returns fields for the completion of the support ticket
       hidden: true
       arguments:
-        - name: product_type
-          description: "The product type for the support ticket. Options: Cortex XSIAM, Cortex Cloud, Cortex XDR."
-          auto: PREDEFINED
-          predefined:
-            - Cortex XSIAM
-            - Cortex Cloud
-            - Cortex XDR
         - name: description
           description: A detailed description of the issue. Include error messages/codes or other identifying details. Limited to 25-32000 chars.
         - name: contact_number
@@ -3437,6 +3430,60 @@ script:
           type: String
         - contextPath: Core.SmeAreasAndSubGroups.suggestedValues.label
           description: The sub-group (problem concentration) display label.
+          type: String
+    - name: core-get-questionnaire-by-sme
+      description: Retrieves questionnaire mappings (questions and log upload fields) for all SME area and sub-group combinations, or for a specific combination if both sme_area and sub_group are provided. When called without arguments, it first fetches all available SME areas and sub-groups, then iterates over every combination to retrieve the full questionnaire catalog.
+      arguments:
+        - name: issue_category
+          description: The issue category (SME area) to fetch questions for. If omitted (along with problem_concentration), all combinations are fetched. Use core-get-sme-areas-and-sub-groups to get available values. Maps to the issue_category argument of core-fill-support-ticket.
+        - name: problem_concentration
+          description: The problem concentration (sub-group) within the issue category. If omitted (along with issue_category), all combinations are fetched. Use core-get-sme-areas-and-sub-groups to get available values. Maps to the problem_concentration argument of core-fill-support-ticket.
+      outputs:
+        - contextPath: Core.Questionnaire.issue_category
+          description: The issue category (SME area) this questionnaire item belongs to. Maps to the issue_category argument of core-fill-support-ticket.
+          type: String
+        - contextPath: Core.Questionnaire.problem_concentration
+          description: The problem concentration (sub-group) this questionnaire item belongs to. Maps to the problem_concentration argument of core-fill-support-ticket.
+          type: String
+        - contextPath: Core.Questionnaire.key
+          description: The unique key identifier for the questionnaire item.
+          type: String
+        - contextPath: Core.Questionnaire.label
+          description: The display label or question text.
+          type: String
+        - contextPath: Core.Questionnaire.required
+          description: Whether the questionnaire item is required.
+          type: Boolean
+        - contextPath: Core.Questionnaire.type
+          description: The input type of the questionnaire item (e.g., text, file).
+          type: String
+        - contextPath: Core.Questionnaire.questionType
+          description: The type of questionnaire item (e.g., question, log).
+          type: String
+    - name: core-get-support-ticket-taxonomy
+      description: Retrieves the complete support ticket taxonomy in a single call. Fetches all SME areas and sub-groups, then iterates over every combination to retrieve the full questionnaire catalog including questions and log upload fields.
+      arguments: []
+      outputs:
+        - contextPath: Core.SupportTicketTaxonomy.issue_category
+          description: The issue category (SME area). Maps to the issue_category argument of core-fill-support-ticket.
+          type: String
+        - contextPath: Core.SupportTicketTaxonomy.problem_concentrations.problem_concentration
+          description: The problem concentration (sub-group) within the issue category. Maps to the problem_concentration argument of core-fill-support-ticket.
+          type: String
+        - contextPath: Core.SupportTicketTaxonomy.problem_concentrations.questions.key
+          description: The unique key identifier for the questionnaire item.
+          type: String
+        - contextPath: Core.SupportTicketTaxonomy.problem_concentrations.questions.label
+          description: The display label or question text.
+          type: String
+        - contextPath: Core.SupportTicketTaxonomy.problem_concentrations.questions.required
+          description: Whether the questionnaire item is required.
+          type: Boolean
+        - contextPath: Core.SupportTicketTaxonomy.problem_concentrations.questions.type
+          description: The input type of the questionnaire item (e.g., text, file).
+          type: String
+        - contextPath: Core.SupportTicketTaxonomy.problem_concentrations.questions.questionType
+          description: The type of questionnaire item (e.g., question, log).
           type: String
   runonce: false
   script: "-"
