@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta, timezone
 import time
 from typing import Any, Literal, TypeAlias, TypedDict
 
@@ -19,7 +19,7 @@ NZ_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
 
 MAX_PAGE_SIZE = 100
-DEFAULT_MAX_FETCH = 2_000
+DEFAULT_MAX_FETCH = 200
 DEFAULT_FIRST_FETCH = "7 days"
 
 AUTH_ENDPOINT = "v1/auth"
@@ -139,7 +139,8 @@ class LastRun(BaseModel):
 
 
 @dataclass(frozen=True)
-class UnauthenticatedError(Exception): ...
+class UnauthenticatedError(Exception):
+    message: str = "Authentication failed: invalid or expired API key"
 
 
 @dataclass(frozen=True)
@@ -173,7 +174,6 @@ class Client(BaseClient):
         self._api_key: str = api_key
         self._jwt: str | None = None
         self._expiry: int = 0
-        self._session: requests.Session = requests.Session()
         self.load_integration_context()
 
     def load_integration_context(self) -> None:
@@ -195,7 +195,7 @@ class Client(BaseClient):
 
         content = Token.model_validate_json(response.content)
         self._jwt = content.token
-        self._expiry = now + 3600  # 1 hr
+        self._expiry = now + 3600 - 60  # 1 hr minus 60s buffer to prevent race conditions
         _ = set_integration_context({"jwt": self._jwt, "expiry": self._expiry})
 
     def _graphql_request(self, query: str, variables: dict[str, Any]) -> requests.Response:
@@ -298,7 +298,7 @@ def fetch_all_weaknesses_pages(
 
 
 def _test_module(client: Client) -> Literal["ok"]:
-    """Tests API connectivity and authentication'
+    """Tests API connectivity and authentication.
 
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
@@ -306,7 +306,7 @@ def _test_module(client: Client) -> Literal["ok"]:
      exceptions if something goes wrong.
 
     Args:
-        Client: client to use
+        client: client to use
 
     Returns:
         'ok' if test passed, anything else will fail the test.
@@ -358,7 +358,7 @@ def fetch_incidents(
     elif first_fetch_time:
         since_date = first_fetch_time.strftime(NZ_DATE_FORMAT)
     else:
-        since_date = (datetime.now(UTC) - timedelta(days=7)).strftime(NZ_DATE_FORMAT)
+        since_date = (datetime.now(timezone.utc) - timedelta(days=7)).strftime(NZ_DATE_FORMAT)
 
     demisto.debug(f"Fetching weaknesses since {since_date}")
 
@@ -368,10 +368,17 @@ def fetch_incidents(
         max_fetch=max_fetch,
     )
 
+    pre_dedup_count = len(weaknesses)
     weaknesses = dedup_by_ids(weaknesses, last_run.last_ids)
-    demisto.debug(f"After deduplication: {len(weaknesses)} weaknesses")
+    demisto.debug(f"After deduplication: {len(weaknesses)} weaknesses (filtered {pre_dedup_count - len(weaknesses)})")
 
     if not weaknesses:
+        if pre_dedup_count > 0 and last_run.last_fetch_date:
+            # All results were duplicates — advance timestamp by 1s to prevent infinite loop
+            advanced = datetime.strptime(last_run.last_fetch_date, NZ_DATE_FORMAT) + timedelta(seconds=1)
+            next_run = LastRun(last_fetch_date=advanced.strftime(NZ_DATE_FORMAT), last_ids=[])
+            demisto.debug(f"All results deduped; advancing fetch date to {next_run.last_fetch_date}")
+            return [], next_run
         return [], last_run
 
     incidents = [w.to_incident() for w in weaknesses]

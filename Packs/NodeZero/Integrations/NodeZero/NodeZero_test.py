@@ -392,9 +392,9 @@ class TestFetchIncidents:
 
         # Should return no incidents since the only one was already fetched
         assert len(incidents) == 0
-        # State should remain unchanged
-        assert next_run.last_fetch_date == "2024-01-15T10:30:00"
-        assert next_run.last_ids == ["test-uuid-123"]
+        # Timestamp should advance by 1s to prevent infinite loop; last_ids cleared
+        assert next_run.last_fetch_date == "2024-01-15T10:30:01"
+        assert next_run.last_ids == []
 
     @patch("NodeZero.demisto")
     def test_fetch_incidents_tracks_ids_at_same_timestamp(self, mock_demisto, requests_mock):
