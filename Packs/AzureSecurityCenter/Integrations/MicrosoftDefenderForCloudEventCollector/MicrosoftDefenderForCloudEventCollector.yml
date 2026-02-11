@@ -1,5 +1,8 @@
 category: Analytics & SIEM
 provider: Microsoft
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Microsoft Defender for Cloud Event Collector
   version: -1
