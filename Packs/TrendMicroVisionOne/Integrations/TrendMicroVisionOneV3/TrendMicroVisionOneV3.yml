@@ -4,7 +4,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Trend Micro Vision One V3
+  id: TrendAI Vision One V3
   version: -1
 configuration:
 - additionalinfo: The base url for the TrendAI Vision One™ API
@@ -106,7 +106,7 @@ description: TrendAI Vision One™ is a purpose-built threat defense platform th
 display: TrendAI Vision One™ v3
 defaultmapperin: Trend Micro Vision One V3 XDR - Incoming Mapper
 defaultmapperout: Trend Micro Vision One V3 XDR - Outgoing Mapper
-name: TrendAI Vision One™ One V3
+name: TrendAI Vision One V3
 script:
   commands:
   - arguments:
