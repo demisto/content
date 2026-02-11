@@ -3612,7 +3612,7 @@ tasks:
       - "109"
     scriptarguments:
       group_name:
-        simple: tpbgroup
+        simple: tpbassetgroup
       group_type:
         simple: Dynamic
       membership_predicate_json:

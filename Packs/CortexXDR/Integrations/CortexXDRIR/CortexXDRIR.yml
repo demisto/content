@@ -4196,7 +4196,641 @@ script:
       required: true
     description: Deletes an automation playbook.
     name: xdr-automation-playbook-delete
-  dockerimage: demisto/python3:3.12.12.5490952
+  - arguments:
+    - description: The BIOC name to filter by. Can filter by only one name at a time.
+      name: name
+    - auto: PREDEFINED
+      description: 'The BIOC severity to filter by.'
+      name: severity
+      predefined:
+      - info
+      - low
+      - medium
+      - high
+      - critical
+    - auto: PREDEFINED
+      description: 'The BIOC type to filter by.'
+      name: type
+      predefined:
+      - other
+      - persistence
+      - evasion
+      - tampering
+      - file_type_obfuscation
+      - privilege_escalation
+      - credential_access
+      - lateral_movement
+      - execution
+      - collection
+      - exfiltration
+      - infiltration
+      - dropper
+      - file_privilege_manipulation
+      - reconnaissance
+      - discovery
+    - auto: PREDEFINED
+      description: 'Whether the BIOC is XQL.'
+      name: is_xql
+      predefined:
+      - 'true'
+      - 'false'
+    - description: 'The BIOC comment to filter by.'
+      name: comment
+    - auto: PREDEFINED
+      description: 'The BIOC status to filter by. Options are enabled or disabled.'
+      name: status
+      predefined:
+      - enabled
+      - disabled
+    - description: 'The BIOC indicator to filter by.'
+      name: indicator
+    - description: "The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']."
+      isArray: true
+      name: mitre_technique_id_and_name
+    - description: "The MITRE tactic ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']."
+      isArray: true
+      name: mitre_tactic_id_and_name
+    - auto: PREDEFINED
+      description: Whether to return extended data.
+      name: extra_data
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Maximum number of results to return.
+      name: limit
+    - description: Page size.
+      name: page_size
+    - description: Page number.
+      name: page
+    description: Returns a list of BIOCs.
+    name: xdr-bioc-list
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.BIOC.rule_id
+      description: BIOC rule ID.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.BIOC.name
+      description: BIOC name.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.BIOC.type
+      description: BIOC type.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.BIOC.severity
+      description: BIOC severity.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.BIOC.status
+      description: BIOC status.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.BIOC.is_xql
+      description: Whether the BIOC is XQL.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.BIOC.comment
+      description: The BIOC comment.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.BIOC.indicator
+      description: The BIOC indicator.
+      type: String
+  - arguments:
+    - description: The BIOC name.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      description: The BIOC severity.
+      name: severity
+      required: true
+      predefined:
+      - info
+      - low
+      - medium
+      - high
+      - critical
+    - auto: PREDEFINED
+      description: The BIOC type.
+      name: type
+      predefined:
+      - other
+      - persistence
+      - evasion
+      - tampering
+      - file_type_obfuscation
+      - privilege_escalation
+      - credential_access
+      - lateral_movement
+      - execution
+      - collection
+      - exfiltration
+      - infiltration
+      - dropper
+      - file_privilege_manipulation
+      - reconnaissance
+      - discovery
+    - auto: PREDEFINED
+      description: Whether the new BIOC is XQL.
+      name: is_xql
+      predefined:
+      - 'true'
+      - 'false'
+    - description: The BIOC comment.
+      name: comment
+    - auto: PREDEFINED
+      description: The BIOC status.
+      name: status
+      predefined:
+      - enabled
+      - disabled
+    - description: |-
+        The BIOC indicator,
+        for example: '{\"runOnCGO\":true,\"investigationType\":\"FILE_EVENT\",\"investigation\":{\"FILE_EVENT\":{\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"action_file_name\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"testfile.exe\"}]}}}}'.
+        For more information, refer to the documentation https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs.
+      isArray: true
+      name: indicator
+      required: true
+    - description: "The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']."
+      isArray: true
+      name: mitre_technique_id_and_name
+    - description: "The MITRE tactic ID and name. Must be in format 'ID - Name', for example: ['TA0001 - Initial Access']."
+      isArray: true
+      name: mitre_tactic_id_and_name
+    description: Creates a new BIOC.
+    name: xdr-bioc-create
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.BIOC.rule_id
+      description: BIOC ID.
+      type: String
+  - arguments:
+    - description: BIOC rule ID.
+      name: rule_id
+      required: true
+    - description: BIOC name.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      description: BIOC severity.
+      name: severity
+      required: true
+      predefined:
+      - info
+      - low
+      - medium
+      - high
+      - critical
+    - auto: PREDEFINED
+      description: BIOC type.
+      name: type
+      predefined:
+      - other
+      - persistence
+      - evasion
+      - tampering
+      - file_type_obfuscation
+      - privilege_escalation
+      - credential_access
+      - lateral_movement
+      - execution
+      - collection
+      - exfiltration
+      - infiltration
+      - dropper
+      - file_privilege_manipulation
+      - reconnaissance
+      - discovery
+    - auto: PREDEFINED
+      description: Whether the BIOC is XQL.
+      name: is_xql
+      predefined:
+      - 'true'
+      - 'false'
+    - description: BIOC comment.
+      name: comment
+    - auto: PREDEFINED
+      description: BIOC status.
+      name: status
+      predefined:
+      - enabled
+      - disabled
+    - description: |-
+        The BIOC indicator,
+        for example: '{\"runOnCGO\":true,\"investigationType\":\"FILE_EVENT\",\"investigation\":{\"FILE_EVENT\":{\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"action_file_name\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"testfile.exe\"}]}}}}'.
+        For more information, refer to the documentation https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs.
+      isArray: true
+      name: indicator
+      required: true
+    - description: "The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']."
+      isArray: true
+      name: mitre_technique_id_and_name
+    - description: "The MITRE tactic ID and name. Must be in format 'ID - Name', for example: ['TA0001 - Initial Access']."
+      isArray: true
+      name: mitre_tactic_id_and_name
+    description: Updates an existing BIOC.
+    name: xdr-bioc-update
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.BIOC.rule_id
+      description: BIOC ID.
+      type: String
+  - arguments:
+    - description: BIOC name.
+      name: name
+    - auto: PREDEFINED
+      description: BIOC severity.
+      name: severity
+      predefined:
+      - info
+      - low
+      - medium
+      - high
+      - critical
+    - auto: PREDEFINED
+      description: BIOC type.
+      name: type
+      predefined:
+      - other
+      - persistence
+      - evasion
+      - tampering
+      - file_type_obfuscation
+      - privilege_escalation
+      - credential_access
+      - lateral_movement
+      - execution
+      - collection
+      - exfiltration
+      - infiltration
+      - dropper
+      - file_privilege_manipulation
+      - reconnaissance
+      - discovery
+    - auto: PREDEFINED
+      description: Whether the BIOC is XQL.
+      name: is_xql
+      predefined:
+      - 'true'
+      - 'false'
+    - description: BIOC comment.
+      name: comment
+    - description: BIOC indicator.
+      isArray: true
+      name: indicator
+    - description: "The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']."
+      isArray: true
+      name: mitre_technique_id_and_name
+    - description: "The MITRE tactic ID and name. Must be in format 'ID - Name', for example: ['TA0001 - Initial Access']."
+      isArray: true
+      name: mitre_tactic_id_and_name
+    description: Deletes a BIOC.
+    name: xdr-bioc-delete
+  - arguments:
+    - description: Correlation rule name.
+      name: name
+    - auto: PREDEFINED
+      description: Correlation rule severity.
+      name: severity
+      predefined:
+      - info
+      - low
+      - medium
+      - high
+      - critical
+    - description: Correlation rule XQL query.
+      name: xql_query
+    - auto: PREDEFINED
+      description: Whether the correlation rule is XQL.
+      name: is_xql
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Correlation rule dataset.
+      name: dataset
+    - description: Alert name.
+      name: alert_name
+    - description: Alert category.
+      name: alert_category
+    - description: Alert fields. Can be a string or a dictionary.
+      name: alert_fields
+    - description: Alert domain.
+      name: alert_domain
+    - description: Filter JSON.
+      name: filter_json
+    - auto: PREDEFINED
+      description: Whether to return extended view.
+      name: extra_data
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Maximum number of results to return.
+      name: limit
+    - description: Page size.
+      name: page_size
+    - description: Page number.
+      name: page
+    description: Returns a list of correlation rules.
+    name: xdr-correlation-rule-list
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.suppression_duration
+      description: The duration for which alerts are suppressed.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.alert_category
+      description: The category of the alert (e.g., DROPPER).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.mitre_defs
+      description: MITRE ATT&CK definitions associated with the rule.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.simple_schedule
+      description: The frequency at which the rule runs in a human-readable format.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.mapping_strategy
+      description: The strategy used for field mapping.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.suppression_fields
+      description: Fields used to determine alert suppression.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.alert_domain
+      description: The security domain the alert belongs to.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.crontab
+      description: The cron expression for the rule execution schedule.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.search_window
+      description: The time window the query searches across.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.user_defined_severity
+      description: Custom severity level defined by the user.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.drilldown_query_timeframe
+      description: The timeframe used for drilldown queries.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.user_defined_category
+      description: Custom category defined by the user.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.lookup_mapping
+      description: Mapping details for lookups.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.execution_mode
+      description: "How the rule is executed, for example: SCHEDULED."
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.name
+      description: The name of the correlation rule.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.is_enabled
+      description: Whether the correlation rule is currently active.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.investigation_query_link
+      description: The query used for further investigation.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.alert_name
+      description: The specific name assigned to the generated alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.suppression_enabled
+      description: Whether suppression is enabled for this rule.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.action
+      description: "The action taken when the rule triggers, for example: ALERTS."
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.dataset
+      description: The dataset the rule queries.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.alert_description
+      description: Detailed description of the generated alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.timezone
+      description: The timezone used for the rule schedule.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.xql_query
+      description: The XQL query string executed by the rule.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.alert_fields
+      description: Specific fields included in the alert output.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.description
+      description: General description of the correlation rule.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.alert_type
+      description: The type of alert generated.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.severity
+      description: The severity level of the rule.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.rule_id
+      description: The unique identifier for the correlation rule.
+      type: Number
+  - arguments:
+    - description: The correlation rule name.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      description: 'The correlation rule severity. Example: severity=low.'
+      name: severity
+      required: true
+      predefined:
+      - info
+      - low
+      - medium
+      - high
+      - critical
+    - description: 'The correlation rule XQL query. Example: xql_query="dataset = xdr_data | limit 1".'
+      name: xql_query
+      required: true
+    - auto: PREDEFINED
+      description: 'Whether the rule is enabled. Example: is_enabled=true.'
+      name: is_enabled
+      required: true
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: 'The alert category. Example: alert_category=dropper.'
+      name: alert_category
+      required: true
+      predefined:
+      - other
+      - persistence
+      - evasion
+      - tampering
+      - file_type_obfuscation
+      - privilege_escalation
+      - credential_access
+      - lateral_movement
+      - execution
+      - collection
+      - exfiltration
+      - infiltration
+      - dropper
+      - file_privilege_manipulation
+      - reconnaissance
+      - discovery
+    - auto: PREDEFINED
+      description: 'The rule execution mode. Example: execution_mode=scheduled.'
+      name: execution_mode
+      required: true
+      predefined:
+      - scheduled
+      - real_time
+    - description: 'The correlation rule timezone. Example: timezone="Asia/Jerusalem".'
+      name: timezone
+      required: true
+    - auto: PREDEFINED
+      description: 'The rule mapping strategy. Example: mapping_strategy=auto.'
+      name: mapping_strategy
+      required: true
+      predefined:
+      - auto
+      - custom
+    - description: The correlation rule description.
+      name: description
+    - description: The alert name.
+      name: alert_name
+    - description: The alert description.
+      name: alert_description
+    - description: Alert fields (string or dictionary).
+      name: alert_fields
+    - description: 'The search window timeframe. Example: search_window="1 hours".'
+      name: search_window
+    - description: 'The correlation rule schedule. Example: schedule="10 minutes".'
+      name: schedule
+    - description: 'Linux scheduling for the rule. Example: schedule_linux="*/10 * * * *".'
+      name: schedule_linux
+    - auto: PREDEFINED
+      description: Whether suppression is enabled.
+      name: suppression_enabled
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Duration of correlation rule suppression.
+      name: suppression_duration
+    - description: Suppression fields.
+      name: suppression_fields
+    - description: 'The correlation rule dataset. Example: dataset=alerts.'
+      name: dataset
+      required: true
+    - description: User-defined severity.
+      name: user_defined_severity
+    - description: User-defined category.
+      name: user_defined_category
+    - description: "MITRE definitions. For example: '{\"TA0005 - Defense Evasion\": [\"T1014 - Rootkit\"]}'."
+      name: mitre_defs_json
+    - description: Investigation query link.
+      name: investigation_query_link
+    - description: 'The drilldown query timeframe. Example: drilldown_query_timeframe="ALERT".'
+      name: drilldown_query_timeframe
+    description: Creates a new correlation rule.
+    name: xdr-correlation-rule-create
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.rule_id
+      description: Correlation rule ID.
+      type: String
+  - arguments:
+    - description: Correlation rule ID.
+      name: rule_id
+      required: true
+    - description: The correlation rule name.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      description: 'The correlation rule severity. Example: severity=low.'
+      name: severity
+      required: true
+      predefined:
+      - info
+      - low
+      - medium
+      - high
+      - critical
+    - description: 'The correlation rule XQL query. Example: xql_query="dataset = xdr_data | limit 1".'
+      name: xql_query
+      required: true
+    - auto: PREDEFINED
+      description: 'Whether the rule is enabled. Example: is_enabled=true.'
+      name: is_enabled
+      required: true
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: 'The alert category. Example: alert_category=dropper.'
+      name: alert_category
+      required: true
+      predefined:
+      - other
+      - persistence
+      - evasion
+      - tampering
+      - file_type_obfuscation
+      - privilege_escalation
+      - credential_access
+      - lateral_movement
+      - execution
+      - collection
+      - exfiltration
+      - infiltration
+      - dropper
+      - file_privilege_manipulation
+      - reconnaissance
+      - discovery
+    - description: 'The rule execution mode. Example: execution_mode=scheduled.'
+      name: execution_mode
+      required: true
+      predefined:
+      - scheduled
+      - real_time
+    - description: 'The correlation rule timezone. Example: timezone="Asia/Jerusalem".'
+      name: timezone
+      required: true
+    - auto: PREDEFINED
+      description: 'The rule mapping strategy. Example: mapping_strategy=auto.'
+      name: mapping_strategy
+      required: true
+      predefined:
+      - auto
+      - custom
+    - description: The correlation rule description.
+      name: description
+    - description: The alert name.
+      name: alert_name
+    - description: The alert description.
+      name: alert_description
+    - description: Alert fields (string or dictionary).
+      name: alert_fields
+    - description: 'The search window timeframe. Example: search_window="1 hours".'
+      name: search_window
+    - description: 'The correlation rule schedule. Example: schedule="10 minutes".'
+      name: schedule
+    - description: 'Linux scheduling for the rule. Example: schedule_linux="*/10 * * * *".'
+      name: schedule_linux
+    - auto: PREDEFINED
+      description: Whether suppression is enabled.
+      name: suppression_enabled
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Duration of correlation rule suppression.
+      name: suppression_duration
+    - description: Suppression fields.
+      name: suppression_fields
+    - description: 'The correlation rule dataset. Example: dataset=alerts.'
+      name: dataset
+      required: true
+    - description: User-defined severity.
+      name: user_defined_severity
+    - description: User-defined category.
+      name: user_defined_category
+    - description: "MITRE definitions. For example: '{\"TA0005 - Defense Evasion\": [\"T1014 - Rootkit\"]}'."
+      name: mitre_defs_json
+    - description: Investigation query link.
+      name: investigation_query_link
+    - description: 'The drilldown query timeframe. Example: drilldown_query_timeframe="ALERT".'
+      name: drilldown_query_timeframe
+    description: Updates an existing correlation rule.
+    name: xdr-correlation-rule-update
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.rule_id
+      description: Correlation rule ID.
+      type: String
+  - arguments:
+    - description: Correlation rule ID.
+      isArray: true
+      name: rule_id
+      required: true
+    description: Deletes correlation rules.
+    name: xdr-correlation-rule-delete
+  dockerimage: demisto/python3:3.12.12.7019815
   isfetch: true
   isfetch:xpanse: false
   script: ''
