@@ -3652,7 +3652,7 @@ tasks:
     scriptarguments:
       filter_json:
         simple: '{"AND": [{"SEARCH_FIELD": "XDM.ASSET_GROUP.NAME", "SEARCH_TYPE":
-          "EQ", "SEARCH_VALUE": "tpbgroup"}]}'
+          "EQ", "SEARCH_VALUE": "tpbassetgroup"}]}'
     separatecontext: false
     continueonerrortype: ""
     view: |-
