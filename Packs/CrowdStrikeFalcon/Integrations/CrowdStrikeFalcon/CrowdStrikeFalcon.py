@@ -6350,8 +6350,6 @@ def initiate_ngsiem_search_request(repository: str, body: dict) -> dict:
     """
     Initiate an NGSIEM search query job.
 
-    POST /humio/api/v1/repositories/{repository}/queryjobs
-
     Args:
         repository: The repository to search (e.g., 'search-all').
         body: The request body containing query parameters.
@@ -6371,8 +6369,6 @@ def initiate_ngsiem_search_request(repository: str, body: dict) -> dict:
 def get_ngsiem_search_results_request(repository: str, job_id: str) -> dict:
     """
     Get the results of an NGSIEM search query job.
-
-    GET /humio/api/v1/repositories/{repository}/queryjobs/{job_id}
 
     Args:
         repository: The repository that was searched.
@@ -6403,10 +6399,7 @@ def clean_ngsiem_rawstring_field(events: list[dict]) -> list[dict]:
                 event["@rawstring"] = decoded
             except json.JSONDecodeError:
                 fixed = raw.replace("\\&", "&")
-                try:
-                    event["@rawstring"] = json.loads(fixed)
-                except Exception:
-                    event["@rawstring"] = raw
+                event["@rawstring"] = json.loads(fixed)
     return events
 
 
@@ -6430,17 +6423,33 @@ def build_ngsiem_query_with_limit(query: str, limit: int) -> str:
 
 
 def arg_to_ngsiem_time_spec(val: Any, arg_name: Optional[str] = None) -> Optional[Union[int, str]]:
+    """
+    Normalize an NGSIEM time argument. CrowdStrike API supports both numeric timestamps and relative.
+    Here we add the support of datetime strings.
+    
+    Converts:
+    - None / "" -> None
+    - Numeric timestamps (int/float/digit-string):
+        * < 2,000,000,000 treated as seconds -> ms
+        * otherwise treated as ms
+    - ISO-8601 datetime strings (e.g. "2023-11-14T00:00:00Z") -> epoch ms
+    - Otherwise returns the string as-is (relative/LogScale spec like "24h", "now").
+
+    Args:
+        val: Raw argument value.
+        arg_name: Optional name forwarded to arg_to_datetime for error context.
+
+    Returns:
+        None, an epoch-ms int, or a relative time spec string.
+    """
     if val is None or val == "":
         return None
 
-    # numeric timestamps: seconds or ms
     if isinstance(val, int | float) or (isinstance(val, str) and val.strip().isdigit()):
         num = float(val)
         return int(num * 1000) if num < 2_000_000_000 else int(num)
 
     s = str(val).strip()
-
-    # ISO 8601 absolute only: parse with stdlib
     iso = s.replace("Z", "+00:00")  # fromisoformat doesn't accept Z
     try:
         datetime.fromisoformat(iso)  # validates absolute date-ish string

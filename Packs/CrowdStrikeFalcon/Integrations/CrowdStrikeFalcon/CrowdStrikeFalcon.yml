@@ -5394,15 +5394,15 @@ script:
       required: true
     - name: start
       description: |
-        The start time (event timestamp) for the search window.
-        Note: This endpoint requires the time interval length to be greater than 0, so end must be strictly greater than start.
-        If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (intersection/AND), which can reduce results.
+        The start of the search window, based on the event timestamp.
+        Note: end must be strictly greater than start.
+        If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).
         Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"), and epoch timestamps in milliseconds (e.g., 1767225600000).
     - name: end
       description: |
-        The end time (event timestamp) for the search window.
-        Note: This endpoint requires the time interval length to be greater than 0, so end must be strictly greater than start.
-        If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (intersection/AND), which can reduce results.
+        The end of the search window, based on the event timestamp.
+        Note: end must be strictly greater than start.
+        If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).
         Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"), and epoch timestamps in milliseconds (e.g., 1767225600000).
     - name: around_event_id
       description: The ID of the event to search around.
@@ -5414,15 +5414,15 @@ script:
       description: Timestamp for around search. Required when around_event_id is used.
     - name: ingest_start
       description: |
-        The start time (ingesttimestamp) for the ingest-time search window.
-        Note: This endpoint requires the time interval length to be greater than 0, so ingest_end must be strictly greater than ingest_start.
-        If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (intersection/AND), which can reduce results.
+        The start of the search window, based on the event ingesttimestamp.
+        Note: ingest_end must be strictly greater than ingest_start.
+        If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).
         Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"), and epoch timestamps in milliseconds (e.g., 1767225600000).
     - name: ingest_end
       description: |
-        The end time (ingesttimestamp) for the ingest-time search window.
-        Note: This endpoint requires the time interval length to be greater than 0, so ingest_end must be strictly greater than ingest_start.
-        If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (intersection/AND), which can reduce results.
+        The end of the search window, based on the event ingesttimestamp.
+        Note: ingest_end must be strictly greater than ingest_start.
+        If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).
         Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"), and epoch timestamps in milliseconds (e.g., 1767225600000).
     - name: use_ingest_time
       description: When true, the query uses ingestStart/ingestEnd instead of start/end. If use_ingest_time is false or not set, start/end are used (even if ingest times are also provided).
@@ -5454,10 +5454,13 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: 'Search NGSIEM historical events. Requires NGSIEM scope with read/write permissions. Query examples: host.hostname = DC1ENV11ADC02, LogonDomain = ENV11, UserName = Administrator, SHA256HashData = <hash>, MD5HashData = <hash>.'
+    description: 'Search NGSIEM historical events. Requires NGSIEM scope with read/write permissions.'
     name: cs-falcon-search-ngsiem-events
     polling: true
     outputs:
+    - contextPath: CrowdStrike.NGSiemEvent
+      description: The list of all events returned from the search.
+      type: Array
     - contextPath: CrowdStrike.NGSiemEvent.timestamp
       description: Event timestamp.
       type: String

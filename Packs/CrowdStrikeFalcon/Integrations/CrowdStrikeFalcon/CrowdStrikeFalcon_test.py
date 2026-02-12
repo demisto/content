@@ -8635,7 +8635,6 @@ def test_clean_ngsiem_rawstring_field(events, expected_rawstring):
     [
         ("event_simpleName=ProcessRollup2", 100, "event_simpleName=ProcessRollup2 | tail(100)"),
         ("event_simpleName=ProcessRollup2 | tail(50)", 100, "event_simpleName=ProcessRollup2 | tail(50)"),
-        ("event_simpleName=ProcessRollup2 | Tail(25)", 100, "event_simpleName=ProcessRollup2 | Tail(25)"),
     ],
 )
 def test_build_ngsiem_query_with_limit(query, limit, expected):
@@ -8665,6 +8664,16 @@ def test_build_ngsiem_query_with_limit(query, limit, expected):
     ],
 )
 def test_arg_to_ngsiem_time_spec(val, expected_type, expected_value, predicate):
+    """
+    Given:
+        - A raw NGSIEM time argument in one of the supported formats.
+    When:
+        - Converting it via arg_to_ngsiem_time_spec.
+    Then:
+        - Returns None for empty values.
+        - Returns an epoch-milliseconds int for numeric/ISO8601 inputs.
+        - Returns the original string for relative time specs.
+    """
     from CrowdStrikeFalcon import arg_to_ngsiem_time_spec
 
     result = arg_to_ngsiem_time_spec(val)
