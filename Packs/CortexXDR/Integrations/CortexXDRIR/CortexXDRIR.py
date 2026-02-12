@@ -687,9 +687,10 @@ class Client(CoreClient):
         """
         res = self._http_request(
             method="GET",
-            url_suffix=f"/uvem/v1/vulnerabilities/{vulnerability_id}",
+            url_suffix=f"../uvem/v1/vulnerabilities",  # we want to remove the v1 from the endpoint so we use ..
+            params={"vulnerabilityId": vulnerability_id}
         )
-        return res.get("reply", {})
+        return res
 
     def run_healthcheck(self):
         """
@@ -700,7 +701,7 @@ class Client(CoreClient):
             method="GET",
             url_suffix="/healthcheck",
         )
-        return res.get("reply", {})
+        return res
 
     def get_triage_presets(self):
         """
@@ -708,10 +709,11 @@ class Client(CoreClient):
         API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-triage-presets
         """
         res = self._http_request(
-            method="GET",
+            method="POST",
             url_suffix="/get_triage_presets",
+            json_data={"request_data": {}}  # required to be empty
         )
-        return res.get("reply", {}).get("triage_presets", [])
+        return res.get("triage_presets", [])
 
     def triage_endpoint(self, request_data: dict):
         """
@@ -721,9 +723,7 @@ class Client(CoreClient):
         res = self._http_request(
             method="POST",
             url_suffix="/triage_endpoint",
-            json_data={"request_data": request_data},
-            headers=self.headers,
-            timeout=self.timeout,
+            json_data=request_data,
         )
         return res.get("reply", {})
 
@@ -2410,13 +2410,15 @@ def get_vulnerability_details_command(client: Client, args: Dict) -> CommandResu
     vulnerability_id = args.get("vulnerability_id")
     response = client.get_vulnerability_details(vulnerability_id)
 
+    hr_data = {"Vulnerability ID": response.get("vulnerabilityID"),
+               "Description": response.get("description")
+               }
+    demisto.debug(f"Got the response {response}")
     readable_output = tableToMarkdown(
         name="Vulnerability Details",
-        t=response,
-        headers=["vulnerabilityID", "description"],
-        headerTransform=string_to_table_header,
+        t=hr_data,
+        headers=["Vulnerability ID", "Description"],
         removeNull=True,
-        is_auto_json_transform=True,
     )
 
     return CommandResults(
@@ -2438,10 +2440,11 @@ def healthcheck_run_command(client: Client) -> CommandResults:
         CommandResults: The command results.
     """
     response = client.run_healthcheck()
-    status = response.get("status", "unknown") if isinstance(response, dict) else response
+    demisto.debug(f"Response for health check {response}")
+    status = response.get("status", "unknown")
 
     return CommandResults(
-        readable_output=f"**Cortex health status: {status}**",
+        readable_output=f"**Cortex XDR health status: {status}**",
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.HealthStatus",
         outputs=response,
         raw_response=response,
@@ -2457,14 +2460,13 @@ def endpoint_triage_preset_list_command(client: Client) -> CommandResults:
     Returns:
         CommandResults: The command results.
     """
-    presets = client.get_triage_presets()
-
+    presets: list = client.get_triage_presets()
+    demisto.debug(f"Got the presets {presets}")
     readable_output = tableToMarkdown(
         name="Endpoint Triage Presets",
         t=presets,
         headerTransform=string_to_table_header,
         removeNull=True,
-        is_auto_json_transform=True,
     )
 
     return CommandResults(
@@ -2492,14 +2494,13 @@ def endpoint_triage_command(client: Client, args: Dict) -> CommandResults:
     if collector_uuid:
         request_data["collector_uuid"] = collector_uuid
 
-    raw_response = client.triage_endpoint(request_data)
+    raw_response = client.triage_endpoint({"request_data": request_data})
 
     readable_output = tableToMarkdown(
         name="Endpoint Triage",
         t=raw_response,
         headerTransform=string_to_table_header,
         removeNull=True,
-        is_auto_json_transform=True,
     )
 
     return CommandResults(
