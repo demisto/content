@@ -6185,7 +6185,7 @@ class Lambda:
         return CommandResults(
             outputs=remove_empty_elements(outputs),
             raw_response=serialize_response_with_datetime_encoding(response),
-            outputs_prefix="AWS.Lambda.Layers",
+            outputs_prefix="AWS.Lambda.LayerVersions",
             outputs_key_field="LayerVersionArn",
             readable_output=readable_output,
         )

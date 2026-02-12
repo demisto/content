@@ -7796,8 +7796,8 @@ def test_lambda_list_layer_versions_command_with_pagination(mocker):
     assert call_kwargs["CompatibleArchitecture"] == "arm64"
 
     # Verify NextMarker is in context
-    assert "AWS.Lambda.Layers(true)" in result.outputs
-    assert result.outputs["AWS.Lambda.Layers(true)"]["LayerVersionsNextToken"] == "next-layer-token-456"
+    assert "AWS.Lambda.LayerVersions(true)" in result.outputs
+    assert result.outputs["AWS.Lambda.LayerVersions(true)"]["LayerVersionsNextToken"] == "next-layer-token-456"
 
 
 def test_lambda_list_layer_versions_command_no_versions(mocker):
@@ -7988,7 +7988,7 @@ def test_lambda_publish_layer_version_command_success_with_s3(mocker):
     assert call_kwargs["CompatibleArchitectures"] == ["x86_64"]
 
     # Verify outputs
-    assert result.outputs_prefix == "AWS.Lambda.Layers"
+    assert result.outputs_prefix == "AWS.Lambda.LayerVersions"
     assert result.outputs_key_field == "LayerVersionArn"
     assert result.outputs["LayerVersionArn"] == "arn:aws:lambda:us-east-1:123456789012:layer:my-layer:1"
     assert result.outputs["Version"] == 1
