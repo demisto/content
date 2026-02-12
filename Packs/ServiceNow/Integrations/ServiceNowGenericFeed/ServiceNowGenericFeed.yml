@@ -1,0 +1,172 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: NDIT-ServiceNow-IoC-Feed-Integration
+  version: -1
+configuration:
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  section: Collect
+  supportedModules: []
+  type: 15
+- additionalinfo: The default value is https://northdakota.service-now.com/
+  display: Server URL (e.g., https://api.xsoar-example.com)
+  name: url
+  required: true
+  section: Connect
+  supportedModules: []
+  type: 0
+- defaultvalue: "10"
+  display: Maximum number of alerts per fetch
+  name: max_fetch
+  required: false
+  section: Collect
+  supportedModules: []
+  type: 0
+- display: ""
+  displaypassword: API Key
+  hiddenusername: true
+  name: credentials
+  required: true
+  section: Connect
+  supportedModules: []
+  type: 9
+- additionalinfo: Set this to determine the HelloWorld score that will determine if an IP is malicious (0-100)
+  advanced: true
+  defaultvalue: "65"
+  display: Score threshold for IP reputation command
+  name: threshold_ip
+  required: false
+  section: Collect
+  supportedModules: []
+  type: 0
+- defaultvalue: low
+  display: Severity of alerts to fetch
+  name: severity
+  options:
+  - low
+  - medium
+  - high
+  - critical
+  required: true
+  section: Collect
+  supportedModules: []
+  type: 15
+- advanced: true
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  section: Connect
+  supportedModules: []
+  type: 8
+- advanced: true
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  section: Connect
+  supportedModules: []
+  type: 8
+- display: Fetch indicators
+  name: feed
+  required: false
+  supportedModules: []
+  type: 8
+- additionalinfo: Indicators from this integration instance will be marked with this verdict
+  display: Indicator Verdict
+  name: feedReputation
+  options:
+  - Unknown
+  - None
+  - Benign
+  - Good
+  - Suspicious
+  - Malicious
+  - Bad
+  required: false
+  supportedModules: []
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: F - Reliability cannot be judged
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  supportedModules: []
+  type: 15
+- defaultvalue: indicatorType
+  display: ""
+  name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  supportedModules: []
+  type: 17
+- defaultvalue: "20160"
+  display: ""
+  name: feedExpirationInterval
+  required: false
+  supportedModules: []
+  type: 1
+- defaultvalue: "240"
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  supportedModules: []
+  type: 19
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  supportedModules: []
+  type: 8
+- additionalinfo: The applied to the indicator when being forwarded into the TIM
+  display: Tags
+  name: feedTags
+  required: false
+  supportedModules: []
+  type: 0
+- additionalinfo: The API route of the requested information in ServiceNow
+  display: query_url
+  name: query_url
+  required: false
+  supportedModules: []
+  type: 0
+- additionalinfo: This field would be used to create the indicator object before inserting the indicator into the TIM
+  display: Indicator Field
+  name: indicator_field
+  required: false
+  supportedModules: []
+  type: 0
+description: This is a test integration for feed integration for extracting networking gear from SNOW
+display: ServiceNowGenericFeed
+name: ServiceNowGenericFeed
+script:
+  dockerimage: demisto/python3:3.12.8.3296088
+  feed: true
+  isFetchSamples: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+sectionorder:
+- Connect
+- Collect
