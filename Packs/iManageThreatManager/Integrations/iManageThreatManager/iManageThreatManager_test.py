@@ -9,9 +9,7 @@ from iManageThreatManager import (
     BEHAVIOR_ANALYTICS,
     ADDRESSABLE_ALERTS,
     DETECT_AND_PROTECT_ALERTS,
-    SOURCE_LOG_TYPE_BEHAVIOR,
-    SOURCE_LOG_TYPE_ADDRESSABLE,
-    SOURCE_LOG_TYPE_DETECT_PROTECT,
+    EVENT_TYPE_CONFIG,
 )
 from CommonServerPython import DemistoException
 
@@ -134,62 +132,66 @@ class TestAddFieldsToEvents:
     def test_add_fields_to_events_with_update_time(self):
         """
         Given:
-            - Events with update_time and source_log_type fields
+            - Events with update_time
+            - Source log type parameter
         When:
             - Calling add_fields_to_events
         Then:
             - Ensure _time and _source_log_type fields are added with correct format
         """
         events = [
-            {"update_time": 1609459200000, "id": "1", "source_log_type": "BehaviorAnalytics"},  # 2021-01-01 00:00:00 UTC
-            {"update_time": 1609545600000, "id": "2", "source_log_type": "AddressableAlerts"},  # 2021-01-02 00:00:00 UTC
+            {"update_time": 1609459200000, "id": "1"},  # 2021-01-01 00:00:00 UTC
+            {"update_time": 1609545600000, "id": "2"},  # 2021-01-02 00:00:00 UTC
         ]
-        add_fields_to_events(events)
+        add_fields_to_events(events, "BehaviorAnalytics")
         assert "_time" in events[0]
         assert "_time" in events[1]
         assert events[0]["_time"] == "2021-01-01T00:00:00Z"
         assert events[1]["_time"] == "2021-01-02T00:00:00Z"
         assert events[0]["_source_log_type"] == "BehaviorAnalytics"
-        assert events[1]["_source_log_type"] == "AddressableAlerts"
+        assert events[1]["_source_log_type"] == "BehaviorAnalytics"
 
     def test_add_fields_to_events_without_update_time(self):
         """
         Given:
-            - Events without update_time field but with source_log_type
+            - Events without update_time field
+            - Source log type parameter
         When:
             - Calling add_fields_to_events
         Then:
             - Ensure _time field is not added but _source_log_type is added
         """
-        events = [{"id": "1", "source_log_type": "BehaviorAnalytics"}]
-        add_fields_to_events(events)
+        events = [{"id": "1"}]
+        add_fields_to_events(events, "AddressableAlerts")
         # Event should not have _time or it should be None
         assert events[0].get("_time") is None
-        assert events[0]["_source_log_type"] == "BehaviorAnalytics"
+        assert events[0]["_source_log_type"] == "AddressableAlerts"
 
     def test_add_fields_to_events_empty_list(self):
         """
         Given:
             - Empty events list
+            - Source log type parameter
         When:
             - Calling add_fields_to_events
         Then:
             - Ensure no error is raised
         """
         events = []
-        add_fields_to_events(events)
+        add_fields_to_events(events, "BehaviorAnalytics")
         assert events == []
 
     def test_add_fields_to_events_none(self):
         """
         Given:
             - None as events
+            - Source log type parameter
         When:
             - Calling add_fields_to_events
         Then:
             - Ensure no error is raised
         """
-        add_fields_to_events(None)
+        add_fields_to_events(None, "BehaviorAnalytics")
 
 
 class TestClient:
@@ -229,78 +231,6 @@ class TestClient:
         assert token == "test_user_access_token"
         assert client._user_access_token == "test_user_access_token"
 
-    def test_get_behavior_analytics_alerts(self, client, requests_mock):
-        """
-        Given:
-            - Valid time range and parameters
-        When:
-            - Calling get_behavior_analytics_alerts
-        Then:
-            - Ensure alerts are returned
-        """
-        mock_response = {
-            "results": [
-                {"id": "1", "update_time": 1609459200000},
-                {"id": "2", "update_time": 1609545600000}
-            ]
-        }
-        requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
-        requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", json=mock_response)
-
-        alerts = client.get_behavior_analytics_alerts(
-            start_date=1609459200000,
-            end_date=1609545600000
-        )
-        assert len(alerts) == 2
-        assert alerts[0]["id"] == "1"
-
-    def test_get_addressable_alerts(self, client, requests_mock):
-        """
-        Given:
-            - Valid time range and parameters
-        When:
-            - Calling get_addressable_alerts
-        Then:
-            - Ensure alerts are returned
-        """
-        mock_response = {
-            "results": [
-                {"id": "3", "update_time": 1609459200000}
-            ]
-        }
-        requests_mock.post(f"{BASE_URL}/tm-api/v2/login", json={"access_token": "user_token"})
-        requests_mock.post(f"{BASE_URL}/tm-api/getAddressableAlerts", json=mock_response)
-
-        alerts = client.get_addressable_alerts(
-            start_date=1609459200000,
-            end_date=1609545600000
-        )
-        assert len(alerts) == 1
-        assert alerts[0]["id"] == "3"
-
-    def test_get_detect_and_protect_alerts(self, client, requests_mock):
-        """
-        Given:
-            - Valid time range and parameters
-        When:
-            - Calling get_detect_and_protect_alerts
-        Then:
-            - Ensure alerts are returned
-        """
-        mock_response = {
-            "results": [
-                {"id": "4", "update_time": 1609459200000}
-            ]
-        }
-        requests_mock.post(f"{BASE_URL}/tm-api/v2/login", json={"access_token": "user_token"})
-        requests_mock.post(f"{BASE_URL}/tm-api/getDetectAndProtectAlerts", json=mock_response)
-
-        alerts = client.get_detect_and_protect_alerts(
-            start_date=1609459200000,
-            end_date=1609545600000
-        )
-        assert len(alerts) == 1
-        assert alerts[0]["id"] == "4"
 
 
 class TestTestModuleCommand:
@@ -364,7 +294,7 @@ class TestGetEventsCommand:
         When:
             - Calling get_events_command
         Then:
-            - Ensure events are returned with correct source_log_type
+            - Ensure events are returned
         """
         mock_response = {
             "results": [
@@ -379,7 +309,7 @@ class TestGetEventsCommand:
             {"event_type": BEHAVIOR_ANALYTICS, "limit": "10"}
         )
         assert len(events) == 1
-        assert events[0]["source_log_type"] == SOURCE_LOG_TYPE_BEHAVIOR
+        assert events[0]["id"] == "1"
 
     def test_get_events_command_addressable_alerts(self, client, requests_mock):
         """
@@ -388,7 +318,7 @@ class TestGetEventsCommand:
         When:
             - Calling get_events_command
         Then:
-            - Ensure events are returned with correct source_log_type
+            - Ensure events are returned
         """
         mock_response = {
             "results": [
@@ -403,7 +333,7 @@ class TestGetEventsCommand:
             {"event_type": ADDRESSABLE_ALERTS, "limit": "10"}
         )
         assert len(events) == 1
-        assert events[0]["source_log_type"] == SOURCE_LOG_TYPE_ADDRESSABLE
+        assert events[0]["id"] == "2"
 
     def test_get_events_command_detect_and_protect(self, client, requests_mock):
         """
@@ -412,7 +342,7 @@ class TestGetEventsCommand:
         When:
             - Calling get_events_command
         Then:
-            - Ensure events are returned with correct source_log_type
+            - Ensure events are returned
         """
         mock_response = {
             "results": [
@@ -427,7 +357,7 @@ class TestGetEventsCommand:
             {"event_type": DETECT_AND_PROTECT_ALERTS, "limit": "10"}
         )
         assert len(events) == 1
-        assert events[0]["source_log_type"] == SOURCE_LOG_TYPE_DETECT_PROTECT
+        assert events[0]["id"] == "3"
 
 
 class TestFetchEventsCommand:
@@ -459,9 +389,9 @@ class TestFetchEventsCommand:
         )
 
         assert len(events) == 1
-        assert events[0]["source_log_type"] == SOURCE_LOG_TYPE_BEHAVIOR
-        assert "last_fetch_Behavior_Analytics_alerts" in next_run
-        assert next_run["last_fetch_Behavior_Analytics_alerts"] == 1609459200000
+        assert events[0]["_source_log_type"] == EVENT_TYPE_CONFIG[BEHAVIOR_ANALYTICS]["source_log_type"]
+        assert "last_fetch_BehaviorAnalytics" in next_run
+        assert next_run["last_fetch_BehaviorAnalytics"] == 1609459200000
 
     def test_fetch_events_multiple_types(self, client, requests_mock):
         """
@@ -488,8 +418,8 @@ class TestFetchEventsCommand:
         )
 
         assert len(events) == 2
-        assert events[0]["source_log_type"] == SOURCE_LOG_TYPE_BEHAVIOR
-        assert events[1]["source_log_type"] == SOURCE_LOG_TYPE_ADDRESSABLE
+        assert events[0]["_source_log_type"] == EVENT_TYPE_CONFIG[BEHAVIOR_ANALYTICS]["source_log_type"]
+        assert events[1]["_source_log_type"] == EVENT_TYPE_CONFIG[ADDRESSABLE_ALERTS]["source_log_type"]
 
     def test_fetch_events_no_new_events(self, client, requests_mock):
         """
@@ -504,7 +434,7 @@ class TestFetchEventsCommand:
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
         requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", json={"results": []})
 
-        last_run = {"last_fetch_Behavior_Analytics_alerts": 1609459200000}
+        last_run = {"last_fetch_BehaviorAnalytics": 1609459200000}
         next_run, events = fetch_events_command(
             client=client,
             last_run=last_run,
@@ -513,7 +443,7 @@ class TestFetchEventsCommand:
         )
 
         assert len(events) == 0
-        assert "last_fetch_Behavior_Analytics_alerts" in next_run
+        assert "last_fetch_BehaviorAnalytics" in next_run
 
     def test_fetch_events_with_error(self, client, requests_mock):
         """
@@ -527,7 +457,7 @@ class TestFetchEventsCommand:
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
         requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", status_code=500, text="Server Error")
 
-        last_run = {"last_fetch_Behavior_Analytics_alerts": 1609459200000}
+        last_run = {"last_fetch_BehaviorAnalytics": 1609459200000}
         next_run, events = fetch_events_command(
             client=client,
             last_run=last_run,
@@ -536,5 +466,5 @@ class TestFetchEventsCommand:
         )
 
         # Should preserve last_run on error
-        assert next_run["last_fetch_Behavior_Analytics_alerts"] == 1609459200000
+        assert next_run["last_fetch_BehaviorAnalytics"] == 1609459200000
         assert len(events) == 0

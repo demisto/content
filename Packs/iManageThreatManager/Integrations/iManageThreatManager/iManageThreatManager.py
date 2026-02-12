@@ -16,27 +16,36 @@ PRODUCT = "Threat"
 MAX_EVENTS_PER_FETCH = 900  # Default events per type
 MAX_PAGE_SIZE = 90  # Maximum page size for Behavior Analytics alerts - Used for all types to simplify pagination logic, even though only Behavior Analytics has this limit
 DEFAULT_TIMEZONE = "UTC"
+SORT_FIELD = "minute_update_time"  # API supports this field (update_time in minutes, loses millisecond precision)
+SORT_ORDER = -1  # -1 for descending (newest first), 1 for ascending (oldest first)
 
-# Event type configurations: maps event type names to their source log types
-EVENT_TYPES = {
-    "Behavior Analytics alerts": "BehaviorAnalytics",
-    "Get Addressable Alerts": "AddressableAlerts",
-    "Get Detect And Protect Alerts": "DetectAndProtectAlerts",
+# Event type configurations: maps event type names to their configuration
+EVENT_TYPE_CONFIG = {
+    "Behavior Analytics alerts": {
+        "source_log_type": "BehaviorAnalytics",
+        "url_suffix": "/tm-api/getAlertList",
+        "use_token_auth": True,
+    },
+    "Get Addressable Alerts": {
+        "source_log_type": "AddressableAlerts",
+        "url_suffix": "/tm-api/getAddressableAlerts",
+        "use_token_auth": False,
+    },
+    "Get Detect And Protect Alerts": {
+        "source_log_type": "DetectAndProtectAlerts",
+        "url_suffix": "/tm-api/getDetectAndProtectAlerts",
+        "use_token_auth": False,
+    },
 }
 
-# Event type constants - derived from EVENT_TYPES keys
-BEHAVIOR_ANALYTICS, ADDRESSABLE_ALERTS, DETECT_AND_PROTECT_ALERTS = EVENT_TYPES.keys()
+# Event type constants - derived from EVENT_TYPE_CONFIG keys
+BEHAVIOR_ANALYTICS, ADDRESSABLE_ALERTS, DETECT_AND_PROTECT_ALERTS = EVENT_TYPE_CONFIG.keys()
 
 """ CLIENT CLASS """
 
 
 class Client(BaseClient):
     """Client class to interact with the iManage Threat Manager API
-
-    This Client implements API calls, and does not contain any Demisto logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
 
     def __init__(
@@ -56,8 +65,8 @@ class Client(BaseClient):
             base_url: The base URL of the iManage Threat Manager instance.
             verify: Whether to verify SSL certificates.
             proxy: Whether to use system proxy settings.
-            username: Username for user sign-in authentication (for Detect and Protect alerts).
-            password: Password for user sign-in authentication (for Detect and Protect alerts).
+            username: Username for user sign-in authentication (for Detect and Protect alerts and Addressable Alerts).
+            password: Password for user sign-in authentication (for Detect and Protect alerts and Addressable Alerts).
             token: Application token for API token authentication (for Behavior Analytics alerts).
             secret: Application secret for API token authentication (for Behavior Analytics alerts).
         """
@@ -79,11 +88,6 @@ class Client(BaseClient):
         Returns:
             int: Expiration timestamp in seconds since epoch (e.g., 1770733029).
                  Returns current time + 30 minutes (1800 seconds) if extraction fails.
-
-        Example:
-            >>> token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzA3MzMwMjl9.signature"
-            >>> expiration = self._extract_jwt_expiration(token)
-            >>> # Returns: 1770733029 (the 'exp' value from the JWT payload)
         """
         try:
             # JWT format: header.payload.signature
@@ -223,176 +227,90 @@ class Client(BaseClient):
 
     def _fetch_alerts(
         self,
-        url_suffix: str,
-        alert_type: str,
-        use_token_auth: bool,
+        event_type: str,
         start_date: int,
         end_date: int,
         page_size: int = MAX_PAGE_SIZE,
-        sort_field: str = "update_time",
-        sort_order: int = -1,
-        timezone: str = DEFAULT_TIMEZONE,
     ) -> List[Dict[str, Any]]:
         """
-        Generic method to fetch alerts from iManage Threat Manager.
+        Fetch alerts from iManage Threat Manager for a specific event type.
 
         Args:
-            url_suffix: API endpoint suffix.
-            alert_type: Type of alert for logging purposes.
-            use_token_auth: If True, use token/secret auth; otherwise use username/password.
+            event_type: Type of events to fetch (e.g., "Behavior Analytics alerts").
             start_date: Timestamp in milliseconds marking the beginning of the alert range.
             end_date: Timestamp in milliseconds marking the end of the alert range.
             page_size: Number of alerts per page.
-            sort_field: Field to sort by (default: "update_time").
-            sort_order: Sort direction. Use -1 for descending (newest first), 1 for ascending (oldest first).
-            timezone: Timezone for interpreting date ranges (default: "UTC").
 
         Returns:
-            List[Dict[str, Any]]: List of alerts sorted by update_time.
+            List[Dict[str, Any]]: List of alerts sorted by minute_update_time (newest first).
         """
-        demisto.debug(f"Fetching {alert_type} from {start_date} to {end_date}.")
+        # Get configuration for this event type
+        config = EVENT_TYPE_CONFIG[event_type]
+        
+        demisto.debug(f"Fetching {event_type} from {start_date} to {end_date} with page size {page_size}.")
 
+        # Get appropriate access token based on auth type
         access_token = (
-            self.get_access_token_from_token_secret() if use_token_auth else self.get_access_token_from_username_password()
+            self.get_access_token_from_token_secret()
+            if config["use_token_auth"]
+            else self.get_access_token_from_username_password()
         )
 
         response = self._http_request(
             method="POST",
-            url_suffix=url_suffix,
+            url_suffix=config["url_suffix"],
             headers={"X-Auth-Token": access_token},
             json_data={
-                "timezone": timezone,
+                "timezone": DEFAULT_TIMEZONE,
                 "start_date": str(start_date),
                 "end_date": str(end_date),
-                "page_size": min(page_size, MAX_PAGE_SIZE) if use_token_auth else page_size,
-                "sort_field": sort_field,
-                "sort_order": sort_order,
+                "page_size": min(page_size, MAX_PAGE_SIZE),
+                "sort_field": SORT_FIELD,
+                "sort_order": SORT_ORDER,
             },
             resp_type="json",
         )
 
         alerts = response.get("results", [])
-        demisto.debug(f"Fetched {len(alerts)} {alert_type}.")
+        demisto.debug(f"Fetched {len(alerts)} {event_type}.")
         return alerts
 
-    def get_behavior_analytics_alerts(
-        self,
-        start_date: int,
-        end_date: int,
-        page_size: int = MAX_PAGE_SIZE,
-        sort_field: str = "update_time",
-        sort_order: int = -1,
-        timezone: str = DEFAULT_TIMEZONE,
-    ) -> List[Dict[str, Any]]:
-        """
-        Fetch Behavior Analytics alerts from iManage Threat Manager.
-
-        Args:
-            start_date: Timestamp in milliseconds marking the beginning of the alert range.
-            end_date: Timestamp in milliseconds marking the end of the alert range.
-            page_size: Number of alerts per page (max 90).
-            sort_field: Field to sort by (default: "update_time").
-            sort_order: Sort direction. Use -1 for descending (newest first), 1 for ascending (oldest first).
-            timezone: Timezone for interpreting date ranges (default: "UTC").
-
-        Returns:
-            List[Dict[str, Any]]: List of alerts sorted by update_time.
-        """
-        return self._fetch_alerts(
-            url_suffix="/tm-api/getAlertList",
-            alert_type="Behavior Analytics alerts",
-            use_token_auth=True,
-            start_date=start_date,
-            end_date=end_date,
-            page_size=page_size,
-            sort_field=sort_field,
-            sort_order=sort_order,
-            timezone=timezone,
-        )
-
-    def get_addressable_alerts(
-        self,
-        start_date: int,
-        end_date: int,
-        page_size: int = MAX_PAGE_SIZE,
-        sort_field: str = "update_time",
-        sort_order: int = -1,
-        timezone: str = DEFAULT_TIMEZONE,
-    ) -> List[Dict[str, Any]]:
-        """
-        Fetch Addressable Alerts from iManage Threat Manager.
-        Requires user sign-in authentication.
-
-        Args:
-            start_date: Timestamp in milliseconds marking the beginning of the alert range.
-            end_date: Timestamp in milliseconds marking the end of the alert range.
-            page_size: Number of alerts per page.
-            sort_field: Field to sort by (default: "update_time").
-            sort_order: Sort direction. Use -1 for descending (newest first), 1 for ascending (oldest first).
-            timezone: Timezone for interpreting date ranges (default: "UTC").
-
-        Returns:
-            List[Dict[str, Any]]: List of alerts sorted by update_time.
-        """
-        return self._fetch_alerts(
-            url_suffix="/tm-api/getAddressableAlerts",
-            alert_type="Addressable Alerts",
-            use_token_auth=False,
-            start_date=start_date,
-            end_date=end_date,
-            page_size=page_size,
-            sort_field=sort_field,
-            sort_order=sort_order,
-            timezone=timezone,
-        )
-
-    def get_detect_and_protect_alerts(
-        self,
-        start_date: int,
-        end_date: int,
-        page_size: int = MAX_PAGE_SIZE,
-        sort_field: str = "update_time",
-        sort_order: int = -1,
-        timezone: str = DEFAULT_TIMEZONE,
-    ) -> List[Dict[str, Any]]:
-        """
-        Fetch Detect and Protect Alerts from iManage Threat Manager.
-        Requires user sign-in authentication.
-
-        Args:
-            start_date: Timestamp in milliseconds marking the beginning of the alert range.
-            end_date: Timestamp in milliseconds marking the end of the alert range.
-            page_size: Number of alerts per page.
-            sort_field: Field to sort by (default: "update_time").
-            sort_order: Sort direction. Use -1 for descending (newest first), 1 for ascending (oldest first).
-            timezone: Timezone for interpreting date ranges (default: "UTC").
-
-        Returns:
-            List[Dict[str, Any]]: List of alerts sorted by update_time.
-        """
-        return self._fetch_alerts(
-            url_suffix="/tm-api/getDetectAndProtectAlerts",
-            alert_type="Detect and Protect Alerts",
-            use_token_auth=False,
-            start_date=start_date,
-            end_date=end_date,
-            page_size=page_size,
-            sort_field=sort_field,
-            sort_order=sort_order,
-            timezone=timezone,
-        )
 
 
 """ HELPER FUNCTIONS """
 
 
-def deduplicate_events(events: List[Dict[str, Any]], last_run_ids: List[str]) -> List[Dict[str, Any]]:
+def _calculate_timestamp_ms(date_str: str | None, default_hours_ago: int = 0) -> int:
+    """
+    Calculate timestamp in milliseconds from a date string or default offset.
+
+    Args:
+        date_str: Date string to convert (e.g., "2024-01-01T00:00:00Z"). If None, uses default.
+        default_hours_ago: Hours to subtract from current time if date_str is None (default: 0 for now).
+
+    Returns:
+        int: Timestamp in milliseconds since epoch.
+    """
+    if date_str:
+        return int(arg_to_datetime(date_str).timestamp() * 1000)
+    
+    base_time = datetime.now()
+    if default_hours_ago > 0:
+        base_time -= timedelta(hours=default_hours_ago)
+    
+    return int(base_time.timestamp() * 1000)
+
+
+def _deduplicate_events(
+    events: List[Dict[str, Any]], last_run_ids: List[str], last_fetch_time: int
+) -> List[Dict[str, Any]]:
     """
     Remove duplicate events based on event IDs.
 
     Args:
-        events: List of events to deduplicate
+        events: List of events to deduplicate (sorted newest first by minute_update_time)
         last_run_ids: List of event IDs from the last run to filter out
+        last_fetch_time: Timestamp in minutes from the last fetch (minute_update_time value)
 
     Returns:
         List of deduplicated events
@@ -405,33 +323,50 @@ def deduplicate_events(events: List[Dict[str, Any]], last_run_ids: List[str]) ->
     seen_ids = set(last_run_ids)
     deduplicated = []
 
-    for event in events:
+    # Iterate from the end (oldest events) backwards
+    for i in range(len(events) - 1, -1, -1):
+        event = events[i]
         event_id = event.get("id")
-        if event_id and event_id not in seen_ids:
+        event_time = event.get("minute_update_time")
+
+        if not event_id:
+            demisto.debug(f"Event at index {i} and at minute_update_time {event_time} has no ID, Adding it without deduplication.")
+            deduplicated.append(event)
+            continue
+        
+        if event_time and event_time > last_fetch_time:
+            # Event is newer than last_fetch_time, add it
+            deduplicated.append(event)
+            
+            # Add all remaining events (from index i-1 down to 0) - they're all newer too
+            for j in range(i - 1, -1, -1):
+                remaining_event = events[j]
+                deduplicated.append(remaining_event)
+            
+            demisto.debug(f"Found event newer than last_fetch_time at index {i}, added all {i + 1} newer events")
+            break
+        
+        # Event is at or before last_fetch_time, check against seen IDs
+        if event_id not in seen_ids:
             deduplicated.append(event)
             seen_ids.add(event_id)
+        else:
+            demisto.debug(f"Duplicate event found with ID {event_id} at index {i}, skipping.")
 
+    # Reverse to maintain original order (newest first)
+    deduplicated.reverse()
+    
     demisto.debug(f"Deduplication complete: {len(deduplicated)} unique events")
     return deduplicated
 
 
-def add_fields_to_events(events: List[Dict] | None, source_log_type: str) -> None:
+def _add_fields_to_events(events: List[Dict] | None, source_log_type: str) -> None:
     """
     Adds required fields to events for ingestion.
-
-    Adds _time and _source_log_type fields to each event.
-    The _time field is formatted according to DATE_FORMAT constant.
-    The _source_log_type is set using the provided source_log_type parameter.
 
     Args:
         events: List of event dictionaries. Can be None or empty list.
         source_log_type: The source log type string (e.g., "BehaviorAnalytics").
-
-    Note:
-        - Modifies events in-place
-        - update_time is expected to be in milliseconds
-        - Events without update_time field are skipped for _time
-        - _source_log_type is set directly from the source_log_type parameter
     """
     if not events:
         return
@@ -449,6 +384,92 @@ def add_fields_to_events(events: List[Dict] | None, source_log_type: str) -> Non
 
         # Add _source_log_type field
         event["_source_log_type"] = source_log_type
+
+
+def _fetch_events_with_pagination(
+    client: Client, event_type: str, start_time: int, end_time: int, limit: int
+) -> List[Dict[str, Any]]:
+    """
+    Fetch events with pagination support for any event type.
+
+    Args:
+        client: iManage Threat Manager client instance.
+        event_type: Type of events to fetch.
+        start_time: Start timestamp in milliseconds.
+        end_time: End timestamp in milliseconds.
+        limit: Maximum number of events to fetch.
+
+    Returns:
+        List of fetched events sorted by minute_update_time (newest first).
+    
+    Note:
+        Uses minute_update_time for pagination cursor. This field represents update_time
+        truncated to minutes (update_time // 60000), which the API uses for sorting.
+        The _time field in events uses the precise update_time value.
+    """
+    demisto.debug(f"Fetching {event_type} with pagination (limit={limit}, page_size={MAX_PAGE_SIZE})")
+    events: List[Dict[str, Any]] = []
+    current_end_time = end_time
+
+    while len(events) < limit:
+        # Calculate how many more events we need
+        remaining = limit - len(events)
+        page_size = min(remaining, MAX_PAGE_SIZE)
+
+        demisto.debug(f"Fetching page: start_time={start_time}, end_time={current_end_time}, page_size={page_size}, total_so_far={len(events)}")
+
+        batch = client._fetch_alerts(event_type, start_time, current_end_time, page_size)
+
+        if not batch:
+            demisto.debug("No more events available, stopping pagination")
+            break
+
+        events.extend(batch)
+        demisto.debug(f"Fetched {len(batch)} events in this batch, total now: {len(events)}")
+
+        # If we got fewer events than requested, we've reached the end
+        if len(batch) < page_size:
+            demisto.debug(f"Received {len(batch)} events (less than page_size {page_size}), no more events available")
+            break
+
+        # Update end_time using minute_update_time (the sort field used by the API)
+        # Convert minute_update_time back to milliseconds for the end_date parameter
+        # Subtract 1 minute (60000ms) to avoid fetching events from the same minute again
+        oldest_minute_update_time = batch[-1].get("minute_update_time")
+        if oldest_minute_update_time:
+            # Convert minutes to milliseconds and subtract 1 minute
+            current_end_time = (oldest_minute_update_time * 60000) - 60000
+            demisto.debug(f"Updated end_time to {current_end_time} (oldest minute_update_time - 1 minute) for next page")
+        else:
+            demisto.debug("No minute_update_time in last event, stopping pagination")
+            break
+
+    return events
+
+
+def _fetch_events_for_type(
+    client: Client,
+    event_type: str,
+    last_fetch_time: int,
+    current_time: int,
+    max_events_per_type: int,
+) -> List[Dict[str, Any]]:
+    """
+    Fetch events for a specific event type.
+
+    Args:
+        client: iManage Threat Manager client instance.
+        event_type: Type of events to fetch.
+        last_fetch_time: Last fetch timestamp in milliseconds.
+        current_time: Current timestamp in milliseconds.
+        max_events_per_type: Maximum number of events to fetch.
+
+    Returns:
+        List of fetched alerts.
+    """
+    # Respect the MAX_PAGE_SIZE limit for all event types
+    page_size = min(max_events_per_type, MAX_PAGE_SIZE)
+    return client._fetch_alerts(event_type, last_fetch_time, current_time, page_size)
 
 
 """ COMMAND FUNCTIONS """
@@ -484,26 +505,9 @@ def validate_credentials_for_event_types(client: Client, event_types: List[str])
     demisto.debug("Credential validation successful")
 
 
-# Mapping of event types to their fetch methods
-EVENT_TYPE_FETCH_METHODS = {
-    BEHAVIOR_ANALYTICS: lambda client, start, end, page_size: client.get_behavior_analytics_alerts(
-        start_date=start, end_date=end, page_size=page_size
-    ),
-    ADDRESSABLE_ALERTS: lambda client, start, end, page_size: client.get_addressable_alerts(
-        start_date=start, end_date=end, page_size=page_size
-    ),
-    DETECT_AND_PROTECT_ALERTS: lambda client, start, end, page_size: client.get_detect_and_protect_alerts(
-        start_date=start, end_date=end, page_size=page_size
-    ),
-}
-
-
 def test_module_command(client: Client, params: dict[str, Any], event_types: List[str]) -> str:
     """
     Tests API connectivity and authentication.
-    When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
-    successful.
-    Raises exceptions if something goes wrong.
 
     Args:
         client: iManage Threat Manager client to use.
@@ -522,9 +526,7 @@ def test_module_command(client: Client, params: dict[str, Any], event_types: Lis
         # Test each configured event type
         for event_type in event_types:
             demisto.debug(f"Testing connectivity for event type: {event_type}")
-            fetch_method = EVENT_TYPE_FETCH_METHODS.get(event_type)
-            if fetch_method:
-                fetch_method(client, start_time, end_time, 1)
+            client._fetch_alerts(event_type, start_time, end_time, 1)
 
     except Exception as e:
         if "Forbidden" in str(e) or "401" in str(e) or "Unauthorized" in str(e):
@@ -540,9 +542,6 @@ def test_module_command(client: Client, params: dict[str, Any], event_types: Lis
 def get_events_command(client: Client, args: dict[str, Any]) -> tuple[List[Dict[str, Any]], CommandResults]:
     """
     Gets events from iManage Threat Manager API.
-
-    This is a manual command for testing/debugging purposes.
-    For Behavior Analytics alerts, implements pagination to fetch more than 90 events.
 
     Args:
         client: iManage Threat Manager client instance
@@ -562,121 +561,16 @@ def get_events_command(client: Client, args: dict[str, Any]) -> tuple[List[Dict[
 
     demisto.debug(f"Getting events: type={event_type}, limit={limit}, from_date={from_date}, to_date={to_date}")
 
-    # Calculate time range
-    if from_date:
-        start_time = int(arg_to_datetime(from_date).timestamp() * 1000)  # type: ignore
-    else:
-        # Default to 1 hour ago
-        start_time = int((datetime.now() - timedelta(hours=1)).timestamp() * 1000)
+    # Calculate time range in milliseconds
+    start_time = _calculate_timestamp_ms(from_date, default_hours_ago=1)
+    end_time = _calculate_timestamp_ms(to_date)
 
-    if to_date:
-        end_time = int(arg_to_datetime(to_date).timestamp() * 1000)  # type: ignore
-    else:
-        # Default to now
-        end_time = int(datetime.now().timestamp() * 1000)
-
-    events: List[Dict[str, Any]] = []
-
-    # Fetch events based on type
-    if event_type == BEHAVIOR_ANALYTICS:
-        # For Behavior Analytics, implement pagination due to 90 page_size limit
-        events = _fetch_behavior_analytics_with_pagination(client, start_time, end_time, limit)
-    else:
-        # For other event types, use the fetch method from the mapping
-        fetch_method = EVENT_TYPE_FETCH_METHODS.get(event_type)
-        if not fetch_method:
-            demisto.debug(f"Unknown event type: {event_type}")
-            return [], CommandResults(readable_output=f"Unknown event type: {event_type}")
-        events = fetch_method(client, start_time, end_time, limit)
-
-    source_log_type = EVENT_TYPES.get(event_type, EVENT_TYPES[BEHAVIOR_ANALYTICS])
+    # Fetch events with pagination support for all event types
+    events = _fetch_events_with_pagination(client, event_type, start_time, end_time, limit)
 
     demisto.debug(f"Retrieved {len(events)} total events for {event_type}")
     hr = tableToMarkdown(name=f"iManage Threat Manager {event_type}", t=events[:10], removeNull=True)
     return events, CommandResults(readable_output=hr)
-
-
-def _fetch_behavior_analytics_with_pagination(client: Client, start_time: int, end_time: int, limit: int) -> List[Dict[str, Any]]:
-    """
-    Fetch Behavior Analytics alerts with pagination support.
-
-    Args:
-        client: iManage Threat Manager client instance.
-        start_time: Start timestamp in milliseconds.
-        end_time: End timestamp in milliseconds.
-        limit: Maximum number of events to fetch.
-
-    Returns:
-        List of fetched events.
-    """
-    demisto.debug(f"Fetching Behavior Analytics with pagination (limit={limit}, page_size={MAX_PAGE_SIZE})")
-    events: List[Dict[str, Any]] = []
-    current_start_time = start_time
-
-    while len(events) < limit:
-        # Calculate how many more events we need
-        remaining = limit - len(events)
-        page_size = min(remaining, MAX_PAGE_SIZE)
-
-        demisto.debug(f"Fetching page: start_time={current_start_time}, page_size={page_size}, total_so_far={len(events)}")
-
-        batch = client.get_behavior_analytics_alerts(start_date=current_start_time, end_date=end_time, page_size=page_size)
-
-        if not batch:
-            demisto.debug("No more events available, stopping pagination")
-            break
-
-        events.extend(batch)
-        demisto.debug(f"Fetched {len(batch)} events in this batch, total now: {len(events)}")
-
-        # If we got fewer events than requested, we've reached the end
-        if len(batch) < page_size:
-            demisto.debug(f"Received {len(batch)} events (less than page_size {page_size}), no more events available")
-            break
-
-        # Update start_time to the oldest event in this batch (last one, since sorted newest first)
-        # Add 1ms to avoid fetching the same event again
-        oldest_event_time = batch[-1].get("update_time")
-        if oldest_event_time:
-            current_start_time = oldest_event_time + 1
-            demisto.debug(f"Updated start_time to {current_start_time} for next page")
-        else:
-            demisto.debug("No update_time in last event, stopping pagination")
-            break
-
-    return events
-
-
-def _fetch_events_for_type(
-    client: Client,
-    event_type: str,
-    last_fetch_time: int,
-    current_time: int,
-    max_events_per_type: int,
-) -> List[Dict[str, Any]]:
-    """
-    Fetch events for a specific event type.
-
-    Args:
-        client: iManage Threat Manager client instance.
-        event_type: Type of events to fetch.
-        last_fetch_time: Last fetch timestamp in milliseconds.
-        current_time: Current timestamp in milliseconds.
-        max_events_per_type: Maximum number of events to fetch.
-
-    Returns:
-        List of fetched events.
-    """
-    if event_type == BEHAVIOR_ANALYTICS:
-        # For Behavior Analytics, respect the page_size limit
-        page_size = min(max_events_per_type, MAX_PAGE_SIZE)
-        return client.get_behavior_analytics_alerts(start_date=last_fetch_time, end_date=current_time, page_size=page_size)
-
-    fetch_method = EVENT_TYPE_FETCH_METHODS.get(event_type)
-    if fetch_method:
-        return fetch_method(client, last_fetch_time, current_time, max_events_per_type)
-
-    return []
 
 
 def fetch_events_command(
@@ -712,7 +606,8 @@ def fetch_events_command(
         demisto.debug(f"Fetching events for type: {event_type}")
 
         # Get source log type for this event type (used for state keys)
-        source_log_type = EVENT_TYPES.get(event_type, EVENT_TYPES[BEHAVIOR_ANALYTICS])
+        config = EVENT_TYPE_CONFIG.get(event_type, EVENT_TYPE_CONFIG[BEHAVIOR_ANALYTICS])
+        source_log_type = config["source_log_type"]
         
         # Get last fetch time and IDs for this event type using source_log_type
         last_fetch_key = f"last_fetch_{source_log_type}"
@@ -737,40 +632,42 @@ def fetch_events_command(
             demisto.debug(f"Fetched {len(events)} events for {event_type} (before deduplication)")
 
             # Deduplicate events based on IDs from last run
-            events = deduplicate_events(events, last_run_ids)
+            events = _deduplicate_events(events, last_run_ids, last_fetch_time)
             demisto.debug(f"After deduplication: {len(events)} events for {event_type}")
 
             # Add fields to events before extending
-            add_fields_to_events(events, source_log_type)
+            _add_fields_to_events(events, source_log_type)
 
             all_events.extend(events)
 
             # Update next run for this event type
             if events:
-                # Since events are sorted newest first (sort_order=-1),
-                # the first event has the latest update_time
-                latest_time = events[0].get("update_time", last_fetch_time)
-                next_run[last_fetch_key] = latest_time
+                # Since events are sorted newest first by minute_update_time,
+                # the first event has the latest minute_update_time
+                latest_minute_time = events[0].get("minute_update_time", last_fetch_time)
+                next_run[last_fetch_key] = latest_minute_time
 
-                # Store IDs of events with the latest update_time for deduplication
-                # Only iterate until we hit a different timestamp (optimization)
+                # Store IDs of events with the latest minute_update_time for deduplication
+                # All events within the same minute will have the same minute_update_time
                 latest_time_event_ids = []
                 for event in events:
-                    event_time = event.get("update_time")
-                    if event_time == latest_time:
+                    event_time = event.get("minute_update_time")
+                    if event_time == latest_minute_time:
                         event_id = event.get("id")
                         if event_id:
                             latest_time_event_ids.append(event_id)
-                    elif event_time and event_time < latest_time:
+                    elif event_time and event_time < latest_minute_time:
                         # Events are sorted newest first, so we can stop here
                         break
 
                 next_run[last_ids_key] = latest_time_event_ids
-                demisto.debug(f"Stored {len(latest_time_event_ids)} event IDs with update_time {latest_time}")
+                demisto.debug(f"Stored {len(latest_time_event_ids)} event IDs with minute_update_time {latest_minute_time}")
             else:
                 # No new events, keep the current timestamp and clear IDs
+                # Convert current_time (ms) to minutes for consistency
+                current_minute_time = current_time // 60000
                 demisto.debug(f"No new events for {event_type}, updating timestamp to current time")
-                next_run[last_fetch_key] = current_time
+                next_run[last_fetch_key] = current_minute_time
                 next_run[last_ids_key] = []
 
         except Exception as e:
@@ -789,11 +686,6 @@ def fetch_events_command(
 def main() -> None:  # pragma: no cover
     """
     Main function that parses params and runs command functions.
-
-    Handles all integration commands:
-    - test-module: Tests connectivity and authentication
-    - imanage-threat-manager-get-events: Manual event retrieval
-    - fetch-events: Automated event collection for XSIAM
     """
     params = demisto.params()
     args = demisto.args()
@@ -803,19 +695,16 @@ def main() -> None:  # pragma: no cover
     base_url = params.get("url", "").rstrip("/")
     if not base_url:
         return_error("Server URL is required")
-        return
 
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
     # Parse authentication parameters
-    credentials_user = params.get("credentials_user", {})
-    username = credentials_user.get("identifier") if isinstance(credentials_user, dict) else None
-    password = credentials_user.get("password") if isinstance(credentials_user, dict) else None
+    username = params.get("credentials_user", {}).get("identifier")
+    password = params.get("credentials_user", {}).get("password")
 
-    credentials_token = params.get("credentials_token", {})
-    token = credentials_token.get("identifier") if isinstance(credentials_token, dict) else None
-    secret = credentials_token.get("password") if isinstance(credentials_token, dict) else None
+    token = params.get("credentials_token", {}).get("identifier")
+    secret = params.get("credentials_token", {}).get("password")
 
     # Parse fetch parameters
     event_types = argToList(params.get("event_types", [BEHAVIOR_ANALYTICS]))
@@ -857,9 +746,10 @@ def main() -> None:  # pragma: no cover
             events, results = get_events_command(client, args)
             if should_push_events:
                 # Determine source_log_type based on event_type
-                source_log_type_param = EVENT_TYPES.get(event_type, EVENT_TYPES[BEHAVIOR_ANALYTICS])
+                config = EVENT_TYPE_CONFIG.get(event_type, EVENT_TYPE_CONFIG[BEHAVIOR_ANALYTICS])
+                source_log_type_param = config["source_log_type"]
 
-                add_fields_to_events(events, source_log_type_param)
+                _add_fields_to_events(events, source_log_type_param)
                 demisto.debug(f"Sending {len(events)} events to XSIAM.")
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
                 results.readable_output += f"\n\n{len(events)} events sent to XSIAM."
