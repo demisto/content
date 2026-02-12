@@ -3920,9 +3920,7 @@ def load_spotlight_state(context_store: ContentClientContextStore) -> tuple[Cont
     return spotlight_state, snapshot_id, total_fetched, unique_aids, processed_aids
 
 
-def save_spotlight_state(
-    context_store: ContentClientContextStore, spotlight_state: ContentClientState
-) -> None:
+def save_spotlight_state(context_store: ContentClientContextStore, spotlight_state: ContentClientState) -> None:
     """
     Save Spotlight state to integration context without breaking other keys.
 
@@ -4383,7 +4381,7 @@ async def send_batch_to_xsiam_and_save_context(
     last_saved_batch_number: int,
     context_store: ContentClientContextStore,
     state: ContentClientState,
-    save_state_callback: Callable[[ContentClientContextStore, dict, ContentClientState], None],
+    save_state_callback: Callable[[ContentClientContextStore, ContentClientState], None],
     data_type: str = "assets",
 ) -> int:
     """
@@ -4590,9 +4588,7 @@ async def fetch_spotlight_assets():
     context_store = ContentClientContextStore(namespace="SpotlightAssets")
 
     # Load state from integration context (now includes processed_aids)
-    spotlight_state, snapshot_id, total_fetched, unique_aids, processed_aids = load_spotlight_state(
-        context_store
-    )
+    spotlight_state, snapshot_id, total_fetched, unique_aids, processed_aids = load_spotlight_state(context_store)
     # The "next page" token - In Falcon API called "after"
     after_token = spotlight_state.cursor
 

@@ -8092,7 +8092,7 @@ class TestFetchCNAPPAssetsFlow:
         mock_send_data_to_xsiam = mocker.patch("CrowdStrikeFalcon.send_data_to_xsiam")
         mock_update_module_health = mocker.patch("CrowdStrikeFalcon.demisto.updateModuleHealth")
         mocker.patch.object(time, "time", return_value=123.123)
-        mocker.patch.object(demisto, "params", return_value={"fetch_assets_type": 'CNAPP Alerts'})
+        mocker.patch.object(demisto, "params", return_value={"fetch_assets_type": "CNAPP Alerts"})
         # --- First Call ---
         # Initial last_run for the first call
         mock_get_assets_last_run.return_value = {"offset": 0, "total_fetched_until_now": 0}
@@ -8441,7 +8441,8 @@ def test_fetch_ngsiem_cases(mocker):
     assert last_run == {"offset": 1}
 
 
-''' Fetch Assets Spotlight '''
+""" Fetch Assets Spotlight """
+
 
 class TestSpotlightFetchAssets:
     """
@@ -8480,10 +8481,7 @@ class TestSpotlightFetchAssets:
         mock_vulns = [{"id": "v1", "aid": "aid1"}, {"id": "v2", "aid": "aid2"}]
         mock_response_data = {"meta": {"pagination": {"after": None}}}
 
-        mock_fetch_batch = mocker.patch(
-            "CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_batch",
-            new_callable=mocker.AsyncMock
-        )
+        mock_fetch_batch = mocker.patch("CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_batch", new_callable=mocker.AsyncMock)
         mock_fetch_batch.return_value = (mock_vulns, mock_response_data)
 
         def create_task_side_effect(*args, **kwargs):
@@ -8492,8 +8490,7 @@ class TestSpotlightFetchAssets:
             return f
 
         mock_create_task = mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
-            side_effect=create_task_side_effect
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context", side_effect=create_task_side_effect
         )
 
         # 2. Execute
@@ -8505,9 +8502,9 @@ class TestSpotlightFetchAssets:
 
         mock_create_task.assert_called()
         call_kwargs = mock_create_task.call_args.kwargs
-        assert call_kwargs['product'] == SPOTLIGHT_VULN_PRODUCT
-        assert call_kwargs['data'] == mock_vulns
-        assert call_kwargs['items_count'] == 2
+        assert call_kwargs["product"] == SPOTLIGHT_VULN_PRODUCT
+        assert call_kwargs["data"] == mock_vulns
+        assert call_kwargs["items_count"] == 2
 
         mock_handler.flush_remaining.assert_awaited_once()
 
@@ -8550,8 +8547,7 @@ class TestSpotlightFetchAssets:
             return f
 
         mock_create_task = mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
-            side_effect=create_task_side_effect
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context", side_effect=create_task_side_effect
         )
         mock_update_state = mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata")
         mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
@@ -8565,15 +8561,15 @@ class TestSpotlightFetchAssets:
 
         mock_create_task.assert_called_once()
         call_kwargs = mock_create_task.call_args.kwargs
-        assert call_kwargs['data'] == []
-        assert call_kwargs['items_count'] == 0
+        assert call_kwargs["data"] == []
+        assert call_kwargs["items_count"] == 0
 
         mock_handler.flush_remaining.assert_awaited_once()
 
         assert mock_update_state.call_count >= 1
         last_call_kwargs = mock_update_state.call_args_list[-1].kwargs
-        assert last_call_kwargs['cursor'] is None
-        assert last_call_kwargs['total_fetched'] == 0
+        assert last_call_kwargs["cursor"] is None
+        assert last_call_kwargs["total_fetched"] == 0
 
     @pytest.mark.asyncio
     async def test_fetch_spotlight_assets_error_handling(self, mocker):
@@ -8590,6 +8586,7 @@ class TestSpotlightFetchAssets:
             - The correct exception type and message are propagated.
         """
         from CrowdStrikeFalcon import fetch_spotlight_assets
+
         # 1. Setup Mocks
         mock_client = mocker.AsyncMock()
         mocker.patch("CrowdStrikeFalcon.create_spotlight_client", return_value=mock_client)
@@ -8599,9 +8596,7 @@ class TestSpotlightFetchAssets:
 
         mock_state = mocker.Mock()
         mock_state.cursor = None
-        mocker.patch("CrowdStrikeFalcon.load_spotlight_state", return_value=(
-            mock_state, "test_snapshot_id", 0, set(), set()
-        ))
+        mocker.patch("CrowdStrikeFalcon.load_spotlight_state", return_value=(mock_state, "test_snapshot_id", 0, set(), set()))
 
         mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler")
 
@@ -8610,13 +8605,10 @@ class TestSpotlightFetchAssets:
 
         def raise_error_side_effect(*args, **kwargs):
             # Extract the error from kwargs (how it's called in code) or args
-            error = kwargs.get('error') or (args[0] if args else Exception("Unknown"))
+            error = kwargs.get("error") or (args[0] if args else Exception("Unknown"))
             raise error
 
-        mock_handle_error = mocker.patch(
-            "CrowdStrikeFalcon.handle_spotlight_fetch_error",
-            side_effect=raise_error_side_effect
-        )
+        mock_handle_error = mocker.patch("CrowdStrikeFalcon.handle_spotlight_fetch_error", side_effect=raise_error_side_effect)
 
         # 2. Execute & Verify
         with pytest.raises(Exception, match="API Error"):
@@ -8624,8 +8616,8 @@ class TestSpotlightFetchAssets:
 
         mock_handle_error.assert_called_once()
         call_kwargs = mock_handle_error.call_args.kwargs
-        assert isinstance(call_kwargs['error'], Exception)
-        assert str(call_kwargs['error']) == "API Error"
+        assert isinstance(call_kwargs["error"], Exception)
+        assert str(call_kwargs["error"]) == "API Error"
 
     @pytest.mark.asyncio
     async def test_fetch_spotlight_assets_crash_mid_execution_preserves_state(self, mocker):
@@ -8641,7 +8633,6 @@ class TestSpotlightFetchAssets:
             - The state is updated with the cursor for Page 2 (the next token) before the crash.
             - The processed AIDs and total fetched count are saved correctly.
         """
-        import CrowdStrikeFalcon
         from CrowdStrikeFalcon import fetch_spotlight_assets
 
         # 1. Setup Mocks
@@ -8653,9 +8644,7 @@ class TestSpotlightFetchAssets:
 
         mock_state = mocker.Mock()
         mock_state.cursor = None
-        mocker.patch("CrowdStrikeFalcon.load_spotlight_state", return_value=(
-            mock_state, "test_snapshot_id", 0, set(), set()
-        ))
+        mocker.patch("CrowdStrikeFalcon.load_spotlight_state", return_value=(mock_state, "test_snapshot_id", 0, set(), set()))
 
         mock_handler_cls = mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler")
         mock_handler = mock_handler_cls.return_value
@@ -8667,10 +8656,10 @@ class TestSpotlightFetchAssets:
         page1_vulns = [{"id": "v1", "aid": "aid1"}]
         page1_resp = {"meta": {"pagination": {"after": "token_page_2"}}}
 
-        mocker.patch("CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_batch", side_effect=[
-            (page1_vulns, page1_resp),
-            Exception("Crash on Page 2")
-        ])
+        mocker.patch(
+            "CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_batch",
+            side_effect=[(page1_vulns, page1_resp), Exception("Crash on Page 2")],
+        )
 
         def create_task_side_effect(*args, **kwargs):
             f = asyncio.Future()
@@ -8678,8 +8667,7 @@ class TestSpotlightFetchAssets:
             return f
 
         _ = mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
-            side_effect=create_task_side_effect
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context", side_effect=create_task_side_effect
         )
 
         mock_save_state = mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
@@ -8694,10 +8682,10 @@ class TestSpotlightFetchAssets:
         assert mock_update_state.call_count >= 2
 
         error_save_call = mock_update_state.call_args_list[-1].kwargs
-        assert error_save_call['cursor'] == "token_page_2"
-        assert error_save_call['total_fetched'] == 1
-        assert error_save_call['processed_aids'] == {"aid1"}
-        assert error_save_call['snapshot_id'] == "test_snapshot_id"
+        assert error_save_call["cursor"] == "token_page_2"
+        assert error_save_call["total_fetched"] == 1
+        assert error_save_call["processed_aids"] == {"aid1"}
+        assert error_save_call["snapshot_id"] == "test_snapshot_id"
 
         mock_save_state.assert_called()
 
@@ -8713,7 +8701,6 @@ class TestSpotlightFetchAssets:
         Then:
             - The main execution raises the exception from the background task.
         """
-        import CrowdStrikeFalcon
         from CrowdStrikeFalcon import fetch_spotlight_assets
 
         # 1. Setup Mocks
@@ -8723,18 +8710,18 @@ class TestSpotlightFetchAssets:
         mocker.patch("CrowdStrikeFalcon.create_spotlight_client", return_value=mock_client)
         mocker.patch("CrowdStrikeFalcon.ContentClientContextStore")
 
-        mocker.patch("CrowdStrikeFalcon.load_spotlight_state", return_value=(
-            mocker.Mock(cursor=None), "test_snapshot_id", 0, set(), set()
-        ))
+        mocker.patch(
+            "CrowdStrikeFalcon.load_spotlight_state", return_value=(mocker.Mock(cursor=None), "test_snapshot_id", 0, set(), set())
+        )
 
         mock_handler_cls = mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler")
         mock_handler_instance = mock_handler_cls.return_value
         mock_handler_instance.receive_aids = mocker.AsyncMock()
 
-        mocker.patch("CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_batch", return_value=(
-            [{"id": "v1", "aid": "aid1"}],
-            {"meta": {"pagination": {"after": None}}}
-        ))
+        mocker.patch(
+            "CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_batch",
+            return_value=([{"id": "v1", "aid": "aid1"}], {"meta": {"pagination": {"after": None}}}),
+        )
 
         async def failing_task():
             # Ensure the task yields control so the loop runs
@@ -8744,10 +8731,7 @@ class TestSpotlightFetchAssets:
         # Create the task inside the test loop
         mock_task = asyncio.create_task(failing_task())
 
-        mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
-            return_value=mock_task
-        )
+        mocker.patch("CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context", return_value=mock_task)
 
         mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
         mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata")
@@ -8780,7 +8764,7 @@ class TestSpotlightFetchAssets:
             spotlight_state=mocker.Mock(),
             snapshot_id="snap1",
             processed_aids=set(),
-            batch_limit=5
+            batch_limit=5,
         )
 
         handler.enrich_and_ingest_batch = mocker.AsyncMock()
@@ -8816,7 +8800,7 @@ class TestSpotlightFetchAssets:
             spotlight_state=mocker.Mock(),
             snapshot_id="snap1",
             processed_aids={"processed_1"},
-            batch_limit=10
+            batch_limit=10,
         )
 
         # Pre-fill buffer
@@ -8850,7 +8834,7 @@ class TestSpotlightFetchAssets:
             spotlight_state=mocker.Mock(),
             snapshot_id="snap1",
             processed_aids=set(),
-            batch_limit=10
+            batch_limit=10,
         )
         handler.pending_buffer = {"aid1", "aid2"}
         handler.enrich_and_ingest_batch = mocker.AsyncMock()
@@ -8862,7 +8846,7 @@ class TestSpotlightFetchAssets:
         handler.enrich_and_ingest_batch.assert_called_once()
         args, kwargs = handler.enrich_and_ingest_batch.call_args
         assert set(args[0]) == {"aid1", "aid2"}
-        assert kwargs['final_items_count'] == 100
+        assert kwargs["final_items_count"] == 100
         assert len(handler.pending_buffer) == 0
 
     @pytest.mark.asyncio
@@ -8891,7 +8875,7 @@ class TestSpotlightFetchAssets:
             spotlight_state=mocker.Mock(),
             snapshot_id="snap1",
             processed_aids=set(),
-            batch_limit=10
+            batch_limit=10,
         )
 
         mock_create_task = mocker.patch("CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context")
@@ -8925,10 +8909,17 @@ class TestSpotlightFetchAssets:
 
         # Scenario: Batch 2 finishes first.
         res2 = await send_batch_to_xsiam_and_save_context(
-            data=[], vendor="v", product="p", snapshot_id="s", items_count=1,
-            batch_number=2, last_saved_batch_number=0,
-            context_store=mocker.Mock(), state=mocker.Mock(),
-            save_state_callback=mock_save_callback, data_type="assets"
+            data=[],
+            vendor="v",
+            product="p",
+            snapshot_id="s",
+            items_count=1,
+            batch_number=2,
+            last_saved_batch_number=0,
+            context_store=mocker.Mock(),
+            state=mocker.Mock(),
+            save_state_callback=mock_save_callback,
+            data_type="assets",
         )
 
         assert res2 == 2
@@ -8937,10 +8928,17 @@ class TestSpotlightFetchAssets:
 
         # Scenario: Batch 1 finishes later.
         res1 = await send_batch_to_xsiam_and_save_context(
-            data=[], vendor="v", product="p", snapshot_id="s", items_count=1,
-            batch_number=1, last_saved_batch_number=2,
-            context_store=mocker.Mock(), state=mocker.Mock(),
-            save_state_callback=mock_save_callback, data_type="assets"
+            data=[],
+            vendor="v",
+            product="p",
+            snapshot_id="s",
+            items_count=1,
+            batch_number=1,
+            last_saved_batch_number=2,
+            context_store=mocker.Mock(),
+            state=mocker.Mock(),
+            save_state_callback=mock_save_callback,
+            data_type="assets",
         )
 
         assert res1 == 2
