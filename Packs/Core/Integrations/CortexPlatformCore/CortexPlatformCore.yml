@@ -3370,27 +3370,27 @@ script:
         - description: "Minimum severity for all issues."
           name: min_severity
           required: false
-          defaultValue: SEV_010_INFO
+          defaultValue: info
           auto: PREDEFINED
           predefined:
-            - SEV_010_INFO
-            - SEV_020_LOW
-            - SEV_030_MEDIUM
-            - SEV_040_HIGH
+            - info
+            - low
+            - medium
+            - high
         - description: "Minimum severity for phishing-specific filtering."
           name: min_severity_phishing
           required: false
-          defaultValue: SEV_020_LOW
+          defaultValue: low
           auto: PREDEFINED
           predefined:
-            - SEV_010_INFO
-            - SEV_020_LOW
-            - SEV_030_MEDIUM
-            - SEV_040_HIGH
+            - info
+            - low
+            - medium
+            - high
         - description: Number of results per page.
           name: page_size
           required: false
-          defaultValue: "50"
+          defaultValue: "100"
         - description: Page number for pagination.
           name: page_number
           required: false

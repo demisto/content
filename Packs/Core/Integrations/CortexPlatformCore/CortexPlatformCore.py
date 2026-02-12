@@ -4565,6 +4565,13 @@ def get_email_investigation_summary_command(client: Client, args: dict) -> Comma
     Returns:
         CommandResults: The command results containing email investigation summaries.
     """
+    severity_mapping = {
+        "info": "SEV_010_INFO",
+        "low": "SEV_020_LOW",
+        "medium": "SEV_030_MEDIUM",
+        "high": "SEV_040_HIGH",
+    }
+
     params: dict[str, Any] = {}
 
     if days_timeframe := args.get("days_timeframe"):
@@ -4572,9 +4579,9 @@ def get_email_investigation_summary_command(client: Client, args: dict) -> Comma
     if detection_method := args.get("detection_method"):
         params["detection_method"] = detection_method
     if min_severity := args.get("min_severity"):
-        params["min_severity"] = min_severity
+        params["min_severity"] = severity_mapping.get(min_severity, min_severity)
     if min_severity_phishing := args.get("min_severity_phishing"):
-        params["min_severity_phishing"] = min_severity_phishing
+        params["min_severity_phishing"] = severity_mapping.get(min_severity_phishing, min_severity_phishing)
     if page_size := args.get("page_size"):
         params["page_size"] = int(page_size)
     if page_number := args.get("page_number"):
