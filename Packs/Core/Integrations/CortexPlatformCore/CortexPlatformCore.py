@@ -175,7 +175,6 @@ class Endpoints:
         "windows": "AGENT_OS_WINDOWS",
         "mac": "AGENT_OS_MAC",
         "linux": "AGENT_OS_LINUX",
-        "caas_linux": "AGENT_OS_CAAS_LINUX",
         "android": "AGENT_OS_ANDROID",
         "ios": "AGENT_OS_IOS",
         "serverless": "AGENT_OS_SERVERLESS",
@@ -4803,7 +4802,8 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
         client: The Cortex Platform client instance.
         args: Dictionary containing policy configuration parameters:
             - policy_name (required): Name for the new policy
-            - target_endpoint (required): Comma-separated list of endpoint names
+            - target_endpoint_names (optional): Comma-separated list of endpoint names
+            - target_endpoint_ids (optional): Comma-separated list of endpoint IDs
             - platform (required): Platform type (AGENT_OS_WINDOWS, AGENT_OS_MAC, etc.)
             - description (optional): Policy description
             - priority (optional): Policy priority (default: auto-assigned)
@@ -4819,8 +4819,83 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
     """
     # Parse required arguments
     policy_name = args.get('policy_name')
-    target_endpoints = argToList(args.get('target_endpoint'))
+    target_endpoint_names = argToList(args.get('target_endpoint_names', ''))
+    target_endpoint_ids = argToList(args.get('target_endpoint_ids', ''))
     platform = args.get('platform', '')
+    
+    # Validate that both target_endpoint_names and target_endpoint_ids are not provided together
+    if target_endpoint_names and target_endpoint_ids:
+        raise DemistoException(
+            'Cannot provide both target_endpoint_names and target_endpoint_ids. '
+            'Please use either target_endpoint_names or target_endpoint_ids, not both.'
+        )
+    
+    # Validate that at least one targeting method is provided
+    if not target_endpoint_names and not target_endpoint_ids:
+        raise DemistoException(
+            'Either target_endpoint_names or target_endpoint_ids must be provided.'
+        )
+    
+    # If endpoint names are provided, verify them and check for duplicates
+    if target_endpoint_names:
+        demisto.debug(f"Verifying endpoint names: {target_endpoint_names}")
+        
+        # Build filter to query endpoints by name (same logic as core_list_endpoints_command)
+        filter_builder = FilterBuilder()
+        filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["endpoint_name"], FilterType.EQ, target_endpoint_names)
+        filter_dict = filter_builder.to_dict()
+        
+        request_data = build_webapp_request_data(
+            table_name=AGENTS_TABLE,
+            filter_dict=filter_dict,
+            limit=MAX_GET_ENDPOINTS_LIMIT,
+            sort_field="AGENT_NAME",
+            sort_order="ASC",
+        )
+        
+        response = client.get_webapp_data(request_data)
+        reply = response.get("reply", {})
+        raw_endpoints = reply.get("DATA", [])
+        
+        if not raw_endpoints:
+            raise DemistoException(
+                f'No endpoints found with the specified names: {", ".join(target_endpoint_names)}'
+            )
+        
+        # Map the endpoint data to get endpoint_name and endpoint_id
+        endpoints = map_endpoint_format(raw_endpoints)
+        
+        # Check for duplicate endpoint names
+        endpoint_name_to_ids: dict[str, list[str]] = {}
+        for endpoint in endpoints:
+            endpoint_name = endpoint.get('endpoint_name')
+            endpoint_id = endpoint.get('endpoint_id')
+            
+            if endpoint_name and endpoint_id:
+                if endpoint_name not in endpoint_name_to_ids:
+                    endpoint_name_to_ids[endpoint_name] = []
+                endpoint_name_to_ids[endpoint_name].append(endpoint_id)
+        
+        # Find duplicates
+        duplicates = {name: ids for name, ids in endpoint_name_to_ids.items() if len(ids) > 1}
+        
+        if duplicates:
+            error_message = 'Multiple endpoints found with the same name. Please use target_endpoint_ids instead:\n\n'
+            for endpoint_name, endpoint_ids in duplicates.items():
+                error_message += f'Endpoint Name: "{endpoint_name}"\n'
+                for endpoint_id in endpoint_ids:
+                    error_message += f'  - ID: {endpoint_id}\n'
+                error_message += '\n'
+            
+            raise DemistoException(error_message.strip())
+        
+        # Extract endpoint IDs from the verified endpoints
+        target_endpoint_ids = [endpoint['endpoint_id'] for endpoint in endpoints if endpoint.get('endpoint_id')]
+        target_endpoints = target_endpoint_names  # For display purposes
+        demisto.debug(f"Resolved endpoint IDs: {target_endpoint_ids}")
+    else:
+        # Using endpoint IDs directly
+        target_endpoints = target_endpoint_ids
     
     # Parse optional arguments
     description = args.get('description', '')
@@ -4980,7 +5055,11 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
 
     # Build readable output
     readable_output = f"Successfully created endpoint policy '{policy_name}' with priority {priority} for platform {platform}.\n"
-    readable_output += f"Target endpoints: {', '.join(target_endpoints)}\n"
+    if target_endpoint_names:
+        readable_output += f"Target endpoints (by name): {', '.join(target_endpoint_names)}\n"
+        readable_output += f"Resolved endpoint IDs: {', '.join(target_endpoint_ids)}\n"
+    else:
+        readable_output += f"Target endpoints (by ID): {', '.join(target_endpoint_ids)}\n"
     readable_output += f"Exploit Profile: {exploit_profile}\n"
     readable_output += f"Malware Profile: {malware_profile}\n"
     readable_output += f"Agent Settings Profile: {agent_settings_profile}"
@@ -4989,12 +5068,14 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
         'PolicyName': policy_name,
         'Platform': platform,
         'Priority': priority,
-        'TargetEndpoints': target_endpoints,
+        'TargetEndpointNames': target_endpoint_names if target_endpoint_names else None,
+        'TargetEndpointIds': target_endpoint_ids,
         'ExploitProfile': exploit_profile,
         'MalwareProfile': malware_profile,
         'AgentSettingsProfile': agent_settings_profile,
         'Description': description,
     }
+    remove_nulls_from_dictionary(outputs)
     
     return CommandResults(
         readable_output=readable_output,

@@ -3359,9 +3359,12 @@ script:
           description: The name for the new endpoint policy. Must be unique and descriptive.
           required: true
           type: String
-        - name: target_endpoint
+        - name: target_endpoint_names
           description: A comma-separated list of endpoint names to apply the policy to. The policy will target these specific endpoints.
-          required: true
+          isArray: true
+          type: String
+        - name: target_endpoint_ids
+          description: A comma-separated list of endpoint ids to apply the policy to. The policy will target these specific endpoints.
           isArray: true
           type: String
         - name: platform
@@ -3374,7 +3377,6 @@ script:
             - linux
             - android
             - ios
-            - caas_linux
             - serverless
           type: String
         - name: description
