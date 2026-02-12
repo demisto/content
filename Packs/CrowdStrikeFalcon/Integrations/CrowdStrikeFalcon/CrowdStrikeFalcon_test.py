@@ -8601,7 +8601,6 @@ def test_resolve_case_command(requests_mock):
         resolve_case_command({"status": "new"})
 
 
-
 # ============== NGSIEM Search Events Tests ==============
 @pytest.mark.parametrize(
     "events, expected_rawstring",
@@ -8756,39 +8755,69 @@ def test_get_ngsiem_search_results_request(requests_mock):
     [
         # 1) First call: should initiate, set job_id, and continue polling
         (
-            {"query": "test", "repository": "search-all"}, {"id": "job123"},
-            {"done": False, "cancelled": False}, False, None,
-            True, None, "job123",
+            {"query": "test", "repository": "search-all", "wait_for_result": True},
+            {"id": "job123"},
+            {"done": False, "cancelled": False},
+            False,
+            None,
+            True,
+            None,
+            "job123",
         ),
         # 2) First call but initiate returns no id: should raise
         (
-            {"query": "test", "repository": "search-all"}, {},
-            None, True, "Failed to initiate",
-            None, None, None,
+            {"query": "test", "repository": "search-all", "wait_for_result": True},
+            {},
+            None,
+            True,
+            "Failed to initiate",
+            None,
+            None,
+            None,
         ),
         # 3) Poll: in progress
         (
-            {"query": "test", "job_id": "job123", "repository": "search-all"}, None,
-            {"done": False, "cancelled": False}, False, None,
-            True, "still in progress", None,
+            {"query": "test", "job_id": "job123", "repository": "search-all", "wait_for_result": True},
+            None,
+            {"done": False, "cancelled": False},
+            False,
+            None,
+            True,
+            "still in progress",
+            None,
         ),
         # 4) Poll: done with events
         (
-            {"query": "test", "job_id": "job123", "repository": "search-all"}, None,
-            {"done": True, "events": [{"id": "evt1", "timestamp": "2023-01-01T00:00:00Z"}]}, False, None,
-            False, "NGSIEM Events", None,
+            {"query": "test", "job_id": "job123", "repository": "search-all", "wait_for_result": True},
+            None,
+            {"done": True, "events": [{"id": "evt1", "timestamp": "2023-01-01T00:00:00Z"}]},
+            False,
+            None,
+            False,
+            "NGSIEM Events",
+            None,
         ),
         # 5) Poll: done no events
         (
-            {"query": "test", "job_id": "job123", "repository": "search-all"}, None,
-            {"done": True, "events": []}, False, None,
-            False, "No events found", None,
+            {"query": "test", "job_id": "job123", "repository": "search-all", "wait_for_result": True},
+            None,
+            {"done": True, "events": []},
+            False,
+            None,
+            False,
+            "No events found",
+            None,
         ),
         # 6) Poll: cancelled -> raise
         (
-            {"query": "test", "job_id": "job123", "repository": "search-all"}, None,
-            {"done": False, "cancelled": True}, True, "cancelled",
-            None, None, None,
+            {"query": "test", "job_id": "job123", "repository": "search-all", "wait_for_result": True},
+            None,
+            {"done": False, "cancelled": True},
+            True,
+            "cancelled",
+            None,
+            None,
+            None,
         ),
     ],
 )
@@ -8817,6 +8846,8 @@ def test_cs_falcon_search_ngsiem_events_command_merged(
         - Sets args["job_id"] on first-call successful initiation when expected
     """
     from CrowdStrikeFalcon import cs_falcon_search_ngsiem_events_command
+
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
 
     # If this is the "first call" flow, cs_falcon_search_ngsiem_events_command will build body + initiate.
     if "job_id" not in args:

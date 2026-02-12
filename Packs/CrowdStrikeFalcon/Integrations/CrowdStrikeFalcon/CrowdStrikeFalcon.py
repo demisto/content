@@ -507,9 +507,7 @@ def error_handler(res):
         body = (res.text or "").strip()
         # keep it short to avoid huge war-room errors
         body = body[:4000]
-        raise DemistoException(
-            f"Error in API call to CrowdStrike Falcon: code: {res.status_code} - reason: {reason}\n{body}"
-        )
+        raise DemistoException(f"Error in API call to CrowdStrike Falcon: code: {res.status_code} - reason: {reason}\n{body}")
     resources = res_json.get("resources", {})
     extracted_error_message = ""
     if resources:
@@ -6431,7 +6429,7 @@ def build_ngsiem_query_with_limit(query: str, limit: int) -> str:
     return query
 
 
-def arg_to_ngsiem_time_spec(val: Any, arg_name: Optional[str] = None) -> Optional[Union[int,str]]:
+def arg_to_ngsiem_time_spec(val: Any, arg_name: Optional[str] = None) -> Optional[Union[int, str]]:
     if val is None or val == "":
         return None
 
@@ -6451,7 +6449,6 @@ def arg_to_ngsiem_time_spec(val: Any, arg_name: Optional[str] = None) -> Optiona
     except ValueError:
         # not ISO absolute -> pass through as LogScale time spec / relative string
         return s
-
 
 
 def build_ngsiem_search_body(args: dict) -> dict:
@@ -6520,6 +6517,7 @@ def process_ngsiem_search_completion(response: dict, args: dict) -> PollResult:
             "event_simpleName",
             "id",
         ]
+
         def header_transform(header: str) -> str:
             clean = header.lstrip("#@")
             return clean.replace("_", " ").replace(".", " ").title()
@@ -6594,11 +6592,11 @@ def cs_falcon_search_ngsiem_events_command(args: dict) -> PollResult:
         return process_ngsiem_search_completion(response, args)
 
     demisto.info(f"NGSIEM search job {job_id} still in progress, continuing to poll...")
-    
+
     return PollResult(
         response=CommandResults(readable_output=f"NGSIEM search job {job_id} still in progress, continuing to poll..."),
         continue_to_poll=True,
-        args_for_next_run=args
+        args_for_next_run=args,
     )
 
 
