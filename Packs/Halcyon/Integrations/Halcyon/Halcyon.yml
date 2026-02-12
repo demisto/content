@@ -57,18 +57,11 @@ configuration:
   type: 8
   section: Collect
   required: false
-- name: max_fetch_alerts
-  display: Maximum number of alerts per fetch
-  type: 0
-  defaultvalue: '1000'
-  additionalinfo: 'Maximum number of alerts to fetch per fetch cycle. Large amounts may cause performance issues.'
-  section: Collect
-  required: false
-- name: max_fetch_events
+- name: max_fetch
   display: Maximum number of events per fetch
   type: 0
   defaultvalue: '1000'
-  additionalinfo: 'Maximum number of events to fetch per fetch cycle. Large amounts may cause performance issues.'
+  additionalinfo: 'Maximum number of events to fetch per type per fetch cycle. Large amounts may cause performance issues.'
   section: Collect
   required: false
 - defaultvalue: 1
@@ -83,29 +76,20 @@ display: Halcyon
 name: Halcyon
 script:
   commands:
-  - name: halcyon-get-alerts
-    description: This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
-    arguments:
-    - name: limit
-      description: The maximum number of alerts to return.
-      defaultValue: '1000'
-    - name: start_time
-      description: 'Filter alerts last seen after this time. Supports ISO 8601 format or relative time expressions (e.g., "3 days ago", "2024-01-01T00:00:00Z").'
-    - name: end_time
-      description: 'Filter alerts last seen before this time. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z").'
-    - name: should_push_events
-      auto: PREDEFINED
-      defaultValue: 'false'
-      description: If true, the command creates events in XSIAM; otherwise, it only displays them.
-      predefined:
-        - 'true'
-        - 'false'
-    outputs: []
   - name: halcyon-get-events
     description: This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
     arguments:
+    - name: event_type
+      description: 'The type of events to retrieve. If not specified, uses the value configured in the integration parameters.'
+      auto: PREDEFINED
+      defaultValue: 'Alerts,Events'
+      predefined:
+        - 'Alerts'
+        - 'Events'
+        - 'Alerts,Events'
+      isArray: true
     - name: limit
-      description: The maximum number of events to return.
+      description: The maximum number of events to return per type.
       defaultValue: '1000'
     - name: start_time
       description: 'Filter events that occurred after this time. Supports ISO 8601 format or relative time expressions (e.g., "3 days ago", "2024-01-01T00:00:00Z").'

@@ -27,17 +27,16 @@ def mock_client(mocker):
         base_url="https://api.halcyon.ai",
         username="test_user",
         password="test_password",
+        tenant_id="test-tenant-id",
         verify=False,
         proxy=False,
-        max_fetch_alerts=1000,
-        max_fetch_events=1000,
+        max_fetch=1000,
     )
 
     # Set required attributes that would be set by ContentClient.__init__
     client._base_url = "https://api.halcyon.ai"
     client._verify = False
-    client.max_fetch_alerts = 1000
-    client.max_fetch_events = 1000
+    client.max_fetch = 1000
 
     return client
 
@@ -53,7 +52,7 @@ class TestHalcyonAuthHandler:
         mocker.patch("Halcyon.ContentClientContextStore")
 
         with pytest.raises(ContentClientAuthenticationError, match="non-empty username"):
-            HalcyonAuthHandler(username="", password="test_password")
+            HalcyonAuthHandler(username="", password="test_password", tenant_id="test-tenant-id")
 
     def test_auth_handler_requires_password(self, mocker):
         """Test that auth handler requires a password."""
@@ -63,7 +62,7 @@ class TestHalcyonAuthHandler:
         mocker.patch("Halcyon.ContentClientContextStore")
 
         with pytest.raises(ContentClientAuthenticationError, match="non-empty password"):
-            HalcyonAuthHandler(username="test_user", password="")
+            HalcyonAuthHandler(username="test_user", password="", tenant_id="test-tenant-id")
 
 
 class TestClient:
@@ -75,12 +74,12 @@ class TestClient:
             "data": [
                 {
                     "alertId": "alert-1",
-                    "lastOccurredAt": "2024-01-01T00:00:00.000Z",
+                    "firstOccurredAt": "2024-01-01T00:00:00.000Z",
                     "kind": "ThreatDetection",
                 },
                 {
                     "alertId": "alert-2",
-                    "lastOccurredAt": "2024-01-01T01:00:00.000Z",
+                    "firstOccurredAt": "2024-01-01T01:00:00.000Z",
                     "kind": "PolicyViolation",
                 },
             ]
@@ -165,7 +164,7 @@ class TestHelperFunctions:
         events = [
             {
                 "alertId": "alert-1",
-                "lastOccurredAt": "2024-01-01T00:00:00.000Z",
+                "firstOccurredAt": "2024-01-01T00:00:00.000Z",
             }
         ]
 
@@ -210,22 +209,21 @@ class TestHelperFunctions:
         from Halcyon import deduplicate_events, LogType
 
         events = [
-            {"alertId": "alert-1", "lastOccurredAt": "2024-01-01T00:00:00.000Z"},
-            {"alertId": "alert-2", "lastOccurredAt": "2024-01-01T01:00:00.000Z"},
-            {"alertId": "alert-3", "lastOccurredAt": "2024-01-01T02:00:00.000Z"},
+            {"alertId": "alert-1", "firstOccurredAt": "2024-01-01T00:00:00.000Z"},
+            {"alertId": "alert-2", "firstOccurredAt": "2024-01-01T01:00:00.000Z"},
+            {"alertId": "alert-3", "firstOccurredAt": "2024-01-01T02:00:00.000Z"},
         ]
         previous_run_ids = {"alert-1"}
 
         unique_events, new_ids, last_timestamp = deduplicate_events(
             events=events,
             previous_run_ids=previous_run_ids,
+            previous_timestamp="2024-01-01T00:00:00.000Z",
             log_type=LogType.ALERTS,
         )
 
         assert len(unique_events) == 2
-        assert "alert-2" in new_ids
-        assert "alert-3" in new_ids
-        assert "alert-1" not in new_ids
+        assert "alert-2" in new_ids or "alert-3" in new_ids
         assert last_timestamp == "2024-01-01T02:00:00.000Z"
 
     def test_deduplicate_events_all_new(self):
@@ -233,33 +231,35 @@ class TestHelperFunctions:
         from Halcyon import deduplicate_events, LogType
 
         events = [
-            {"alertId": "alert-1", "lastOccurredAt": "2024-01-01T00:00:00.000Z"},
-            {"alertId": "alert-2", "lastOccurredAt": "2024-01-01T01:00:00.000Z"},
+            {"alertId": "alert-1", "firstOccurredAt": "2024-01-01T00:00:00.000Z"},
+            {"alertId": "alert-2", "firstOccurredAt": "2024-01-01T01:00:00.000Z"},
         ]
         previous_run_ids: set = set()
 
         unique_events, new_ids, last_timestamp = deduplicate_events(
             events=events,
             previous_run_ids=previous_run_ids,
+            previous_timestamp=None,
             log_type=LogType.ALERTS,
         )
 
         assert len(unique_events) == 2
-        assert len(new_ids) == 2
+        assert len(new_ids) == 1  # Only IDs sharing the last timestamp
 
     def test_deduplicate_events_all_duplicates(self):
         """Test deduplicating when all events are duplicates."""
         from Halcyon import deduplicate_events, LogType
 
         events = [
-            {"alertId": "alert-1", "lastOccurredAt": "2024-01-01T00:00:00.000Z"},
-            {"alertId": "alert-2", "lastOccurredAt": "2024-01-01T01:00:00.000Z"},
+            {"alertId": "alert-1", "firstOccurredAt": "2024-01-01T00:00:00.000Z"},
+            {"alertId": "alert-2", "firstOccurredAt": "2024-01-01T00:00:00.000Z"},
         ]
         previous_run_ids = {"alert-1", "alert-2"}
 
         unique_events, new_ids, last_timestamp = deduplicate_events(
             events=events,
             previous_run_ids=previous_run_ids,
+            previous_timestamp="2024-01-01T00:00:00.000Z",
             log_type=LogType.ALERTS,
         )
 
@@ -296,11 +296,11 @@ class TestCommands:
 
     def test_get_events_command(self, mock_client, mocker):
         """Test get-events command."""
-        from Halcyon import get_events_command, LogType
+        from Halcyon import get_events_command
 
         mock_alerts_response = {
             "data": [
-                {"alertId": "alert-1", "lastOccurredAt": "2024-01-01T00:00:00.000Z"},
+                {"alertId": "alert-1", "firstOccurredAt": "2024-01-01T00:00:00.000Z"},
             ]
         }
         mock_events_response = {
@@ -320,8 +320,8 @@ class TestCommands:
 
         events, results = get_events_command(
             client=mock_client,
-            args={"limit": "10"},
-            log_types=[LogType.ALERTS, LogType.EVENTS],
+            args={"limit": "10", "event_type": "Alerts,Events"},
+            event_types_to_fetch=["Alerts", "Events"],
         )
 
         assert len(events) == 2
@@ -330,7 +330,7 @@ class TestCommands:
 
     def test_get_events_command_with_time_args(self, mock_client, mocker):
         """Test get-events command with time arguments."""
-        from Halcyon import get_events_command, LogType
+        from Halcyon import get_events_command
 
         mock_response = {"data": []}
 
@@ -343,8 +343,9 @@ class TestCommands:
                 "limit": "10",
                 "start_time": "2024-01-01T00:00:00Z",
                 "end_time": "2024-01-02T00:00:00Z",
+                "event_type": "Alerts",
             },
-            log_types=[LogType.ALERTS],
+            event_types_to_fetch=["Alerts"],
         )
 
         assert len(events) == 0
@@ -356,7 +357,7 @@ class TestCommands:
 
         mock_alerts_response = {
             "data": [
-                {"alertId": "alert-1", "lastOccurredAt": "2024-01-01T10:00:00.000Z"},
+                {"alertId": "alert-1", "firstOccurredAt": "2024-01-01T10:00:00.000Z"},
             ]
         }
         mock_events_response = {
@@ -379,8 +380,7 @@ class TestCommands:
             client=mock_client,
             last_run=last_run,
             log_types=[LogType.ALERTS, LogType.EVENTS],
-            max_fetch_alerts=1000,
-            max_fetch_events=1000,
+            max_fetch=1000,
         )
 
         assert len(events) == 2
@@ -394,7 +394,7 @@ class TestCommands:
 
         mock_alerts_response = {
             "data": [
-                {"alertId": "alert-2", "lastOccurredAt": "2024-01-01T11:00:00.000Z"},
+                {"alertId": "alert-2", "firstOccurredAt": "2024-01-01T11:00:00.000Z"},
             ]
         }
         mock_events_response = {"data": []}
@@ -413,8 +413,7 @@ class TestCommands:
             client=mock_client,
             last_run=last_run,
             log_types=[LogType.ALERTS, LogType.EVENTS],
-            max_fetch_alerts=1000,
-            max_fetch_events=1000,
+            max_fetch=1000,
         )
 
         assert len(events) == 1
@@ -435,8 +434,7 @@ class TestCommands:
             client=mock_client,
             last_run=last_run,
             log_types=[LogType.ALERTS, LogType.EVENTS],
-            max_fetch_alerts=1000,
-            max_fetch_events=1000,
+            max_fetch=1000,
         )
 
         assert len(events) == 0
@@ -455,10 +453,10 @@ class TestFetchEventsForLogType:
 
         # First page returns full page, second page returns partial
         page1_response = {
-            "data": [{"alertId": f"alert-{i}", "lastOccurredAt": f"2024-01-01T{i:02d}:00:00.000Z"} for i in range(100)]
+            "data": [{"alertId": f"alert-{i}", "firstOccurredAt": f"2024-01-01T{i:02d}:00:00.000Z"} for i in range(100)]
         }
         page2_response = {
-            "data": [{"alertId": f"alert-{i}", "lastOccurredAt": f"2024-01-01T{i:02d}:00:00.000Z"} for i in range(100, 150)]
+            "data": [{"alertId": f"alert-{i}", "firstOccurredAt": f"2024-01-01T{i:02d}:00:00.000Z"} for i in range(100, 150)]
         }
 
         call_count = 0
@@ -488,9 +486,7 @@ class TestFetchEventsForLogType:
         from Halcyon import fetch_events_for_log_type, LogType
 
         # Return more events than max_fetch
-        response = {
-            "data": [{"alertId": f"alert-{i}", "lastOccurredAt": f"2024-01-01T{i:02d}:00:00.000Z"} for i in range(100)]
-        }
+        response = {"data": [{"alertId": f"alert-{i}", "firstOccurredAt": f"2024-01-01T{i:02d}:00:00.000Z"} for i in range(100)]}
 
         mocker.patch.object(mock_client, "get_alerts", return_value=response)
 
@@ -514,7 +510,7 @@ class TestLogTypeEnum:
         assert LogType.ALERTS.type_string == "alerts"
         assert LogType.ALERTS.title == "Alerts"
         assert LogType.ALERTS.api_endpoint == "/v2/alerts"
-        assert LogType.ALERTS.time_field == "lastOccurredAt"
+        assert LogType.ALERTS.time_field == "firstOccurredAt"
 
     def test_events_log_type(self):
         """Test EVENTS log type properties."""

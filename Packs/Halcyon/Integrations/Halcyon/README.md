@@ -60,6 +60,7 @@ The command returns a table with the fetched events.
 The integration fetches the following event types:
 
 ### Alerts
+
 - **API Endpoint**: `/v2/alerts`
 - **Time Field**: `lastOccurredAt`
 - **Source Log Type**: `alerts`
@@ -67,6 +68,7 @@ The integration fetches the following event types:
 Alerts represent security-related notifications from the Halcyon platform, including threat detections, policy violations, and other security events.
 
 ### Events
+
 - **API Endpoint**: `/v2/events`
 - **Time Field**: `occurredAt`
 - **Source Log Type**: `events`
@@ -82,6 +84,7 @@ The data is stored in the `halcyon_halcyon_raw` dataset in Cortex XSIAM.
 ### Authentication Issues
 
 If you encounter authentication errors:
+
 1. Verify that the username and password are correct.
 2. Ensure the account has the necessary permissions to access the Halcyon API.
 3. Check if the account is locked or disabled.
@@ -89,6 +92,7 @@ If you encounter authentication errors:
 ### Rate Limiting
 
 If you encounter rate limiting errors:
+
 1. Reduce the maximum number of events per fetch.
 2. Increase the fetch interval.
 3. Contact Halcyon support if the issue persists.
@@ -96,6 +100,7 @@ If you encounter rate limiting errors:
 ### Connection Issues
 
 If you encounter connection errors:
+
 1. Verify the Server URL is correct.
 2. Check network connectivity to the Halcyon API.
 3. If using a proxy, ensure the proxy settings are configured correctly.
@@ -104,6 +109,7 @@ If you encounter connection errors:
 ### Missing Events
 
 If events are not being fetched:
+
 1. Verify that the "Fetch events" checkbox is enabled.
 2. Check that the correct log types are selected.
 3. Ensure the account has permissions to access the selected log types.
