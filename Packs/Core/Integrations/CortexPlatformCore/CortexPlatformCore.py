@@ -68,6 +68,7 @@ WEBAPP_COMMANDS = [
     "core-list-exception-rules",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
+    "core-get-email-investigation-summary",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -680,6 +681,23 @@ class Client(CoreClient):
             method="POST",
             url_suffix="/get_histograms",
             json_data=request_data,
+        )
+
+    def get_email_investigation_summary(self, params: dict) -> dict:
+        """Retrieves phishing email investigation summary from the email security API.
+
+        Args:
+            params (dict): Query parameters for the API call including days_timeframe,
+                          detection_method, min_severity, min_severity_phishing,
+                          page_size, and page_number.
+
+        Returns:
+            dict: The API response containing email investigation campaign summaries.
+        """
+        return self.platform_http_request(
+            method="GET",
+            url_suffix="/email-security/investigation/phishing-investigation/",
+            params=params,
         )
 
     def enable_scanners(self, payload: dict, repository_id: str) -> dict:
@@ -4533,6 +4551,54 @@ def get_case_resolution_statuses(client, args):
     )
 
 
+def get_email_investigation_summary_command(client: Client, args: dict) -> CommandResults:
+    """Retrieves phishing email investigation summary campaigns from Cortex.
+
+    Groups individual alerts into campaigns by email message ID, allowing
+    prioritization of investigations based on impact and scale.
+
+    Args:
+        client (Client): The Cortex platform client instance.
+        args (dict): Command arguments including days_timeframe, detection_method,
+                    min_severity, min_severity_phishing, page_size, page_number.
+
+    Returns:
+        CommandResults: The command results containing email investigation summaries.
+    """
+    params: dict[str, Any] = {}
+
+    if days_timeframe := args.get("days_timeframe"):
+        params["days_timeframe"] = int(days_timeframe)
+    if detection_method := args.get("detection_method"):
+        params["detection_method"] = detection_method
+    if min_severity := args.get("min_severity"):
+        params["min_severity"] = min_severity
+    if min_severity_phishing := args.get("min_severity_phishing"):
+        params["min_severity_phishing"] = min_severity_phishing
+    if page_size := args.get("page_size"):
+        params["page_size"] = int(page_size)
+    if page_number := args.get("page_number"):
+        params["page_number"] = int(page_number)
+
+    response = client.get_email_investigation_summary(params)
+    data = response if isinstance(response, list) else response.get("reply", response)
+
+    if isinstance(data, dict):
+        data = data.get("data", data.get("DATA", [data]))
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Email Investigation Summary",
+            data,
+            headerTransform=string_to_table_header,
+        ),
+        outputs_prefix="Core.EmailInvestigationSummary",
+        outputs_key_field="internet_message_id",
+        outputs=data,
+        raw_response=response,
+    )
+
+
 def verify_platform_version(version: str = "8.13.0"):
     if not is_demisto_version_ge(version):
         raise DemistoException("This command is not available for this platform version")
@@ -4671,6 +4737,9 @@ def main():  # pragma: no cover
         elif command == "core-xql-generic-query-platform":
             verify_platform_version()
             return_results(xql_query_platform_command(client, args))
+
+        elif command == "core-get-email-investigation-summary":
+            return_results(get_email_investigation_summary_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())

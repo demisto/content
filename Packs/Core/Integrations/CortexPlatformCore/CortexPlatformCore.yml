@@ -3351,6 +3351,78 @@ script:
         - contextPath: Core.CaseResolutionStatus.userInput
           description: User input parameters (for pending playbookTask items).
           type: Unknown
+    - arguments:
+        - description: Number of days to look back for issues.
+          name: days_timeframe
+          required: false
+        - description: "The source of the alerts to be clustered."
+          name: detection_method
+          required: false
+          defaultValue: USER_REPORTED_PHISHING
+          auto: PREDEFINED
+          predefined:
+            - EMAIL_ATTACHMENT
+            - ANALYTICS_BIOC
+            - MAGNIFIER
+            - AURL
+            - USER_REPORTED_PHISHING
+            - IOC
+        - description: "Minimum severity for all issues."
+          name: min_severity
+          required: false
+          defaultValue: SEV_010_INFO
+          auto: PREDEFINED
+          predefined:
+            - SEV_010_INFO
+            - SEV_020_LOW
+            - SEV_030_MEDIUM
+            - SEV_040_HIGH
+        - description: "Minimum severity for phishing-specific filtering."
+          name: min_severity_phishing
+          required: false
+          defaultValue: SEV_020_LOW
+          auto: PREDEFINED
+          predefined:
+            - SEV_010_INFO
+            - SEV_020_LOW
+            - SEV_030_MEDIUM
+            - SEV_040_HIGH
+        - description: Number of results per page.
+          name: page_size
+          required: false
+          defaultValue: "50"
+        - description: Page number for pagination.
+          name: page_number
+          required: false
+          defaultValue: "1"
+      name: core-get-email-investigation-summary
+      description: Retrieves a summary of phishing email investigation campaigns from Cortex, grouping individual alerts by email message ID to help prioritize investigations based on impact and scale.
+      hidden: true
+      outputs:
+        - contextPath: Core.EmailInvestigationSummary.internet_message_id
+          description: The unique identifier of the email message.
+          type: String
+        - contextPath: Core.EmailInvestigationSummary.sender
+          description: The source email address of the campaign.
+          type: String
+        - contextPath: Core.EmailInvestigationSummary.reporting_users_count
+          description: The number of unique users who actively reported this email.
+          type: Number
+        - contextPath: Core.EmailInvestigationSummary.total_affected
+          description: The total number of unique mailboxes in the organization that received this email.
+          type: Number
+        - contextPath: Core.EmailInvestigationSummary.total_issues
+          description: The total number of security issues generated in the system for this specific email ID.
+          type: Number
+        - contextPath: Core.EmailInvestigationSummary.unique_urls_count
+          description: The number of distinct URLs found within the email body.
+          type: Number
+        - contextPath: Core.EmailInvestigationSummary.unique_attachments_count
+          description: The number of distinct files attached to the email.
+          type: Number
+        - contextPath: Core.EmailInvestigationSummary.detection_methods_with_ids
+          description: Comma-separated list of detection methods with their issue IDs.
+          type: String
   runonce: false
   script: "-"
   subtype: python3
