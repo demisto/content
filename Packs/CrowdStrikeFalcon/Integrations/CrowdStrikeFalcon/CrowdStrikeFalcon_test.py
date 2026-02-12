@@ -8441,6 +8441,192 @@ def test_fetch_ngsiem_cases(mocker):
     assert last_run == {"offset": 1}
 
 
+def test_list_case_summaries_command_no_given_ids(mocker):
+    """
+    Test list_case_summaries_command without ids arg
+    Given
+     - No arguments given, as is
+    When
+     - The user is running list_case_summaries_command with no ids
+    Then
+     - Function is executed properly and returns no cases found message
+    """
+    from CrowdStrikeFalcon import list_case_summaries_command
+
+    mocker.patch.object(demisto, "args", return_value={})
+
+    # Mock get_cases_data to return IDs
+    mocker.patch("CrowdStrikeFalcon.get_cases_data", return_value=(1, ["case_id_1"]))
+
+    entity_response = [
+        {
+            "assigned_to_name": "Test no ids",
+            "cid": "string",
+            "created_time": "2022-02-21T16:36:57.759Z",
+            "description": "string",
+            "id": "case_id_1",
+            "status": "new",
+            "severity": "High",
+            "tags": ["tag1"],
+            "version": "1",
+        }
+    ]
+    # Mock get_cases_entities to return case details
+    mocker.patch("CrowdStrikeFalcon.get_cases_entities", return_value=entity_response)
+
+    result = list_case_summaries_command()
+    assert result.outputs[0]["assigned_to_name"] == "Test no ids"
+    assert result.outputs[0]["id"] == "case_id_1"
+
+
+def test_list_case_summaries_command_with_given_ids(requests_mock, mocker):
+    """
+    Test list_case_summaries_command with ids arg
+    Given
+     - ids
+    When
+     - The user is running list_case_summaries_command with ids
+    Then
+     - Function is executed properly and get_cases_entities func was called
+    """
+    from CrowdStrikeFalcon import list_case_summaries_command
+
+    entity_response = {
+        "errors": [],
+        "meta": {"pagination": {"limit": 0, "offset": 0, "total": 0}, "powered_by": "string"},
+        "resources": [
+            {
+                "assigned_to_name": "Test with ids",
+                "cid": "string",
+                "created_time": "2022-02-21T16:36:57.759Z",
+                "description": "string",
+                "id": "case_id_1",
+                "status": "new",
+                "severity": "High",
+                "tags": ["tag1"],
+                "version": "1",
+            }
+        ],
+    }
+
+    requests_mock.post(
+        f"{SERVER_URL}/cases/entities/cases/v2",
+        json=entity_response,
+        status_code=200,
+    )
+    mocker.patch.object(demisto, "args", return_value={"ids": "case_id_1"})
+
+    outputs = list_case_summaries_command().outputs
+
+    assert outputs[0]["assigned_to_name"] == "Test with ids"
+    assert outputs[0]["id"] == "case_id_1"
+
+
+def test_add_case_tags_command(requests_mock):
+    """
+    Given:
+        - Case ID and tags.
+    When:
+        - Running add_case_tags_command.
+    Then:
+        - Verify that the http_request is called with the correct arguments.
+        - Verify that the function returns the correct readable output.
+    """
+    from CrowdStrikeFalcon import add_case_tags_command
+
+    requests_mock.post(f"{SERVER_URL}/cases/entities/case-tags/v1", json={})
+
+    result = add_case_tags_command({"id": "case1", "tags": "tag1,tag2"})
+
+    assert result.readable_output == "Tags were added successfully."
+    assert requests_mock.last_request.json() == {"id": "case1", "tags": ["tag1", "tag2"]}
+
+
+def test_delete_case_tags_command(requests_mock):
+    """
+    Given:
+        - Case ID and tag.
+    When:
+        - Running delete_case_tags_command.
+    Then:
+        - Verify that the http_request is called with the correct arguments.
+        - Verify that the function returns the correct readable output.
+    """
+    from CrowdStrikeFalcon import delete_case_tags_command
+
+    requests_mock.delete(f"{SERVER_URL}/cases/entities/case-tags/v1?id=case1&tag=tag1", json={})
+
+    result = delete_case_tags_command({"id": "case1", "tag": "tag1"})
+
+    assert result.readable_output == "Tags were deleted successfully."
+    assert requests_mock.last_request.qs["id"] == ["case1"]
+    assert requests_mock.last_request.qs["tag"] == ["tag1"]
+
+
+def test_get_evidence_for_case_command(requests_mock, mocker):
+    """
+    Given:
+        - Case ID.
+    When:
+        - Running get_evidence_for_case_command.
+    Then:
+        - Verify that the http_request is called with the correct arguments.
+        - Verify that the function returns the correct readable output.
+    """
+    from CrowdStrikeFalcon import get_evidence_for_case_command
+
+    response_data = load_json("test_data/get_evidence_for_case_response.json")
+    requests_mock.post(f"{SERVER_URL}/cases/entities/cases/v2", json=response_data)
+    mocker.patch.object(demisto, "args", return_value={"id": "case_id_1"})
+    result = get_evidence_for_case_command({"id": "case_id_1"})
+
+    assert result.outputs == response_data["resources"][0]["evidence"]
+
+
+def test_resolve_case_command(requests_mock):
+    """
+    Given:
+        - Case ID and fields to update.
+    When:
+        - Running resolve_case_command.
+    Then:
+        - Verify that the http_request is called with the correct arguments.
+        - Verify that the function returns the correct readable output.
+    """
+    from CrowdStrikeFalcon import resolve_case_command
+
+    requests_mock.patch(f"{SERVER_URL}/cases/entities/cases/v2", json={})
+
+    # Test case 1: Update status and description
+    args = {"id": "case1", "status": "in_progress", "description": "investigating"}
+    result = resolve_case_command(args)
+    assert "Case case1 was changed successfully" in result.readable_output
+    assert "Status" in result.readable_output
+    assert "Description" in result.readable_output
+    assert requests_mock.last_request.json() == {
+        "id": "case1",
+        "fields": {"status": "in_progress", "description": "investigating"},
+    }
+
+    # Test case 2: Remove user assignment
+    args = {"id": "case1", "remove_user_assignment": "true"}
+    result = resolve_case_command(args)
+    assert "Assigned To Uuid" in result.readable_output
+    assert "Unassigned" in result.readable_output
+    assert requests_mock.last_request.json() == {
+        "id": "case1",
+        "fields": {"remove_user_assignment": True},
+    }
+
+    # Test case 3: Invalid severity
+    with pytest.raises(ValueError, match="Severity must be an integer between 10 and 100"):
+        resolve_case_command({"id": "case1", "severity": "5"})
+
+    # Test case 4: Missing ID
+    with pytest.raises(ValueError, match="The 'id' argument is required"):
+        resolve_case_command({"status": "new"})
+
+
 """ Fetch Assets Spotlight """
 
 
