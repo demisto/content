@@ -6399,7 +6399,11 @@ def clean_ngsiem_rawstring_field(events: list[dict]) -> list[dict]:
                 event["@rawstring"] = decoded
             except json.JSONDecodeError:
                 fixed = raw.replace("\\&", "&")
-                event["@rawstring"] = json.loads(fixed)
+                try:
+                    event["@rawstring"] = json.loads(fixed)
+                except json.JSONDecodeError:
+                    # if raw is string will keep it as is
+                    event["@rawstring"] = raw
     return events
 
 
@@ -6426,7 +6430,7 @@ def arg_to_ngsiem_time_spec(val: Any, arg_name: Optional[str] = None) -> Optiona
     """
     Normalize an NGSIEM time argument. CrowdStrike API supports both numeric timestamps and relative.
     Here we add the support of datetime strings.
-    
+
     Converts:
     - None / "" -> None
     - Numeric timestamps (int/float/digit-string):
