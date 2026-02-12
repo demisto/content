@@ -8783,7 +8783,7 @@ def test_get_ngsiem_search_results_request(requests_mock):
             False,
             None,
             True,
-            "still in progress",
+            "Searching NGSIEM events:",
             None,
         ),
         # 4) Poll: done with events
