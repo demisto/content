@@ -8443,16 +8443,6 @@ def test_fetch_ngsiem_cases(mocker):
 
 ''' Fetch Assets Spotlight '''
 
-import CrowdStrikeFalcon
-from CrowdStrikeFalcon import (
-        fetch_spotlight_assets,
-        SPOTLIGHT_VULN_PRODUCT,
-        AssetsDeviceHandler,
-        save_spotlight_state,
-        ContentClientState,
-        send_batch_to_xsiam_and_save_context
-)
-
 class TestSpotlightFetchAssets:
     """
     Tests for the Spotlight fetch-assets flow, including vulnerability fetching,
@@ -8474,7 +8464,10 @@ class TestSpotlightFetchAssets:
             - An XSIAM send task is created with the correct product and data.
             - The handler's flush_remaining is called to process any remaining AIDs.
         """
-        # 1. Setup Mocks
+        import CrowdStrikeFalcon
+        from CrowdStrikeFalcon import fetch_spotlight_assets, SPOTLIGHT_VULN_PRODUCT
+
+        # 1. Mock
         mock_client = mocker.AsyncMock()
         mocker.patch("CrowdStrikeFalcon.create_spotlight_client", return_value=mock_client)
 
@@ -8533,6 +8526,9 @@ class TestSpotlightFetchAssets:
             - The handler's flush_remaining is still called.
             - The state is updated with a count of 0.
         """
+        import CrowdStrikeFalcon
+        from CrowdStrikeFalcon import fetch_spotlight_assets
+
         # 1. Setup Mocks
         mock_client = mocker.AsyncMock()
         mocker.patch("CrowdStrikeFalcon.create_spotlight_client", return_value=mock_client)
@@ -8593,6 +8589,7 @@ class TestSpotlightFetchAssets:
             - The error handler re-raises the exception (as configured in this test).
             - The correct exception type and message are propagated.
         """
+        from CrowdStrikeFalcon import fetch_spotlight_assets
         # 1. Setup Mocks
         mock_client = mocker.AsyncMock()
         mocker.patch("CrowdStrikeFalcon.create_spotlight_client", return_value=mock_client)
@@ -8644,6 +8641,9 @@ class TestSpotlightFetchAssets:
             - The state is updated with the cursor for Page 2 (the next token) before the crash.
             - The processed AIDs and total fetched count are saved correctly.
         """
+        import CrowdStrikeFalcon
+        from CrowdStrikeFalcon import fetch_spotlight_assets
+
         # 1. Setup Mocks
         mock_client = mocker.AsyncMock()
         mocker.patch("CrowdStrikeFalcon.create_spotlight_client", return_value=mock_client)
@@ -8713,6 +8713,9 @@ class TestSpotlightFetchAssets:
         Then:
             - The main execution raises the exception from the background task.
         """
+        import CrowdStrikeFalcon
+        from CrowdStrikeFalcon import fetch_spotlight_assets
+
         # 1. Setup Mocks
         mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
 
@@ -8734,9 +8737,11 @@ class TestSpotlightFetchAssets:
         ))
 
         async def failing_task():
+            # Ensure the task yields control so the loop runs
             await asyncio.sleep(0.01)
             raise ValueError("XSIAM Send Failed")
 
+        # Create the task inside the test loop
         mock_task = asyncio.create_task(failing_task())
 
         mocker.patch(
@@ -8765,6 +8770,8 @@ class TestSpotlightFetchAssets:
             - Enrichment is triggered once for the first 5 AIDs.
             - 2 AIDs remain in the pending buffer.
         """
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
         # Setup
         mock_client = mocker.AsyncMock()
         handler = AssetsDeviceHandler(
@@ -8800,6 +8807,8 @@ class TestSpotlightFetchAssets:
             - Only the new AIDs are added to the buffer.
             - Existing processed and buffered AIDs are ignored.
         """
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
         # Setup
         handler = AssetsDeviceHandler(
             client=mocker.AsyncMock(),
@@ -8810,6 +8819,7 @@ class TestSpotlightFetchAssets:
             batch_limit=10
         )
 
+        # Pre-fill buffer
         handler.pending_buffer = {"buffer_1"}
 
         # Execute
@@ -8831,6 +8841,8 @@ class TestSpotlightFetchAssets:
             - Enrichment is triggered for the remaining items.
             - The buffer is cleared.
         """
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
         # Setup
         handler = AssetsDeviceHandler(
             client=mocker.AsyncMock(),
@@ -8865,6 +8877,8 @@ class TestSpotlightFetchAssets:
         Then:
             - No XSIAM task is created (preventing ingestion of empty data).
         """
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
         # Setup
         mock_client = mocker.AsyncMock()
         mock_response = mocker.Mock()
@@ -8902,6 +8916,8 @@ class TestSpotlightFetchAssets:
             - State is saved for Batch 2.
             - State is NOT saved for Batch 1 (avoiding regression).
         """
+        from CrowdStrikeFalcon import send_batch_to_xsiam_and_save_context
+
         # Setup
         mock_save_callback = mocker.Mock()
         mocker.patch("CrowdStrikeFalcon.send_data_to_xsiam_async", return_value=[])
@@ -8942,6 +8958,8 @@ class TestSpotlightFetchAssets:
             - The integration context is updated with a 'spotlight_assets' key.
             - Existing context data is preserved.
         """
+        from CrowdStrikeFalcon import save_spotlight_state, ContentClientState
+
         # Setup
         mock_context_store = mocker.Mock()
         integration_context = {"existing_key": "val"}
