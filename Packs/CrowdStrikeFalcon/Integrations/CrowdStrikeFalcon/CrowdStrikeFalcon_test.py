@@ -8868,8 +8868,13 @@ def test_cs_falcon_search_ngsiem_events_command_merged(
 
     result = cs_falcon_search_ngsiem_events_command(args)
 
-    assert result.continue_to_poll is expect_continue
+    if expect_continue:
+        # When polling should continue, the decorator wraps the result with a ScheduledCommand
+        assert result.scheduled_command is not None
+    else:
+        # When polling is done, the decorator returns the final CommandResults directly
+        assert result.scheduled_command is None
     if expect_hr is not None:
-        assert expect_hr in result.response.readable_output
+        assert expect_hr in result.readable_output
     if expect_job_id is not None:
         assert args["job_id"] == expect_job_id
