@@ -3516,7 +3516,7 @@ Returns a list of your Lambda functions. For each function, the response include
 | --- | --- | --- |
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
-| limit | Maximum number of functions to return in a single request. Valid range is 1-50. Default: 50. Default is 50. | Optional |
+| limit | Maximum number of functions to return in a single request. Valid range is 1-50. Default: 50. | Optional |
 | next_token | Token for pagination. Use the value from AWS.Lambda.FunctionsNextToken to retrieve the next page of results. | Optional |
 
 #### Context Output
@@ -3546,8 +3546,8 @@ Returns a list of your Lambda functions. For each function, the response include
 | AWS.Lambda.Functions.TracingConfig.Mode | string | The function's AWS X-Ray tracing configuration mode. |
 | AWS.Lambda.Functions.MasterArn | string | The ARN of the master function. |
 | AWS.Lambda.Functions.RevisionId | string | Represents the latest updated revision of the function or alias. |
-| AWS.Lambda.Functions.Layers.Arn | string | The Amazon Resource Name \(ARN\) of the function layer. |
-| AWS.Lambda.Functions.Layers.CodeSize | string | The size of the layer archive in bytes. |
+| AWS.Lambda.Functions.LayerVersions.Arn | string | The Amazon Resource Name \(ARN\) of the function layer. |
+| AWS.Lambda.Functions.LayerVersions.CodeSize | string | The size of the layer archive in bytes. |
 | AWS.Lambda.Functions.Region | string | The AWS Region. |
 | AWS.Lambda.FunctionsNextToken | string | Token to use for pagination in subsequent requests. |
 
@@ -3763,21 +3763,21 @@ Lists the versions of an Lambda layer.
 | layer_name | The name or Amazon Resource Name (ARN) of the layer. | Required |
 | compatible_runtime | A runtime identifier. For example, java21. | Optional |
 | next_token | A pagination token returned by a previous call. | Optional |
-| limit | The maximum number of versions to return. | Optional |
+| limit | The maximum number of versions to return. Note that the maximum limit is 50 items in each response. Default is 50. | Optional |
 | compatible_architecture | The compatible instruction set architecture. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.Lambda.Layers.VersionsNextToken | string | A pagination token returned when the response doesn't contain all versions. |
-| AWS.Lambda.Layers.LayerVersionArn | string | The ARN of the layer version. |
-| AWS.Lambda.Layers.Version | number | The version number. |
-| AWS.Lambda.Layers.Description | string | The description of the version. |
-| AWS.Lambda.Layers.CreatedDate | string | The date that the version was created, in ISO 8601 format. |
-| AWS.Lambda.Layers.CompatibleRuntimes | array | The layer's compatible runtimes. |
-| AWS.Lambda.Layers.LicenseInfo | string | The layer's open-source license. |
-| AWS.Lambda.Layers.CompatibleArchitectures | array | A list of compatible instruction set architectures. |
+| AWS.Lambda.LayerVersions.VersionsNextToken | string | A pagination token returned when the response doesn't contain all versions. |
+| AWS.Lambda.LayerVersions.LayerVersionArn | string | The ARN of the layer version. |
+| AWS.Lambda.LayerVersions.Version | number | The version number. |
+| AWS.Lambda.LayerVersions.Description | string | The description of the version. |
+| AWS.Lambda.LayerVersions.CreatedDate | string | The date that the version was created, in ISO 8601 format. |
+| AWS.Lambda.LayerVersions.CompatibleRuntimes | array | The layer's compatible runtimes. |
+| AWS.Lambda.LayerVersions.LicenseInfo | string | The layer's open-source license. |
+| AWS.Lambda.LayerVersions.CompatibleArchitectures | array | A list of compatible instruction set architectures. |
 
 ### aws-lambda-function-delete
 
@@ -3851,11 +3851,11 @@ Creates a Lambda layer from a ZIP archive.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.Lambda.Layers.LayerVersionArn | string | The ARN of the layer version. |
-| AWS.Lambda.Layers.LayerArn | string | The ARN of the layer. |
-| AWS.Lambda.Layers.Description | string | The description of the version. |
-| AWS.Lambda.Layers.CreatedDate | string | The date that the layer version was created, in ISO 8601 format. |
-| AWS.Lambda.Layers.Version | number | The version number. |
-| AWS.Lambda.Layers.CompatibleRuntimes | array | The layer's compatible runtimes. |
-| AWS.Lambda.Layers.CompatibleArchitectures | array | A list of compatible instruction set architectures. |
-| AWS.Lambda.Layers.Region | string | The AWS Region. |
+| AWS.Lambda.LayerVersions.LayerVersionArn | string | The ARN of the layer version. |
+| AWS.Lambda.LayerVersions.LayerArn | string | The ARN of the layer. |
+| AWS.Lambda.LayerVersions.Description | string | The description of the version. |
+| AWS.Lambda.LayerVersions.CreatedDate | string | The date that the layer version was created, in ISO 8601 format. |
+| AWS.Lambda.LayerVersions.Version | number | The version number. |
+| AWS.Lambda.LayerVersions.CompatibleRuntimes | array | The layer's compatible runtimes. |
+| AWS.Lambda.LayerVersions.CompatibleArchitectures | array | A list of compatible instruction set architectures. |
+| AWS.Lambda.LayerVersions.Region | string | The AWS Region. |
