@@ -118,7 +118,7 @@ script:
       - Single
       - Multiple
       - Range
-    description: Retrieves list of Details of Activity Audits.
+    description: This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding. Retrieves the list of Audit Activities by start date.
     outputs:
     - contextPath: BeyondTrust.Audit.id
       description: The ID of the audit.

@@ -1,28 +1,14 @@
 BeyondTrust Privilege Management Cloud (PM Cloud) integration for retrieving audit events and activity logs.
 
-## Create a Token
+## Authenticate to the API
 
-Create a token by POSTing to the URL of your BeyondTrust site followed by `/oauth/connect/token`:
+To authenticate to the API, you must create an API account on the **Configuration > Settings > API Settings** page. The account must have permission to access the necessary APIs. API requests require a token to be first created and then submitted with each API request.
 
-`https://example-services.pm.beyondtrustcloud.com/oauth/connect/token`
+## Important Information
 
-**NOTE:** Replace "example" with your production sub-domain name, as shown:
+The instance URL to use with the EPM API can be found at the top of the **API Settings** page:
 
-`https://[yourProductionSub-domainName]-services.pm.beyondtrustcloud.com/oauth/connect/token`
+- In **Pathfinder**: Endpoint Privilege Management for Windows and Mac > Configuration > API Settings
+- In **Classic**: Configuration > API Settings
 
-The OAuth client ID and client secret associated with the API account should be included in the POST body:
-
-`grant_type=client_credentials&client_id=[yourClientId]&client_secret=[yourGeneratedClientSecret]`
-
-Send the POST request using an HTTP client. Ensure the Content-Type header is set to `application/x-www-form-urlencoded`.
-
-If the request is processed without error, you will get an access token JSON response:
-
-```json
-{
-    "access_token":"<token>",
-    "token_type":"Bearer",
-    "expires_in":3600,
-    "Scope":"urn:management:api"
-}
-```
+**Note:** The client secret cannot be modified, but it can be regenerated on the **Configuration > Settings > API Settings** page. Regenerating a client secret and then saving the account immediately invalidates any OAuth tokens associated with the account. Any API calls using those tokens will be unable to access the API. A new token must be generated using the new client secret.
