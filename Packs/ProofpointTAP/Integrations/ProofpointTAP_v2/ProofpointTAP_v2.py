@@ -1288,6 +1288,7 @@ def list_issues_command(
 
     return command_results_list
 
+def list_compromised_accounts(client: Client, start: datetime, end: datetime, high_risk: bool, page: int, limit: int)-> list:
 
 def main():
     """
@@ -1379,6 +1380,8 @@ def main():
 
         elif command == "proofpoint-list-issues":
             return_results(list_issues_command(client, **args))
+        elif command == "proofpoint-list-compromised-accounts":
+            return_results(list_compromised_accounts(client, **args))
 
     except Exception as exception:
         if command == "test-module":
