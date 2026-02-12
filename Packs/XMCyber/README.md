@@ -4,6 +4,10 @@ XM Cyber continuously identifies attack paths to critical assets. This integrati
 
 ## Use Cases
 
-- New attack path to a critical asset triggers alerts and options to quarantine/disconnect/patch
-- New attack technique triggers alerts and options to change policy, and scan endpoints
-- Incidents from EDRs are enriched with critical asset information and if the severity is high then action can be taken
+- New attack path to a critical asset triggers alerts and options to quarantine/disconnect/patch.
+- New lateral movement exposure triggers alerts and options to change policy, and scan endpoints.
+- Incidents from EDRs are enriched with critical asset information and, if the severity is high, then action can be taken.
+
+## Dashboard
+
+- **XM Cyber Dashboard**: This dashboard displays the information from the XM Cyber CEM integration for Security Score, Choke Points by Severity, Critical Assets by Severity, and Top Compromising Exposures.

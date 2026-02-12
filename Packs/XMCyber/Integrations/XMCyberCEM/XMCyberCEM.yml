@@ -29,7 +29,7 @@ configuration:
   required: false
   type: 8
   section: Connect
-description: "The XM Cyber integration connects XM Cyber's Continuous Exposure Management (CEM) platform with XSOAR, enhancing your Security Information and Event Management (SIEM) and Security Orchestration, Automation, and Response processes with attack graph context and prioritization, and also feeding relevant entities back to CEM to be defined as breach points in CEM scenarios."
+description: "The XM Cyber integration connects XM Cyber's Continuous Exposure Management (CEM) platform with XSOAR, enhancing your Security Information and Event Management (SIEM) and Security Orchestration, Automation, and Response processes with attack graph context and prioritization, while also feeding relevant entities back to CEM to be defined as breach points in CEM scenarios."
 display: XM Cyber CEM
 name: XMCyberCEM
 script:
@@ -132,7 +132,7 @@ script:
     - name: operator
       required: false
       defaultValue: Equals
-      description: When setting up the condition for when to push the breach point data, this is the operator of the condition. 
+      description: When setting up the condition for when to push the breach point data, this is the operator of the condition.
       auto: PREDEFINED
       predefined:
       - Less than

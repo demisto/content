@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 07207457-3195-4a07-80a0-6d261a49431e
+    taskid: ed77d150-baf1-4044-8a21-10181f54a41b
     type: start
     task:
-      id: 07207457-3195-4a07-80a0-6d261a49431e
+      id: ed77d150-baf1-4044-8a21-10181f54a41b
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 85999473-ca71-4dc2-8a73-f8f50b07f130
+    taskid: a5c01f54-c6fc-4de9-87da-9636b1496574
     type: condition
     task:
-      id: 85999473-ca71-4dc2-8a73-f8f50b07f130
+      id: a5c01f54-c6fc-4de9-87da-9636b1496574
       version: -1
       name: Is XM Cyber CEM integration enabled?
       description: Checks whether XM Cyber CEM integration is enabled or not.
@@ -98,14 +98,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 185c84ee-1346-44d0-8c20-298b222c1e97
+    taskid: d13740ec-246d-46fc-859d-cdf3fedd7c80
     type: regular
     task:
-      id: 185c84ee-1346-44d0-8c20-298b222c1e97
+      id: d13740ec-246d-46fc-859d-cdf3fedd7c80
       version: -1
       name: Clear previous inputs.
       description: |-
-        Delete field from context.
+        Deletes specific keys from context to ensure a clean run.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
@@ -140,13 +140,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 49a84884-f594-4603-8ea0-3bd849797670
+    taskid: b5136941-12f3-4e7f-814a-b062c1f81a86
     type: regular
     task:
-      id: 49a84884-f594-4603-8ea0-3bd849797670
+      id: b5136941-12f3-4e7f-814a-b062c1f81a86
       version: -1
       name: Extract Hostname Entities.
-      description: commands.local.cmd.find.indicators
+      description: Automatically pulls indicators from the incident.
       script: Builtin|||findIndicators
       type: regular
       iscommand: true
@@ -187,10 +187,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 3a4d915a-6ca5-48a4-8fad-c82e3ed0e52b
+    taskid: 2072d3a5-a064-40a8-8118-c95db2b3757d
     type: condition
     task:
-      id: 3a4d915a-6ca5-48a4-8fad-c82e3ed0e52b
+      id: 2072d3a5-a064-40a8-8118-c95db2b3757d
       version: -1
       name: Check entity values in playbook input.
       description: Validates if entity values were provided at launch.
@@ -233,10 +233,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 0564cd9d-5bdd-404a-8c5c-9515a10d860c
+    taskid: b62e0075-dd4d-45c5-83ff-6cbb097ef802
     type: regular
     task:
-      id: 0564cd9d-5bdd-404a-8c5c-9515a10d860c
+      id: b62e0075-dd4d-45c5-83ff-6cbb097ef802
       version: -1
       name: Enrich incident.
       description: Enriches Hostname and User entities on the SOAR platform by using information available in the XM Cyber platform.
@@ -270,6 +270,7 @@ tasks:
                 value:
                   simple: inputs.entity_values
                 iscontext: true
+          - operator: trim
           - operator: SetIfEmpty
             args:
               applyIfEmpty: {}
@@ -295,10 +296,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: c714f95e-c5d6-4a2d-885c-7722bbee8739
+    taskid: 50a8fb5b-2d39-469d-8075-2c3e418f25bb
     type: collection
     task:
-      id: c714f95e-c5d6-4a2d-885c-7722bbee8739
+      id: 50a8fb5b-2d39-469d-8075-2c3e418f25bb
       version: -1
       name: Collect Hostname/User entities.
       description: Provide the Hostname and User entities.
@@ -341,7 +342,7 @@ tasks:
         label: ""
         labelarg:
           simple: Specify the Hostname or User entity.
-        required: false
+        required: true
         gridcolumns: []
         defaultrows: []
         type: multiSelect
@@ -362,10 +363,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 6867f1ff-0e9b-4ba9-84fb-3c6e0acb2b49
+    taskid: 1835bfc6-f70a-4251-87a0-76714c66b740
     type: regular
     task:
-      id: 6867f1ff-0e9b-4ba9-84fb-3c6e0acb2b49
+      id: 1835bfc6-f70a-4251-87a0-76714c66b740
       version: -1
       name: Calculate risk score.
       description: Calculates the overall risk score for entities based on their Compromise Risk Score and Choke Point Score from XM Cyber enrichment data.
@@ -409,6 +410,7 @@ tasks:
                 value:
                   simple: inputs.entity_values
                 iscontext: true
+          - operator: trim
           - operator: SetIfEmpty
             args:
               applyIfEmpty: {}
@@ -436,13 +438,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 774d836d-b4b0-4a87-8be5-6647eec59e31
+    taskid: 8d7b98a3-631d-4709-8424-d90c587b1312
     type: regular
     task:
-      id: 774d836d-b4b0-4a87-8be5-6647eec59e31
+      id: 8d7b98a3-631d-4709-8424-d90c587b1312
       version: -1
       name: Set calculated severity.
-      description: Set a value in context under the key you entered.
+      description: Maps the XM Cyber risk score to XSOAR severity levels (0-4).
       scriptName: Set
       type: regular
       iscommand: false
@@ -490,12 +492,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 058d6b18-2c60-47be-846f-434cce13c526
+    taskid: bbb5ceac-d742-4cb4-8f13-96724b199a76
     type: condition
     task:
-      id: 058d6b18-2c60-47be-846f-434cce13c526
+      id: bbb5ceac-d742-4cb4-8f13-96724b199a76
       version: -1
-      name: Is calculated severity higher?
+      name: Is the new severity higher?
       description: Compares calculated severity against current incident severity.
       type: condition
       iscommand: false
@@ -536,13 +538,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 6c107ef9-c765-4379-8a03-3405ccce9497
+    taskid: 5fd3fc35-6397-44a8-868b-ced59542475e
     type: regular
     task:
-      id: 6c107ef9-c765-4379-8a03-3405ccce9497
+      id: 5fd3fc35-6397-44a8-868b-ced59542475e
       version: -1
       name: Set Incident severity.
-      description: commands.local.cmd.set.incident
+      description: Updates the severity of XSOAR incident.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -572,13 +574,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 61bc6342-0ed5-4002-8115-6ddbeebcd38f
+    taskid: ba20a593-6f81-498a-8407-fa13493970f2
     type: regular
     task:
-      id: 61bc6342-0ed5-4002-8115-6ddbeebcd38f
+      id: ba20a593-6f81-498a-8407-fa13493970f2
       version: -1
       name: Push breach point data.
-      description: Adds a breach point label to the specified entities based on defined criteria and pushes the label as an  Imported Attribute to XM Cyber CEM's platform
+      description: Adds a custom breach point label to relevant entities and pushes the label to CEM Imported Attributes.
       script: '|||xmcyber-push-breach-point'
       type: regular
       iscommand: true
@@ -614,6 +616,7 @@ tasks:
                 value:
                   simple: inputs.entity_values
                 iscontext: true
+          - operator: trim
           - operator: SetIfEmpty
             args:
               applyIfEmpty: {}
@@ -654,10 +657,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: ef56c554-c8fd-42a9-8641-9c18d26cbbc7
+    taskid: 773d5dde-7093-46c8-8ad3-bb42a6290321
     type: title
     task:
-      id: ef56c554-c8fd-42a9-8641-9c18d26cbbc7
+      id: 773d5dde-7093-46c8-8ad3-bb42a6290321
       version: -1
       name: Done
       type: title
@@ -682,10 +685,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: a77b1a2b-19b0-4f8d-82d3-74694754bfc5
+    taskid: 06287957-609b-4f3f-835f-110d3ccf965e
     type: condition
     task:
-      id: a77b1a2b-19b0-4f8d-82d3-74694754bfc5
+      id: 06287957-609b-4f3f-835f-110d3ccf965e
       version: -1
       name: Collect or Extract Entities?
       description: Collect the entities or extract the entities from incident.
@@ -733,13 +736,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 96632438-87ea-44c8-8f80-4cb3ea74f10e
+    taskid: 007b72e4-8699-4b28-8fd9-5840e147a3d2
     type: condition
     task:
-      id: 96632438-87ea-44c8-8f80-4cb3ea74f10e
+      id: 007b72e4-8699-4b28-8fd9-5840e147a3d2
       version: -1
       name: Check Hostname availability.
-      description: Check whether Hostname values are available in incident.
+      description: Verifies whether Hostname values are available in incident.
       type: condition
       iscommand: false
       brand: ""
@@ -790,13 +793,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: eae35152-5747-497d-8b9c-fc508200a6f0
+    taskid: 990fc4f7-5fef-43e2-881f-f3236949fd43
     type: condition
     task:
-      id: eae35152-5747-497d-8b9c-fc508200a6f0
+      id: 990fc4f7-5fef-43e2-881f-f3236949fd43
       version: -1
-      name: Want to remove breach point data?
-      description: Remove the breach point data from the entities or not.
+      name: Remove breach point data?
+      description: Determines whether breach point information is removed from the entities.
       type: condition
       iscommand: false
       brand: ""
@@ -841,10 +844,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 01fe4fb6-8bdc-4796-8ab0-1b7a2608b9eb
+    taskid: 744cc6c2-ac03-4588-82e4-7f2da976a191
     type: regular
     task:
-      id: 01fe4fb6-8bdc-4796-8ab0-1b7a2608b9eb
+      id: 744cc6c2-ac03-4588-82e4-7f2da976a191
       version: -1
       name: Remove breach point data.
       description: Removes a breach point label from the specified entities in XM Cyber CEM's platform.
@@ -883,6 +886,7 @@ tasks:
                 value:
                   simple: inputs.entity_values
                 iscontext: true
+          - operator: trim
           - operator: SetIfEmpty
             args:
               applyIfEmpty: {}
@@ -971,7 +975,7 @@ inputs:
   description: |-
     When setting up the condition for when to push the breach point data, this is the operator of the condition.
 
-    Possible values are: Less than, Greater than, Less than equal to, Greater than equal to, Equals, Not .equal to, Contains, Not Contains.
+    Possible values are: Less than, Greater than, Less than equal to, Greater than equal to, Equals, Not equal to, Contains, Not Contains.
   playbookInputQuery:
 - key: value
   value:

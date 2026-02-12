@@ -1,6 +1,6 @@
 {
     "name": "XM Cyber",
-    "description": "XSOAR offers a unified experience across SOAR and threat intelligence to drive better detection, investigation, and response to suspicious activity across your organization.The integration uses attack graph context and prioritization data that XSOAR receives from XM CEM, and also allows XSOAR to feed relevant entities back to CEM to be defined as breach points in CEM scenarios.",
+    "description": "XSOAR is a comprehensive SOAR platform that integrates different security tools to centralize incident management, driving better detection, investigation, and response to suspicious activity across your organization.The integration uses attack graph context and prioritization data that XSOAR receives from XM CEM, and also allows XSOAR to feed relevant entities back to CEM to be defined as breach points in CEM scenarios.",
     "support": "partner",
     "currentVersion": "2.0.0",
     "author": "XM Cyber",

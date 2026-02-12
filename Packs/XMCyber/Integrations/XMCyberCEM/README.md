@@ -1,4 +1,4 @@
-The XM Cyber integration connects XM Cyber's Continuous Exposure Management (CEM) platform with XSOAR, enhancing your Security Information and Event Management (SIEM) and Security Orchestration, Automation, and Response processes with attack graph context and prioritization, and also feeding relevant entities back to CEM to be defined as breach points in CEM scenarios.
+The XM Cyber integration connects XM Cyber's Continuous Exposure Management (CEM) platform with XSOAR, enhancing your Security Information and Event Management (SIEM) and Security Orchestration, Automation, and Response processes with attack graph context and prioritization, while also feeding relevant entities back to CEM to be defined as breach points in CEM scenarios.
 
 ## Configure XM Cyber CEM in Cortex
 
