@@ -8441,9 +8441,23 @@ def test_fetch_ngsiem_cases(mocker):
     assert last_run == {"offset": 1}
 
 
+''' Fetch Assets Spotlight '''
+
+import CrowdStrikeFalcon
+from CrowdStrikeFalcon import (
+        fetch_spotlight_assets,
+        SPOTLIGHT_VULN_PRODUCT,
+        AssetsDeviceHandler,
+        save_spotlight_state,
+        ContentClientState,
+        send_batch_to_xsiam_and_save_context
+)
+
 class TestSpotlightFetchAssets:
-    """Tests for the Spotlight fetch-assets flow, including vulnerability fetching,
-    device handler enrichment, batch sending, and state persistence."""
+    """
+    Tests for the Spotlight fetch-assets flow, including vulnerability fetching,
+    device handler enrichment, batch sending, and state persistence.
+    """
 
     @pytest.mark.asyncio
     async def test_fetch_spotlight_assets_success_single_page(self, mocker):
@@ -8460,9 +8474,7 @@ class TestSpotlightFetchAssets:
             - An XSIAM send task is created with the correct product and data.
             - The handler's flush_remaining is called to process any remaining AIDs.
         """
-        import CrowdStrikeFalcon
-        from CrowdStrikeFalcon import fetch_spotlight_assets, SPOTLIGHT_VULN_PRODUCT
-
+        # 1. Setup Mocks
         mock_client = mocker.AsyncMock()
         mocker.patch("CrowdStrikeFalcon.create_spotlight_client", return_value=mock_client)
 
@@ -8491,8 +8503,10 @@ class TestSpotlightFetchAssets:
             side_effect=create_task_side_effect
         )
 
+        # 2. Execute
         await fetch_spotlight_assets()
 
+        # 3. Verify
         CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_batch.assert_awaited_once()
         mock_handler.receive_aids.assert_awaited_once_with({"aid1", "aid2"})
 
@@ -8507,12 +8521,18 @@ class TestSpotlightFetchAssets:
     @pytest.mark.asyncio
     async def test_fetch_spotlight_assets_empty_response(self, mocker):
         """
-        Test Case: test_fetch_spotlight_assets_empty_response
-        Description: Simulates API returning no vulnerabilities.
+        Tests behavior when the API returns no vulnerabilities.
+
+        Given:
+            - A Spotlight API that returns an empty list of vulnerabilities.
+        When:
+            - fetch_spotlight_assets is called.
+        Then:
+            - The handler receives an empty set of AIDs.
+            - An XSIAM task is created with 0 items (to ensure state is updated).
+            - The handler's flush_remaining is still called.
+            - The state is updated with a count of 0.
         """
-        import CrowdStrikeFalcon
-        from CrowdStrikeFalcon import fetch_spotlight_assets
-        # TODO - Working. Merge this with "test_fetch_spotlight_assets_success_single_page"
         # 1. Setup Mocks
         mock_client = mocker.AsyncMock()
         mocker.patch("CrowdStrikeFalcon.create_spotlight_client", return_value=mock_client)
@@ -8530,7 +8550,7 @@ class TestSpotlightFetchAssets:
 
         def create_task_side_effect(*args, **kwargs):
             f = asyncio.Future()
-            f.set_result(1)  # The expected return value (e.g., batch_number)
+            f.set_result(1)
             return f
 
         mock_create_task = mocker.patch(
@@ -8544,22 +8564,16 @@ class TestSpotlightFetchAssets:
         await fetch_spotlight_assets()
 
         # 3. Verify
-        # Verify fetch called once
         CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_batch.assert_awaited_once()
-
-        # Verify receive_aids called with empty set
         mock_handler.receive_aids.assert_awaited_once_with(set())
 
-        # Verify XSIAM task created for vulnerabilities (since empty)
         mock_create_task.assert_called_once()
         call_kwargs = mock_create_task.call_args.kwargs
         assert call_kwargs['data'] == []
-        assert call_kwargs['items_count'] == 0  # total fetched is 0
+        assert call_kwargs['items_count'] == 0
 
-        # Verify flush called
         mock_handler.flush_remaining.assert_awaited_once()
 
-        # Verify state reset
         assert mock_update_state.call_count >= 1
         last_call_kwargs = mock_update_state.call_args_list[-1].kwargs
         assert last_call_kwargs['cursor'] is None
@@ -8568,12 +8582,18 @@ class TestSpotlightFetchAssets:
     @pytest.mark.asyncio
     async def test_fetch_spotlight_assets_error_handling(self, mocker):
         """
-        Test Case: test_fetch_spotlight_assets_error_handling
-        Description: Simulates an exception during the fetch loop (e.g., API error).
-        """
-        from CrowdStrikeFalcon import fetch_spotlight_assets
+        Tests error handling when the fetch loop encounters an exception.
 
-        # Setup Mocks
+        Given:
+            - The API raises an exception (e.g., 'API Error') during the fetch loop.
+        When:
+            - fetch_spotlight_assets is called.
+        Then:
+            - The exception is caught by the error handler.
+            - The error handler re-raises the exception (as configured in this test).
+            - The correct exception type and message are propagated.
+        """
+        # 1. Setup Mocks
         mock_client = mocker.AsyncMock()
         mocker.patch("CrowdStrikeFalcon.create_spotlight_client", return_value=mock_client)
 
@@ -8598,14 +8618,13 @@ class TestSpotlightFetchAssets:
 
         mock_handle_error = mocker.patch(
             "CrowdStrikeFalcon.handle_spotlight_fetch_error",
-            side_effect=raise_error_side_effect  # Use the re-raising side effect
+            side_effect=raise_error_side_effect
         )
 
         # 2. Execute & Verify
         with pytest.raises(Exception, match="API Error"):
             await fetch_spotlight_assets()
 
-        # Verify handle_spotlight_fetch_error called
         mock_handle_error.assert_called_once()
         call_kwargs = mock_handle_error.call_args.kwargs
         assert isinstance(call_kwargs['error'], Exception)
@@ -8614,12 +8633,17 @@ class TestSpotlightFetchAssets:
     @pytest.mark.asyncio
     async def test_fetch_spotlight_assets_crash_mid_execution_preserves_state(self, mocker):
         """
-        Test Case: test_fetch_spotlight_assets_crash_mid_execution_preserves_state
-        Description: Simulates a crash after processing partial pages, verifying resumption capability.
-        """
-        import CrowdStrikeFalcon
-        from CrowdStrikeFalcon import fetch_spotlight_assets
+        Tests that state is preserved if the integration crashes midway through fetching.
 
+        Given:
+            - Page 1 is fetched successfully.
+            - Page 2 raises an exception ("Crash on Page 2").
+        When:
+            - fetch_spotlight_assets is called.
+        Then:
+            - The state is updated with the cursor for Page 2 (the next token) before the crash.
+            - The processed AIDs and total fetched count are saved correctly.
+        """
         # 1. Setup Mocks
         mock_client = mocker.AsyncMock()
         mocker.patch("CrowdStrikeFalcon.create_spotlight_client", return_value=mock_client)
@@ -8636,7 +8660,7 @@ class TestSpotlightFetchAssets:
         mock_handler_cls = mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler")
         mock_handler = mock_handler_cls.return_value
         mock_handler.receive_aids = mocker.AsyncMock()
-        mock_handler.processed_aids = {"aid1"}  # Simulate some processed aids
+        mock_handler.processed_aids = {"aid1"}
         mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
 
         # Mock fetch: Page 1 success, Page 2 crash
@@ -8650,17 +8674,14 @@ class TestSpotlightFetchAssets:
 
         def create_task_side_effect(*args, **kwargs):
             f = asyncio.Future()
-            f.set_result(1)  # The expected return value (e.g., batch_number)
+            f.set_result(1)
             return f
 
-        # Mock create_task_send_batch_to_xsiam_and_save_context
         _ = mocker.patch(
             "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
             side_effect=create_task_side_effect
         )
 
-        # We want to verify handle_spotlight_fetch_error logic, specifically that it saves state
-        # So we WON'T mock handle_spotlight_fetch_error, but we WILL mock save_spotlight_state and update_spotlight_state_and_metadata
         mock_save_state = mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
         mock_update_state = mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata")
 
@@ -8668,32 +8689,31 @@ class TestSpotlightFetchAssets:
         with pytest.raises(Exception, match="Crash on Page 2"):
             await fetch_spotlight_assets()
 
+        # 3. Verify
         # Verify update_spotlight_state_and_metadata called with correct state BEFORE crash
-        # The last call should be from handle_spotlight_fetch_error
-        assert mock_update_state.call_count >= 2  # Once for page 1, once for error
+        assert mock_update_state.call_count >= 2
 
         error_save_call = mock_update_state.call_args_list[-1].kwargs
-        assert error_save_call['cursor'] == "token_page_2"  # Should save the token for the NEXT page (where we crashed)
-        assert error_save_call['total_fetched'] == 1  # We successfully fetched 1 item before crash
-        assert error_save_call['processed_aids'] == {"aid1"}  # Should include processed aids
-        assert error_save_call['snapshot_id'] == "test_snapshot_id"  # Save the snapshot id for the next run.
-        # Verify save_spotlight_state called
+        assert error_save_call['cursor'] == "token_page_2"
+        assert error_save_call['total_fetched'] == 1
+        assert error_save_call['processed_aids'] == {"aid1"}
+        assert error_save_call['snapshot_id'] == "test_snapshot_id"
+
         mock_save_state.assert_called()
 
     @pytest.mark.asyncio
     async def test_fetch_spotlight_assets_background_task_failure(self, mocker):
         """
-        Test Case: test_fetch_spotlight_assets_background_task_failure
-        Description: Simulates a failure in one of the "fire-and-forget" XSIAM tasks.
+        Tests that failure in a background fire-and-forget task bubbles up to the main thread.
+
+        Given:
+            - A background task (XSIAM send) that raises a ValueError.
+        When:
+            - fetch_spotlight_assets awaits completion of all tasks.
+        Then:
+            - The main execution raises the exception from the background task.
         """
-        import asyncio
-        import pytest
-        import CrowdStrikeFalcon
-        from CrowdStrikeFalcon import fetch_spotlight_assets
-
         # 1. Setup Mocks
-
-        # FIX 1: Silence Logger to prevent stdout errors
         mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
 
         mock_client = mocker.AsyncMock()
@@ -8704,28 +8724,21 @@ class TestSpotlightFetchAssets:
             mocker.Mock(cursor=None), "test_snapshot_id", 0, set(), set()
         ))
 
-        # FIX 2: Configure AssetsDeviceHandler to support await
         mock_handler_cls = mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler")
         mock_handler_instance = mock_handler_cls.return_value
-        # This is the critical line: make receive_aids awaitable
         mock_handler_instance.receive_aids = mocker.AsyncMock()
 
-        # Mock fetch to return data
         mocker.patch("CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_batch", return_value=(
-            [{"id": "v1", "aid": "aid1"}],  # Add 'aid' so receive_aids is actually called
+            [{"id": "v1", "aid": "aid1"}],
             {"meta": {"pagination": {"after": None}}}
         ))
 
-        # Mock create_task... to return a task that fails
         async def failing_task():
-            # Ensure the task yields control so the loop runs
             await asyncio.sleep(0.01)
             raise ValueError("XSIAM Send Failed")
 
-        # Create the task inside the test loop
         mock_task = asyncio.create_task(failing_task())
 
-        # When code calls create_task..., return our pre-cooked failing task
         mocker.patch(
             "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
             return_value=mock_task
@@ -8741,11 +8754,17 @@ class TestSpotlightFetchAssets:
     @pytest.mark.asyncio
     async def test_handler_trigger_enrichment(self, mocker):
         """
-        Test Case: test_handler_trigger_enrichment
-        Description: Sends enough AIDs to exceed batch_limit.
-        """
-        from CrowdStrikeFalcon import AssetsDeviceHandler
+        Tests that the AssetsDeviceHandler triggers enrichment when the batch limit is exceeded.
 
+        Given:
+            - A handler with a batch limit of 5.
+            - 7 unique AIDs are received.
+        When:
+            - receive_aids is called.
+        Then:
+            - Enrichment is triggered once for the first 5 AIDs.
+            - 2 AIDs remain in the pending buffer.
+        """
         # Setup
         mock_client = mocker.AsyncMock()
         handler = AssetsDeviceHandler(
@@ -8759,24 +8778,28 @@ class TestSpotlightFetchAssets:
 
         handler.enrich_and_ingest_batch = mocker.AsyncMock()
 
-        # Execute - send 7 items (limit is 5)
+        # Execute
         await handler.receive_aids({f"aid{i}" for i in range(7)})
 
         # Verify
         assert len(handler.pending_buffer) == 2
         handler.enrich_and_ingest_batch.assert_called_once()
-        # Verify the batch size passed
         args, _ = handler.enrich_and_ingest_batch.call_args
         assert len(args[0]) == 5
 
     @pytest.mark.asyncio
     async def test_handler_deduplication(self, mocker):
         """
-        Test Case: test_handler_deduplication
-        Description: Sends duplicate AIDs (some already processed, some in buffer).
-        """
-        from CrowdStrikeFalcon import AssetsDeviceHandler
+        Tests that the AssetsDeviceHandler correctly deduplicates AIDs.
 
+        Given:
+            - A handler with "processed_1" in processed_aids and "buffer_1" in the buffer.
+        When:
+            - receive_aids is called with duplicate and new AIDs.
+        Then:
+            - Only the new AIDs are added to the buffer.
+            - Existing processed and buffered AIDs are ignored.
+        """
         # Setup
         handler = AssetsDeviceHandler(
             client=mocker.AsyncMock(),
@@ -8787,25 +8810,27 @@ class TestSpotlightFetchAssets:
             batch_limit=10
         )
 
-        # Pre-fill buffer
         handler.pending_buffer = {"buffer_1"}
 
         # Execute
-        # Send: processed_1 (duplicate), buffer_1 (duplicate), new_1
         await handler.receive_aids({"processed_1", "buffer_1", "new_1"})
 
         # Verify
-        # Should only add new_1. Buffer should contain buffer_1 and new_1.
         assert handler.pending_buffer == {"buffer_1", "new_1"}
 
     @pytest.mark.asyncio
     async def test_handler_flush_remaining(self, mocker):
         """
-        Test Case: test_handler_flush_remaining
-        Description: Calls flush_remaining with items in buffer.
-        """
-        from CrowdStrikeFalcon import AssetsDeviceHandler
+        Tests that flush_remaining processes any items left in the buffer.
 
+        Given:
+            - A handler with AIDs in the pending buffer.
+        When:
+            - flush_remaining is called.
+        Then:
+            - Enrichment is triggered for the remaining items.
+            - The buffer is cleared.
+        """
         # Setup
         handler = AssetsDeviceHandler(
             client=mocker.AsyncMock(),
@@ -8831,15 +8856,19 @@ class TestSpotlightFetchAssets:
     @pytest.mark.asyncio
     async def test_handler_enrichment_empty_response(self, mocker):
         """
-        Test Case: test_handler_enrichment_empty_response
-        Description: Simulates Devices API returning no devices for given AIDs.
-        """
-        from CrowdStrikeFalcon import AssetsDeviceHandler
+        Tests behavior when the Device enrichment API returns no results.
 
+        Given:
+            - The Device API returns an empty list for the requested AIDs.
+        When:
+            - enrich_and_ingest_batch is called.
+        Then:
+            - No XSIAM task is created (preventing ingestion of empty data).
+        """
         # Setup
         mock_client = mocker.AsyncMock()
         mock_response = mocker.Mock()
-        mock_response.json.return_value = {"resources": []}  # Empty
+        mock_response.json.return_value = {"resources": []}
         mock_client._request.return_value = mock_response
 
         handler = AssetsDeviceHandler(
@@ -8857,27 +8886,28 @@ class TestSpotlightFetchAssets:
         await handler.enrich_and_ingest_batch(["d1"])
 
         # Verify
-        # API called
         mock_client._request.assert_awaited_once()
-
-        # Task NOT created
         mock_create_task.assert_not_called()
 
     @pytest.mark.asyncio
     async def test_send_batch_out_of_order_completion(self, mocker):
         """
-        Test Case: test_send_batch_out_of_order_completion
-        Description: Simulates Batch 2 finishing *before* Batch 1.
-        """
-        from CrowdStrikeFalcon import send_batch_to_xsiam_and_save_context
+        Tests that state is only saved if the completing batch is newer than the last saved batch.
 
+        Given:
+            - Two concurrent batches where Batch 2 finishes before Batch 1.
+        When:
+            - The callback runs for Batch 2, then for Batch 1.
+        Then:
+            - State is saved for Batch 2.
+            - State is NOT saved for Batch 1 (avoiding regression).
+        """
         # Setup
         mock_save_callback = mocker.Mock()
         mocker.patch("CrowdStrikeFalcon.send_data_to_xsiam_async", return_value=[])
         mocker.patch("asyncio.gather", new_callable=mocker.AsyncMock)
 
         # Scenario: Batch 2 finishes first.
-        # Current last_saved is 0. Batch is 2.
         res2 = await send_batch_to_xsiam_and_save_context(
             data=[], vendor="v", product="p", snapshot_id="s", items_count=1,
             batch_number=2, last_saved_batch_number=0,
@@ -8885,13 +8915,11 @@ class TestSpotlightFetchAssets:
             save_state_callback=mock_save_callback, data_type="assets"
         )
 
-        # Verify Batch 2 saved (2 > 0)
         assert res2 == 2
         mock_save_callback.assert_called()
         mock_save_callback.reset_mock()
 
         # Scenario: Batch 1 finishes later.
-        # Current last_saved is now 2 (updated by Batch 2). Batch is 1.
         res1 = await send_batch_to_xsiam_and_save_context(
             data=[], vendor="v", product="p", snapshot_id="s", items_count=1,
             batch_number=1, last_saved_batch_number=2,
@@ -8899,17 +8927,21 @@ class TestSpotlightFetchAssets:
             save_state_callback=mock_save_callback, data_type="assets"
         )
 
-        # Verify Batch 1 SKIPPED save (1 < 2)
-        assert res1 == 2  # Returns the higher number (last_saved)
+        assert res1 == 2
         mock_save_callback.assert_not_called()
 
     def test_state_persistence_structure(self, mocker):
         """
-        Test Case: test_state_persistence_structure
-        Description: Verifies the structure of the saved state object.
-        """
-        from CrowdStrikeFalcon import save_spotlight_state, ContentClientState
+        Tests that the state is serialized into the correct JSON structure for the Context Store.
 
+        Given:
+            - A populated ContentClientState object.
+        When:
+            - save_spotlight_state is called.
+        Then:
+            - The integration context is updated with a 'spotlight_assets' key.
+            - Existing context data is preserved.
+        """
         # Setup
         mock_context_store = mocker.Mock()
         integration_context = {"existing_key": "val"}
@@ -8928,4 +8960,4 @@ class TestSpotlightFetchAssets:
         assert "spotlight_assets" in saved_context
         assert saved_context["spotlight_assets"]["cursor"] == "token123"
         assert saved_context["spotlight_assets"]["metadata"]["snapshot_id"] == "snap1"
-        assert "existing_key" in saved_context  # Preserves existing keys
+        assert "existing_key" in saved_context
