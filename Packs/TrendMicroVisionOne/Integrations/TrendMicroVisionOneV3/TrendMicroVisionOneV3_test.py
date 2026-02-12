@@ -2499,7 +2499,7 @@ def test_get_mapping_fields(mocker):
 
     # Verify incident type name
     scheme_type = result.scheme_types_mappings[0]
-    assert scheme_type.type_name == "Trend Micro Vision One XDR Incident"
+    assert scheme_type.type_name == "TrendAI Vision One XDR Incident"
     fields: dict = scheme_type.fields
     # Verify mirrored fields are present
     field_names = [field_key for field_key, _ in fields.items()]

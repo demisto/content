@@ -466,8 +466,8 @@
         ]
     },
     "group": "incident",
-    "id": "Trend Micro Vision One XDR Incident",
-    "name": "Trend Micro Vision One XDR Incident",
+    "id": "TrendAI Vision One XDR Incident",
+    "name": "TrendAI Vision One XDR Incident",
     "system": false,
     "version": -1,
     "fromVersion": "6.2.0",

@@ -34,7 +34,7 @@ configuration:
   section: Collect
 - display: Incident type
   name: incidentType
-  defaultvalue: Trend Micro Vision One XDR Incident
+  defaultvalue: TrendAI Vision One XDR Incident
   type: 13
   required: false
   section: Collect

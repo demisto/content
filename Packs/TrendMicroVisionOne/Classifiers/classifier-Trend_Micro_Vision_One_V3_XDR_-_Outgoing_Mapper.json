@@ -1,11 +1,11 @@
 {
-    "defaultIncidentType": "Trend Micro Vision One XDR Incident",
+    "defaultIncidentType": "TrendAI Vision One XDR Incident",
     "description": "Maps outgoing Trend Vision One alerts for mirroring. Maps XSOAR incident fields to Vision One alert fields.",
     "feed": false,
     "fromVersion": "6.5.0",
-    "id": "Trend Micro Vision One V3 XDR - Outgoing Mapper",
+    "id": "TrendAI Vision One V3 XDR - Outgoing Mapper",
     "mapping": {
-        "Trend Micro Vision One XDR Incident": {
+        "TrendAI Vision One XDR Incident": {
             "dontMapEventToLabels": true,
             "internalMapping": {
                 "status": {
@@ -32,7 +32,7 @@
             }
         }
     },
-    "name": "Trend Micro Vision One V3 XDR - Outgoing Mapper",
+    "name": "TrendAI Vision One V3 XDR - Outgoing Mapper",
     "type": "mapping-outgoing",
     "version": -1
 }

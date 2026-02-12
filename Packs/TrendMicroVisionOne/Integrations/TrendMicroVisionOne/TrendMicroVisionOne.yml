@@ -27,7 +27,7 @@ configuration:
   required: false
 - display: Incident type
   name: incidentType
-  defaultvalue: Trend Micro Vision One XDR Incident
+  defaultvalue: TrendAI Vision One XDR Incident
   type: 13
   required: false
 - defaultvalue: '30'
@@ -66,7 +66,7 @@ configuration:
   required: false
 description: TrendAI Vision One™ is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—TrendAI Vision One™ prevents the majority of attacks with automated protection.
 display: TrendAI Vision One™
-defaultmapperin: Trend Micro Vision One XDR - Incoming Mapper
+defaultmapperin: TrendAI Vision One XDR - Incoming Mapper
 name: TrendAI Vision One
 script:
   commands:

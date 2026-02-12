@@ -1,7 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Trend Micro Vision One XDR Incident"
+        "TrendAI Vision One XDR Incident"
     ],
     "caseInsensitive": true,
     "cliName": "trendmicrovisiononexdrimpactedentities",
@@ -13,7 +13,7 @@
     "id": "incident_trendmicrovisiononexdrimpactedentities",
     "isReadOnly": false,
     "locked": false,
-    "name": "Trend Micro Vision One XDR Impacted Entities",
+    "name": "TrendAI Vision One XDR Impacted Entities",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

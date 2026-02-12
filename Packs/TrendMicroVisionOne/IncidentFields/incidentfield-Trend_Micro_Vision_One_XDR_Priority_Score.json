@@ -1,7 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Trend Micro Vision One XDR Incident"
+        "TrendAI Vision One XDR Incident"
     ],
     "caseInsensitive": true,
     "cliName": "trendmicrovisiononexdrpriorityscore",
@@ -13,7 +13,7 @@
     "id": "incident_trendmicrovisiononexdrpriorityscore",
     "isReadOnly": false,
     "locked": false,
-    "name": "Trend Micro Vision One XDR Priority Score",
+    "name": "TrendAI Vision One XDR Priority Score",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
