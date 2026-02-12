@@ -22,11 +22,11 @@ If you are upgrading from a Flashpoint Feed integration, please refer to the [Mi
     | CIDR Range of an IPv4 or IPv6 indicator | CIDR range to filter IPv4 or IPv6 indicators.<br/><br/>Note: This parameter is applied only if the "Types of the indicators to fetch" is IPv4 or IPv6. | False |
     | Maximum Severity Level of an indicator | Filter indicators by their maximum severity level. If not specified, it fetches all the indicators. Options: Informational, Suspicious, Malicious. | False |
     | Minimum Severity Level of an indicator | Filter indicators by their minimum severity level. If not specified, it fetches all the indicators. Options: Informational, Suspicious, Malicious. | False |
-    | MITRE ATTACK IDs of an indicator | Filter indicators by their MITRE ATTACK IDs. | False |
-    | Tags of an indicator | Filter indicators by their tags. Must be exact tag matches. | False |
-    | Actor Tags of an indicator | Filter indicators by their actor tags. Must be exact tag matches. Inclusion of the actor: prefix is optional. | False |
-    | Malware Tags of an indicator | Filter indicators by their malware tags. Must be exact tag matches. Inclusion of the malware: prefix is optional. | False |
-    | Source Tags of an indicator | Filter indicators by their source tags. Must be exact tag matches. Inclusion of the source: prefix is optional. | False |
+    | MITRE ATTACK IDs of an indicator | Filter indicators by their MITRE ATTACK IDs.<br/><br/>Example: T1003, T1004. | False |
+    | Tags of an indicator | Filter indicators by their tags. Must be exact tag matches.<br/><br/>Example: malware:cobaltstrike, actor:apt. | False |
+    | Actor Tags of an indicator | Filter indicators by their actor tags. Must be exact tag matches. Inclusion of the actor: prefix is optional.<br/><br/>Example: actor:apt37, apt1. | False |
+    | Malware Tags of an indicator | Filter indicators by their malware tags. Must be exact tag matches. Inclusion of the malware: prefix is optional.<br/><br/>Example: malware:cobaltstrike, amadey. | False |
+    | Source Tags of an indicator | Filter indicators by their source tags. Must be exact tag matches. Inclusion of the source: prefix is optional.<br/><br/>Example: source:flashpoint_extraction, flashpoint_detection. | False |
     | First fetch time | Backfill indicators by providing date or relative timestamp. Default is '3 days'.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | False |
     | Fetch indicators | Enable to fetch indicators. | False |
     | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
