@@ -5393,9 +5393,17 @@ script:
       description: 'The CQL query to use for the search. Note: Double quotes (“) and backslashes (\) in the queryString must be escaped with a backslash to ensure they are properly interpreted. Example:#event_simpleName = \"Event_APIActivityAuditEvent\" For more details see: https://library.humio.com/data-analysis/syntax.html."'
       required: true
     - name: start
-      description: 'The start time to use as the starting point of the search results, based on an event’s recorded timestamp field. If end is provided, it must be greater than or equal to the start. You can also use the time_zone_offset_minutes to retrieve results relative to your timezone. Supports relative time (e.g., "3 days ago", "2 hours"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z") and timestamps (e.g., 1767225600000).'
+      description: |
+        The start time (event timestamp) for the search window.
+        Note: This endpoint requires the time interval length to be greater than 0, so end must be strictly greater than start.
+        If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (intersection/AND), which can reduce results.
+        Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"), and epoch timestamps in milliseconds (e.g., 1767225600000).
     - name: end
-      description: 'The end time to use as the ending point of the search results, based on an event’s recorded timestamp field. If start is provided, it must be less than or equal to the end. You can also use the time_zone_offset_minutes to retrieve results relative to your timezone. Supports relative time (e.g., "3 days ago", "2 hours"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z") and timestamps (e.g., 1767225600000).'
+      description: |
+        The end time (event timestamp) for the search window.
+        Note: This endpoint requires the time interval length to be greater than 0, so end must be strictly greater than start.
+        If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (intersection/AND), which can reduce results.
+        Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"), and epoch timestamps in milliseconds (e.g., 1767225600000).
     - name: around_event_id
       description: The ID of the event to search around.
     - name: around_number_events_before
@@ -5405,9 +5413,17 @@ script:
     - name: around_timestamp
       description: Timestamp for around search. Required when around_event_id is used.
     - name: ingest_start
-      description: The date and time to use as the starting point of the search results, based on an event's recorded ingesttimestamp field. If ingestEnd is provided, it must be greater than or equal to the ingestStart. You can also use the time_zone_offset_minutes to retrieve results relative to your timezone. Supports relative time (e.g., "3 days ago", "2 hours"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z") and timestamps (e.g., 1767225600000)
+      description: |
+        The start time (ingesttimestamp) for the ingest-time search window.
+        Note: This endpoint requires the time interval length to be greater than 0, so ingest_end must be strictly greater than ingest_start.
+        If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (intersection/AND), which can reduce results.
+        Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"), and epoch timestamps in milliseconds (e.g., 1767225600000).
     - name: ingest_end
-      description: The date and time to use as the ending point of the search results, based on an event's recorded ingesttimestamp field. If ingestStart is provided, it must be less than or equal to the ingestEnd. You can also use the time_zone_offset_minutes to retrieve results relative to your timezone. Supports relative time (e.g., "3 days ago", "2 hours"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z") and timestamps (e.g., 1767225600000)
+      description: |
+        The end time (ingesttimestamp) for the ingest-time search window.
+        Note: This endpoint requires the time interval length to be greater than 0, so ingest_end must be strictly greater than ingest_start.
+        If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (intersection/AND), which can reduce results.
+        Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"), and epoch timestamps in milliseconds (e.g., 1767225600000).
     - name: use_ingest_time
       description: When true, the query uses ingestStart/ingestEnd instead of start/end. If use_ingest_time is false or not set, start/end are used (even if ingest times are also provided).
       auto: PREDEFINED
@@ -5445,7 +5461,6 @@ script:
     - contextPath: CrowdStrike.NGSiemEvent.timestamp
       description: Event timestamp.
       type: String
-  - name: test-debug-mode
   dockerimage: demisto/py3-tools:1.0.0.6308650
   isfetch: true
   isfetch:marketplacev2: false

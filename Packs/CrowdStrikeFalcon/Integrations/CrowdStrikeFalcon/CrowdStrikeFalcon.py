@@ -6361,7 +6361,7 @@ def initiate_ngsiem_search_request(repository: str, body: dict) -> dict:
     Returns:
         dict: Response containing the job ID.
     """
-    demisto.info(f"Initiating NGSIEM search with {repository=}, {body=}")
+    demisto.debug(f"Initiating NGSIEM search with {repository=}, {body=}")
 
     return http_request(
         method="POST",
@@ -6383,7 +6383,7 @@ def get_ngsiem_search_results_request(repository: str, job_id: str) -> dict:
     Returns:
         dict: Response containing the search results and status.
     """
-    demisto.info(f"Getting NGSIEM search results for {repository=}, {job_id=}")
+    demisto.debug(f"Getting NGSIEM search results for {repository=}, {job_id=}")
 
     return http_request(
         method="GET",
@@ -6431,23 +6431,27 @@ def build_ngsiem_query_with_limit(query: str, limit: int) -> str:
     return query
 
 
-def arg_to_ms_int(val: Any, arg_name: Optional[str] = None) -> Optional[int]:
-    """
-    Convert an argument into an absolute epoch timestamp in milliseconds.
+def arg_to_ngsiem_time_spec(val: Any, arg_name: Optional[str] = None) -> Optional[Union[int,str]]:
+    if val is None or val == "":
+        return None
 
-    Args:
-        val: The raw argument value (from demisto.args()).
-        arg_name: Optional argument name for clearer error messages.
+    # numeric timestamps: seconds or ms
+    if isinstance(val, int | float) or (isinstance(val, str) and val.strip().isdigit()):
+        num = float(val)
+        return int(num * 1000) if num < 2_000_000_000 else int(num)
 
-    Returns:
-        Epoch time in milliseconds as an int, or None if `val` is None.
-    """
-    dt: Optional[datetime] = (
-        arg_to_datetime(val, arg_name=arg_name, is_utc=True, required=False)
-        if val is not None
-        else None
-    )
-    return int(dt.timestamp() * 1000) if dt else None
+    s = str(val).strip()
+
+    # ISO 8601 absolute only: parse with stdlib
+    iso = s.replace("Z", "+00:00")  # fromisoformat doesn't accept Z
+    try:
+        datetime.fromisoformat(iso)  # validates absolute date-ish string
+        dt = arg_to_datetime(s, arg_name=arg_name, is_utc=False, required=False)
+        return int(dt.timestamp() * 1000) if dt else None
+    except ValueError:
+        # not ISO absolute -> pass through as LogScale time spec / relative string
+        return s
+
 
 
 def build_ngsiem_search_body(args: dict) -> dict:
@@ -6471,15 +6475,15 @@ def build_ngsiem_search_body(args: dict) -> dict:
         eventId=args.get("around_event_id"),
         numberOfEventsBefore=arg_to_number(args.get("around_number_events_before")),
         numberOfEventsAfter=arg_to_number(args.get("around_number_events_after")),
-        timestamp=arg_to_ms_int(args.get("around_timestamp")),
+        timestamp=arg_to_ngsiem_time_spec(args.get("around_timestamp")),
     )
-    demisto.info(f"around_config: {around_config}")
+    demisto.debug(f"around_config: {around_config}")
     body = assign_params(
         queryString=query,
-        start=arg_to_ms_int(args.get("start")),
-        end=arg_to_ms_int(args.get("end")),
-        ingestStart=arg_to_ms_int(args.get("ingest_start")),
-        ingestEnd=arg_to_ms_int(args.get("ingest_end")),
+        start=arg_to_ngsiem_time_spec(args.get("start")),
+        end=arg_to_ngsiem_time_spec(args.get("end")),
+        ingestStart=arg_to_ngsiem_time_spec(args.get("ingest_start")),
+        ingestEnd=arg_to_ngsiem_time_spec(args.get("ingest_end")),
         useIngestTime=argToBoolean(args.get("use_ingest_time")) if args.get("use_ingest_time") else None,
         timeZone=args.get("time_zone"),
         timeZoneOffsetMinutes=arg_to_number(args.get("time_zone_offset_minutes")),
@@ -6505,13 +6509,14 @@ def process_ngsiem_search_completion(response: dict, args: dict) -> PollResult:
     events = clean_ngsiem_rawstring_field(events)
     warnings = response.get("warnings", [])
     if warnings:
-        demisto.info(f"NGSIEM search completed with warnings: {warnings}")
+        demisto.debug(f"NGSIEM search completed with warnings: {warnings}")
 
     if events:
+        demisto.debug(f"Returend {len(events)} results from NGSIEM search")
         table_headers = [
             "timestamp",
-            "host.hostname",
             "user.name",
+            "host.hostname",
             "event_simpleName",
             "id",
         ]
@@ -6527,6 +6532,7 @@ def process_ngsiem_search_completion(response: dict, args: dict) -> PollResult:
             removeNull=True,
         )
     else:
+        demisto.debug("No events found matching the query.")
         hr = "No events found matching the query."
     command_results = CommandResults(
         outputs_prefix="CrowdStrike.NGSiemEvent",
@@ -6566,14 +6572,13 @@ def cs_falcon_search_ngsiem_events_command(args: dict) -> PollResult:
     if not job_id:
         # First call - initiate the search job
         body = build_ngsiem_search_body(args)
-        demisto.info(f"body{body}")
         response = initiate_ngsiem_search_request(repository=repository, body=body)
 
         job_id = response.get("id")
         if not job_id:
             raise DemistoException(f"Failed to initiate NGSIEM search. Response: {response}")
 
-        demisto.info(f"NGSIEM search job initiated with {job_id=}")
+        demisto.debug(f"NGSIEM search job initiated with {job_id=}")
         args["job_id"] = job_id
 
     # Poll for results
@@ -6581,7 +6586,7 @@ def cs_falcon_search_ngsiem_events_command(args: dict) -> PollResult:
 
     is_done = response.get("done", False)
     is_cancelled = response.get("cancelled", False)
-
+    demisto.debug(f"NGSIEM search job status: {is_done=}, {is_cancelled=}")
     if is_cancelled:
         raise DemistoException(f"NGSIEM search job {job_id} was cancelled.")
 
