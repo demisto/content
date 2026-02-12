@@ -694,8 +694,8 @@ class Client(CoreClient):
         Returns:
             dict: The API response containing email investigation campaign summaries.
         """
-        return self.platform_http_request(
-            method="GET",
+        return self._http_request(
+            method="POST",
             url_suffix="/email-security/investigation/phishing-investigation/",
             params=params,
         )
