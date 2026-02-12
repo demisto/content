@@ -1115,3 +1115,73 @@ def test_get_xql_quota_is_core_available_false(mock_http_request):
         with_metrics=False,
         resp_type="json",
     )
+
+
+def test_xql_library_list_command(mocker):
+    """
+    Given:
+    - A client object and command arguments.
+    When:
+    - Calling xql_library_list_command function.
+    Then:
+    - Ensure the client is called with correct parameters and results are returned correctly.
+    """
+    args = {"extra_data": "false", "xql_query_name": "test_query", "xql_query_tag": "test_tag"}
+    mock_response = {
+        "xql_queries": [
+            {"xql_query_name": "test_query", "xql_query": "dataset = xdr_data", "xql_query_tags": ["test_tag"], "id": "123"}
+        ]
+    }
+    mocker.patch.object(CLIENT, "get_xql_queries", return_value=mock_response)
+    response = XQLQueryingEngine.xql_library_list_command(CLIENT, args)
+
+    assert response.outputs[0]["name"] == "test_query"
+    assert response.outputs[0]["query_text"] == "dataset = xdr_data"
+    assert response.outputs_prefix == "PaloAltoNetworksXQL.Library"
+
+
+def test_xql_library_create_command(mocker):
+    """
+    Given:
+    - A client object and command arguments.
+    When:
+    - Calling xql_library_create_command function.
+    Then:
+    - Ensure the client is called with correct parameters.
+    """
+    args = {
+        "override_existing": "true",
+        "xql_query": "dataset = xdr_data",
+        "xql_query_name": "test_query",
+        "xql_query_tag": "test_tag",
+    }
+    res = mocker.patch.object(CLIENT, "create_xql_queries")
+    response = XQLQueryingEngine.xql_library_create_command(CLIENT, args)
+
+    assert response.readable_output == "XQL queries created successfully."
+    res.assert_called_once_with(
+        {
+            "request_data": {
+                "xql_queries_override": True,
+                "xql_query_tags": "test_tag",
+                "xql_queries": [{"xql_query": "dataset = xdr_data", "xql_query_name": "test_query"}],
+            }
+        }
+    )
+
+
+def test_xql_library_delete_command(mocker):
+    """
+    Given:
+    - A client object and command arguments.
+    When:
+    - Calling xql_library_delete_command function.
+    Then:
+    - Ensure the client is called with correct parameters.
+    """
+    args = {"xql_query_name": "test_query", "xql_query_tag": "test_tag"}
+    res = mocker.patch.object(CLIENT, "delete_xql_queries")
+    response = XQLQueryingEngine.xql_library_delete_command(CLIENT, args)
+
+    assert response.readable_output == "XQL queries deleted successfully."
+    res.assert_called_once_with({"request_data": {"xql_query_names": ["test_query"], "xql_query_tags": ["test_tag"]}})

@@ -42,6 +42,22 @@ RESPONSE_WITH_EVENTS_1 = {
     "nextPageExists": False,
     "tracker": "xxxx",
 }
+
+RESPONSE_CYBERSECURITY_EVENTS = {
+    "events": [
+        {
+            "id": 1178203423,
+            "productID": 8193,
+            "globalID": "e65b5695-4ef4-453b-90c6-3a31b0e6b159",
+            "category": "EVENT",
+            "feature": "Alerts And Notifications",
+            "type": "Alert",
+            "timeStamp": "2024-05-25T18:52:48Z",
+            "details": {"eventID": 36832945, "ip": None, "clientOS": None},
+        }
+    ],
+    "nextPageToken": "cybertoken123",
+}
 RESPONSE_WITH_EVENTS_2 = {
     "events": [
         {
@@ -128,7 +144,7 @@ def test_test_module_command(mocker, mock_client):
         "search_events",
         return_value={"events": [], "tracker": "DUMMY_TRACKER"},
     )
-    result = run_test_module(client=mock_client)
+    result = run_test_module(client=mock_client, event_types=["InSync events"])
     assert result == "ok"
 
 
@@ -149,25 +165,53 @@ def test_test_module_command_failure(mocker, mock_client):
         side_effect=DemistoException(message="Error: invalid_grant"),
     )
     with pytest.raises(DemistoException):
-        run_test_module(client=mock_client)
+        run_test_module(client=mock_client, event_types=["InSync events"])
 
 
-def test_get_events_command(mocker, mock_client):
+@pytest.mark.parametrize(
+    "event_type,mock_response,expected_tracker,expected_event_count,expected_event_id_field",
+    [
+        ("InSync events", RESPONSE_WITH_EVENTS_1, "xxxx", 1, "eventID"),
+    ],
+)
+def test_get_events_command(
+    mocker, mock_client, event_type, mock_response, expected_tracker, expected_event_count, expected_event_id_field
+):
     """
     Given:
-    - get_events command
+    - get_events command for InSync events
 
     When:
     - running get events command
 
     Then:
-    - events and tracker as expected
+    - Ensure events and tracker are returned as expected
     """
-    mocker.patch.object(mock_client, "search_events", return_value=RESPONSE_WITH_EVENTS_1)
-    events, tracker = get_events(client=mock_client)
+    mocker.patch.object(mock_client, "search_events", return_value=mock_response)
+    events, tracker = get_events(client=mock_client, event_type=event_type)
 
-    assert tracker == "xxxx"
-    assert len(events) == 1
+    assert tracker == expected_tracker
+    assert len(events) == expected_event_count
+    assert expected_event_id_field in events[0]
+
+
+def test_search_events_cybersecurity_normalization(mocker, mock_client):
+    """
+    Given:
+    - Cybersecurity events API response with nextPageToken
+
+    When:
+    - running search_events method with event_type="Cybersecurity events"
+
+    Then:
+    - Ensure nextPageToken is normalized to tracker in the response
+    """
+    mocker.patch.object(mock_client, "_http_request", return_value=RESPONSE_CYBERSECURITY_EVENTS)
+    response = mock_client.search_events(event_type="Cybersecurity events")
+
+    # Verify normalization: tracker should be added with same value as nextPageToken
+    assert response["tracker"] == "cybertoken123"
+    assert response["nextPageToken"] == "cybertoken123"
 
 
 def test_get_events_command_failure(mocker, mock_client):
@@ -185,7 +229,7 @@ def test_get_events_command_failure(mocker, mock_client):
     """
     mocker.patch.object(mock_client, "search_events", return_value=INVALID_RESPONSE)
     with pytest.raises(KeyError):
-        get_events(client=mock_client)
+        get_events(client=mock_client, event_type="InSync events")
 
 
 def test_refresh_access_token(mocker, mock_client):
@@ -215,24 +259,38 @@ def test_refresh_access_token(mocker, mock_client):
         mock_client._refresh_access_token()
 
 
-def test_search_events_called_with(mocker, mock_client):
+@pytest.mark.parametrize(
+    "event_type,tracker,expected_url_suffix,mock_response",
+    [
+        ("InSync events", "xxxx", "/insync/eventmanagement/v2/events?tracker=xxxx", RESPONSE_WITHOUT_EVENTS),
+        ("InSync events", None, "/insync/eventmanagement/v2/events", RESPONSE_WITHOUT_EVENTS),
+        (
+            "Cybersecurity events",
+            "token123",
+            "/platform/eventmanagement/v3/events?pageToken=token123",
+            RESPONSE_CYBERSECURITY_EVENTS,
+        ),
+        ("Cybersecurity events", None, "/platform/eventmanagement/v3/events?pageSize=500", RESPONSE_CYBERSECURITY_EVENTS),
+    ],
+)
+def test_search_events_called_with(mocker, mock_client, event_type, tracker, expected_url_suffix, mock_response):
     """
     Given:
     - a mock client
+    - different event types and tracker scenarios
 
     When:
-    - running search_events method
+    - running search_events method with various parameters
 
     Then:
-    -  Ensure all arguments were sent to the api call as expected
+    - Ensure correct URL is constructed for each scenario
     """
+    http_mock = mocker.patch.object(mock_client, "_http_request", return_value=mock_response)
 
-    http_mock = mocker.patch.object(mock_client, "_http_request", return_value=RESPONSE_WITHOUT_EVENTS)
-
-    mock_client.search_events(tracker="xxxx")
+    mock_client.search_events(tracker=tracker, event_type=event_type)
     http_mock.assert_called_with(
         method="GET",
-        url_suffix="/insync/eventmanagement/v2/events?tracker=xxxx",
+        url_suffix=expected_url_suffix,
         headers={"Authorization": "Bearer DUMMY_TOKEN", "accept": "application/json"},
     )
 
@@ -272,18 +330,23 @@ def test_fetch_events_command(mocker, mock_client):
     # First fetch
     mocker.patch.object(mock_client, "search_events", return_value=RESPONSE_WITH_EVENTS_1)
     first_run = {}
-    events, tracker_for_second_run = fetch_events(client=mock_client, last_run=first_run, max_fetch=MAX_FETCH)
+    events, tracker_for_second_run = fetch_events(
+        client=mock_client, last_run=first_run, max_fetch=MAX_FETCH, event_types=["InSync events"]
+    )
 
     assert len(events) == 1
-    assert tracker_for_second_run["tracker"] == "xxxx"
+    assert tracker_for_second_run["tracker_InSync events"] == "xxxx"
     assert events[0]["eventID"] == 0
 
     # Second fetch
     mock_search_events = mocker.patch.object(mock_client, "search_events", return_value=RESPONSE_WITH_EVENTS_2)
-    events, tracker_for_third_run = fetch_events(client=mock_client, last_run=tracker_for_second_run, max_fetch=MAX_FETCH)
-    mock_search_events.assert_called_with(tracker_for_second_run.get("tracker"))
+    events, tracker_for_third_run = fetch_events(
+        client=mock_client, last_run=tracker_for_second_run, max_fetch=MAX_FETCH, event_types=["InSync events"]
+    )
+    # The second fetch uses the tracker from first fetch result (xxxx)
+    mock_search_events.assert_called_with("xxxx", "InSync events")
     assert len(events) == 1
-    assert tracker_for_third_run["tracker"] == "yyyy"
+    assert tracker_for_third_run["tracker_InSync events"] == "yyyy"
     assert events[0]["eventID"] == 1
 
 
@@ -397,12 +460,62 @@ def test_fetch_events_invalid_tracker(mocker, mock_client):
     """
     # First fetch
     mocker.patch.object(mock_client, "search_events", return_value=RESPONSE_WITH_EVENTS_1)
-    events, tracker_for_second_run = fetch_events(client=mock_client, last_run={}, max_fetch=MAX_FETCH)
+    events, tracker_for_second_run = fetch_events(
+        client=mock_client, last_run={}, max_fetch=MAX_FETCH, event_types=["InSync events"]
+    )
 
     # Second fetch
     mocker.patch.object(mock_client, "search_events", side_effect=Exception("Invalid tracker"))
-    events, tracker_for_third_run = fetch_events(client=mock_client, last_run=tracker_for_second_run, max_fetch=MAX_FETCH)
+    events, tracker_for_third_run = fetch_events(
+        client=mock_client, last_run=tracker_for_second_run, max_fetch=MAX_FETCH, event_types=["InSync events"]
+    )
 
     # same tracker should be returned when "Invalid tracker" exception is thrown and no events
-    assert tracker_for_third_run["tracker"] == tracker_for_second_run["tracker"]
+    assert tracker_for_third_run["tracker_InSync events"] == tracker_for_second_run["tracker_InSync events"]
     assert events == []
+
+
+@pytest.mark.parametrize(
+    "event_types,expected_tracker_keys,mock_responses",
+    [
+        (["InSync events"], ["tracker_InSync events"], {"InSync events": RESPONSE_WITH_EVENTS_1}),
+        (["Cybersecurity events"], ["tracker_Cybersecurity events"], {"Cybersecurity events": RESPONSE_CYBERSECURITY_EVENTS}),
+        (
+            ["InSync events", "Cybersecurity events"],
+            ["tracker_InSync events", "tracker_Cybersecurity events"],
+            {"InSync events": RESPONSE_WITH_EVENTS_1, "Cybersecurity events": RESPONSE_CYBERSECURITY_EVENTS},
+        ),
+    ],
+)
+def test_fetch_events_multiple_types(mocker, mock_client, event_types, expected_tracker_keys, mock_responses):
+    """
+    Given:
+    - fetch events command with different event type configurations
+
+    When:
+    - Running fetch-events command with single or multiple event types
+
+    Then:
+    - Ensure correct trackers are stored for each event type
+    - Ensure _time and source_log_type fields are added to events
+    """
+
+    def mock_search(tracker=None, event_type="InSync events"):
+        return mock_responses.get(event_type, RESPONSE_WITH_EVENTS_1)
+
+    mocker.patch.object(mock_client, "search_events", side_effect=mock_search)
+    events, next_run = fetch_events(client=mock_client, last_run={}, max_fetch=MAX_FETCH, event_types=event_types)
+
+    # Verify all expected tracker keys are present
+    for key in expected_tracker_keys:
+        assert key in next_run
+
+    # Verify event count matches number of event types
+    assert len(events) == len(event_types)
+
+    # Verify _time and source_log_type fields are added
+    for event in events:
+        assert "_time" in event
+        assert "source_log_type" in event
+        # Verify source_log_type has correct value
+        assert event["source_log_type"] in ["insync_events", "cybersecurity_events"]
