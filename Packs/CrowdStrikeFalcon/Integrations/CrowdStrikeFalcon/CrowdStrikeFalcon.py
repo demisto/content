@@ -6426,7 +6426,7 @@ def build_ngsiem_query_with_limit(query: str, limit: int) -> str:
     return query
 
 
-def arg_to_ngsiem_time_spec(val: Any, arg_name: Optional[str] = None) -> Optional[Union[int, str]]:
+def arg_to_ngsiem_time_spec(val: Any) -> Optional[Union[int, str]]:
     """
     Normalize an NGSIEM time argument. CrowdStrike API supports both numeric timestamps and relative.
     Here we add the support of datetime strings.
@@ -6457,7 +6457,7 @@ def arg_to_ngsiem_time_spec(val: Any, arg_name: Optional[str] = None) -> Optiona
     iso = s.replace("Z", "+00:00")  # fromisoformat doesn't accept Z
     try:
         datetime.fromisoformat(iso)  # validates absolute date-ish string
-        dt = arg_to_datetime(s, arg_name=arg_name, is_utc=False, required=False)
+        dt = arg_to_datetime(s)
         return int(dt.timestamp() * 1000) if dt else None
     except ValueError:
         # not ISO absolute -> pass through as LogScale time spec / relative string
@@ -6522,7 +6522,7 @@ def process_ngsiem_search_completion(response: dict, args: dict) -> PollResult:
         demisto.debug(f"NGSIEM search completed with warnings: {warnings}")
 
     if events:
-        demisto.debug(f"Returend {len(events)} results from NGSIEM search")
+        demisto.debug(f"Returned {len(events)} results from NGSIEM search")
         table_headers = [
             "timestamp",
             "user.name",

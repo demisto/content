@@ -7413,13 +7413,16 @@ def test_http_request_get_token_request_429(mocker, requests_mock):
 
 
 class ResMocker:
-    def __init__(self, http_response, status_code, reason):
+    def __init__(self, http_response, status_code, reason, text=None):
         self.http_response = http_response
         self.status_code = status_code
         self.reason = reason
         self.ok = False
+        self.text = text
 
     def json(self):
+        if self.http_response is None:
+            raise ValueError("No JSON object could be decoded")
         return self.http_response
 
 
@@ -7451,6 +7454,30 @@ def test_error_handler():
         error_handler(arg_res)
     except DemistoException as e:
         assert e.message == f"Error in API call to CrowdStrike Falcon: code: {status_code} - reason: {reason}"
+
+
+def test_error_handler_non_json_response():
+    """
+    Given:
+        - A response from the API that returns a non-JSON body (e.g., text/plain from NGSIEM errors).
+    When:
+        - Running error_handler
+    Then:
+        - Validate that the error message contains the status code, reason, and the plain-text body content.
+        - Validate that the body is truncated to 4000 characters.
+    """
+    from CrowdStrikeFalcon import error_handler
+
+    status_code = 500
+    reason = "Internal Server Error"
+    plain_text_body = "SearchQueryParsingError: Error parsing query at line 1:0"
+
+    arg_res = ResMocker(None, status_code, reason, text=plain_text_body)
+    with pytest.raises(DemistoException) as e:
+        error_handler(arg_res)
+    assert e.value.message == (
+        f"Error in API call to CrowdStrike Falcon: code: {status_code} - reason: {reason}\n{plain_text_body}"
+    )
 
 
 @pytest.mark.parametrize(

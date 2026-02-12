@@ -5390,7 +5390,7 @@ script:
       - investigate_view
       defaultValue: search-all
     - name: query
-      description: 'The CQL query to use for the search. Note: Double quotes (“) and backslashes (\) in the queryString must be escaped with a backslash to ensure they are properly interpreted. Example:#event_simpleName = \"Event_APIActivityAuditEvent\" For more details see: https://library.humio.com/data-analysis/syntax.html."'
+      description: 'The CQL query to use for the search. Note: Double quotes (“) and backslashes (\) in the queryString must be escaped with a backslash to ensure they are properly interpreted. For more details see: https://library.humio.com/data-analysis/syntax.html.'
       required: true
     - name: start
       description: |
@@ -5461,6 +5461,9 @@ script:
     - contextPath: CrowdStrike.NGSiemEvent
       description: The list of all events returned from the search.
       type: Array
+    - contextPath: CrowdStrike.NGSiemEvent.id
+      description: The event ID.
+      type: String
     - contextPath: CrowdStrike.NGSiemEvent.timestamp
       description: Event timestamp.
       type: String
