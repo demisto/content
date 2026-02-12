@@ -6684,3 +6684,40 @@ Deletes a tag from the specified case.
 #### Context Output
 
 There is no context output for this command.
+
+### cs-falcon-search-ngsiem-events
+
+***
+Search NGSIEM historical events. Requires NGSIEM scope with read/write permissions.
+
+#### Base Command
+
+`cs-falcon-search-ngsiem-events`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| repository | The repository to run the query against.<br/>Available repository values:<br/>- All: search-all<br/>- Falcon: investigate_view<br/>- Third party: third-party<br/>- IT Automation: falcon_for_it_view<br/>- Forensics: forensics_view<br/>. Possible values are: search-all, third-party, falcon_for_it_view, forensics_view, investigate_view. Default is search-all. | Optional |
+| query | The CQL query to use for the search. Note: Double quotes (“) and backslashes (\) in the queryString must be escaped with a backslash to ensure they are properly interpreted. Example:#event_simpleName = \"Event_APIActivityAuditEvent\" For more details see: https://library.humio.com/data-analysis/syntax.html.". | Required |
+| start | The start of the search window, based on the event timestamp.<br/>Note: end must be strictly greater than start.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"), and epoch timestamps in milliseconds (e.g., 1767225600000).<br/>. | Optional |
+| end | The end of the search window, based on the event timestamp.<br/>Note: end must be strictly greater than start.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"), and epoch timestamps in milliseconds (e.g., 1767225600000).<br/>. | Optional |
+| around_event_id | The ID of the event to search around. | Optional |
+| around_number_events_before | Number of events to show before the eventId. Required when around_event_id is used. | Optional |
+| around_number_events_after | Number of events to show after the eventId. Required when around_event_id is used. | Optional |
+| around_timestamp | Timestamp for around search. Required when around_event_id is used. | Optional |
+| ingest_start | The start of the search window, based on the event ingesttimestamp.<br/>Note: ingest_end must be strictly greater than ingest_start.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"), and epoch timestamps in milliseconds (e.g., 1767225600000).<br/>. | Optional |
+| ingest_end | The end of the search window, based on the event ingesttimestamp.<br/>Note: ingest_end must be strictly greater than ingest_start.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"), and epoch timestamps in milliseconds (e.g., 1767225600000).<br/>. | Optional |
+| use_ingest_time | When true, the query uses ingestStart/ingestEnd instead of start/end. If use_ingest_time is false or not set, start/end are used (even if ingest times are also provided). Possible values are: true, false. | Optional |
+| time_zone | The time zone to use if start and end times are not specified in milliseconds. Time zones are provided in "area/location" format. Example: UTC. | Optional |
+| time_zone_offset_minutes | The time zone offset must be provided in minutes. For example, if your time zone is UTC+2:00, you would pass a value of 120. | Optional |
+| limit | Maximum number of events to return. Default is 50. | Optional |
+| interval | Interval between polling attempts in seconds. To prevent search timeouts, set this value within the 60–90 second range. Default is 60. | Optional |
+| timeout | Timeout for polling in seconds. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.NGSiemEvent | Array | The list of all events returned from the search. |
+| CrowdStrike.NGSiemEvent.timestamp | String | Event timestamp. |
