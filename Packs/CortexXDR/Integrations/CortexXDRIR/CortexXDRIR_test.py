@@ -2815,9 +2815,7 @@ def test_automation_script_create_command(mocker, tmp_path, file_name, file_cont
     test_file = tmp_path / file_name
     test_file.write_bytes(file_content)
 
-    mocker.patch.object(
-        demisto, "getFilePath", return_value={"path": str(test_file), "name": file_name}
-    )
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": str(test_file), "name": file_name})
     mock_create = mocker.patch.object(Client, "create_automation_script")
 
     args = {"entry_id": "test_entry_id"}
@@ -2932,9 +2930,7 @@ def test_automation_playbook_create_command(mocker, tmp_path, file_name, file_co
     test_file = tmp_path / file_name
     test_file.write_bytes(file_content)
 
-    mocker.patch.object(
-        demisto, "getFilePath", return_value={"path": str(test_file), "name": file_name}
-    )
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": str(test_file), "name": file_name})
     mock_create = mocker.patch.object(Client, "create_automation_playbook")
 
     args = {"entry_id": "test_entry_id"}
@@ -3019,6 +3015,7 @@ def test_automation_playbook_delete_command(mocker, field, value):
     expected_request_data = {"request_data": {"filter": {"field": field, "value": value}}}
     mock_delete.assert_called_once_with(expected_request_data)
     assert result.readable_output == "Automation playbook deleted successfully."
+
 
 @pytest.mark.parametrize(
     "args, expected_request_data",

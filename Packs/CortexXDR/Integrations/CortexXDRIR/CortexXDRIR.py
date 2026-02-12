@@ -689,8 +689,8 @@ class Client(CoreClient):
             files (dict):
         """
         res = self._http_request(
-            method='POST',
-            url_suffix='/scripts/insert',
+            method="POST",
+            url_suffix="/scripts/insert",
             files=files,
         )
         return res
@@ -706,12 +706,7 @@ class Client(CoreClient):
         Returns:
             bytes: The script file content.
         """
-        return self._http_request(
-            method='POST',
-            url_suffix='/scripts/get',
-            json_data=request_data,
-            resp_type='content'
-        )
+        return self._http_request(method="POST", url_suffix="/scripts/get", json_data=request_data, resp_type="content")
 
     def delete_automation_script(self, request_data):
         """
@@ -722,8 +717,8 @@ class Client(CoreClient):
             request_data (dict):
         """
         self._http_request(
-            method='POST',
-            url_suffix='/scripts/delete',
+            method="POST",
+            url_suffix="/scripts/delete",
             json_data=request_data,
         )
 
@@ -737,8 +732,8 @@ class Client(CoreClient):
 
         """
         self._http_request(
-            method='POST',
-            url_suffix='/playbooks/insert',
+            method="POST",
+            url_suffix="/playbooks/insert",
             files=files,
         )
 
@@ -754,10 +749,10 @@ class Client(CoreClient):
             bytes: The playbook file content.
         """
         return self._http_request(
-            method='POST',
-            url_suffix='/playbooks/get',
+            method="POST",
+            url_suffix="/playbooks/get",
             json_data=request_data,
-            resp_type='content',
+            resp_type="content",
         )
 
     def delete_automation_playbook(self, request_data):
@@ -769,8 +764,8 @@ class Client(CoreClient):
             request_data (dict):
         """
         self._http_request(
-            method='POST',
-            url_suffix='/playbooks/delete',
+            method="POST",
+            url_suffix="/playbooks/delete",
             json_data=request_data,
         )
 
@@ -2456,21 +2451,19 @@ def automation_script_create_command(client: Client, args: Dict) -> CommandResul
     Returns:
         CommandResults: The results of the command.
     """
-    entry_id = args.get('entry_id')
+    entry_id = args.get("entry_id")
     file_info = demisto.getFilePath(entry_id)
 
-    file_path = file_info.get('path', '')
-    file_name = file_info.get('name', '')
+    file_path = file_info.get("path", "")
+    file_name = file_info.get("name", "")
     demisto.debug(f"Got file info {file_info}")
 
-    with open(file_path, 'rb') as f:
+    with open(file_path, "rb") as f:
         file_content = f.read()
 
-    files = {
-        'file': (file_name, file_content)
-    }
+    files = {"file": (file_name, file_content)}
     client.create_automation_script(files)
-    return CommandResults(readable_output='Automation script created successfully.')
+    return CommandResults(readable_output="Automation script created successfully.")
 
 
 def automation_script_get_command(client: Client, args: Dict) -> dict:
@@ -2485,12 +2478,12 @@ def automation_script_get_command(client: Client, args: Dict) -> dict:
     Returns:
         dict: A file result dictionary.
     """
-    field = args.get('field')
-    value = args.get('value')
+    field = args.get("field")
+    value = args.get("value")
 
-    request_data = {'request_data': {"filter": {"field": field, "value": value}}}
+    request_data = {"request_data": {"filter": {"field": field, "value": value}}}
     file_content = client.get_automation_script(request_data)
-    return fileResult(filename=f'automation_script_{value}', data=file_content)
+    return fileResult(filename=f"automation_script_{value}", data=file_content)
 
 
 def automation_script_delete_command(client: Client, args: Dict) -> CommandResults:
@@ -2505,12 +2498,12 @@ def automation_script_delete_command(client: Client, args: Dict) -> CommandResul
     Returns:
         CommandResults: The results of the command.
     """
-    field = args.get('field')
-    value = args.get('value')
+    field = args.get("field")
+    value = args.get("value")
 
-    request_data = {'request_data': {"filter": {"field": field, "value": value}}}
+    request_data = {"request_data": {"filter": {"field": field, "value": value}}}
     client.delete_automation_script(request_data)
-    return CommandResults(readable_output='Automation script deleted successfully.')
+    return CommandResults(readable_output="Automation script deleted successfully.")
 
 
 def automation_playbook_create_command(client: Client, args: Dict) -> CommandResults:
@@ -2525,19 +2518,19 @@ def automation_playbook_create_command(client: Client, args: Dict) -> CommandRes
     Returns:
         CommandResults: The results of the command.
     """
-    entry_id = args.get('entry_id')
+    entry_id = args.get("entry_id")
     file_info = demisto.getFilePath(entry_id)
 
     demisto.debug(f"Got file info {file_info}")
-    file_path = file_info.get('path', '')
-    file_name = file_info.get('name', '')
+    file_path = file_info.get("path", "")
+    file_name = file_info.get("name", "")
 
-    with open(file_path, 'rb') as f:
+    with open(file_path, "rb") as f:
         file_content = f.read()
 
-    files = {'file': (file_name, file_content)}
+    files = {"file": (file_name, file_content)}
     client.create_automation_playbook(files)
-    return CommandResults(readable_output='Automation playbook created successfully.')
+    return CommandResults(readable_output="Automation playbook created successfully.")
 
 
 def automation_playbook_get_command(client: Client, args: Dict) -> dict:
@@ -2552,12 +2545,12 @@ def automation_playbook_get_command(client: Client, args: Dict) -> dict:
     Returns:
         dict: A file result dictionary.
     """
-    field = args.get('field', '')
-    value = args.get('value', '')
+    field = args.get("field", "")
+    value = args.get("value", "")
 
-    request_data = {'request_data': {"filter": {"field": field, "value": value}}}
+    request_data = {"request_data": {"filter": {"field": field, "value": value}}}
     file_content = client.get_automation_playbook(request_data)
-    return fileResult(filename=f'automation_playbook_{value}', data=file_content)
+    return fileResult(filename=f"automation_playbook_{value}", data=file_content)
 
 
 def automation_playbook_delete_command(client: Client, args: Dict) -> CommandResults:
@@ -2572,11 +2565,11 @@ def automation_playbook_delete_command(client: Client, args: Dict) -> CommandRes
     Returns:
         CommandResults: The results of the command.
     """
-    field = args.get('field', '')
-    value = args.get('value', '')
-    request_data = {'request_data': {"filter": {"field": field, "value": value}}}
+    field = args.get("field", "")
+    value = args.get("value", "")
+    request_data = {"request_data": {"filter": {"field": field, "value": value}}}
     client.delete_automation_playbook(request_data)
-    return CommandResults(readable_output='Automation playbook deleted successfully.')
+    return CommandResults(readable_output="Automation playbook deleted successfully.")
 
 
 def main():  # pragma: no cover
