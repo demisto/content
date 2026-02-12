@@ -1438,6 +1438,34 @@ script:
     - contextPath: Proofpoint.URL.success
       description: Indicates whether the URL could successfully be decoded.
       type: Boolean
+  - arguments:
+    - description: "the start time to pull the accounts."
+      name: start
+      defaultvalue: '1 week'
+    - description: "the end time to pull the accounts."
+      name: end
+      defaultvalue: 'now'
+    - description: "weather to return high risk accounts or not."
+      name: high_risk
+      defaultvalue: 'false'
+    - description: "page to pull from."
+      name: page
+      defaultvalue: "0"
+    - description: "limit of pages to pull."
+      name: limit
+      defaultvalue: "50"
+    description: Get compromised accounts.
+    name: proofpoint-list-compromised-accounts
+    outputs:
+#      - contextPath: Proofpoint.URL.encodedUrl
+#        description: The original, rewritten URL supplied to the endpoint.
+#        type: String
+#      - contextPath: Proofpoint.URL.decodedUrl
+#        description: The target URL embedded inside the rewritten link.
+#        type: String
+#      - contextPath: Proofpoint.URL.success
+#        description: Indicates whether the URL could successfully be decoded.
+#        type: Boolean
   dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
