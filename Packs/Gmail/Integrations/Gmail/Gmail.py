@@ -1510,10 +1510,10 @@ def search(
 ) -> tuple[list[dict[str, Any]] | bool, str, str | None]:
     """
     Search for Gmail messages in a user's mailbox using various filter criteria.
-    
+
     This function queries the Gmail API to find messages matching the specified criteria.
     It can return either full message details or just a boolean indicating if messages were found.
-    
+
     Args:
         user_id: The user's email address or user ID to search in their mailbox.
         subject: Filter by email subject (partial match).
@@ -1532,17 +1532,17 @@ def search(
         has_attachments: Filter by attachment presence (True/False/None).
         only_return_account_names: If True, returns only a boolean indicating if messages exist,
                                    rather than full message details.
-    
+
     Returns:
         A tuple containing three elements:
         - First element: Either a list of email message dictionaries (when only_return_account_names is False)
                         or a boolean True (when only_return_account_names is True and messages exist).
         - Second element: The constructed query string that was used for the search.
         - Third element: The next page token for pagination (None if no more pages exist).
-    
+
     Raises:
         Exception: If the Gmail API call fails (unless "Mail service not enabled" error).
-    
+
     Note:
         - When only_return_account_names is True and no messages are found, returns (False, query, None).
         - The function constructs a Gmail search query from the individual filter parameters.
