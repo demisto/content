@@ -45,3 +45,4 @@ This script uses the following commands and scripts.
 | AWSPublicExposure.SGReplacements.ReplacementSet.old-sg | ID of the original security group before remediation. | String |
 | AWSPublicExposure.SGReplacements.ResourceID | The EC2 Resource ID whose Security Groups are to be remediated. | String |
 | AWSPublicExposure.SGReplacements.UpdatedSGList | List of Security Groups to associate to the EC2 resource after remediation. | String |
+| AWSPublicExposure.SGReplacements.RemediationRequired | Indicates whether or not any of the provided Security Groups contained rules requiring remediation. | boolean |

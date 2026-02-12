@@ -38,9 +38,9 @@
                             "UserIdGroupPairs": []
                         }
                     ],
-                    "OwnerId": "717007404259",
+                    "OwnerId": "123456789012",
                     "Region": "us-east-1",
-                    "VpcId": "vpc-061c242911e464170",
+                    "VpcId": "vpc-0123456789abcdef0",
                     "Tags": [
                                 {"Key": "Environment", "Value": "test"},
                                 {"Key": "Project", "Value": "demo"}
@@ -48,7 +48,7 @@
                 }
             ]
         },
-        "HumanReadable": "### AWS EC2 SecurityGroups\n|Description|GroupId|GroupName|OwnerId|Region|VpcId|\n|---|---|---|---|---|---|\n| sldkjdlskfjs | sg-0408c2745d3d13b15 | demo-sg | 717007404259 | us-east-1 | vpc-061c242911e464170 |\n",
+        "HumanReadable": "### AWS EC2 SecurityGroups\n|Description|GroupId|GroupName|OwnerId|Region|VpcId|\n|---|---|---|---|---|---|\n| sldkjdlskfjs | sg-00000000000000001 | demo-sg | 123456789012 | us-east-1 | vpc-0123456789abcdef0 |\n",
         "ImportantEntryContext": "None"
     }
 ]

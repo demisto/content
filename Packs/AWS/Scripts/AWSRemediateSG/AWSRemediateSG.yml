@@ -69,7 +69,7 @@ dependson:
   - AWS|||aws-ec2-security-group-ingress-authorize
   - AWS|||aws-ec2-security-group-egress-authorize
   - AWS|||aws-ec2-security-group-egress-revoke
-dockerimage: demisto/python3:3.12.12.6391686
+dockerimage: demisto/python3:3.12.12.7090913
 enabled: true
 name: AWSRemediateSG
 runas: DBotWeakRole

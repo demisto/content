@@ -27,7 +27,7 @@ def split_rule(rule: dict, port: int, protocol: str) -> list[dict]:
         list[dict]: List of replacement security group rules with the specified port excluded
     """
     res_list = []
-    # Work on a deep copy to avoid mutating the caller's rule dict (and nested objects like IpRanges).
+
     rule = copy.deepcopy(rule)
     # Check if 'FromPort' is in rule, else it is an "all traffic rule".
     if "FromPort" in rule:
@@ -50,21 +50,17 @@ def split_rule(rule: dict, port: int, protocol: str) -> list[dict]:
         # the specified port, plus a rule allowing all ports on the opposite protocol.
         opposite = "udp" if protocol == "tcp" else "tcp"
         description = (
-            f"Allow rule created by Cortex remediation from All Traffic rule "
-            f"omitting {protocol.upper()} port {port}."
+            f"Allow rule created by Cortex remediation from All Traffic rule " f"omitting {protocol.upper()} port {port}."
         )
         ip_ranges = [{"CidrIp": "0.0.0.0/0", "Description": description}]
         base_fields: dict = {"Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}
 
         # Target protocol: all ports below the excluded port
-        res_list.append({**base_fields, "IpProtocol": protocol, "IpRanges": ip_ranges,
-                         "FromPort": 0, "ToPort": port - 1})
+        res_list.append({**base_fields, "IpProtocol": protocol, "IpRanges": ip_ranges, "FromPort": 0, "ToPort": port - 1})
         # Target protocol: all ports above the excluded port
-        res_list.append({**base_fields, "IpProtocol": protocol, "IpRanges": ip_ranges,
-                         "FromPort": port + 1, "ToPort": 65535})
+        res_list.append({**base_fields, "IpProtocol": protocol, "IpRanges": ip_ranges, "FromPort": port + 1, "ToPort": 65535})
         # Opposite protocol: all ports
-        res_list.append({**base_fields, "IpProtocol": opposite, "IpRanges": ip_ranges,
-                         "FromPort": 0, "ToPort": 65535})
+        res_list.append({**base_fields, "IpProtocol": opposite, "IpRanges": ip_ranges, "FromPort": 0, "ToPort": 65535})
     return res_list
 
 
@@ -132,29 +128,30 @@ def sg_fix(account_id: str, sg_info: list, port: int, protocol: str, integration
     else:
         # Add rules that allow private IPs (RFC 1918) to the specific port.
         for cidr in PRIVATE_CIDRS:
-            recreate_list.append({
-                "IpProtocol": protocol,
-                "IpRanges": [
-                    {
-                        "CidrIp": cidr,
-                        "Description": "Internal access rule automatically created by Cortex remediation.",
-                    }
-                ],
-                "Ipv6Ranges": [],
-                "PrefixListIds": [],
-                "UserIdGroupPairs": [],
-                "FromPort": port,
-                "ToPort": port,
-            })
+            recreate_list.append(
+                {
+                    "IpProtocol": protocol,
+                    "IpRanges": [
+                        {
+                            "CidrIp": cidr,
+                            "Description": "Internal access rule automatically created by Cortex remediation.",
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": [],
+                    "UserIdGroupPairs": [],
+                    "FromPort": port,
+                    "ToPort": port,
+                }
+            )
 
         # Create the empty Security Group
         # Check if the name already contains the cortex remediation suffix
         if "_cortex_remediation_" in info["GroupName"]:
-            # Find the last occurrence of the suffix and replace the number
+            # Replace the random number
             base_name = info["GroupName"].rsplit("_cortex_remediation_", 1)[0]
             new_name = base_name + "_cortex_remediation_" + str(randint(1000, 9999))
         else:
-            # Original behavior for names that don't contain the suffix
             new_name = info["GroupName"] + "_cortex_remediation_" + str(randint(1000, 9999))
         description = "Copied from Security Group " + info["GroupName"] + " by Cortex."
         create_group_cmd_args = {
@@ -196,7 +193,6 @@ def sg_fix(account_id: str, sg_info: list, port: int, protocol: str, integration
                     f"Error: {json.dumps(create_tags_result[0]['Contents'])}"
                 )
 
-    # Batch all ingress rules into a single API call
     if recreate_list:
         create_ingress_rule_cmd_args = {
             "account_id": account_id,
@@ -216,7 +212,6 @@ def sg_fix(account_id: str, sg_info: list, port: int, protocol: str, integration
                     f"'aws-ec2-security-group-ingress-authorize'.\nError: {json.dumps(new_ingress_rule_res[0]['Contents'])}"
                 )
 
-    # Collect egress rules to batch into a single API call.
     # AWS auto-creates a default all-traffic egress rule (IpProtocol "-1", 0.0.0.0/0) on every new SG.
     # We need to match the original SG's egress configuration:
     #   1. Original has NO egress rules at all → revoke the AWS default.
@@ -231,8 +226,7 @@ def sg_fix(account_id: str, sg_info: list, port: int, protocol: str, integration
     # 0.0.0.0/0 CIDR.
     original_egress = info.get("IpPermissionsEgress", [])
     original_has_all_traffic = any(
-        egress["IpProtocol"] == "-1"
-        and any(r.get("CidrIp") == "0.0.0.0/0" for r in egress.get("IpRanges", []))
+        egress["IpProtocol"] == "-1" and any(r.get("CidrIp") == "0.0.0.0/0" for r in egress.get("IpRanges", []))
         for egress in original_egress
     )
 
@@ -242,9 +236,8 @@ def sg_fix(account_id: str, sg_info: list, port: int, protocol: str, integration
     # modified copy.
     egress_rules: list[dict] = []
     for egress in original_egress:
-        is_all_traffic_with_default = (
-            egress["IpProtocol"] == "-1"
-            and any(r.get("CidrIp") == "0.0.0.0/0" for r in egress.get("IpRanges", []))
+        is_all_traffic_with_default = egress["IpProtocol"] == "-1" and any(
+            r.get("CidrIp") == "0.0.0.0/0" for r in egress.get("IpRanges", [])
         )
         if is_all_traffic_with_default:
             # Strip the default 0.0.0.0/0 CIDR; check if anything else remains in this entry.
@@ -285,13 +278,17 @@ def sg_fix(account_id: str, sg_info: list, port: int, protocol: str, integration
     # Cases where we revoke: no egress rules at all (case 1), or specific rules without all-traffic (case 4).
     # Cases where we keep it: original had only the default (case 2), or had it alongside others (case 3).
     if not original_has_all_traffic:
-        all_traffic_rule = json.dumps([{
-            "IpProtocol": "-1",
-            "IpRanges": [{"CidrIp": "0.0.0.0/0"}],
-            "Ipv6Ranges": [],
-            "PrefixListIds": [],
-            "UserIdGroupPairs": [],
-        }])
+        all_traffic_rule = json.dumps(
+            [
+                {
+                    "IpProtocol": "-1",
+                    "IpRanges": [{"CidrIp": "0.0.0.0/0"}],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": [],
+                    "UserIdGroupPairs": [],
+                }
+            ]
+        )
         revoke_egress_rule_cmd_args = {
             "account_id": account_id,
             "group_id": new_id,
@@ -309,7 +306,12 @@ def sg_fix(account_id: str, sg_info: list, port: int, protocol: str, integration
 
 
 def fix_excessive_access(
-    account_id: str, sg_list: list, port: int, protocol: str, integration_instance: str, region: str,
+    account_id: str,
+    sg_list: list,
+    port: int,
+    protocol: str,
+    integration_instance: str,
+    region: str,
     cached_sg_data: dict | None = None,
 ) -> list[dict]:
     """
@@ -410,7 +412,7 @@ def identify_integration_instance(account_id: str, sg: str, region: str) -> tupl
     instance_to_use = dict_safe_get(sg_info, (0, "Metadata", "instance"))
     return instance_to_use, sg_info
 
-    
+
 def aws_recreate_sg(args: dict[str, Any]) -> CommandResults:
     """
     Main command function to remediate overly permissive security group rules.
@@ -470,7 +472,7 @@ def aws_recreate_sg(args: dict[str, Any]) -> CommandResults:
                 "ResourceID": resource_id,
                 "ReplacementSet": replace_list,
                 "UpdatedSGList": updated_sg_list,
-                "RemediationRequired": True
+                "RemediationRequired": True,
             },
         )
     else:
@@ -478,12 +480,7 @@ def aws_recreate_sg(args: dict[str, Any]) -> CommandResults:
             outputs_prefix="AWSPublicExposure.SGReplacements",
             outputs_key_field="ResourceID",
             readable_output="No security groups required remediation based on the provided inputs.",
-            outputs={
-                "ResourceID": resource_id,
-                "ReplacementSet": [],
-                "UpdatedSGList": "",
-                "RemediationRequired": False
-            },
+            outputs={"ResourceID": resource_id, "ReplacementSet": [], "UpdatedSGList": "", "RemediationRequired": False},
         )
 
 
