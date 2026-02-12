@@ -5381,6 +5381,7 @@ script:
         - Third party: third-party
         - IT Automation: falcon_for_it_view
         - Forensics: forensics_view
+        Default is search-all.
       auto: PREDEFINED
       predefined:
       - search-all
@@ -5431,14 +5432,14 @@ script:
       - 'true'
       - 'false'
     - name: time_zone
-      description: 'The time zone to use if start and end times are not specified in milliseconds. Time zones are provided in "area/location" format. Example: UTC'
+      description: 'The time zone to use if start and end times are not specified in milliseconds. Time zones are provided in "area/location" format. Example: UTC.'
     - name: time_zone_offset_minutes
       description: 'The time zone offset must be provided in minutes. For example, if your time zone is UTC+2:00, you would pass a value of 120.'
     - name: limit
       description: Maximum number of events to return.
       defaultValue: '50'
     - name: interval
-      description: Interval between polling attempts in seconds. To prevent search timeouts, set this value within the 60–90 second range
+      description: Interval between polling attempts in seconds. To prevent search timeouts, set this value within the 60–90 second range.
       defaultValue: '60'
     - name: timeout
       description: Timeout for polling in seconds.
