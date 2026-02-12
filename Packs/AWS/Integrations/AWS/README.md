@@ -3770,14 +3770,14 @@ Lists the versions of an Lambda layer.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.Lambda.LayerVersionsNextToken | string | A pagination token returned when the response doesn't contain all versions. |
-| AWS.Lambda.LayerVersions.LayerVersionArn | string | The ARN of the layer version. |
-| AWS.Lambda.LayerVersions.Version | number | The version number. |
-| AWS.Lambda.LayerVersions.Description | string | The description of the version. |
-| AWS.Lambda.LayerVersions.CreatedDate | string | The date that the version was created, in ISO 8601 format. |
-| AWS.Lambda.LayerVersions.CompatibleRuntimes | array | The layer's compatible runtimes. |
-| AWS.Lambda.LayerVersions.LicenseInfo | string | The layer's open-source license. |
-| AWS.Lambda.LayerVersions.CompatibleArchitectures | array | A list of compatible instruction set architectures. |
+| AWS.Lambda.Layers.VersionsNextToken | string | A pagination token returned when the response doesn't contain all versions. |
+| AWS.Lambda.Layers.LayerVersionArn | string | The ARN of the layer version. |
+| AWS.Lambda.Layers.Version | number | The version number. |
+| AWS.Lambda.Layers.Description | string | The description of the version. |
+| AWS.Lambda.Layers.CreatedDate | string | The date that the version was created, in ISO 8601 format. |
+| AWS.Lambda.Layers.CompatibleRuntimes | array | The layer's compatible runtimes. |
+| AWS.Lambda.Layers.LicenseInfo | string | The layer's open-source license. |
+| AWS.Lambda.Layers.CompatibleArchitectures | array | A list of compatible instruction set architectures. |
 
 ### aws-lambda-function-delete
 
@@ -3851,11 +3851,11 @@ Creates a Lambda layer from a ZIP archive.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.Lambda.LayerVersions.LayerVersionArn | string | The ARN of the layer version. |
-| AWS.Lambda.LayerVersions.LayerArn | string | The ARN of the layer. |
-| AWS.Lambda.LayerVersions.Description | string | The description of the version. |
-| AWS.Lambda.LayerVersions.CreatedDate | string | The date that the layer version was created, in ISO 8601 format. |
-| AWS.Lambda.LayerVersions.Version | number | The version number. |
-| AWS.Lambda.LayerVersions.CompatibleRuntimes | array | The layer's compatible runtimes. |
-| AWS.Lambda.LayerVersions.CompatibleArchitectures | array | A list of compatible instruction set architectures. |
-| AWS.Lambda.LayerVersions.Region | string | The AWS Region. |
+| AWS.Lambda.Layers.LayerVersionArn | string | The ARN of the layer version. |
+| AWS.Lambda.Layers.LayerArn | string | The ARN of the layer. |
+| AWS.Lambda.Layers.Description | string | The description of the version. |
+| AWS.Lambda.Layers.CreatedDate | string | The date that the layer version was created, in ISO 8601 format. |
+| AWS.Lambda.Layers.Version | number | The version number. |
+| AWS.Lambda.Layers.CompatibleRuntimes | array | The layer's compatible runtimes. |
+| AWS.Lambda.Layers.CompatibleArchitectures | array | A list of compatible instruction set architectures. |
+| AWS.Lambda.Layers.Region | string | The AWS Region. |
