@@ -5199,7 +5199,8 @@ async def test_listen(client_session):
         '"selected_options": [{"text": {"type": "plain_text", "text": "*Option 3*", '
         '"emoji": true}, "value": "value-2"}]}}, "timepicker_1": {"timepicker1": '
         '{"type": "timepicker", "selected_time": "06:00"}}}, "xsoar-button-submit": '
-        '"Successful"}'
+        '"Successful", "submitting_user": {"id": "UAALZT5D2", "username": "andrew", '
+        '"name": "andrew", "team_id": "TABQMPKP0"}}'
     )
     req = SocketModeRequest(type="event", payload=SAMPLE_PAYLOAD, envelope_id=default_envelope_id)
     client = mock.MagicMock(spec=SocketModeClient)
