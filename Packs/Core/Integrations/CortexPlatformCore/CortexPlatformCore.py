@@ -4565,27 +4565,24 @@ def get_email_investigation_summary_command(client: Client, args: dict) -> Comma
     Returns:
         CommandResults: The command results containing email investigation summaries.
     """
-    severity_mapping = {
+    phishing_severity_mapping = {
         "info": "SEV_010_INFO",
         "low": "SEV_020_LOW",
         "medium": "SEV_030_MEDIUM",
         "high": "SEV_040_HIGH",
     }
 
-    params: dict[str, Any] = {}
+    min_severity = args.get("min_severity")
+    min_severity_phishing = args.get("min_severity_phishing")
 
-    if days_timeframe := args.get("days_timeframe"):
-        params["days_timeframe"] = int(days_timeframe)
-    if detection_method := args.get("detection_method"):
-        params["detection_method"] = detection_method
-    if min_severity := args.get("min_severity"):
-        params["min_severity"] = severity_mapping.get(min_severity, min_severity)
-    if min_severity_phishing := args.get("min_severity_phishing"):
-        params["min_severity_phishing"] = severity_mapping.get(min_severity_phishing, min_severity_phishing)
-    if page_size := args.get("page_size"):
-        params["page_size"] = int(page_size)
-    if page_number := args.get("page_number"):
-        params["page_number"] = int(page_number)
+    params = assign_params(
+        days_timeframe=arg_to_number(args.get("days_timeframe")),
+        detection_method=args.get("detection_method"),
+        min_severity=phishing_severity_mapping.get(min_severity, min_severity) if min_severity else None,
+        min_severity_phishing=phishing_severity_mapping.get(min_severity_phishing, min_severity_phishing) if min_severity_phishing else None,
+        page_size=arg_to_number(args.get("page_size")),
+        page_number=arg_to_number(args.get("page_number")),
+    )
 
     response = client.get_email_investigation_summary(params)
     data = response if isinstance(response, list) else response.get("reply", response)
