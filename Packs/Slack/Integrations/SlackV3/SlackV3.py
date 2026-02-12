@@ -22,7 +22,7 @@ from slack_sdk.web.slack_response import SlackResponse
 import json
 import re
 
-from SlackApiModule import *
+from SlackUtilsApiModule import *
 
 """ CONSTANTS """
 ALLOWED_HTTP_VERBS = Literal["POST", "GET"]
@@ -100,25 +100,25 @@ ENABLED_AI_ASSISTANT: bool
 """ HELPER FUNCTIONS """
 
 # ============================================================================
-# Slack Agentix Handler - Implementation of AgentixMessagingHandler for Slack
+# Slack Assistant Handler - Implementation of AssistantMessagingHandler for Slack
 # ============================================================================
 
 
-class SlackAgentixHandler(AgentixMessagingHandler):
+class SlackAssistantHandler(AssistantMessagingHandler):
     """
-    Slack implementation of AgentixMessagingHandler.
-    Handles all Agentix interactions specific to Slack platform.
+    Slack implementation of AssistantMessagingHandler.
+    Handles all Assistant interactions specific to Slack platform.
     """
 
     def __init__(self):
-        """Initialize the Slack Agentix handler"""
+        """Initialize the Slack Assistant handler"""
         super().__init__()
 
     # ============================================================================
-    # Implementation of abstract methods from AgentixMessagingHandler
+    # Implementation of abstract methods from AssistantMessagingHandler
     # ============================================================================
 
-    async def send_message(
+    async def send_message_async(
         self,
         channel_id: str,
         message: str,
@@ -181,7 +181,7 @@ class SlackAgentixHandler(AgentixMessagingHandler):
     ):
         """
         Delete an existing Slack message.
-        Implements the abstract method from AgentixMessagingHandler.
+        Implements the abstract method from AssistantMessagingHandler.
 
         Args:
             channel_id: The Slack channel ID
@@ -202,7 +202,7 @@ class SlackAgentixHandler(AgentixMessagingHandler):
         """
         return await get_user_details(user_id)  # type: ignore[return-value]
 
-    async def get_conversation_history(self, channel_id: str, thread_ts: str, limit: int = 20) -> list:
+    async def get_thread_history(self, channel_id: str, thread_ts: str, limit: int = 20) -> list:
         """
         Get Slack conversation history.
 
@@ -232,10 +232,10 @@ class SlackAgentixHandler(AgentixMessagingHandler):
         """
         return f"<@{user_id}>"
 
-    def normalize_message_for_backend(self, text: str) -> str:
+    def normalize_message_from_user(self, text: str) -> str:
         """
         Normalize Slack message for backend by removing markdown formatting.
-        Implements the abstract method from AgentixMessagingHandler.
+        Implements the abstract method from AssistantMessagingHandler.
 
         Args:
             text: The Slack message text with markdown formatting
@@ -243,7 +243,7 @@ class SlackAgentixHandler(AgentixMessagingHandler):
         Returns:
             Normalized text suitable for backend
         """
-        return normalize_slack_message_for_backend(text)
+        return normalize_slack_message_from_user(text)
 
     def prepare_message_blocks(self, message: str, message_type: str, is_update: bool = False) -> tuple:
         """
@@ -292,7 +292,7 @@ class SlackAgentixHandler(AgentixMessagingHandler):
         """
         return get_feedback_buttons_block(message_id)
 
-    def send_new_message(
+    def post_agent_response_sync(
         self,
         channel_id: str,
         thread_id: str,
@@ -301,7 +301,7 @@ class SlackAgentixHandler(AgentixMessagingHandler):
     ) -> dict:
         """
         Send a new message to Slack.
-        Implements the abstract method from AgentixMessagingHandler.
+        Implements the abstract method from AssistantMessagingHandler.
 
         Args:
             channel_id: The channel ID
@@ -326,7 +326,7 @@ class SlackAgentixHandler(AgentixMessagingHandler):
     ) -> bool:
         """
         Update an existing Slack message.
-        Implements the abstract method from AgentixMessagingHandler.
+        Implements the abstract method from AssistantMessagingHandler.
 
         Args:
             channel_id: The channel ID
@@ -365,7 +365,7 @@ class SlackAgentixHandler(AgentixMessagingHandler):
     ):
         """
         Finalize the plan header (remove "updating..." indicator).
-        Implements the abstract method from AgentixMessagingHandler.
+        Implements the abstract method from AssistantMessagingHandler.
 
         Args:
             channel_id: The channel ID
@@ -377,7 +377,7 @@ class SlackAgentixHandler(AgentixMessagingHandler):
     def update_context(self, context_updates: dict):
         """
         Update the integration context.
-        Implements the abstract method from AgentixMessagingHandler.
+        Implements the abstract method from AssistantMessagingHandler.
 
         Args:
             context_updates: Dictionary of updates to apply
@@ -393,7 +393,7 @@ class SlackAgentixHandler(AgentixMessagingHandler):
     ):
         """
         Open a feedback modal for negative feedback collection.
-        Implements the abstract method from AgentixMessagingHandler.
+        Implements the abstract method from AssistantMessagingHandler.
         Delegates to get_feedback_modal() for modal construction.
 
         Args:
@@ -402,13 +402,90 @@ class SlackAgentixHandler(AgentixMessagingHandler):
             channel_id: The channel ID
             thread_ts: The thread timestamp
         """
-        # Get modal view from SlackApiModule (uses SDK classes)
+        # Get modal view from SlackUtilsApiModule (uses SDK classes)
         modal_view = get_feedback_modal(message_id, channel_id, thread_ts)
 
         # Use send_slack_request_async for retry logic
         await send_slack_request_async(
             client=ASYNC_CLIENT, method="views.open", body={"trigger_id": trigger_id, "view": modal_view.to_dict()}
         )
+
+    async def get_conversation_context_formatted(
+        self, channel_id: str, thread_ts: str, bot_id: str, current_message_ts: str
+    ) -> str:
+        """
+        Retrieves and formats Slack conversation context.
+        Slack-specific implementation.
+
+        Args:
+            channel_id: The Slack channel ID
+            thread_ts: The thread timestamp
+            bot_id: The bot user ID
+            current_message_ts: The current message timestamp
+
+        Returns:
+            Formatted context string
+        """
+        try:
+            # Get conversation history
+            response = await send_slack_request_async(
+                ASYNC_CLIENT, "conversations.replies", http_verb="GET", body={"channel": channel_id, "ts": thread_ts, "limit": 20}
+            )
+            messages = response.get("messages", [])
+
+            if not messages:
+                demisto.debug(f"No conversation history found for thread {thread_ts}")
+                return ""
+
+            # Filter and collect context messages
+            context_messages = []
+            bot_mention = f"<@{bot_id}>"
+
+            for msg in reversed(messages):  # Process from oldest to newest
+                msg_ts = msg.get("ts", "")
+                msg_text = msg.get("text", "")
+                msg_user = msg.get("user", "")
+                msg_bot_id = msg.get("bot_id", "")
+
+                # Skip current message
+                if msg_ts == current_message_ts:
+                    continue
+
+                # Skip bot messages
+                if msg_bot_id or msg_user == bot_id:
+                    continue
+
+                # Stop if we hit a previous bot mention
+                if bot_mention in msg_text and msg_ts != current_message_ts:
+                    break
+
+                # Add to context
+                if msg_text and msg_user:
+                    # Get user name
+                    try:
+                        user_response = await send_slack_request_async(
+                            ASYNC_CLIENT, "users.info", http_verb="GET", body={"user": msg_user}
+                        )
+                        user_info = user_response.get("user", {})
+                        user_name = user_info.get("real_name", user_info.get("name", msg_user))
+                    except Exception:
+                        user_name = msg_user
+
+                    context_messages.append({"user": user_name, "text": msg_text, "ts": msg_ts})
+
+                # Limit to 5 messages
+                if len(context_messages) >= 5:
+                    break
+
+            # Use base class formatting
+            context_str = self.format_context_messages(context_messages)
+            if context_str:
+                demisto.debug(f"Retrieved {len(context_messages)} context messages for thread {thread_ts}")
+            return context_str
+
+        except Exception as e:
+            demisto.error(f"Failed to get Slack conversation context: {e}")
+            return ""
 
 
 def finalize_plan_message(channel_id: str, thread_id: str, step_message_ts: str):
@@ -443,7 +520,9 @@ def finalize_plan_message(channel_id: str, thread_id: str, step_message_ts: str)
             if elements and "text" in elements[0]:
                 # Replace "Plan (updating...)" with "Plan"
                 original_text = elements[0]["text"]
-                updated_text = original_text.replace(SlackAgentixMessages.PLAN_LABEL_UPDATING, SlackAgentixMessages.PLAN_LABEL)
+                updated_text = original_text.replace(
+                    SlackAssistantMessages.PLAN_LABEL_UPDATING, SlackAssistantMessages.PLAN_LABEL
+                )
                 if original_text != updated_text:
                     elements[0]["text"] = updated_text
                     # Update the message
@@ -458,36 +537,36 @@ def finalize_plan_message(channel_id: str, thread_id: str, step_message_ts: str)
 
 
 # Create a global instance of the handler
-slack_agentix_handler = SlackAgentixHandler()
+slack_assistant_handler = SlackAssistantHandler()
 
 
 def send_agent_response():
     """
     Wrapper function for the send-agent-response command.
-    Delegates to SlackAgentixHandler.send_agent_response()
+    Delegates to SlackAssistantHandler.send_agent_response()
     """
     args = demisto.args()
 
     # Get current integration context
     integration_context = get_integration_context(SYNC_CONTEXT)
-    agentix_context = integration_context.get("agentix", {})
-    if isinstance(agentix_context, str):
-        agentix_context = json.loads(agentix_context)
+    assistant_context = integration_context.get(slack_assistant_handler.CONTEXT_KEY, {})
+    if isinstance(assistant_context, str):
+        assistant_context = json.loads(assistant_context)
 
     channel_id = args["channel_id"]
     thread_id = str(args["thread_id"])
-    agentix_id_key = f"{channel_id}_{thread_id}"
+    assistant_id_key = f"{channel_id}_{thread_id}"
 
     # Call the handler's send_agent_response method
-    slack_agentix_handler.send_agent_response(
+    slack_assistant_handler.send_agent_response(
         channel_id=channel_id,
         thread_id=thread_id,
         message=args["message"],
         message_type=args["message_type"],
         message_id=args.get("message_id", ""),
         completed=argToBoolean(args.get("completed", False)),
-        agentix_context=agentix_context,
-        agentix_id_key=agentix_id_key,
+        assistant_context=assistant_context,
+        assistant_id_key=assistant_id_key,
     )
 
 
@@ -887,7 +966,7 @@ def set_name_and_icon(body: dict, method: str):
         body: The message body.
         method: The current API method.
     """
-    if method == "chat.postMessage":
+    if method in ["chat.postMessage", "chat.postEphemeral"]:
         if BOT_NAME:
             body["username"] = BOT_NAME
         if BOT_ICON_URL:
@@ -1309,9 +1388,9 @@ def long_running_loop():
                 check_for_mirrors()
             check_for_unanswered_questions()
 
-            # Cleanup expired Agentix conversations
+            # Cleanup expired Assistant conversations
             if ENABLED_AI_ASSISTANT:
-                slack_agentix_handler.check_and_cleanup_agentix_conversations()
+                slack_assistant_handler.check_and_cleanup_assistant_conversations()
 
             if EXTENSIVE_LOGGING:
                 demisto.debug(f"Number of threads currently - {threading.active_count()}")
@@ -2005,7 +2084,7 @@ async def handle_entitlement_interactions(
     return False
 
 
-async def handle_agentix_interactions(
+async def handle_assistant_interactions(
     data: dict,
     event: dict,
     user_id: str,
@@ -2013,7 +2092,7 @@ async def handle_agentix_interactions(
     data_type: str,
 ):
     """
-    Handles Agentix AI Assistant interactions.
+    Handles Assistant AI interactions.
 
     Args:
         data: The payload data
@@ -2027,64 +2106,60 @@ async def handle_agentix_interactions(
 
     # Check if this is a modal submission (e.g., feedback modal)
     view = data.get("view", {})
-    is_modal_submission = is_agentix_modal_submission(data_type, view)
+    is_modal_submission = is_assistant_modal_submission(data_type, view)
 
     integration_context = get_integration_context(SYNC_CONTEXT)
     bot_id = json.loads(integration_context.get("bot_id", '""'))
     if not bot_id:
         bot_id = get_bot_id()
 
-    is_agentix_action = is_agentix_interactive_response(actions)
+    is_assistant_action = is_assistant_interactive_response(actions)
     text = event.get("text", "")
     is_bot_mentioned = is_bot_mention(text, bot_id, event)
 
-    demisto.debug(
-        f"Processing Agentix AI Assistant interaction: Bot Mentioned: {is_bot_mentioned}, Agentix Action: {is_agentix_action}"
-    )
-
-    # Only proceed if bot was mentioned or it's an agentix action
-    if is_bot_mentioned or is_agentix_action or is_modal_submission:
+    # Only proceed if bot was mentioned or it's an assistant action
+    if is_bot_mentioned or is_assistant_action or is_modal_submission:
         # Get user details and prepare data
         user = await get_user_details(user_id=user_id)
         user_email = user.get("profile", {}).get("email", "")  # type: ignore[call-overload]
-        demisto.debug(f"Agentix AI Assistant processing for user {user_email}")
-        demisto.debug(f"{data=}")
         container = data.get("container", {})
         channel_id = event.get("channel", "") or container.get("channel_id", "")
         thread_ts = event.get("thread_ts", "") or event.get("ts", "") or container.get("thread_ts", "")
 
-        agentix_context = json.loads(integration_context.get("agentix", "{}"))
-        demisto.debug(f"Current Agentix state before processing: {agentix_context}")
-        agentix_id_key = f"{channel_id}_{thread_ts}"
+        assistant_context = json.loads(integration_context.get(slack_assistant_handler.CONTEXT_KEY, "{}"))
+        assistant_id_key = f"{channel_id}_{thread_ts}"
 
-        # Track original agentix to detect changes
-        original_agentix = json.dumps(agentix_context, sort_keys=True)
+        demisto.debug(f"Assistant interaction: user={user_email}, channel={channel_id}, thread={thread_ts}, "
+                     f"bot_mentioned={is_bot_mentioned}, action={is_assistant_action}, modal={is_modal_submission}")
+
+        # Track original assistant to detect changes
+        original_assistant = json.dumps(assistant_context, sort_keys=True)
 
         # Handle bot mention using the handler
         if is_bot_mentioned:
             message_ts = event.get("ts", "")
-            agentix_context = await slack_agentix_handler.handle_bot_mention(
-                text, user_id, user_email, channel_id, thread_ts, agentix_context, agentix_id_key, bot_id, message_ts
+            assistant_context = await slack_assistant_handler.handle_bot_mention(
+                text, user_id, user_email, channel_id, thread_ts, assistant_context, assistant_id_key, bot_id, message_ts
             )
 
         # Handle interactive actions (agent selection or approval)
-        elif is_agentix_action:
+        elif is_assistant_action:
             trigger_id = data.get("trigger_id", "")
             message = data.get("message", {})
-            agentix_context = await slack_agentix_handler.handle_action(
-                actions, user_id, user_email, channel_id, thread_ts, message, agentix_context, agentix_id_key, trigger_id
+            assistant_context = await slack_assistant_handler.handle_action(
+                actions, user_id, user_email, channel_id, thread_ts, message, assistant_context, assistant_id_key, trigger_id
             )
 
         elif is_modal_submission:
-            await handle_agentix_modal_submission(view, user_id, user_email, slack_agentix_handler)
+            await handle_assistant_modal_submission(view, user_id, user_email, slack_assistant_handler)
 
-        # Save updated agentix context only if it was actually modified
-        updated_agentix = json.dumps(agentix_context, sort_keys=True)
-        if updated_agentix != original_agentix:
-            demisto.debug(f"Agentix context was modified, saving updated context: {agentix_context}")
-            set_to_integration_context_with_retries({"agentix": agentix_context, "bot_id": bot_id}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
-        else:
-            demisto.debug("Agentix context was not modified, skipping context update")
+        # Save updated assistant context only if it was actually modified
+        updated_assistant = json.dumps(assistant_context, sort_keys=True)
+        if updated_assistant != original_assistant:
+            demisto.debug("Assistant context modified, saving to integration context")
+            set_to_integration_context_with_retries(
+                {slack_assistant_handler.CONTEXT_KEY: assistant_context, "bot_id": bot_id}, OBJECTS_TO_KEYS, SYNC_CONTEXT
+            )
 
 
 async def listen(client: SocketModeClient, req: SocketModeRequest):
@@ -2142,8 +2217,8 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             data, event, user_id, actions, channel, thread, message_ts, quick_check_payload
         )
 
-        # Handle Agentix AI Assistant interactions
-        await handle_agentix_interactions(data, event, user_id, actions, data_type)
+        # Handle Assistant AI interactions
+        await handle_assistant_interactions(data, event, user_id, actions, data_type)
 
         if entitlement_handled:
             # Entitlement was handled, stop processing

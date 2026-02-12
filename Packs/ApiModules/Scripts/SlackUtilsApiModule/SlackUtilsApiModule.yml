@@ -1,7 +1,7 @@
 commonfields:
-  id: SlackApiModule
+  id: SlackUtilsApiModule
   version: -1
-name: SlackApiModule
+name: SlackUtilsApiModule
 script: '-'
 type: python
 subtype: python3

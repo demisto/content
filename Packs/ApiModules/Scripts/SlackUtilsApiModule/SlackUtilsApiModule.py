@@ -27,10 +27,10 @@ from CommonServerPython import *  # noqa: F401
 from CortexAssistantApiModule import *
 
 
-class SlackAgentixMessages(AgentixMessages):
+class SlackAssistantMessages(AssistantMessages):
     """
-    Slack-specific messages and UI elements for Agentix.
-    Extends the base AgentixMessages with Slack-specific formatting.
+    Slack-specific messages and UI elements for Assistant.
+    Extends the base AssistantMessages with Slack-specific formatting.
     """
 
     # Step/Plan display (Slack-specific with emoji)
@@ -203,7 +203,7 @@ def parse_md_table_to_slack_table(md_text: str) -> dict | None:
 def process_text_part(text: str) -> List[Dict]:
     """
     Processes non-table text.
-    Handles headers (#), lists (- or * or numbered), and paragraphs.
+    Handles code blocks (```), headers (#), lists (- or * or numbered), and paragraphs.
 
     Args:
         text: The text to process
@@ -212,6 +212,20 @@ def process_text_part(text: str) -> List[Dict]:
         List of Slack block dictionaries
     """
     sub_blocks = []
+
+    # First, extract code blocks and replace with placeholders
+    code_block_pattern = r"```(\w+)?\n(.*?)\n```"
+    code_blocks = []
+
+    def save_code_block(match):
+        language = match.group(1) or ""
+        code_content = match.group(2)
+        placeholder = f"__CODE_BLOCK_{len(code_blocks)}__"
+        code_blocks.append({"language": language, "content": code_content})
+        return placeholder
+
+    text = re.sub(code_block_pattern, save_code_block, text, flags=re.DOTALL)
+
     lines = text.split("\n")
     current_paragraph: list[str] = []
     current_list_items: list[str] = []
@@ -249,6 +263,25 @@ def process_text_part(text: str) -> List[Dict]:
 
     for line in lines:
         stripped_line = line.strip()
+
+        # Check for code block placeholder
+        code_block_match = re.match(r"__CODE_BLOCK_(\d+)__", stripped_line)
+        if code_block_match:
+            flush_paragraph()
+            flush_list()
+            block_index = int(code_block_match.group(1))
+            if block_index < len(code_blocks):
+                code_block = code_blocks[block_index]
+                # Create preformatted block for code
+                sub_blocks.append(
+                    {
+                        "type": "rich_text",
+                        "elements": [
+                            {"type": "rich_text_preformatted", "elements": [{"type": "text", "text": code_block["content"]}]}
+                        ],
+                    }
+                )
+            continue
 
         if not stripped_line:
             flush_paragraph()
@@ -293,11 +326,11 @@ def prepare_slack_message(message: str, message_type: str, is_update: bool = Fal
     Main processing function for the input message.
     Converts markdown tables and text into Slack Block Kit components.
 
-    Uses AgentixMessageType constants for message type handling.
+    Uses AssistantMessageType enum for message type handling.
 
     Args:
         message: The message text (markdown format)
-        message_type: The type of message (from AgentixMessageType)
+        message_type: The type of message (from AssistantMessageType)
         is_update: Whether this is an update to existing message (True) or new message (False)
 
     Returns:
@@ -307,9 +340,11 @@ def prepare_slack_message(message: str, message_type: str, is_update: bool = Fal
         ValueError: If message_type is not valid
     """
     # Validate message_type
-    if not AgentixMessageType.is_valid(message_type):
+    try:
+        AssistantMessageType(message_type)
+    except ValueError:
         error_msg = (
-            f"Invalid message_type: '{message_type}'. " + f"Must be one of: {', '.join(sorted(AgentixMessageType.VALID_TYPES))}"
+            f"Invalid message_type: '{message_type}'. " f"Must be one of: {', '.join([t.value for t in AssistantMessageType])}"
         )
         demisto.error(error_msg)
         raise ValueError(error_msg)
@@ -337,7 +372,7 @@ def prepare_slack_message(message: str, message_type: str, is_update: bool = Fal
                 blocks.extend(process_text_part(part))
 
     # For step types (step/thought), wrap everything in an attachment structure for a subtle appearance.
-    if AgentixMessageType.is_step_type(message_type):
+    if AssistantMessageType.is_step_type(message_type):
         # Add divider before new content if this is an update
         if is_update:
             blocks.insert(0, DividerBlock().to_dict())
@@ -348,7 +383,9 @@ def prepare_slack_message(message: str, message_type: str, is_update: bool = Fal
             attachment_blocks = [
                 ContextBlock(
                     elements=[
-                        MarkdownTextObject(text=f"{SlackAgentixMessages.PLAN_ICON} {SlackAgentixMessages.PLAN_LABEL_UPDATING}")
+                        MarkdownTextObject(
+                            text=f"{SlackAssistantMessages.PLAN_ICON} {SlackAssistantMessages.PLAN_LABEL_UPDATING}"
+                        )
                     ]
                 ).to_dict()
             ] + blocks
@@ -362,7 +399,7 @@ def prepare_slack_message(message: str, message_type: str, is_update: bool = Fal
         return [], attachments
 
     # For error types, use red color
-    if AgentixMessageType.is_error_type(message_type):
+    if AssistantMessageType.is_error_type(message_type):
         attachments = [
             {
                 "color": "#FF0000",  # Red border for errors
@@ -387,28 +424,27 @@ def create_agent_selection_blocks(agents: list[dict]) -> list:
     dropdown_options = [
         Option(
             text=PlainTextObject(text=agent.get("name", agent.get("id", ""))),
-            value=f"{AgentixActionIds.AGENT_SELECTION_VALUE_PREFIX}{agent.get('id', '')}",
+            value=f"{AssistantActionIds.AGENT_SELECTION_VALUE_PREFIX}{agent.get('id', '')}",
         )
         for agent in agents
     ]
 
     if not dropdown_options:
-        demisto.debug("No agents found for selection, returning empty list of blocks")
         return []
 
     return [
-        SectionBlock(text=MarkdownTextObject(text=AgentixMessages.AGENT_SELECTION_PROMPT)).to_dict(),
+        SectionBlock(text=MarkdownTextObject(text=AssistantMessages.AGENT_SELECTION_PROMPT)).to_dict(),
         ActionsBlock(
             elements=[
                 StaticSelectElement(
-                    placeholder=PlainTextObject(text=AgentixMessages.AGENT_SELECTION_PLACEHOLDER),
-                    action_id=AgentixActionIds.AGENT_SELECTION,
+                    placeholder=PlainTextObject(text=AssistantMessages.AGENT_SELECTION_PLACEHOLDER),
+                    action_id=AssistantActionIds.AGENT_SELECTION.value,
                     options=dropdown_options,
                     confirm=ConfirmObject(
-                        title=PlainTextObject(text=AgentixMessages.AGENT_SELECTION_CONFIRM_TITLE),
-                        text=MarkdownTextObject(text=AgentixMessages.AGENT_SELECTION_CONFIRM_TEXT),
-                        confirm=PlainTextObject(text=AgentixMessages.AGENT_SELECTION_CONFIRM_BUTTON),
-                        deny=PlainTextObject(text=AgentixMessages.AGENT_SELECTION_DENY_BUTTON),
+                        title=PlainTextObject(text=AssistantMessages.AGENT_SELECTION_CONFIRM_TITLE),
+                        text=MarkdownTextObject(text=AssistantMessages.AGENT_SELECTION_CONFIRM_TEXT),
+                        confirm=PlainTextObject(text=AssistantMessages.AGENT_SELECTION_CONFIRM_BUTTON),
+                        deny=PlainTextObject(text=AssistantMessages.AGENT_SELECTION_DENY_BUTTON),
                     ),
                 )
             ],
@@ -432,16 +468,16 @@ def get_feedback_buttons_block(message_id: str) -> Dict:
         "elements": [
             {
                 "type": "feedback_buttons",
-                "action_id": AgentixActionIds.FEEDBACK,
+                "action_id": AssistantActionIds.FEEDBACK.value,
                 "positive_button": {
-                    "text": {"type": "plain_text", "text": AgentixMessages.FEEDBACK_GOOD_BUTTON},
+                    "text": {"type": "plain_text", "text": AssistantMessages.FEEDBACK_GOOD_BUTTON},
                     "value": f"positive-{message_id}",
-                    "accessibility_label": AgentixMessages.FEEDBACK_GOOD_ACCESSIBILITY,
+                    "accessibility_label": AssistantMessages.FEEDBACK_GOOD_ACCESSIBILITY,
                 },
                 "negative_button": {
-                    "text": {"type": "plain_text", "text": AgentixMessages.FEEDBACK_BAD_BUTTON},
+                    "text": {"type": "plain_text", "text": AssistantMessages.FEEDBACK_BAD_BUTTON},
                     "value": f"negative-{message_id}",
-                    "accessibility_label": AgentixMessages.FEEDBACK_BAD_ACCESSIBILITY,
+                    "accessibility_label": AssistantMessages.FEEDBACK_BAD_ACCESSIBILITY,
                 },
             }
         ],
@@ -458,29 +494,29 @@ def get_approval_buttons_block() -> List[dict]:
     """
     return [
         HeaderBlock(
-            text=PlainTextObject(text=AgentixMessages.APPROVAL_HEADER, emoji=True),
+            text=PlainTextObject(text=AssistantMessages.APPROVAL_HEADER, emoji=True),
         ).to_dict(),
         DividerBlock().to_dict(),
-        SectionBlock(text=MarkdownTextObject(text=AgentixMessages.APPROVAL_PROMPT)).to_dict(),
+        SectionBlock(text=MarkdownTextObject(text=AssistantMessages.APPROVAL_PROMPT)).to_dict(),
         ActionsBlock(
             elements=[
                 ButtonElement(
-                    text=PlainTextObject(text=AgentixMessages.APPROVAL_PROCEED_BUTTON),
+                    text=PlainTextObject(text=AssistantMessages.APPROVAL_PROCEED_BUTTON),
                     style="primary",
-                    action_id=AgentixActionIds.APPROVAL_YES,
-                    value="agentix-sensitive-action-btn-yes",
+                    action_id=AssistantActionIds.APPROVAL_YES.value,
+                    value="assistant-sensitive-action-btn-yes",
                     confirm=ConfirmObject(
-                        title=PlainTextObject(text=AgentixMessages.APPROVAL_CONFIRM_TITLE),
-                        text=MarkdownTextObject(text=AgentixMessages.APPROVAL_CONFIRM_TEXT),
-                        confirm=PlainTextObject(text=AgentixMessages.APPROVAL_CONFIRM_BUTTON),
-                        deny=PlainTextObject(text=AgentixMessages.APPROVAL_DENY_BUTTON),
+                        title=PlainTextObject(text=AssistantMessages.APPROVAL_CONFIRM_TITLE),
+                        text=MarkdownTextObject(text=AssistantMessages.APPROVAL_CONFIRM_TEXT),
+                        confirm=PlainTextObject(text=AssistantMessages.APPROVAL_CONFIRM_BUTTON),
+                        deny=PlainTextObject(text=AssistantMessages.APPROVAL_DENY_BUTTON),
                     ),
                 ),
                 ButtonElement(
-                    text=PlainTextObject(text=AgentixMessages.APPROVAL_CANCEL_BUTTON),
+                    text=PlainTextObject(text=AssistantMessages.APPROVAL_CANCEL_BUTTON),
                     style="danger",
-                    action_id=AgentixActionIds.APPROVAL_NO,
-                    value="agentix-sensitive-action-btn-no",
+                    action_id=AssistantActionIds.APPROVAL_NO.value,
+                    value="assistant-sensitive-action-btn-no",
                 ),
             ],
         ).to_dict(),
@@ -501,48 +537,48 @@ def get_feedback_modal(message_id: str, channel_id: str, thread_ts: str) -> View
     """
     return View(
         type="modal",
-        callback_id=AgentixActionIds.FEEDBACK_MODAL_CALLBACK_ID,
-        title=PlainTextObject(text=AgentixMessages.FEEDBACK_MODAL_TITLE),
-        submit=PlainTextObject(text=AgentixMessages.FEEDBACK_MODAL_SUBMIT),
-        close=PlainTextObject(text=AgentixMessages.FEEDBACK_MODAL_CANCEL),
+        callback_id=AssistantActionIds.FEEDBACK_MODAL_CALLBACK_ID,
+        title=PlainTextObject(text=AssistantMessages.FEEDBACK_MODAL_TITLE),
+        submit=PlainTextObject(text=AssistantMessages.FEEDBACK_MODAL_SUBMIT),
+        close=PlainTextObject(text=AssistantMessages.FEEDBACK_MODAL_CANCEL),
         blocks=[
             InputBlock(
-                block_id=AgentixActionIds.FEEDBACK_MODAL_QUICK_BLOCK_ID,
-                label=PlainTextObject(text=AgentixMessages.FEEDBACK_MODAL_QUICK_LABEL),
+                block_id=AssistantActionIds.FEEDBACK_MODAL_QUICK_BLOCK_ID,
+                label=PlainTextObject(text=AssistantMessages.FEEDBACK_MODAL_QUICK_LABEL),
                 element=CheckboxesElement(
-                    action_id=AgentixActionIds.FEEDBACK_MODAL_CHECKBOXES_ACTION_ID,
+                    action_id=AssistantActionIds.FEEDBACK_MODAL_CHECKBOXES_ACTION_ID,
                     options=[
                         Option(
-                            text=PlainTextObject(text=AgentixMessages.FEEDBACK_OPTION_NO_ANSWER),
-                            value=AgentixMessages.FEEDBACK_OPTION_NO_ANSWER,
+                            text=PlainTextObject(text=AssistantMessages.FEEDBACK_OPTION_NO_ANSWER),
+                            value=AssistantMessages.FEEDBACK_OPTION_NO_ANSWER,
                         ),
                         Option(
-                            text=PlainTextObject(text=AgentixMessages.FEEDBACK_OPTION_FACTUALLY_INCORRECT),
-                            value=AgentixMessages.FEEDBACK_OPTION_FACTUALLY_INCORRECT,
+                            text=PlainTextObject(text=AssistantMessages.FEEDBACK_OPTION_FACTUALLY_INCORRECT),
+                            value=AssistantMessages.FEEDBACK_OPTION_FACTUALLY_INCORRECT,
                         ),
                         Option(
-                            text=PlainTextObject(text=AgentixMessages.FEEDBACK_OPTION_ANSWERED_ANOTHER),
-                            value=AgentixMessages.FEEDBACK_OPTION_ANSWERED_ANOTHER,
+                            text=PlainTextObject(text=AssistantMessages.FEEDBACK_OPTION_ANSWERED_ANOTHER),
+                            value=AssistantMessages.FEEDBACK_OPTION_ANSWERED_ANOTHER,
                         ),
                         Option(
-                            text=PlainTextObject(text=AgentixMessages.FEEDBACK_OPTION_PARTIALLY_HELPFUL),
-                            value=AgentixMessages.FEEDBACK_OPTION_PARTIALLY_HELPFUL,
+                            text=PlainTextObject(text=AssistantMessages.FEEDBACK_OPTION_PARTIALLY_HELPFUL),
+                            value=AssistantMessages.FEEDBACK_OPTION_PARTIALLY_HELPFUL,
                         ),
                         Option(
-                            text=PlainTextObject(text=AgentixMessages.FEEDBACK_OPTION_UNHELPFUL),
-                            value=AgentixMessages.FEEDBACK_OPTION_UNHELPFUL,
+                            text=PlainTextObject(text=AssistantMessages.FEEDBACK_OPTION_UNHELPFUL),
+                            value=AssistantMessages.FEEDBACK_OPTION_UNHELPFUL,
                         ),
                     ],
                 ),
                 optional=False,
             ),
             InputBlock(
-                block_id=AgentixActionIds.FEEDBACK_MODAL_TEXT_BLOCK_ID,
-                label=PlainTextObject(text=AgentixMessages.FEEDBACK_MODAL_ADDITIONAL_LABEL),
+                block_id=AssistantActionIds.FEEDBACK_MODAL_TEXT_BLOCK_ID,
+                label=PlainTextObject(text=AssistantMessages.FEEDBACK_MODAL_ADDITIONAL_LABEL),
                 element=PlainTextInputElement(
-                    action_id=AgentixActionIds.FEEDBACK_MODAL_TEXT_INPUT_ACTION_ID,
+                    action_id=AssistantActionIds.FEEDBACK_MODAL_TEXT_INPUT_ACTION_ID,
                     multiline=True,
-                    placeholder=PlainTextObject(text=AgentixMessages.FEEDBACK_MODAL_ADDITIONAL_PLACEHOLDER),
+                    placeholder=PlainTextObject(text=AssistantMessages.FEEDBACK_MODAL_ADDITIONAL_PLACEHOLDER),
                 ),
                 optional=False,
             ),
@@ -564,6 +600,7 @@ def is_bot_mention(text: str, bot_id: str, event: dict[str, Any]) -> bool:
     Args:
         text: The text content of the message
         bot_id: The bot user ID
+        event: The event dictionary
 
     Returns:
         bool: Indicates if bot was directly mentioned
@@ -571,37 +608,36 @@ def is_bot_mention(text: str, bot_id: str, event: dict[str, Any]) -> bool:
     return f"<@{bot_id}>" in text and event.get("subtype", "") != "channel_join"
 
 
-def is_agentix_interactive_response(actions: list) -> bool:
+def is_assistant_interactive_response(actions: list) -> bool:
     """
-    Check if received action is an agentix interactive response that requires special handling
+    Check if received action is an assistant interactive response that requires special handling
     (agent selection, sensitive action approval, or feedback)
     """
     if actions:
         action = actions[0]
-        demisto.debug(f"Checking Agentix interactive response for action: {action}")
-
-        # Check action_id using centralized constants
+        # Check action_id using enum values
         action_id = action.get("action_id", "")
-        if AgentixActionIds.is_valid(action_id):
+        valid_action_ids = {e.value for e in AssistantActionIds}
+        if action_id in valid_action_ids:
             return True
 
     return False
 
 
-def is_agentix_modal_submission(data_type: str, view: dict) -> bool:
+def is_assistant_modal_submission(data_type: str, view: dict) -> bool:
     """
-    Check if received event is an agentix modal submission (e.g., feedback modal)
+    Check if received event is an assistant modal submission (e.g., feedback modal)
 
     Args:
         data_type: The type of the Slack event
         view: The view payload from Slack
 
     Returns:
-        True if this is an agentix modal submission, False otherwise
+        True if this is an assistant modal submission, False otherwise
     """
     if data_type == "interactive":
         callback_id = view.get("callback_id", "")
-        return callback_id == AgentixActionIds.FEEDBACK_MODAL_CALLBACK_ID
+        return callback_id == AssistantActionIds.FEEDBACK_MODAL_CALLBACK_ID
     return False
 
 
@@ -647,20 +683,18 @@ def merge_attachment_blocks(history_response: SlackResponse, new_attachments: li
     return existing_attachments
 
 
-def normalize_slack_message_for_backend(text: str) -> str:
+def normalize_slack_message_from_user(text: str) -> str:
     """
-    Normalizes Slack message by removing Slack-specific formatting but keeping structure.
+    Normalizes Slack message from user for backend processing.
+    Decodes HTML entities but preserves Slack-specific syntax like user mentions and channel references.
 
-    Removes:
-    - Bold: *text* -> text
-    - Italic: _text_ -> text
-    - Strikethrough: ~text~ -> text
-    - Inline code: `text` -> text
-    - Code blocks: ```text``` -> text
-    - Slack links: <url> or <url|text> -> url or text
-    - Quotes: > text -> text
+    Decodes:
+    - All HTML entities using html.unescape() (e.g., > -> >, < -> <, & -> &, " -> ", etc.)
 
-    Keeps:
+    Preserves:
+    - User mentions: <@U12345>
+    - Channel references: <#C12345>
+    - Slack links: <url|text> or <url>
     - Bullet points (- or * at start of line)
     - Numbered lists (1. 2. etc.)
     - Plain text structure
@@ -674,50 +708,28 @@ def normalize_slack_message_for_backend(text: str) -> str:
     if not text:
         return text
 
-    # Clean up HTML entities first (Slack might use these)
-    text = text.replace("&gt;", ">")
-    text = text.replace("&lt;", "<")
-    text = text.replace("&amp;", "&")
+    # Decode all HTML entities (Slack uses these for special characters)
+    import html
 
-    # Remove Slack links: <url|text> -> text, <url> -> url
-    text = re.sub(r"<([^|>]+)\|([^>]+)>", r"\2", text)  # <url|text> -> text
-    text = re.sub(r"<([^>]+)>", r"\1", text)  # <url> -> url
+    text = html.unescape(text)
 
-    # Remove code blocks: ```text``` -> text
-    text = re.sub(r"```(.+?)```", r"\1", text, flags=re.DOTALL)
-
-    # Remove inline code: `text` -> text
-    text = re.sub(r"`([^`]+)`", r"\1", text)
-
-    # Remove bold: *text* -> text (Slack uses single asterisk, not double)
-    # But preserve bullets at start of line (- or * followed by space)
-    # Match *text* but not "* item" or "- item" at start of line
-    text = re.sub(r"(?<!^[-*]\s)\*([^\*\n]+?)\*", r"\1", text, flags=re.MULTILINE)
-
-    # Remove italics: _text_ -> text
-    # But preserve underscores in URLs and variable names
-    text = re.sub(r"(?<![a-zA-Z0-9])_([^_\n]+?)_(?![a-zA-Z0-9])", r"\1", text, flags=re.MULTILINE)
-
-    # Remove strikethrough: ~text~ -> text (Slack uses single tilde, not double)
-    text = re.sub(r"~([^~\n]+?)~", r"\1", text)
-
-    # Remove quote markers: > text -> text (at start of line, with optional whitespace)
-    text = re.sub(r"^\s*>\s*(.+)$", r"\1", text, flags=re.MULTILINE)
+    # Note: We preserve Slack syntax like <@U12345>, <#C12345>, and <url|text>
+    # The backend should handle these appropriately
 
     return text
 
 
-async def handle_agentix_modal_submission(view: dict, user_id: str, user_email: str, handler: AgentixMessagingHandler):
+async def handle_assistant_modal_submission(view: dict, user_id: str, user_email: str, handler: AssistantMessagingHandler):
     """
-    Handles Agentix modal submissions (e.g., negative feedback with checkboxes and text).
+    Handles Assistant modal submissions (e.g., negative feedback with checkboxes and text).
     Extracts Slack-specific data and delegates to the handler.
-    Uses AgentixActionIds constants for block and action IDs.
+    Uses AssistantActionIds enum for block and action IDs.
 
     Args:
         view: The view payload from Slack
         user_id: The Slack user ID
         user_email: The user's email
-        handler: The AgentixMessagingHandler instance to delegate to
+        handler: The AssistantMessagingHandler instance to delegate to
     """
     private_metadata = json.loads(view.get("private_metadata", "{}"))
     message_id = private_metadata.get("message_id", "")
@@ -727,20 +739,20 @@ async def handle_agentix_modal_submission(view: dict, user_id: str, user_email: 
     # Extract feedback from modal
     values = view.get("state", {}).get("values", {})
 
-    # Extract selected checkboxes (quick feedback) - using constants
+    # Extract selected checkboxes (quick feedback) - using enum constants
     issues = []
-    if AgentixActionIds.FEEDBACK_MODAL_QUICK_BLOCK_ID in values:
-        checkboxes_data = values[AgentixActionIds.FEEDBACK_MODAL_QUICK_BLOCK_ID].get(
-            AgentixActionIds.FEEDBACK_MODAL_CHECKBOXES_ACTION_ID, {}
+    if AssistantActionIds.FEEDBACK_MODAL_QUICK_BLOCK_ID in values:
+        checkboxes_data = values[AssistantActionIds.FEEDBACK_MODAL_QUICK_BLOCK_ID].get(
+            AssistantActionIds.FEEDBACK_MODAL_CHECKBOXES_ACTION_ID, {}
         )
         selected_options = checkboxes_data.get("selected_options", [])
         issues = [option.get("value", "") for option in selected_options]
 
-    # Extract additional text feedback - using constants
+    # Extract additional text feedback - using enum constants
     feedback_text = ""
-    if AgentixActionIds.FEEDBACK_MODAL_TEXT_BLOCK_ID in values:
-        text_input_data = values[AgentixActionIds.FEEDBACK_MODAL_TEXT_BLOCK_ID].get(
-            AgentixActionIds.FEEDBACK_MODAL_TEXT_INPUT_ACTION_ID, {}
+    if AssistantActionIds.FEEDBACK_MODAL_TEXT_BLOCK_ID in values:
+        text_input_data = values[AssistantActionIds.FEEDBACK_MODAL_TEXT_BLOCK_ID].get(
+            AssistantActionIds.FEEDBACK_MODAL_TEXT_INPUT_ACTION_ID, {}
         )
         feedback_text = text_input_data.get("value", "") or ""
 
@@ -748,7 +760,7 @@ async def handle_agentix_modal_submission(view: dict, user_id: str, user_email: 
     await handler.handle_modal_submission(
         message_id=message_id,
         channel_id=channel_id,
-        thread_ts=thread_ts,
+        thread_id=thread_ts,
         user_id=user_id,
         user_email=user_email,
         issues=issues,

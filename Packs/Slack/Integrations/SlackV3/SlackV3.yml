@@ -126,7 +126,7 @@ configuration:
   advanced: true
   required: false
   additionalinfo: If your organization does not require incident mirroring, or data collection, it is possible to disable the `longRunning` parameter. For those organizations who do want to use these features, the parameter should be set to `True` to enable the long-running container.
-- defaultvalue: Cortex XSOAR
+- defaultvalue: 'Cortex Assistant'
   display: Bot display name in Slack
   name: bot_name
   type: 0
@@ -147,7 +147,10 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- defaultvalue: 'true'
+- defaultvalue: 'false'
+  defaultvalue:platform: 'true'
+  hidden:
+  - xsoar
   display: Enabled AI assistant
   name: enabled_ai_assistant
   type: 8
