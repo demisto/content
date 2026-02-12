@@ -4568,7 +4568,7 @@ def get_case_resolution_statuses(client, args):
     )
 
 
-def build_target_filter_from_endpoint_names(endpoint_names: list[str]) -> dict:
+def build_target_filter_from_endpoint_ids(endpoint_ids: list[str]) -> dict:
     """
     Build a TARGET_FILTER object from endpoint names.
     
@@ -4578,15 +4578,15 @@ def build_target_filter_from_endpoint_names(endpoint_names: list[str]) -> dict:
     Returns:
         dict: Filter object for targeting specific endpoints.
     """
-    if len(endpoint_names) == 1:
+    if len(endpoint_ids) == 1:
         # Single endpoint
         return {
             'filter': {
                 'AND': [
                     {
-                        'SEARCH_FIELD': 'HOST_NAME',
+                        'SEARCH_FIELD': 'AGENT_ID',
                         'SEARCH_TYPE': 'EQ',
-                        'SEARCH_VALUE': endpoint_names[0]
+                        'SEARCH_VALUE': endpoint_ids[0]
                     }
                 ]
             }
@@ -4595,11 +4595,11 @@ def build_target_filter_from_endpoint_names(endpoint_names: list[str]) -> dict:
         # Multiple endpoints - use OR logic
         or_conditions = [
             {
-                'SEARCH_FIELD': 'HOST_NAME',
+                'SEARCH_FIELD': 'AGENT_ID',
                 'SEARCH_TYPE': 'EQ',
-                'SEARCH_VALUE': endpoint_name
+                'SEARCH_VALUE': endpoint_id
             }
-            for endpoint_name in endpoint_names
+            for endpoint_id in endpoint_ids
         ]
         return {
             'filter': {
@@ -4610,7 +4610,7 @@ def build_target_filter_from_endpoint_names(endpoint_names: list[str]) -> dict:
         }
 
 
-def build_target_array_from_endpoint_names(endpoint_names: list[str]) -> list[dict]:
+def build_target_array_from_endpoint_ids(endpoint_ids: list[str]) -> list[dict]:
     """
     Build a TARGET array representation from endpoint names.
     
@@ -4621,8 +4621,8 @@ def build_target_array_from_endpoint_names(endpoint_names: list[str]) -> list[di
         list: Array of objects representing the target expression.
     """
     target_array = []
-    
-    for i, endpoint_name in enumerate(endpoint_names):
+    return []
+    for i, endpoint_id in enumerate(endpoint_ids):
         if i > 0:
             # Add OR operator between endpoints
             target_array.append({
@@ -4648,7 +4648,7 @@ def build_target_array_from_endpoint_names(endpoint_names: list[str]) -> list[di
                 'entity_map': None,
             },
             {
-                'pretty_name': endpoint_name,
+                'pretty_name': endpoint_id,
                 'data_type': None,
                 'render_type': 'value',
                 'entity_map': None,
@@ -4708,7 +4708,7 @@ def validate_profile_platform_compatibility(platform: str, profile_args: dict[st
         )
 
 
-def get_profile_ids(client: Client, platform: str, profile_args: dict[str, str]) -> dict[str, int]:
+def get_profile_ids(client: Client, platform: str, profile_args: dict[str, str]) -> dict[str, dict[str, str| int]]:
     """
     Get profile IDs for multiple profiles from AGENT_PROFILES_TABLE using OR filters.
     
@@ -4732,18 +4732,40 @@ def get_profile_ids(client: Client, platform: str, profile_args: dict[str, str])
         profile_type = profile_type_lower.upper()
         
         # Create AND condition for each profile (name + type)
+        # and_condition = [
+        #     {
+        #         'SEARCH_FIELD': 'PROFILE_NAME',
+        #         'SEARCH_TYPE': 'EQ',
+        #         'SEARCH_VALUE': profile_name
+        #     },
+        #     {
+        #         'SEARCH_FIELD': 'PROFILE_TYPE',
+        #         'SEARCH_TYPE': 'EQ',
+        #         'SEARCH_VALUE': profile_type
+        #     }
+        # ]
         and_condition = [
+    {
+        'OR': [
             {
                 'SEARCH_FIELD': 'PROFILE_NAME',
                 'SEARCH_TYPE': 'EQ',
                 'SEARCH_VALUE': profile_name
             },
             {
-                'SEARCH_FIELD': 'PROFILE_TYPE',
+                'SEARCH_FIELD': 'PROFILE_ID',
                 'SEARCH_TYPE': 'EQ',
-                'SEARCH_VALUE': profile_type
+                'SEARCH_VALUE': profile_name
             }
         ]
+    },
+    {
+        'SEARCH_FIELD': 'PROFILE_TYPE',
+        'SEARCH_TYPE': 'EQ',
+        'SEARCH_VALUE': profile_type
+    }
+]
+
         or_filters.append({'AND': and_condition})
     
     # Build the complete filter structure with platform at the top level
@@ -4775,14 +4797,15 @@ def get_profile_ids(client: Client, platform: str, profile_args: dict[str, str])
     profiles_data = response.get('reply', {})
     
     # Build mapping: {profile_type: profile_id}
-    profile_map: dict[str, int] = {}
+    profile_map: dict[str, dict[str, str| int]] = {}
     
     for profile in profiles_data:
         profile_type = profile.get('PROFILE_TYPE')
         profile_id = profile.get('PROFILE_ID')
+        profile_name = profile.get('PROFILE_NAME')
         
         if profile_type and profile_id is not None:
-            profile_map[profile_type] = profile_id
+            profile_map[profile_type] = {"id": profile_id, "name" : profile_name}
     
     demisto.debug(f"Retrieved profile IDs for platform {platform}: {profile_map}")
     return profile_map
@@ -4891,11 +4914,11 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
         
         # Extract endpoint IDs from the verified endpoints
         target_endpoint_ids = [endpoint['endpoint_id'] for endpoint in endpoints if endpoint.get('endpoint_id')]
-        target_endpoints = target_endpoint_names  # For display purposes
+        #target_endpoints = target_endpoint_ids
         demisto.debug(f"Resolved endpoint IDs: {target_endpoint_ids}")
-    else:
-        # Using endpoint IDs directly
-        target_endpoints = target_endpoint_ids
+    # else:
+    #     # Using endpoint IDs directly
+    #     target_endpoints = target_endpoint_ids
     
     # Parse optional arguments
     description = args.get('description', '')
@@ -4943,8 +4966,8 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
                     demisto.debug(f"Shifted policy '{policy.get('NAME')}' from priority {current_priority} to {current_priority + 1}")
     
     # Build TARGET array and TARGET_FILTER
-    target_array = build_target_array_from_endpoint_names(target_endpoints)
-    target_filter = build_target_filter_from_endpoint_names(target_endpoints)
+    #target_array = build_target_array_from_endpoint_ids(target_endpoint_ids)
+    target_filter = build_target_filter_from_endpoint_ids(target_endpoint_ids)
     
     # Parse profile arguments
     exploit_profile = args.get('exploit_profile', 'Default')
@@ -4977,14 +5000,22 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
     profile_map = get_profile_ids(client, platform, profile_args)
     
     # Extract profile IDs from the map
-    exploit_id = profile_map.get('EXPLOIT')
-    malware_id = profile_map.get('MALWARE')
-    agent_settings_id = profile_map.get('AGENT_SETTINGS')
-    restrictions_id = profile_map.get('RESTRICTIONS')
-    exceptions_id = profile_map.get('EXCEPTIONS')
-    web_and_api_id = profile_map.get('WEB_AND_API')
-    identity_id = profile_map.get('IDENTITY')
-        
+    exploit_id = profile_map.get('EXPLOIT', {}).get("id")
+    malware_id = profile_map.get('MALWARE', {}).get("id")
+    agent_settings_id = profile_map.get('AGENT_SETTINGS', {}).get("id")
+    restrictions_id = profile_map.get('RESTRICTIONS', {}).get("id")
+    exceptions_id = profile_map.get('EXCEPTIONS', {}).get("id")
+    web_and_api_id = profile_map.get('WEB_AND_API', {}).get("id")
+    identity_id = profile_map.get('IDENTITY', {}).get("id")
+    
+    exploit_name = profile_map.get('EXPLOIT', {}).get("name")
+    malware_name= profile_map.get('MALWARE', {}).get("name")
+    agent_settings_name = profile_map.get('AGENT_SETTINGS', {}).get("name")
+    restrictions_name = profile_map.get('RESTRICTIONS', {}).get("name")
+    exceptions_name = profile_map.get('EXCEPTIONS', {}).get("name")
+    web_and_api_name = profile_map.get('WEB_AND_API', {}).get("name")
+    identity_name = profile_map.get('IDENTITY', {}).get("name")
+    
     # Create new policy object with complete schema
     new_policy = {
         'IS_ANY': False,  # Not targeting "Any" - targeting specific endpoints
@@ -4993,12 +5024,12 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
         'IS_ENABLED': True,
         'TARGET_FILTER': target_filter,
         'TARGET_GROUP_TYPE': 'STATIC',
-        'EXPLOIT': exploit_profile,
-        'MALWARE': malware_profile,
-        'AGENT_SETTINGS': agent_settings_profile,
-        'RESTRICTIONS': restrictions_profile,
-        'EXCEPTIONS': exceptions_profile,
-        'TARGET': target_array,
+        'EXPLOIT': exploit_name,
+        'MALWARE': malware_name,
+        'AGENT_SETTINGS': agent_settings_name,
+        'RESTRICTIONS': restrictions_name,
+        'EXCEPTIONS': exceptions_name,
+        'TARGET': [],#target_array,
         'PRIORITY': priority,
         "IDENTITY_ID": 17,
         "IDENTITY": "Default",
@@ -5055,20 +5086,20 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
 
     # Build readable output
     readable_output = f"Successfully created endpoint policy '{policy_name}' with priority {priority} for platform {platform}.\n"
-    if target_endpoint_names:
-        readable_output += f"Target endpoints (by name): {', '.join(target_endpoint_names)}\n"
-        readable_output += f"Resolved endpoint IDs: {', '.join(target_endpoint_ids)}\n"
-    else:
-        readable_output += f"Target endpoints (by ID): {', '.join(target_endpoint_ids)}\n"
-    readable_output += f"Exploit Profile: {exploit_profile}\n"
-    readable_output += f"Malware Profile: {malware_profile}\n"
-    readable_output += f"Agent Settings Profile: {agent_settings_profile}"
+    # if target_endpoint_names:
+    #     readable_output += f"Target endpoints (by name): {', '.join(target_endpoint_names)}\n"
+    #     readable_output += f"Resolved endpoint IDs: {', '.join(target_endpoint_ids)}\n"
+    # else:
+    readable_output += f"Target endpoints (by ID): {', '.join(target_endpoint_ids)}\n"
+    # readable_output += f"Exploit Profile: {exploit_profile}\n"
+    # readable_output += f"Malware Profile: {malware_profile}\n"
+    # readable_output += f"Agent Settings Profile: {agent_settings_profile}"
     
     outputs = {
         'PolicyName': policy_name,
         'Platform': platform,
         'Priority': priority,
-        'TargetEndpointNames': target_endpoint_names if target_endpoint_names else None,
+        # 'TargetEndpointNames': target_endpoint_names if target_endpoint_names else None,
         'TargetEndpointIds': target_endpoint_ids,
         'ExploitProfile': exploit_profile,
         'MalwareProfile': malware_profile,
