@@ -3,7 +3,12 @@ commonfields:
   version: -1
 name: CasRepositoryScan
 display: Application Security - Trigger Repository Scan
-description: Trigger Repository Periodic Scan
+description: >
+  Triggers a security scan on one or more source code repositories.
+  Accepts repositories either by their asset IDs (repository_ids) or by their display names (repositories_names).
+  When names are provided, the system validates that each name maps to exactly one repository in the inventory.
+  If a name matches multiple repositories, the action returns an error listing the duplicates and their asset IDs.
+  Use repository_ids when you know the exact asset identifiers, or repositories_names for a more user-friendly lookup by name.
 category: Utilities
 requiresuserapproval: true
 marketplaces:
@@ -21,25 +26,39 @@ args:
   - name: repository_ids
     underlyingargname: repository_ids
     description: >
-      A comma-separated list of repository IDs to trigger scan on.
+      A comma-separated list of repository asset IDs to trigger a scan on.
+      Use this when you already know the exact asset identifiers of the repositories.
+      Mutually exclusive with repositories_names — provide one or the other, not both.
     type: string
-    required: true
+    required: false
+  - name: repositories_names
+    underlyingargname: repositories_names
+    description: >
+      A comma-separated list of repository names to scan.
+      The system will look up each name in the repositories inventory and resolve it to a repository asset ID.
+      If a name matches multiple repositories, the action will return an error with the duplicate names and their asset IDs.
+      If a name is not found, the action will return an error listing the missing names.
+      Mutually exclusive with repository_ids — provide one or the other, not both.
+    type: string
+    required: false
   - name: scan_git_history
     underlyingargname: scan_git_history
     type: string
     description: >
-      Options: true, false.
+      Whether to scan the full git commit history of the repository.
+      Options: true, false. Default: true.
     required: false
     defaultvalue: "true"
 outputs:
-  - underlyingoutputcontextpath: Cas.RepositoryScan.scan_id
-    description: The scan IDs that triggered
-    type: Number
-    name: Cas.RepositoryScan.scan_id
+  - underlyingoutputcontextpath: Cas.RepositoryScan.scan_ids
+    description: >
+      A list of scan IDs for the triggered repository scans.
+      Each scan ID corresponds to one repository and can be used to track the scan status.
+    type: String
+    name: Cas.RepositoryScan.scan_ids
 underlyingcontentitem:
   id: TriggerRepositoryScan
   name: TriggerRepositoryScan
   type: script
   version: -1
   command: ""
-

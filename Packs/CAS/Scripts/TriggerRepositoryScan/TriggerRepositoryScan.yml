@@ -10,18 +10,22 @@ comment: Trigger Repository Periodic Scan
 enabled: true
 args:
 - name: repository_ids
-  description: List of repository asset IDs.
+  description: List of repository asset IDs. Provide either repository_ids or repositories_names, not both.
   isArray: true
-  required: true
+  required: false
+- name: repositories_names
+  description: List of repository names to resolve to asset IDs. Provide either repositories_names or repository_ids, not both.
+  isArray: true
+  required: false
 - name: scan_git_history
-  description: Enable git history scanning for repository. This argument only relevant when GIT_HISTORY scanner is enabled, default is true.
+  description: Enable git history scanning for repository.
   type: boolean
   auto: PREDEFINED
   predefined:
     - "true"
     - "false"
 outputs:
-- contextPath: Cas.RepositoryScan.scan_id
+- contextPath: Cas.RepositoryScan.scan_ids
   isArray: true
   description: The scan IDs that triggered
   type: String
