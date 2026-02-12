@@ -28,13 +28,13 @@ def ec2_instance_info(
         "instance_ids": instance_id,
         "region": region,
         "account_id": account_id,
-        "using": integration_instance if integration_instance else None
+        "using": integration_instance if integration_instance else None,
     }
 
     result = demisto.executeCommand("aws-ec2-instances-describe", cmd_args)
-    
-    instance_info = {}
-    
+
+    instance_info = []
+
     if result and len(result) > 1:
         # If multiple entries were returned, such as when multiple AWS integration instances are configured,
         # Identify the first entry with valid results.
@@ -56,7 +56,6 @@ def ec2_instance_info(
 
     interfaces = dict_safe_get(instance_info, (0, "Contents", "Reservations", 0, "Instances", 0, "NetworkInterfaces"))
     instance_to_use = dict_safe_get(instance_info, (0, "Metadata", "instance"))
-
 
     if interfaces:
         for interface in interfaces:

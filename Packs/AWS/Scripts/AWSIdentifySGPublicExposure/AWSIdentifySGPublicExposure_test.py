@@ -47,7 +47,9 @@ def test_identify_sgs(mocker):
     from AWSIdentifySGPublicExposure import identify_sgs
 
     mocker.patch.object(
-        AWSIdentifySGPublicExposure, "ec2_instance_info", return_value=("eni-00000000000000000", ["sg-00000000000000000"], "fake-integration")
+        AWSIdentifySGPublicExposure,
+        "ec2_instance_info",
+        return_value=("eni-00000000000000000", ["sg-00000000000000000"], "fake-integration"),
     )
     args = {
         "account_id": "000000000000",
