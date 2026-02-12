@@ -6031,8 +6031,8 @@ class Lambda:
 
         # Prepare outputs
         outputs = {
-            "AWS.Lambda.Layers(val.LayerVersionArn && val.LayerVersionArn == obj.LayerVersionArn)": layer_versions,
-            "AWS.Lambda.Layers(true)": {"LayerVersionsNextToken": next_marker},
+            "AWS.Lambda.LayerVersions(val.LayerVersionArn && val.LayerVersionArn == obj.LayerVersionArn)": layer_versions,
+            "AWS.Lambda.LayerVersions(true)": {"LayerVersionsNextToken": next_marker},
         }
 
         headers = ["LayerVersionArn", "Description", "CreatedDate", "Version"]
@@ -6043,7 +6043,7 @@ class Lambda:
 
         return CommandResults(
             outputs=remove_empty_elements(outputs),
-            outputs_prefix="AWS.Lambda.Layers",
+            outputs_prefix="AWS.Lambda.LayerVersions",
             raw_response=serialized_response,
             readable_output=readable_output,
         )
