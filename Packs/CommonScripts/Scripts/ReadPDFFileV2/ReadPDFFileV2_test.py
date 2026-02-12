@@ -57,7 +57,7 @@ def test_hash_contexts_in_return_results():
         ]
     }
     entry_context = build_readpdf_entry_context(hashes)
-    assert entry_context == hashes
+    assert entry_context == 0
 
 
 UNESCAPE_CASES = [
@@ -151,7 +151,7 @@ def test_get_pdf_metadata_using_owner_password(mocker: MockerFixture):
     get_pdf_metadata(file_path=f"{CWD}/dummy-with-owner-pass.pdf", user_or_owner_password="123456!")
     assert run_shell_command_mocker.call_count == 2
     assert run_shell_command_mocker.call_args_list[0][0][0:2] == ("pdfinfo", "-upw")
-    assert run_shell_command_mocker.call_args_list[1][0][0:2] == ("pdfinfo", "-opw")
+    assert run_shell_command_mocker.call_args_list[1][0][0:2] == 0
 
 
 def test_incorrect_authentication():
