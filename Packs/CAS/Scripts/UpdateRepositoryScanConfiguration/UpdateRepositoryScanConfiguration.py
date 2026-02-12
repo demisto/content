@@ -26,7 +26,7 @@ def validate_scanner_name(scanner_name: str):
     Raises:
         ValueError: If the scanner name is not in the list of allowed scanners.
     """
-    if scanner_name.upper() not in ALLOWED_SCANNERS:
+    if scanner_name not in ALLOWED_SCANNERS:
         raise ValueError(f"Invalid scanner '{scanner_name}'. Allowed scanners are: {', '.join(sorted(ALLOWED_SCANNERS))}")
 
 
@@ -63,18 +63,22 @@ def build_scanner_config_payload(args: dict) -> dict:
     overlap = set(enabled_scanners) & set(disabled_scanners)
     if overlap:
         raise ValueError(f"Cannot enable and disable the same scanner(s) simultaneously: {', '.join(overlap)}")
+    
+    enabled_scanners_upper = [s.upper() for s in enabled_scanners]
+    if (enable_git_history or secret_validation) and "SECRETS" not in enabled_scanners_upper:
+        raise ValueError("Cannot enable 'secret_validation' or 'enable_git_history' without enabling the SECRETS scanner, Please add 'SECRETS' to 'enable_scanners'.")
 
     # Build scanners configuration
     scanners = {}
-    for scanner in enabled_scanners:
+    for scanner in enabled_scanners_upper:
         validate_scanner_name(scanner)
-        if scanner.upper() == "SECRETS":
+        if scanner:
             scanners["SECRETS"] = {
                 "isEnabled": True,
                 "scanOptions": {"secretValidation": secret_validation, "gitHistory": enable_git_history},
             }
         else:
-            scanners[scanner.upper()] = {"isEnabled": True}
+            scanners[scanner] = {"isEnabled": True}
 
     for scanner in disabled_scanners:
         validate_scanner_name(scanner)

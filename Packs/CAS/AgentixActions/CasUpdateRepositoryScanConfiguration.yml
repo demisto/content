@@ -4,7 +4,14 @@ commonfields:
 name: CasUpdateRepositoryScanConfiguration
 display: Application Security - Update Repository Scan Configuration
 description: >
-  Update repository scanners with the specified configuration for a list of repository asset IDs.
+  Updates the scan configuration for one or more repositories identified by their asset IDs.
+  You can enable or disable specific security scanners (SECRETS, SCA, IAC), configure scanner-specific options,
+  set up pull request scanning, configure tagging behavior, and exclude file paths from scanning.
+
+  Important constraints:
+  - A scanner cannot appear in both enable_scanners and disable_scanners at the same time.
+  - The secret_validation and enable_git_history options require the SECRETS scanner to be included in enable_scanners.
+  - block_on_error only applies when pr_scanning is enabled.
 category: Utilities
 requiresuserapproval: true
 marketplaces:
@@ -22,27 +29,35 @@ args:
   - name: repository_ids
     required: true
     type: string
-    description: A comma-separated list of repository asset IDs to configure scanners for.
+    description: >
+      A comma-separated list of repository asset IDs whose scan configuration should be updated.
+      Each ID corresponds to a repository asset in the system.
     underlyingargname: repository_ids
   - name: enable_scanners
     type: string
-    description: |
-      A comma-separated list of scanners to enable.
-      Options: SECRETS, SCA, IAC.
+    description: >
+      A comma-separated list of scanners to enable for the specified repositories.
+      Allowed values: SECRETS, SCA,IAC.
+      A scanner cannot be in both enable_scanners and disable_scanners.
     underlyingargname: enable_scanners
   - name: disable_scanners
     type: string
-    description: |
-      A comma-separated list of scanners to disable.
-      Options: SECRETS, SCA, IAC.
+    description: >
+      A comma-separated list of scanners to disable for the specified repositories.
+      Allowed values: SECRETS, SCA, IAC.
+      A scanner cannot be in both enable_scanners and disable_scanners.
     underlyingargname: disable_scanners
   - name: secret_validation
     type: boolean
-    description: Enable live validation of discovered secrets. This argument is only relevant when the SECRETS scanner is enabled.
+    description: >
+      When set to true, enables live validation of discovered secrets to check if they are still active.
+      Requires SECRETS to be included in enable_scanners; otherwise an error is raised.
     underlyingargname: secret_validation
   - name: enable_git_history
     type: boolean
-    description: Enable git history secrets scan. This argument only relevant when SECRETS scanner is enabled.
+    description: >
+      Enable git history secrets scan. 
+      Requires SECRETS to be included in enable_scanners; otherwise an error is raised.
     underlyingargname: enable_git_history
   - name: pr_scanning
     type: boolean
@@ -50,23 +65,29 @@ args:
     underlyingargname: pr_scanning
   - name: block_on_error
     type: boolean
-    description: Block deployment on scanner errors.
+    description: >
+      When set to true, blocks pull request merging if the scanner encounters errors.
+      Only applicable when pr_scanning is enabled.
     underlyingargname: block_on_error
   - name: tag_resource_blocks
     type: boolean
-    description: Enable tagging of resource blocks.
+    description: >
+      When set to true, enables automatic tagging of IaC resource blocks with trace metadata.
     underlyingargname: tag_resource_blocks
   - name: tag_module_blocks
     type: boolean
-    description: Enable tagging of module blocks.
+    description: >
+      When set to true, enables automatic tagging of IaC module blocks with trace metadata.
     underlyingargname: tag_module_blocks
   - name: exclude_paths
     type: string
-    description: A comma-separated List of file paths to exclude from scanning.
+    description: >
+      A comma-separated list of file or directory paths to exclude from scanning (e.g., "tests/,docs/,*.md").
     underlyingargname: exclude_paths
 outputs:
   - underlyingoutputcontextpath: Cas.RepositoryScanConfiguration
-    description: The repository IDs that have been changed
+    description: >
+      A list of repository asset IDs whose scan configuration was successfully updated.
     type: String
     name: Cas.RepositoryScanConfiguration
 underlyingcontentitem:
