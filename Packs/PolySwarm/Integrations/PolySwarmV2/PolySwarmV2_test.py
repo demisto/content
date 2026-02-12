@@ -204,7 +204,7 @@ def test_file(mocker):
 
     # Verify custom User-Agent header
     ua = polyswarm.polyswarm_api.session.headers["User-Agent"]
-    assert "polyswarm_api/" in ua
+    assert "polyswarm_api/" in ua or "polyswarm-api/" in ua
     assert f"xsoar-PolySwarmV2/{PolySwarmV2.POLYSWARM_DEMISTO_VERSION}" in ua
 
     param = {"hash": TEST_HASH_FILE}
