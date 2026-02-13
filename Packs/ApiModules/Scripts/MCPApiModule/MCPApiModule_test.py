@@ -714,7 +714,7 @@ class TestClient:
         mock_session.list_tools = mocker.AsyncMock(return_value=mock_tools)
 
         # FIX: Explicitly mock streamablehttp_client context manager return value
-        mock_streamable_client = mocker.patch("MCPApiModule.streamable_http_client")
+        mock_streamable_client = mocker.patch("MCPApiModule.streamablehttp_client")
         mock_streamable_client.return_value.__aenter__ = mocker.AsyncMock(return_value=("r", "w", None))
         mock_streamable_client.return_value.__aexit__ = mocker.AsyncMock(return_value=None)
 
@@ -745,7 +745,7 @@ class TestClient:
         mock_session.initialize = mocker.AsyncMock()
 
         # FIX: Explicitly mock streamablehttp_client context manager return value
-        mock_streamable_client = mocker.patch("MCPApiModule.streamable_http_client")
+        mock_streamable_client = mocker.patch("MCPApiModule.streamablehttp_client")
         mock_streamable_client.return_value.__aenter__ = mocker.AsyncMock(return_value=(None, None, None))
         mock_streamable_client.return_value.__aexit__ = mocker.AsyncMock(return_value=None)
 
