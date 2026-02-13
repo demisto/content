@@ -4610,52 +4610,52 @@ def build_target_filter_from_endpoint_ids(endpoint_ids: list[str]) -> dict:
         }
 
 
-def build_target_array_from_endpoint_ids(endpoint_ids: list[str]) -> list[dict]:
-    """
-    Build a TARGET array representation from endpoint names.
+# def build_target_array_from_endpoint_ids(endpoint_ids: list[str]) -> list[dict]:
+#     """
+#     Build a TARGET array representation from endpoint names.
     
-    Args:
-        endpoint_names: List of endpoint names to target.
+#     Args:
+#         endpoint_names: List of endpoint names to target.
     
-    Returns:
-        list: Array of objects representing the target expression.
-    """
-    target_array = []
-    return []
-    for i, endpoint_id in enumerate(endpoint_ids):
-        if i > 0:
-            # Add OR operator between endpoints
-            target_array.append({
-                'pretty_name': 'OR',
-                'data_type': None,
-                'render_type': 'operator',
-                'entity_map': None
-            })
+#     Returns:
+#         list: Array of objects representing the target expression.
+#     """
+#     target_array = []
+#     return []
+#     for i, endpoint_id in enumerate(endpoint_ids):
+#         if i > 0:
+#             # Add OR operator between endpoints
+#             target_array.append({
+#                 'pretty_name': 'OR',
+#                 'data_type': None,
+#                 'render_type': 'operator',
+#                 'entity_map': None
+#             })
         
-        # Add: endpoint = <name>
-        target_array.extend([
-            {
-                'pretty_name': 'endpoint',
-                'data_type': 'TEXT',
-                'render_type': 'attribute',
-                'entity_map': None,
-                'dml_type': None
-            },
-            {
-                'pretty_name': '=',
-                'data_type': None,
-                'render_type': 'operator',
-                'entity_map': None,
-            },
-            {
-                'pretty_name': endpoint_id,
-                'data_type': None,
-                'render_type': 'value',
-                'entity_map': None,
-            }
-        ])
+#         # Add: endpoint = <name>
+#         target_array.extend([
+#             {
+#                 'pretty_name': 'endpoint',
+#                 'data_type': 'TEXT',
+#                 'render_type': 'attribute',
+#                 'entity_map': None,
+#                 'dml_type': None
+#             },
+#             {
+#                 'pretty_name': '=',
+#                 'data_type': None,
+#                 'render_type': 'operator',
+#                 'entity_map': None,
+#             },
+#             {
+#                 'pretty_name': endpoint_id,
+#                 'data_type': None,
+#                 'render_type': 'value',
+#                 'entity_map': None,
+#             }
+#         ])
     
-    return target_array
+#     return target_array
 
 
 def validate_profile_platform_compatibility(platform: str, profile_args: dict[str, str]) -> None:
@@ -4708,64 +4708,55 @@ def validate_profile_platform_compatibility(platform: str, profile_args: dict[st
         )
 
 
-def get_profile_ids(client: Client, platform: str, profile_args: dict[str, str]) -> dict[str, dict[str, str| int]]:
+def get_profile_ids(client: Client, platform: str, profile_args: dict[str, str]) -> dict[str, dict[str, Any]]:
     """
     Get profile IDs for multiple profiles from AGENT_PROFILES_TABLE using OR filters.
     
     Args:
         client: The Cortex Platform client instance.
         platform: The platform type (e.g., AGENT_OS_WINDOWS, AGENT_OS_LINUX).
-        profile_args: Dictionary mapping profile type (lowercase) to profile name.
+        profile_args: Dictionary mapping profile type (lowercase) to profile name or ID.
                      Example: {'exploit': 'Default', 'malware': 'Default'}
     
     Returns:
-        dict: Dictionary mapping 'PROFILE_TYPE' (uppercase) to profile_id.
-              Example: {'EXPLOIT': 11, 'MALWARE': 10}
+        dict: Dictionary mapping 'PROFILE_TYPE' (uppercase) to profile data.
+              Example: {'EXPLOIT': {'id': 11, 'name': 'Default'}, 'MALWARE': {'id': 10, 'name': 'Default'}}
+    
+    Raises:
+        DemistoException: If multiple profiles with the same name exist for a profile type,
+                         or if a requested profile doesn't exist.
     """
     # Build OR filters for all profiles
     or_filters = []
-    for profile_type_lower, profile_name in profile_args.items():
-        if not profile_name:  # Skip profiles without values
+    for profile_type_lower, profile_name_or_id in profile_args.items():
+        if not profile_name_or_id:  # Skip profiles without values
             continue
         
         # Convert profile type to uppercase for PROFILE_TYPE field
         profile_type = profile_type_lower.upper()
         
-        # Create AND condition for each profile (name + type)
-        # and_condition = [
-        #     {
-        #         'SEARCH_FIELD': 'PROFILE_NAME',
-        #         'SEARCH_TYPE': 'EQ',
-        #         'SEARCH_VALUE': profile_name
-        #     },
-        #     {
-        #         'SEARCH_FIELD': 'PROFILE_TYPE',
-        #         'SEARCH_TYPE': 'EQ',
-        #         'SEARCH_VALUE': profile_type
-        #     }
-        # ]
+        # Create AND condition for each profile (name OR id + type)
         and_condition = [
-    {
-        'OR': [
             {
-                'SEARCH_FIELD': 'PROFILE_NAME',
-                'SEARCH_TYPE': 'EQ',
-                'SEARCH_VALUE': profile_name
+                'OR': [
+                    {
+                        'SEARCH_FIELD': 'PROFILE_NAME',
+                        'SEARCH_TYPE': 'EQ',
+                        'SEARCH_VALUE': profile_name_or_id
+                    },
+                    {
+                        'SEARCH_FIELD': 'PROFILE_ID',
+                        'SEARCH_TYPE': 'EQ',
+                        'SEARCH_VALUE': profile_name_or_id
+                    }
+                ]
             },
             {
-                'SEARCH_FIELD': 'PROFILE_ID',
+                'SEARCH_FIELD': 'PROFILE_TYPE',
                 'SEARCH_TYPE': 'EQ',
-                'SEARCH_VALUE': profile_name
+                'SEARCH_VALUE': profile_type
             }
         ]
-    },
-    {
-        'SEARCH_FIELD': 'PROFILE_TYPE',
-        'SEARCH_TYPE': 'EQ',
-        'SEARCH_VALUE': profile_type
-    }
-]
-
         or_filters.append({'AND': and_condition})
     
     # Build the complete filter structure with platform at the top level
@@ -4796,16 +4787,48 @@ def get_profile_ids(client: Client, platform: str, profile_args: dict[str, str])
     response = client.get_webapp_data(request_data)
     profiles_data = response.get('reply', {})
     
-    # Build mapping: {profile_type: profile_id}
-    profile_map: dict[str, dict[str, str| int]] = {}
-    
+    # Group profiles by type to detect duplicates
+    profiles_by_type: dict[str, list[dict]] = {}
     for profile in profiles_data:
         profile_type = profile.get('PROFILE_TYPE')
+        if profile_type:
+            if profile_type not in profiles_by_type:
+                profiles_by_type[profile_type] = []
+            profiles_by_type[profile_type].append(profile)
+    
+    # Build mapping and check for duplicates
+    profile_map: dict[str, dict[str, Any]] = {}
+    
+    for profile_type_lower, profile_name_or_id in profile_args.items():
+        if not profile_name_or_id:  # Skip profiles without values
+            continue
+        
+        profile_type = profile_type_lower.upper()
+        matching_profiles = profiles_by_type.get(profile_type, [])
+        
+        # Check if profile exists
+        if not matching_profiles:
+            raise DemistoException(
+                f"Profile '{profile_name_or_id}' of type '{profile_type}' not found for platform '{platform}'. "
+                f"Please verify the profile name or ID exists."
+            )
+        
+        # Check for multiple profiles with the same name
+        if len(matching_profiles) > 1:
+            profile_details = '\n'.join([
+                f"  - Name: {p.get('PROFILE_NAME')}, ID: {p.get('PROFILE_ID')}"
+                for p in matching_profiles
+            ])
+            raise DemistoException(
+                f"Multiple profiles found with name '{profile_name_or_id}' for type '{profile_type}':\n{profile_details}\n"
+                f"Please use the profile ID instead to specify which one you want."
+            )
+        
+        # Single profile found - add to map
+        profile = matching_profiles[0]
         profile_id = profile.get('PROFILE_ID')
         profile_name = profile.get('PROFILE_NAME')
-        
-        if profile_type and profile_id is not None:
-            profile_map[profile_type] = {"id": profile_id, "name" : profile_name}
+        profile_map[profile_type] = {"id": profile_id, "name": profile_name}
     
     demisto.debug(f"Retrieved profile IDs for platform {platform}: {profile_map}")
     return profile_map
@@ -4922,8 +4945,9 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
     
     # Parse optional arguments
     description = args.get('description', '')
-    priority = arg_to_number(args.get('priority'))
-
+    priority = arg_to_number(args.get('priority')) or 1
+    priority -=1
+    
     # Fetch current policy table
     demisto.debug("Fetching current agent policy table")
     policy_response = client.get_agent_policy_table()
@@ -4937,33 +4961,28 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
     demisto.debug(f"Current policy hash: {policy_hash}")
     demisto.debug(f"Current policies count: {len(current_policies)}")
     
-    # Filter policies for the same platform
-    platform_policies = [p for p in current_policies if p.get('PLATFORM') == platform]
+    # Check if priority already exists for this platform and shift if needed
+    # We need to modify current_policies directly (not the filtered view)
+    existing_priority_policy = next(
+        (p for p in current_policies if p.get('PLATFORM') == Endpoints.ENDPOINT_PLATFORM[platform] and p.get('PRIORITY') == priority),
+        None
+    )
     
-    # Determine priority for new policy
-    if priority is None:
-        # Auto-assign priority: find the highest priority for this platform and add 1
-        if platform_policies:
-            max_priority = max(p.get('PRIORITY', 0) for p in platform_policies)
-            priority = max_priority + 1
-        else:
-            priority = 1
-        demisto.debug(f"Auto-assigned priority: {priority}")
-    else:
-        # Check if priority already exists for this platform
-        existing_priority_policy = next(
-            (p for p in platform_policies if p.get('PRIORITY') == priority),
-            None
+    if existing_priority_policy:
+        demisto.debug(f"Priority {priority} already exists for platform {platform}. Shifting existing policies down.")
+        # Shift all policies with priority >= new priority up by 1 (push down)
+        # Sort in descending order to avoid overwriting during the shift
+        policies_to_shift = sorted(
+            [p for p in current_policies if p.get('PLATFORM') == Endpoints.ENDPOINT_PLATFORM[platform] and p.get('PRIORITY', 0) >= priority],
+            key=lambda p: p.get('PRIORITY', 0),
+            reverse=True
         )
         
-        if existing_priority_policy:
-            demisto.debug(f"Priority {priority} already exists for platform {platform}. Shifting existing policies.")
-            # Shift all policies with priority >= new priority up by 1
-            for policy in platform_policies:
-                current_priority = policy.get('PRIORITY', 0)
-                if current_priority >= priority:
-                    policy['PRIORITY'] = current_priority + 1
-                    demisto.debug(f"Shifted policy '{policy.get('NAME')}' from priority {current_priority} to {current_priority + 1}")
+        for policy in policies_to_shift:
+            current_priority = policy.get('PRIORITY', 0)
+            new_priority = current_priority + 1
+            policy['PRIORITY'] = new_priority
+            demisto.debug(f"Shifted policy '{policy.get('NAME')}' from priority {current_priority} to {new_priority}")
     
     # Build TARGET array and TARGET_FILTER
     #target_array = build_target_array_from_endpoint_ids(target_endpoint_ids)
