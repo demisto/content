@@ -55,8 +55,8 @@ You can then create a user account and generate an API key to be used for the Co
 | ------------------------ | --------------------------------------------------------------------------- | ------------ |
 | Name                     | Unique name for this Trend Micro Vision One instance                        | True         |
 | Fetch Incidents          | Choose if the integration should sync incidents                             | True         |
-| Incident Type            | Endsure the "TrendAI Vision One XDR Incident" type is selected          | True         |
-| Mapper (Incoming)        | Endsure the "TrendAI Vision One XDR - Incoming Mapper" type is selected | True         |
+| Incident Type            | Endsure the "Trend Micro Vision One XDR Incident" type is selected          | True         |
+| Mapper (Incoming)        | Endsure the "Trend Micro Vision One XDR - Incoming Mapper" type is selected | True         |
 | API URL                  | Base URL for Trend Micro Vision One API                                     | True         |
 | API Key                  | API token for authentication                                                | True         |
 | Incidents Fetch Interval | How often do you want to check for new incidents                            | False        |

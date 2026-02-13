@@ -1,9 +1,9 @@
 {
-    "description": "Maps incoming TrendAI Vision One™ alerts.",
+    "description": "Maps incoming Trend Vision One alerts.",
     "feed": false,
-    "id": "TrendAI Vision One™ V3 XDR - Incoming Mapper",
+    "id": "Trend Micro Vision One V3 XDR - Incoming Mapper",
     "mapping": {
-        "TrendAI Vision One XDR Incident": {
+        "Trend Micro Vision One XDR Incident": {
             "dontMapEventToLabels": true,
             "internalMapping": {
                 "Alert Name": {
@@ -71,7 +71,7 @@
                         "transformers": []
                     }
                 },
-                "TrendAI Vision One XDR Account Count": {
+                "Trend Micro Vision One XDR Account Count": {
                     "complex": {
                         "accessor": "account_count",
                         "filters": [],
@@ -79,7 +79,7 @@
                         "transformers": []
                     }
                 },
-                "TrendAI Vision One XDR Desktop Count": {
+                "Trend Micro Vision One XDR Desktop Count": {
                     "complex": {
                         "accessor": "desktop_count",
                         "filters": [],
@@ -87,7 +87,7 @@
                         "transformers": []
                     }
                 },
-                "TrendAI Vision One XDR Detail": {
+                "Trend Micro Vision One XDR Detail": {
                     "complex": {
                         "filters": [],
                         "root": "detail",
@@ -102,7 +102,7 @@
                         ]
                     }
                 },
-                "TrendAI Vision One XDR Email Address Count": {
+                "Trend Micro Vision One XDR Email Address Count": {
                     "complex": {
                         "accessor": "email_address_count",
                         "filters": [],
@@ -110,7 +110,7 @@
                         "transformers": []
                     }
                 },
-                "TrendAI Vision One XDR Impact Scope": {
+                "Trend Micro Vision One XDR Impact Scope": {
                     "complex": {
                         "filters": [
                             [
@@ -251,7 +251,7 @@
                         ]
                     }
                 },
-                "TrendAI Vision One XDR Impacted Entities": {
+                "Trend Micro Vision One XDR Impacted Entities": {
                     "complex": {
                         "accessor": "entities",
                         "filters": [],
@@ -365,7 +365,7 @@
                         ]
                     }
                 },
-                "TrendAI Vision One XDR Impacted Entities JSON": {
+                "Trend Micro Vision One XDR Impacted Entities JSON": {
                     "complex": {
                         "accessor": "entities",
                         "filters": [],
@@ -373,7 +373,7 @@
                         "transformers": []
                     }
                 },
-                "TrendAI Vision One XDR Indicators": {
+                "Trend Micro Vision One XDR Indicators": {
                     "complex": {
                         "filters": [],
                         "root": "indicators",
@@ -458,31 +458,31 @@
                         ]
                     }
                 },
-                "TrendAI Vision One XDR Indicators JSON": {
+                "Trend Micro Vision One XDR Indicators JSON": {
                     "complex": {
                         "filters": [],
                         "root": "indicators",
                         "transformers": []
                     }
                 },
-                "TrendAI Vision One XDR Investigation Status": {
+                "Trend Micro Vision One XDR Investigation Status": {
                     "simple": "investigation_status"
                 },
-                "TrendAI Vision One XDR Matched Rules JSON": {
+                "Trend Micro Vision One XDR Matched Rules JSON": {
                     "complex": {
                         "filters": [],
                         "root": "matched_rules",
                         "transformers": []
                     }
                 },
-                "TrendAI Vision One XDR Priority Score": {
+                "Trend Micro Vision One XDR Priority Score": {
                     "complex": {
                         "filters": [],
                         "root": "score",
                         "transformers": []
                     }
                 },
-                "TrendAI Vision One XDR Server Count": {
+                "Trend Micro Vision One XDR Server Count": {
                     "complex": {
                         "accessor": "server_count",
                         "filters": [],
@@ -490,14 +490,14 @@
                         "transformers": []
                     }
                 },
-                "TrendAI Vision One XDR Workbench ID": {
+                "Trend Micro Vision One XDR Workbench ID": {
                     "complex": {
                         "filters": [],
                         "root": "id",
                         "transformers": []
                     }
                 },
-                "TrendAI Vision One XDR Workbench Link": {
+                "Trend Micro Vision One XDR Workbench Link": {
                     "simple": "workbench_link"
                 },
                 "details": {
@@ -538,7 +538,7 @@
             }
         }
     },
-    "name": "TrendAI Vision One V3 XDR - Incoming Mapper",
+    "name": "Trend Micro Vision One V3 XDR - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.5.0"

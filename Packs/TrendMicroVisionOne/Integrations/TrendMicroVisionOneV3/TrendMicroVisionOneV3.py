@@ -2712,7 +2712,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     - Fields that can be synced bidirectionally or incoming-only
     - Fields that are actually used by get_remote_data_command
     """
-    incident_type_name = "TrendAI Vision One XDR Incident"
+    incident_type_name = "Trend Micro Vision One XDR Incident"
     mapping = SchemeTypeMapping(type_name=incident_type_name)
 
     # Define ONLY mirroring-relevant fields that get_remote_data actually syncs

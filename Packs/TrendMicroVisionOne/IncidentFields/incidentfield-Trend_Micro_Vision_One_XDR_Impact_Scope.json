@@ -1,7 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "TrendAI Vision One XDR Incident"
+        "Trend Micro Vision One XDR Incident"
     ],
     "caseInsensitive": true,
     "cliName": "trendmicrovisiononexdrimpactscope",
@@ -13,7 +13,7 @@
     "id": "incident_trendmicrovisiononexdrimpactscope",
     "isReadOnly": false,
     "locked": false,
-    "name": "TrendAI Vision One XDR Impact Scope",
+    "name": "Trend Micro Vision One XDR Impact Scope",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

@@ -1,7 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "TrendAI Vision One XDR Incident"
+        "Trend Micro Vision One XDR Incident"
     ],
     "caseInsensitive": true,
     "cliName": "trendmicrovisiononexdrdesktopcount",
@@ -13,7 +13,7 @@
     "id": "incident_trendmicrovisiononexdrdesktopcount",
     "isReadOnly": false,
     "locked": false,
-    "name": "TrendAI Vision One XDR Desktop Count",
+    "name": "Trend Micro Vision One XDR Desktop Count",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
