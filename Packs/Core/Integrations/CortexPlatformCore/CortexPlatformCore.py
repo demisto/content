@@ -4937,17 +4937,14 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
         
         # Extract endpoint IDs from the verified endpoints
         target_endpoint_ids = [endpoint['endpoint_id'] for endpoint in endpoints if endpoint.get('endpoint_id')]
-        #target_endpoints = target_endpoint_ids
         demisto.debug(f"Resolved endpoint IDs: {target_endpoint_ids}")
-    # else:
-    #     # Using endpoint IDs directly
-    #     target_endpoints = target_endpoint_ids
+
     
     # Parse optional arguments
     description = args.get('description', '')
     priority = arg_to_number(args.get('priority')) or 1
-    priority -=1
-    
+    if priority < 1:
+        raise DemistoException('Priority should be at least 1.')
     # Fetch current policy table
     demisto.debug("Fetching current agent policy table")
     policy_response = client.get_agent_policy_table()
@@ -4961,8 +4958,26 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
     demisto.debug(f"Current policy hash: {policy_hash}")
     demisto.debug(f"Current policies count: {len(current_policies)}")
     
+    # Get platform-specific policies to determine priority range
+    platform_policies = [p for p in current_policies if p.get('PLATFORM') == Endpoints.ENDPOINT_PLATFORM[platform]]
+    
+    # Validate and adjust priority if out of range
+    # if platform_policies:
+    #     max_existing_priority = max(p.get('PRIORITY', 0) for p in platform_policies)
+        
+    #     # If user provides priority higher than max, set to max + 1
+    #     if priority > max_existing_priority:
+    #         original_priority = priority
+    #         priority = max_existing_priority + 1
+    #         demisto.debug(
+    #             f"Priority {original_priority} is higher than the current maximum ({max_existing_priority}). "
+    #             f"Setting priority to {priority}."
+    #         )
+    # else:
+    #     priority = 0
+    
+
     # Check if priority already exists for this platform and shift if needed
-    # We need to modify current_policies directly (not the filtered view)
     existing_priority_policy = next(
         (p for p in current_policies if p.get('PLATFORM') == Endpoints.ENDPOINT_PLATFORM[platform] and p.get('PRIORITY') == priority),
         None
@@ -4970,7 +4985,7 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
     
     if existing_priority_policy:
         demisto.debug(f"Priority {priority} already exists for platform {platform}. Shifting existing policies down.")
-        # Shift all policies with priority >= new priority up by 1 (push down)
+        # Shift all policies with priority >= new priority up by 1 (push down to lower priority)
         # Sort in descending order to avoid overwriting during the shift
         policies_to_shift = sorted(
             [p for p in current_policies if p.get('PLATFORM') == Endpoints.ENDPOINT_PLATFORM[platform] and p.get('PRIORITY', 0) >= priority],
@@ -4994,8 +5009,6 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
     agent_settings_profile = args.get('agent_settings_profile', 'Default')
     restrictions_profile = args.get('restrictions_profile', 'Default')
     exceptions_profile = args.get('exceptions_profile', 'Default (No Exceptions)')
-    #web_and_api_profile = args.get('web_and_api_profile', 'Default')
-    #identity_profile = args.get('identity_profile', 'Default')
     
     # Validate profile-platform compatibility
     profile_args = {
@@ -5004,16 +5017,8 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
         'agent_settings': agent_settings_profile,
         'restrictions': restrictions_profile,
         'exceptions': exceptions_profile,
-        #'web_and_api_profile': web_and_api_profile,
-        #'identity_profile': identity_profile,
     }
     validate_profile_platform_compatibility(platform, profile_args)
-    
-    # Add platform-specific profiles
-    # if platform in ['AGENT_OS_LINUX', 'AGENT_OS_CAAS_LINUX']:
-    #     profiles_to_query.append((web_and_api_profile, 'WEB_AND_API'))
-    # elif platform in ['AGENT_OS_WINDOWS']:
-    #     profiles_to_query.append((identity_profile, 'IDENTITY'))
     
     # Get all profile IDs in a single query with OR filters
     profile_map = get_profile_ids(client, platform, profile_args)
@@ -5024,36 +5029,58 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
     agent_settings_id = profile_map.get('AGENT_SETTINGS', {}).get("id")
     restrictions_id = profile_map.get('RESTRICTIONS', {}).get("id")
     exceptions_id = profile_map.get('EXCEPTIONS', {}).get("id")
-    web_and_api_id = profile_map.get('WEB_AND_API', {}).get("id")
-    identity_id = profile_map.get('IDENTITY', {}).get("id")
     
     exploit_name = profile_map.get('EXPLOIT', {}).get("name")
     malware_name= profile_map.get('MALWARE', {}).get("name")
     agent_settings_name = profile_map.get('AGENT_SETTINGS', {}).get("name")
     restrictions_name = profile_map.get('RESTRICTIONS', {}).get("name")
     exceptions_name = profile_map.get('EXCEPTIONS', {}).get("name")
-    web_and_api_name = profile_map.get('WEB_AND_API', {}).get("name")
-    identity_name = profile_map.get('IDENTITY', {}).get("name")
+
+    
+    platform_value = Endpoints.ENDPOINT_PLATFORM[platform]
+    
+    # Determine identity and web_and_api based on platform
+    if platform_value == 'AGENT_OS_WINDOWS':
+        identity = 'Default'
+        identity_id = 17
+        web_and_api = None
+        web_and_api_id = None
+    elif platform_value == 'AGENT_OS_LINUX':
+        identity = None
+        identity_id = None
+        web_and_api = 'Default'
+        web_and_api_id = 12
+    else:
+        # For AGENT_OS_MAC, AGENT_OS_ANDROID, AGENT_OS_IOS, AGENT_OS_SERVERLESS
+        identity = None
+        identity_id = None
+        web_and_api = None
+        web_and_api_id = None
     
     # Create new policy object with complete schema
     new_policy = {
         'IS_ANY': False,  # Not targeting "Any" - targeting specific endpoints
-        'PLATFORM': Endpoints.ENDPOINT_PLATFORM[platform],
+        'PLATFORM': platform_value,
         'NAME': policy_name,
         'IS_ENABLED': True,
         'TARGET_FILTER': target_filter,
         'TARGET_GROUP_TYPE': 'STATIC',
         'EXPLOIT': exploit_name,
+        'EXPLOIT_ID': exploit_id,
         'MALWARE': malware_name,
+        'MALWARE_ID': malware_id,
         'AGENT_SETTINGS': agent_settings_name,
+        'AGENT_SETTINGS_ID': agent_settings_id,
         'RESTRICTIONS': restrictions_name,
+        'RESTRICTIONS_ID': restrictions_id,
         'EXCEPTIONS': exceptions_name,
-        'TARGET': [],#target_array,
+        'EXCEPTIONS_ID': exceptions_id,
+        'IDENTITY_ID': identity_id,
+        'IDENTITY': identity,
+        'WEB_AND_API_ID': web_and_api_id,
+        'WEB_AND_API': web_and_api,
+        'TARGET': [],
         'PRIORITY': priority,
-        "IDENTITY_ID": 17,
-        "IDENTITY": "Default",
-        "WEB_AND_API_ID": None,
-        "WEB_AND_API": None,
         "DESCRIPTION": description,
     }
         
@@ -5068,25 +5095,6 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
         new_policy['RESTRICTIONS_ID'] = restrictions_id
     if exceptions_id is not None:
         new_policy['EXCEPTIONS_ID'] = exceptions_id
-    
-    # Add platform-specific fields based on the valid schema
-    # if platform in ['AGENT_OS_WINDOWS']:
-    #     new_policy['IDENTITY'] = identity_profile
-    #     if identity_id is not None:
-    #         new_policy['IDENTITY_ID'] = identity_id
-    #     new_policy['WEB_AND_API'] = 'N/A'
-    #     new_policy['WEB_AND_API_ID'] = None
-    # elif platform in ['AGENT_OS_LINUX', 'AGENT_OS_CAAS_LINUX']:
-    #     new_policy['WEB_AND_API'] = web_and_api_profile
-    #     if web_and_api_id is not None:
-    #         new_policy['WEB_AND_API_ID'] = web_and_api_id
-    #     new_policy['IDENTITY'] = None
-    #     new_policy['IDENTITY_ID'] = None
-    # elif platform in ['AGENT_OS_MAC']:
-    #     new_policy['WEB_AND_API'] = 'N/A'
-    #     new_policy['WEB_AND_API_ID'] = None
-    #     new_policy['IDENTITY'] = 'N/A'
-    #     new_policy['IDENTITY_ID'] = None
     
     demisto.debug(f"New policy to be created: {new_policy}")
     
@@ -5105,20 +5113,12 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
 
     # Build readable output
     readable_output = f"Successfully created endpoint policy '{policy_name}' with priority {priority} for platform {platform}.\n"
-    # if target_endpoint_names:
-    #     readable_output += f"Target endpoints (by name): {', '.join(target_endpoint_names)}\n"
-    #     readable_output += f"Resolved endpoint IDs: {', '.join(target_endpoint_ids)}\n"
-    # else:
     readable_output += f"Target endpoints (by ID): {', '.join(target_endpoint_ids)}\n"
-    # readable_output += f"Exploit Profile: {exploit_profile}\n"
-    # readable_output += f"Malware Profile: {malware_profile}\n"
-    # readable_output += f"Agent Settings Profile: {agent_settings_profile}"
     
     outputs = {
         'PolicyName': policy_name,
         'Platform': platform,
         'Priority': priority,
-        # 'TargetEndpointNames': target_endpoint_names if target_endpoint_names else None,
         'TargetEndpointIds': target_endpoint_ids,
         'ExploitProfile': exploit_profile,
         'MalwareProfile': malware_profile,
