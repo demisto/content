@@ -9,7 +9,8 @@ permissions:
 jobs:
   check_ai_review_approval_job:
     runs-on: ubuntu-latest
-    if: github.repository == 'demisto/content'
+    # Skip for fork PRs since we do not want to allow secrets access.
+    if: github.repository == 'demisto/content' && github.event.pull_request.head.repo.fork != true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -29,7 +30,7 @@ jobs:
         id: check_approval
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.MARKETPLACE_AI_REVIEWER_GITHUB_TOKEN }}
         run: |
           echo "Checking AI Review Approval for PR: $PR_NUMBER"
           cd .github/github_workflow_scripts

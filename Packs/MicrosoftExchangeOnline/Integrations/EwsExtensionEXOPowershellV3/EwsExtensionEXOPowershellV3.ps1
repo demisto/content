@@ -570,6 +570,7 @@ class ExchangeOnlinePowershellV3Client
         [string]$recipient_address
     )
     {
+        $zipErrMsg = "Using this argument requires 'compress_output' argument to be set to true."
         $results = ""
         try {
             $cmd_params = @{ }
@@ -583,7 +584,7 @@ class ExchangeOnlinePowershellV3Client
             }
             if ($compress_output)
             {
-                $cmd_params.CompressOutput = $null
+                $cmd_params.CompressOutput = $true
             }
             if ($entity_type)
             {
@@ -591,14 +592,20 @@ class ExchangeOnlinePowershellV3Client
             }
             if ($force_conversion_to_mime)
             {
-                $cmd_params.ForceConversionToMime = $null
+                $cmd_params.ForceConversionToMime = $true
             }
             if ($password)
             {
-                $cmd_params.Password = $password
+                if ($compress_output -eq $false) {
+                    throw $zipErrMsg
+                }
+                $cmd_params.PasswordV2 = $password
             }
             if ($reason_for_export)
             {
+                if ($compress_output -eq $false) {
+                    throw $zipErrMsg
+                }
                 $cmd_params.ReasonForExport = $reason_for_export
             }
             if ($recipient_address)
@@ -2662,7 +2669,6 @@ function Main
     $command = $demisto.GetCommand()
     $command_arguments = $demisto.Args()
     $integration_params = [Hashtable] $demisto.Params()
-
     if ($integration_params.password.password)
     {
         $password = ConvertTo-SecureString $integration_params.password.password -AsPlainText -Force
