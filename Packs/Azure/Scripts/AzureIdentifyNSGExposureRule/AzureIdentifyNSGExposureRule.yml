@@ -1,0 +1,60 @@
+args:
+- description: The Azure Subscription ID where the NSG resides.
+  name: subscription_id
+  required: true
+- description: The Azure Resource Group Name where the NSG resides.
+  name: resource_group_name
+  required: true
+- description: The Azure Network Security Group (NSG) Name to analyze for exposure rules.
+  name: network_security_group_name
+  required: true
+- description: The destination private IP address(es) of the Virtual Machine interface.
+  name: private_ip_addresses
+  required: true
+  isArray: true
+- description: TCP/UDP port to be restricted.
+  name: port
+  required: true
+- description: Protocol of the port to be restricted.
+  auto: PREDEFINED
+  name: protocol
+  predefined:
+  - tcp
+  - udp
+  required: true
+- description: The number of available priority values below the matching rule to return.
+  name: priority_count
+  defaultValue: '2'
+- description: The Azure Integration Instance to use.
+  name: integration_instance
+comment: This script identifies the first inbound Allow rule in the specified NSG that matches the criteria for network exposure. It returns details about the identified rule as well as a list of available priority numbers to insert new security rules with a higher priority.
+commonfields:
+  id: AzureIdentifyNSGExposureRule
+  version: -1
+enabled: false
+name: AzureIdentifyNSGExposureRule
+outputs:
+- contextPath: AzurePublicExposure.MatchingRuleName
+  description: The name of the matching inbound security rule in the NSG that allows exposure.
+  type: String
+- contextPath: AzurePublicExposure.MatchingRulePriority
+  description: The priority number of the matching inbound security rule.
+  type: Number
+- contextPath: AzurePublicExposure.NextAvailablePriorityValues
+  description: The next available priority values to insert new security rules before the matching rule, given in descending order.
+  type: Unknown
+- contextPath: AzurePublicExposure.IntegrationInstance
+  description: The Azure Integration Instance used for identification.
+  type: String
+script: ''
+system: false
+timeout: '0'
+type: python
+subtype: python3
+dependson:
+  must:
+  - Azure|||azure-nsg-security-rules-list
+dockerimage: demisto/python3:3.12.12.6922358
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
