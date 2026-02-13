@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 import pytest
 import json
 from CommonServerPython import DemistoException
+import ipaddress
 
 
 def util_load_json(path):
@@ -260,3 +261,66 @@ def test_process_nsg_info_empty_ips():
         process_nsg_info(args)
 
     assert "At least one valid IP address must be provided" in str(exc_info.value)
+
+
+def test_port_matches_range_single_port():
+    """
+    Test _port_matches_range function with a single port.
+    """
+    from AzureIdentifyNSGExposureRule import _port_matches_range
+
+    result = _port_matches_range(80, "80")
+    assert result is True
+
+
+def test_port_matches_range_multiple_ports():
+    """
+    Test _port_matches_range function with a multiple individual ports.
+    """
+    from AzureIdentifyNSGExposureRule import _port_matches_range
+
+    result = _port_matches_range(80, "80,443")
+    assert result is True
+
+
+def test_port_matches_range_multiple_ports_with_range():
+    """
+    Test _port_matches_range function with multiple ports and ranges
+    """
+    from AzureIdentifyNSGExposureRule import _port_matches_range
+
+    result = _port_matches_range(80, "22, 79-81")
+    assert result is True
+
+
+def test_ip_matches_prefix_in_cidr():
+    """
+    Test _ip_matches_prefix function when the target IP address is within a CIDR prefix
+    """
+    from AzureIdentifyNSGExposureRule import _ip_matches_prefix
+
+    target_ip_obj = ipaddress.ip_address("10.0.0.5")
+    result = _ip_matches_prefix(target_ip_obj, "10.0.0.0/24")
+    assert result is True
+
+
+def test_ip_matches_prefix_not_in_cidr():
+    """
+    Test _ip_matches_prefix function when the target IP address is not within a CIDR prefix
+    """
+    from AzureIdentifyNSGExposureRule import _ip_matches_prefix
+
+    target_ip_obj = ipaddress.ip_address("10.0.0.5")
+    result = _ip_matches_prefix(target_ip_obj, "10.0.1.0/24")
+    assert result is False
+
+
+def test_ip_matches_prefix_invalid_prefix():
+    """
+    Test _ip_matches_prefix function when the provided prefix string is invalid
+    """
+    from AzureIdentifyNSGExposureRule import _ip_matches_prefix
+
+    target_ip_obj = ipaddress.ip_address("10.0.0.5")
+    result = _ip_matches_prefix(target_ip_obj, "10.0.0.0/42")
+    assert result is False
