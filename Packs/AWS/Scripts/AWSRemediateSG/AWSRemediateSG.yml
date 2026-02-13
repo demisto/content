@@ -56,6 +56,8 @@ args:
   - me-south-1
   - me-central-1
   - sa-east-1
+- description: One or more tags to apply to re-created Security Groups. Must be separated by a semicolon (;) and specified using the format "key=abc,value=123;key=fed,value=456".
+  name: tags
 - description: The AWS Integration Instance to use.
   name: integration_instance
 comment: Automation to duplicate Security Groups with rules modified to remove public exposure of the given port.  The updated list of security groups can then be used to remediate public exposure of an AWS resource by replacing the current list.

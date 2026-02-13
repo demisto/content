@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 import pytest
 import json
+from CommonServerPython import DemistoException
 
 
 def util_load_json(path):
@@ -9,6 +10,51 @@ def util_load_json(path):
 
 
 NEW_SG = [{"Type": 1, "Contents": {"GroupId": "sg-00000000000000001"}}]
+
+
+def test_identify_integration_instance(mocker):
+    """Tests identify_integration_instance helper function.
+
+    Given:
+        - Command results from aws-ec2-security-groups-describe when multiple integration instances are configured
+            and one is connected to the account where the requested object resides and the other is connected to a
+            different account.
+    When:
+        - Identifying the result with a successful response
+    Then:
+        - The function returns the name of the integration instance to use and security group data was returned
+    """
+    from AWSRemediateSG import identify_integration_instance
+
+    RESULT = util_load_json("./test_data/multi_integration_instances.json")
+
+    mocker.patch.object(demisto, "executeCommand", return_value=RESULT)
+
+    instance_to_use, sg_info = identify_integration_instance("1234", "sg-00000000000000000", "us-east-1")
+
+    assert instance_to_use == "AWS_instance_2"
+    assert sg_info == [RESULT[1]]
+
+
+def test_identify_integration_instance_error(mocker):
+    """Tests identify_integration_instance helper function.
+
+    Given:
+        - Command results from aws-ec2-security-groups-describe when multiple integration instances are configured
+            and all instances return errors.
+    When:
+        - Handling multiple results that are all errors
+    Then:
+        - The function raises an exception
+    """
+    from AWSRemediateSG import identify_integration_instance
+
+    RESULT = util_load_json("./test_data/multi_integration_instances_with_errors.json")
+
+    mocker.patch.object(demisto, "executeCommand", return_value=RESULT)
+
+    with pytest.raises(DemistoException):
+        identify_integration_instance("1234", "sg-00000000000000000", "us-east-1")
 
 
 @pytest.mark.parametrize(

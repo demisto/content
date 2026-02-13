@@ -5,8 +5,38 @@ from typing import Any
 import copy
 import traceback
 from random import randint
+import re
 
 PRIVATE_CIDRS = ("10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16")
+MAX_TAGS = 50
+
+
+def parse_tag_field(tags_string: str | None):
+    """
+    Parses a list representation of key and value with the form of 'key=<name>,value=<value>.
+    You can specify up to 50 tags per resource.
+    Args:
+        tags_string: The name and value list
+    Returns:
+        A list of dicts with the form {"key": <key>, "value": <value>}
+    """
+    tags = []
+    list_tags = argToList(tags_string, separator=";")
+    if len(list_tags) > MAX_TAGS:
+        list_tags = list_tags[0:50]
+        demisto.debug("Number of tags is larger then 50, parsing only first 50 tags.")
+    # According to the AWS Tag restrictions docs.
+    regex = re.compile(r"^key=([a-zA-Z0-9\s+\-=._:/@]{1,128}),value=(.{0,256})$", flags=re.UNICODE)
+    for tag in list_tags:
+        match_tag = regex.match(tag)
+        if match_tag is None:
+            raise ValueError(
+                f"Could not parse given tag data: {tag}."
+                "Please make sure you provided like so: key=abc,value=123;key=fed,value=456"
+            )
+        tags.append({"Key": match_tag.group(1), "Value": match_tag.group(2)})
+
+    return tags
 
 
 def split_rule(rule: dict, port: int, protocol: str) -> list[dict]:
@@ -64,7 +94,15 @@ def split_rule(rule: dict, port: int, protocol: str) -> list[dict]:
     return res_list
 
 
-def sg_fix(account_id: str, sg_info: list, port: int, protocol: str, integration_instance: str, region: str) -> dict:
+def sg_fix(
+    account_id: str,
+    sg_info: list,
+    port: int,
+    protocol: str,
+    integration_instance: str,
+    region: str,
+    tags: list[dict] | None = None,
+) -> dict:
     """
     Analyze a security group and create a remediated version that removes overly permissive rules.
 
@@ -79,6 +117,8 @@ def sg_fix(account_id: str, sg_info: list, port: int, protocol: str, integration
         protocol (str): Protocol of the port to be restricted ("tcp" or "udp")
         integration_instance (str): AWS integration instance name to use for API calls
         region (str): AWS EC2 region where the security group is located
+        tags (list[dict] | None): Optional list of tag dicts ({"Key": ..., "Value": ...}) to merge
+            with the old security group's tags when creating the new security group.
 
     Returns:
         dict: Dictionary containing the new security group ID under 'new-sg' key,
@@ -173,8 +213,15 @@ def sg_fix(account_id: str, sg_info: list, port: int, protocol: str, integration
 
         new_id = dict_safe_get(new_sg, (0, "Contents", "GroupId"))
 
-        # Apply old SG's tags to new SG
-        tags_data = info.get("Tags")
+        # Apply old SG's tags to new SG, merged with any tags provided via the script argument.
+        # Script-provided tags take precedence over old SG tags when keys conflict.
+        tags_data = info.get("Tags", []) or []
+        if tags:
+            # Build a dict keyed by tag Key from old SG tags, then overlay script-provided tags.
+            merged: dict[str, str] = {tag["Key"]: tag["Value"] for tag in tags_data}
+            for tag in tags:
+                merged[tag["Key"]] = tag["Value"]
+            tags_data = [{"Key": k, "Value": v} for k, v in merged.items()]
         if tags_data:
             formatted_tags = ";".join([f"key={tag['Key']},value={tag['Value']}" for tag in tags_data])
             create_tags_cmd_args = {
@@ -313,6 +360,7 @@ def fix_excessive_access(
     integration_instance: str,
     region: str,
     cached_sg_data: dict | None = None,
+    tags: list[dict] | None = None,
 ) -> list[dict]:
     """
     Process multiple security groups to remediate excessive public access to a specific port.
@@ -331,6 +379,8 @@ def fix_excessive_access(
         cached_sg_data (dict | None): Optional pre-fetched SG data keyed by SG ID, used to
             avoid redundant describe calls when data was already retrieved during instance
             identification.
+        tags (list[dict] | None): Optional list of tag dicts ({"Key": ..., "Value": ...}) to merge
+            with each old security group's tags when creating new security groups.
 
     Returns:
         list[dict]: List of dictionaries containing mapping between old and new security groups.
@@ -353,7 +403,7 @@ def fix_excessive_access(
                     f"Error: {json.dumps(sg_info[0]['Contents'])}"
                 )
         if sg_info:
-            res = sg_fix(account_id, sg_info, port, protocol, integration_instance, region)
+            res = sg_fix(account_id, sg_info, port, protocol, integration_instance, region, tags)
             # Need interface, old sg and new sg.
             if res.get("new-sg"):
                 res["old-sg"] = sg
@@ -442,6 +492,7 @@ def aws_recreate_sg(args: dict[str, Any]) -> CommandResults:
     protocol = args.get("protocol", "")
     region = args.get("region", "")
     integration_instance = args.get("integration_instance", "")
+    tags = parse_tag_field(args.get("tags"))
 
     if not account_id or not sg_list or not port or not protocol:
         raise ValueError("account_id, sg_list, instance_id, port, and protocol all need to be specified")
@@ -452,7 +503,7 @@ def aws_recreate_sg(args: dict[str, Any]) -> CommandResults:
         # Cache the SG data already fetched during instance identification to avoid a redundant API call.
         cached_sg_data = {sg_list[0]: first_sg_info}
 
-    replace_list = fix_excessive_access(account_id, sg_list, port, protocol, integration_instance, region, cached_sg_data)
+    replace_list = fix_excessive_access(account_id, sg_list, port, protocol, integration_instance, region, cached_sg_data, tags)
 
     if replace_list:
         # Create updated_sg_list with old SGs replaced by new ones
