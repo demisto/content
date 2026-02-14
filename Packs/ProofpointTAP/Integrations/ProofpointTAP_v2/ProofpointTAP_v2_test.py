@@ -930,6 +930,7 @@ def test_validate_first_fetch_time_not_valid():
             "Proofpoint supports a maximum 1 week fetch back."
         ) in str(e)
 
+
 @freeze_time("2024-05-03T11:00:00")
 def test_list_compromised_accounts(requests_mock):
     """
@@ -947,7 +948,10 @@ def test_list_compromised_accounts(requests_mock):
     from ProofpointTAP_v2 import Client, list_compromised_accounts
 
     mock_response = json.loads(load_mock_response("compromised_accounts.json"))
-    requests_mock.get(f"{MOCK_URL}/v2/stp/compromised-accounts?start=2024-04-26T14%3A00%3A00Z&end=2024-05-02T14%3A00%3A00Z&page=0&size=50&highRisk=True", json=mock_response)
+    requests_mock.get(
+        f"{MOCK_URL}/v2/stp/compromised-accounts?start=2024-04-26T11%3A00%3A00Z&end=2024-05-02T11%3A00%3A00Z&page=0&size=50&highRisk=True",
+        json=mock_response,
+    )
     client = Client(
         proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
     )
