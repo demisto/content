@@ -247,7 +247,8 @@ class Client:
         }
         if high_risk:
             params["highRisk"] = high_risk
-        return self.http_request("GET", "/v2/stp/compromised-accounts", params=params)
+        return self.http_request("GET", "/stp/compromised-accounts", params=params)
+
 
 def test_module(client: Client) -> str:
     """
@@ -1298,7 +1299,10 @@ def list_issues_command(
 
     return command_results_list
 
-def list_compromised_accounts(client: Client, start: str = "1 week", end: str = "now", high_risk: bool = False, page: int = 1, limit: int = 50)-> CommandResults:
+
+def list_compromised_accounts(
+    client: Client, start: str = "1 week", end: str = "now", high_risk: bool = False, page: int = 0, limit: int = 50
+) -> CommandResults:
     """
     Retrieves a list of compromided accounts.
     Args:
@@ -1315,15 +1319,28 @@ def list_compromised_accounts(client: Client, start: str = "1 week", end: str = 
     start_date = dateparser.parse(start).strftime(DATE_FORMAT)  # type: ignore
     end_date = dateparser.parse(end).strftime(DATE_FORMAT)  # type: ignore
 
-    raw_response = client.list_compromised_accounts(start_date, end_date,page,limit,argToBoolean(high_risk))
+    raw_response = client.list_compromised_accounts(start_date, end_date, page, limit, argToBoolean(high_risk))
 
     outputs = dict_safe_get(raw_response, ["compromisedAccounts"])
 
     readable_output = tableToMarkdown(
-        "Compromised accounts:", outputs, headers=["titles", "threatCategories", "trafficType",
-                                                   "maliciousMessages", "address", "identity", "observations",
-                                                   "deliveredMessages", "context", "departments", "highRisk"],
-        headerTransform=pascalToSpace, removeNull=True
+        "Compromised accounts:",
+        outputs,
+        headers=[
+            "titles",
+            "threatCategories",
+            "trafficType",
+            "maliciousMessages",
+            "address",
+            "identity",
+            "observations",
+            "deliveredMessages",
+            "context",
+            "departments",
+            "highRisk",
+        ],
+        headerTransform=pascalToSpace,
+        removeNull=True,
     )
 
     return CommandResults(
