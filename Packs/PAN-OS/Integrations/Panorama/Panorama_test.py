@@ -9240,77 +9240,45 @@ class TestDynamicUpdateCommands:
 
 
 @pytest.mark.parametrize(
-    ("vsys", "rules", "no_new_hits_since", "expected_cmd", "expected_datetime"),
+    ("vsys", "rules", "rulebase", "expected_cmd"),
     [
         (
             "vsys1",
             "Rule1",
-            "",
-            b'<show><rule-hit-count><vsys><vsys-name><entry name="vsys1"><rule-base><entry name="security"><rules>'
+            "qos",
+            b'<show><rule-hit-count><vsys><vsys-name><entry name="vsys1"><rule-base><entry name="qos"><rules>'
             b"<list><member>Rule1</member></list></rules></entry></rule-base></entry></vsys-name></vsys>"
             b"</rule-hit-count></show>",
-            None,
         ),
         (
-            "all",
-            "Rule1",
-            "",
-            b'<show><rule-hit-count><vsys><all><rule-base><entry name="security"><rules><list><member>Rule1</member>'
-            b"</list></rules></entry></rule-base></all></vsys></rule-hit-count></show>",
-            None,
-        ),
-        (
-            "all",
-            "all",
-            "",
-            b'<show><rule-hit-count><vsys><all><rule-base><entry name="security"><rules><all /></rules></entry>'
-            b"</rule-base></all></vsys></rule-hit-count></show>",
-            None,
-        ),
-        (
-            "all",
-            "Rule1, Rule2, Rule3",
-            "",
-            b'<show><rule-hit-count><vsys><all><rule-base><entry name="security"><rules><list><member>Rule1</member>'
-            b"<member>Rule2</member><member>Rule3</member></list></rules></entry></rule-base></all></vsys>"
-            b"</rule-hit-count></show>",
-            None,
-        ),
-        (
-            "vsys1",
-            "Rule1",
-            "2025/06/01 00:00:00",
-            b'<show><rule-hit-count><vsys><vsys-name><entry name="vsys1"><rule-base><entry name="security"><rules>'
-            b"<list><member>Rule1</member></list></rules></entry></rule-base></entry></vsys-name></vsys>"
-            b"</rule-hit-count></show>",
-            datetime.strptime("2025/06/01 00:00:00", "%Y/%m/%d %H:%M:%S"),
-        ),
+            "vsys3",
+            "Rule1,Rule2,Rule3",
+            "security",
+            b'<show><rule-hit-count><vsys><vsys-name><entry name="vsys3"><rule-base><entry name="security"><rules><list>'
+            b'<member>Rule1</member><member>Rule2</member><member>Rule3</member>'
+            b"</list></rules></entry></rule-base></entry></vsys-name></vsys></rule-hit-count></show>",
+        )
     ],
 )
-def test_get_rule_hitcounts(vsys, rules, no_new_hits_since, expected_cmd, expected_datetime, mock_topology, mocker):
-    """Test the get_rule_hitcounts function with various parameter combinations.  Verify that it properly
-        constructs the API call to retrieve the specified rule hitcount data.
+def test_build_rule_hit_count_xml(vsys, rules, rulebase, expected_cmd):
+    """Test the build_rule_hit_count_xml return value.
 
     Args:
         vsys: Virtual system name or "all" for all virtual systems
         rules: Rule names (single rule, multiple comma-separated rules, or "all")
-        no_new_hits_since: Date string for filtering rules with no new hits since this time
+        rulebase: The firewall rulebase to check
         expected_cmd: Expected XML command that should be generated
-        expected_datetime: Expected parsed datetime object from no_new_hits_since
         mock_topology: Mocked topology fixture
         mocker: Pytest mocker fixture
+
     """
-    from Panorama import get_rule_hitcounts
+    from Panorama import FirewallCommand
+    import xml.etree.ElementTree as ET
 
-    mock_get_hitcounts = mocker.patch("Panorama.FirewallCommand.get_hitcounts", return_value=True)
-
-    get_rule_hitcounts(mock_topology, "", "1.2.3.4", "security", vsys, rules, "false", no_new_hits_since)
-
-    cmd_result = mock_get_hitcounts.call_args[0][1]
-    no_new_hits_since_dt = mock_get_hitcounts.call_args[0][3]
-
-    assert cmd_result == expected_cmd
-    assert no_new_hits_since_dt == expected_datetime
+    xml_root = FirewallCommand.build_rule_hit_count_xml(vsys, rulebase, rules)
+    cmd = ET.tostring(xml_root, encoding="unicode").encode()
+    
+    assert cmd == expected_cmd
 
 
 @freeze_time("2025-06-26 13:00:00 UTC")

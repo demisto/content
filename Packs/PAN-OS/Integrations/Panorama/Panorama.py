@@ -12185,6 +12185,23 @@ class FirewallCommand:
         return pushed_rulebase_results
 
     @staticmethod
+    def build_rule_hit_count_xml(vsys_name: str, rulebase_type: str, rules_arg:str) -> ET.Element:
+        xml_root = ET.Element("show")
+        xml_rhc = ET.SubElement(xml_root, "rule-hit-count")
+        xml_vsys = ET.SubElement(xml_rhc, "vsys")
+        v_name_container = ET.SubElement(xml_vsys, "vsys-name")
+        v_entry = ET.SubElement(v_name_container, "entry", name=vsys_name)
+        rb_elem = ET.SubElement(v_entry, "rule-base")
+        rb_entry = ET.SubElement(rb_elem, "entry", name=rulebase_type)
+        rules_container = ET.SubElement(rb_entry, "rules")
+        if rules_arg == "all":
+            ET.SubElement(rules_container, "all")
+        else:
+            rule_list = ET.SubElement(rules_container, "list")
+            for rule in rules_arg.split(","):
+                ET.SubElement(rule_list, "member").text = rule.strip()
+        return xml_root
+    @staticmethod
     def get_hitcounts(
         topology: Topology,
         rulebase_type: str,
@@ -12242,27 +12259,10 @@ class FirewallCommand:
             except Exception as e:
                 demisto.debug(f"{debug_prefix} Continue without enrichment {firewall.id}:\n{str(e)}")
 
-            def build_rule_hit_count_xml(vsys_name: str, rulebase_type: str) -> ET.Element:
-                xml_root = ET.Element("show")
-                xml_rhc = ET.SubElement(xml_root, "rule-hit-count")
-                xml_vsys = ET.SubElement(xml_rhc, "vsys")
-                v_name_container = ET.SubElement(xml_vsys, "vsys-name")
-                v_entry = ET.SubElement(v_name_container, "entry", name=vsys_name)
-                rb_elem = ET.SubElement(v_entry, "rule-base")
-                rb_entry = ET.SubElement(rb_elem, "entry", name=rulebase_type)
-                rules_container = ET.SubElement(rb_entry, "rules")
-                if rules_arg == "all":
-                    ET.SubElement(rules_container, "all")
-                else:
-                    rule_list = ET.SubElement(rules_container, "list")
-                    for rule in rules_arg.split(","):
-                        ET.SubElement(rule_list, "member").text = rule.strip()
-                return xml_root
-
             # STEP 3: Iterate through vsys and perform hitcount queries
             for vsys_name in vsys_to_query:
                 demisto.debug(f"{debug_prefix} Step 3 Starting: Iterate through vsys: {vsys_name}")
-                xml_root = build_rule_hit_count_xml(vsys_name, rulebase_type)
+                xml_root = FirewallCommand.build_rule_hit_count_xml(vsys_name, rulebase_type, rules_arg)
                 try:
                     cmd = ET.tostring(xml_root, encoding="unicode")
 
