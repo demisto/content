@@ -1,5 +1,5 @@
-from CommonServerPython import argToList  # noqa: F401
-from group import group
+from CommonServerPython import argToList
+from Group import group
 
 
 def test_group_list():

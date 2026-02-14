@@ -26,7 +26,7 @@ def main():
             CommandResults(
                 outputs=outputs,
                 outputs_prefix="Group",
-                readable_output="Grouped the input.",
+                readable_output="Input is grouped.",
             )
         )
     except Exception as e:
