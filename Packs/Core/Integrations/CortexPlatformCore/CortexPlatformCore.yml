@@ -3360,7 +3360,7 @@ script:
           required: true
           type: String
         - name: target_endpoint_names
-          description: A comma-separated list of endpoint names to apply the policy to. The policy will target these specific endpoints.
+          description: A comma-separated list of endpoint names to apply the policy to.
           isArray: true
           type: String
         - name: target_endpoint_ids
@@ -3438,6 +3438,44 @@ script:
         - contextPath: Core.EndpointPolicy.Description
           description: The policy description.
           type: String
+    - name: core-delete-endpoint-policy
+      description: Deletes an existing endpoint policy from the policy table.
+      hidden: false
+      arguments:
+        - name: policy_name
+          description: The name of the policy to delete. Either this or policy_id must be provided.
+          type: String
+        - name: policy_id
+          description: The ID of the policy to delete. Either this or policy_name must be provided. Use this when multiple policies have the same name.
+          type: String
+        - name: platform
+          description: The platform type to narrow down the policy search. Required to identify the correct policy.
+          required: true
+          auto: PREDEFINED
+          predefined:
+            - windows
+            - mac
+            - linux
+            - android
+            - ios
+            - serverless
+          type: String
+      outputs:
+        - contextPath: Core.DeletedEndpointPolicy.PolicyName
+          description: The name of the deleted policy.
+          type: String
+        - contextPath: Core.DeletedEndpointPolicy.PolicyID
+          description: The ID of the deleted policy.
+          type: String
+        - contextPath: Core.DeletedEndpointPolicy.Platform
+          description: The platform type of the deleted policy.
+          type: String
+        - contextPath: Core.DeletedEndpointPolicy.Priority
+          description: The priority level of the deleted policy.
+          type: Number
+        - contextPath: Core.DeletedEndpointPolicy.Deleted
+          description: Confirmation flag that the policy was deleted (always true).
+          type: Boolean
   runonce: false
   script: "-"
   subtype: python3
