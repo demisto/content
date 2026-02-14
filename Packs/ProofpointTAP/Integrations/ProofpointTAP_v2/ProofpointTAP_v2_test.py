@@ -929,3 +929,29 @@ def test_validate_first_fetch_time_not_valid():
             "The First fetch time range is more than 7 days ago. Please update this parameter since "
             "Proofpoint supports a maximum 1 week fetch back."
         ) in str(e)
+
+@freeze_time("2024-05-03T11:00:00")
+def test_list_compromised_accounts(requests_mock):
+    """
+    Scenario: List compromised accounts.
+    Given:
+     - User has provided valid credentials and arguments.
+    When:
+     - A list-compromised-accounts command is called.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
+
+    """
+    from ProofpointTAP_v2 import Client, list_compromised_accounts
+
+    mock_response = json.loads(load_mock_response("compromised_accounts.json"))
+    requests_mock.get(f"{MOCK_URL}/v2/stp/compromised-accounts?start=2024-04-26T14%3A00%3A00Z&end=2024-05-02T14%3A00%3A00Z&page=0&size=50&highRisk=True", json=mock_response)
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+    result = list_compromised_accounts(client, "1 week", "1 day", True, 0, 50)
+    assert len(result.outputs) == 1
+    assert result.outputs_prefix == "Proofpoint.CompromisedAccount"
+    assert result.outputs[0].get("address") == "test@example.com"
