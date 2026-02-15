@@ -736,6 +736,140 @@ def executeCommandBatch(commands_list):
     return ""
 
 
+def agentixCommands(command, args):
+    """(System Integrations only)
+    Executes Cortex Assistant commands with given arguments
+    
+    This function is used to interact with Cortex Assistant conversation management system.
+    It supports sending messages, resetting conversations, and rating messages.
+    
+    Args:
+        command (str): Cortex Assistant command name to execute. Supported commands:
+            - "sendToConversation": Send a message to the Cortex Assistant conversation
+            - "resetConversation": Reset/clear the current conversation
+            - "rateMessage": Rate a specific message in the conversation
+        args (dict): Command arguments. The structure depends on the command:
+            - For "sendToConversation": {
+                "channel_id": str (required),
+                "thread_id": str (required),
+                "message": str (required),
+                "username": str (required),
+                "agent_id": str (optional, required on second call)
+              }
+            - For "resetConversation": {
+                "channel_id": str (required),
+                "thread_id": str (required),
+                "username": str (required)
+              }
+            - For "rateMessage": {
+                "channel_id": str (required),
+                "thread_id": str (required),
+                "message_id": str (required),
+                "username": str (required),
+                "is_liked": bool (required),
+                "improvement_suggestion": str (required if is_liked=false),
+                "issues": list[str] (required if is_liked=false)
+              }
+
+    Returns:
+        dict: Command execution response object with the following structure:
+            - On success: {"success": true}
+            - On agent selection (first sendToConversation call): {"agents": [{"id": "uuid", "name": "name"}]}
+            - On failure: {"success": false, "error": "message", "error_code": int}
+
+    Common Error Codes:
+        - 103102: User not found in the system
+        - 103103: Permission denied (user lacks cortex-assistant:action permissions)
+        - 103201: Conversation not found (may have expired)
+        - 103204: Wrong user (conversation belongs to different user)
+
+    Examples:
+        Success - First call (agent selection):
+        >>> demisto.agentixCommands("sendToConversation", {
+        ...     "channel_id": "C123",
+        ...     "thread_id": "T456",
+        ...     "message": "Hello",
+        ...     "username": "user@example.com"
+        ... })
+        {"agents": [{"id": "agent-uuid-1", "name": "Security Agent"}, {"id": "agent-uuid-2", "name": "IT Agent"}]}
+        
+        Success - Second call (with agent):
+        >>> demisto.agentixCommands("sendToConversation", {
+        ...     "channel_id": "C123",
+        ...     "thread_id": "T456",
+        ...     "message": "Hello",
+        ...     "username": "user@example.com",
+        ...     "agent_id": "agent-uuid-1"
+        ... })
+        {"success": true}
+        
+        Success - Reset conversation:
+        >>> demisto.agentixCommands("resetConversation", {
+        ...     "channel_id": "C123",
+        ...     "thread_id": "T456",
+        ...     "username": "user@example.com"
+        ... })
+        {"success": true}
+        
+        Success - Rate message positively:
+        >>> demisto.agentixCommands("rateMessage", {
+        ...     "channel_id": "C123",
+        ...     "thread_id": "T456",
+        ...     "message_id": "M789",
+        ...     "username": "user@example.com",
+        ...     "is_liked": true
+        ... })
+        {"success": true}
+        
+        Success - Rate message negatively:
+        >>> demisto.agentixCommands("rateMessage", {
+        ...     "channel_id": "C123",
+        ...     "thread_id": "T456",
+        ...     "message_id": "M789",
+        ...     "username": "user@example.com",
+        ...     "is_liked": false,
+        ...     "improvement_suggestion": "Response was too generic",
+        ...     "issues": ["Inaccurate", "Not helpful"]
+        ... })
+        {"success": true}
+        
+        Failure - User not found:
+        >>> demisto.agentixCommands("sendToConversation", {...})
+        {"success": false, "error": "User not found in system", "error_code": 103102}
+        
+        Failure - Permission denied:
+        >>> demisto.agentixCommands("sendToConversation", {...})
+        {"success": false, "error": "User lacks required Cortex Assistant permissions", "error_code": 103103}
+        
+        Failure - Conversation not found:
+        >>> demisto.agentixCommands("rateMessage", {...})
+        {"success": false, "error": "Conversation not found", "error_code": 103201}
+        
+        Failure - Wrong user:
+        >>> demisto.agentixCommands("sendToConversation", {
+        ...     "channel_id": "C123",
+        ...     "thread_id": "T456",
+        ...     "message": "Hello",
+        ...     "username": "different-user@example.com"
+        ... })
+        {"success": false, "error": "This conversation belongs to another user", "error_code": 103204}
+
+    Note:
+        This is a mock implementation for testing purposes. In production, this function
+        communicates with the Cortex Assistant backend service. Only the conversation owner
+        can interact with their conversations.
+    """
+    commands = {
+        "sendToConversation": {"success": True},
+        "resetConversation": {"success": True},
+        "rateMessage": {"success": True},
+    }
+    if commands.get(command):
+        return commands.get(command, {})
+
+    return {}
+
+
 def getParam(param):
     """(Integration only)
     Extracts given parameter from the integration parameters object
