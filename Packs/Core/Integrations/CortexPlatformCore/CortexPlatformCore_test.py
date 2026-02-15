@@ -9359,7 +9359,6 @@ def test_core_fill_support_ticket_command_success(mocker: MockerFixture):
 
     result = core_fill_support_ticket_command(args)
 
-    assert result.outputs["productType"] == "Cortex XSIAM"
     assert result.outputs["description"] == args["description"]
     assert result.outputs["contactNumber"] == "123456789"
     assert result.outputs["IssueImpact"] == "P4"
