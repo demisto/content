@@ -1154,8 +1154,8 @@ def test_search_command_with_next_page_token(mocker):
 
     assert result is not None
     assert "EntryContext" in result
-    assert "GmailMails" in result["EntryContext"]
-    assert result["EntryContext"]["GmailMails"]["NextPageToken"] == "next_page_token_123"
+    assert "GmailEmails" in result["EntryContext"]
+    assert result["EntryContext"]["GmailEmails"]["NextPageToken"] == "next_page_token_123"
 
 
 def test_search_command_without_next_page_token(mocker):
@@ -1187,4 +1187,4 @@ def test_search_command_without_next_page_token(mocker):
 
     assert result is not None
     assert "EntryContext" in result
-    assert "GmailMails" not in result["EntryContext"]
+    assert "GmailEmails" not in result["EntryContext"]
