@@ -9357,7 +9357,7 @@ def test_core_fill_support_ticket_command_success(mocker: MockerFixture):
         "most_recent_issue_start_time": "2023-01-01T00:00:00Z",
     }
 
-    result = core_fill_support_ticket_command(None, args)
+    result = core_fill_support_ticket_command(args)
 
     assert result.outputs["productType"] == "Cortex XSIAM"
     assert result.outputs["description"] == args["description"]
@@ -9416,6 +9416,8 @@ def test_core_fill_support_ticket_command_invalid_category_per_product():
 
     with pytest.raises(ValueError, match="Invalid issue category 'AI Security \(AISPM\)' for product type 'Cortex XSIAM'"):
         core_fill_support_ticket_command(args)
+
+
 def test_get_cases_command_with_ai_summary(mocker: MockerFixture):
     """
     GIVEN:
