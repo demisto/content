@@ -65,7 +65,7 @@ Follow the below steps to configure the Broker VM to receive VMware ESXi logs.
 | `Protocol`   | Select **UDP** for the default forwarding, **TCP** or **Secure TCP** (depends on the protocol you configured in VMware ESXi). |
 | `Port`       | Enter the syslog service port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from VMware ESXi.   |
 | `Format`     | Enter **Raw**.                                                                                                                |
-| `Vendor`     | Enter **VMware**.                                                                                                             |
-| `Product`    | Enter **ESXi**.                                                                                                               |
+| `Vendor`     | Enter **vmware**.                                                                                                             |
+| `Product`    | Enter **esxi**.                                                                                                               |
 
 </~XSIAM>
