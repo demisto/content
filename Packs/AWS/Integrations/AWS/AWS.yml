@@ -9943,10 +9943,10 @@ script:
         description: The principal that created the launch template.
         type: string
       - contextPath: AWS.EC2.LaunchTemplates.DefaultVersionNumber
-        description: The version number of the default version of the launch template.
+        description: The default version number of the launch template.
         type: number
       - contextPath: AWS.EC2.LaunchTemplates.LatestVersionNumber
-        description: The version number of the latest version of the launch template.
+        description: The latest version number of the launch template.
         type: number
       - contextPath: AWS.EC2.LaunchTemplates.Tags.Key
         description: The key of the tag.
@@ -10012,7 +10012,7 @@ script:
         description: The ID of the kernel.
         required: false
       - name: ebs_optimized
-        description: Indicates whether the instance is optimized for Amazon EBS I/O.
+        description: Whether the instance is optimized for Amazon EBS I/O.
         required: false
         auto: PREDEFINED
         predefined:
@@ -10034,7 +10034,7 @@ script:
         description: The name of the key pair.
         required: false
       - name: monitoring
-        description: Specify true to enable detailed monitoring. Otherwise, basic monitoring is enabled.
+        description: Set to true to enable detailed monitoring. Set to false to enable basic monitoring.
         required: false
         auto: PREDEFINED
         predefined:
@@ -10048,7 +10048,7 @@ script:
           - 'true'
           - 'false'
       - name: instance_initiated_shutdown_behavior
-        description: Indicates whether an instance stops or terminates when you initiate shutdown from the instance.
+        description: Whether an instance stops or terminates when you initiate shutdown from the instance.
         required: false
         auto: PREDEFINED
         predefined:
@@ -10114,7 +10114,7 @@ script:
           - 'true'
           - 'false'
       - name: network_interfaces_delete_on_termination
-        description: Indicates whether the network interface is deleted when the instance is terminated.
+        description: Whether the network interface is deleted when the instance is terminated.
         required: false
         auto: PREDEFINED
         predefined:
@@ -10191,10 +10191,10 @@ script:
         description: The principal that created the launch template.
         type: string
       - contextPath: AWS.EC2.LaunchTemplates.DefaultVersionNumber
-        description: The version number of the default version of the launch template.
+        description: The default version number of the launch template.
         type: number
       - contextPath: AWS.EC2.LaunchTemplates.LatestVersionNumber
-        description: The version number of the latest version of the launch template.
+        description: The latest version number of the launch template.
         type: number
       - contextPath: AWS.EC2.LaunchTemplates.Tags.Key
         description: The key of the tag.
@@ -10211,7 +10211,7 @@ script:
         description: The AWS account ID.
         required: true
       - name: region
-        description: The AWS Region.
+        description: The AWS region.
         required: true
         auto: PREDEFINED
         predefined:
@@ -10250,10 +10250,10 @@ script:
           - us-gov-east-1
           - us-gov-west-1
       - name: launch_template_id
-        description: The ID of the launch template. You must specify either the launch template ID or launch template name.
+        description: The ID of the launch template. You must specify either the launch template ID or launch template name, but not both.
         required: false
       - name: launch_template_name
-        description: The name of the launch template. You must specify either the launch template ID or launch template name.
+        description: The name of the launch template. You must specify either the launch template ID or launch template name, but not both.
         required: false
     outputs:
       - contextPath: AWS.EC2.DeletedLaunchTemplates.LaunchTemplateId
@@ -10269,10 +10269,10 @@ script:
         description: The principal that created the launch template.
         type: string
       - contextPath: AWS.EC2.DeletedLaunchTemplates.DefaultVersionNumber
-        description: The version number of the default version of the launch template.
+        description: The default version number of the launch template.
         type: number
       - contextPath: AWS.EC2.DeletedLaunchTemplates.LatestVersionNumber
-        description: The version number of the latest version of the launch template.
+        description: The latest version number of the launch template.
         type: number
       - contextPath: AWS.EC2.DeletedLaunchTemplates.Operator
         description: The entity that manages the launch template.

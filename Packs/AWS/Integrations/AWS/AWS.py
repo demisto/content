@@ -4271,7 +4271,7 @@ class EC2:
             outputs_key_field="LaunchTemplateId",
             outputs=launch_template,
             readable_output=tableToMarkdown(
-                "AWS LaunchTemplates",
+                "The AWS LaunchTemplate was created successfully",
                 launch_template,
                 headers=[
                     "LaunchTemplateId",
@@ -4325,7 +4325,7 @@ class EC2:
             outputs_key_field="LaunchTemplateId",
             outputs=deleted_template,
             readable_output=tableToMarkdown(
-                "AWS Deleted Launch Templates",
+                "AWS Deleted Launch Template",
                 deleted_template,
                 headers=[
                     "LaunchTemplateId",
