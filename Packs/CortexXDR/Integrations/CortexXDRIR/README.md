@@ -4417,6 +4417,7 @@ Deletes correlation rules.
 #### Context Output
 
 There is no context output for this command.
+
 ### xdr-automation-playbook-create
 
 ***
@@ -4430,11 +4431,12 @@ Creates or updates an automation playbook.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entry_id | The entry ID of the file. The playbook should be a zipped YAML file. | Required | 
+| entry_id | The entry ID of the file. The playbook should be a zipped YAML file. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### xdr-automation-playbook-get
 
 ***
@@ -4448,12 +4450,13 @@ Gets an automation playbook.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| field | The field to search by. Possible values are: id, name. | Required | 
-| value | The field value to search for. | Required | 
+| field | The field to search by. Possible values are: id, name. | Required |
+| value | The field value to search for. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### xdr-automation-playbook-delete
 
 ***
@@ -4467,12 +4470,13 @@ Deletes an automation playbook.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| field | The field to search by. Possible values are: id, name. | Required | 
-| value | The field value to search for. | Required | 
+| field | The field to search by. Possible values are: id, name. | Required |
+| value | The field value to search for. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### xdr-automation-script-delete
 
 ***
@@ -4486,12 +4490,13 @@ Deletes an automation script.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| field | The field to search by. Possible values are: id, name. | Required | 
-| value | The field value to search for. | Required | 
+| field | The field to search by. Possible values are: id, name. | Required |
+| value | The field value to search for. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### xdr-automation-script-get
 
 ***
@@ -4505,12 +4510,13 @@ Gets an automation script.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| field | The field to search by. Possible values are: id, name. | Required | 
-| value | The field value to search for. | Required | 
+| field | The field to search by. Possible values are: id, name. | Required |
+| value | The field value to search for. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### xdr-automation-script-create
 
 ***
@@ -4524,7 +4530,7 @@ Creates or updates an automation script.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entry_id | The entry ID of the file. The script should be a zipped YAML file. | Required | 
+| entry_id | The entry ID of the file. The script should be a zipped YAML file. | Required |
 
 #### Context Output
 
