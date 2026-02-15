@@ -431,7 +431,7 @@ class SlackAssistantHandler(AssistantMessagingHandler):
             response = await send_slack_request_async(
                 ASYNC_CLIENT, "conversations.replies", http_verb="GET", body={"channel": channel_id, "ts": thread_ts, "limit": 20}
             )
-            messages = response.get("messages", [])
+            messages: list[dict] = response.get("messages", [])
 
             if not messages:
                 demisto.debug(f"No conversation history found for thread {thread_ts}")
@@ -466,7 +466,7 @@ class SlackAssistantHandler(AssistantMessagingHandler):
                         user_response = await send_slack_request_async(
                             ASYNC_CLIENT, "users.info", http_verb="GET", body={"user": msg_user}
                         )
-                        user_info = user_response.get("user", {})
+                        user_info: dict[str, Any] = user_response.get("user", {})
                         user_name = user_info.get("real_name", user_info.get("name", msg_user))
                     except Exception:
                         user_name = msg_user
@@ -2129,8 +2129,10 @@ async def handle_assistant_interactions(
         assistant_context = json.loads(integration_context.get(slack_assistant_handler.CONTEXT_KEY, "{}"))
         assistant_id_key = f"{channel_id}_{thread_ts}"
 
-        demisto.debug(f"Assistant interaction: user={user_email}, channel={channel_id}, thread={thread_ts}, "
-                     f"bot_mentioned={is_bot_mentioned}, action={is_assistant_action}, modal={is_modal_submission}")
+        demisto.debug(
+            f"Assistant interaction: user={user_email}, channel={channel_id}, thread={thread_ts}, "
+            f"bot_mentioned={is_bot_mentioned}, action={is_assistant_action}, modal={is_modal_submission}"
+        )
 
         # Track original assistant to detect changes
         original_assistant = json.dumps(assistant_context, sort_keys=True)

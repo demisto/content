@@ -215,7 +215,7 @@ def process_text_part(text: str) -> List[Dict]:
 
     # First, extract code blocks and replace with placeholders
     code_block_pattern = r"```(\w+)?\n(.*?)\n```"
-    code_blocks = []
+    code_blocks: list[dict[str, Any]] = []
 
     def save_code_block(match):
         language = match.group(1) or ""
@@ -424,7 +424,7 @@ def create_agent_selection_blocks(agents: list[dict]) -> list:
     dropdown_options = [
         Option(
             text=PlainTextObject(text=agent.get("name", agent.get("id", ""))),
-            value=f"{AssistantActionIds.AGENT_SELECTION_VALUE_PREFIX}{agent.get('id', '')}",
+            value=f"{AssistantActionIds.AGENT_SELECTION_VALUE_PREFIX.value}{agent.get('id', '')}",
         )
         for agent in agents
     ]
@@ -537,16 +537,16 @@ def get_feedback_modal(message_id: str, channel_id: str, thread_ts: str) -> View
     """
     return View(
         type="modal",
-        callback_id=AssistantActionIds.FEEDBACK_MODAL_CALLBACK_ID,
+        callback_id=AssistantActionIds.FEEDBACK_MODAL_CALLBACK_ID.value,
         title=PlainTextObject(text=AssistantMessages.FEEDBACK_MODAL_TITLE),
         submit=PlainTextObject(text=AssistantMessages.FEEDBACK_MODAL_SUBMIT),
         close=PlainTextObject(text=AssistantMessages.FEEDBACK_MODAL_CANCEL),
         blocks=[
             InputBlock(
-                block_id=AssistantActionIds.FEEDBACK_MODAL_QUICK_BLOCK_ID,
+                block_id=AssistantActionIds.FEEDBACK_MODAL_QUICK_BLOCK_ID.value,
                 label=PlainTextObject(text=AssistantMessages.FEEDBACK_MODAL_QUICK_LABEL),
                 element=CheckboxesElement(
-                    action_id=AssistantActionIds.FEEDBACK_MODAL_CHECKBOXES_ACTION_ID,
+                    action_id=AssistantActionIds.FEEDBACK_MODAL_CHECKBOXES_ACTION_ID.value,
                     options=[
                         Option(
                             text=PlainTextObject(text=AssistantMessages.FEEDBACK_OPTION_NO_ANSWER),
@@ -573,10 +573,10 @@ def get_feedback_modal(message_id: str, channel_id: str, thread_ts: str) -> View
                 optional=False,
             ),
             InputBlock(
-                block_id=AssistantActionIds.FEEDBACK_MODAL_TEXT_BLOCK_ID,
+                block_id=AssistantActionIds.FEEDBACK_MODAL_TEXT_BLOCK_ID.value,
                 label=PlainTextObject(text=AssistantMessages.FEEDBACK_MODAL_ADDITIONAL_LABEL),
                 element=PlainTextInputElement(
-                    action_id=AssistantActionIds.FEEDBACK_MODAL_TEXT_INPUT_ACTION_ID,
+                    action_id=AssistantActionIds.FEEDBACK_MODAL_TEXT_INPUT_ACTION_ID.value,
                     multiline=True,
                     placeholder=PlainTextObject(text=AssistantMessages.FEEDBACK_MODAL_ADDITIONAL_PLACEHOLDER),
                 ),
