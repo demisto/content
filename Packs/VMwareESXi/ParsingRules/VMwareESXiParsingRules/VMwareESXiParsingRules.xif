@@ -1,4 +1,4 @@
-[INGEST:vendor="vmware", product="esxi", target_dataset="vmware_esxi_raw", no_hit=keep]
+[INGEST:vendor="VMware", product="ESXi", target_dataset="vmware_esxi_raw", no_hit=keep]
 // Filter for RFC 3164 log format, with ISO-8601 timestamp format: <PRI>YYYY-MM-DDTHH:MM:SS.mmZ HOSTNAME PROCESS: MSG
 filter _raw_log ~= "^\<*\d*\>*\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.*\d{0,}"
 | alter
