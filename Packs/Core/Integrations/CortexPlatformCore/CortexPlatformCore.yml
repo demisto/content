@@ -3298,6 +3298,199 @@ script:
         description: Contains a message if the query's LIMIT clauses were automatically reduced to the maximum supported limit.
         type: String
     - arguments:
+        - description: The Internet Message ID of the email to investigate. This is the unique identifier that links all related issues in the email campaign.
+          name: internet_message_id
+          required: true
+          type: String
+        - description: Number of days to look back when searching for related issues. Must be a positive integer.
+          name: days_timeframe
+          required: true
+          type: Number
+      name: core-get-email-campaign-consolidated-forensic-enrichment
+      description: Aggregates, deduplicates, and presents a unified forensic view of an entire email campaign by merging telemetry from all associated issues sharing the same internet_message_id.
+      hidden: false
+      outputs:
+        - contextPath: Core.EmailCampaignForensics.internet_message_id
+          description: The Internet Message ID that serves as the primary identifier for the email campaign.
+          type: String
+        - contextPath: Core.EmailCampaignForensics.lcaas_id
+          description: The LCaaS (Log Collection as a Service) identifier for the email.
+          type: String
+        - contextPath: Core.EmailCampaignForensics.external_id
+          description: External identifier for the email from the source system.
+          type: String
+        - contextPath: Core.EmailCampaignForensics.observation_time
+          description: Timestamp when the email was first observed in the system.
+          type: Date
+        - contextPath: Core.EmailCampaignForensics.created_time
+          description: Timestamp when the email record was created.
+          type: Date
+        - contextPath: Core.EmailCampaignForensics.alert_name
+          description: Unique list of alert names triggered by this email campaign.
+          type: Array
+        - contextPath: Core.EmailCampaignForensics.alert_full_description
+          description: List of full alert descriptions from all related issues.
+          type: Array
+        - contextPath: Core.EmailCampaignForensics.detector_id
+          description: The detector ID that identified the threat.
+          type: String
+        - contextPath: Core.EmailCampaignForensics.variation_rule_id
+          description: The variation rule ID associated with the detection.
+          type: String
+        - contextPath: Core.EmailCampaignForensics.original_severity
+          description: The original severity level assigned to the email threat.
+          type: String
+        - contextPath: Core.EmailCampaignForensics.message_directionality
+          description: The direction of the email message (inbound/outbound).
+          type: String
+        - contextPath: Core.EmailCampaignForensics.msft_directionality
+          description: Microsoft-specific directionality information.
+          type: String
+        - contextPath: Core.EmailCampaignForensics.folder
+          description: The email folder where the message was found.
+          type: String
+        - contextPath: Core.EmailCampaignForensics.o365_data_is_draft
+          description: Boolean indicating if the email is a draft in Office 365.
+          type: Boolean
+        - contextPath: Core.EmailCampaignForensics.o365_data_json
+          description: Complete Office 365 metadata for the email in JSON format.
+          type: Unknown
+        - contextPath: Core.EmailCampaignForensics.from_json
+          description: Parsed 'From' header information in JSON format.
+          type: Unknown
+        - contextPath: Core.EmailCampaignForensics.sender_json
+          description: Parsed sender information in JSON format.
+          type: Unknown
+        - contextPath: Core.EmailCampaignForensics.return_path_data_json
+          description: Return-Path header data in JSON format.
+          type: Unknown
+        - contextPath: Core.EmailCampaignForensics.reply_to_json
+          description: Reply-To header information in JSON format.
+          type: Unknown
+        - contextPath: Core.EmailCampaignForensics.internet_message_id_data_json
+          description: Complete Internet Message ID header data in JSON format.
+          type: Unknown
+        - contextPath: Core.EmailCampaignForensics.mailbox_owner
+          description: List of mailbox owners who received this email.
+          type: Array
+        - contextPath: Core.EmailCampaignForensics.mailbox_owner_fqdn
+          description: Fully qualified domain name of the mailbox owner.
+          type: String
+        - contextPath: Core.EmailCampaignForensics.recipients
+          description: Merged unique list of all recipients across related issues.
+          type: Array
+        - contextPath: Core.EmailCampaignForensics.cc_recipients
+          description: List of CC recipients.
+          type: Array
+        - contextPath: Core.EmailCampaignForensics.bcc_recipients
+          description: List of BCC recipients.
+          type: Array
+        - contextPath: Core.EmailCampaignForensics.sender_ip_received_headers
+          description: Sender IP addresses extracted from Received headers.
+          type: String
+        - contextPath: Core.EmailCampaignForensics.connecting_ip_address
+          description: The IP address that connected to deliver the email.
+          type: String
+        - contextPath: Core.EmailCampaignForensics.original_client_ip
+          description: The original client IP address from email headers.
+          type: String
+        - contextPath: Core.EmailCampaignForensics.sender_ip_as_data_json
+          description: Autonomous System (AS) data for the sender IP in JSON format.
+          type: Unknown
+        - contextPath: Core.EmailCampaignForensics.sender_ip_location_json
+          description: Geographic location data for the sender IP in JSON format.
+          type: Unknown
+        - contextPath: Core.EmailCampaignForensics.msft_country
+          description: Country information from Microsoft telemetry.
+          type: String
+        - contextPath: Core.EmailCampaignForensics.sender_ip_enrichment_json
+          description: Complete sender IP enrichment data in JSON format.
+          type: Unknown
+        - contextPath: Core.EmailCampaignForensics.attachments
+          description: Unique list of email attachments deduplicated by file hash.
+          type: Array
+        - contextPath: Core.EmailCampaignForensics.url_verdicts_json
+          description: Unique list of URLs with their verdicts, deduplicated by URL string.
+          type: Unknown
+        - contextPath: Core.EmailCampaignForensics.arc_headers_data_json
+          description: ARC (Authenticated Received Chain) headers data in JSON format.
+          type: Unknown
+        - contextPath: Core.EmailCampaignForensics.first_authentication_results_json
+          description: First authentication results (SPF/DKIM/DMARC) in JSON format.
+          type: Unknown
+        - contextPath: Core.EmailCampaignForensics.last_authentication_results_json
+          description: Last authentication results (SPF/DKIM/DMARC) in JSON format.
+          type: Unknown
+        - contextPath: Core.EmailCampaignForensics.microsoft_threat_category
+          description: Microsoft's threat categorization for the email.
+          type: String
+        - contextPath: Core.EmailCampaignForensics.scl
+          description: Spam Confidence Level (SCL) from Microsoft.
+          type: Number
+        - contextPath: Core.EmailCampaignForensics.bcl
+          description: Bulk Complaint Level (BCL) from Microsoft.
+          type: Number
+        - contextPath: Core.EmailCampaignForensics.sfty
+          description: Safety score from Microsoft filtering.
+          type: Number
+        - contextPath: Core.EmailCampaignForensics.sfv
+          description: Spam Filtering Verdict from Microsoft.
+          type: String
+        - contextPath: Core.EmailCampaignForensics.x_customspam
+          description: Custom spam header values from Microsoft.
+          type: String
+        - contextPath: Core.EmailCampaignForensics.subject_hash
+          description: Hash of the email subject line for fingerprinting.
+          type: String
+        - contextPath: Core.EmailCampaignForensics.body_hash
+          description: Hash of the email body for fingerprinting.
+          type: String
+        - contextPath: Core.EmailCampaignForensics.internet_message_headers_normalized_json
+          description: Normalized email headers in JSON format for analysis.
+          type: Unknown
+    - arguments:
+        - description: The Internet Message ID of the email campaign to remediate.
+          name: internet_message_id
+          required: true
+          type: String
+        - description: The unique identifier for the alert across all email security module services.
+          name: external_id
+          required: true
+          type: String
+        - description: The remediation action to execute on the email.
+          name: action
+          required: true
+          type: String
+          auto: PREDEFINED
+          predefined:
+            - DeleteEmail
+            - UndeleteEmail
+            - SendAlertEmail
+            - MoveEmailToFolder
+            - TagEmailAsPhishing
+      name: core-execute-email-security-remediation
+      description: Triggers automated email security remediation actions such as deleting, undeleting, moving, or tagging emails based on the security verdict.
+      hidden: false
+      outputs:
+        - contextPath: Core.EmailSecurityRemediation.internet_message_id
+          description: The Internet Message ID of the email that was remediated.
+          type: String
+        - contextPath: Core.EmailSecurityRemediation.external_id
+          description: The unique identifier for the alert across all email security services.
+          type: String
+        - contextPath: Core.EmailSecurityRemediation.action
+          description: The remediation action that was executed.
+          type: String
+        - contextPath: Core.EmailSecurityRemediation.success
+          description: Boolean indicating whether the remediation action was successful.
+          type: Boolean
+        - contextPath: Core.EmailSecurityRemediation.message
+          description: Success message from the remediation action (present when successful).
+          type: String
+        - contextPath: Core.EmailSecurityRemediation.error
+          description: Error message from the remediation action (present when failed).
+          type: String
+    - arguments:
         - description: A comma separated list of case ids to retrieve resolution statuses for.
           isArray: false
           name: case_id
