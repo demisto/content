@@ -4417,3 +4417,115 @@ Deletes correlation rules.
 #### Context Output
 
 There is no context output for this command.
+### xdr-automation-playbook-create
+
+***
+Creates or updates an automation playbook.
+
+#### Base Command
+
+`xdr-automation-playbook-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entry_id | The entry ID of the file. The playbook should be a zipped YAML file. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### xdr-automation-playbook-get
+
+***
+Gets an automation playbook.
+
+#### Base Command
+
+`xdr-automation-playbook-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| field | The field to search by. Possible values are: id, name. | Required | 
+| value | The field value to search for. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### xdr-automation-playbook-delete
+
+***
+Deletes an automation playbook.
+
+#### Base Command
+
+`xdr-automation-playbook-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| field | The field to search by. Possible values are: id, name. | Required | 
+| value | The field value to search for. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### xdr-automation-script-delete
+
+***
+Deletes an automation script.
+
+#### Base Command
+
+`xdr-automation-script-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| field | The field to search by. Possible values are: id, name. | Required | 
+| value | The field value to search for. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### xdr-automation-script-get
+
+***
+Gets an automation script.
+
+#### Base Command
+
+`xdr-automation-script-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| field | The field to search by. Possible values are: id, name. | Required | 
+| value | The field value to search for. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### xdr-automation-script-create
+
+***
+Creates or updates an automation script.
+
+#### Base Command
+
+`xdr-automation-script-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entry_id | The entry ID of the file. The script should be a zipped YAML file. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
