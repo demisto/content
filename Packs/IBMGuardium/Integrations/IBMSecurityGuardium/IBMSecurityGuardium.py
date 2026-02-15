@@ -389,7 +389,7 @@ def fetch_events_command(
             raise DemistoException(f"Failed to parse last_fetch_time: {last_fetch_time_str}")
     else:
         # Default to 12 hours ago for first fetch to account for IBM Guardium's event indexing delays.
-        # Events may be indexed with significant delays (e.g., 2+ hours). Without a sufficient lookback period,
+        # Events may be indexed with significant delays. Without a sufficient lookback period,
         # the integration may never retrieve any events, as the fetch window would always be ahead of the indexed events.
         last_fetch_time = now - timedelta(hours=12)
         demisto.debug("No last_fetch_time found, using default: 12 hours ago")
