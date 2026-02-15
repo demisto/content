@@ -4793,6 +4793,8 @@ def main():  # pragma: no cover
         elif command == "core-update-endpoint-version":
             return_results(update_endpoint_version_command(client, args))
         elif command == "core-get-cdr-protection-status":
+            if not is_demisto_version_ge("8.14.0"):
+                raise DemistoException("This command is not available for this platform version")
             return_results(get_cdr_protection_status_command(client))
 
         elif command == "core-xql-generic-query-platform":
