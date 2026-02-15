@@ -277,7 +277,7 @@ class ServiceNowClient(BaseClient):
                     # Other inherited integrations require modification to function here
                     if self.use_oauth and self.username and self.password and not retry_attempted:
                         demisto.debug("Refresh token may have expired, automatically generating new refresh token via login")
-                        self.login(self.username, self.password)
+                        self.login(username=self.username, password=self.password)
                         return self.get_access_token(retry_attempted=True)
 
                     # If retry was already attempted or credentials not available, raise the error

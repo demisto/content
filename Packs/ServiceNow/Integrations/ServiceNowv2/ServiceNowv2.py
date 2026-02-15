@@ -3775,7 +3775,7 @@ def main():
     username = basic_auth_creds.get("identifier", "")
     password = basic_auth_creds.get("password", "")
 
-    oauth_creds = params.get("oath_credentials", {})
+    oauth_creds = params.get("oauth_credentials", {})
 
     if use_oauth:  # if the `Use OAuth` checkbox was checked, client id & secret should be in the credentials fields
         client_id = oauth_creds.get("identifier")

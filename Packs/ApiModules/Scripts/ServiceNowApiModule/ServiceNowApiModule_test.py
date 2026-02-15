@@ -181,7 +181,8 @@ def test_get_access_token_retry_only_once(mocker):
     mocker.patch.object(BaseClient, "_http_request", return_value=error_response)
 
     # Call get_access_token - should retry once then raise error
-    with pytest.raises(Exception, match="Could not create an access token"):
+    # After retry, return_error() is called which raises SystemExit
+    with pytest.raises(SystemExit):
         client.get_access_token()
 
     # Validate that login was called exactly once (no infinite loop)
@@ -327,14 +328,14 @@ def test_servicenow_client_jwt_init(mocker):
     """
     mocker.patch("jwt.encode", return_value="jwt_token_stub")
     client = ServiceNowClient(
-        username=PARAMS["credentials"]["identifier"],
-        password=PARAMS["credentials"]["password"],
+        username=PARAMS.get("credentials", {}).get("identifier", ""),
+        password=PARAMS.get("credentials", {}).get("password", ""),
         use_oauth=True,
-        client_id=PARAMS["client_id"],
-        client_secret=PARAMS["client_secret"],
+        client_id=PARAMS.get("client_id", ""),
+        client_secret=PARAMS.get("client_secret", ""),
         url="https://example.com",
-        verify=PARAMS["insecure"],
-        proxy=PARAMS["proxy"],
+        verify=PARAMS.get("insecure", False),
+        proxy=PARAMS.get("proxy", False),
         headers=None,
         jwt_params=JWT_PARAMS,
     )
@@ -352,14 +353,14 @@ def test_servicenow_client_jwt_none():
     - The client should not have a 'jwt' attribute
     """
     client = ServiceNowClient(
-        username=PARAMS["credentials"]["identifier"],
-        password=PARAMS["credentials"]["password"],
+        username=PARAMS.get("credentials", {}).get("identifier", ""),
+        password=PARAMS.get("credentials", {}).get("password", ""),
         use_oauth=True,
-        client_id=PARAMS["client_id"],
-        client_secret=PARAMS["client_secret"],
+        client_id=PARAMS.get("client_id", ""),
+        client_secret=PARAMS.get("client_secret", ""),
         url="https://example.com",
-        verify=PARAMS["insecure"],
-        proxy=PARAMS["proxy"],
+        verify=PARAMS.get("insecure", False),
+        proxy=PARAMS.get("proxy", False),
         headers=None,
         jwt_params=None,
     )
