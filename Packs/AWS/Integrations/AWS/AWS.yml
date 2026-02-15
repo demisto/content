@@ -183,7 +183,138 @@ script:
       - 'true'
       - 'false'
 
-    
+  - name: aws-s3-bucket-delete
+    description: Delete AWS S3 bucket, the bucket must be empty from files.
+    arguments:
+      - description: The name of S3 bucket.
+        name: bucket
+        required: true
+      - description: The AWS account ID.
+        name: account_id
+        required: true
+      - description: The AWS region.
+        name: region
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+
+  - name: aws-s3-bucket-objects-list
+    description: Returns some or all (up to 1,000) of the objects in a bucket.
+    arguments:
+      - description: The name of S3 bucket.
+        name: bucket
+        required: true
+      - description: The AWS account ID.
+        name: account_id
+        required: true
+      - description: The AWS region.
+        name: region
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - description: A delimiter is a character (like a slash /) used to bundle files into folders. It turns a long list of file names into an organized, clickable hierarchy.
+        name: delimiter
+      - description: Restricts the response to include only those keys that begin with the specified string. This is commonly used to filter results to a specific folder or category.
+        name: prefix
+      - description: The next_token is the marker where you want Amazon S3 to start listing from. Amazon S3 starts listing after this specified key. Marker can be any key in the bucket.
+        name: next_token
+      - description: "Specifies the maximum number of keys to return in the response, ranging from 1 to 1,000. Default: 50."
+        name: limit
+    outputs:
+      - contextPath: AWS.S3.Buckets.BucketName
+        description: The name of S3 bucket.
+        type: String
+      - contextPath: AWS.S3.Buckets.Objects.Key
+        description: The name of S3 object.
+        type: String
+      - contextPath: AWS.S3.Buckets.Objects.Size
+        description: Object size in bytes.
+        type: Number
+      - contextPath: AWS.S3.Buckets.Objects.LastModified
+        description: Last date object was modified.
+        type: String
+      - contextPath: AWS.S3.Buckets.Objects.StorageClass
+        description: The storage class of the object.
+        type: String
+      - contextPath: AWS.S3.Buckets.Objects.ChecksumType
+        description: The checksum algorithm used to calculate the object checksum.
+        type: Array
+      - contextPath: AWS.S3.Buckets.Objects.ETag
+        description: The entity tag (hash) of the object.
+        type: String
+      - contextPath: AWS.S3.Buckets.ObjectsNextToken
+        description: Token to use for pagination in subsequent requests.
+        type: String
+
+
   - name: aws-s3-bucket-acl-put
     description: Sets the access control list (ACL) permissions for an existing Amazon S3 bucket. This command allows you to define who can access the bucket and what actions they can perform, using predefined ACLs. Since 2023, all new S3 buckets *block* ACLs by default for better security.
     arguments:
@@ -5377,6 +5508,500 @@ script:
       description: Whether Amazon S3 restricts public bucket policies for this bucket.
       type: boolean
 
+  - name: aws-ec2-images-describe
+    description: Describes the specified images (AMIs, AKIs, and ARIs) available to you or all of the images available to you.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: filters
+        description: "One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options."
+        required: false
+      - name: image_ids
+        description: "A comma-separated list of image IDs to describe."
+        required: false
+        isArray: true
+      - name: owners
+        description: "Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon | aws-marketplace | microsoft). Omitting this option returns all images for which you have launch permissions, regardless of ownership. Separated by a comma."
+        required: false
+        isArray: true
+      - name: executable_users
+        description: "Scopes the images by users with explicit launch permissions. Specify an AWS account ID, self (the sender of the request), or all (public AMIs). Separated by a comma."
+        required: false
+        isArray: true
+      - name: include_deprecated
+        description: "Specifies whether to include deprecated AMIs. If not specified, the default behavior is determined by the AWS API."
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: include_disabled
+        description: "Specifies whether to include disabled AMIs. If not specified, the default behavior is determined by the AWS API."
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: limit
+        description: Maximum number of AMIs to be returned in response.
+        required: false
+      - name: next_token
+        description: The token for the next set of AMIs to return. Use value from AWS.EC2.ImagesNextPageToken if available; otherwise, use the token from the output file header.
+        required: false
+    outputs:
+      - contextPath: AWS.EC2.Images.Architecture
+        description: The architecture of the image.
+        type: string
+      - contextPath: AWS.EC2.Images.CreationDate
+        description: The date and time the image was created.
+        type: date
+      - contextPath: AWS.EC2.Images.ImageId
+        description: The ID of the AMI.
+        type: string
+      - contextPath: AWS.EC2.Images.ImageLocation
+        description: The location of the AMI.
+        type: string
+      - contextPath: AWS.EC2.Images.ImageType
+        description: The type of image.
+        type: string
+      - contextPath: AWS.EC2.Images.Public
+        description: Indicates whether the image has public launch permissions.
+        type: boolean
+      - contextPath: AWS.EC2.Images.KernelId
+        description: The kernel associated with the image, if any.
+        type: string
+      - contextPath: AWS.EC2.Images.OwnerId
+        description: The AWS account ID of the image owner.
+        type: string
+      - contextPath: AWS.EC2.Images.Platform
+        description: The value is Windows for Windows AMIs; otherwise blank.
+        type: string
+      - contextPath: AWS.EC2.Images.ProductCodes.ProductCodeId
+        description: The product code.
+        type: string
+      - contextPath: AWS.EC2.Images.ProductCodes.ProductCodeType
+        description: The type of product code.
+        type: string
+      - contextPath: AWS.EC2.Images.RamdiskId
+        description: The RAM disk associated with the image, if any.
+        type: string
+      - contextPath: AWS.EC2.Images.State
+        description: The current state of the AMI.
+        type: string
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.DeviceName
+        description: The device name.
+        type: string
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.VirtualName
+        description: The virtual device name.
+        type: string
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.Encrypted
+        description: Indicates whether the EBS volume is encrypted.
+        type: boolean
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.DeleteOnTermination
+        description: Indicates whether the EBS volume is deleted upon instance termination.
+        type: boolean
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.Iops
+        description: The number of input/output operations per second (IOPS).
+        type: number
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.KmsKeyId
+        description: Identifier for a user-managed CMK under which the EBS volume is encrypted.
+        type: string
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.SnapshotId
+        description: The ID of the snapshot.
+        type: string
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.VolumeSize
+        description: The size of the EBS volume, in GiB.
+        type: number
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.VolumeType
+        description: The volume type.
+        type: string
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.NoDevice
+        description: Suppresses the specified device included in the block device mapping.
+        type: string
+      - contextPath: AWS.EC2.Images.Description
+        description: The description of the AMI.
+        type: string
+      - contextPath: AWS.EC2.Images.EnaSupport
+        description: Specifies whether enhanced networking with ENA is enabled.
+        type: boolean
+      - contextPath: AWS.EC2.Images.Hypervisor
+        description: The hypervisor type of the image.
+        type: string
+      - contextPath: AWS.EC2.Images.ImageOwnerAlias
+        description: The AWS account alias or AWS account ID of the AMI owner.
+        type: string
+      - contextPath: AWS.EC2.Images.Name
+        description: The name of the AMI.
+        type: string
+      - contextPath: AWS.EC2.Images.RootDeviceName
+        description: The device name of the root device volume.
+        type: string
+      - contextPath: AWS.EC2.Images.RootDeviceType
+        description: The type of root device used by the AMI.
+        type: string
+      - contextPath: AWS.EC2.Images.SriovNetSupport
+        description: Indicates whether enhanced networking with the Intel 82599 VF interface is enabled.
+        type: string
+      - contextPath: AWS.EC2.Images.StateReason.Code
+        description: The reason code for the state change.
+        type: string
+      - contextPath: AWS.EC2.Images.StateReason.Message
+        description: The message for the state change.
+        type: string
+      - contextPath: AWS.EC2.Images.Tags.Key
+        description: The key of the tag.
+        type: string
+      - contextPath: AWS.EC2.Images.Tags.Value
+        description: The value of the tag.
+        type: string
+      - contextPath: AWS.EC2.Images.VirtualizationType
+        description: The type of virtualization of the AMI.
+        type: string
+      - contextPath: AWS.EC2.Images.BootMode
+        description: The boot mode of the image.
+        type: string
+      - contextPath: AWS.EC2.Images.DeprecationTime
+        description: The date and time to deprecate the AMI.
+        type: string
+      - contextPath: AWS.EC2.Images.ImdsSupport
+        description: If v2.0, it indicates that IMDSv2 is specified in the AMI.
+        type: string
+      - contextPath: AWS.EC2.Images.SourceInstanceId
+        description: The ID of the instance that the AMI was created from.
+        type: string
+      - contextPath: AWS.EC2.Images.AccountId
+        description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+        type: string
+
+  - name: aws-ec2-image-create
+    description: Creates an Amazon Machine Image (AMI) from an Amazon EBS-backed instance. The instance must be in the running or stopped state.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: name
+        description: A name for the new image.
+        required: true
+      - name: instance_id
+        description: The ID of the instance.
+        required: true
+      - name: description
+        description: A description for the new image.
+        required: false
+      - name: no_reboot
+        description: By default, Amazon EC2 attempts to shut down and reboot the instance before creating the image. If the No Reboot option is set, Amazon EC2 doesn't shut down the instance before creating the image.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: block_device_mappings
+        description: The block devices for the instance in JSON format.
+        required: false
+      - name: tag_specifications
+        description: The tags to apply to the AMI and snapshots on creation. Must be separated by a semicolon (;) and specified using the format "key=key,value=val".
+        required: false
+    outputs:
+      - contextPath: AWS.EC2.Images.ImageId
+        description: The ID of the new AMI.
+        type: string
+      - contextPath: AWS.EC2.Images.Name
+        description: The name of the new AMI.
+        type: string
+      - contextPath: AWS.EC2.Images.InstanceId
+        description: The ID of the instance used to create the AMI.
+        type: string
+      - contextPath: AWS.EC2.Images.Region
+        description: The AWS region where the AMI was created.
+        type: string
+
+  - name: aws-ec2-image-deregister
+    description: Deregisters the specified Amazon Machine Image (AMI). After you deregister an AMI, it can't be used to launch new instances. However, it doesn't affect any instances that you've already launched from the AMI.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: image_id
+        description: The ID of the AMI to deregister.
+        required: true
+
+  - name: aws-ec2-image-copy
+    description: Initiates the copy of an AMI from the specified source region to the current region. You can copy an AMI across regions to enable consistent global deployment.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: name
+        description: A name for the new AMI in the destination region.
+        required: true
+      - name: source_image_id
+        description: The ID of the AMI to copy.
+        required: true
+      - name: source_region
+        description: The name of the region that contains the AMI to copy.
+        required: true
+      - name: description
+        description: A description for the new AMI in the destination region.
+        required: false
+      - name: encrypted
+        description: Specifies whether the destination snapshots of the copied image should be encrypted.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: kms_key_id
+        description: The identifier of the symmetric AWS KMS key to use when creating encrypted volumes. If this parameter is not specified, your AWS managed key for Amazon EBS is used.
+        required: false
+      - name: client_token
+        description: Unique, case-sensitive identifier you provide to ensure idempotency of the request.
+        required: false
+    outputs:
+      - contextPath: AWS.EC2.Images.ImageId
+        description: The ID of the new AMI.
+        type: string
+      - contextPath: AWS.EC2.Images.Name
+        description: The name of the new AMI.
+        type: string
+      - contextPath: AWS.EC2.Images.SourceImageId
+        description: The ID of the source AMI.
+        type: string
+      - contextPath: AWS.EC2.Images.SourceRegion
+        description: The source region from which the AMI was copied.
+        type: string
+      - contextPath: AWS.EC2.Images.Region
+        description: The region to which the AMI was copied.
+        type: string
+
+  - name: aws-ec2-image-available-waiter
+    description: Waits until an AMI is in the 'available' state. This command polls the AMI status until it becomes available or the maximum wait time is reached.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: filters
+        description: "One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options."
+        required: false
+      - name: image_ids
+        description: "A comma-separated list of image IDs to wait for."
+        required: false
+        isArray: true
+      - name: owners
+        description: "Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon | aws-marketplace | microsoft). Separated by a comma."
+        required: false
+        isArray: true
+      - name: executable_users
+        description: "Scopes the images by users with explicit launch permissions. Specify an AWS account ID, self (the sender of the request), or all (public AMIs). Separated by a comma."
+        required: false
+        isArray: true
+      - name: waiter_delay
+        description: "The amount of time in seconds to wait between attempts. Default is 15 seconds."
+        required: false
+        defaultValue: "15"
+      - name: waiter_max_attempts
+        description: "The maximum number of attempts to check the image status. Default is 40 attempts."
+        required: false
+        defaultValue: "40"
+
   - name: aws-s3-bucket-encryption-get
     description: Retrieves the default encryption configuration for an Amazon S3 bucket. Shows the server-side encryption settings that are applied to new objects stored in the bucket.
     arguments:
@@ -7240,6 +7865,2256 @@ script:
     - contextPath: AWS.EC2.SecurityGroups.SecurityGroupArn
       description: The ARN of the security group.
       type: string
+
+  - name: aws-ec2-addresses-describe
+    description: Describes one or more of your Elastic IP addresses.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: filters
+      description: "One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options."
+      required: false
+    - name: public_ips
+      description: "One or more Elastic IP addresses, separated by commas."
+      required: false
+      isArray: true
+    - name: allocation_ids
+      description: "One or more allocation IDs, separated by commas."
+      required: false
+      isArray: true
+    outputs:
+    - contextPath: AWS.EC2.ElasticIPs.PublicIp
+      description: The Elastic IP address.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.AllocationId
+      description: The ID representing the allocation of the address.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.Domain
+      description: The network (vpc or standard).
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.InstanceId
+      description: The ID of the instance the address is associated with (if any).
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.AssociationId
+      description: The ID representing the association of the address with an instance.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.NetworkInterfaceId
+      description: The ID of the network interface.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.NetworkInterfaceOwnerId
+      description: The ID of the AWS account that owns the network interface.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.PrivateIpAddress
+      description: The private IP address associated with the Elastic IP address.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.Tags.Value
+      description: The value of the tag.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.PublicIpv4Pool
+      description: The ID of an address pool.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.NetworkBorderGroup
+      description: The name of the unique set of Availability Zones, Local Zones, or Wavelength Zones from which AWS advertises IP addresses.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.CustomerOwnedIp
+      description: The customer-owned IP address.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.CustomerOwnedIpv4Pool
+      description: The ID of the customer-owned address pool.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.CarrierIp
+      description: The carrier IP address associated.
+      type: string
+
+  - name: aws-ec2-address-allocate
+    description: Allocates an Elastic IP address to your AWS account. After you allocate the Elastic IP address you can associate it with an instance or network interface.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: address
+      description: The Elastic IP address to recover or an IPv4 address from an address pool.
+      required: false
+    - name: public_ipv4_pool
+      description: The ID of an address pool that you own. Use this parameter to let Amazon EC2 select an address from the address pool.
+      required: false
+    - name: network_border_group
+      description: A unique set of Availability Zones, Local Zones, or Wavelength Zones from which AWS advertises IP addresses.
+      required: false
+    - name: customer_owned_ipv4_pool
+      description: The ID of a customer-owned address pool.
+      required: false
+    - name: tag_specifications
+      description: "The tags to assign to the Elastic IP address. Format: key=<key>,value=<value>;key=<key>,value=<value>."
+      required: false
+    outputs:
+    - contextPath: AWS.EC2.ElasticIPs.PublicIp
+      description: The Elastic IP address.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.AllocationId
+      description: The ID that represents the allocation of the Elastic IP address.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.Domain
+      description: The network (vpc or standard).
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.PublicIpv4Pool
+      description: The ID of an address pool.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.NetworkBorderGroup
+      description: The name of the unique set of Availability Zones, Local Zones, or Wavelength Zones.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.CustomerOwnedIp
+      description: The customer-owned IP address.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.CustomerOwnedIpv4Pool
+      description: The ID of the customer-owned address pool.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.CarrierIp
+      description: The carrier IP address.
+      type: string
+
+  - name: aws-ec2-address-associate
+    description: Associates an Elastic IP address, or carrier IP address (for instances that are in subnets in Wavelength Zones) with an instance or a network interface.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: allocation_id
+      description: The allocation ID.
+      required: true
+    - name: instance_id
+      description: The ID of the instance. The instance must have exactly one attached network interface.
+      required: false
+    - name: network_interface_id
+      description: The ID of the network interface.
+      required: false
+    - name: private_ip_address
+      description: The primary or secondary private IP address to associate with the Elastic IP address.
+      required: false
+    - name: allow_reassociation
+      description: Whether to allow an Elastic IP address that is already associated with another network interface or instance to be reassociated with the specified instance or network interface.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: AWS.EC2.ElasticIPs.AllocationId
+      description: The allocation ID.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.AssociationId
+      description: The ID that represents the association of the Elastic IP address with an instance.
+      type: string
+
+  - name: aws-ec2-address-disassociate
+    description: Disassociates an Elastic IP address from the instance or network interface it's associated with.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: association_id
+      description: The association ID. Required for VPC.
+      required: false
+
+  - name: aws-ec2-address-release
+    description: Releases the specified Elastic IP address. After releasing an Elastic IP address, it is released to the IP address pool and might be unavailable to you.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: allocation_id
+      description: The allocation ID. Required for VPC.
+      required: false
+    - name: network_border_group
+      description: The set of Availability Zones, Local Zones, or Wavelength Zones from which AWS advertises IP addresses.
+      required: false
+
+  - name: aws-ec2-instances-monitor
+    description: Enables detailed monitoring on one or more running Amazon EC2 instances.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: instance_ids
+      description: A comma-separated list of instance IDs to enable monitoring for.
+      required: true
+      isArray: true
+    outputs:
+    - contextPath: AWS.EC2.Instances.InstanceId
+      description: The ID of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.Monitoring.State
+      description: The monitoring state (disabled | disabling | enabled | pending).
+      type: String
+
+  - name: aws-ec2-instances-unmonitor
+    description: Disables detailed monitoring for one or more running Amazon EC2 instances.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: instance_ids
+      description: A comma-separated list of instance IDs to disable monitoring for.
+      required: true
+      isArray: true
+    outputs:
+    - contextPath: AWS.EC2.Instances.InstanceId
+      description: The ID of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.Monitoring.State
+      description: The monitoring state (disabled | disabling | enabled | pending).
+      type: String
+
+  - name: aws-ec2-instances-reboot
+    description: Requests a reboot of one or more instances. This operation is asynchronous; it only queues a request to reboot the specified instances.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: instance_ids
+      description: A comma-separated list of instance IDs to reboot.
+      required: true
+      isArray: true
+
+  - name: aws-ec2-instance-running-waiter
+    description: "Waits until the specified EC2 instances reach the 'running' state. Checks the status every `waiter_delay` seconds until successful or until `waiter_max_attempts` is reached (default maximum attempts: `waiter_max_attempts`)."
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: instance_ids
+      description: A comma-separated list of instance IDs to wait for.
+      isArray: true
+    - name: filters
+      description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>).
+    - name: waiter_delay
+      description: The amount of time in seconds to wait between attempts. Default is 15.
+      defaultValue: "15"
+    - name: waiter_max_attempts
+      description: The maximum number of attempts to be made. Default is 40.
+      defaultValue: "40"
+
+  - name: aws-ec2-instance-status-ok-waiter
+    description: "Waits until EC2 instance status checks pass. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached."
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: instance_ids
+      description: A comma-separated list of instance IDs to wait for.
+      isArray: true
+    - name: filters
+      description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>).
+    - name: waiter_delay
+      description: The amount of time in seconds, to wait between attempts. Default is 15.
+      defaultValue: "15"
+    - name: waiter_max_attempts
+      description: The maximum number of attempts to be made. Default is 40.
+      defaultValue: "40"
+    - name: include_all_instances
+      description: When true, includes the health status for all instances. When false, includes the health status for running instances only.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+
+  - name: aws-ec2-instance-stopped-waiter
+    description: Waits until EC2 instances are in the 'stopped' state. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: instance_ids
+      description: A comma-separated list of instance IDs to wait for.
+      isArray: true
+    - name: filters
+      description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>).
+    - name: waiter_delay
+      description: The amount of time in seconds to wait between attempts. Default is 15.
+      defaultValue: "15"
+    - name: waiter_max_attempts
+      description: The maximum number of attempts to be made. Default is 40.
+      defaultValue: "40"
+
+  - name: aws-ec2-instance-terminated-waiter
+    description: "Waits until the specified EC2 instances reach the 'terminated' state. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached."
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: instance_ids
+      description: A comma-separated list of instance IDs to wait for.
+      isArray: true
+    - name: filters
+      description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>).
+    - name: waiter_delay
+      description: The amount of time in seconds to wait between attempts. Default is 15.
+      defaultValue: "15"
+    - name: waiter_max_attempts
+      description: The maximum number of attempts to be made. Default is 40.
+      defaultValue: "40"
+
+  - name: aws-ec2-iam-instance-profile-associations-describe
+    description: Describes IAM instance profile associations.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: association_ids
+      description: A comma-separated list of IAM instance profile association IDs.
+      isArray: true
+    - name: filters
+      description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>).
+    - name: limit
+      description: The maximum number of results to return. Minimum value of 5. Maximum value of 1000.
+      defaultValue: 50
+    - name: next_token
+      description: The token for the next set of results.
+    outputs:
+    - contextPath: AWS.EC2.IamInstanceProfileAssociations.AssociationId
+      description: The ID of the association.
+      type: String
+    - contextPath: AWS.EC2.IamInstanceProfileAssociations.InstanceId
+      description: The ID of the instance.
+      type: String
+    - contextPath: AWS.EC2.IamInstanceProfileAssociations.IamInstanceProfile.Arn
+      description: The Amazon Resource Name (ARN) of the instance profile.
+      type: String
+    - contextPath: AWS.EC2.IamInstanceProfileAssociations.IamInstanceProfile.Id
+      description: The ID of the instance profile.
+      type: String
+    - contextPath: AWS.EC2.IamInstanceProfileAssociations.State
+      description: The state of the association.
+      type: String
+    - contextPath: AWS.EC2.IamInstanceProfileAssociationsNextToken
+      description: The token for the next set of results.
+      type: String
+
+  - name: aws-ec2-password-data-get
+    description: Retrieves the encrypted administrator password for a running Windows instance.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: instance_id
+      description: The ID of the Windows instance.
+      required: true
+    outputs:
+    - contextPath: AWS.EC2.Instances.PasswordData.InstanceId
+      description: The ID of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.PasswordData.PasswordData
+      description: The password of the instance. Returns an empty string if the password is not available.
+      type: String
+    - contextPath: AWS.EC2.Instances.PasswordData.Timestamp
+      description: The time the data was last updated.
+      type: Date
+    - contextPath: AWS.EC2.Instances.InstanceId
+      description: The ID of the instance.
+      type: String
+
+  - name: aws-ec2-reserved-instances-describe
+    description: Describes one or more of the Reserved Instances that you purchased.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: reserved_instances_ids
+      description: A comma-separated list of Reserved Instance IDs.
+      isArray: true
+    - name: filters
+      description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>).
+    - name: offering_class
+      description: The offering class of the Reserved Instance.
+      auto: PREDEFINED
+      predefined:
+      - standard
+      - convertible
+    - name: offering_type
+      description: The Reserved Instance offering type.
+      auto: PREDEFINED
+      predefined:
+        - Heavy Utilization
+        - Medium Utilization
+        - Light Utilization
+        - No Upfront
+        - Partial Upfront
+        - All Upfront
+    outputs:
+    - contextPath: AWS.EC2.ReservedInstances.ReservedInstancesId
+      description: The ID of the Reserved Instance.
+      type: String
+    - contextPath: AWS.EC2.ReservedInstances.InstanceType
+      description: The instance type on which the Reserved Instance can be used.
+      type: String
+    - contextPath: AWS.EC2.ReservedInstances.AvailabilityZone
+      description: The Availability Zone in which the Reserved Instance can be used.
+      type: String
+    - contextPath: AWS.EC2.ReservedInstances.Start
+      description: The date and time the Reserved Instance started.
+      type: Date
+    - contextPath: AWS.EC2.ReservedInstances.End
+      description: The time when the Reserved Instance expires.
+      type: Date
+    - contextPath: AWS.EC2.ReservedInstances.Duration
+      description: The duration of the Reserved Instance, in seconds.
+      type: Number
+    - contextPath: AWS.EC2.ReservedInstances.UsagePrice
+      description: The usage price of the Reserved Instance, per hour.
+      type: Number
+    - contextPath: AWS.EC2.ReservedInstances.FixedPrice
+      description: The purchase price of the Reserved Instance.
+      type: Number
+    - contextPath: AWS.EC2.ReservedInstances.InstanceCount
+      description: The number of reservations purchased.
+      type: Number
+    - contextPath: AWS.EC2.ReservedInstances.ProductDescription
+      description: The Reserved Instance product platform description.
+      type: String
+    - contextPath: AWS.EC2.ReservedInstances.State
+      description: The state of the Reserved Instance purchase.
+      type: String
+    - contextPath: AWS.EC2.ReservedInstances.CurrencyCode
+      description: The currency of the Reserved Instance.
+      type: String
+    - contextPath: AWS.EC2.ReservedInstances.InstanceTenancy
+      description: The tenancy of the instance.
+      type: String
+    - contextPath: AWS.EC2.ReservedInstances.OfferingClass
+      description: The offering class of the Reserved Instance.
+      type: String
+    - contextPath: AWS.EC2.ReservedInstances.OfferingType
+      description: The Reserved Instance offering type.
+      type: String
+    - contextPath: AWS.EC2.ReservedInstances.RecurringCharges.Amount
+      description: The amount of the recurring charge.
+      type: Number
+    - contextPath: AWS.EC2.ReservedInstances.RecurringCharges.Frequency
+      description: The frequency of the recurring charge.
+      type: String
+    - contextPath: AWS.EC2.ReservedInstances.Scope
+      description: The scope of the Reserved Instance.
+      type: String
+    - contextPath: AWS.EC2.ReservedInstances.Tags.Key
+      description: The key of the tag.
+      type: String
+    - contextPath: AWS.EC2.ReservedInstances.Tags.Value
+      description: The value of the tag.
+      type: String
+  - name: aws-ec2-volumes-describe
+    description: Describes the specified EBS volumes or all of your EBS volumes.
+    arguments:
+      - name: account_id
+        description: The AWS account ID. This is used when running commands across multiple accounts.
+        required: true
+      - name: region
+        description: The AWS Region. If not specified, the default region will be used.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: filters
+        description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
+        required: false
+      - name: volume_ids
+        description: A comma-separated list of volume IDs.
+        required: false
+        isArray: true
+      - name: limit
+        description: The maximum number of records to return. The valid range is 5-1000.
+      - name: next_token
+        description: The token returned from a previous paginated request. Pagination continues from the end of the items returned by the previous request.
+    outputs:
+      - contextPath: AWS.EC2.Volumes.Attachments.AttachTime
+        description: The timestamp when the attachment was initiated.
+        type: date
+      - contextPath: AWS.EC2.Volumes.Attachments.Device
+        description: The device name.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.InstanceId
+        description: The ID of the instance.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.State
+        description: The attachment state of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.VolumeId
+        description: The ID of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.DeleteOnTermination
+        description: Indicates whether the EBS volume is deleted on instance termination.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.AvailabilityZone
+        description: The Availability Zone for the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.CreateTime
+        description: The time stamp when volume creation was initiated.
+        type: date
+      - contextPath: AWS.EC2.Volumes.Encrypted
+        description: Indicates whether the volume is encrypted.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.KmsKeyId
+        description: The Amazon Resource Name (ARN) of the AWS Key Management Service (AWS KMS) customer master key (CMK) that was used to protect the volume encryption key for the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.OutpostArn
+        description: The Amazon Resource Name (ARN) of the Outpost.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Size
+        description: The size of the volume, in GiBs.
+        type: number
+      - contextPath: AWS.EC2.Volumes.SnapshotId
+        description: The snapshot from which the volume was created, if applicable.
+        type: string
+      - contextPath: AWS.EC2.Volumes.State
+        description: The volume state.
+        type: string
+      - contextPath: AWS.EC2.Volumes.VolumeId
+        description: The ID of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Iops
+        description: The number of I/O operations per second (IOPS).
+        type: number
+      - contextPath: AWS.EC2.Volumes.Tags.Key
+        description: The key of the tag.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Tags.Value
+        description: The value of the tag.
+        type: string
+      - contextPath: AWS.EC2.Volumes.VolumeType
+        description: The volume type.
+        type: string
+      - contextPath: AWS.EC2.Volumes.FastRestored
+        description: Indicates whether the volume was created using fast snapshot restore.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.MultiAttachEnabled
+        description: Indicates whether Amazon EBS Multi-Attach is enabled.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.Throughput
+        description: The throughput that the volume supports, in MiB/s.
+        type: number
+      - contextPath: AWS.EC2.Volumes.SseType
+        description: Reserved for future use.
+        type: string
+      - contextPath: AWS.EC2.VolumesNextToken
+        description: Token to use for pagination in subsequent requests.
+        type: String
+
+  - name: aws-ec2-volume-modify
+    description: You can modify several parameters of an existing EBS volume, including volume size, volume type, and IOPS capacity.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID. This is used when running commands across multiple accounts.
+        required: true
+      - name: region
+        description: The AWS Region. If not specified, the default region will be used.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: volume_id
+        description: The ID of the volume.
+        required: true
+      - name: size
+        description: Target size in GiB of the volume to be modified.
+        required: false
+      - name: volume_type
+        description: Target EBS volume type of the volume to be modified. The API does not support modifications for volume type standard.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - gp2
+          - gp3
+          - io1
+          - io2
+          - sc1
+          - st1
+      - name: iops
+        description: Target IOPS rate of the volume to be modified.
+        required: false
+      - name: throughput
+        description: Target throughput of the volume to be modified, in MiB/s. Valid only for gp3 volumes.
+        required: false
+      - name: multi_attach_enabled
+        description: Specifies whether to enable Amazon EBS Multi-Attach. Valid only for io1 and io2 volumes.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+    outputs:
+      - contextPath: AWS.EC2.Volumes.VolumeId
+        description: The ID of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Modification.ModificationState
+        description: The current modification state.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Modification.StatusMessage
+        description: A status message about the modification progress or failure.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Size
+        description: The target size of the volume, in GiB.
+        type: number
+      - contextPath: AWS.EC2.Volumes.Iops
+        description: The target IOPS rate of the volume.
+        type: number
+      - contextPath: AWS.EC2.Volumes.VolumeType
+        description: The target EBS volume type of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Throughput
+        description: The target throughput of the volume, in MiB/s.
+        type: number
+      - contextPath: AWS.EC2.Volumes.MultiAttachEnabled
+        description: The target setting for Amazon EBS Multi-Attach.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.Modification.OriginalSize
+        description: The original size of the volume, in GiB.
+        type: number
+      - contextPath: AWS.EC2.Volumes.Modification.OriginalIops
+        description: The original IOPS rate of the volume.
+        type: number
+      - contextPath: AWS.EC2.Volumes.Modification.OriginalVolumeType
+        description: The original EBS volume type of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Modification.OriginalThroughput
+        description: The original throughput of the volume, in MiB/s.
+        type: number
+      - contextPath: AWS.EC2.Volumes.Modification.OriginalMultiAttachEnabled
+        description: The original setting for Amazon EBS Multi-Attach.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.Modification.Progress
+        description: The modification progress, from 0 to 100 percent complete.
+        type: number
+      - contextPath: AWS.EC2.Volumes.Modification.StartTime
+        description: The modification start time.
+        type: date
+      - contextPath: AWS.EC2.Volumes.Modification.EndTime
+        description: The modification completion or failure time.
+        type: date
+
+  - name: aws-ec2-volume-create
+    description: Creates an EBS volume that can be attached to an instance in the same Availability Zone.
+    arguments:
+      - name: account_id
+        description: The AWS account ID. This is used when running commands across multiple accounts.
+        required: true
+      - name: region
+        description: The AWS Region. If not specified, the default region will be used.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: availability_zone
+        description: The Availability Zone in which to create the volume.
+        required: true
+      - name: encrypted
+        description: Specifies whether the volume should be encrypted.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: iops
+        description: The number of I/O operations per second (IOPS). For gp3, io1, and io2 volumes, this represents the number of IOPS that are provisioned for the volume.
+        required: false
+      - name: kms_key_id
+        description: The identifier of the AWS KMS key to use for Amazon EBS encryption. If this parameter is not specified, your AWS managed key for Amazon EBS is used.
+        required: false
+      - name: outpost_arn
+        description: The Amazon Resource Name (ARN) of the Outpost.
+        required: false
+      - name: size
+        description: The size of the volume, in GiBs. You must specify either a snapshot ID or a volume size.
+        required: false
+      - name: snapshot_id
+        description: The snapshot from which to create the volume. You must specify either a snapshot ID or a volume size.
+        required: false
+      - name: volume_type
+        description: The volume type.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - standard
+          - io1
+          - io2
+          - gp2
+          - gp3
+          - sc1
+          - st1
+      - name: throughput
+        description: The throughput to provision for a volume, with a maximum of 1,000 MiB/s. This parameter is valid only for gp3 volumes.
+        required: false
+      - name: multi_attach_enabled
+        description: Indicates whether to enable Amazon EBS Multi-Attach. If you enable Multi-Attach, you can attach the volume to up to 16 Nitro-based instances in the same Availability Zone. This parameter is supported with io1 and io2 volumes only.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: tags
+        description: One or more tags. Example key=Name,value=test;key=Owner,value=Bob.
+        required: false
+      - name: client_token
+        description: Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
+        required: false
+    outputs:
+      - contextPath: AWS.EC2.Volumes.Attachments.AttachTime
+        description: The timestamp when the attachment was initiated.
+        type: date
+      - contextPath: AWS.EC2.Volumes.Attachments.Device
+        description: The device name.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.InstanceId
+        description: The ID of the instance.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.State
+        description: The attachment state of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.VolumeId
+        description: The ID of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.DeleteOnTermination
+        description: Indicates whether the EBS volume is deleted on instance termination.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.AvailabilityZone
+        description: The Availability Zone for the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.CreateTime
+        description: The time stamp when volume creation was initiated.
+        type: date
+      - contextPath: AWS.EC2.Volumes.Encrypted
+        description: Indicates whether the volume is encrypted.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.KmsKeyId
+        description: The Amazon Resource Name (ARN) of the AWS Key Management Service (AWS KMS) customer master key (CMK) that was used to protect the volume encryption key for the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.OutpostArn
+        description: The Amazon Resource Name (ARN) of the Outpost.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Size
+        description: The size of the volume, in GiBs.
+        type: number
+      - contextPath: AWS.EC2.Volumes.SnapshotId
+        description: The snapshot from which the volume was created, if applicable.
+        type: string
+      - contextPath: AWS.EC2.Volumes.State
+        description: The volume state.
+        type: string
+      - contextPath: AWS.EC2.Volumes.VolumeId
+        description: The ID of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Iops
+        description: The number of I/O operations per second (IOPS).
+        type: number
+      - contextPath: AWS.EC2.Volumes.Tags.Key
+        description: The key of the tag.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Tags.Value
+        description: The value of the tag.
+        type: string
+      - contextPath: AWS.EC2.Volumes.VolumeType
+        description: The volume type.
+        type: string
+      - contextPath: AWS.EC2.Volumes.FastRestored
+        description: Indicates whether the volume was created using fast snapshot restore.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.MultiAttachEnabled
+        description: Indicates whether Amazon EBS Multi-Attach is enabled.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.Throughput
+        description: The throughput that the volume supports, in MiB/s.
+        type: number
+      - contextPath: AWS.EC2.Volumes.SseType
+        description: Reserved for future use.
+        type: string
+
+  - name: aws-ec2-volume-attach
+    description: Attaches an EBS volume to a running or stopped instance and exposes it to the instance with the specified device name.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID. This is used when running commands across multiple accounts.
+        required: true
+      - name: region
+        description: The AWS Region. If not specified, the default region will be used.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: device
+        description: The device name (for example, /dev/sdh or xvdh).
+        required: true
+      - name: instance_id
+        description: The ID of the instance.
+        required: true
+      - name: volume_id
+        description: The ID of the EBS volume. The volume and instance must be within the same Availability Zone.
+        required: true
+    outputs:
+      - contextPath: AWS.EC2.Volumes.VolumeId
+        description: The ID of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.AttachTime
+        description: The timestamp when the attachment was initiated.
+        type: date
+      - contextPath: AWS.EC2.Volumes.Attachments.Device
+        description: The device name.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.InstanceId
+        description: The ID of the instance.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.State
+        description: The attachment state of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.VolumeId
+        description: The ID of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.DeleteOnTermination
+        description: Indicates whether the EBS volume is deleted on instance termination.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.Attachments.AssociatedResource
+        description: The ARN of the Amazon ECS or Fargate task to which the volume is attached.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.InstanceOwningService
+        description: The service principal of Amazon Web Services service that owns the underlying instance to which the volume is attached.
+        type: string
+
+  - name: aws-ec2-volume-detach
+    description: Detaches an EBS volume from an instance.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID. This is used when running commands across multiple accounts.
+        required: true
+      - name: region
+        description: The AWS Region. If not specified, the default region will be used.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: volume_id
+        description: The ID of the volume.
+        required: true
+      - name: force
+        description: Forces detachment if the previous detachment attempt did not occur cleanly. This option can lead to data loss or a corrupted file system. Use this option only as a last resort to detach a volume from a failed instance.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: device
+        description: The device name (for example, /dev/sdh or xvdh).
+        required: false
+      - name: instance_id
+        description: The ID of the instance. If you are detaching a Multi-Attach enabled volume, you must specify an instance ID.
+        required: false
+    outputs:
+      - contextPath: AWS.EC2.Volumes.VolumeId
+        description: The ID of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.AttachTime
+        description: The timestamp when the attachment was initiated.
+        type: date
+      - contextPath: AWS.EC2.Volumes.Attachments.Device
+        description: The device name.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.InstanceId
+        description: The ID of the instance.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.State
+        description: The attachment state of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.VolumeId
+        description: The ID of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.DeleteOnTermination
+        description: Indicates whether the EBS volume is deleted on instance termination.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.Attachments.AssociatedResource
+        description: The ARN of the Amazon ECS or Fargate task to which the volume is attached.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.InstanceOwningService
+        description: The AWS service principal that owns the instance to which the volume is attached.
+        type: string
+
+  - name: aws-ec2-volume-delete
+    description: Deletes the specified EBS volume. The volume must be in the available state (not attached to an instance).
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID. This is used when running commands across multiple accounts.
+        required: true
+      - name: region
+        description: The AWS Region. If not specified, the default region will be used.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: volume_id
+        description: The ID of the volume.
+        required: true
+    outputs: [ ]
+
+  - name: aws-ec2-vpc-delete
+    description: Deletes the specified VPC. You must detach or delete all gateways and resources that are associated with the VPC before you can delete it.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: vpc_id
+        description: The ID of the VPC.
+        required: true
+    outputs: []
+
+  - name: aws-ec2-vpc-endpoint-create
+    description: Creates a VPC endpoint for a specified service. An endpoint enables you to create a private connection between your VPC and the service.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: vpc_id
+        description: The ID of the VPC in which the endpoint will be used.
+        required: true
+      - name: service_name
+        description: The service name. For AWS services, the service name is usually in the form com.amazonaws.<region>.<service>.
+        required: true
+      - name: vpc_endpoint_type
+        description: The type of endpoint.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - Interface
+          - Gateway
+          - GatewayLoadBalancer
+      - name: policy_document
+        description: A policy to attach to the endpoint that controls access to the service. The policy must be in valid JSON format.
+        required: false
+      - name: route_table_ids
+        description: One or more route table IDs (comma-separated). Applicable for Gateway endpoints only.
+        required: false
+        isArray: true
+      - name: subnet_ids
+        description: The ID of one or more subnets (comma-separated) in which to create an endpoint network interface. Applicable for Interface and GatewayLoadBalancer endpoints only.
+        required: false
+        isArray: true
+      - name: security_group_ids
+        description: The ID of one or more security groups (comma-separated) to associate with the endpoint network interface. Applicable for Interface and GatewayLoadBalancer endpoints only.
+        required: false
+        isArray: true
+      - name: ip_address_type
+        description: The IP address type for the endpoint.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - ipv4
+          - dualstack
+          - ipv6
+      - name: dns_options_dns_record_ip_type
+        description: The DNS records created for the endpoint.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - ipv4
+          - dualstack
+          - ipv6
+          - service-defined
+      - name: dns_options_private_dns_only_for_inbound_resolver_endpoint
+        description: Indicates whether to enable private DNS only for inbound endpoints.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: client_token
+        description: Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
+        required: false
+      - name: private_dns_enabled
+        description: Indicates whether to associate a private hosted zone with the specified VPC. Applicable for Interface endpoints only.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: tag_specifications
+        description: The tags to apply to the VPC endpoint. Format key=<key>,value=<value>;key=<key>,value=<value>.
+        required: false
+      - name: subnet_configurations
+        description: The subnet configurations for the endpoint. Format SubnetId=subnet-xxx,Ipv4=x.x.x.x;SubnetId=subnet-yyy.
+        required: false
+    outputs:
+      - contextPath: AWS.EC2.VpcEndpoints.VpcEndpointId
+        description: The ID of the VPC endpoint.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.VpcEndpointType
+        description: The type of endpoint.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.VpcId
+        description: The ID of the VPC to which the endpoint is associated.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.ServiceName
+        description: The name of the service to which the endpoint is associated.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.State
+        description: The state of the VPC endpoint.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.PolicyDocument
+        description: The policy document associated with the endpoint, if applicable.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.RouteTableIds
+        description: One or more route tables associated with the endpoint.
+        type: array
+      - contextPath: AWS.EC2.VpcEndpoints.SubnetIds
+        description: One or more subnets in which the endpoint is located.
+        type: array
+      - contextPath: AWS.EC2.VpcEndpoints.Groups.GroupId
+        description: The ID of the security group.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.Groups.GroupName
+        description: The name of the security group.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.IpAddressType
+        description: The IP address type for the endpoint.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.DnsOptions.DnsRecordIpType
+        description: The DNS records created for the endpoint.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.DnsOptions.PrivateDnsOnlyForInboundResolverEndpoint
+        description: Indicates whether to enable private DNS only for inbound endpoints.
+        type: boolean
+      - contextPath: AWS.EC2.VpcEndpoints.PrivateDnsEnabled
+        description: Indicates whether the VPC is associated with a private hosted zone.
+        type: boolean
+      - contextPath: AWS.EC2.VpcEndpoints.RequesterManaged
+        description: Indicates whether the VPC endpoint is being managed by its service.
+        type: boolean
+      - contextPath: AWS.EC2.VpcEndpoints.NetworkInterfaceIds
+        description: One or more network interfaces for the endpoint.
+        type: array
+      - contextPath: AWS.EC2.VpcEndpoints.DnsEntries.DnsName
+        description: The DNS name.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.DnsEntries.HostedZoneId
+        description: The ID of the private hosted zone.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.CreationTimestamp
+        description: The date and time that the VPC endpoint was created.
+        type: date
+      - contextPath: AWS.EC2.VpcEndpoints.Tags.Key
+        description: The key of the tag.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.Tags.Value
+        description: The value of the tag.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.OwnerId
+        description: The ID of the AWS account that owns the VPC endpoint.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.LastError.Message
+        description: The error message for the VPC endpoint error.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.LastError.Code
+        description: The error code for the VPC endpoint error.
+        type: string
+
+  - name: aws-ec2-internet-gateway-describe
+    description: Describes one or more of your internet gateways.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: filters
+        description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
+        required: false
+      - name: internet_gateway_ids
+        description: One or more internet gateway IDs (comma-separated).
+        required: false
+        isArray: true
+      - name: max_results
+        description: The maximum number of results to return with a single call. To retrieve the remaining results, make another call with the returned nextToken value.
+        required: false
+      - name: next_token
+        description: The token for the next page of results.
+        required: false
+    outputs:
+      - contextPath: AWS.EC2.InternetGateways.InternetGatewayId
+        description: The ID of the internet gateway.
+        type: string
+      - contextPath: AWS.EC2.InternetGateways.Attachments.State
+        description: The current state of the attachment.
+        type: string
+      - contextPath: AWS.EC2.InternetGateways.Attachments.VpcId
+        description: The ID of the VPC.
+        type: string
+      - contextPath: AWS.EC2.InternetGateways.Tags.Key
+        description: The key of the tag.
+        type: string
+      - contextPath: AWS.EC2.InternetGateways.Tags.Value
+        description: The value of the tag.
+        type: string
+      - contextPath: AWS.EC2.InternetGateways.OwnerId
+        description: The ID of the AWS account that owns the internet gateway.
+        type: string
+      - contextPath: AWS.EC2.InternetGatewaysNextToken
+        description: The token to use to retrieve the next page of results.
+        type: string
+
+  - name: aws-ec2-internet-gateway-detach
+    description: Detaches an internet gateway from a VPC, disabling connectivity between the internet and the VPC.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: internet_gateway_id
+        description: The ID of the internet gateway.
+        required: true
+      - name: vpc_id
+        description: The ID of the VPC.
+        required: true
+    outputs: []
+
+  - name: aws-ec2-internet-gateway-delete
+    description: Deletes the specified internet gateway. You must detach the internet gateway from the VPC before you can delete it.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: internet_gateway_id
+        description: The ID of the internet gateway.
+        required: true
+    outputs: []
+
+  - name: aws-ec2-subnet-delete
+    description: Deletes the specified subnet. You must terminate all running instances in the subnet before you can delete the subnet.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: subnet_id
+        description: The ID of the subnet.
+        required: true
+    outputs: []
+
+  - name: aws-ec2-network-acl-entry-create
+    description: Creates an entry (a rule) in a network ACL with the specified rule number.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: network_acl_id
+        description: The ID of the network ACL.
+        required: true
+      - name: rule_number
+        description: The rule number for the entry (for example, 100). ACL entries are processed in ascending order by rule number.
+        required: true
+      - name: protocol
+        description: The protocol number. A value of -1 or all means all protocols. If you specify all, -1, or a protocol number other than tcp, udp, or icmp, traffic on all ports is allowed, regardless of any ports or ICMP types or codes that you specify.
+        required: true
+      - name: rule_action
+        description: Indicates whether to allow or deny the traffic that matches the rule.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - allow
+          - deny
+      - name: egress
+        description: Indicates whether this is an egress rule (rule is applied to traffic leaving the subnet).
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: cidr_block
+        description: The IPv4 network range to allow or deny, in CIDR notation (for example, 172.16.0.0/24). You must specify either cidr_block or ipv6_cidr_block.
+        required: false
+      - name: ipv6_cidr_block
+        description: The IPv6 network range to allow or deny, in CIDR notation (for example, 2001:db8:1234:1a00::/64). You must specify either cidr_block or ipv6_cidr_block.
+        required: false
+      - name: icmp_type_code_type
+        description: The ICMP type. Required if specifying ICMP for the protocol parameter.
+        required: false
+      - name: icmp_type_code_code
+        description: The ICMP code. A value of -1 means all codes for the specified ICMP type. Required if specifying ICMP for the protocol parameter.
+        required: false
+      - name: port_range_from
+        description: The first port in the range. Required if specifying TCP or UDP for the protocol parameter.
+        required: false
+      - name: port_range_to
+        description: The last port in the range. Required if specifying TCP or UDP for the protocol parameter.
+        required: false
+    outputs: []
 
   isfetch: false
   runonce: false
