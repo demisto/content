@@ -4554,7 +4554,6 @@ def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandR
                   - asset_name (str, optional): Filter by asset name (supports comma-separated list).
                   - page (int, optional): Page number for pagination. Default is 0.
                   - page_size (int, optional): Number of findings to return per page. Default is 100.
-                  - limit (int, optional): Maximum number of findings to return. Default is 100.
 
     Returns:
         list[CommandResults]: List containing:

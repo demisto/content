@@ -3501,55 +3501,52 @@ script:
           description: Number of findings to return per page.
           defaultValue: "100"
       outputs:
-        - contextPath: Core.Findings.category
+        - contextPath: Core.Finding.category
           description: The category of the finding (e.g., VULNERABILITY).
           type: String
-        - contextPath: Core.Findings.name
+        - contextPath: Core.Finding.name
           description: The name of the finding.
           type: String
-        - contextPath: Core.Findings.description
+        - contextPath: Core.Finding.description
           description: Detailed description of the finding.
           type: String
-        - contextPath: Core.Findings.first_observed
+        - contextPath: Core.Finding.first_observed
           description: Timestamp when the finding was first observed (in milliseconds).
           type: Number
-        - contextPath: Core.Findings.last_observed
+        - contextPath: Core.Finding.last_observed
           description: Timestamp when the finding was last observed (in milliseconds).
           type: Number
-        - contextPath: Core.Findings.id
+        - contextPath: Core.Finding.id
           description: The unique identifier of the finding.
           type: String
-        - contextPath: Core.Findings.asset_id
+        - contextPath: Core.Finding.asset_id
           description: The unique identifier of the asset associated with the finding.
           type: String
-        - contextPath: Core.Findings.asset_name
+        - contextPath: Core.Finding.asset_name
           description: The name of the asset associated with the finding.
           type: String
-        - contextPath: Core.Findings.asset_class
+        - contextPath: Core.Finding.asset_class
           description: The class of the asset (e.g., Compute).
           type: String
-        - contextPath: Core.Findings.asset_category
+        - contextPath: Core.Finding.asset_category
           description: The category of the asset (e.g., Container Instance).
           type: String
-        - contextPath: Core.Findings.asset_type
+        - contextPath: Core.Finding.asset_type
           description: The type of the asset (e.g., Container Instance).
           type: String
-        - contextPath: Core.Findings.asset_group_ids
+        - contextPath: Core.Finding.asset_group_ids
           description: List of asset group IDs associated with the finding.
           type: Array
-        - contextPath: Core.Findings.normalized_fields
+        - contextPath: Core.Finding.normalized_fields
           description: Normalized fields containing structured finding data (e.g., vulnerability details, software package info).
           type: Unknown
-        - contextPath: Core.Findings.extended_fields
+        - contextPath: Core.Finding.extended_fields
           description: Extended fields containing additional finding metadata and source-specific information.
           type: Unknown
-        - contextPath: Core.FindingsMetadata.filtered_count
+        - contextPath: Core.FindingMetadata.filtered_count
           description: The total number of findings that match the filter criteria.
           type: Number
-        - contextPath: Core.FindingsMetadata.total_count
-          description: The total number of findings in the system.
-          type: Number
-        - contextPath: Core.FindingsMetadata.returned_count
+        - contextPath: Core.FindingMetadata.returned_count
           description: The actual number of findings returned in this response.
           type: Number
   runonce: false
