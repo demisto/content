@@ -4418,15 +4418,6 @@ Deletes correlation rules.
 
 There is no context output for this command.
 
-
-### xdr-automation-playbook-create
-
-***
-Creates or updates an automation playbook.
-
-#### Base Command
-
-`xdr-automation-playbook-create`
 ### xdr-case-list
 
 ***
@@ -4436,26 +4427,10 @@ Returns a list of cases based on the specified filters.
 
 `xdr-case-list`
 
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-
-| entry_id | The entry ID of the file. The playbook should be a zipped YAML file. | Required |
-
-#### Context Output
-
-There is no context output for this command.
-
-### xdr-automation-playbook-get
-
-***
-Gets an automation playbook.
-
-#### Base Command
-
-`xdr-automation-playbook-get`
 | case_id | A comma-separated list of case IDs to filter by. | Optional |
 | case_domain | A comma-separated list of case domains to filter by. | Optional |
 | severity | A comma-separated list of severities to filter by. | Optional |
@@ -4504,10 +4479,6 @@ Updates an existing case with the specified details.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-<<<<<<< HEAD
-| field | The field to search by. Possible values are: id, name. | Required |
-| value | The field value to search for. | Required |
-
 | case_id | The ID of the case to update. | Required |
 | status | The status to set for the case. if the status is updated to "resolved", resolve_reason must be provided. Possible values are: new, under_investigation, resolved. | Optional |
 | resolve_reason | The reason for resolving the case. Possible values are: resolved_known_issue, resolved_duplicate, resolved_false_positive, resolved_other. | Optional |
@@ -4517,14 +4488,6 @@ Updates an existing case with the specified details.
 
 There is no context output for this command.
 
-### xdr-automation-playbook-delete
-
-***
-Deletes an automation playbook.
-
-#### Base Command
-
-`xdr-automation-playbook-delete`
 ### xdr-case-artifact-list
 
 ***
@@ -4533,77 +4496,11 @@ Retrieves a list of artifacts for a specific case.
 #### Base Command
 
 `xdr-case-artifact-list`
->>>>>>> master
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| field | The field to search by. Possible values are: id, name. | Required |
-| value | The field value to search for. | Required |
-
-#### Context Output
-
-There is no context output for this command.
-
-### xdr-automation-script-delete
-
-***
-Deletes an automation script.
-
-#### Base Command
-
-`xdr-automation-script-delete`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| field | The field to search by. Possible values are: id, name. | Required |
-| value | The field value to search for. | Required |
-
-#### Context Output
-
-There is no context output for this command.
-
-### xdr-automation-script-get
-
-***
-Gets an automation script.
-
-#### Base Command
-
-`xdr-automation-script-get`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| field | The field to search by. Possible values are: id, name. | Required |
-| value | The field value to search for. | Required |
-
-#### Context Output
-
-There is no context output for this command.
-
-### xdr-automation-script-create
-
-***
-Creates or updates an automation script.
-
-#### Base Command
-
-`xdr-automation-script-create`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| entry_id | The entry ID of the file. The script should be a zipped YAML file. | Required |
-
-#### Context Output
-
-There is no context output for this command.
 | case_id | The ID of the case for which to retrieve artifacts. | Required |
 
 #### Context Output
@@ -4626,7 +4523,6 @@ There is no context output for this command.
 | PaloAltoNetworksXDR.CaseFileArtifact.file_signature_status | String | The status of the digital signature \(e.g., SIGNATURE_SIGNED\). |
 | PaloAltoNetworksXDR.CaseFileArtifact.alert_count | Number | Number of alerts associated with this file artifact. |
 | PaloAltoNetworksXDR.CaseFileArtifact.low_confidence | Boolean | Indicates if the detection confidence is low. |
-
 
 
 ### xdr-automation-playbook-create
