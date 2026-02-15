@@ -977,6 +977,59 @@ class Client(CoreClient):
             json_data={"case_id": case_id},
         )
 
+    def get_email_campaign_consolidated_forensic_enrichment(
+        self, internet_message_id: str, days_timeframe: int
+    ) -> dict:
+        """
+        Get consolidated forensic enrichment for an email campaign.
+        
+        Aggregates, deduplicates, and presents a unified forensic view of an entire
+        email campaign by merging telemetry from all associated issues.
+        
+        Args:
+            internet_message_id: The Internet Message ID of the email
+            days_timeframe: Number of days to look back for related issues
+            
+        Returns:
+            dict: Consolidated forensic enrichment data
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/email-security/investigation/consolidated-forensic-enrichment/",
+            json_data={
+                "internet_message_id": internet_message_id,
+                "days_timeframe": days_timeframe,
+            },
+        )
+
+    def execute_email_security_remediation(
+        self, internet_message_id: str, external_id: str, action: str
+    ) -> dict:
+        """
+        Execute automated email security remediation action.
+        
+        Triggers remediation actions such as deleting, undeleting, moving, or tagging emails
+        based on the security verdict.
+        
+        Args:
+            internet_message_id: The Internet Message ID of the email campaign
+            external_id: The unique identifier for the alert across all email security services
+            action: The remediation action to execute (DeleteEmail, UndeleteEmail,
+                   SendAlertEmail, MoveEmailToFolder, TagEmailAsPhishing)
+            
+        Returns:
+            dict: Action execution status with success, message, or error fields
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/email-security/actions/on-demand",
+            json_data={
+                "internet_message_id": internet_message_id,
+                "external_id": external_id,
+                "action": {"id": action},
+            },
+        )
+
 
 def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
     """
@@ -4551,6 +4604,207 @@ def get_case_resolution_statuses(client, args):
     )
 
 
+def get_email_campaign_consolidated_forensic_enrichment_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """
+    Get consolidated forensic enrichment for an email campaign.
+    
+    Aggregates, deduplicates, and presents a unified forensic view of an entire
+    email campaign by merging telemetry from all associated issues sharing the
+    same internet_message_id.
+    
+    Args:
+        client: The API client instance
+        args: Command arguments from XSOAR
+        
+    Returns:
+        CommandResults object with consolidated forensic enrichment data
+    """
+    internet_message_id = args.get('internet_message_id', '')
+    days_timeframe = arg_to_number(args.get('days_timeframe'))
+    
+    # Validate days_timeframe is a positive integer
+    if days_timeframe is not None and days_timeframe <= 0:
+        raise DemistoException('days_timeframe must be a positive integer')
+    
+    # Ensure days_timeframe has a valid value (YAML enforces required, but be safe)
+    if days_timeframe is None:
+        raise DemistoException('days_timeframe is required and must be a valid number')
+    
+    # Call API via client
+    response = client.get_email_campaign_consolidated_forensic_enrichment(
+        internet_message_id, int(days_timeframe)
+    )
+    
+    # Process response - the API returns consolidated data
+    outputs = response if isinstance(response, dict) else {}
+    
+    # Create readable output with key forensic categories
+    readable_sections = []
+    
+    # 1. Identification
+    if any(k in outputs for k in ['internet_message_id', 'lcaas_id', 'external_id']):
+        identification = {
+            'internet_message_id': outputs.get('internet_message_id'),
+            'lcaas_id': outputs.get('lcaas_id'),
+            'external_id': outputs.get('external_id'),
+            'observation_time': outputs.get('observation_time'),
+            'created_time': outputs.get('created_time'),
+        }
+        readable_sections.append(
+            tableToMarkdown('Identification', identification, headerTransform=string_to_table_header)
+        )
+    
+    # 2. Detection Context
+    if any(k in outputs for k in ['alert_name', 'detector_id', 'original_severity']):
+        detection = {
+            'alert_name': outputs.get('alert_name'),
+            'alert_full_description': outputs.get('alert_full_description'),
+            'detector_id': outputs.get('detector_id'),
+            'variation_rule_id': outputs.get('variation_rule_id'),
+            'original_severity': outputs.get('original_severity'),
+        }
+        readable_sections.append(
+            tableToMarkdown('Detection Context', detection, headerTransform=string_to_table_header)
+        )
+    
+    # 3. Sender Forensics
+    if any(k in outputs for k in ['from_json', 'sender_json', 'return_path_data_json']):
+        sender = {
+            'from_json': outputs.get('from_json'),
+            'sender_json': outputs.get('sender_json'),
+            'return_path_data_json': outputs.get('return_path_data_json'),
+            'reply_to_json': outputs.get('reply_to_json'),
+        }
+        readable_sections.append(
+            tableToMarkdown('Sender Forensics', sender, headerTransform=string_to_table_header)
+        )
+    
+    # 4. Targeting Scope
+    if any(k in outputs for k in ['mailbox_owner', 'recipients']):
+        targeting = {
+            'mailbox_owner': outputs.get('mailbox_owner'),
+            'mailbox_owner_fqdn': outputs.get('mailbox_owner_fqdn'),
+            'recipients': outputs.get('recipients'),
+            'cc_recipients': outputs.get('cc_recipients'),
+            'bcc_recipients': outputs.get('bcc_recipients'),
+        }
+        readable_sections.append(
+            tableToMarkdown('Targeting Scope', targeting, headerTransform=string_to_table_header)
+        )
+    
+    # 5. Infrastructure
+    if any(k in outputs for k in ['sender_ip_received_headers', 'connecting_ip_address']):
+        infrastructure = {
+            'sender_ip_received_headers': outputs.get('sender_ip_received_headers'),
+            'connecting_ip_address': outputs.get('connecting_ip_address'),
+            'original_client_ip': outputs.get('original_client_ip'),
+            'msft_country': outputs.get('msft_country'),
+        }
+        readable_sections.append(
+            tableToMarkdown('Infrastructure', infrastructure, headerTransform=string_to_table_header)
+        )
+    
+    # 6. Artifacts
+    if any(k in outputs for k in ['attachments', 'url_verdicts_json']):
+        artifacts = {
+            'attachments': outputs.get('attachments'),
+            'url_verdicts_json': outputs.get('url_verdicts_json'),
+        }
+        readable_sections.append(
+            tableToMarkdown('Artifacts', artifacts, headerTransform=string_to_table_header)
+        )
+    
+    readable_output = '\n\n'.join(readable_sections) if readable_sections else 'No forensic data found'
+    
+    return CommandResults(
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.EmailCampaignForensics',
+        outputs_key_field='internet_message_id',
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def execute_email_security_remediation_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """
+    Execute automated email security remediation action.
+    
+    Triggers remediation actions such as deleting, undeleting, moving, or tagging emails
+    based on the security verdict.
+    
+    Args:
+        client: The API client instance
+        args: Command arguments from XSOAR
+        
+    Returns:
+        CommandResults object with action execution status
+    """
+    internet_message_id = args.get('internet_message_id', '')
+    external_id = args.get('external_id', '')
+    action = args.get('action', '')
+    
+    # Validate action is one of the allowed values
+    valid_actions = [
+        'DeleteEmail',
+        'UndeleteEmail',
+        'SendAlertEmail',
+        'MoveEmailToFolder',
+        'TagEmailAsPhishing',
+    ]
+    
+    if action not in valid_actions:
+        raise DemistoException(
+            f'Invalid action "{action}". Must be one of: {", ".join(valid_actions)}'
+        )
+    
+    # Call API via client
+    response = client.execute_email_security_remediation(
+        internet_message_id, external_id, action
+    )
+    
+    # Process response
+    success = response.get('success', False)
+    message = response.get('message', '')
+    error = response.get('error', '')
+    
+    # Prepare outputs
+    outputs = {
+        'internet_message_id': internet_message_id,
+        'external_id': external_id,
+        'action': action,
+        'success': success,
+    }
+    
+    if message:
+        outputs['message'] = message
+    if error:
+        outputs['error'] = error
+    
+    # Create readable output
+    if success:
+        readable_output = f'✅ Email security remediation action "{action}" executed successfully'
+        if message:
+            readable_output += f'\n\nMessage: {message}'
+    else:
+        readable_output = f'❌ Email security remediation action "{action}" failed'
+        if error:
+            readable_output += f'\n\nError: {error}'
+        elif message:
+            readable_output += f'\n\nMessage: {message}'
+    
+    return CommandResults(
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.EmailSecurityRemediation',
+        outputs_key_field='external_id',
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
 def get_email_investigation_summary_command(client: Client, args: dict) -> CommandResults:
     """Retrieves phishing email investigation summary campaigns from Cortex.
 
@@ -4741,6 +4995,12 @@ def main():  # pragma: no cover
         elif command == "core-xql-generic-query-platform":
             verify_platform_version()
             return_results(xql_query_platform_command(client, args))
+
+        elif command == "core-get-email-campaign-consolidated-forensic-enrichment":
+            return_results(get_email_campaign_consolidated_forensic_enrichment_command(client, args))
+
+        elif command == "core-execute-email-security-remediation":
+            return_results(execute_email_security_remediation_command(client, args))
 
         elif command == "core-get-email-investigation-summary":
             return_results(get_email_investigation_summary_command(client, args))
