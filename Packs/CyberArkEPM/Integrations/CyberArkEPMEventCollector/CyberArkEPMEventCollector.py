@@ -548,7 +548,7 @@ def main():  # pragma: no cover
         )
 
         set_ids = get_set_ids_by_set_names(client, set_names)
-        demisto.info(f"[main] Resolved {len(set_ids)} set ID(s) from {len(set_names)} configured set name(s)")
+        demisto.debug(f"[main] Resolved {len(set_ids)} set ID(s) from {len(set_names)} configured set name(s)")
         demisto.debug(f"[main] resolved {set_ids=}")
 
         # Validate we got set IDs
