@@ -3590,7 +3590,7 @@ script:
           defaultValue: "1"
       name: core-get-email-investigation-summary
       description: Retrieves a summary of phishing email investigation campaigns from Cortex, grouping individual alerts by email message ID to help prioritize investigations based on impact and scale.
-      hidden: true
+      hidden: false
       outputs:
         - contextPath: Core.EmailInvestigationSummary.internet_message_id
           description: The unique identifier of the email message.

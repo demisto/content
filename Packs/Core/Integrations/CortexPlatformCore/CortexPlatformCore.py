@@ -69,7 +69,10 @@ WEBAPP_COMMANDS = [
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
     "core-get-email-investigation-summary",
+    "core-get-email-campaign-consolidated-forensic-enrichment",
+    "core-execute-email-security-remediation",
 ]
+
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
 ENDPOINT_COMMANDS = ["core-get-endpoint-support-file"]
@@ -995,7 +998,7 @@ class Client(CoreClient):
         """
         return self._http_request(
             method="POST",
-            url_suffix="/email-security/investigation/consolidated-forensic-enrichment/",
+            url_suffix="/email-security/investigation/consolidated-forensic-enrichment",
             json_data={
                 "internet_message_id": internet_message_id,
                 "days_timeframe": days_timeframe,
@@ -4637,6 +4640,7 @@ def get_email_campaign_consolidated_forensic_enrichment_command(
         internet_message_id, int(days_timeframe)
     )
     
+    demisto.debug(f"get_email_campaign_consolidated_forensic_enrichment response: {response}")
     # Process response - the API returns consolidated data
     outputs = response if isinstance(response, dict) else {}
     
@@ -4743,10 +4747,9 @@ def execute_email_security_remediation_command(
     Returns:
         CommandResults object with action execution status
     """
+    action = args.get('action', '')
     internet_message_id = args.get('internet_message_id', '')
     external_id = args.get('external_id', '')
-    action = args.get('action', '')
-    
     # Validate action is one of the allowed values
     valid_actions = [
         'DeleteEmail',
