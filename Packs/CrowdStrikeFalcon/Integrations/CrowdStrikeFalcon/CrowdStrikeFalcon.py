@@ -4747,7 +4747,7 @@ async def fetch_spotlight_assets():
 
 
 def fetch_cnapp_assets():
-    demisto.info("Strating fetch assets 'CNAPP Alerts' exeuction.")
+    demisto.info("Starting fetch assets 'CNAPP Alerts' execution.")
     new_last_run, detections, items_count, snapshot_id = get_cnapp_assets()
 
     demisto.debug(f"Sending a batch of {len(detections)} assets to xsiam with {snapshot_id=}")
@@ -4772,7 +4772,7 @@ def fetch_cnapp_assets():
 
 
 def fetch_assets_command():
-    demisto.debug("Strating fetch assets exeuction.")
+    demisto.debug("Starting fetch assets execution.")
     params = demisto.params()
     fetch_assets_types = params.get("fetch_assets_type", "")
 
