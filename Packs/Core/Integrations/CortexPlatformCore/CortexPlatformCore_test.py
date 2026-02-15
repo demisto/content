@@ -9368,6 +9368,7 @@ def test_core_fill_support_ticket_command_success(mocker: MockerFixture):
     assert result.outputs["DateTimeOfIssue"] is not None
     assert result.outputs_prefix == "Core.SupportTicket"
 
+
 def test_get_cases_command_with_ai_summary(mocker: MockerFixture):
     """
     GIVEN:

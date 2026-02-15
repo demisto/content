@@ -371,6 +371,7 @@ DAYS_MAPPING = {
     "saturday": 7,
 }
 
+
 def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
     """
     Replace all occurrences of a substring in the keys of a dictionary with a new substring or in a string.
