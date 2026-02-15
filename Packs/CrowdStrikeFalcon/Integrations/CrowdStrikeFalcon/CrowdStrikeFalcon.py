@@ -6467,7 +6467,7 @@ def build_ngsiem_search_body(args: dict) -> dict:
         # so we only set `limit` when "around" is not used.
         limit = arg_to_number(args.get("limit")) or 50
         query = build_ngsiem_query_with_limit(query, limit)
-    demisto.debug(f"around_config: {around_config}")
+
     body = assign_params(
         queryString=query,
         start=arg_to_timestamp(args.get("start")),
@@ -6477,7 +6477,6 @@ def build_ngsiem_search_body(args: dict) -> dict:
         useIngestTime=argToBoolean(args.get("use_ingest_time")) if args.get("use_ingest_time") else None,
         timeZone=args.get("time_zone"),
         timeZoneOffsetMinutes=arg_to_number(args.get("time_zone_offset_minutes")),
-        # This inserts the nested object ONLY if it has data
         around=around_config,
     )
     return body
@@ -6496,12 +6495,12 @@ def process_ngsiem_search_completion(response: dict, args: dict) -> PollResult:
     """
     args["wait_for_result"] = False
     events = response.get("events", [])
-    events = clean_ngsiem_rawstring_field(events)
     warnings = response.get("warnings", [])
     if warnings:
         demisto.debug(f"NGSIEM search completed with warnings: {warnings}")
 
     if events:
+        events = clean_ngsiem_rawstring_field(events)
         demisto.debug(f"Returned {len(events)} results from NGSIEM search")
         table_headers = [
             "timestamp",

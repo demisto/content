@@ -5398,13 +5398,13 @@ script:
         The start of the search window, based on the event timestamp.
         Note: end must be strictly greater than start.
         If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).
-        Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps in milliseconds (e.g., 1767225600000).
+        Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000).
     - name: end
       description: |
         The end of the search window, based on the event timestamp.
         Note: end must be strictly greater than start.
         If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).
-        Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps in milliseconds (e.g., 1767225600000).
+        Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000).
     - name: around_event_id
       description: The ID of the event to search around.
     - name: around_number_events_before
@@ -5418,13 +5418,13 @@ script:
         The start of the search window, based on the event ingesttimestamp.
         Note: ingest_end must be strictly greater than ingest_start.
         If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).
-        Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps in milliseconds (e.g., 1767225600000).
+        Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000).
     - name: ingest_end
       description: |
         The end of the search window, based on the event ingesttimestamp.
         Note: ingest_end must be strictly greater than ingest_start.
         If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).
-        Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps in milliseconds (e.g., 1767225600000).
+        Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000).
     - name: use_ingest_time
       description: When true, the server uses ingest_start/ingest_end as the query window. when false (or not set), it uses start/end. If both windows are provided, results are constrained by BOTH (AND).
       auto: PREDEFINED
