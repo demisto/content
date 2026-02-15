@@ -8335,31 +8335,6 @@ def test_get_cases_details(mocker):
     http_request_mock.assert_called_with("POST", "/cases/entities/cases/v2", data=json.dumps({"ids": ["case1"]}))
 
 
-@pytest.mark.parametrize("status, expected_exception", [("new", False), ("invalid_status", True)])
-def test_update_ngsiem_case_request(mocker, status, expected_exception):
-    """
-    Given:
-        - Case ID and status.
-    When:
-        - Running update_ngsiem_case_request.
-    Then:
-        - Verify that the http_request is called with the correct arguments if status is valid.
-        - Verify that DemistoException is raised if status is invalid.
-    """
-    from CrowdStrikeFalcon import update_ngsiem_case_request
-
-    http_request_mock = mocker.patch("CrowdStrikeFalcon.http_request")
-
-    if expected_exception:
-        with pytest.raises(DemistoException):
-            update_ngsiem_case_request("case1", status)
-    else:
-        update_ngsiem_case_request("case1", status)
-        http_request_mock.assert_called_with(
-            "PATCH", "/cases/entities/cases/v2", data=json.dumps({"fields": {"status": status}, "id": "case1"})
-        )
-
-
 def test_get_remote_ngsiem_case_data(mocker):
     """
     Given:
@@ -8397,13 +8372,13 @@ def test_update_remote_ngsiem_case(mocker, delta, inc_status, close_in_cs_falcon
     from CrowdStrikeFalcon import update_remote_ngsiem_case, IncidentType
 
     mocker.patch.object(demisto, "params", return_value={"close_in_cs_falcon": close_in_cs_falcon_param})
-    update_mock = mocker.patch("CrowdStrikeFalcon.update_ngsiem_case_request", return_value="success")
+    update_mock = mocker.patch("CrowdStrikeFalcon.resolve_case", return_value="success")
 
     remote_id = f"{IncidentType.NGSIEM_CASE.value}:case1"
     result = update_remote_ngsiem_case(delta, inc_status, remote_id)
 
     if expected_status:
-        update_mock.assert_called_with("case1", expected_status)
+        update_mock.assert_called_with("case1", status=expected_status)
         assert result == "success"
     else:
         update_mock.assert_not_called()
