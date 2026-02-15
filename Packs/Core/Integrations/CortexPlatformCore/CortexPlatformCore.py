@@ -4439,7 +4439,7 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
         outputs_prefix="GenericXQLQuery", outputs_key_field="execution_id", outputs=outputs, raw_response=outputs
     )
 
-def core_fill_support_ticket_command(client, args: Dict[str, Any]) -> CommandResults:
+def core_fill_support_ticket_command(args: Dict[str, Any]) -> CommandResults:
     """
     Validates arguments and maps them to the support ticket context.
     Includes dependent validation for problem_concentration based on the issue_category.
@@ -4663,7 +4663,7 @@ def main():  # pragma: no cover
             return_results(xql_query_platform_command(client, args))
 
         elif command == "core-fill-support-ticket":
-            return_results(core_fill_support_ticket_command(client, args))
+            return_results(core_fill_support_ticket_command(args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
