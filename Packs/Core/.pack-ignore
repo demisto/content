@@ -20,6 +20,9 @@ ignore=BA101
 [file:layoutscontainer-Default.json]
 ignore=GR103,LO107
 
+[file:playbook-WildFire_Malware.yml]
+ignore=GR109
+
 [file:layoutscontainer-Default_XDR_Alert.json]
 ignore=LO107
 
