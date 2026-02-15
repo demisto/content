@@ -61,75 +61,99 @@ class SlackAssistantMessages(AssistantMessages):
 
 def parse_to_rich_text_elements(text: str) -> List[Dict]:
     """
-    Parses a string and returns a list of Slack rich_text element objects.
-    Supports bold (**), italics (_), strikethrough (~~), inline code (`),
-    links ([text](url)), and URLs (https://...).
+    Parses markdown-formatted text and converts it to Slack rich_text elements.
+
+    Supported markdown syntax:
+    - Bold: **text** → {"type": "text", "text": "text", "style": {"bold": True}}
+    - Italic: _text_ or __text__ → {"type": "text", "text": "text", "style": {"italic": True}}
+    - Strikethrough: ~~text~~ → {"type": "text", "text": "text", "style": {"strike": True}}
+    - Inline code: `text` → {"type": "text", "text": "text", "style": {"code": True}}
+    - Links: [text](url) → {"type": "link", "text": "text", "url": "url"}
+    - URLs: https://example.com → {"type": "link", "text": "url", "url": "url"}
+
+    Algorithm:
+    1. Build regex pattern that matches all supported markdown syntax
+    2. Split text by pattern to get alternating plain text and formatted parts
+    3. For each part, determine its type and create appropriate Slack element
+    4. Return list of elements (or single space element if empty)
 
     Args:
-        text: The text to parse
+        text: Markdown-formatted text to parse
 
     Returns:
-        List of Slack rich text element dictionaries
+        List of Slack rich_text element dictionaries
+
+    Example:
+        >>> parse_to_rich_text_elements("Hello **world** and `code`")
+        [
+            {"type": "text", "text": "Hello "},
+            {"type": "text", "text": "world", "style": {"bold": True}},
+            {"type": "text", "text": " and "},
+            {"type": "text", "text": "code", "style": {"code": True}}
+        ]
     """
     if not text:
         return [{"type": "text", "text": " "}]
 
-    # Build pattern from simpler components for better readability and maintenance
-    link_pattern = r"\[.*?\]\(.*?\)"
-    url_pattern = r'https?://[^\s<>"]+'
-    bold_pattern = r"\*\*.*?\*\*"
-    code_pattern = r"`[^`]+`"
-    strike_pattern = r"~~.*?~~"
-    italic_double_pattern = r"__.*?__"
-    italic_single_pattern = r"_.*?_"
+    # Define regex patterns for each markdown syntax
+    # Order matters: more specific patterns first
+    LINK_PATTERN = r"\[.*?\]\(.*?\)"  # [text](url)
+    URL_PATTERN = r'https?://[^\s<>"]+'  # https://example.com
+    BOLD_PATTERN = r"\*\*.*?\*\*"  # **text**
+    CODE_PATTERN = r"`[^`]+`"  # `text`
+    STRIKE_PATTERN = r"~~.*?~~"  # ~~text~~
+    ITALIC_DOUBLE_PATTERN = r"__.*?__"  # __text__
+    ITALIC_SINGLE_PATTERN = r"_.*?_"  # _text_
 
-    # Combine patterns with alternation (|) - each in its own capture group
-    pattern = (
-        f"({link_pattern})|({url_pattern})|({bold_pattern})|({code_pattern})|"
-        f"({strike_pattern})|({italic_double_pattern})|({italic_single_pattern})"
+    # Combine all patterns with alternation (|) - each in its own capture group
+    # This allows us to identify which pattern matched
+    combined_pattern = (
+        f"({LINK_PATTERN})|({URL_PATTERN})|({BOLD_PATTERN})|({CODE_PATTERN})|"
+        f"({STRIKE_PATTERN})|({ITALIC_DOUBLE_PATTERN})|({ITALIC_SINGLE_PATTERN})"
     )
-    parts = re.split(pattern, text)
+
+    # Split text by pattern - results in alternating plain text and matched patterns
+    parts = re.split(combined_pattern, text)
 
     elements: list[dict] = []
     for part in parts:
         if not part:
             continue
 
-        # Link: [text](url)
+        # Check if this part matches a specific pattern and create appropriate element
+
+        # Markdown link: [text](url)
         if link_match := re.match(r"\[(.*?)\]\((.*?)\)", part):
             elements.append({"type": "link", "text": link_match.group(1), "url": link_match.group(2)})
             continue
 
-        # URL: https://...
-        if url_match := re.match(url_pattern, part):
+        # Plain URL: https://example.com
+        if url_match := re.match(URL_PATTERN, part):
             url = url_match.group(0)
             elements.append({"type": "link", "text": url, "url": url})
             continue
 
+        # For styled text, extract content and determine style
         style = {}
         content = part
 
-        # Bold: **text**
-        if re.match(bold_pattern, part):
-            content = part[2:-2]
+        if re.match(BOLD_PATTERN, part):
+            content = part[2:-2]  # Remove ** from both sides
             style["bold"] = True
-        # Inline Code: `text`
-        elif re.match(code_pattern, part):
-            content = part[1:-1]
+        elif re.match(CODE_PATTERN, part):
+            content = part[1:-1]  # Remove ` from both sides
             style["code"] = True
-        # Strikethrough: ~~text~~
-        elif re.match(strike_pattern, part):
-            content = part[2:-2]
+        elif re.match(STRIKE_PATTERN, part):
+            content = part[2:-2]  # Remove ~~ from both sides
             style["strike"] = True
-        # Italics: __text__
-        elif re.match(italic_double_pattern, part):
-            content = part[2:-2]
+        elif re.match(ITALIC_DOUBLE_PATTERN, part):
+            content = part[2:-2]  # Remove __ from both sides
             style["italic"] = True
-        # Italics: _text_
-        elif re.match(italic_single_pattern, part):
-            content = part[1:-1]
+        elif re.match(ITALIC_SINGLE_PATTERN, part):
+            content = part[1:-1]  # Remove _ from both sides
             style["italic"] = True
 
+        # Create text element with optional style
         element = {"type": "text", "text": content}
         if style:
             element["style"] = style
@@ -141,44 +165,89 @@ def parse_to_rich_text_elements(text: str) -> List[Dict]:
 
 def create_rich_cell(text: str) -> dict:
     """
-    Helper to wrap rich elements into the cell structure for tables.
+    Creates a Slack table cell with rich text formatting support.
+
+    Determines whether to use raw_text (for plain text) or rich_text_section
+    (for formatted text with bold, italic, links, etc.).
 
     Args:
-        text: The cell text
+        text: Cell content (may contain markdown formatting)
 
     Returns:
-        Slack table cell dictionary
+        Slack table cell dictionary:
+        - {"type": "raw_text", "text": "..."} for plain text
+        - {"type": "rich_text_section", "elements": [...]} for formatted text
+
+    Example:
+        >>> create_rich_cell("Plain text")
+        {"type": "raw_text", "text": "Plain text"}
+
+        >>> create_rich_cell("**Bold** text")
+        {"type": "rich_text_section", "elements": [...]}
     """
     elements = parse_to_rich_text_elements(text)
+
+    # Check if any element has styling or is a link
     has_rich_features = any(e.get("style") or e.get("type") == "link" for e in elements)
 
     if not has_rich_features:
+        # Use raw_text for better performance with plain text
         return {"type": "raw_text", "text": text if text else " "}
 
+    # Use rich_text_section for formatted content
     return RichTextSectionElement(elements=elements).to_dict()
 
 
 def parse_md_table_to_slack_table(md_text: str) -> dict | None:
     """
-    Converts Markdown table to Slack 'table' block.
+    Converts markdown table to Slack table block.
+
+    Markdown table format:
+    ```
+    | Header 1 | Header 2 |
+    |----------|----------|
+    | Cell 1   | Cell 2   |
+    ```
+
+    Algorithm:
+    1. Split table into lines
+    2. Skip separator lines (|---|---|)
+    3. For each data line:
+       - Split by | delimiter
+       - Remove leading/trailing | if present
+       - Create rich cell for each column
+    4. Return Slack table block with all rows
 
     Args:
-        md_text: Markdown table text
+        md_text: Markdown table text (must include header separator line)
 
     Returns:
-        Slack table block dictionary or None
+        Slack table block dictionary, or None if table is empty/invalid
+
+    Example:
+        >>> parse_md_table_to_slack_table("|A|B|\\n|---|---|\\n|1|2|")
+        {
+            "type": "table",
+            "column_settings": [{"is_wrapped": True}],
+            "rows": [[{"type": "raw_text", "text": "A"}, ...], ...]
+        }
     """
     lines = [line.strip() for line in md_text.strip().split("\n")]
     if not lines:
         return None
 
     rows = []
+    SEPARATOR_PATTERN = r"^[\s|:-]+$"  # Matches lines like |---|---| or | --- | --- |
+
     for line in lines:
-        # Skip separator lines like |---|
-        if re.match(r"^[\s|:-]+$", line):
+        # Skip separator lines (|---|---|)
+        if re.match(SEPARATOR_PATTERN, line):
             continue
 
+        # Split line by | delimiter
         raw_cells = [cell.strip() for cell in line.split("|")]
+
+        # Remove empty cells from leading/trailing |
         if line.startswith("|"):
             raw_cells.pop(0)
         if line.endswith("|"):
@@ -187,7 +256,8 @@ def parse_md_table_to_slack_table(md_text: str) -> dict | None:
         if not raw_cells:
             continue
 
-        slack_row = [create_rich_cell(c) for c in raw_cells]
+        # Convert each cell to Slack table cell format
+        slack_row = [create_rich_cell(cell) for cell in raw_cells]
         rows.append(slack_row)
 
     if not rows:
@@ -195,43 +265,71 @@ def parse_md_table_to_slack_table(md_text: str) -> dict | None:
 
     return {
         "type": "table",
-        "column_settings": [{"is_wrapped": True}],
+        "column_settings": [{"is_wrapped": True}],  # Allow text wrapping in cells
         "rows": rows,
     }
 
 
 def process_text_part(text: str) -> List[Dict]:
     """
-    Processes non-table text.
-    Handles code blocks (```), headers (#), lists (- or * or numbered), and paragraphs.
+    Processes markdown text and converts it to Slack Block Kit blocks.
+
+    Supported markdown elements:
+    - Code blocks: ```python\\ncode\\n``` → rich_text_preformatted block
+    - Headers: # Header → header block
+    - Bullet lists: - item or * item → rich_text list (bullet style)
+    - Numbered lists: 1. item → rich_text list (ordered style)
+    - Paragraphs: Plain text → rich_text section
+
+    Algorithm:
+    1. Extract code blocks (```...```) and replace with placeholders
+    2. Process line by line:
+       - Headers (# text) → create header block
+       - List items (- or * or 1.) → accumulate into list
+       - Empty lines → flush current paragraph/list
+       - Code block placeholders → create preformatted block
+       - Other lines → accumulate into paragraph
+    3. Flush any remaining paragraph/list at end
 
     Args:
-        text: The text to process
+        text: Markdown-formatted text to process
 
     Returns:
-        List of Slack block dictionaries
+        List of Slack block dictionaries (header, rich_text, etc.)
+
+    Example:
+        >>> process_text_part("# Title\\n\\n- Item 1\\n- Item 2\\n\\nParagraph")
+        [
+            {"type": "header", "text": {"type": "plain_text", "text": "Title"}},
+            {"type": "rich_text", "elements": [{"type": "rich_text_list", ...}]},
+            {"type": "rich_text", "elements": [{"type": "rich_text_section", ...}]}
+        ]
     """
     sub_blocks = []
 
-    # First, extract code blocks and replace with placeholders
-    code_block_pattern = r"```(\w+)?\n(.*?)\n```"
+    # Step 1: Extract code blocks and replace with placeholders
+    # This prevents code content from being parsed as markdown
+    CODE_BLOCK_PATTERN = r"```(\w+)?\n(.*?)\n```"
     code_blocks: list[dict[str, Any]] = []
 
     def save_code_block(match):
+        """Saves code block and returns placeholder"""
         language = match.group(1) or ""
         code_content = match.group(2)
         placeholder = f"__CODE_BLOCK_{len(code_blocks)}__"
         code_blocks.append({"language": language, "content": code_content})
         return placeholder
 
-    text = re.sub(code_block_pattern, save_code_block, text, flags=re.DOTALL)
+    text = re.sub(CODE_BLOCK_PATTERN, save_code_block, text, flags=re.DOTALL)
 
+    # Step 2: Process text line by line
     lines = text.split("\n")
     current_paragraph: list[str] = []
     current_list_items: list[str] = []
-    current_list_style = "bullet"  # Can be "bullet" or "ordered"
+    current_list_style = "bullet"  # "bullet" or "ordered"
 
     def flush_list():
+        """Converts accumulated list items to Slack rich_text list block"""
         if current_list_items:
             sub_blocks.append(
                 RichTextBlock(
@@ -249,6 +347,7 @@ def process_text_part(text: str) -> List[Dict]:
             current_list_items.clear()
 
     def flush_paragraph():
+        """Converts accumulated paragraph lines to Slack rich_text section block"""
         if current_paragraph:
             para_text = "\n".join(current_paragraph).strip()
             if para_text:
@@ -261,85 +360,119 @@ def process_text_part(text: str) -> List[Dict]:
                 )
             current_paragraph.clear()
 
+    # Regex patterns for line types
+    CODE_BLOCK_PLACEHOLDER_PATTERN = r"__CODE_BLOCK_(\d+)__"
+    HEADER_PATTERN = r"^(#{1,6})\s+(.+)"  # # Header or ## Header, etc.
+    BULLET_LIST_PATTERN = r"^[-*]\s+(.+)"  # - item or * item
+    NUMBERED_LIST_PATTERN = r"^(\d+)\.\s+(.+)"  # 1. item
+
     for line in lines:
         stripped_line = line.strip()
 
         # Check for code block placeholder
-        code_block_match = re.match(r"__CODE_BLOCK_(\d+)__", stripped_line)
-        if code_block_match:
+        if code_block_match := re.match(CODE_BLOCK_PLACEHOLDER_PATTERN, stripped_line):
             flush_paragraph()
             flush_list()
             block_index = int(code_block_match.group(1))
             if block_index < len(code_blocks):
                 code_block = code_blocks[block_index]
-                # Create preformatted block for code
+                # Create preformatted block for code (inline display)
                 sub_blocks.append(
                     {
                         "type": "rich_text",
                         "elements": [
-                            {"type": "rich_text_preformatted", "elements": [{"type": "text", "text": code_block["content"]}]}
+                            {
+                                "type": "rich_text_preformatted",
+                                "elements": [{"type": "text", "text": code_block["content"]}],
+                            }
                         ],
                     }
                 )
             continue
 
+        # Empty line - flush current paragraph/list
         if not stripped_line:
             flush_paragraph()
             flush_list()
             continue
 
-        header_match = re.match(r"^(#{1,6})\s+(.+)", stripped_line)
-        bullet_list_match = re.match(r"^[-*]\s+(.+)", stripped_line)
-        numbered_list_match = re.match(r"^(\d+)\.\s+(.+)", stripped_line)
-
-        if header_match:
+        # Check line type and process accordingly
+        if header_match := re.match(HEADER_PATTERN, stripped_line):
+            # Header line (# text)
             flush_paragraph()
             flush_list()
             header_content = header_match.group(2)
             sub_blocks.append({"type": "header", "text": {"type": "plain_text", "text": header_content, "emoji": True}})
-        elif bullet_list_match:
+
+        elif bullet_list_match := re.match(BULLET_LIST_PATTERN, stripped_line):
+            # Bullet list item (- item or * item)
             flush_paragraph()
-            # Switch to bullet list if needed
+            # Switch to bullet list if currently in ordered list
             if current_list_items and current_list_style != "bullet":
                 flush_list()
             current_list_style = "bullet"
             current_list_items.append(bullet_list_match.group(1))
-        elif numbered_list_match:
+
+        elif numbered_list_match := re.match(NUMBERED_LIST_PATTERN, stripped_line):
+            # Numbered list item (1. item)
             flush_paragraph()
-            # Switch to ordered list if needed
+            # Switch to ordered list if currently in bullet list
             if current_list_items and current_list_style != "ordered":
                 flush_list()
             current_list_style = "ordered"
             current_list_items.append(numbered_list_match.group(2))
+
         else:
+            # Regular paragraph line
             if current_list_items:
                 flush_list()
             current_paragraph.append(line)
 
+    # Flush any remaining content
     flush_paragraph()
     flush_list()
+
     return sub_blocks
 
 
 def prepare_slack_message(message: str, message_type: str, is_update: bool = False) -> Tuple[List, List]:
     """
-    Main processing function for the input message.
-    Converts markdown tables and text into Slack Block Kit components.
+    Converts markdown-formatted message to Slack Block Kit format.
 
-    Uses AssistantMessageType enum for message type handling.
+    This is the main entry point for converting Assistant responses to Slack messages.
+    Handles different message types with appropriate styling:
+    - Step/Thought: Gray attachment with "Plan" header
+    - Error: Red attachment with error icon
+    - Model/Final: Standard blocks with no attachment
+
+    Processing flow:
+    1. Validate message_type using AssistantMessageType enum
+    2. Split message into tables and text parts
+    3. Convert tables to Slack table blocks
+    4. Convert text to Slack rich_text blocks (headers, lists, paragraphs, code)
+    5. Wrap in attachments if needed (step/error types)
 
     Args:
-        message: The message text (markdown format)
-        message_type: The type of message (from AssistantMessageType)
-        is_update: Whether this is an update to existing message (True) or new message (False)
+        message: Markdown-formatted message text
+        message_type: Message type from AssistantMessageType enum
+        is_update: True if updating existing step message, False for new message
 
     Returns:
-        Tuple of (blocks, attachments) for Slack message
+        Tuple of (blocks, attachments):
+        - blocks: List of Slack block dictionaries (empty for step/error types)
+        - attachments: List of attachment dictionaries (used for step/error types)
 
     Raises:
-        ValueError: If message_type is not valid
+        ValueError: If message_type is not a valid AssistantMessageType value
+
+    Example:
+        >>> prepare_slack_message("# Title\\n\\n- Item 1", "model", False)
+        ([{"type": "header", ...}, {"type": "rich_text", ...}], [])
+
+        >>> prepare_slack_message("Step 1", "step", False)
+        ([], [{"color": "#D1D2D3", "blocks": [...]}])
     """
-    # Validate message_type
+    # Validate message_type using enum
     try:
         AssistantMessageType(message_type)
     except ValueError:
@@ -355,31 +488,36 @@ def prepare_slack_message(message: str, message_type: str, is_update: bool = Fal
     blocks = []
     attachments = []
 
-    # Standard processing for all new types
-    table_regex = r"(\|[^\n]+\|\r?\n\|[\s|:-]+\|\r?\n(?:\|[^\n]+\|\r?\n?)+)"
-    parts = re.split(table_regex, message)
+    # Step 1: Split message into tables and text parts
+    # Tables are identified by markdown table syntax: |col1|col2|\n|---|---|\n|val1|val2|
+    TABLE_REGEX = r"(\|[^\n]+\|\r?\n\|[\s|:-]+\|\r?\n(?:\|[^\n]+\|\r?\n?)+)"
+    parts = re.split(TABLE_REGEX, message)
 
+    # Step 2: Process each part
     for part in parts:
         if not part:
             continue
 
-        if re.match(table_regex, part):
+        if re.match(TABLE_REGEX, part):
+            # This part is a markdown table
             table_block = parse_md_table_to_slack_table(part)
             if table_block:
                 blocks.append(table_block)
         else:
+            # This part is regular text (may contain headers, lists, code blocks, etc.)
             if part.strip():
                 blocks.extend(process_text_part(part))
 
-    # For step types (step/thought), wrap everything in an attachment structure for a subtle appearance.
+    # Step 3: Wrap blocks in attachments based on message type
+
     if AssistantMessageType.is_step_type(message_type):
-        # Add divider before new content if this is an update
+        # Step/Thought messages: wrap in gray attachment for subtle appearance
         if is_update:
+            # For updates, add divider before new content
             blocks.insert(0, DividerBlock().to_dict())
-            # Don't add Plan header for updates
             attachment_blocks = blocks
         else:
-            # Add Plan header with "updating..." indicator for first message
+            # For first message, add "Plan (updating...)" header
             attachment_blocks = [
                 ContextBlock(
                     elements=[
@@ -392,22 +530,23 @@ def prepare_slack_message(message: str, message_type: str, is_update: bool = Fal
 
         attachments = [
             {
-                "color": "#D1D2D3",  # Light gray border for a subtle look
+                "color": "#D1D2D3",  # Light gray border
                 "blocks": attachment_blocks,
             }
         ]
         return [], attachments
 
-    # For error types, use red color
     if AssistantMessageType.is_error_type(message_type):
+        # Error messages: wrap in red attachment with error icon
         attachments = [
             {
-                "color": "#FF0000",  # Red border for errors
+                "color": "#FF0000",  # Red border
                 "blocks": [ContextBlock(elements=[MarkdownTextObject(text=":x: *Error*")]).to_dict()] + blocks,
             }
         ]
         return [], attachments
 
+    # Model/Final responses: return blocks directly (no attachment)
     return blocks, attachments
 
 

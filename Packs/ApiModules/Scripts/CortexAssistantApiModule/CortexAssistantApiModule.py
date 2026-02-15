@@ -16,9 +16,12 @@ class BackendErrorType(str, Enum):
     Maps to error_code from backend API.
     """
 
+    # Configuration errors (103000)
+    LLM_NOT_ENABLED = "llm_not_enabled"  # 103000 - Assistant commands only available when LLM is enabled
+
     # Permission errors (103102-103103)
     USER_NOT_FOUND = "user_not_found"  # 103102 - User doesn't exist in the system
-    PERMISSION_DENIED = "permission_denied"  # 103103 - User lacks agentix permissions
+    PERMISSION_DENIED = "permission_denied"  # 103103 - User lacks assistant permissions
 
     # Conversation errors (103201-103205)
     CONVERSATION_NOT_FOUND = "conversation_not_found"  # 103201 - Conversation not found (may have expired)
@@ -196,6 +199,10 @@ class AssistantMessages:
 
     # Bot display name (used when replacing bot mentions in messages sent to backend)
     BOT_DISPLAY_NAME = "Cortex Assistant"
+    
+    # Bot name format for agent responses (used in Slack username field)
+    # {0} will be replaced with agent name (e.g., "Security Analyst")
+    AGENT_BOT_NAME_FORMAT = "Cortex {0} Agent"
 
     # Commands
     RESET_SESSION_COMMAND = "reset session"
@@ -225,6 +232,12 @@ class AssistantMessages:
     # Messages for action errors
     CANNOT_SELECT_AGENT = "You cannot make this selection. Only {locked_user_tag} can choose."
     CANNOT_APPROVE_ACTION = "You cannot respond to this action. Only {locked_user_tag} can approve or reject."
+
+    # Configuration errors
+    LLM_NOT_ENABLED = (
+        f"❌ {BOT_DISPLAY_NAME} is not available. "
+        "The LLM feature must be enabled in your Cortex platform by your administrator to use this functionality."
+    )
 
     # Permission errors
     USER_NOT_FOUND = "You don't have an account in the system. Please contact your administrator."
@@ -496,6 +509,7 @@ class AssistantMessagingHandler:
         thread_id: str,
         blocks: list,
         attachments: list,
+        agent_name: str = "",
     ) -> Optional[dict]:
         """
         Send a new agent message to the platform.
@@ -506,6 +520,7 @@ class AssistantMessagingHandler:
             thread_id: The thread ID
             blocks: Message blocks
             attachments: Message attachments
+            agent_name: Optional agent name to display (e.g., "Security Analyst")
 
         Returns:
             Response dict with 'ts' (message timestamp) if successful, None otherwise
@@ -560,6 +575,7 @@ class AssistantMessagingHandler:
         attachments: list,
         assistant: dict,
         assistant_id_key: str,
+        agent_name: str = "",
     ) -> dict:
         """
         Send or update an agent response based on message type.
@@ -573,6 +589,7 @@ class AssistantMessagingHandler:
             attachments: Message attachments
             assistant: The assistant context
             assistant_id_key: The conversation key
+            agent_name: Optional agent name to display (e.g., "Security Analyst")
 
         Returns:
             Updated assistant dictionary
@@ -588,17 +605,17 @@ class AssistantMessagingHandler:
                 if not success:
                     # Fallback: send as new message
                     demisto.error("Failed to update step message, sending as new message")
-                    response = self.post_agent_response_sync(channel_id, thread_id, blocks, attachments)
+                    response = self.post_agent_response_sync(channel_id, thread_id, blocks, attachments, agent_name)
                     if response and assistant_id_key in assistant:
                         assistant[assistant_id_key]["step_message_ts"] = response.get("ts")
             else:
                 # Send new step message and save its timestamp
-                response = self.post_agent_response_sync(channel_id, thread_id, blocks, attachments)
+                response = self.post_agent_response_sync(channel_id, thread_id, blocks, attachments, agent_name)
                 if response and assistant_id_key in assistant:
                     assistant[assistant_id_key]["step_message_ts"] = response.get("ts")
         else:
             # For non-step types (model, approval, error), always send as new message
-            self.post_agent_response_sync(channel_id, thread_id, blocks, attachments)
+            self.post_agent_response_sync(channel_id, thread_id, blocks, attachments, agent_name)
 
             # Finalize Plan message when sending final response
             if AssistantMessageType.is_model_type(message_type) and assistant_id_key in assistant:
@@ -660,8 +677,14 @@ class AssistantMessagingHandler:
             error_msg = str(response.get("error", ""))
             
             # Map error_code to error type
+            # Configuration errors (103000)
+            if error_code == 103000:
+                demisto.debug(f"LLM not enabled for {operation}: {error_msg}")
+                return BackendResponse(
+                    success=False, error_type=BackendErrorType.LLM_NOT_ENABLED, error_message=error_msg
+                )
             # Permission errors (103102-103103)
-            if error_code == 103102:
+            elif error_code == 103102:
                 demisto.debug(f"User not found for {operation}: {error_msg}")
                 return BackendResponse(
                     success=False, error_type=BackendErrorType.USER_NOT_FOUND, error_message=error_msg
@@ -1423,7 +1446,12 @@ class AssistantMessagingHandler:
             error_msg = None
             is_ephemeral = True
             
-            if backend_response.error_type == BackendErrorType.USER_NOT_FOUND:
+            if backend_response.error_type == BackendErrorType.LLM_NOT_ENABLED:
+                # 103000 - LLM not enabled (public message)
+                demisto.debug("LLM not enabled in Cortex platform")
+                error_msg = AssistantMessages.LLM_NOT_ENABLED
+                is_ephemeral = False  # Public so everyone sees the configuration issue
+            elif backend_response.error_type == BackendErrorType.USER_NOT_FOUND:
                 # 103102 - User not found in system (public message with user tag)
                 demisto.debug(f"User {user_email} not found in system")
                 user_mention = self.format_user_mention(user_id)
@@ -1461,6 +1489,7 @@ class AssistantMessagingHandler:
         completed: bool = False,
         assistant_context: dict | None = None,
         assistant_id_key: str = "",
+        agent_name: str = "",
     ) -> dict:
         """
         Sends an agent response and updates the Assistant status accordingly.
@@ -1475,6 +1504,7 @@ class AssistantMessagingHandler:
             completed: Whether this is the final response
             assistant_context: The assistant context dictionary
             assistant_id_key: The unique key for this conversation
+            agent_name: Optional agent name to display in message (e.g., "Security Analyst")
 
         Returns:
             Updated assistant dictionary
@@ -1496,7 +1526,7 @@ class AssistantMessagingHandler:
         if not assistant_context:
             assistant_context = {}
 
-        demisto.debug(f"Sending agent response: type={message_type}, completed={completed}, conversation={assistant_id_key}")
+        demisto.debug(f"Sending agent response: type={message_type}, completed={completed}, conversation={assistant_id_key}, agent={agent_name}")
 
         # Replace escaped characters with actual characters
         message = message.replace("\\n", "\n")
@@ -1553,7 +1583,7 @@ class AssistantMessagingHandler:
 
         # Send or update message using platform-specific method
         assistant_context = self.send_or_update_agent_response(
-            channel_id, thread_id, message_type, blocks, attachments, assistant_context, assistant_id_key
+            channel_id, thread_id, message_type, blocks, attachments, assistant_context, assistant_id_key, agent_name
         )
 
         # Update context based on message type

@@ -293,11 +293,7 @@ class SlackAssistantHandler(AssistantMessagingHandler):
         return get_feedback_buttons_block(message_id)
 
     def post_agent_response_sync(
-        self,
-        channel_id: str,
-        thread_id: str,
-        blocks: list,
-        attachments: list,
+        self, channel_id: str, thread_id: str, blocks: list, attachments: list, agent_name: str = ""
     ) -> dict:
         """
         Send a new message to Slack.
@@ -312,7 +308,7 @@ class SlackAssistantHandler(AssistantMessagingHandler):
         Returns:
             Response dict with 'ts' if successful
         """
-        response = send_message_to_destinations([channel_id], "", thread_id, blocks, attachments)
+        response = send_message_to_destinations([channel_id], "", thread_id, blocks, attachments, bot_name=agent_name)
         if response:
             return {"ts": response.get("ts")}
         return {}
@@ -547,6 +543,10 @@ def send_agent_response():
     """
     args = demisto.args()
 
+    # Format agent name if provided
+    agent_name = args.get("agent_name", "")
+    bot_name = AssistantMessages.AGENT_BOT_NAME_FORMAT.format(agent_name) if agent_name else ""
+
     # Get current integration context
     integration_context = get_integration_context(SYNC_CONTEXT)
     assistant_context = integration_context.get(slack_assistant_handler.CONTEXT_KEY, {})
@@ -567,6 +567,7 @@ def send_agent_response():
         completed=argToBoolean(args.get("completed", False)),
         assistant_context=assistant_context,
         assistant_id_key=assistant_id_key,
+        agent_name=bot_name,
     )
 
 
@@ -959,16 +960,17 @@ def find_mirror_by_investigation() -> dict:
     return mirror
 
 
-def set_name_and_icon(body: dict, method: str):
+def set_name_and_icon(body: dict, method: str, bot_name: str = ""):
     """
     If provided, sets a name and an icon for the bot if a message is sent.
     Args:
         body: The message body.
         method: The current API method.
+        bot_name: Optional name for the bot.
     """
     if method in ["chat.postMessage", "chat.postEphemeral"]:
-        if BOT_NAME:
-            body["username"] = BOT_NAME
+        if bot_name or BOT_NAME:
+            body["username"] = bot_name or BOT_NAME
         if BOT_ICON_URL:
             body["icon_url"] = BOT_ICON_URL
 
@@ -1004,6 +1006,7 @@ def send_slack_request_sync(
     http_verb: ALLOWED_HTTP_VERBS = "POST",
     body: Optional[dict] = None,
     file_upload_params: Optional[FileUploadParams] = None,
+    bot_name: str = "",
 ) -> SlackResponse:
     """
     Sends a request to slack API while handling rate limit errors.
@@ -1014,6 +1017,7 @@ def send_slack_request_sync(
         http_verb: The HTTP method to use.
         body: The request body.
         file_upload_params: An instance of FileUploadParams (for uploading using the file-upload APIs).
+        bot_name: Optional name for the bot.
 
     Returns:
         The Slack API response.
@@ -1023,7 +1027,7 @@ def send_slack_request_sync(
     if body is None:
         body = {}
 
-    set_name_and_icon(body, method)
+    set_name_and_icon(body, method, bot_name)
     total_try_time = 0
     while True:
         try:
@@ -2793,6 +2797,7 @@ def send_message_to_destinations(
     attachments: list | None = None,
     ephemeral_message: bool = False,
     user_id: str = "",
+    bot_name: str = "",
 ) -> Optional[SlackResponse]:
     """
     Sends a message to provided destinations Slack.
@@ -2805,6 +2810,7 @@ def send_message_to_destinations(
         attachments: Optional attachments to include
         ephemeral_message: Whether to send as ephemeral (only visible to specific user)
         user_id: User ID for ephemeral messages (required if ephemeral_message=True)
+        bot_name: Optional name for the bot.
 
     Returns:
         The Slack send response.
@@ -2834,7 +2840,7 @@ def send_message_to_destinations(
         body["channel"] = destination
         if ephemeral_message and user_id:
             body["user"] = user_id
-        response = send_slack_request_sync(CLIENT, post_method, body=body)
+        response = send_slack_request_sync(CLIENT, post_method, body=body, bot_name=bot_name)
 
     return response
 
