@@ -260,9 +260,10 @@ script:
       name: starred_incidents_fetch_window
       deprecated: true
     description: |-
-      Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
+      This command is deprecated please use xdr-case-list instead. Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
       If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported.
     name: xdr-get-incidents
+    deprecated: true
     outputs:
     - contextPath: PaloAltoNetworksXDR.Incident.incident_id
       description: Unique ID assigned to each returned incident.
@@ -683,8 +684,9 @@ script:
       - 'true'
       - 'false'
       defaultValue: 'false'
-    description: Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
+    description: This command is deprecated please use xdr-case-update instead. Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
     name: xdr-update-incident
+    deprecated: true
   - arguments:
     - description: Product name.
       name: product
@@ -4196,6 +4198,177 @@ script:
       required: true
     description: Deletes an automation playbook.
     name: xdr-automation-playbook-delete
+  - arguments:
+    - description: A comma-separated list of case IDs to filter by.
+      isArray: true
+      name: case_id
+    - description: A comma-separated list of case domains to filter by.
+      isArray: true
+      name: case_domain
+    - description: "A comma-separated list of severities to filter by."
+      isArray: true
+      name: severity
+    - description: Filters cases that were created before this date. Supports natural language expressions such as "one year".
+      name: created_before
+    - description: Filters cases that were created after this date. Supports natural language expressions such as "one year".
+      name: created_after
+    - description: A comma-separated list of statuses to filter by.
+      isArray: true
+      name: status
+    - auto: PREDEFINED
+      description: The field by which to sort the results.
+      name: sort_field
+      predefined:
+      - case_id
+      - severity
+      - creation_time
+    - auto: PREDEFINED
+      description: The order in which to sort the results.
+      name: sort_order
+      predefined:
+      - asc
+      - desc
+    - description: Maximum number of cases to return.
+      name: limit
+    - description: Page size for pagination.
+      name: page_size
+    - description: Page number for pagination.
+      name: page
+    description: Returns a list of cases based on the specified filters.
+    name: xdr-case-list
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.Case.case_id
+      description: The unique identifier of the case.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.case_name
+      description: The name of the case.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.severity
+      description: The severity of the case.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.creation_time
+      description: The creation time of the case.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.modification_time
+      description: The modification time of the case.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.status_progress
+      description: The progress status of the case (e.g., New, Under Investigation).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.description
+      description: A detailed description of the case and involved entities.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.low_severity_issue_count
+      description: The number of low severity issues associated with the case.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.med_severity_issue_count
+      description: The number of medium severity issues associated with the case.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.case_domain
+      description: The security domain of the case.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.xdr_url
+      description: The direct URL to the incident view in the XDR console.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.is_blocked
+      description: Indicates if the threat was blocked.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Case.aggregated_score
+      description: The overall risk score calculated for the case.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.host_count
+      description: The number of hosts involved in the case.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.user_count
+      description: The number of users involved in the case.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.wildfire_hits
+      description: The number of WildFire malware hits associated with the case.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.tags
+      description: A list of tags associated with the case.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.starred
+      description: Whether the case has been starred/flagged.
+      type: Boolean
+  - arguments:
+    - description: The ID of the case to update.
+      name: case_id
+      required: true
+    - auto: PREDEFINED
+      description: The status to set for the case. if the status is updated to "resolved", resolve_reason must be provided.
+      name: status
+      predefined:
+      - new
+      - under_investigation
+      - resolved
+    - auto: PREDEFINED
+      description: The reason for resolving the case.
+      name: resolve_reason
+      predefined:
+      - resolved_known_issue
+      - resolved_duplicate
+      - resolved_false_positive
+      - resolved_other
+    - description: A comment explaining the resolution.
+      name: resolve_comment
+    description: Updates an existing case with the specified details.
+    name: xdr-case-update
+  - arguments:
+    - description: The ID of the case for which to retrieve artifacts.
+      name: case_id
+      required: true
+    description: Retrieves a list of artifacts for a specific case.
+    name: xdr-case-artifact-list
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.CaseNetworkArtifact.case_id
+      description: The ID of the case associated with the network artifact.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CaseNetworkArtifact.network_remote_ip
+      description: The remote IP address associated with the artifact.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CaseNetworkArtifact.network_remote_port
+      description: The remote port used in the network connection.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.CaseNetworkArtifact.alert_count
+      description: Number of alerts associated with this network artifact.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.CaseNetworkArtifact.type
+      description: The type of network artifact (e.g., IP).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CaseNetworkArtifact.is_manual
+      description: Indicates if the artifact was added manually.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.case_id
+      description: The ID of the case associated with the file artifact.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.file_name
+      description: The name of the file.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.file_sha256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.file_wildfire_verdict
+      description: The verdict from WildFire (e.g., MALWARE, BENIGN).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.is_malicious
+      description: Whether the file has been identified as malicious.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.is_process
+      description: Indicates if the file was a running process.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.file_signature_vendor_name
+      description: The vendor name from the file signature.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.file_signature_status
+      description: The status of the digital signature (e.g., SIGNATURE_SIGNED).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.alert_count
+      description: Number of alerts associated with this file artifact.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.low_confidence
+      description: Indicates if the detection confidence is low.
+      type: Boolean
   - arguments:
     - description: The BIOC name to filter by. Can filter by only one name at a time.
       name: name

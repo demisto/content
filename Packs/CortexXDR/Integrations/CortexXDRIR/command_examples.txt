@@ -62,6 +62,9 @@
 !xdr-asset-group-create group_name="assetGroupTest" group_type=Dynamic membership_predicate_json="{\"AND\":[{\"SEARCH_FIELD\":\"xdm.asset.type.class\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Other\"}]}"
 !xdr-asset-group-update group_id=1 group_type=Dynamic group_description=test group_name="Test" membership_predicate_json="{\"AND\":[{\"SEARCH_FIELD\":\"xdm.asset.provider\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Other\"}]}"
 !xdr-asset-group-delete group_id=1
+!xdr-case-list status="New" severity="low" case_domain="security" created_after="one year"
+!xdr-case-update case_id=1 status=resolved resolve_reason=resolved_other
+!xdr-case-artifact-list case_id=1
 !xdr-bioc-list severity=high type=collection
 !xdr-bioc-create name="TestBIOC" severity=high mitre_tactic_id_and_name="['TA0002 - Execution']" mitre_technique_id_and_name="['T1059 - Command and Scripting Interpreter']" indicator="{\"runOnCGO\":true,\"investigationType\":\"FILE_EVENT\",\"investigation\":{\"FILE_EVENT\":{\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"action_file_name\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"testfile.exe\"}]}}}}" type=collection status=enabled comment="Test"
 !xdr-bioc-update name="TestBIOC" severity=high mitre_tactic_id_and_name="['TA0002 - Execution']" mitre_technique_id_and_name="['T1059 - Command and Scripting Interpreter']" indicator="{\"runOnCGO\":true,\"investigationType\":\"FILE_EVENT\",\"investigation\":{\"FILE_EVENT\":{\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"action_file_name\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"testfile.exe\"}]}}}}" type=collection status=enabled comment="Test"
@@ -76,4 +79,3 @@
 !xdr-automation-playbook-create entry_id=abcd1234
 !xdr-automation-playbook-get field=id value=playbook_id
 !xdr-automation-playbook-delete field=name value=playbook_name
-
