@@ -9523,3 +9523,735 @@ def test_get_case_resolution_statuses_command(mocker):
     assert len(result.outputs) == 2
     assert len(result.raw_response) == 2
     assert mock_client.get_case_resolution_statuses.call_count == 2
+
+
+# =========================================== TEST Endpoint Policy Commands ===========================================#
+
+
+class TestCreateEndpointPolicyCommand:
+    """Test cases for create_endpoint_policy_command function."""
+
+    def test_create_endpoint_policy_windows_success(self, mocker: MockerFixture):
+        """
+        GIVEN:
+            Valid arguments for creating a Windows endpoint policy with all profiles.
+        WHEN:
+            create_endpoint_policy_command is called.
+        THEN:
+            Policy is created successfully with platform-specific default profiles.
+        """
+        from CortexPlatformCore import create_endpoint_policy_command, Client
+
+        mock_client = Client(base_url="", headers={})
+
+        # Mock fetch_policy_table
+        current_policies = []
+        policy_hash = "test_hash_123"
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, policy_hash))
+
+        # Mock validate_platform
+        mocker.patch("CortexPlatformCore.validate_platform", return_value="AGENT_OS_WINDOWS")
+
+        # Mock get_profile_ids
+        profile_map = {
+            "EXPLOIT": {"id": 1, "name": "Default"},
+            "MALWARE": {"id": 2, "name": "Default"},
+            "AGENT_SETTINGS": {"id": 3, "name": "Default"},
+            "RESTRICTIONS": {"id": 4, "name": "Default"},
+            "EXCEPTIONS": {"id": 5, "name": "Default (No Exceptions)"},
+        }
+        mocker.patch("CortexPlatformCore.get_profile_ids", return_value=profile_map)
+
+        # Mock validate_profile_platform_compatibility
+        mocker.patch("CortexPlatformCore.validate_profile_platform_compatibility")
+
+        # Mock update_agent_policy
+        mock_update = mocker.patch.object(mock_client, "update_agent_policy", return_value={"success": True})
+
+        args = {
+            "policy_name": "Test Windows Policy",
+            "target_endpoint_ids": "endpoint1,endpoint2",
+            "platform": "windows",
+            "description": "Test policy for Windows endpoints",
+        }
+
+        result = create_endpoint_policy_command(mock_client, args)
+
+        assert "Successfully created endpoint policy 'Test Windows Policy'" in result.readable_output
+        assert result.outputs["PolicyName"] == "Test Windows Policy"
+        assert result.outputs["Platform"] == "windows"
+        assert result.outputs["Priority"] == 1
+        assert result.outputs["ExploitProfile"] == "Default"
+        assert result.outputs["MalwareProfile"] == "Default"
+        assert result.outputs["AgentSettingsProfile"] == "Default"
+        assert result.outputs["RestrictionsProfile"] == "Default"
+        assert result.outputs["ExceptionsProfile"] == "Default (No Exceptions)"
+
+        # Verify update_agent_policy was called
+        mock_update.assert_called_once()
+
+    def test_create_endpoint_policy_serverless_defaults(self, mocker: MockerFixture):
+        """
+        GIVEN:
+            Arguments for creating a serverless endpoint policy without explicit profiles.
+        WHEN:
+            create_endpoint_policy_command is called.
+        THEN:
+            Only restrictions profile defaults to 'Default', others are None.
+        """
+        from CortexPlatformCore import create_endpoint_policy_command, Client
+
+        mock_client = Client(base_url="", headers={})
+
+        current_policies = []
+        policy_hash = "test_hash_456"
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, policy_hash))
+        mocker.patch("CortexPlatformCore.validate_platform", return_value="AGENT_OS_SERVERLESS")
+
+        profile_map = {
+            "RESTRICTIONS": {"id": 4, "name": "Default"},
+        }
+        mocker.patch("CortexPlatformCore.get_profile_ids", return_value=profile_map)
+        mocker.patch("CortexPlatformCore.validate_profile_platform_compatibility")
+        mocker.patch.object(mock_client, "update_agent_policy", return_value={"success": True})
+
+        args = {
+            "policy_name": "Test Serverless Policy",
+            "target_endpoint_ids": "endpoint1",
+            "platform": "serverless",
+        }
+
+        result = create_endpoint_policy_command(mock_client, args)
+
+        assert result.outputs["RestrictionsProfile"] == "Default"
+        # Other profiles should not be in outputs (filtered by remove_nulls_from_dictionary)
+        assert "ExploitProfile" not in result.outputs
+        assert "MalwareProfile" not in result.outputs
+        assert "AgentSettingsProfile" not in result.outputs
+        assert "ExceptionsProfile" not in result.outputs
+
+    def test_create_endpoint_policy_android_defaults(self, mocker: MockerFixture):
+        """
+        GIVEN:
+            Arguments for creating an Android endpoint policy without explicit profiles.
+        WHEN:
+            create_endpoint_policy_command is called.
+        THEN:
+            Only malware and agent_settings profiles default to 'Default', others are None.
+        """
+        from CortexPlatformCore import create_endpoint_policy_command, Client
+
+        mock_client = Client(base_url="", headers={})
+
+        current_policies = []
+        policy_hash = "test_hash_789"
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, policy_hash))
+        mocker.patch("CortexPlatformCore.validate_platform", return_value="AGENT_OS_ANDROID")
+
+        profile_map = {
+            "MALWARE": {"id": 2, "name": "Default"},
+            "AGENT_SETTINGS": {"id": 3, "name": "Default"},
+        }
+        mocker.patch("CortexPlatformCore.get_profile_ids", return_value=profile_map)
+        mocker.patch("CortexPlatformCore.validate_profile_platform_compatibility")
+        mocker.patch.object(mock_client, "update_agent_policy", return_value={"success": True})
+
+        args = {
+            "policy_name": "Test Android Policy",
+            "target_endpoint_ids": "endpoint1",
+            "platform": "android",
+        }
+
+        result = create_endpoint_policy_command(mock_client, args)
+
+        assert result.outputs["MalwareProfile"] == "Default"
+        assert result.outputs["AgentSettingsProfile"] == "Default"
+        assert "ExploitProfile" not in result.outputs
+        assert "RestrictionsProfile" not in result.outputs
+        assert "ExceptionsProfile" not in result.outputs
+
+    def test_create_endpoint_policy_invalid_profile_for_platform(self, mocker: MockerFixture):
+        """
+        GIVEN:
+            Arguments trying to set an exploit profile for serverless platform.
+        WHEN:
+            create_endpoint_policy_command is called.
+        THEN:
+            DemistoException is raised indicating profile not supported for platform.
+        """
+        from CortexPlatformCore import create_endpoint_policy_command, Client
+
+        mock_client = Client(base_url="", headers={})
+
+        current_policies = []
+        policy_hash = "test_hash"
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, policy_hash))
+        mocker.patch("CortexPlatformCore.validate_platform", return_value="AGENT_OS_SERVERLESS")
+
+        # Mock validate_profile_platform_compatibility to raise exception
+        mocker.patch(
+            "CortexPlatformCore.validate_profile_platform_compatibility",
+            side_effect=DemistoException("The following profiles are not supported for platform 'serverless': exploit"),
+        )
+
+        args = {
+            "policy_name": "Invalid Policy",
+            "target_endpoint_ids": "endpoint1",
+            "platform": "serverless",
+            "exploit_profile": "Default",  # Not allowed for serverless
+        }
+
+        with pytest.raises(DemistoException, match="not supported for platform 'serverless'"):
+            create_endpoint_policy_command(mock_client, args)
+
+    def test_create_endpoint_policy_missing_policy_name(self, mocker: MockerFixture):
+        """
+        GIVEN:
+            Arguments without policy_name.
+        WHEN:
+            create_endpoint_policy_command is called.
+        THEN:
+            DemistoException is raised.
+        """
+        from CortexPlatformCore import create_endpoint_policy_command, Client
+
+        mock_client = Client(base_url="", headers={})
+
+        args = {
+            "target_endpoint_ids": "endpoint1",
+            "platform": "windows",
+        }
+
+        with pytest.raises(DemistoException, match="policy_name is required"):
+            create_endpoint_policy_command(mock_client, args)
+
+    def test_create_endpoint_policy_both_endpoint_identifiers(self, mocker: MockerFixture):
+        """
+        GIVEN:
+            Arguments with both target_endpoint_names and target_endpoint_ids.
+        WHEN:
+            create_endpoint_policy_command is called.
+        THEN:
+            DemistoException is raised.
+        """
+        from CortexPlatformCore import create_endpoint_policy_command, Client
+
+        mock_client = Client(base_url="", headers={})
+
+        args = {
+            "policy_name": "Test Policy",
+            "target_endpoint_names": "endpoint1",
+            "target_endpoint_ids": "endpoint2",
+            "platform": "windows",
+        }
+
+        with pytest.raises(DemistoException, match="Cannot provide both target_endpoint_names and target_endpoint_ids"):
+            create_endpoint_policy_command(mock_client, args)
+
+    def test_create_endpoint_policy_priority_handling(self, mocker: MockerFixture):
+        """
+        GIVEN:
+            Arguments with custom priority and existing policies.
+        WHEN:
+            create_endpoint_policy_command is called.
+        THEN:
+            Priority conflicts are handled and existing policies are shifted.
+        """
+        from CortexPlatformCore import create_endpoint_policy_command, Client
+
+        mock_client = Client(base_url="", headers={})
+
+        # Mock existing policies with priority 1 and 2
+        current_policies = [
+            {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 1, "NAME": "Existing Policy 1"},
+            {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 2, "NAME": "Existing Policy 2"},
+        ]
+        policy_hash = "test_hash"
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, policy_hash))
+        mocker.patch("CortexPlatformCore.validate_platform", return_value="AGENT_OS_WINDOWS")
+
+        profile_map = {"EXPLOIT": {"id": 1, "name": "Default"}}
+        mocker.patch("CortexPlatformCore.get_profile_ids", return_value=profile_map)
+        mocker.patch("CortexPlatformCore.validate_profile_platform_compatibility")
+
+        mock_update = mocker.patch.object(mock_client, "update_agent_policy", return_value={"success": True})
+
+        args = {
+            "policy_name": "New Policy",
+            "target_endpoint_ids": "endpoint1",
+            "platform": "windows",
+            "priority": "1",  # Conflicts with existing
+        }
+
+        result = create_endpoint_policy_command(mock_client, args)
+
+        # Verify the result
+        assert result.outputs["Priority"] == 1
+
+        # Verify the update was called
+        mock_update.assert_called_once()
+        update_payload = mock_update.call_args[0][0]
+
+        # Verify existing policies were shifted
+        assert update_payload["DATA"][0]["PRIORITY"] == 2  # Was 1, shifted to 2
+        assert update_payload["DATA"][1]["PRIORITY"] == 3  # Was 2, shifted to 3
+        assert update_payload["DATA"][2]["PRIORITY"] == 1  # New policy at priority 1
+
+
+class TestDeleteEndpointPolicyCommand:
+    """Test cases for delete_endpoint_policy_command function."""
+
+    def test_delete_endpoint_policy_by_name_success(self, mocker: MockerFixture):
+        """
+        GIVEN:
+            Valid arguments with policy_name to delete.
+        WHEN:
+            delete_endpoint_policy_command is called.
+        THEN:
+            Policy is deleted successfully.
+        """
+        from CortexPlatformCore import delete_endpoint_policy_command, Client
+
+        mock_client = Client(base_url="", headers={})
+
+        # Mock existing policies
+        current_policies = [
+            {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 0, "NAME": "Default Policy", "ID": "default-id"},
+            {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 1, "NAME": "Test Policy", "ID": "test-id-123"},
+        ]
+        policy_hash = "test_hash"
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, policy_hash))
+        mocker.patch("CortexPlatformCore.validate_platform", return_value="AGENT_OS_WINDOWS")
+
+        mock_update = mocker.patch.object(mock_client, "update_agent_policy", return_value={"success": True})
+
+        args = {
+            "policy_name": "Test Policy",
+            "platform": "windows",
+        }
+
+        result = delete_endpoint_policy_command(mock_client, args)
+
+        assert "Successfully deleted endpoint policy" in result.readable_output
+        assert "Test Policy" in result.readable_output
+        assert result.outputs["PolicyName"] == "Test Policy"
+        assert result.outputs["PolicyID"] == "test-id-123"
+        assert result.outputs["Deleted"] is True
+
+        # Verify update was called with policy removed
+        mock_update.assert_called_once()
+        update_payload = mock_update.call_args[0][0]
+        assert len(update_payload["DATA"]) == 1  # Only default policy remains
+        assert update_payload["DATA"][0]["NAME"] == "Default Policy"
+
+    def test_delete_endpoint_policy_by_id_success(self, mocker: MockerFixture):
+        """
+        GIVEN:
+            Valid arguments with policy_id to delete.
+        WHEN:
+            delete_endpoint_policy_command is called.
+        THEN:
+            Policy is deleted successfully.
+        """
+        from CortexPlatformCore import delete_endpoint_policy_command, Client
+
+        mock_client = Client(base_url="", headers={})
+
+        current_policies = [
+            {"PLATFORM": "AGENT_OS_LINUX", "PRIORITY": 0, "NAME": "Default Policy", "ID": "default-id"},
+            {"PLATFORM": "AGENT_OS_LINUX", "PRIORITY": 1, "NAME": "Test Policy", "ID": "test-id-456"},
+        ]
+        policy_hash = "test_hash"
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, policy_hash))
+        mocker.patch("CortexPlatformCore.validate_platform", return_value="AGENT_OS_LINUX")
+
+        mock_update = mocker.patch.object(mock_client, "update_agent_policy", return_value={"success": True})
+
+        args = {
+            "policy_id": "test-id-456",
+            "platform": "linux",
+        }
+
+        result = delete_endpoint_policy_command(mock_client, args)
+
+        assert result.outputs["PolicyID"] == "test-id-456"
+        assert result.outputs["Deleted"] is True
+        mock_update.assert_called_once()
+
+    def test_delete_endpoint_policy_default_policy_error(self, mocker: MockerFixture):
+        """
+        GIVEN:
+            Arguments trying to delete the default policy (priority 0).
+        WHEN:
+            delete_endpoint_policy_command is called.
+        THEN:
+            DemistoException is raised indicating default policy cannot be deleted.
+        """
+        from CortexPlatformCore import delete_endpoint_policy_command, Client
+
+        mock_client = Client(base_url="", headers={})
+
+        current_policies = [
+            {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 0, "NAME": "Default Policy", "ID": "default-id"},
+        ]
+        policy_hash = "test_hash"
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, policy_hash))
+        mocker.patch("CortexPlatformCore.validate_platform", return_value="AGENT_OS_WINDOWS")
+
+        args = {
+            "policy_name": "Default Policy",
+            "platform": "windows",
+        }
+
+        with pytest.raises(DemistoException, match="Cannot delete the default policy"):
+            delete_endpoint_policy_command(mock_client, args)
+
+    def test_delete_endpoint_policy_not_found(self, mocker: MockerFixture):
+        """
+        GIVEN:
+            Arguments with non-existent policy name.
+        WHEN:
+            delete_endpoint_policy_command is called.
+        THEN:
+            DemistoException is raised indicating policy not found.
+        """
+        from CortexPlatformCore import delete_endpoint_policy_command, Client
+
+        mock_client = Client(base_url="", headers={})
+
+        current_policies = [
+            {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 0, "NAME": "Default Policy", "ID": "default-id"},
+        ]
+        policy_hash = "test_hash"
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, policy_hash))
+        mocker.patch("CortexPlatformCore.validate_platform", return_value="AGENT_OS_WINDOWS")
+
+        args = {
+            "policy_name": "Nonexistent Policy",
+            "platform": "windows",
+        }
+
+        with pytest.raises(DemistoException, match="No policy found with name"):
+            delete_endpoint_policy_command(mock_client, args)
+
+    def test_delete_endpoint_policy_missing_identifier(self, mocker: MockerFixture):
+        """
+        GIVEN:
+            Arguments without policy_name or policy_id.
+        WHEN:
+            delete_endpoint_policy_command is called.
+        THEN:
+            DemistoException is raised.
+        """
+        from CortexPlatformCore import delete_endpoint_policy_command, Client
+
+        mock_client = Client(base_url="", headers={})
+
+        args = {
+            "platform": "windows",
+        }
+
+        with pytest.raises(DemistoException, match="Either policy_name or policy_id must be provided"):
+            delete_endpoint_policy_command(mock_client, args)
+
+
+class TestValidateProfilePlatformCompatibility:
+    """Test cases for validate_profile_platform_compatibility function."""
+
+    def test_validate_profile_serverless_valid(self):
+        """
+        GIVEN:
+            Serverless platform with only restrictions profile.
+        WHEN:
+            validate_profile_platform_compatibility is called.
+        THEN:
+            No exception is raised.
+        """
+        from CortexPlatformCore import validate_profile_platform_compatibility
+
+        profile_args = {
+            "exploit": None,
+            "malware": None,
+            "agent_settings": None,
+            "restrictions": "Default",
+            "exceptions": None,
+        }
+
+        # Should not raise
+        validate_profile_platform_compatibility("serverless", profile_args)
+
+    def test_validate_profile_serverless_invalid(self):
+        """
+        GIVEN:
+            Serverless platform with exploit profile (not allowed).
+        WHEN:
+            validate_profile_platform_compatibility is called.
+        THEN:
+            DemistoException is raised.
+        """
+        from CortexPlatformCore import validate_profile_platform_compatibility
+
+        profile_args = {
+            "exploit": "Default",  # Not allowed for serverless
+            "malware": None,
+            "agent_settings": None,
+            "restrictions": "Default",
+            "exceptions": None,
+        }
+
+        with pytest.raises(DemistoException, match="not supported for platform 'serverless'"):
+            validate_profile_platform_compatibility("serverless", profile_args)
+
+    def test_validate_profile_android_valid(self):
+        """
+        GIVEN:
+            Android platform with malware and agent_settings profiles.
+        WHEN:
+            validate_profile_platform_compatibility is called.
+        THEN:
+            No exception is raised.
+        """
+        from CortexPlatformCore import validate_profile_platform_compatibility
+
+        profile_args = {
+            "exploit": None,
+            "malware": "Default",
+            "agent_settings": "Default",
+            "restrictions": None,
+            "exceptions": None,
+        }
+
+        # Should not raise
+        validate_profile_platform_compatibility("android", profile_args)
+
+    def test_validate_profile_android_invalid(self):
+        """
+        GIVEN:
+            Android platform with exceptions profile (not allowed).
+        WHEN:
+            validate_profile_platform_compatibility is called.
+        THEN:
+            DemistoException is raised.
+        """
+        from CortexPlatformCore import validate_profile_platform_compatibility
+
+        profile_args = {
+            "exploit": None,
+            "malware": "Default",
+            "agent_settings": "Default",
+            "restrictions": None,
+            "exceptions": "Default (No Exceptions)",  # Not allowed for android
+        }
+
+        with pytest.raises(DemistoException, match="not supported for platform 'android'"):
+            validate_profile_platform_compatibility("android", profile_args)
+
+    def test_validate_profile_windows_all_valid(self):
+        """
+        GIVEN:
+            Windows platform with all profiles.
+        WHEN:
+            validate_profile_platform_compatibility is called.
+        THEN:
+            No exception is raised.
+        """
+        from CortexPlatformCore import validate_profile_platform_compatibility
+
+        profile_args = {
+            "exploit": "Default",
+            "malware": "Default",
+            "agent_settings": "Default",
+            "restrictions": "Default",
+            "exceptions": "Default (No Exceptions)",
+        }
+
+        # Should not raise
+        validate_profile_platform_compatibility("windows", profile_args)
+
+
+class TestGetPlatformSpecificProfileDefaults:
+    """Test cases for the inner function get_platform_specific_profile_defaults."""
+
+    def test_profile_defaults_serverless(self, mocker: MockerFixture):
+        """
+        GIVEN:
+            Serverless platform without user-provided profiles.
+        WHEN:
+            Profile defaults are calculated.
+        THEN:
+            Only restrictions defaults to 'Default'.
+        """
+        from CortexPlatformCore import create_endpoint_policy_command, Client
+
+        mock_client = Client(base_url="", headers={})
+
+        current_policies = []
+        policy_hash = "test_hash"
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, policy_hash))
+        mocker.patch("CortexPlatformCore.validate_platform", return_value="AGENT_OS_SERVERLESS")
+
+        # Capture the profile_args passed to validate_profile_platform_compatibility
+        captured_profile_args = {}
+
+        def capture_profile_args(platform, profile_args):
+            captured_profile_args.update(profile_args)
+
+        mocker.patch("CortexPlatformCore.validate_profile_platform_compatibility", side_effect=capture_profile_args)
+        mocker.patch("CortexPlatformCore.get_profile_ids", return_value={})
+        mocker.patch.object(mock_client, "update_agent_policy", return_value={"success": True})
+
+        args = {
+            "policy_name": "Test",
+            "target_endpoint_ids": "endpoint1",
+            "platform": "serverless",
+        }
+
+        try:
+            create_endpoint_policy_command(mock_client, args)
+        except Exception:
+            pass
+
+        # Verify defaults
+        assert captured_profile_args["restrictions"] == "Default"
+        assert captured_profile_args["exploit"] is None
+        assert captured_profile_args["malware"] is None
+        assert captured_profile_args["agent_settings"] is None
+        assert captured_profile_args["exceptions"] is None
+
+    def test_profile_defaults_android(self, mocker: MockerFixture):
+        """
+        GIVEN:
+            Android platform without user-provided profiles.
+        WHEN:
+            Profile defaults are calculated.
+        THEN:
+            Only malware and agent_settings default to 'Default'.
+        """
+        from CortexPlatformCore import create_endpoint_policy_command, Client
+
+        mock_client = Client(base_url="", headers={})
+
+        current_policies = []
+        policy_hash = "test_hash"
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, policy_hash))
+        mocker.patch("CortexPlatformCore.validate_platform", return_value="AGENT_OS_ANDROID")
+
+        captured_profile_args = {}
+
+        def capture_profile_args(platform, profile_args):
+            captured_profile_args.update(profile_args)
+
+        mocker.patch("CortexPlatformCore.validate_profile_platform_compatibility", side_effect=capture_profile_args)
+        mocker.patch("CortexPlatformCore.get_profile_ids", return_value={})
+        mocker.patch.object(mock_client, "update_agent_policy", return_value={"success": True})
+
+        args = {
+            "policy_name": "Test",
+            "target_endpoint_ids": "endpoint1",
+            "platform": "android",
+        }
+
+        try:
+            create_endpoint_policy_command(mock_client, args)
+        except Exception:
+            pass
+
+        # Verify defaults
+        assert captured_profile_args["malware"] == "Default"
+        assert captured_profile_args["agent_settings"] == "Default"
+        assert captured_profile_args["exploit"] is None
+        assert captured_profile_args["restrictions"] is None
+        assert captured_profile_args["exceptions"] is None
+
+    def test_profile_defaults_windows(self, mocker: MockerFixture):
+        """
+        GIVEN:
+            Windows platform without user-provided profiles.
+        WHEN:
+            Profile defaults are calculated.
+        THEN:
+            All profiles default appropriately.
+        """
+        from CortexPlatformCore import create_endpoint_policy_command, Client
+
+        mock_client = Client(base_url="", headers={})
+
+        current_policies = []
+        policy_hash = "test_hash"
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, policy_hash))
+        mocker.patch("CortexPlatformCore.validate_platform", return_value="AGENT_OS_WINDOWS")
+
+        captured_profile_args = {}
+
+        def capture_profile_args(platform, profile_args):
+            captured_profile_args.update(profile_args)
+
+        mocker.patch("CortexPlatformCore.validate_profile_platform_compatibility", side_effect=capture_profile_args)
+        mocker.patch("CortexPlatformCore.get_profile_ids", return_value={})
+        mocker.patch.object(mock_client, "update_agent_policy", return_value={"success": True})
+
+        args = {
+            "policy_name": "Test",
+            "target_endpoint_ids": "endpoint1",
+            "platform": "windows",
+        }
+
+        try:
+            create_endpoint_policy_command(mock_client, args)
+        except Exception:
+            pass
+
+        # Verify defaults
+        assert captured_profile_args["exploit"] == "Default"
+        assert captured_profile_args["malware"] == "Default"
+        assert captured_profile_args["agent_settings"] == "Default"
+        assert captured_profile_args["restrictions"] == "Default"
+        assert captured_profile_args["exceptions"] == "Default (No Exceptions)"
+
+    def test_profile_user_override(self, mocker: MockerFixture):
+        """
+        GIVEN:
+            User provides explicit profile values.
+        WHEN:
+            Profile defaults are calculated.
+        THEN:
+            User values override defaults.
+        """
+        from CortexPlatformCore import create_endpoint_policy_command, Client
+
+        mock_client = Client(base_url="", headers={})
+
+        current_policies = []
+        policy_hash = "test_hash"
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, policy_hash))
+        mocker.patch("CortexPlatformCore.validate_platform", return_value="AGENT_OS_WINDOWS")
+
+        captured_profile_args = {}
+
+        def capture_profile_args(platform, profile_args):
+            captured_profile_args.update(profile_args)
+
+        mocker.patch("CortexPlatformCore.validate_profile_platform_compatibility", side_effect=capture_profile_args)
+        mocker.patch("CortexPlatformCore.get_profile_ids", return_value={})
+        mocker.patch.object(mock_client, "update_agent_policy", return_value={"success": True})
+
+        args = {
+            "policy_name": "Test",
+            "target_endpoint_ids": "endpoint1",
+            "platform": "windows",
+            "exploit_profile": "Custom Exploit",
+            "malware_profile": "Custom Malware",
+        }
+
+        try:
+            create_endpoint_policy_command(mock_client, args)
+        except Exception:
+            pass
+
+        # Verify user values override defaults
+        assert captured_profile_args["exploit"] == "Custom Exploit"
+        assert captured_profile_args["malware"] == "Custom Malware"
+        # Others should still use defaults
+        assert captured_profile_args["agent_settings"] == "Default"
+        assert captured_profile_args["restrictions"] == "Default"
+        assert captured_profile_args["exceptions"] == "Default (No Exceptions)"
