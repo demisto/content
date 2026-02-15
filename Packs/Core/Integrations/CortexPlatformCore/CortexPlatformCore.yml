@@ -3423,6 +3423,20 @@ script:
         - contextPath: Core.EmailInvestigationSummary.detection_methods_with_ids
           description: Comma-separated list of detection methods with their issue IDs.
           type: String
+    - arguments:
+        - description: The unique internet message ID of the email to decrypt.
+          name: internet_message_id
+          required: true
+      name: core-decrypt-email-content
+      description: Decrypts the encrypted subject and body of a specific email identified by its internet message ID.
+      hidden: true
+      outputs:
+        - contextPath: Core.DecryptedEmail.body
+          description: The decrypted body content of the email.
+          type: String
+        - contextPath: Core.DecryptedEmail.subject
+          description: The decrypted subject line of the email.
+          type: String
   runonce: false
   script: "-"
   subtype: python3
