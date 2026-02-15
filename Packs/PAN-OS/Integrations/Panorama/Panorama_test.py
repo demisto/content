@@ -9331,6 +9331,7 @@ def test_get_hitcounts(rulebase_type, unused_only, no_new_hits_since_dt, length_
     assert result is not None
     assert len(result) == length_expected
 
+
 @pytest.mark.parametrize(
     "unused_only, no_new_hits_since, expected_count",
     [
@@ -9339,10 +9340,10 @@ def test_get_hitcounts(rulebase_type, unused_only, no_new_hits_since_dt, length_
         # Case 2: unused_only=True -> only rules with hit_count=0
         ("true", None, 2),
         # Case 3: unused_only=False, no_new_hits_since recent -> only rules older than filter
-        ("false",dateparser.parse("12 hours ago", settings={"TIMEZONE": "UTC"}), 4),
+        ("false", dateparser.parse("12 hours ago", settings={"TIMEZONE": "UTC"}), 4),
         # Case 4: unused_only=True, no_new_hits_since recent -> only old unused rules
         ("true", dateparser.parse("12 hours ago", settings={"TIMEZONE": "UTC"}), 2),
-    ]
+    ],
 )
 def test_get_hitcounts_filters_param(unused_only, no_new_hits_since, expected_count, mocker):
     """Test get_hitcounts with different unused_only and no_new_hits_since values."""
@@ -9396,7 +9397,6 @@ def test_get_hitcounts_filters_param(unused_only, no_new_hits_since, expected_co
 
         return xml_root
 
-
     mocker.patch("Panorama.run_op_command", side_effect=fake_run_op)
 
     # Patch demisto
@@ -9405,8 +9405,11 @@ def test_get_hitcounts_filters_param(unused_only, no_new_hits_since, expected_co
 
     # Patch build_rule_hit_count_xml to use original
     original_build_xml = FirewallCommand.build_rule_hit_count_xml
-    mocker.patch.object(FirewallCommand, "build_rule_hit_count_xml",
-                        side_effect=lambda vsys_name, rb, rules: original_build_xml(vsys_name, rb, rules))
+    mocker.patch.object(
+        FirewallCommand,
+        "build_rule_hit_count_xml",
+        side_effect=lambda vsys_name, rb, rules: original_build_xml(vsys_name, rb, rules),
+    )
 
     # ----------------------------
     # Call function
@@ -9419,7 +9422,7 @@ def test_get_hitcounts_filters_param(unused_only, no_new_hits_since, expected_co
         no_new_hits_since=no_new_hits_since,
         device_filter_string=None,
         target=None,
-        unused_only=unused_only
+        unused_only=unused_only,
     )
 
     # ----------------------------
