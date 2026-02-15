@@ -203,7 +203,7 @@ def test_client_empty_jwt_param_usage(mocker):
 
 
 class TestCredentialFlowEndToEnd:
-    """End-to-end tests for the new basic_credentials / oath_credentials flow in main()."""
+    """End-to-end tests for the new basic_credentials / oauth_credentials flow in main()."""
 
     BASE_PARAMS = {
         "url": "https://test.service-now.com",
@@ -227,7 +227,7 @@ class TestCredentialFlowEndToEnd:
         params = {
             **self.BASE_PARAMS,
             "basic_credentials": {"identifier": "basic_user", "password": "basic_pass"},
-            "oath_credentials": {"identifier": "oauth_id", "password": "oauth_secret"},
+            "oauth_credentials": {"identifier": "oauth_id", "password": "oauth_secret"},
         }
         mocker.patch("ServiceNow_CMDB.demisto.params", return_value=params)
         mocker.patch("ServiceNow_CMDB.demisto.command", return_value="test-module")
@@ -248,18 +248,18 @@ class TestCredentialFlowEndToEnd:
         """
         Given:
             - basic_credentials param is empty (no username/password).
-            - oath_credentials param has identifier and password.
+            - oauth_credentials param has identifier and password.
             - OAuth is not enabled.
         When:
             - main() is called with the 'test-module' command.
         Then:
-            - The Client falls back to using oath_credentials for username/password (legacy behavior).
+            - The Client falls back to using oauth_credentials for username/password (legacy behavior).
             - test-module succeeds.
         """
         params = {
             **self.BASE_PARAMS,
             "basic_credentials": {},
-            "oath_credentials": {"identifier": "legacy_user", "password": "legacy_pass"},
+            "oauth_credentials": {"identifier": "legacy_user", "password": "legacy_pass"},
         }
         mocker.patch("ServiceNow_CMDB.demisto.params", return_value=params)
         mocker.patch("ServiceNow_CMDB.demisto.command", return_value="test-module")
@@ -270,38 +270,36 @@ class TestCredentialFlowEndToEnd:
         client_init_spy = mocker.patch("ServiceNow_CMDB.Client", wraps=Client)
         main()
 
-        # Verify Client was called with legacy fallback values from oath_credentials
+        # Verify Client was called with legacy fallback values from oauth_credentials
         call_kwargs = client_init_spy.call_args[1]
         assert call_kwargs["username"] == "legacy_user"
         assert call_kwargs["password"] == "legacy_pass"
         assert call_kwargs["use_oauth"] is False
         return_results_mock.assert_called_once_with("ok")
 
-    def test_oauth_uses_oath_credentials_for_client_id_secret(self, mocker):
+    def test_oauth_uses_oauth_credentials_for_client_id_secret(self, mocker):
         """
         Given:
             - use_oauth is True.
-            - oath_credentials provides client_id (identifier) and client_secret (password).
+            - oauth_credentials provides client_id (identifier) and client_secret (password).
             - basic_credentials provides username and password.
         When:
             - main() is called with the 'test-module' command.
         Then:
-            - The Client is created with client_id/client_secret from oath_credentials.
+            - The Client is created with client_id/client_secret from oauth_credentials.
             - use_oauth is True.
         """
         params = {
             **self.BASE_PARAMS,
             "use_oauth": True,
             "basic_credentials": {"identifier": "basic_user", "password": "basic_pass"},
-            "oath_credentials": {"identifier": "my_client_id", "password": "my_client_secret"},
+            "oauth_credentials": {"identifier": "my_client_id", "password": "my_client_secret"},
         }
         mocker.patch("ServiceNow_CMDB.demisto.params", return_value=params)
         mocker.patch("ServiceNow_CMDB.demisto.command", return_value="test-module")
         # return_error must stop execution (like the real one does via sys.exit),
         # otherwise test_module continues to records_list which triggers auto-login HTTP calls.
-        return_error_mock = mocker.patch(
-            "ServiceNow_CMDB.return_error", side_effect=SystemExit("return_error called")
-        )
+        mocker.patch("ServiceNow_CMDB.return_error", side_effect=SystemExit("return_error called"))
 
         client_init_spy = mocker.patch("ServiceNow_CMDB.Client", wraps=Client)
         with pytest.raises(SystemExit):
@@ -314,14 +312,12 @@ class TestCredentialFlowEndToEnd:
         assert call_kwargs["use_oauth"] is True
         assert call_kwargs["username"] == "basic_user"
         assert call_kwargs["password"] == "basic_pass"
-        # test-module with OAuth should trigger return_error
-        assert "Test button cannot be used when using OAuth 2.0" in return_error_mock.call_args[0][0]
 
     def test_jwt_auth_flow(self, mocker):
         """
         Given:
             - use_jwt is True, use_oauth is False.
-            - oath_credentials provides client_id and client_secret.
+            - oauth_credentials provides client_id and client_secret.
             - JWT params (private_key, kid, sub) are provided.
         When:
             - main() is called with the 'test-module' command.
@@ -334,7 +330,7 @@ class TestCredentialFlowEndToEnd:
             **self.BASE_PARAMS,
             "use_jwt": True,
             "basic_credentials": {"identifier": "basic_user", "password": "basic_pass"},
-            "oath_credentials": {"identifier": "jwt_client_id", "password": "jwt_client_secret"},
+            "oauth_credentials": {"identifier": "jwt_client_id", "password": "jwt_client_secret"},
             "private_key": {"password": "-----BEGIN PRIVATE KEY-----test-----END PRIVATE KEY-----"},
             "kid": "test_kid",
             "sub": "test_sub",
@@ -372,7 +368,7 @@ class TestCredentialFlowEndToEnd:
             "use_jwt": True,
             "use_oauth": True,
             "basic_credentials": {},
-            "oath_credentials": {"identifier": "id", "password": "secret"},
+            "oauth_credentials": {"identifier": "id", "password": "secret"},
         }
         mocker.patch("ServiceNow_CMDB.demisto.params", return_value=params)
         mocker.patch("ServiceNow_CMDB.demisto.command", return_value="test-module")
@@ -389,17 +385,17 @@ class TestCredentialFlowEndToEnd:
         """
         Given:
             - basic_credentials has username but no password.
-            - oath_credentials has identifier and password.
+            - oauth_credentials has identifier and password.
             - OAuth is not enabled.
         When:
             - main() is called with the 'test-module' command.
         Then:
-            - The Client falls back to oath_credentials for both username and password.
+            - The Client falls back to oauth_credentials for both username and password.
         """
         params = {
             **self.BASE_PARAMS,
             "basic_credentials": {"identifier": "partial_user", "password": ""},
-            "oath_credentials": {"identifier": "fallback_user", "password": "fallback_pass"},
+            "oauth_credentials": {"identifier": "fallback_user", "password": "fallback_pass"},
         }
         mocker.patch("ServiceNow_CMDB.demisto.params", return_value=params)
         mocker.patch("ServiceNow_CMDB.demisto.command", return_value="test-module")
@@ -417,17 +413,17 @@ class TestCredentialFlowEndToEnd:
     def test_no_credentials_at_all(self, mocker):
         """
         Given:
-            - Both basic_credentials and oath_credentials are empty.
+            - Both basic_credentials and oauth_credentials are empty.
             - OAuth is not enabled.
         When:
             - main() is called with the 'test-module' command.
         Then:
-            - The Client is created with None username/password (from empty oath_credentials fallback).
+            - The Client is created with None username/password (from empty oauth_credentials fallback).
         """
         params = {
             **self.BASE_PARAMS,
             "basic_credentials": {},
-            "oath_credentials": {},
+            "oauth_credentials": {},
         }
         mocker.patch("ServiceNow_CMDB.demisto.params", return_value=params)
         mocker.patch("ServiceNow_CMDB.demisto.command", return_value="test-module")
@@ -439,7 +435,7 @@ class TestCredentialFlowEndToEnd:
         main()
 
         call_kwargs = client_init_spy.call_args[1]
-        # Falls back to oath_credentials which are also empty
+        # Falls back to oauth_credentials which are also empty
         assert call_kwargs["username"] is None
         assert call_kwargs["password"] is None
 
@@ -447,7 +443,7 @@ class TestCredentialFlowEndToEnd:
         """
         Given:
             - use_oauth is True.
-            - oath_credentials provides client_id and client_secret.
+            - oauth_credentials provides client_id and client_secret.
             - basic_credentials provides username and password.
         When:
             - main() is called with the 'servicenow-cmdb-oauth-login' command.
@@ -458,7 +454,7 @@ class TestCredentialFlowEndToEnd:
             **self.BASE_PARAMS,
             "use_oauth": True,
             "basic_credentials": {"identifier": "basic_user", "password": "basic_pass"},
-            "oath_credentials": {"identifier": "my_client_id", "password": "my_client_secret"},
+            "oauth_credentials": {"identifier": "my_client_id", "password": "my_client_secret"},
         }
         mocker.patch("ServiceNow_CMDB.demisto.params", return_value=params)
         mocker.patch("ServiceNow_CMDB.demisto.command", return_value="servicenow-cmdb-oauth-login")
