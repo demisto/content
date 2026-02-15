@@ -4405,7 +4405,7 @@ def get_cloud_accounts_log_sending_status(client: Client) -> tuple[int, int, lis
     Returns:
         Tuple containing:
             - total_accounts: Total number of cloud accounts
-            - accounts_not_sending_count: Number of accounts not sending logs
+            - accounts_not_sending_logs_count: Number of accounts not sending logs
             - accounts_not_sending_logs: List of account details not sending logs
     """
     total_accounts = 0
@@ -4445,12 +4445,12 @@ def get_cloud_accounts_log_sending_status(client: Client) -> tuple[int, int, lis
             break
 
     # Calculate statistics
-    accounts_not_sending_count = len(accounts_not_sending_logs)
+    accounts_not_sending_logs_count = len(accounts_not_sending_logs)
 
-    return total_accounts, accounts_not_sending_count, accounts_not_sending_logs
+    return total_accounts, accounts_not_sending_logs_count, accounts_not_sending_logs
 
 
-def get_cdr_protection_status_command(client: Client) -> list[CommandResults]:
+def get_cdr_protection_status_command(client: Client) -> CommandResults:
     """
     Calculates the CDR (Cloud Detection and Response) protection coverage percentages.
 
@@ -4461,20 +4461,15 @@ def get_cdr_protection_status_command(client: Client) -> list[CommandResults]:
         List of CommandResults objects with CDR protection coverage percentages
     """
     # Get cloud accounts log sending status
-    total_accounts, accounts_not_sending_count, accounts_not_sending_logs = get_cloud_accounts_log_sending_status(client)
-    accounts_sending_logs = total_accounts - accounts_not_sending_count
-
-    command_results = []
+    total_accounts, accounts_not_sending_logs_count, accounts_not_sending_logs = get_cloud_accounts_log_sending_status(client)
+    accounts_sending_logs = total_accounts - accounts_not_sending_logs_count
 
     # Handle case when no cloud accounts exist
     if total_accounts == 0:
-        command_results.append(
-            CommandResults(
-                readable_output="#### Cloud Accounts Log Sending Status\nNo Cloud Accounts found.",
-                entry_type=4,
-            )
+        return CommandResults(
+            readable_output="No Cloud Accounts found.",
+            entry_type=4,
         )
-        return command_results
 
     # Build outputs with cloud account statistics
     log_sending_percentage = round((accounts_sending_logs / total_accounts) * 100, 2)
@@ -4482,44 +4477,19 @@ def get_cdr_protection_status_command(client: Client) -> list[CommandResults]:
     outputs = {
         "CloudAccounts": {
             "Total": total_accounts,
-            "NotSendingLogs": accounts_not_sending_count,
+            "NotSendingLogs": accounts_not_sending_logs_count,
             "AccountsNotSendingLogsList": accounts_not_sending_logs,
         }
     }
 
-    readable_output = f"""### CDR Protection Status
-
-#### Cloud Accounts Log Sending Status
-**Coverage**: {log_sending_percentage}%
-
-| Metric | Count |
-|--------|-------|
-| Total Cloud Accounts | {total_accounts} |
-| Accounts Sending Logs | {accounts_sending_logs} |
-| Accounts NOT Sending Logs | {accounts_not_sending_count} |
-
-"""
-
-    if accounts_not_sending_logs:
-        readable_output += tableToMarkdown(
-            "Cloud Accounts Not Sending Logs (automation_log_level = OFF)",
-            accounts_not_sending_logs,
-            headers=["account_id", "account_name", "cloud_type", "status"],
-            headerTransform=string_to_table_header,
-        )
-
-    command_results.append(
-        CommandResults(
-            readable_output=readable_output,
-            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CDRProtectionStatus",
-            outputs=outputs,
-            raw_response={
-                "cloud_accounts_not_sending_logs": accounts_not_sending_logs,
-            },
-        )
+    return CommandResults(
+        readable_output=f"{log_sending_percentage}% of onboarded accounts are not sending logs.",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CDRProtectionStatus",
+        outputs=outputs,
+        raw_response={
+            "cloud_accounts_not_sending_logs": accounts_not_sending_logs,
+        },
     )
-
-    return command_results
 
 
 def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
@@ -4790,8 +4760,6 @@ def main():  # pragma: no cover
         elif command == "core-update-endpoint-version":
             return_results(update_endpoint_version_command(client, args))
         elif command == "core-get-cdr-protection-status":
-            if not is_demisto_version_ge("8.14.0"):
-                raise DemistoException("This command is not available for this platform version")
             return_results(get_cdr_protection_status_command(client))
         elif command == "core-get-case-resolution-statuses":
             verify_platform_version()

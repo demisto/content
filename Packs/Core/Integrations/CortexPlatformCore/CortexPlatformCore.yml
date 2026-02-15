@@ -3254,6 +3254,7 @@ script:
           description: A specific name of a group the user belongs to within this instance.
           type: String
     - name: core-get-cdr-protection-status
+      fromversion: 8.14.0
       description: Calculates the CDR (Cloud Detection and Response) protection coverage percentages for cloud accounts. Determines what percentage of cloud accounts are sending logs.
       hidden: true
       arguments: []
