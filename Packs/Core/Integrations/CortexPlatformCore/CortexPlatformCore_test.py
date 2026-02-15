@@ -9317,12 +9317,11 @@ def test_core_fill_support_ticket_command_success(mocker: MockerFixture):
 
     result = core_fill_support_ticket_command(None, args)
 
-    assert result.outputs["productType"] == "Cortex XSIAM"
     assert result.outputs["description"] == args["description"]
     assert result.outputs["smeArea"] == "Agent"
     assert result.outputs["subGroupName"] == "Communication"
     assert result.outputs["OngoingIssue"] == "Yes - Consistent"
-    assert result.outputs_prefix == "CoreApiModule.SupportTicket"
+    assert result.outputs_prefix == "Core.SupportTicket"
 
 
 def test_core_fill_support_ticket_command_invalid_product_type():

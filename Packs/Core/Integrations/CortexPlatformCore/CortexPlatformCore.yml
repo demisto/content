@@ -2740,7 +2740,7 @@ script:
         - description: Dictionary containing the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}.
           name: parameters
       outputs:
-      - contextPath: Core.ScriptResult.action_id
+      - contextPath: CoreApiModule.ScriptResult.action_id
         description: ID of the action initiated.
         type: Number
     - arguments:
