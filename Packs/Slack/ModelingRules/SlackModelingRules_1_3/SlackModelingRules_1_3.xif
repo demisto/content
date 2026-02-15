@@ -84,10 +84,10 @@ alter
     xdm.source.ipv4 = if(is_ipv4(json_extract_scalar(context, "$['ip_address']")), json_extract_scalar(context, "$['ip_address']"), ""),
     xdm.source.ipv6 = if(is_ipv6(json_extract_scalar(context, "$['ip_address']")), json_extract_scalar(context, "$['ip_address']"), ""),
     xdm.observer.type = "Slack CRM",
-    xdm.observer.sub_type = "Audit Logs",
+    //xdm.observer.sub_type = "Audit Logs",
     xdm.source.user.user_type = XDM_CONST.USER_TYPE_REGULAR,
     xdm.source.user.scope = XDM_CONST.SCOPE_TYPE_SAAS,
-    xdm.source.user.full_domain_name = arrayindex(array_actor_user_email, 1),
+    //xdm.source.user.full_domain_name = arrayindex(array_actor_user_email, 1),
     xdm.event.outcome_reason = "OTHER",
     xdm.source.user.username = arrayindex(array_actor_user_email, 0),
     xdm.source.user.domain = arrayindex(array_actor_user_email, 1),
@@ -109,7 +109,7 @@ alter
         get_context_app_scopes != NULL, get_context_app_scopes,
         get_context_app_scopes_bot
     ),
-    xdm.intermediate.identity.app_registration.owners = arraycreate(json_extract_scalar(context, "$['app']['creator']")), //platfrom
+    //xdm.intermediate.identity.app_registration.owners = arraycreate(json_extract_scalar(context, "$['app']['creator']")), //platfrom
     xdm.intermediate.identity.groups = arraycreate(json_extract_scalar(context, "$['app']['team']")),
 
     xdm.target.application.name = json_extract_scalar(entity, "$['app']['name']"),
