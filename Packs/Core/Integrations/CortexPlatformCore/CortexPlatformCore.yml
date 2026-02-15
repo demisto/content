@@ -3301,13 +3301,6 @@ script:
       description: Returns fields for the completion of the support ticket
       hidden: true
       arguments:
-        - name: product_type
-          description: "The product type for the support ticket. Options: Cortex XSIAM, Cortex Cloud, Cortex XDR."
-          auto: PREDEFINED
-          predefined:
-            - Cortex XSIAM
-            - Cortex Cloud
-            - Cortex XDR
         - name: description
           description: A detailed description of the issue. Include error messages/codes or other identifying details. Limited to 25-32000 chars.
         - name: contact_number
@@ -3367,10 +3360,7 @@ script:
             - Data Security (DSPM)
             - Vulnerability Management
           description: |
-            The category of the issue. Valid values per product:
-            - Cortex XSIAM: Agent, Cases and Issues, Cloud Onboarding, Data Collection, Integrations, and Marketplace, Detection, Investigation and Inventory, Modules, Posture Management, Security Incidents, Server, Tenant Administration and Access Control, Vulnerability and Compliance Management, Web Application and API Security, XDR Agent
-            - Cortex Cloud: AI Security (AISPM), API Security (WAAS), Access Management, Integrations and Authentication, Application Security, CI/CD Prevention, Cases and Issues, Cloud Agent, Cloud Alerts and Events, Cloud Assets and Reports, Cloud Onboarding, Cloud Scan and Agentless, Cloud Workload and Posture Security Settings, Compliance Management, Compute Workload Inventory, Data Collection, Integrations, and Marketplace, Data Security (DSPM), Detection, Investigation and Inventory, Modules, Posture Management, Tenant Administration and Access Control, Vulnerability Management, Vulnerability and Compliance Management, Web Application and API Security, XDR Agent
-            - Cortex XDR: Agent, Cases and Issues, Cloud Onboarding, Data Collection, Integrations, and Marketplace, Detection, Investigation and Inventory, Modules, Posture Management, Security Incidents, Server, Tenant Administration and Access Control, Vulnerability and Compliance Management, Web Application and API Security, XDR Agent
+            The category of the issue.
         - name: problem_concentration
           description: |
             The specific problem concentration. Valid values vary based on the selected issue_category (smeArea) such as Communication, Device Control, Dashboard and Reports, etc.
