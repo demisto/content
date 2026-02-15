@@ -6702,16 +6702,16 @@ Search NGSIEM historical events. Requires NGSIEM scope with read/write permissio
 | query | The CQL query to use for the search. Note: Double quotes and backslashes in the queryString must be escaped with a backslash to ensure they are properly interpreted. For more details see: https://library.humio.com/data-analysis/syntax.html. | Required |
 | start | The start of the search window, based on the event timestamp.<br/>Note: end must be strictly greater than start.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000). | Optional |
 | end | The end of the search window, based on the event timestamp.<br/>Note: end must be strictly greater than start.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000). | Optional |
-| around_event_id | The ID of the event to search around. | Optional |
-| around_number_events_before | Number of events to show before the eventId. Required when around_event_id is used. | Optional |
-| around_number_events_after | Number of events to show after the eventId. Required when around_event_id is used. | Optional |
-| around_timestamp | Timestamp for around search. Required when around_event_id is used. | Optional |
+| around_event_id | The ID of the event to search around. Must be provided together with around_timestamp. | Optional |
+| around_number_events_before | Number of events to return before the target event. Valid only when around_event_id and around_timestamp are provided; otherwise the command fails. | Optional |
+| around_number_events_after | Number of events to return after the target event. Valid only when around_event_id and around_timestamp are provided; otherwise the command fails. | Optional |
+| around_timestamp | Timestamp for around search. Must be provided together with around_event_id. | Optional |
 | ingest_start | The start of the search window, based on the event ingesttimestamp.<br/>Note: ingest_end must be strictly greater than ingest_start.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000). | Optional |
 | ingest_end | The end of the search window, based on the event ingesttimestamp.<br/>Note: ingest_end must be strictly greater than ingest_start.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000). | Optional |
 | use_ingest_time | When true, the server uses ingest_start/ingest_end as the query window. when false (or not set), it uses start/end. If both windows are provided, results are constrained by BOTH (AND). Possible values are: true, false. | Optional |
 | time_zone | The time zone to use if start and end times are not specified in milliseconds. Time zones are provided in "area/location" format. Example: UTC. | Optional |
 | time_zone_offset_minutes | The time zone offset must be provided in minutes. For example, if your time zone is UTC+2:00, you would pass a value of 120. | Optional |
-| limit | Maximum number of events to return. Default is 50. | Optional |
+| limit | Maximum number of events to return. Ignored when any around_* parameter is specified. Default is 50. | Optional |
 | interval | Interval between polling attempts in seconds. To prevent search timeouts, set this value within the 60–90 second range. Default is 60. | Optional |
 | timeout | Timeout for polling in seconds. Default is 600. | Optional |
 

@@ -5406,13 +5406,13 @@ script:
         If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).
         Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000).
     - name: around_event_id
-      description: The ID of the event to search around.
+      description: The ID of the event to search around. Must be provided together with around_timestamp.
     - name: around_number_events_before
-      description: Number of events to show before the eventId. Required when around_event_id is used.
+      description: Number of events to return before the target event. Valid only when around_event_id and around_timestamp are provided; otherwise the command fails.
     - name: around_number_events_after
-      description: Number of events to show after the eventId. Required when around_event_id is used.
+      description: Number of events to return after the target event. Valid only when around_event_id and around_timestamp are provided; otherwise the command fails.
     - name: around_timestamp
-      description: Timestamp for around search. Required when around_event_id is used.
+      description: Timestamp for around search. Must be provided together with around_event_id.
     - name: ingest_start
       description: |
         The start of the search window, based on the event ingesttimestamp.
@@ -5436,7 +5436,7 @@ script:
     - name: time_zone_offset_minutes
       description: 'The time zone offset must be provided in minutes. For example, if your time zone is UTC+2:00, you would pass a value of 120.'
     - name: limit
-      description: Maximum number of events to return.
+      description: Maximum number of events to return. Ignored when any around_* parameter is specified.
       defaultValue: '50'
     - name: interval
       description: Interval between polling attempts in seconds. To prevent search timeouts, set this value within the 60–90 second range.
