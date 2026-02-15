@@ -2,6 +2,7 @@ import copy
 import json
 import re
 from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -13,6 +14,7 @@ DEFAULT_PAGE = "1"
 DEFAULT_PAGE_SIZE = DEFAULT_LIMIT
 MAX_FETCH = 200
 MAX_EVENTS_FETCH = 50
+EVENTS_TIME_BUFFER_MS = 5 * 60 * 1000  # 5 minutes buffer in milliseconds
 DEFAULT_FETCH = DEFAULT_LIMIT
 DEFAULT_EVENTS_FETCH = "20"
 ALL_STATUS_FILTER = "All"
@@ -151,7 +153,13 @@ class FortiSIEMClient(BaseClient):
             "timeTo": time_to,
         }
         demisto.debug(f"Fetch incident request: {data!s}")
+        start_time = datetime.now()
         response = self._http_request("POST", "pub/incident", json_data=data)
+        elapsed = (datetime.now() - start_time).total_seconds()
+        demisto.debug(
+            f"Fetch incident request completed in {elapsed:.2f}s, "
+            f"{response.get('total', 'N/A')} total incidents exist for the given time interval."
+        )
         return response
 
     def incident_update_request(
@@ -191,20 +199,57 @@ class FortiSIEMClient(BaseClient):
         response = self._http_request("POST", "incident/external", json_data=data)
         return response
 
-    def events_list_request(self, size: int, incident_id: str) -> dict[str, Any]:
+    def events_list_request(
+        self, size: int, incident_id: str, time_from: int | None = None, time_to: int | None = None
+    ) -> dict[str, Any]:
         """
         List triggered events by the specified incident ID.
 
         Args:
             size (int): How many events to retrieve.
             incident_id (str): The ID of the incident which the events were triggered by.
+            time_from (int | None): Start of time range filter in epoch milliseconds (supported in FortiSIEM v7.3.2+).
+            time_to (int | None): End of time range filter in epoch milliseconds (supported in FortiSIEM v7.3.2+).
 
         Returns:
             Dict[str,Any]: API response from FortiSIEM.
         """
         params = assign_params(size=size, incidentId=incident_id)
 
-        response = self._http_request("GET", "pub/incident/triggeringEvents", params=params, ok_codes=(200, 201, 204, 400))
+        # Try with timeFrom/timeTo if provided (supported in FortiSIEM v7.3.2+)
+        if time_from is not None and time_to is not None:
+            params_with_time = {**params, "timeFrom": time_from, "timeTo": time_to}
+            demisto.debug(
+                f"Fetching events for incident {incident_id} with time range "
+                f"(timeFrom={time_from}, timeTo={time_to}, max {size})..."
+            )
+            try:
+                start_time = datetime.now()
+                response = self._http_request(
+                    "GET", "pub/incident/triggeringEvents", params=params_with_time, ok_codes=(200, 201, 204), timeout=60
+                )
+                elapsed = (datetime.now() - start_time).total_seconds()
+                event_count = len(response.get("data", [])) if isinstance(response, dict) else "N/A"
+                demisto.debug(
+                    f"Events fetch for incident {incident_id} with time range completed in {elapsed:.2f}s, "
+                    f"got {event_count} events."
+                )
+                return response
+            except Exception as e:
+                demisto.debug(
+                    f"Events fetch with timeFrom/timeTo failed for incident {incident_id}: {e}. "
+                    f"Falling back to request without time range parameters."
+                )
+
+        # Original request without time params (fallback or when no time params provided)
+        demisto.debug(f"Fetching events for incident {incident_id} (max {size})...")
+        start_time = datetime.now()
+        response = self._http_request(
+            "GET", "pub/incident/triggeringEvents", params=params, ok_codes=(200, 201, 204, 400), timeout=60
+        )
+        elapsed = (datetime.now() - start_time).total_seconds()
+        event_count = len(response.get("data", [])) if isinstance(response, dict) else "N/A"
+        demisto.debug(f"Events fetch for incident {incident_id} completed in {elapsed:.2f}s, got {event_count} events.")
         return response
 
     def watchlist_list_by_entry_value_request(self, entry_value: str):
@@ -1148,6 +1193,11 @@ def fetch_incidents(
     Returns:
        tuple: Fetched incidents & updated last_run.
     """
+    fetch_start_time = datetime.now()
+    demisto.debug(
+        f"Starting fetch_incidents: max_fetch={max_fetch}, fetch_with_events={fetch_with_events}, "
+        f"max_events_fetch={max_events_fetch}, last_run={last_run!s}"
+    )
     validate_fetch_params(max_fetch, max_events_fetch, fetch_with_events, first_fetch, status_list)
     numeric_status_list = convert_verbal_status_filtering_to_numeric(status_list)
 
@@ -1155,6 +1205,7 @@ def fetch_incidents(
     last_incident_create_time = last_run.get("create_time")
     time_from = last_incident_create_time or first_fetch_epoch
 
+    incidents_fetch_start = datetime.now()
     relevant_incidents = fetch_relevant_incidents(
         client,
         numeric_status_list,
@@ -1163,15 +1214,28 @@ def fetch_incidents(
         last_run,
         max_fetch,
     )
+    incidents_fetch_elapsed = (datetime.now() - incidents_fetch_start).total_seconds()
+    demisto.debug(
+        f"fetch_relevant_incidents completed in {incidents_fetch_elapsed:.2f}s, "
+        f"got {len(relevant_incidents)} relevant incidents."
+    )
+
     formatted_incidents = format_incidents(relevant_incidents)  # for Layout
 
     incidents = []
+    if fetch_with_events and formatted_incidents:
+        events_map, events_total_time, events_success_count, events_fail_count = fetch_events_concurrently(
+            formatted_incidents, max_events_fetch, client
+        )
+    else:
+        events_map = {}
+        events_total_time = 0.0
+        events_success_count = 0
+        events_fail_count = 0
+
     for incident in formatted_incidents:
-        if fetch_with_events:
-            events = get_related_events_for_fetch_command(incident["incidentId"], max_events_fetch, client)
-        else:
-            events = []
-        incident["events"] = events
+        incident_id = incident.get("incidentId", "unknown")
+        incident["events"] = events_map.get(incident_id, [])
 
         incidents.append(
             {
@@ -1180,23 +1244,105 @@ def fetch_incidents(
                 "rawJSON": json.dumps(incident),
             }
         )
+
+    total_elapsed = (datetime.now() - fetch_start_time).total_seconds()
+    demisto.debug(
+        f"fetch_incidents completed in {total_elapsed:.2f}s total. "
+        f"Incidents: {len(incidents)}, "
+        f"Events fetch time: {events_total_time:.2f}s "
+        f"(success: {events_success_count}, failed: {events_fail_count})."
+    )
+
     if incidents:
         last_run = update_last_run_obj(last_run, formatted_incidents)
         demisto.debug(f"Update last run to: {last_run!s}.")
     return incidents, last_run
 
 
-def get_related_events_for_fetch_command(incident_id: str, max_events_fetch: int, client: FortiSIEMClient) -> List[dict]:
+def fetch_events_concurrently(
+    formatted_incidents: List[dict],
+    max_events_fetch: int,
+    client: FortiSIEMClient,
+) -> tuple[dict, float, int, int]:
+    """
+    Fetch events for all incidents concurrently using a thread pool.
+
+    Args:
+        formatted_incidents (List[dict]): List of formatted incident dicts.
+        max_events_fetch (int): Maximum number of events to fetch per incident.
+        client (FortiSIEMClient): FortiSIEM client.
+
+    Returns:
+        tuple: A tuple of (events_map, total_time, success_count, fail_count) where
+            events_map maps incident_id -> list of event dicts.
+    """
+    events_map: dict = {}
+    max_workers = min(len(formatted_incidents), 8)
+    total_count = len(formatted_incidents)
+
+    demisto.debug(f"Starting concurrent event fetch for {total_count} incidents with {max_workers} workers.")
+    events_start_time = datetime.now()
+    success_count = 0
+    fail_count = 0
+
+    def _fetch_single(incident: dict) -> tuple:
+        """Fetch events for a single incident. Returns (incident_id, events_list, elapsed, error)."""
+        inc_id = incident.get("incidentId", "unknown")
+        start = datetime.now()
+        try:
+            incident_first_seen = incident.get("incidentFirstSeen")
+            incident_last_seen = incident.get("incidentLastSeen")
+            time_from = incident_first_seen - EVENTS_TIME_BUFFER_MS if incident_first_seen else None
+            time_to = incident_last_seen + EVENTS_TIME_BUFFER_MS if incident_last_seen else None
+            events = get_related_events_for_fetch_command(
+                inc_id,
+                max_events_fetch,
+                client,
+                time_from=time_from,
+                time_to=time_to,
+            )
+            elapsed = (datetime.now() - start).total_seconds()
+            return inc_id, events, elapsed, None
+        except Exception as e:
+            elapsed = (datetime.now() - start).total_seconds()
+            return inc_id, [], elapsed, e
+
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = [executor.submit(_fetch_single, incident) for incident in formatted_incidents]
+        for idx, future in enumerate(as_completed(futures), start=1):
+            inc_id, events, elapsed, error = future.result()
+            events_map[inc_id] = events
+            if error is None:
+                success_count += 1
+                demisto.debug(
+                    f"[{idx}/{total_count}] Events for incident {inc_id}: " f"got {len(events)} events in {elapsed:.2f}s"
+                )
+            else:
+                fail_count += 1
+                demisto.debug(
+                    f"[{idx}/{total_count}] Failed to fetch events for incident " f"{inc_id} after {elapsed:.2f}s: {error}"
+                )
+
+    total_time = (datetime.now() - events_start_time).total_seconds()
+    demisto.debug(f"Concurrent event fetch completed in {total_time:.2f}s " f"(success: {success_count}, failed: {fail_count}).")
+    return events_map, total_time, success_count, fail_count
+
+
+def get_related_events_for_fetch_command(
+    incident_id: str, max_events_fetch: int, client: FortiSIEMClient, time_from: int | None = None, time_to: int | None = None
+) -> List[dict]:
     """
     Get triggered events of the specified incident ID, in a convenient format for fetch layout.
     Args:
+        incident_id (str): The incident ID of the related event.
+        max_events_fetch (int): The Maximum number of events to retrieve.
         client (FortiSIEMClient): FortiSIEM client.
-        incident_id (int): The incident ID of the related event.
-        max_events_fetch (str): The Maximum number of events to retrieve.
+        time_from (int | None): Start of time range filter in epoch milliseconds.
+        time_to (int | None): End of time range filter in epoch milliseconds.
     Returns:
-       None
+       List[dict]: Formatted events list.
     """
-    events_list_response = client.events_list_request(max_events_fetch, incident_id)
+    events_list_response = client.events_list_request(max_events_fetch, incident_id, time_from=time_from, time_to=time_to)
 
     if isinstance(events_list_response, dict):
         data = events_list_response.get("data")
@@ -1668,13 +1814,15 @@ def fetch_relevant_incidents(
     last_incident_create_time = last_run.get("create_time") or time_from
     last_fetch_incidents: List[int] = last_run.get("last_incidents") or []
     page_size: int = 2 * max_fetch
+    page_count = 0
     # first API call
     response = client.fetch_incidents_request(status, time_from, time_to, page_size, start_index)
     incidents = response.get("data")
     total = response.get("total")
-    demisto.debug(f"Got: {total} total incidents.")
+    demisto.debug(f"Got: {total} total incidents from API (page_size={page_size}, start_index={start_index}).")
     # filtering & pagination
     while len(filtered_incidents) < max_fetch and start_index < total:  # type: ignore[operator]
+        page_count += 1
         for incident in incidents:  # type: ignore[union-attr]
             if (
                 incident.get("incidentId") not in last_fetch_incidents
@@ -1686,9 +1834,12 @@ def fetch_relevant_incidents(
             break
 
         start_index += page_size
+        demisto.debug(
+            f"Pagination: fetching next page (start_index={start_index}, " f"filtered so far={len(filtered_incidents)})."
+        )
         response = client.fetch_incidents_request(status, time_from, time_to, page_size, start_index)
         incidents = response.get("data")
-    demisto.debug(f"Got: {len(filtered_incidents)} incidents after filtering.")
+    demisto.debug(f"Got: {len(filtered_incidents)} incidents after filtering ({page_count} page(s) fetched).")
     return filtered_incidents
 
 
@@ -1950,7 +2101,7 @@ def main() -> None:
     fetch_with_events = params.get("fetch_mode") == "Fetch With Events"
     max_events_fetch = arg_to_number(params.get("max_events_fetch", DEFAULT_EVENTS_FETCH))
     status_filter_list = argToList(params.get("status"))
-    headers = {}  # type: ignore[var-annotated]
+    headers = {"__no_session__": "true"}
 
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
