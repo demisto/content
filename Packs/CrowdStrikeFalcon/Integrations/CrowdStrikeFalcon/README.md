@@ -153,6 +153,7 @@ For more information, refer to the [documentation on CSPM Registration Keyword A
 
 CrowdStrike Falcon assets and vulnerabilities can be fetched and ingested into the Cortex XSIAM Unified Asset Inventory (UAI).
 Select the desired method in the Fetch Assets Type parameter:
+
 - Spotlight: Fetches vulnerabilities from the Spotlight Vulnerabilities Endpoint and enriches them with the associated host details. Both the vulnerabilities and the corresponding assets are ingested into the XSIAM UAI.
 - CNAPP Alerts: Fetches Cloud Native Application Protection Platform (CNAPP) alerts as assets.
 
