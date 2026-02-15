@@ -4976,6 +4976,7 @@ def main():  # pragma: no cover
             return_results(xql_query_platform_command(client, args))
 
         elif command == "core-fill-support-ticket":
+            verify_platform_version()
             return_results(core_fill_support_ticket_command(args))
 
     except Exception as err:
