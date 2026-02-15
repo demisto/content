@@ -1,0 +1,295 @@
+category: Analytics & SIEM
+provider: SOCRadar
+commonfields:
+  id: SOCRadarIncidentsMultiTenant
+  version: -1
+sectionorder:
+- Connect
+- Collect
+configuration:
+- display: API Key
+  name: apikey
+  required: true
+  type: 4
+  section: Connect
+  additionalinfo: Your SOCRadar API key from platform.socradar.com
+- display: Multi-Tenant ID
+  name: multi_tenant_id
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: Your Multi-Tenant ID from SOCRadar platform for fetching incidents across all companies
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  section: Collect
+  required: false
+- display: First Fetch Time
+  name: first_fetch
+  type: 0
+  defaultvalue: 3 days
+  section: Collect
+  additionalinfo: 'Time range for FIRST fetch only. Examples: "3 days", "7 days", "30 days". After first fetch, integration will use Fetch Interval for subsequent fetches.'
+- display: Fetch Interval (Minutes)
+  name: fetch_interval_minutes
+  type: 0
+  defaultvalue: '1'
+  section: Collect
+  additionalinfo: 'Time window for subsequent fetches in minutes. Default: 1 minute. Integration will fetch alarms from last N minutes. Example: If set to 1, it fetches alarms from last 1 minute each cycle.'
+- display: Max incidents per fetch
+  name: max_fetch
+  type: 0
+  defaultvalue: '200'
+  section: Collect
+  additionalinfo: 'Maximum number of incidents to create per cycle. Recommended: 200 for stability. The actual number fetched depends on the time window and available alarms.'
+- display: Status Filter
+  name: status
+  type: 16
+  required: false
+  section: Collect
+  options:
+  - OPEN
+  - CLOSED
+  - ON_HOLD
+  additionalinfo: Filter incidents by status (leave empty for all statuses)
+- display: Severity Levels
+  name: severities
+  type: 16
+  required: false
+  section: Collect
+  options:
+  - LOW
+  - INFO
+  - MEDIUM
+  - HIGH
+  - CRITICAL
+  additionalinfo: Filter incidents by severity levels (leave empty for all severities)
+- display: Alarm Type IDs (Include)
+  name: alarm_type_ids
+  type: 0
+  required: false
+  section: Collect
+  additionalinfo: Comma-separated list of alarm type IDs to include (e.g., "1,2,3"). Leave empty to include all alarm types.
+- display: Alarm Type IDs (Exclude)
+  name: excluded_alarm_type_ids
+  type: 0
+  required: false
+  section: Collect
+  additionalinfo: Comma-separated list of alarm type IDs to exclude (e.g., "4,5,6"). Takes precedence if same ID appears in both include and exclude.
+- display: Alarm Main Types
+  name: alarm_main_types
+  type: 0
+  required: false
+  section: Collect
+  additionalinfo: Comma-separated list of alarm main types to filter (e.g., "Brand Protection,Attack Surface Management")
+- display: Alarm Main Types (Exclude)
+  name: excluded_alarm_main_types
+  type: 0
+  required: false
+  section: Collect
+  additionalinfo: Comma-separated list of alarm main types to exclude (e.g., "Brand Protection,Attack Surface Management")
+- display: Alarm Sub Types
+  name: alarm_sub_types
+  type: 0
+  required: false
+  section: Collect
+  additionalinfo: Comma-separated list of alarm sub types to filter (e.g., "Impersonating Domain,Stolen Credential")
+- display: Alarm Sub Types (Exclude)
+  name: excluded_alarm_sub_types
+  type: 0
+  required: false
+  section: Collect
+  additionalinfo: Comma-separated list of alarm sub types to exclude (e.g., "Impersonating Domain,Stolen Credential")
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  section: Collect
+description: SOCRadar Multi-Tenant Incidents integration with advanced incident management, status reasons, and compliance tracking. Fetches security incidents from SOCRadar platform across all tenant companies with proper deduplication and date handling. Uses Multi-Tenant API for incident fetching and company-specific APIs for alarm management.
+display: SOCRadar Incidents Multi-Tenant
+name: SOCRadarIncidentsMultiTenant
+script:
+  commands:
+  - name: socradar-change-alarm-status
+    description: Change the status of one or more alarms.
+    arguments:
+    - name: alarm_ids
+      description: Comma-separated list of alarm IDs to update.
+      required: true
+    - name: status_reason
+      description: New status reason for the alarms.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - OPEN
+      - INVESTIGATING
+      - RESOLVED
+      - PENDING_INFO
+      - LEGAL_REVIEW
+      - VENDOR_ASSESSMENT
+      - FALSE_POSITIVE
+      - DUPLICATE
+      - PROCESSED_INTERNALLY
+      - MITIGATED
+      - NOT_APPLICABLE
+    - name: comments
+      description: Optional comments explaining the status change.
+      required: false
+    - name: company_id
+      description: Company ID for the alarm. If not provided, will be auto-fetched from alarm data. Can also use ${incident.socradarcompanyid} from incident fields.
+      required: false
+    outputs:
+    - contextPath: SOCRadar.Alarm.ID
+      description: Alarm ID.
+      type: String
+    - contextPath: SOCRadar.Alarm.Status
+      description: New alarm status.
+      type: String
+
+  - name: socradar-mark-false-positive
+    description: Mark an alarm as false positive.
+    arguments:
+    - name: alarm_id
+      description: Alarm ID to mark as false positive.
+      required: true
+    - name: comments
+      description: Optional comments explaining why this is a false positive.
+      required: false
+      defaultValue: "False positive"
+    - name: company_id
+      description: Company ID for the alarm. If not provided, will be auto-fetched from alarm data. Can also use ${incident.socradarcompanyid} from incident fields.
+      required: false
+    outputs:
+    - contextPath: SOCRadar.Alarm.ID
+      description: Alarm ID.
+      type: String
+    - contextPath: SOCRadar.Alarm.Status
+      description: New alarm status.
+      type: String
+
+  - name: socradar-mark-resolved
+    description: Mark an alarm as resolved.
+    arguments:
+    - name: alarm_id
+      description: Alarm ID to mark as resolved.
+      required: true
+    - name: comments
+      description: Optional comments explaining the resolution.
+      required: false
+      defaultValue: "Resolved"
+    - name: company_id
+      description: Company ID for the alarm. If not provided, will be auto-fetched from alarm data. Can also use ${incident.socradarcompanyid} from incident fields.
+      required: false
+    outputs:
+    - contextPath: SOCRadar.Alarm.ID
+      description: Alarm ID.
+      type: String
+    - contextPath: SOCRadar.Alarm.Status
+      description: New alarm status.
+      type: String
+
+  - name: socradar-add-comment
+    description: Add a comment to an alarm.
+    arguments:
+    - name: alarm_id
+      description: Alarm ID to add comment to.
+      required: true
+    - name: user_email
+      description: Email address of the user adding the comment.
+      required: true
+    - name: comment
+      description: Comment text to add.
+      required: true
+    - name: company_id
+      description: Company ID for the alarm. If not provided, will be auto-fetched from alarm data. Can also use ${incident.socradarcompanyid} from incident fields.
+      required: false
+    outputs:
+    - contextPath: SOCRadar.Alarm.ID
+      description: Alarm ID.
+      type: String
+
+  - name: socradar-add-assignee
+    description: Add the assignee(s) of an alarm.
+    arguments:
+    - name: alarm_id
+      description: Alarm ID to add assignee for.
+      required: true
+    - name: user_emails
+      description: Comma-separated list of user email addresses to assign.
+      required: true
+    - name: company_id
+      description: Company ID for the alarm. If not provided, will be auto-fetched from alarm data. Can also use ${incident.socradarcompanyid} from incident fields.
+      required: false
+    outputs:
+    - contextPath: SOCRadar.Alarm.ID
+      description: Alarm ID.
+      type: String
+    - contextPath: SOCRadar.Alarm.Assignees
+      description: New assignees.
+      type: String
+
+  - name: socradar-add-tag
+    description: Add or remove a tag from an alarm.
+    arguments:
+    - name: alarm_id
+      description: Alarm ID to add/remove tag for.
+      required: true
+    - name: tag
+      description: Tag name to add or remove.
+      required: true
+    - name: company_id
+      description: Company ID for the alarm. If not provided, will be auto-fetched from alarm data. Can also use ${incident.socradarcompanyid} from incident fields.
+      required: false
+    outputs:
+    - contextPath: SOCRadar.Alarm.ID
+      description: Alarm ID.
+      type: String
+    - contextPath: SOCRadar.Alarm.Tags
+      description: Alarm tags.
+      type: String
+
+  - name: socradar-test-fetch
+    description: Test incident fetching to verify alarms are available and date parsing works correctly.
+    arguments:
+    - name: limit
+      description: Number of incidents to test fetch (default 5).
+      required: false
+      defaultValue: '5'
+    - name: first_fetch
+      description: 'Test date range (e.g., "3 days", "7 days").'
+      required: false
+      defaultValue: '3 days'
+    outputs:
+    - contextPath: SOCRadar.TestFetch.TotalCount
+      description: Total number of incidents found.
+      type: Number
+    - contextPath: SOCRadar.TestFetch.SampleIncidents
+      description: Sample incidents for testing.
+      type: Unknown
+    - contextPath: SOCRadar.TestFetch.StartDate
+      description: Parsed start date used for the test.
+      type: String
+    - contextPath: SOCRadar.TestFetch.TotalRecords
+      description: Total number of incidents from service.
+      type: Number
+    - contextPath: SOCRadar.TestFetch.TotalPages
+      description: Total number of pages of incidents from service.
+      type: Number
+
+  dockerimage: demisto/python3:3.12.12.6796194
+  isfetch: true
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

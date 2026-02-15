@@ -2395,6 +2395,58 @@ def test_extract_paths_and_names_single_item():
     assert file_names == ["file.exe"]
 
 
+def test_api_key_list_command(requests_mock):
+    """
+    Given:
+        - an XDR client
+        - arguments (api_id, role, expires_before, expires_after)
+    When
+        - Running api_key_list_command
+    Then
+        - Verify the returned result is as we expected
+    """
+    from CortexXDRIR import Client, api_key_list_command
+
+    api_keys_response = load_test_data("./test_data/get_api_keys.json")
+    requests_mock.post(f"{XDR_URL}/public_api/v1/api_keys/get_api_keys/", json=api_keys_response)
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    args = {
+        "api_id": "1",
+        "role": "Admin",
+        "expires_before": "2024-01-01T00:00:00Z",
+        "expires_after": "2020-01-01T00:00:00Z",
+    }
+
+    response = api_key_list_command(client, args)
+
+    assert response.outputs == api_keys_response["reply"]["DATA"]
+    assert response.outputs_prefix == "PaloAltoNetworksXDR.APIKeyData"
+    assert "API Keys" in response.readable_output
+
+
+def test_api_key_delete_command(requests_mock):
+    """
+    Given:
+        - an XDR client
+        - arguments (api_id)
+    When
+        - Running api_key_delete_command
+    Then
+        - Verify the returned result is as we expected
+    """
+    from CortexXDRIR import Client, api_key_delete_command
+
+    requests_mock.post(f"{XDR_URL}/public_api/v1/api_keys/delete/", json={"reply": "ok"})
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    args = {"api_id": "1,2"}
+
+    response = api_key_delete_command(client, args)
+
+    assert response.readable_output == "API Keys deleted successfully."
+
+
 @freeze_time("1993-06-17 11:00:00 GMT")
 def test_fetch_incidents_name_generation(mocker):
     """
@@ -2733,3 +2785,523 @@ def test_replace_dots_in_keys():
     # Test with non-dict/list input
     assert replace_dots_in_keys("string.with.dots") == "string.with.dots"
     assert replace_dots_in_keys(123) == 123
+
+
+@pytest.mark.parametrize(
+    "args, expected_request_data",
+    [
+        (
+            {"name": "test_bioc", "severity": "high", "page": "1", "limit": "10", "extra_data": "true"},
+            {
+                "request_data": {
+                    "filters": [
+                        {"field": "name", "operator": "EQ", "value": "test_bioc"},
+                        {"field": "severity", "operator": "EQ", "value": "SEV_040_HIGH"},
+                    ],
+                    "extended_view": True,
+                    "search_from": 10,
+                    "search_to": 20,
+                }
+            },
+        ),
+        (
+            {},
+            {
+                "request_data": {
+                    "extended_view": False,
+                    "search_from": 0,
+                    "search_to": 50,
+                    "filters": [],
+                }
+            },
+        ),
+    ],
+)
+def test_bioc_list_command(mocker, args, expected_request_data):
+    """
+    Given:
+        - Arguments for filtering BIOCs.
+    When:
+        - Running bioc_list_command.
+    Then:
+        - Verify the client.get_biocs is called with correct parameters.
+    """
+    from CortexXDRIR import Client, bioc_list_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mock_reply = {"objects": [{"rule_id": "1", "name": "test_bioc", "type": "host", "severity": "high", "status": "enabled"}]}
+    mocker.patch.object(Client, "get_biocs", return_value=mock_reply)
+
+    res = bioc_list_command(client, args)
+
+    assert res.outputs == mock_reply["objects"]
+    Client.get_biocs.assert_called_with(expected_request_data)
+
+
+@pytest.mark.parametrize(
+    "args, expected_request_data, expected_output, expected_error",
+    [
+        (
+            {
+                "name": "test_bioc",
+                "severity": "high",
+                "type": "bioc_type",
+                "is_xql": "true",
+                "comment": "test_comment",
+                "status": "enabled",
+                "mitre_technique_id_and_name": "T1000",
+                "mitre_tactic_id_and_name": "TA0001",
+                "indicator": '{"field": "value"}',
+            },
+            {
+                "request_data": [
+                    {
+                        "rule_id": None,
+                        "name": "test_bioc",
+                        "severity": "SEV_040_HIGH",
+                        "type": "bioc_type",
+                        "is_xql": True,
+                        "comment": "test_comment",
+                        "status": "enabled",
+                        "mitre_technique_id_and_name": "T1000",
+                        "mitre_tactic_id_and_name": "TA0001",
+                        "indicator": {"field": "value"},
+                    }
+                ]
+            },
+            {"rule_id": "1", "readable_output": "BIOC created successfully"},
+            None,
+        ),
+        (
+            {"name": "test_bioc", "severity": "high", "indicator": "invalid_json"},
+            None,
+            None,
+            "Unable to parse 'indicator'. Please use the JSON format.",
+        ),
+    ],
+)
+def test_bioc_create_command(mocker, args, expected_request_data, expected_output, expected_error):
+    """
+    Given:
+        - Arguments for creating a BIOC.
+    When:
+        - Running bioc_create_command.
+    Then:
+        - Verify the client.insert_or_update_biocs is called and results are correct.
+    """
+    from CortexXDRIR import Client, bioc_create_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mock_reply = {"added_objects": [{"id": "1", "status": "BIOC created successfully"}]}
+    mocker.patch.object(Client, "insert_or_update_biocs", return_value=mock_reply)
+
+    if expected_error:
+        with pytest.raises(DemistoException) as e:
+            bioc_create_command(client, args)
+        assert expected_error in str(e.value)
+    else:
+        res = bioc_create_command(client, args)
+        assert res.outputs == {"rule_id": expected_output["rule_id"]}
+        assert res.readable_output == expected_output["readable_output"]
+        Client.insert_or_update_biocs.assert_called_with(expected_request_data)
+
+
+@pytest.mark.parametrize(
+    "mock_reply, expected_output, expected_readable_output",
+    [
+        (
+            {"updated_objects": [{"id": "1", "status": "BIOC updated successfully"}]},
+            {"rule_id": "1"},
+            "BIOC updated successfully",
+        ),
+        (
+            {"updated_objects": []},
+            {},
+            "No BIOCs updated.",
+        ),
+    ],
+)
+def test_bioc_update_command(mocker, mock_reply, expected_output, expected_readable_output):
+    """
+    Given:
+        - Arguments for updating a BIOC.
+    When:
+        - Running bioc_update_command.
+    Then:
+        - Verify the client.insert_or_update_biocs is called and results are correct.
+    """
+    from CortexXDRIR import Client, bioc_update_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mocker.patch.object(Client, "insert_or_update_biocs", return_value=mock_reply)
+
+    args = {"rule_id": "1", "name": "test_bioc", "severity": "high"}
+    res = bioc_update_command(client, args)
+
+    assert res.outputs == expected_output
+    assert res.readable_output == expected_readable_output
+
+
+@pytest.mark.parametrize(
+    "mock_reply, expected_output",
+    [
+        ({"objects": ["1"]}, "BIOC with id 1 deleted successfully."),
+        ({"objects": ["1", "2"]}, "BIOCs with ids 1, 2 deleted successfully."),
+        ({"objects": []}, "No BIOCs were found to delete."),
+    ],
+)
+def test_bioc_delete_command(mocker, mock_reply, expected_output):
+    """
+    Given:
+        - Arguments for deleting a BIOC.
+    When:
+        - Running bioc_delete_command.
+    Then:
+        - Verify the client.delete_biocs is called and results are correct.
+    """
+    from CortexXDRIR import Client, bioc_delete_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mocker.patch.object(Client, "delete_biocs", return_value=mock_reply)
+
+    args = {"name": "test_bioc"}
+    res = bioc_delete_command(client, args)
+
+    assert res.readable_output == expected_output
+
+
+@pytest.mark.parametrize(
+    "args, expected_request_data",
+    [
+        (
+            {"name": "test_rule", "page": "1", "limit": "10", "extra_data": "true"},
+            {
+                "request_data": {
+                    "filters": [{"field": "name", "operator": "EQ", "value": "test_rule"}],
+                    "extended_view": True,
+                    "search_from": 10,
+                    "search_to": 20,
+                }
+            },
+        ),
+        (
+            {"filter_json": '[{"field": "name", "operator": "EQ", "value": "test_rule"}]'},
+            {
+                "request_data": {
+                    "filters": [{"field": "name", "operator": "EQ", "value": "test_rule"}],
+                    "extended_view": False,
+                    "search_from": 0,
+                    "search_to": 50,
+                }
+            },
+        ),
+    ],
+)
+def test_correlation_rule_list_command(mocker, args, expected_request_data):
+    """
+    Given:
+        - Arguments for filtering correlation rules.
+    When:
+        - Running correlation_rule_list_command.
+    Then:
+        - Verify the client.get_correlation_rules is called and results are correct.
+    """
+    from CortexXDRIR import Client, correlation_rule_list_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mock_reply = {"objects": [{"rule_id": "1", "name": "test_rule", "description": "desc", "is_enabled": True}]}
+    mocker.patch.object(Client, "get_correlation_rules", return_value=mock_reply)
+
+    res = correlation_rule_list_command(client, args)
+
+    assert res.outputs == mock_reply["objects"]
+    Client.get_correlation_rules.assert_called_with(expected_request_data)
+
+
+@pytest.mark.parametrize(
+    "args, expected_request_data, expected_output",
+    [
+        (
+            {
+                "name": "test_rule",
+                "severity": "high",
+                "xql_query": "dataset = xdr_data",
+                "is_enabled": "true",
+                "timezone": "UTC",
+                "dataset": "xdr_data",
+                "alert_category": "category",
+                "execution_mode": "real_time",
+                "mapping_strategy": "strategy",
+                "description": "desc",
+                "alert_name": "alert",
+                "alert_description": "alert_desc",
+                "search_window": "1h",
+                "schedule_linux": "* * * * *",
+                "schedule": "daily",
+                "drilldown_query_timeframe": "1h",
+                "investigation_query_link": "link",
+                "suppression_enabled": "true",
+                "suppression_duration": "1h",
+                "suppression_fields": "field1",
+                "user_defined_severity": "medium",
+                "user_defined_category": "cat",
+                "mitre_defs_json": '{"tactic": "test"}',
+                "alert_fields": '{"field": "value"}',
+            },
+            {
+                "request_data": [
+                    {
+                        "rule_id": None,
+                        "name": "test_rule",
+                        "severity": "SEV_040_HIGH",
+                        "xql_query": "dataset = xdr_data",
+                        "is_enabled": True,
+                        "action": "ALERTS",
+                        "timezone": "UTC",
+                        "dataset": "xdr_data",
+                        "alert_category": "CATEGORY",
+                        "execution_mode": "REAL_TIME",
+                        "mapping_strategy": "STRATEGY",
+                        "description": "desc",
+                        "alert_name": "alert",
+                        "alert_description": "alert_desc",
+                        "search_window": "1h",
+                        "crontab": "* * * * *",
+                        "simple_schedule": "daily",
+                        "drilldown_query_timeframe": "1h",
+                        "investigation_query_link": "link",
+                        "suppression_enabled": True,
+                        "suppression_duration": "1h",
+                        "suppression_fields": "field1",
+                        "user_defined_severity": "medium",
+                        "user_defined_category": "cat",
+                        "mitre_defs": {"tactic": "test"},
+                        "alert_fields": {"field": "value"},
+                    }
+                ]
+            },
+            {"rule_id": "1", "readable_output": "Rule created successfully"},
+        )
+    ],
+)
+def test_correlation_rule_create_command(mocker, args, expected_request_data, expected_output):
+    """
+    Given:
+        - Arguments for creating a correlation rule.
+    When:
+        - Running correlation_rule_create_command.
+    Then:
+        - Verify the client.create_or_update_correlation_rules is called and results are correct.
+    """
+    from CortexXDRIR import Client, correlation_rule_create_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mock_reply = {"added_objects": [{"id": "1", "status": "Rule created successfully"}]}
+    mocker.patch.object(Client, "create_or_update_correlation_rules", return_value=mock_reply)
+
+    res = correlation_rule_create_command(client, args)
+
+    assert res.outputs == {"rule_id": expected_output["rule_id"]}
+    assert res.readable_output == expected_output["readable_output"]
+    Client.create_or_update_correlation_rules.assert_called_with(expected_request_data)
+
+
+@pytest.mark.parametrize(
+    "args, expected_request_data, expected_output",
+    [
+        (
+            {"rule_id": "1", "name": "test_rule", "severity": "high", "is_enabled": "true"},
+            {
+                "request_data": [
+                    {
+                        "rule_id": "1",
+                        "name": "test_rule",
+                        "severity": "SEV_040_HIGH",
+                        "xql_query": None,
+                        "is_enabled": True,
+                        "action": "ALERTS",
+                        "timezone": None,
+                        "dataset": None,
+                        "alert_category": None,
+                        "execution_mode": None,
+                        "mapping_strategy": None,
+                        "description": None,
+                        "alert_name": None,
+                        "alert_description": None,
+                        "search_window": None,
+                        "crontab": None,
+                        "simple_schedule": None,
+                        "drilldown_query_timeframe": None,
+                        "investigation_query_link": None,
+                        "suppression_enabled": None,
+                        "suppression_duration": None,
+                        "suppression_fields": None,
+                        "user_defined_severity": None,
+                        "user_defined_category": None,
+                        "mitre_defs": {},
+                        "alert_fields": {},
+                    }
+                ]
+            },
+            {"rule_id": "1", "readable_output": "Rule updated successfully"},
+        )
+    ],
+)
+def test_correlation_rule_update_command(mocker, args, expected_request_data, expected_output):
+    """
+    Given:
+        - Arguments for updating a correlation rule.
+    When:
+        - Running correlation_rule_update_command.
+    Then:
+        - Verify the client.create_or_update_correlation_rules is called and results are correct.
+    """
+    from CortexXDRIR import Client, correlation_rule_update_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mock_reply = {"updated_objects": [{"id": "1", "status": "Rule updated successfully"}]}
+    mocker.patch.object(Client, "create_or_update_correlation_rules", return_value=mock_reply)
+
+    res = correlation_rule_update_command(client, args)
+
+    assert res.outputs == {"rule_id": expected_output["rule_id"]}
+    assert res.readable_output == expected_output["readable_output"]
+    Client.create_or_update_correlation_rules.assert_called_with(expected_request_data)
+
+
+@pytest.mark.parametrize(
+    "mock_reply, args, expected_output, expected_filters",
+    [
+        (
+            {"objects": ["1"], "objects_count": 1},
+            {"rule_id": "1"},
+            "Correlation Rule 1 was deleted.",
+            {"request_data": {"filters": [{"field": "rule_id", "operator": "EQ", "value": 1}]}},
+        ),
+        (
+            {"objects": ["1", "2"], "objects_count": 2},
+            {"rule_id": "1,2"},
+            "Correlation Rules 1, 2 were deleted.",
+            {
+                "request_data": {
+                    "filters": [
+                        {"field": "rule_id", "operator": "EQ", "value": 1},
+                        {"field": "rule_id", "operator": "EQ", "value": 2},
+                    ]
+                }
+            },
+        ),
+        (
+            {"objects": [], "objects_count": 0},
+            {"rule_id": "1"},
+            "Could not find any correlation rules to delete.",
+            {"request_data": {"filters": [{"field": "rule_id", "operator": "EQ", "value": 1}]}},
+        ),
+        (
+            {"objects": ["1"], "objects_count": 1},
+            {"rule_id": "1,invalid"},
+            "Correlation Rule 1 was deleted.",
+            {"request_data": {"filters": [{"field": "rule_id", "operator": "EQ", "value": 1}]}},
+        ),
+    ],
+)
+def test_correlation_rule_delete_command(mocker, mock_reply, args, expected_output, expected_filters):
+    """
+    Given:
+        - Arguments for deleting correlation rules.
+    When:
+        - Running correlation_rule_delete_command.
+    Then:
+        - Verify the client.delete_correlation_rules is called and results are correct.
+    """
+    from CortexXDRIR import Client, correlation_rule_delete_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mocker.patch.object(Client, "delete_correlation_rules", return_value=mock_reply)
+
+    res = correlation_rule_delete_command(client, args)
+
+    assert res.readable_output == expected_output
+    Client.delete_correlation_rules.assert_called_with(expected_filters)
+
+
+def test_create_filters_for_bioc_and_correlation_rules_all_fields():
+    """
+    Given:
+        - All possible arguments for creating filters.
+    When:
+        - Running create_filters_for_bioc_and_correlation_rules.
+    Then:
+        - Verify the returned filters list contains all expected filters.
+    """
+    from CortexXDRIR import create_filters_for_bioc_and_correlation_rules
+
+    args = {
+        "name": "test_name",
+        "severity": "high",
+        "type": "bioc_type",
+        "is_xql": "true",
+        "comment": "test_comment",
+        "status": "enabled",
+        "indicator": "test_indicator",
+        "mitre_technique_id_and_name": "T1000,T1001",
+        "mitre_tactic_id_and_name": "TA0001,TA0002",
+        "xql_query": "test_query",
+        "is_enabled": "true",
+        "description": "test_description",
+        "alert_name": "test_alert_name",
+        "alert_category": "test_alert_category",
+        "alert_description": "test_alert_description",
+        "alert_fields": "field1,field2",
+        "execution_mode": "real_time",
+        "search_window": "1h",
+        "schedule": "daily",
+        "timezone": "UTC",
+        "schedule_linux": "* * * * *",
+        "suppression_enabled": "true",
+        "suppression_duration": "1h",
+        "suppression_fields": "field1",
+        "dataset": "xdr_data",
+        "user_defined_severity": "medium",
+        "user_defined_category": "category",
+        "mitre_defs_json": '{"tactic": "test"}',
+        "investigation_query_link": "link",
+        "drilldown_query_timeframe": "1h",
+        "mapping_strategy": "strategy",
+        "alert_domain": "domain",
+    }
+
+    filters = create_filters_for_bioc_and_correlation_rules(args)
+
+    assert {"field": "name", "operator": "EQ", "value": "test_name"} in filters
+    assert {"field": "severity", "operator": "EQ", "value": "SEV_040_HIGH"} in filters
+    assert {"field": "type", "operator": "EQ", "value": "bioc_type"} in filters
+    assert {"field": "is_xql", "operator": "EQ", "value": True} in filters
+    assert {"field": "comment", "operator": "EQ", "value": "test_comment"} in filters
+    assert {"field": "status", "operator": "EQ", "value": "enabled"} in filters
+    assert {"field": "indicator", "operator": "EQ", "value": "test_indicator"} in filters
+    assert {"field": "mitre_technique_id_and_name", "operator": "EQ", "value": ["T1000", "T1001"]} in filters
+    assert {"field": "mitre_tactic_id_and_name", "operator": "EQ", "value": ["TA0001", "TA0002"]} in filters
+    assert {"field": "xql_query", "operator": "EQ", "value": "test_query"} in filters
+    assert {"field": "is_enabled", "operator": "EQ", "value": True} in filters
+    assert {"field": "description", "operator": "EQ", "value": "test_description"} in filters
+    assert {"field": "alert_name", "operator": "EQ", "value": "test_alert_name"} in filters
+    assert {"field": "alert_category", "operator": "EQ", "value": "test_alert_category"} in filters
+    assert {"field": "alert_description", "operator": "EQ", "value": "test_alert_description"} in filters
+    assert {"field": "alert_fields", "operator": "EQ", "value": ["field1", "field2"]} in filters
+    assert {"field": "execution_mode", "operator": "EQ", "value": "real_time"} in filters
+    assert {"field": "search_window", "operator": "EQ", "value": "1h"} in filters
+    assert {"field": "schedule", "operator": "EQ", "value": "daily"} in filters
+    assert {"field": "timezone", "operator": "EQ", "value": "UTC"} in filters
+    assert {"field": "schedule_linux", "operator": "EQ", "value": "* * * * *"} in filters
+    assert {"field": "suppression_enabled", "operator": "EQ", "value": True} in filters
+    assert {"field": "suppression_duration", "operator": "EQ", "value": "1h"} in filters
+    assert {"field": "suppression_fields", "operator": "EQ", "value": "field1"} in filters
+    assert {"field": "dataset", "operator": "EQ", "value": "xdr_data"} in filters
+    assert {"field": "user_defined_severity", "operator": "EQ", "value": "medium"} in filters
+    assert {"field": "user_defined_category", "operator": "EQ", "value": "category"} in filters
+    assert {"field": "mitre_defs", "operator": "EQ", "value": {"tactic": "test"}} in filters
+    assert {"field": "investigation_query_link", "operator": "EQ", "value": "link"} in filters
+    assert {"field": "drilldown_query_timeframe", "operator": "EQ", "value": "1h"} in filters
+    assert {"field": "mapping_strategy", "operator": "EQ", "value": "strategy"} in filters
+    assert {"field": "alert_domain", "operator": "EQ", "value": "domain"} in filters

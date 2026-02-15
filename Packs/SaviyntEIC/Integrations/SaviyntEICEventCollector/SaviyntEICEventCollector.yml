@@ -17,6 +17,13 @@ configuration:
   required: true
   type: 9
   section: Connect
+- display: Analytics Name
+  name: analytics_name
+  required: false
+  type: 0
+  section: Collect
+  defaultvalue: SIEMAuditLogs
+  additionalinfo: The name of the Analytics Runtime Control to fetch events from. This value must match an existing Analytics Record configured in Saviynt. Multiple values are not supported.
 - defaultvalue: '30000'
   section: Collect
   display: Maximum number of events per fetch
@@ -77,7 +84,7 @@ script:
     description: Gets events from Saviynt EIC. This command is supported in Cortex XSIAM only and is intended to be used for debugging purposes as it may result in duplicate events.
     execution: false
     name: saviynt-eic-get-events
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.12.6391686
   isfetchevents: true
   runonce: false
   script: '-'

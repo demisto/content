@@ -50,6 +50,14 @@ XDR_TO_XSOAR = "XDR -> XSOAR"
 
 XDR_OPEN_STATUS_TO_XSOAR = ["under_investigation", "new"]
 
+BIOC_AND_CR_SEVERITY_MAPPING = {
+    "info": "SEV_010_INFO",
+    "low": "SEV_020_LOW",
+    "medium": "SEV_030_MEDIUM",
+    "high": "SEV_040_HIGH",
+    "critical": "SEV_050_CRITICAL",
+}
+
 
 def convert_epoch_to_milli(timestamp):
     if timestamp is None:
@@ -425,6 +433,39 @@ class Client(CoreClient):
 
         return reply.get("reply")
 
+    def get_api_keys(self, request_data: dict):
+        """
+        Gets a list of existing API keys.
+        Args:
+            request_data (dict): The request data
+        Returns:
+            list: A list of API keys.
+        """
+        res = self._http_request(
+            method="POST",
+            url_suffix="/api_keys/get_api_keys/",
+            json_data={"request_data": request_data},
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+        return res.get("reply", {}).get("DATA", [])
+
+    def delete_api_keys(self, request_data: dict):
+        """
+        Deletes the specified API keys.
+        Args:
+            request_data (dict): List of API key IDs to delete.
+        Returns:
+            dict: The API response.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/api_keys/delete/",
+            json_data={"request_data": request_data},
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+
     def get_tenant_info(self):
         reply = self._http_request(
             method="POST",
@@ -529,6 +570,54 @@ class Client(CoreClient):
         if "reply" not in response or "alerts_ids" not in response["reply"]:
             raise DemistoException(f"Parse Error. Response not in format, can't find reply key. The response {response}.")
         return response["reply"]["alerts_ids"]
+
+    def get_biocs(self, request_data: dict):
+        reply = self._http_request(
+            method="POST",
+            url_suffix="/bioc/get",
+            json_data=request_data,
+        )
+        return reply
+
+    def insert_or_update_biocs(self, request_data):
+        reply = self._http_request(
+            method="POST",
+            url_suffix="/bioc/insert",
+            json_data=request_data,
+        )
+        return reply
+
+    def delete_biocs(self, request_data: dict):
+        reply = self._http_request(
+            method="POST",
+            url_suffix="/bioc/delete",
+            json_data=request_data,
+        )
+        return reply
+
+    def get_correlation_rules(self, request_data: dict):
+        reply = self._http_request(
+            method="POST",
+            url_suffix="/correlations/get",
+            json_data=request_data,
+        )
+        return reply
+
+    def create_or_update_correlation_rules(self, request_data: dict):
+        reply = self._http_request(
+            method="POST",
+            url_suffix="/correlations/insert",
+            json_data=request_data,
+        )
+        return reply
+
+    def delete_correlation_rules(self, request_data: dict):
+        reply = self._http_request(
+            method="POST",
+            url_suffix="/correlations/delete",
+            json_data=request_data,
+        )
+        return reply
 
     def get_asset(self, asset_id: str):
         try:
@@ -1496,6 +1585,488 @@ def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output="Alerts with IDs {} have been updated successfully.".format(",".join(array_of_all_ids)))
 
 
+def create_filters_for_bioc_and_correlation_rules(args: dict) -> list:
+    """
+    Creates a list of filters for BIOC and correlation rules based on the provided arguments.
+
+    Args:
+        args (dict): The command arguments containing filter criteria.
+
+    Returns:
+        list: A list of filter dictionaries compatible with the Cortex XDR API.
+    """
+    filters = []
+    if name := args.get("name"):
+        filters.append({"field": "name", "operator": "EQ", "value": name})
+    if severity := args.get("severity"):
+        filters.append({"field": "severity", "operator": "EQ", "value": BIOC_AND_CR_SEVERITY_MAPPING.get(severity, severity)})
+    if bioc_type := args.get("type"):
+        filters.append({"field": "type", "operator": "EQ", "value": bioc_type})
+    if is_xql := args.get("is_xql"):
+        filters.append({"field": "is_xql", "operator": "EQ", "value": argToBoolean(is_xql)})
+    if comment := args.get("comment"):
+        filters.append({"field": "comment", "operator": "EQ", "value": comment})
+    if status := args.get("status"):
+        filters.append({"field": "status", "operator": "EQ", "value": status})
+    if indicator := args.get("indicator"):
+        filters.append({"field": "indicator", "operator": "EQ", "value": indicator})
+    if mitre_technique := argToList(args.get("mitre_technique_id_and_name")):
+        filters.append({"field": "mitre_technique_id_and_name", "operator": "EQ", "value": mitre_technique})
+    if mitre_tactic := argToList(args.get("mitre_tactic_id_and_name")):
+        filters.append({"field": "mitre_tactic_id_and_name", "operator": "EQ", "value": mitre_tactic})
+    if xql_query := args.get("xql_query"):
+        filters.append({"field": "xql_query", "operator": "EQ", "value": xql_query})
+    if is_enabled := args.get("is_enabled"):
+        filters.append({"field": "is_enabled", "operator": "EQ", "value": argToBoolean(is_enabled)})
+    if description := args.get("description"):
+        filters.append({"field": "description", "operator": "EQ", "value": description})
+    if alert_name := args.get("alert_name"):
+        filters.append({"field": "alert_name", "operator": "EQ", "value": alert_name})
+    if alert_category := args.get("alert_category"):
+        filters.append({"field": "alert_category", "operator": "EQ", "value": alert_category})
+    if alert_description := args.get("alert_description"):
+        filters.append({"field": "alert_description", "operator": "EQ", "value": alert_description})
+    if alert_fields := argToList(args.get("alert_fields")):
+        filters.append({"field": "alert_fields", "operator": "EQ", "value": alert_fields})
+    if execution_mode := args.get("execution_mode"):
+        filters.append({"field": "execution_mode", "operator": "EQ", "value": execution_mode})
+    if search_window := args.get("search_window"):
+        filters.append({"field": "search_window", "operator": "EQ", "value": search_window})
+    if simple_schedule := args.get("schedule"):
+        filters.append({"field": "schedule", "operator": "EQ", "value": simple_schedule})
+    if timezone := args.get("timezone"):
+        filters.append({"field": "timezone", "operator": "EQ", "value": timezone})
+    if crontab := args.get("schedule_linux"):
+        filters.append({"field": "schedule_linux", "operator": "EQ", "value": crontab})
+    if suppression_enabled := args.get("suppression_enabled"):
+        filters.append({"field": "suppression_enabled", "operator": "EQ", "value": argToBoolean(suppression_enabled)})
+    if suppression_duration := args.get("suppression_duration"):
+        filters.append({"field": "suppression_duration", "operator": "EQ", "value": suppression_duration})
+    if suppression_fields := args.get("suppression_fields"):
+        filters.append({"field": "suppression_fields", "operator": "EQ", "value": suppression_fields})
+    if dataset := args.get("dataset"):
+        filters.append({"field": "dataset", "operator": "EQ", "value": dataset})
+    if user_defined_severity := args.get("user_defined_severity"):
+        filters.append({"field": "user_defined_severity", "operator": "EQ", "value": user_defined_severity})
+    if user_defined_category := args.get("user_defined_category"):
+        filters.append({"field": "user_defined_category", "operator": "EQ", "value": user_defined_category})
+    if mitre_defs := args.get("mitre_defs_json"):
+        try:
+            mitre_defs_json = json.loads(mitre_defs)
+        except ValueError:
+            raise DemistoException("Unable to parse 'mitre_defs'. Please use the JSON format.")
+        filters.append({"field": "mitre_defs", "operator": "EQ", "value": mitre_defs_json})
+    if investigation_query_link := args.get("investigation_query_link"):
+        filters.append({"field": "investigation_query_link", "operator": "EQ", "value": investigation_query_link})
+    if drilldown_query_timeframe := args.get("drilldown_query_timeframe"):
+        filters.append({"field": "drilldown_query_timeframe", "operator": "EQ", "value": drilldown_query_timeframe})
+    if mapping_strategy := args.get("mapping_strategy"):
+        filters.append({"field": "mapping_strategy", "operator": "EQ", "value": mapping_strategy})
+    if alert_domain := args.get("alert_domain"):
+        filters.append({"field": "alert_domain", "operator": "EQ", "value": alert_domain})
+    return filters
+
+
+def bioc_list_command(client: Client, args: Dict) -> CommandResults:
+    """
+    API Docs https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-BIOCs
+    Returns a list of BIOCs.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments.
+    Returns:
+        CommandResults: The command results.
+    """
+    filters = create_filters_for_bioc_and_correlation_rules(args)
+    page = arg_to_number(args.get("page")) or 0
+    limit = arg_to_number(args.get("limit")) or 50
+    page_size = arg_to_number(args.get("page_size")) or limit
+    extended_view = argToBoolean(args.get("extra_data", False))
+
+    request_data = assign_params(
+        extended_view=extended_view,
+        search_from=page * page_size,
+        search_to=(page + 1) * page_size,
+    )
+    request_data["filters"] = filters
+    reply = client.get_biocs({"request_data": request_data})
+    biocs = reply.get("objects", [])
+    readable_output = tableToMarkdown(
+        name="BIOCs List",
+        t=biocs,
+        headerTransform=string_to_table_header,
+        headers=["rule_id", "name", "type", "severity", "status"],
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.BIOC",
+        outputs_key_field="rule_id",
+        outputs=biocs,
+        raw_response=reply,
+    )
+
+
+def bioc_create_or_update_helper(client: Client, args: Dict) -> dict:
+    """
+    Creates or updates BIOC indicators based on provided arguments.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments containing rule configuration.
+    Returns:
+        dict: The raw response from the client containing the update/creation results.
+    """
+    bioc_data = {
+        # required for updating
+        "rule_id": args.get("rule_id"),
+        # required fields
+        "name": args.get("name"),
+        "severity": BIOC_AND_CR_SEVERITY_MAPPING.get(args.get("severity", "")),
+        # not required but need to be null
+        "type": args.get("type"),
+        "is_xql": argToBoolean(args.get("is_xql")) if args.get("is_xql") else None,
+        "comment": args.get("comment"),
+        "status": args.get("status"),
+        "mitre_technique_id_and_name": args.get("mitre_technique_id_and_name") or [],
+        "mitre_tactic_id_and_name": args.get("mitre_tactic_id_and_name") or [],
+    }
+    indicator = args.get("indicator")  # required
+    if indicator:
+        try:
+            indicator = json.loads(indicator)
+            bioc_data["indicator"] = indicator
+        except ValueError:
+            raise DemistoException("Unable to parse 'indicator'. Please use the JSON format.")
+
+    return client.insert_or_update_biocs({"request_data": [bioc_data]})
+
+
+def bioc_create_command(client: Client, args: Dict) -> CommandResults:
+    """
+    API Docs https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs
+    Creates a new BIOC.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments.
+    Returns:
+        CommandResults: The command results.
+    """
+    reply = bioc_create_or_update_helper(client, args)
+    if added_objects := reply.get("added_objects", []):
+        message = added_objects[0].get("status")
+        outputs = {"rule_id": added_objects[0].get("id")}
+    else:
+        message = "No BIOCs created."
+        outputs = {}
+
+    return CommandResults(
+        readable_output=message,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.BIOC",
+        outputs_key_field="rule_id",
+        outputs=outputs,
+        raw_response=reply,
+    )
+
+
+def bioc_update_command(client: Client, args: Dict) -> CommandResults:
+    """
+    API Docs https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs
+    Updates an existing BIOC.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments.
+    Returns:
+        CommandResults: The command results.
+    """
+    reply = bioc_create_or_update_helper(client, args)
+    if updated_objects := reply.get("updated_objects"):
+        message = updated_objects[0].get("status")
+        outputs = {"rule_id": updated_objects[0].get("id")}
+    else:
+        message = "No BIOCs updated."
+        outputs = {}
+
+    return CommandResults(
+        readable_output=message,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.BIOC",
+        outputs_key_field="rule_id",
+        outputs=outputs,
+        raw_response=reply,
+    )
+
+
+def bioc_delete_command(client: Client, args: Dict) -> CommandResults:
+    """
+    API Docs https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-BIOCs
+    Deletes a BIOC.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments.
+    Returns:
+        str: Success message.
+    """
+    filters: list = create_filters_for_bioc_and_correlation_rules(args)
+    request_data = {"request_data": {"filters": filters}}
+    res = client.delete_biocs(request_data)
+    rule_ids = res.get("objects", [])
+    count = len(rule_ids)
+
+    if count == 1:
+        return CommandResults(readable_output=f"BIOC with id {rule_ids[0]} deleted successfully.")
+
+    elif count > 1:
+        ids_str = ", ".join(map(str, rule_ids))
+        return CommandResults(readable_output=f"BIOCs with ids {ids_str} deleted successfully.")
+
+    else:
+        return CommandResults(readable_output="No BIOCs were found to delete.")
+
+
+def correlation_rule_list_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Returns a list of correlation rules.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments.
+    Returns:
+        CommandResults: The command results.
+    """
+    filters = create_filters_for_bioc_and_correlation_rules(args)
+    if filter_json := args.get("filter_json"):
+        try:
+            filter_json = json.loads(filter_json)
+            filters.extend(filter_json)
+        except ValueError:
+            raise DemistoException("Unable to parse 'filter_json'. Please use the JSON format.")
+
+    page = arg_to_number(args.get("page")) or 0
+    limit = arg_to_number(args.get("limit")) or 50
+    page_size = arg_to_number(args.get("page_size")) or limit
+
+    request_data = assign_params(
+        extended_view=argToBoolean(args.get("extra_data", False)),
+        search_from=page * page_size,
+        search_to=(page + 1) * page_size,
+    )
+    request_data["filters"] = filters
+    reply = client.get_correlation_rules({"request_data": request_data})
+    rules = reply.get("objects", [])
+    readable_output = tableToMarkdown(
+        name="Correlation Rules List",
+        t=rules,
+        headers=["rule_id", "name", "severity", "description", "is_enabled"],
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CorrelationRule",
+        outputs_key_field="rule_id",
+        outputs=rules,
+        raw_response=reply,
+    )
+
+
+def correlation_rule_create_or_update_helper(client: Client, args: Dict) -> dict:
+    """
+    Creates or updates correlation rules based on provided arguments.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments containing rule configuration.
+    Returns:
+        dict: The raw response from the client containing the update/creation results.
+    """
+    severity_arg = args.get("severity")
+    severity_mapped = BIOC_AND_CR_SEVERITY_MAPPING.get(severity_arg) if severity_arg else None
+
+    rule_data = {
+        # Required fields
+        "rule_id": args.get("rule_id"),
+        "name": args.get("name"),
+        "severity": severity_mapped,
+        "xql_query": args.get("xql_query"),
+        "is_enabled": argToBoolean(args.get("is_enabled")) if args.get("is_enabled") else None,
+        "action": "ALERTS",
+        "timezone": args.get("timezone"),
+        "dataset": args.get("dataset"),
+        "alert_category": args.get("alert_category", "").upper() if args.get("alert_category") else None,
+        "execution_mode": args.get("execution_mode", "").upper() if args.get("execution_mode") else None,
+        "mapping_strategy": args.get("mapping_strategy", "").upper() if args.get("mapping_strategy") else None,
+        # Use 'or None' to convert empty strings ("") into JSON null. We must put a value for those fields.
+        "description": args.get("description") or None,
+        "alert_name": args.get("alert_name") or None,
+        "alert_description": args.get("alert_description") or None,
+        "search_window": args.get("search_window") or None,
+        "crontab": args.get("schedule_linux") or None,
+        "simple_schedule": args.get("schedule") or None,
+        "drilldown_query_timeframe": args.get("drilldown_query_timeframe") or None,
+        "investigation_query_link": args.get("investigation_query_link") or None,
+        "suppression_enabled": argToBoolean(args.get("suppression_enabled")) if args.get("suppression_enabled") else None,
+        "suppression_duration": args.get("suppression_duration") or None,
+        "suppression_fields": args.get("suppression_fields") or None,
+        # User Defined Severity (Must be None unless Severity is "User Defined")
+        "user_defined_severity": args.get("user_defined_severity") or None,
+        "user_defined_category": args.get("user_defined_category") or None,
+        # Defaults to "{}" string if missing so json.loads doesn't fail
+        "mitre_defs": json.loads(args.get("mitre_defs_json") or "{}"),
+        "alert_fields": json.loads(args.get("alert_fields") or "{}"),
+    }
+
+    return client.create_or_update_correlation_rules({"request_data": [rule_data]})
+
+
+def correlation_rule_create_command(client: Client, args: Dict) -> CommandResults:
+    """
+    API Docs https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-Correlation-Rules
+    Creates a new correlation rule.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments.
+    Returns:
+        CommandResults: The command results.
+    """
+    reply = correlation_rule_create_or_update_helper(client, args)
+    if added_objects := reply.get("added_objects", []):
+        message = added_objects[0].get("status")
+        outputs = {"rule_id": added_objects[0].get("id")}
+    else:
+        message = "No Correlation Rules created."
+        outputs = {}
+    return CommandResults(
+        readable_output=message,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CorrelationRule",
+        outputs_key_field="rule_id",
+        outputs=outputs,
+        raw_response=reply,
+    )
+
+
+def correlation_rule_update_command(client: Client, args: Dict) -> CommandResults:
+    """
+    API Docs https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-Correlation-Rules
+    Updates an existing correlation rule.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments.
+    Returns:
+        CommandResults: The command results.
+    """
+    reply = correlation_rule_create_or_update_helper(client, args)
+    if updated_objects := reply.get("updated_objects"):
+        message = updated_objects[0].get("status")
+        outputs = {"rule_id": updated_objects[0].get("id")}
+    else:
+        message = "No Correlation Rules updated."
+        outputs = {}
+    return CommandResults(
+        readable_output=message,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CorrelationRule",
+        outputs_key_field="rule_id",
+        outputs=outputs,
+        raw_response=reply,
+    )
+
+
+def correlation_rule_delete_command(client: Client, args: Dict) -> CommandResults:
+    """
+    API Docs  https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-Correlation-Rules
+    Deletes correlation rules.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments.
+    Returns:
+        str: Success message.
+    """
+    rule_ids = argToList(args.get("rule_id"))
+    rule_id_list = []
+    for rule_id in rule_ids:
+        try:
+            rule_id_list.append({"field": "rule_id", "operator": "EQ", "value": int(rule_id)})
+        except (ValueError, TypeError):
+            # If rule_id is None, "abc", or "", skip it safely
+            continue
+
+    reply = client.delete_correlation_rules({"request_data": {"filters": rule_id_list}})
+    deleted_ids = reply.get("objects", [])
+    objects_count = reply.get("objects_count")
+
+    if objects_count == 0:
+        status = "Could not find any correlation rules to delete."
+    elif objects_count == 1:
+        status = f"Correlation Rule {deleted_ids[0]} was deleted."
+    else:
+        ids_str = ", ".join(map(str, deleted_ids))
+        status = f"Correlation Rules {ids_str} were deleted."
+
+    return CommandResults(readable_output=status, raw_response=reply)
+
+
+def api_key_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-existing-API-keys
+    Gets a list of existing API keys.
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+    Returns:
+        CommandResults: The results of the command.
+    """
+    api_ids = [int(x) for x in argToList(args.get("api_id", []))] or None
+    roles_list = argToList(args.get("role", []))
+    expires_before = (
+        arg_to_timestamp(args.get("expires_before"), arg_name="expires_before") if args.get("expires_before") else None
+    )
+    expires_after = arg_to_timestamp(args.get("expires_after"), arg_name="expires_after") if args.get("expires_after") else None
+
+    filters = []
+
+    if api_ids:
+        filters.append({"field": "id", "operator": "in", "value": api_ids})
+
+    if roles_list:
+        filters.append({"field": "roles", "operator": "contains", "value": roles_list})
+
+    if expires_before:
+        filters.append({"field": "expiration", "operator": "lte", "value": expires_before})
+
+    if expires_after:
+        filters.append({"field": "expiration", "operator": "gte", "value": expires_after})
+
+    api_keys = client.get_api_keys({"filters": filters})
+    readable_output = tableToMarkdown(
+        name="API Keys",
+        t=api_keys,
+        headers=["id", "roles", "created_by", "creation_time", "expiration", "comment"],
+        date_fields=["creation_time", "expiration"],
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.APIKeyData",
+        outputs=api_keys,
+        outputs_key_field="id",
+        raw_response=api_keys,
+    )
+
+
+def api_key_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-API-keys
+    Deletes the specified API keys.
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+    Returns:
+        CommandResults: The results of the command.
+    """
+    api_ids = [int(x) for x in argToList(args.get("api_id", []))] or None
+    request_data = {"filters": [{"field": "id", "operator": "in", "value": api_ids}]}
+    client.delete_api_keys(request_data=request_data)
+    return CommandResults(readable_output="API Keys deleted successfully.")
+
+
 def get_asset_list_command(client: Client, args: Dict) -> CommandResults:
     """
     Returns a list of assets.
@@ -2269,6 +2840,36 @@ def main():  # pragma: no cover
 
         elif command == "xdr-update-alert":
             return_results(update_alerts_in_xdr_command(client, args))
+
+        elif command == "xdr-bioc-list":
+            return_results(bioc_list_command(client, args))
+
+        elif command == "xdr-bioc-create":
+            return_results(bioc_create_command(client, args))
+
+        elif command == "xdr-bioc-update":
+            return_results(bioc_update_command(client, args))
+
+        elif command == "xdr-bioc-delete":
+            return_results(bioc_delete_command(client, args))
+
+        elif command == "xdr-correlation-rule-list":
+            return_results(correlation_rule_list_command(client, args))
+
+        elif command == "xdr-correlation-rule-create":
+            return_results(correlation_rule_create_command(client, args))
+
+        elif command == "xdr-correlation-rule-update":
+            return_results(correlation_rule_update_command(client, args))
+
+        elif command == "xdr-correlation-rule-delete":
+            return_results(correlation_rule_delete_command(client, args))
+
+        elif command == "xdr-api-key-list":
+            return_results(api_key_list_command(client, args))
+
+        elif command == "xdr-api-key-delete":
+            return_results(api_key_delete_command(client, args))
 
     except Exception as err:
         return_error(str(err))
