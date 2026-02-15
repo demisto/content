@@ -299,9 +299,7 @@ class TestCredentialFlowEndToEnd:
         mocker.patch("ServiceNow_CMDB.demisto.command", return_value="test-module")
         # return_error must stop execution (like the real one does via sys.exit),
         # otherwise test_module continues to records_list which triggers auto-login HTTP calls.
-        mocker.patch(
-            "ServiceNow_CMDB.return_error", side_effect=SystemExit("return_error called")
-        )
+        mocker.patch("ServiceNow_CMDB.return_error", side_effect=SystemExit("return_error called"))
 
         client_init_spy = mocker.patch("ServiceNow_CMDB.Client", wraps=Client)
         with pytest.raises(SystemExit):
@@ -314,7 +312,6 @@ class TestCredentialFlowEndToEnd:
         assert call_kwargs["use_oauth"] is True
         assert call_kwargs["username"] == "basic_user"
         assert call_kwargs["password"] == "basic_pass"
-
 
     def test_jwt_auth_flow(self, mocker):
         """

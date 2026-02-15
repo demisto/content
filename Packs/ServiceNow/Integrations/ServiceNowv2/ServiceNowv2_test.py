@@ -1730,7 +1730,6 @@ def test_test_module(mocker):
     assert result[0] == "ok"
 
 
-
 def test_oauth_test_module(mocker):
     """
     Given:
