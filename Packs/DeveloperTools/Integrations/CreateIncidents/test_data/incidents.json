@@ -312,7 +312,7 @@
     "reminder": "0001-01-01T00:00:00Z",
     "roles": null,
     "runStatus": "",
-    "severity": 0,
+    "severity": 2,
     "sla": 0,
     "sortValues": null,
     "sourceBrand": "",
