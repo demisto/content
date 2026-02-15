@@ -6438,7 +6438,6 @@ def arg_to_timestamp(val: Any) -> Optional[int]:
     return int(dt.timestamp() * 1000) if dt else None
 
 
-
 def build_ngsiem_search_body(args: dict) -> dict:
     """
     Build the request body for NGSIEM search.
@@ -6453,15 +6452,13 @@ def build_ngsiem_search_body(args: dict) -> dict:
     if not query:
         raise ValueError("The 'query' argument is required.")
 
-    
-
     around_config = assign_params(
         eventId=args.get("around_event_id"),
         numberOfEventsBefore=arg_to_number(args.get("around_number_events_before")),
         numberOfEventsAfter=arg_to_number(args.get("around_number_events_after")),
         timestamp=arg_to_timestamp(args.get("around_timestamp")),
     )
-    
+
     if not around_config:
         # If an "around" is used (around_number_events_before/after), adding `limit` would override/ignore the config,
         # so we only set `limit` when "around" is not used.
