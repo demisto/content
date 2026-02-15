@@ -1811,6 +1811,13 @@ def flatten_dict_of_dicts_and_lists(data: dict[str, Any]) -> list[dict]:
     This is useful when you want to build a "raw" response list that contains all output
     items without preserving the original top-level keys.
 
+    Examples:
+        >>> flatten_dict_of_dicts_and_lists({
+        ...     "IPEnrichment(val.Value && val.Value == obj.Value)": {"Value": "1"},
+        ...     "EndpointData(val.Brand && val.Brand = ... )": [{"Value": "2"}, {"Value": "3"}],
+        ... })
+        [{'Value': '1'}, {'Value': '2'}, {'Value': '3'}]
+
     Returns:
         A single flat list of dictionaries collected from all values.
     """
