@@ -1,5 +1,5 @@
 Use the CyberArk EPM integration to activate and deactivate CyberArk EPM risk plans for specific endpoints.
-This integration was integrated and tested with version xx of CyberArkEPMSOCResponse.
+This integration was integrated and tested with the CyberArk EPM API.
 
 ## Configure CyberArk EPM SOC Response (Beta) in Cortex
 

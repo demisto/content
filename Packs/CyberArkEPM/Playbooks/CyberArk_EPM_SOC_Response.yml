@@ -8,7 +8,7 @@ marketplaces:
 - marketplacev2
 - platform
 - xsoar
-fromversion: 6.5.0
+fromversion: 6.10.0
 starttaskid: "0"
 tasks:
   "0":
@@ -19,6 +19,7 @@ tasks:
       id: ae9c99f4-49a4-41f7-8417-b9682b743bd8
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -219,6 +220,7 @@ tasks:
       id: 3847060b-4ebd-4d44-b6ed-240481ce918d
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
