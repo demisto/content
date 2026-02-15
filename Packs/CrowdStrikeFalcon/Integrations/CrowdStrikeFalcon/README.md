@@ -5226,6 +5226,8 @@ Create an ODS scan and wait for the results.
 | max_duration | Maximum time (in hours) the scan is allowed to execute. Default is 2. | Optional |
 | interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional |
 | timeout_in_seconds | The timeout in seconds until polling ends. Default is 600. | Optional |
+| cloud_pup_adware_level_detection | Potentially unwanted programs (PUPs) adware detection level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled). | Optional |
+| cloud_pup_adware_level_prevention | Potentially unwanted programs (PUPs) adware prevention level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled). | Optional |
 
 #### Context Output
 
@@ -5268,6 +5270,8 @@ Create an ODS scan and wait for the results.
 | CrowdStrike.ODSScan.created_on | Date | The timestamp when the scan was created. |
 | CrowdStrike.ODSScan.created_by | String | The ID of the user who created the scan job. |
 | CrowdStrike.ODSScan.last_updated | Date | The timestamp when the scan job was last updated. |
+| CrowdStrike.ODSScan.cloud_pup_adware_level_prevention | Number | Potentially unwanted programs (PUPs) Adware prevention level. |
+| CrowdStrike.ODSScan.cloud_pup_adware_level_detection | Number | Potentially unwanted programs (PUPs) Adware detection level. |
 
 #### Command Example
 
@@ -5328,6 +5332,8 @@ Create an ODS scan and wait for the results.
             ],
             "sensor_ml_level_detection": 2,
             "sensor_ml_level_prevention": 2,
+            "cloud_pup_adware_level_prevention": 1,
+            "cloud_pup_adware_level_detection": 1,
             "status": "complete"
         }
     }
@@ -5371,6 +5377,8 @@ Create an ODS scheduled scan.
 | max_duration | Maximum time (in hours) the scan is allowed to execute. Default is 2. | Optional |
 | schedule_start_timestamp | When to start the first scan. Supports english expressions such as "tomorrow" or "in an hour". | Required |
 | schedule_interval | The schedule interval. Possible values are: Never, Daily, Weekly, Every other week, Every four weeks, Monthly. | Required |
+| cloud_pup_adware_level_detection | Potentially unwanted programs (PUPs) adware detection level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled). | Optional |
+| cloud_pup_adware_level_prevention | Potentially unwanted programs (PUPs) adware prevention level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled). | Optional |
 
 #### Context Output
 
@@ -5403,6 +5411,8 @@ Create an ODS scheduled scan.
 | CrowdStrike.ODSScheduledScan.metadata.last_updated | Date | The date and time when the detection event was last updated. |
 | CrowdStrike.ODSScheduledScan.sensor_ml_level_prevention | Number | The machine learning prevention level for the sensor. |
 | CrowdStrike.ODSScheduledScan.cloud_ml_level_prevention | Number | The machine learning prevention level for the cloud. |
+| CrowdStrike.ODSScheduledScan.cloud_pup_adware_level_prevention | Number | Potentially unwanted programs (PUPs) Adware prevention level. |
+| CrowdStrike.ODSScheduledScan.cloud_pup_adware_level_detection | Number | Potentially unwanted programs (PUPs) Adware detection level. |
 
 #### Command Example
 
@@ -5487,6 +5497,8 @@ Create an ODS scheduled scan.
             },
             "sensor_ml_level_detection": 2,
             "sensor_ml_level_prevention": 2,
+            "cloud_pup_adware_level_prevention": 1,
+            "cloud_pup_adware_level_detection": 1,
             "status": "scheduled"
         }
     }
@@ -6554,3 +6566,121 @@ Returns a list of CNAPP alerts. Used for debugging fetch-assets.
       - Falcon Cloud Security Proactive
       - Falcon Cloud Security with Containers
       - Falcon for Managed Containers
+
+### cs-falcon-list-case-summaries
+
+***
+Lists case summaries.
+
+#### Base Command
+
+`cs-falcon-list-case-summaries`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of case IDs. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Case.id | String | The ID of the case. |
+| CrowdStrike.Case.name | String | The name of the case. |
+| CrowdStrike.Case.created_timestamp | Date | The date and time the case was created. |
+| CrowdStrike.Case.status | String | The status of the case. |
+| CrowdStrike.Case.version | String | The version of the case. |
+| CrowdStrike.Case.description | String | The description of the case. |
+| CrowdStrike.Case.severity | String | The severity of the case. |
+| CrowdStrike.Case.assigned_to | String | The name of the user assigned to the case. |
+| CrowdStrike.Case.tags | String | The tags of the case. |
+
+### cs-falcon-add-case-tag
+
+***
+Adds tags to the specified case.
+
+#### Base Command
+
+`cs-falcon-add-case-tag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tags | A comma-separated list of tags. | Required |
+| id | The ID of the case the tags will be added to. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### cs-falcon-get-evidence-for-case
+
+***
+Get evidence for a specific case.
+
+#### Base Command
+
+`cs-falcon-get-evidence-for-case`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID of the case to retrieve evidence for. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.CaseEvidence.alerts | Array | The alerts associated with the case. |
+| CrowdStrike.CaseEvidence.events | Array | The events associated with the case. |
+| CrowdStrike.CaseEvidence.leads | Array | The leads associated with the case. |
+
+### cs-falcon-resolve-case
+
+***
+Resolves or updates a case.
+
+#### Base Command
+
+`cs-falcon-resolve-case`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID of the case to resolve. | Required |
+| status | The status to set for the case. Possible values are: new, in_progress, closed, reopened. | Optional |
+| assigned_to_uuid | A UUID of a user to assign the case to. | Optional |
+| description | A new description for the case. | Optional |
+| remove_user_assignment | Whether to remove case assignment from the current user.<br/>If set to true and assigned_to_uuid is not provided, the case becomes unassigned.<br/>If set to false and assigned_to_uuid is provided, the case is reassigned to the specified user UUID.<br/>If set to true and assigned_to_uuid is provided, the case is reassigned to the specified user UUID.<br/>If this field is omitted and assigned_to_uuid is provided, the case is reassigned to the specified user UUID. Possible values are: true, false. Default is false. | Optional |
+| severity | The new case severity rating (10-100). | Optional |
+| template_id | The unique ID of the template to apply to the case. | Optional |
+| name | The new name for the case. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### cs-falcon-delete-case-tag
+
+***
+Deletes a tag from the specified case.
+
+#### Base Command
+
+`cs-falcon-delete-case-tag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID of the case the tags will be deleted from. | Required |
+| tag | The tag to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
