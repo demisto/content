@@ -12135,7 +12135,7 @@ class FirewallCommand:
     @staticmethod
     def get_vsys_list(firewall: Firewall, debug_prefix: str) -> List[str]:
         """
-        Runs Vsys.refreshall framwork command to get all vsys from specific FW.
+        Runs Vsys.refreshall framework command to get all vsys from specific FW.
 
         :param firewall: The `Firewall` device to directly connect to.
         """
@@ -12221,8 +12221,7 @@ class FirewallCommand:
         :param vsys_arg: The firewall VSYS name to check or "all" for all virtual systems.
         :param rules_arg: Comma-separated list of rule names to check, or "all" for all rules.
         :param no_new_hits_since: Date string in format ISO-8601 UTC to filter rules with no hits since that time
-        :param device_filter_string: The datetime object used to filter out rules that haven't had any new hits since that time.
-        :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param device_filter_string: The string by which to filter the results to only show specific hostnames or serial number.
         :param target: Single serial number to target with this command.
         :param unused_only: Whether only rules with hitcount of 0 should be returned ("true" or "false")
         """
@@ -12559,7 +12558,7 @@ def get_rule_hitcounts(
     """
     Retrieves hit counts for policy rules from the specified firewall or device.
     :param topology: `Topology` instance.
-    :param device_filter_string: The datetime object used to filter out rules that haven't had any new hits since that time.
+    :param device_filter_string: The string by which to filter the results to only show specific hostnames or serial numbers.
     :param target: Single serial number to target with this command.
     :param rulebase: The rulebase being examined.
     :param vsys: The firewall VSYS name to check or "all" for all virtual systems.
@@ -12573,7 +12572,7 @@ def get_rule_hitcounts(
         try:
             no_new_hits_since_dt = datetime.strptime(no_new_hits_since, "%Y/%m/%d %H:%M:%S")
         except ValueError:
-            message = f"Failed convert {no_new_hits_since=} argument to YYYY/MM/DD HH:MM:SS foramt."
+            message = f"Failed convert {no_new_hits_since=} argument to YYYY/MM/DD HH:MM:SS format."
             demisto.debug(f"[get_rule_hitcounts] {message}")
             raise DemistoException(message)
 
