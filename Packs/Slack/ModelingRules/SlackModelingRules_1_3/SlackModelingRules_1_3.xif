@@ -28,7 +28,7 @@ alter
         action ~= "_deleted|_uninstalled|_archive|_revoked|_removed|_deactivated|_tombstoned", XDM_CONST.OPERATION_TYPE_DELETE,
         action ~= "pref\.|_updated|_renamed|_converted|_changed|_reset|_resumed|_upgraded|_downgraded|_expanded", XDM_CONST.OPERATION_TYPE_UPDATE,
         action ~= "_searched|_export|_download|_preview|_opened", XDM_CONST.OPERATION_TYPE_READ,
-        action ~= "_forwarded|_moved|_merged", XDM_CONST.OPERATION_TYPE_COPY,
+        //action ~= "_forwarded|_moved|_merged", XDM_CONST.OPERATION_TYPE_COPY,
         action ~= "_login$", XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
         action ~= "_paused|_expired", XDM_CONST.OPERATION_TYPE_STATUS_CHANGE,
         action ~= "_notification|_requested|_failed|_join|_leave", XDM_CONST.OPERATION_TYPE_AUDIT,
@@ -37,16 +37,16 @@ alter
     xdm.source.user.upn = get_actor_user_email,
     xdm.source.user.identifier = get_actor_user_id,
     xdm.source.user.identity_type = if(
-        get_actor_user_id IN("*USLACKBOT*","*USLACKSECURITY*"), XDM_CONST.IDENTITY_TYPE_APPLICATION,
-        arrayindex(array_actor_user_email, 1) CONTAINS "slack-bots.com", XDM_CONST.IDENTITY_TYPE_APPLICATION,
-        get_actor_user_id ~= "^A", XDM_CONST.IDENTITY_TYPE_APPLICATION,
+        //get_actor_user_id IN("*USLACKBOT*","*USLACKSECURITY*"), XDM_CONST.IDENTITY_TYPE_APPLICATION,
+        //arrayindex(array_actor_user_email, 1) CONTAINS "slack-bots.com", XDM_CONST.IDENTITY_TYPE_APPLICATION,
+        //get_actor_user_id ~= "^A", XDM_CONST.IDENTITY_TYPE_APPLICATION,
         get_actor_user_id CONTAINS "USLACKUSER", XDM_CONST.IDENTITY_TYPE_UNKNOWN,
         XDM_CONST.IDENTITY_TYPE_USER
     ),
     xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
     xdm.intermediate.identity.username = json_extract_scalar(context, "$['app']['name']"),
     xdm.intermediate.identity.identifier = get_context_app_id,
-    xdm.intermediate.identity.identity_type = if(get_context_app_id != null, XDM_CONST.IDENTITY_TYPE_APPLICATION),
+    //xdm.intermediate.identity.identity_type = if(get_context_app_id != null, XDM_CONST.IDENTITY_TYPE_APPLICATION),
     xdm.event.outcome = if(
         action in ("user_login_failed", "app_restricted", "file_download_blocked", "team_unsupported_versions_start_failure"), XDM_CONST.OUTCOME_FAILED,
         XDM_CONST.OUTCOME_SUCCESS
@@ -86,7 +86,7 @@ alter
     xdm.observer.type = "Slack CRM",
     //xdm.observer.sub_type = "Audit Logs",
     xdm.source.user.user_type = XDM_CONST.USER_TYPE_REGULAR,
-    xdm.source.user.scope = XDM_CONST.SCOPE_TYPE_SAAS,
+    //xdm.source.user.scope = XDM_CONST.SCOPE_TYPE_SAAS,
     //xdm.source.user.full_domain_name = arrayindex(array_actor_user_email, 1),
     xdm.event.outcome_reason = "OTHER",
     xdm.source.user.username = arrayindex(array_actor_user_email, 0),
@@ -103,7 +103,7 @@ alter
     ),
     xdm.source.user.groups = if(get_actor_user_team != null, arraycreate(get_actor_user_team)),
     xdm.source.cloud.project = json_extract_scalar(context, "$['location']['domain']"),
-    xdm.intermediate.identity.scope = if(get_context_app_id != NULL, XDM_CONST.SCOPE_TYPE_SAAS),
+    //xdm.intermediate.identity.scope = if(get_context_app_id != NULL, XDM_CONST.SCOPE_TYPE_SAAS),
     xdm.intermediate.identity.roles = if(
         get_context_app_scopes != NULL and get_context_app_scopes_bot != NULL, arrayconcat(get_context_app_scopes, get_context_app_scopes_bot),
         get_context_app_scopes != NULL, get_context_app_scopes,
@@ -136,11 +136,11 @@ alter
         json_extract_scalar(entity, "$['usergroups']['name']"),
         json_extract_scalar(entity, "$['huddles']['name']")
     ),
-    xdm.target.identity.scope = XDM_CONST.SCOPE_TYPE_SAAS,
+    //xdm.target.identity.scope = XDM_CONST.SCOPE_TYPE_SAAS,
     xdm.target.identity.roles = get_entity_app_scopes,
     xdm.target.identity.identity_type = if(
         get_entity_type = "user", XDM_CONST.IDENTITY_TYPE_USER,
-        get_entity_type = "app", XDM_CONST.IDENTITY_TYPE_APPLICATION,
+        //get_entity_type = "app", XDM_CONST.IDENTITY_TYPE_APPLICATION,
         XDM_CONST.IDENTITY_TYPE_VIRTUAL
     ),
 //    xdm.target.user.groups = arraycreate(json_extract_scalar(entity, "$['user']['team']")),
