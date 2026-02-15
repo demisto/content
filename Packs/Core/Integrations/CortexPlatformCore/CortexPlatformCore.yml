@@ -2091,7 +2091,7 @@ script:
           name: status
           predefined:
             - 'new'
-            - 'under_investigation'
+            - 'in_progress'
             - 'resolved'
         - auto: PREDEFINED
           description: |
@@ -2504,7 +2504,7 @@ script:
           type: String
           predefined:
             - "new"
-            - "under_investigation"
+            - "in_progress"
             - "resolved"
         - name: notes
           description: Additional notes for the case.
