@@ -3470,7 +3470,7 @@ script:
             - TagEmailAsPhishing
       name: core-execute-email-security-remediation
       description: Triggers automated email security remediation actions such as deleting, undeleting, moving, or tagging emails based on the security verdict.
-      hidden: true
+      hidden: false
       outputs:
         - contextPath: Core.EmailSecurityRemediation.internet_message_id
           description: The Internet Message ID of the email that was remediated.
