@@ -3259,7 +3259,7 @@ def run_playbook_command(client: Client, args: dict) -> CommandResults:
     raise ValueError(f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages))
 
 
-def list_scripts_command(client: Client, args: dict) -> List[CommandResults]:
+def list_scripts_command(client: Client, args: dict) -> list[CommandResults]:
     """
     Retrieves a list of scripts from the platform with optional filtering.
     """
@@ -3604,7 +3604,7 @@ def create_assessment_profile_payload(
     day: str | None,
     time: str | None,
     report_type: str = "ALL",
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Prepare assessment profile payload
 
@@ -3641,7 +3641,7 @@ def list_compliance_standards_payload(
     labels: list[str] | None = None,
     page=0,
     page_size=MAX_COMPLIANCE_STANDARDS,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Prepare assessment profile payload
 
@@ -4200,7 +4200,7 @@ def list_system_users_command(client, args):
     )
 
 
-def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, int]:
+def convert_timeframe_string_to_json(time_to_convert: str) -> dict[str, int]:
     """Convert a timeframe string to a json required for XQL queries.
 
     Args:
@@ -4384,7 +4384,7 @@ def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str
     Returns:
         str: The query execution ID.
     """
-    data: Dict[str, Any] = {
+    data: dict[str, Any] = {
         "query": query,
         "timeframe": timeframe,
     }
@@ -4434,6 +4434,33 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
 
     return CommandResults(
         outputs_prefix="GenericXQLQuery", outputs_key_field="execution_id", outputs=outputs, raw_response=outputs
+    )
+
+
+def core_fill_support_ticket_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Validates arguments and maps them to the support ticket context.
+    Includes dependent validation for problem_concentration based on the issue_category.
+    """
+
+    start_time = args.get("most_recent_issue_start_time")
+
+    start_time_dt = arg_to_datetime(start_time) if start_time else None
+    data = {
+        "description": args.get("description"),
+        "contactNumber": args.get("contact_number"),
+        "OngoingIssue": args.get("issue_frequency"),
+        "DateTimeOfIssue": start_time_dt.timestamp() if start_time_dt else None,
+        "IssueImpact": args.get("issue_impact"),
+        "smeArea": args.get("issue_category"),
+        "subGroupName": args.get("problem_concentration"),
+    }
+
+    return CommandResults(
+        readable_output=tableToMarkdown("Validated Support Ticket Fields", data),
+        outputs_prefix="Core.SupportTicket",
+        outputs=data,
+        raw_response=data,
     )
 
 
@@ -4671,6 +4698,10 @@ def main():  # pragma: no cover
         elif command == "core-xql-generic-query-platform":
             verify_platform_version()
             return_results(xql_query_platform_command(client, args))
+
+        elif command == "core-fill-support-ticket":
+            verify_platform_version("8.14.0")
+            return_results(core_fill_support_ticket_command(args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())

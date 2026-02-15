@@ -3297,6 +3297,95 @@ script:
       - contextPath: GenericXQLQuery.query_limit_modified
         description: Contains a message if the query's LIMIT clauses were automatically reduced to the maximum supported limit.
         type: String
+    - name: core-fill-support-ticket
+      description: Returns fields for the completion of the support ticket
+      hidden: true
+      arguments:
+        - name: description
+          description: A detailed description of the issue. Include error messages/codes or other identifying details. Limited to 25-32000 chars.
+        - name: contact_number
+          description: The preferred contact number for follow-up.
+        - name: issue_frequency
+          auto: PREDEFINED
+          predefined:
+            - "Yes - Consistent"
+            - "Yes - Intermittent"
+            - "Not Applicable"
+          description: "The frequency of the issue."
+        - name: most_recent_issue_start_time
+          description: The start date and time of the most recent occurrence of the issue. Flexible formats are supported (e.g., "7 days ago", "2023-01-01T00:00:00Z").
+        - name: issue_impact
+          auto: PREDEFINED
+          predefined:
+            - P4
+            - P3
+            - P2
+            - P1
+            - P0
+          description: |
+            The impact of the issue on the system or business.
+            - P4: Low - Use for inquiries or a minor issue. Product function not impaired, no impact to business.
+            - P3: Minor - Production system not affected, but a function has failed. A workaround is available.
+            - P2: Major - Major functionality or performance degradation of the product. Operations are severely impaired. No workaround exists.
+            - P1: Critical - Production system is down or a critical issue severely impacts the product. Business operations have stopped. No workaround exists.
+            - P0: Critical & Life/Operations at Risk - Imminent risk to life or our organization's finances, brand, or security. Requires urgent restoration.
+        - name: issue_category
+          auto: PREDEFINED
+          predefined:
+            - Agent
+            - Cases and Issues
+            - Cloud Onboarding
+            - Data Collection, Integrations, and Marketplace
+            - Detection, Investigation and Inventory
+            - Modules
+            - Posture Management
+            - Security Incidents
+            - Server
+            - Tenant Administration and Access Control
+            - Vulnerability and Compliance Management
+            - Web Application and API Security
+            - XDR Agent
+            - AI Security (AISPM)
+            - API Security (WAAS)
+            - Access Management, Integrations and Authentication
+            - Application Security
+            - CI/CD Prevention
+            - Cloud Agent
+            - Cloud Alerts and Events
+            - Cloud Assets and Reports
+            - Cloud Scan and Agentless
+            - Cloud Workload and Posture Security Settings
+            - Compliance Management
+            - Compute Workload Inventory
+            - Data Security (DSPM)
+            - Vulnerability Management
+          description: |
+            The category of the issue.
+        - name: problem_concentration
+          description: |
+            The specific problem concentration. Valid values vary based on the selected issue_category (smeArea) such as Communication, Device Control, Dashboard and Reports, etc.
+      outputs:
+        - contextPath: Core.SupportTicket.description
+          description: The description of the Filed support ticket.
+          type: String
+        - contextPath: Core.SupportTicket.contactNumber
+          description: The contact number associated with the ticket.
+          type: String
+        - contextPath: Core.SupportTicket.OngoingIssue
+          description: The frequency status of the issue.
+          type: String
+        - contextPath: Core.SupportTicket.DateTimeOfIssue
+          description: The timestamp of the issue occurrence.
+          type: Number
+        - contextPath: Core.SupportTicket.IssueImpact
+          description: The impact level of the ticket.
+          type: String
+        - contextPath: Core.SupportTicket.smeArea
+          description: The category of the issue.
+          type: String
+        - contextPath: Core.SupportTicket.subGroupName
+          description: The specific problem concentration.
+          type: String
     - arguments:
         - description: A comma separated list of case ids to retrieve resolution statuses for.
           isArray: false
