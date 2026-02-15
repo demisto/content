@@ -4647,7 +4647,7 @@ def core_fill_support_ticket_command(args: dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=tableToMarkdown("Validated Support Ticket Fields", data),
-        outputs_prefix="CoreApiModule.SupportTicket",
+        outputs_prefix="Core.SupportTicket",
         outputs=data,
         raw_response=data,
     )

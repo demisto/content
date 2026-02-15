@@ -9315,12 +9315,16 @@ def test_core_fill_support_ticket_command_success(mocker: MockerFixture):
         "most_recent_issue_start_time": "2023-01-01T00:00:00Z",
     }
 
-    result = core_fill_support_ticket_command(args)
+    result = core_fill_support_ticket_command(None, args)
 
+    assert result.outputs["productType"] == "Cortex XSIAM"
     assert result.outputs["description"] == args["description"]
+    assert result.outputs["contactNumber"] == "123456789"
+    assert result.outputs["IssueImpact"] == "P4"
     assert result.outputs["smeArea"] == "Agent"
     assert result.outputs["subGroupName"] == "Communication"
     assert result.outputs["OngoingIssue"] == "Yes - Consistent"
+    assert result.outputs["DateTimeOfIssue"] is not None
     assert result.outputs_prefix == "Core.SupportTicket"
 
 
