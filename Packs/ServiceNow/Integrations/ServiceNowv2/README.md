@@ -1,9 +1,9 @@
-IT service management. Cortex XSOAR interfaces with ServiceNow to help streamline security-related service management and IT operations. For example, you can use the `ServiceNow` integration in order to:
+IT service management. Cortex interfaces with ServiceNow to help streamline security-related service management and IT operations. For example, you can use the `ServiceNow` integration in order to:
 
-- View, create, update or delete a ServiceNow ticket directly from the Cortex XSOAR CLI, and enrich it with Cortex XSOAR data.
+- View, create, update or delete a ServiceNow ticket directly from the Cortex CLI, and enrich it with Cortex data.
 - View, create, update and delete records from any ServiceNow table.
 - Query ServiceNow data with the ServiceNow query syntax.
-- Manage Security Incident Response (SIR) tickets with Cortex XSOAR, update tickets and enrich them with data.
+- Manage Security Incident Response (SIR) tickets with Cortex, update tickets and enrich them with data.
 
 Please refer to ServiceNow documentation for additional information. We especially recommend the [Operators available for filters and queries](https://docs.servicenow.com/bundle/xanadu-platform-user-interface/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html) page.
 
@@ -19,7 +19,7 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Required Permissions
 
-To use ServiceNow on Cortex XSOAR, ensure your user account has the *snc_platform_rest_api_access* role.
+To use ServiceNow on Cortex, ensure your user account has the *snc_platform_rest_api_access* role.
  This role is required to make API calls.
  Also add to your user account the specific tables that you want to have access to.
  However, these permissions may not suffice for managing records in some tables. Make sure you have the correct role so you have permissions to work with the relevant table.
@@ -34,7 +34,7 @@ servicenow-update-record - ServiceNowUpdateIncident
 You can use these scripts if you want to wrap these commands around a ServiceNow table of your choice.
 These scripts are wrapped around the incident table, so to wrap them around another table simply copy the scripts and edit the code, arguments and outputs accordingly.
 
-## Configure ServiceNow v2 on Cortex XSOAR
+## Configure ServiceNow v2 on Cortex
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for ServiceNow v2.
