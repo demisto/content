@@ -6426,42 +6426,17 @@ def build_ngsiem_query_with_limit(query: str, limit: int) -> str:
     return query
 
 
-def arg_to_ngsiem_time_spec(val: Any) -> Optional[Union[int, str]]:
-    """
-    Normalize an NGSIEM time argument. CrowdStrike API supports both numeric timestamps and relative.
-    Here we add the support of datetime strings.
+def arg_to_timestamp(val: Any) -> Optional[int]:
+    """Converts a value to an epoch-milliseconds timestamp using ``arg_to_datetime``.
 
-    Converts:
-    - None / "" -> None
-    - Numeric timestamps (int/float/digit-string):
-        * < 2,000,000,000 treated as seconds -> ms
-        * otherwise treated as ms
-    - ISO-8601 datetime strings (e.g. "2023-11-14T00:00:00Z") -> epoch ms
-    - Otherwise returns the string as-is (relative/LogScale spec like "24h", "now").
-
-    Args:
-        val: Raw argument value.
-        arg_name: Optional name forwarded to arg_to_datetime for error context.
-
-    Returns:
-        None, an epoch-ms int, or a relative time spec string.
+    Returns ``None`` for empty/None values, otherwise an ``int`` (epoch ms).
     """
     if val is None or val == "":
         return None
 
-    if isinstance(val, int | float) or (isinstance(val, str) and val.strip().isdigit()):
-        num = float(val)
-        return int(num * 1000) if num < 2_000_000_000 else int(num)
+    dt = arg_to_datetime(val)
+    return int(dt.timestamp() * 1000) if dt else None
 
-    s = str(val).strip()
-    iso = s.replace("Z", "+00:00")  # fromisoformat doesn't accept Z
-    try:
-        datetime.fromisoformat(iso)  # validates absolute date-ish string
-        dt = arg_to_datetime(s)
-        return int(dt.timestamp() * 1000) if dt else None
-    except ValueError:
-        # not ISO absolute -> pass through as LogScale time spec / relative string
-        return s
 
 
 def build_ngsiem_search_body(args: dict) -> dict:
@@ -6484,19 +6459,21 @@ def build_ngsiem_search_body(args: dict) -> dict:
         eventId=args.get("around_event_id"),
         numberOfEventsBefore=arg_to_number(args.get("around_number_events_before")),
         numberOfEventsAfter=arg_to_number(args.get("around_number_events_after")),
-        timestamp=arg_to_ngsiem_time_spec(args.get("around_timestamp")),
+        timestamp=arg_to_timestamp(args.get("around_timestamp")),
     )
     
     if not around_config:
+        # If an "around" is used (around_number_events_before/after), adding `limit` would override/ignore the config,
+        # so we only set `limit` when "around" is not used.
         limit = arg_to_number(args.get("limit")) or 50
         query = build_ngsiem_query_with_limit(query, limit)
     demisto.debug(f"around_config: {around_config}")
     body = assign_params(
         queryString=query,
-        start=arg_to_ngsiem_time_spec(args.get("start")),
-        end=arg_to_ngsiem_time_spec(args.get("end")),
-        ingestStart=arg_to_ngsiem_time_spec(args.get("ingest_start")),
-        ingestEnd=arg_to_ngsiem_time_spec(args.get("ingest_end")),
+        start=arg_to_timestamp(args.get("start")),
+        end=arg_to_timestamp(args.get("end")),
+        ingestStart=arg_to_timestamp(args.get("ingest_start")),
+        ingestEnd=arg_to_timestamp(args.get("ingest_end")),
         useIngestTime=argToBoolean(args.get("use_ingest_time")) if args.get("use_ingest_time") else None,
         timeZone=args.get("time_zone"),
         timeZoneOffsetMinutes=arg_to_number(args.get("time_zone_offset_minutes")),

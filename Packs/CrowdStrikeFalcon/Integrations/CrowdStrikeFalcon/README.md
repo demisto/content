@@ -6708,7 +6708,7 @@ Search NGSIEM historical events. Requires NGSIEM scope with read/write permissio
 | around_timestamp | Timestamp for around search. Required when around_event_id is used. | Optional |
 | ingest_start | The start of the search window, based on the event ingesttimestamp.<br/>Note: ingest_end must be strictly greater than ingest_start.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps in milliseconds (e.g., 1767225600000). | Optional |
 | ingest_end | The end of the search window, based on the event ingesttimestamp.<br/>Note: ingest_end must be strictly greater than ingest_start.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps in milliseconds (e.g., 1767225600000). | Optional |
-| use_ingest_time | When true, the query uses ingestStart/ingestEnd instead of start/end. If use_ingest_time is false or not set, start/end are used (even if ingest times are also provided). Possible values are: true, false. | Optional |
+| use_ingest_time | When true, the server uses ingest_start/ingest_end as the query window. when false (or not set), it uses start/end. If both windows are provided, results are constrained by BOTH (AND). Possible values are: true, false. | Optional |
 | time_zone | The time zone to use if start and end times are not specified in milliseconds. Time zones are provided in "area/location" format. Example: UTC. | Optional |
 | time_zone_offset_minutes | The time zone offset must be provided in minutes. For example, if your time zone is UTC+2:00, you would pass a value of 120. | Optional |
 | limit | Maximum number of events to return. Default is 50. | Optional |
@@ -6721,3 +6721,37 @@ Search NGSIEM historical events. Requires NGSIEM scope with read/write permissio
 | --- | --- | --- |
 | CrowdStrike.NGSiemEvent | Array | The list of all events returned from the search. |
 | CrowdStrike.NGSiemEvent.timestamp | String | Event timestamp. |
+| CrowdStrike.NGSiemEvent.id | String | The event ID. |
+
+#### Command Example
+
+`!cs-falcon-search-ngsiem-events query="#event_simpleName = \"Event_name\"" repository="search-all" start="1d" end="now" limit=2 interval=5 timeout=20`
+
+`!cs-falcon-search-ngsiem-events query="*" repository="search-all" start="7d" end="now" around_event_id="aaa" around_number_events_before=1 around_number_events_after=1 around_timestamp=1700000000000 interval=5 timeout=20`
+
+`!cs-falcon-search-ngsiem-events query="id=aaaaa_anchor_event" repository="search-all" ingest_start=1700000000000 ingest_end=1700000002000 use_ingest_time=true limit=2 interval=5 timeout=20`
+
+#### Context Example
+
+```json
+{
+  "CrowdStrike": {
+    "NGSiemEvent": [
+      {
+        "@id": "aaaaa_event_1",
+        "@timestamp": 1700000000000,
+        "@ingesttimestamp": "1700000001000",
+        "id": "aaaaa_event_1",
+        "event_simpleName": "Event_APIActivityAuditEvent"
+      },
+      {
+        "@id": "aaaaa_event_2",
+        "@timestamp": 1700000002000,
+        "@ingesttimestamp": "1700000003000",
+        "id": "aaaaa_event_2",
+        "event_simpleName": "Event_APIActivityAuditEvent"
+      }
+    ]
+  }
+}
+```

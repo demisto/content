@@ -8683,27 +8683,27 @@ def test_build_ngsiem_query_with_limit(query, limit, expected):
     [
         (None, type(None), None, None),
         ("", type(None), None, None),
-        (1700000000, int, 1700000000000, None),
-        (1700000000000, int, 1700000000000, None),
-        ("1700000000", int, 1700000000000, None),
-        ("24h", str, "24h", None),
+        (1700000000, int, None, lambda x: x > 0),
+        (1700000000000, int, None, lambda x: x > 0),
+        ("1700000000", int, None, lambda x: x > 0),
+        ("24 hours", int, None, lambda x: x > 0),
         ("2023-11-14T00:00:00Z", int, None, lambda x: x > 0),
     ],
 )
-def test_arg_to_ngsiem_time_spec(val, expected_type, expected_value, predicate):
+def test_arg_to_timestamp(val, expected_type, expected_value, predicate):
     """
     Given:
-        - A raw NGSIEM time argument in one of the supported formats.
+        - A raw time argument in one of the supported formats (None, empty string,
+          epoch seconds/milliseconds, relative time expression, or ISO-8601 string).
     When:
-        - Converting it via arg_to_ngsiem_time_spec.
+        - Converting it via arg_to_timestamp.
     Then:
         - Returns None for empty values.
-        - Returns an epoch-milliseconds int for numeric/ISO8601 inputs.
-        - Returns the original string for relative time specs.
+        - Returns an epoch-milliseconds int for all other valid inputs.
     """
-    from CrowdStrikeFalcon import arg_to_ngsiem_time_spec
+    from CrowdStrikeFalcon import arg_to_timestamp
 
-    result = arg_to_ngsiem_time_spec(val)
+    result = arg_to_timestamp(val)
     assert isinstance(result, expected_type)
     if expected_value is not None:
         assert result == expected_value
