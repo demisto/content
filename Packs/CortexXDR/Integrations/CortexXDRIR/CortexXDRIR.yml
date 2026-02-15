@@ -339,8 +339,9 @@ script:
     - defaultValue: 'False'
       description: "Whether to exclude Network Artifacts and File Artifacts from incident data."
       name: excluding_artifacts
-    description: Returns additional data for the specified incident, for example, related alerts, file artifacts, network artifacts, and so on.
+    description: This command is deprecated. Returns additional data for the specified incident, for example, related alerts, file artifacts, network artifacts, and so on.
     name: xdr-get-incident-extra-data
+    deprecated: true
     outputs:
     - contextPath: PaloAltoNetworksXDR.Incident.incident_id
       description: Unique ID assigned to each returned incident.
@@ -723,17 +724,19 @@ script:
     - description: The alert description.
       name: alert_description
     description: |-
-      Uploads an alert from external alert sources in Cortex XDR format. Cortex XDR displays alerts that are parsed
+      This command is deprecated. Uploads an alert from external alert sources in Cortex XDR format. Cortex XDR displays alerts that are parsed
       successfully in related incidents and views. You can send 600 alerts per minute. Each request can contain a
       maximum of 60 alerts.
     name: xdr-insert-parsed-alert
+    deprecated: true
   - arguments:
     - description: List of alerts in CEF format.
       isArray: true
       name: cef_alerts
       required: true
-    description: Upload alerts in CEF format from external alert sources. After you map CEF alert fields to Cortex XDR fields, Cortex XDR displays the alerts in related incidents and views. You can send 600 requests per minute. Each request can contain a maximum of 60 alerts.
+    description: This command is deprecated. Upload alerts in CEF format from external alert sources. After you map CEF alert fields to Cortex XDR fields, Cortex XDR displays the alerts in related incidents and views. You can send 600 requests per minute. Each request can contain a maximum of 60 alerts.
     name: xdr-insert-cef-alerts
+    deprecated: true
   - arguments:
     - description: The incident ID. Allows linking the response action to the incident that triggered it.
       name: incident_id
@@ -3096,8 +3099,9 @@ script:
       predefined:
       - 'list'
       - 'dict'
-    description: Returns information about each alert ID.
+    description: This command is deprecated. Returns information about each alert ID.
     name: xdr-get-cloud-original-alerts
+    deprecated: true
     outputs:
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event._time
       description: The timestamp of the occurrence of the event.
@@ -4766,6 +4770,46 @@ script:
       required: true
     description: Deletes correlation rules.
     name: xdr-correlation-rule-delete
+  - arguments:
+    - description: The vulnerability ID to retrieve details for.
+      name: vulnerability_id
+      required: true
+    description: Gets vulnerability details by ID. For more information, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Vulnerabilities.
+    name: xdr-vulnerability-details-get
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.vulnerabilityID
+      description: The unique identifier of the vulnerability.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.description
+      description: Description of the vulnerability.
+      type: String
+  - arguments: []
+    description: Runs a system health check on the Cortex XDR environment. For more information, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/System-Health-Check.
+    name: xdr-healthcheck-run
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.HealthStatus.status
+      description: The health status of the Cortex XDR system.
+      type: String
+  - arguments: []
+    description: Gets a list of available triage presets. For more information, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-triage-presets.
+    name: xdr-endpoint-triage-preset-list
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.EndpointTriagePreset
+      description: The list of triage presets.
+      type: Unknown
+  - arguments:
+    - description: A comma-separated list of agent IDs to initiate triage on.
+      isArray: true
+      name: agent_id
+      required: true
+    - description: The collector UUID to use for the triage.
+      name: collector_uuid
+    description: Initiates a forensics triage on the specified endpoints. For more information, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Initiate-Forensics-Triage.
+    name: xdr-endpoint-triage
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.EndpointTriage
+      description: The triage response data.
+      type: Unknown
   dockerimage: demisto/python3:3.12.12.7019815
   isfetch: true
   isfetch:xpanse: false

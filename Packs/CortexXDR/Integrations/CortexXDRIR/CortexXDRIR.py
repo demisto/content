@@ -680,6 +680,59 @@ class Client(CoreClient):
             json_data=request_data,
         )
 
+    def get_vulnerability_details(self, vulnerability_id: str):
+        """
+        Gets vulnerability details by ID.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Vulnerabilities
+        """
+        res = self._http_request(
+            method="GET",
+            url_suffix=f"/uvem/v1/vulnerabilities/{vulnerability_id}",
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+        return res.get("reply", {})
+
+    def run_healthcheck(self):
+        """
+        Runs a system health check.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/System-Health-Check
+        """
+        res = self._http_request(
+            method="GET",
+            url_suffix="/healthcheck",
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+        return res.get("reply", {})
+
+    def get_triage_presets(self):
+        """
+        Gets triage presets.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-triage-presets
+        """
+        res = self._http_request(
+            method="GET",
+            url_suffix="/get_triage_presets",
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+        return res.get("reply", {}).get("triage_presets", [])
+
+    def triage_endpoint(self, request_data: dict):
+        """
+        Initiates forensics triage on endpoints.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Initiate-Forensics-Triage
+        """
+        res = self._http_request(
+            method="POST",
+            url_suffix="/triage_endpoint",
+            json_data={"request_data": request_data},
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+        return res.get("reply", {})
+
 
 def extract_paths_and_names(paths: list) -> tuple:
     """
@@ -2350,6 +2403,119 @@ def update_asset_group_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output="Asset group updated successfully")
 
 
+def get_vulnerability_details_command(client: Client, args: Dict) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Vulnerabilities
+    Gets vulnerability details by ID.
+    Args:
+        client (Client): The Cortex XDR client.
+        args (Dict): The command arguments.
+    Returns:
+        CommandResults: The command results.
+    """
+    vulnerability_id = args.get("vulnerability_id", "")
+    raw_response = client.get_vulnerability_details(vulnerability_id)
+
+    readable_output = tableToMarkdown(
+        name="Vulnerability Details",
+        t=raw_response,
+        headers=["vulnerabilityID", "description"],
+        headerTransform=string_to_table_header,
+        removeNull=True,
+        is_auto_json_transform=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Vulnerability",
+        outputs_key_field="vulnerabilityID",
+        outputs=raw_response,
+        raw_response=raw_response,
+    )
+
+
+def healthcheck_run_command(client: Client) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/System-Health-Check
+    Runs a system health check.
+    Args:
+        client (Client): The Cortex XDR client.
+    Returns:
+        CommandResults: The command results.
+    """
+    raw_response = client.run_healthcheck()
+    status = raw_response.get("status", "unknown") if isinstance(raw_response, dict) else raw_response
+
+    return CommandResults(
+        readable_output=f"**Cortex health status: {status}**",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.HealthStatus",
+        outputs=raw_response,
+        raw_response=raw_response,
+    )
+
+
+def endpoint_triage_preset_list_command(client: Client) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-triage-presets
+    Gets triage presets.
+    Args:
+        client (Client): The Cortex XDR client.
+    Returns:
+        CommandResults: The command results.
+    """
+    presets = client.get_triage_presets()
+
+    readable_output = tableToMarkdown(
+        name="Endpoint Triage Presets",
+        t=presets,
+        headerTransform=string_to_table_header,
+        removeNull=True,
+        is_auto_json_transform=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.EndpointTriagePreset",
+        outputs=presets,
+        raw_response=presets,
+    )
+
+
+def endpoint_triage_command(client: Client, args: Dict) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Initiate-Forensics-Triage
+    Initiates forensics triage on endpoints.
+    Args:
+        client (Client): The Cortex XDR client.
+        args (Dict): The command arguments.
+    Returns:
+        CommandResults: The command results.
+    """
+    agent_ids = argToList(args.get("agent_id"))
+    collector_uuid = args.get("collector_uuid")
+
+    request_data: Dict[str, Any] = {"agent_id": agent_ids}
+    if collector_uuid:
+        request_data["collector_uuid"] = collector_uuid
+
+    raw_response = client.triage_endpoint(request_data)
+
+    readable_output = tableToMarkdown(
+        name="Endpoint Triage",
+        t=raw_response,
+        headerTransform=string_to_table_header,
+        removeNull=True,
+        is_auto_json_transform=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.EndpointTriage",
+        outputs=raw_response,
+        raw_response=raw_response,
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -2870,6 +3036,18 @@ def main():  # pragma: no cover
 
         elif command == "xdr-api-key-delete":
             return_results(api_key_delete_command(client, args))
+
+        elif command == "xdr-vulnerability-details-get":
+            return_results(get_vulnerability_details_command(client, args))
+
+        elif command == "xdr-healthcheck-run":
+            return_results(healthcheck_run_command(client))
+
+        elif command == "xdr-endpoint-triage-preset-list":
+            return_results(endpoint_triage_preset_list_command(client))
+
+        elif command == "xdr-endpoint-triage":
+            return_results(endpoint_triage_command(client, args))
 
     except Exception as err:
         return_error(str(err))
