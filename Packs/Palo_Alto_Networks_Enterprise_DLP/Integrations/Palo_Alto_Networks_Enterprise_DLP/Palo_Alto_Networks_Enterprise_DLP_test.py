@@ -385,8 +385,10 @@ def test_create_incident(incident_type_input, expected_type):
         - Ensure no errors due to the lack of `userId` in `INCIDENT_JSON`.
         - Ensure the incident is created with the correct type.
     """
+    import copy
+
     # Inputs
-    notification = {"incident": INCIDENT_JSON, "previous_notifications": []}
+    notification = {"incident": copy.deepcopy(INCIDENT_JSON), "previous_notifications": []}
     region = "us"
 
     # Prepare

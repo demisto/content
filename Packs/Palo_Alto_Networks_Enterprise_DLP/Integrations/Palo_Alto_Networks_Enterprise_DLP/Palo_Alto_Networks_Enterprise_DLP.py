@@ -425,8 +425,9 @@ def create_incident(notification: dict, region: str, incident_type: str = "Data 
     return incident
 
 
-def fetch_incidents(client: Client, regions: str, start_time: int = None, end_time: int = None,
-                    incident_type: str = "Data Loss Prevention"):
+def fetch_incidents(
+    client: Client, regions: str, start_time: int = None, end_time: int = None, incident_type: str = "Data Loss Prevention"
+):
     if start_time and end_time:
         print_debug_msg(f"Start fetching incidents between {start_time} and {end_time}.")
     else:
