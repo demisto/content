@@ -54,7 +54,7 @@
         "original_tag2"
     ],
     "predicted_score": 92,
-    "resolved_comment": "Issue resolved successfully",
+    "resolve_comment": "Issue resolved successfully",
     "resolved_timestamp": "2023-01-03T00:00:00Z",
     "rule_based_score": 85,
     "severity": "high",

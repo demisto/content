@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "Renamed the *resolve_comment* output to *resolved_comment* in **core-get-cases**."
-}

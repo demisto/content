@@ -1607,7 +1607,7 @@ def map_case_format(case_list):
             "wildfire_hits": case_data.get("WF_HITS"),
             "assigned_user_pretty_name": case_data.get("ASSIGNED_USER_PRETTY"),
             "assigned_user_mail": case_data.get("ASSIGNED_USER"),
-            "resolved_comment": case_data.get("RESOLVED_COMMENT"),
+            "resolve_comment": case_data.get("RESOLVED_COMMENT"),
             "issues_grouping_status": str(case_data.get("CASE_GROUPING_STATUS")).split("_")[-1],
             "starred": case_data.get("CASE_STARRED"),
             "case_sources": case_data.get("INCIDENT_SOURCES"),
