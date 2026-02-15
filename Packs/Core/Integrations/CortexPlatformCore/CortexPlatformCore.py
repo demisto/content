@@ -4462,13 +4462,11 @@ def get_cdr_protection_status_command(client: Client) -> list[CommandResults]:
         List of CommandResults objects with CDR protection coverage percentages
     """
     # Get cloud accounts log sending status
-    total_accounts, accounts_not_sending_count, accounts_not_sending_logs = (
-        get_cloud_accounts_log_sending_status(client)
-    )
+    total_accounts, accounts_not_sending_count, accounts_not_sending_logs = get_cloud_accounts_log_sending_status(client)
     accounts_sending_logs = total_accounts - accounts_not_sending_count
 
     command_results = []
-    
+
     # Handle case when no cloud accounts exist
     if total_accounts == 0:
         command_results.append(
@@ -4481,7 +4479,7 @@ def get_cdr_protection_status_command(client: Client) -> list[CommandResults]:
 
     # Build outputs with cloud account statistics
     log_sending_percentage = round((accounts_sending_logs / total_accounts) * 100, 2)
-    
+
     outputs = {
         "CloudAccounts": {
             "Total": total_accounts,
@@ -4489,7 +4487,7 @@ def get_cdr_protection_status_command(client: Client) -> list[CommandResults]:
             "AccountsNotSendingLogsList": accounts_not_sending_logs,
         }
     }
-    
+
     readable_output = f"""### CDR Protection Status
 
 #### Cloud Accounts Log Sending Status
@@ -4502,7 +4500,7 @@ def get_cdr_protection_status_command(client: Client) -> list[CommandResults]:
 | Accounts NOT Sending Logs | {accounts_not_sending_count} |
 
 """
-    
+
     if accounts_not_sending_logs:
         readable_output += tableToMarkdown(
             "Cloud Accounts Not Sending Logs (automation_log_level = OFF)",

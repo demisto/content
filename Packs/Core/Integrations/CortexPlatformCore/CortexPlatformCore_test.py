@@ -9342,395 +9342,17 @@ class TestGetCDRProtectionStatusCommand:
     def test_get_cdr_protection_status_command_success(self, mocker):
         """
         Given:
-            - API returns 75 VMs with agents out of 100 total VMs, and 8 K8S clusters protected out of 10 total.
+            - API returns cloud accounts with some sending logs.
         When:
             - Calling get_cdr_protection_status_command.
         Then:
-            - Returns 75% VM coverage and 80% K8S coverage with correct counts.
+            - Returns correct log sending statistics and list of accounts not sending logs.
         """
         from CortexPlatformCore import get_cdr_protection_status_command, Client
 
         mock_client = Client(base_url="", headers={})
 
-        # Mock responses in order: VMs with agents, All VMs, K8S protected, All K8S
-        responses = [
-            {"reply": {"FILTER_COUNT": 75}},  # VMs with agents
-            {"reply": {"FILTER_COUNT": 100}},  # All VMs
-            {"reply": {"FILTER_COUNT": 8}},  # K8S clusters protected
-            {"reply": {"FILTER_COUNT": 10}},  # All K8S clusters
-        ]
-
-        mock_get_webapp_data = mocker.patch.object(mock_client, "get_webapp_data", side_effect=responses)
-
-        args = {}
-
-        # Mock cloud accounts response
-        accounts_response = {
-            "next_token": "",
-            "values": [
-                {
-                    "account_id": "111",
-                    "account_name": "A1",
-                    "cloud_type": "AWS",
-                    "status": "ENABLED",
-                    "additional_capabilities": {"automation_log_level": "INFO"},
-                }
-            ],
-        }
-        mocker.patch.object(demisto, "_platformAPICall", return_value={"status": 200, "data": json.dumps(accounts_response)})
-
-        result = get_cdr_protection_status_command(mock_client, args)
-
-        # Verify four API calls were made
-        assert mock_get_webapp_data.call_count == 4
-
-        # Verify VM outputs
-        assert result.outputs["CloudVMs"]["Total"] == 100
-        assert result.outputs["CloudVMs"]["Protected"] == 75
-        assert result.outputs["CloudVMs"]["Unprotected"] == 25
-        assert result.outputs["CloudVMs"]["ProtectionPercentage"] == 75.0
-
-        # Verify K8S outputs
-        assert result.outputs["KubernetesClusters"]["Total"] == 10
-        assert result.outputs["KubernetesClusters"]["Protected"] == 8
-        assert result.outputs["KubernetesClusters"]["Unprotected"] == 2
-        assert result.outputs["KubernetesClusters"]["ProtectionPercentage"] == 80.0
-
-        # Verify readable output contains both sections
-        assert "Cloud VMs Protection" in result.readable_output
-        assert "Kubernetes Clusters Protection" in result.readable_output
-        assert "75.0%" in result.readable_output
-        assert "80.0%" in result.readable_output
-
-        # Verify CommandResults structure
-        assert result.outputs_prefix == "Core.CDRProtectionStatus"
-
-    def test_get_cdr_protection_status_command_zero_totals(self, mocker):
-        """
-        Given:
-            - API returns 0 total VMs and 0 total K8S clusters.
-        When:
-            - Calling get_cdr_protection_status_command.
-        Then:
-            - Returns 0% coverage for both without division by zero error.
-        """
-        from CortexPlatformCore import get_cdr_protection_status_command, Client
-
-        mock_client = Client(base_url="", headers={})
-
-        responses = [
-            {"reply": {"FILTER_COUNT": 0}},  # VMs with agents
-            {"reply": {"FILTER_COUNT": 0}},  # All VMs
-            {"reply": {"FILTER_COUNT": 0}},  # K8S protected
-            {"reply": {"FILTER_COUNT": 0}},  # All K8S
-        ]
-
-        mocker.patch.object(mock_client, "get_webapp_data", side_effect=responses)
-
-        args = {}
-
-        # Mock cloud accounts response
-        accounts_response = {
-            "next_token": "",
-            "values": [
-                {
-                    "account_id": "111",
-                    "account_name": "A1",
-                    "cloud_type": "AWS",
-                    "status": "ENABLED",
-                    "additional_capabilities": {"automation_log_level": "INFO"},
-                }
-            ],
-        }
-        mocker.patch.object(demisto, "_platformAPICall", return_value={"status": 200, "data": json.dumps(accounts_response)})
-
-        result = get_cdr_protection_status_command(mock_client, args)
-
-        assert result.outputs["CloudVMs"]["Total"] == 0
-        assert result.outputs["CloudVMs"]["ProtectionPercentage"] == 0.0
-        assert result.outputs["KubernetesClusters"]["Total"] == 0
-        assert result.outputs["KubernetesClusters"]["ProtectionPercentage"] == 0.0
-
-    def test_get_cdr_protection_status_command_100_percent_coverage(self, mocker):
-        """
-        Given:
-            - API returns 100% coverage for both VMs and K8S clusters.
-        When:
-            - Calling get_cdr_protection_status_command.
-        Then:
-            - Returns 100% protection coverage for both.
-        """
-        from CortexPlatformCore import get_cdr_protection_status_command, Client
-
-        mock_client = Client(base_url="", headers={})
-
-        responses = [
-            {"reply": {"FILTER_COUNT": 50}},  # VMs with agents
-            {"reply": {"FILTER_COUNT": 50}},  # All VMs
-            {"reply": {"FILTER_COUNT": 20}},  # K8S protected
-            {"reply": {"FILTER_COUNT": 20}},  # All K8S
-        ]
-
-        mocker.patch.object(mock_client, "get_webapp_data", side_effect=responses)
-
-        args = {}
-
-        # Mock cloud accounts response
-        accounts_response = {
-            "next_token": "",
-            "values": [
-                {
-                    "account_id": "111",
-                    "account_name": "A1",
-                    "cloud_type": "AWS",
-                    "status": "ENABLED",
-                    "additional_capabilities": {"automation_log_level": "INFO"},
-                }
-            ],
-        }
-        mocker.patch.object(demisto, "_platformAPICall", return_value={"status": 200, "data": json.dumps(accounts_response)})
-
-        result = get_cdr_protection_status_command(mock_client, args)
-
-        assert result.outputs["CloudVMs"]["ProtectionPercentage"] == 100.0
-        assert result.outputs["CloudVMs"]["Unprotected"] == 0
-        assert result.outputs["KubernetesClusters"]["ProtectionPercentage"] == 100.0
-        assert result.outputs["KubernetesClusters"]["Unprotected"] == 0
-
-    def test_get_cdr_protection_status_command_zero_percent_coverage(self, mocker):
-        """
-        Given:
-            - API returns 0% coverage for both VMs and K8S clusters.
-        When:
-            - Calling get_cdr_protection_status_command.
-        Then:
-            - Returns 0% protection coverage for both.
-        """
-        from CortexPlatformCore import get_cdr_protection_status_command, Client
-
-        mock_client = Client(base_url="", headers={})
-
-        responses = [
-            {"reply": {"FILTER_COUNT": 0}},  # VMs with agents
-            {"reply": {"FILTER_COUNT": 200}},  # All VMs
-            {"reply": {"FILTER_COUNT": 0}},  # K8S protected
-            {"reply": {"FILTER_COUNT": 15}},  # All K8S
-        ]
-
-        mocker.patch.object(mock_client, "get_webapp_data", side_effect=responses)
-
-        args = {}
-
-        # Mock cloud accounts response
-        accounts_response = {
-            "next_token": "",
-            "values": [
-                {
-                    "account_id": "111",
-                    "account_name": "A1",
-                    "cloud_type": "AWS",
-                    "status": "ENABLED",
-                    "additional_capabilities": {"automation_log_level": "INFO"},
-                }
-            ],
-        }
-        mocker.patch.object(demisto, "_platformAPICall", return_value={"status": 200, "data": json.dumps(accounts_response)})
-
-        result = get_cdr_protection_status_command(mock_client, args)
-
-        assert result.outputs["CloudVMs"]["Total"] == 200
-        assert result.outputs["CloudVMs"]["Protected"] == 0
-        assert result.outputs["CloudVMs"]["Unprotected"] == 200
-        assert result.outputs["CloudVMs"]["ProtectionPercentage"] == 0.0
-
-        assert result.outputs["KubernetesClusters"]["Total"] == 15
-        assert result.outputs["KubernetesClusters"]["Protected"] == 0
-        assert result.outputs["KubernetesClusters"]["Unprotected"] == 15
-        assert result.outputs["KubernetesClusters"]["ProtectionPercentage"] == 0.0
-
-    def test_get_cdr_protection_status_command_k8s_filter_validation(self, mocker):
-        """
-        Given:
-            - Valid API responses.
-        When:
-            - Calling get_cdr_protection_status_command.
-        Then:
-            - K8S protected query uses correct filter for realtime status.
-        """
-        from CortexPlatformCore import get_cdr_protection_status_command, Client
-
-        mock_client = Client(base_url="", headers={})
-
-        responses = [
-            {"reply": {"FILTER_COUNT": 50}},  # VMs with agents
-            {"reply": {"FILTER_COUNT": 100}},  # All VMs
-            {"reply": {"FILTER_COUNT": 5}},  # K8S protected
-            {"reply": {"FILTER_COUNT": 10}},  # All K8S
-        ]
-
-        mock_get_webapp_data = mocker.patch.object(mock_client, "get_webapp_data", side_effect=responses)
-
-        # Mock cloud accounts response
-        accounts_response = {
-            "next_token": "",
-            "values": [
-                {
-                    "account_id": "111",
-                    "account_name": "A1",
-                    "cloud_type": "AWS",
-                    "status": "ENABLED",
-                    "additional_capabilities": {"automation_log_level": "INFO"},
-                }
-            ],
-        }
-        mocker.patch.object(mock_client, "platform_http_request", return_value=accounts_response)
-
-        args = {}
-
-        get_cdr_protection_status_command(mock_client, args)
-
-        # Verify third call (K8S protected) filters by realtime status
-        third_call_args = mock_get_webapp_data.call_args_list[2][0][0]
-        third_filter = third_call_args["filter_data"]["filter"]["AND"]
-
-        assert any(
-            f.get("SEARCH_FIELD") == "xdm__asset__type__category" and f.get("SEARCH_VALUE") == "Kubernetes Cluster"
-            for f in third_filter
-        )
-        assert any(
-            f.get("SEARCH_FIELD") == "xdm__kubernetes__profile__capabilities__realtime__status"
-            and f.get("SEARCH_VALUE") == "ENABLED"
-            for f in third_filter
-        )
-
-        # Verify fourth call (all K8S) only filters by category
-        fourth_call_args = mock_get_webapp_data.call_args_list[3][0][0]
-        fourth_filter = fourth_call_args["filter_data"]["filter"]["AND"]
-
-        assert any(
-            f.get("SEARCH_FIELD") == "xdm__asset__type__category" and f.get("SEARCH_VALUE") == "Kubernetes Cluster"
-            for f in fourth_filter
-        )
-        assert not any(f.get("SEARCH_FIELD") == "xdm__kubernetes__profile__capabilities__realtime__status" for f in fourth_filter)
-
-    def test_get_cdr_protection_status_command_decimal_percentages(self, mocker):
-        """
-        Given:
-            - API returns values that result in decimal percentages.
-        When:
-            - Calling get_cdr_protection_status_command.
-        Then:
-            - Returns properly rounded percentages.
-        """
-        from CortexPlatformCore import get_cdr_protection_status_command, Client
-
-        mock_client = Client(base_url="", headers={})
-
-        responses = [
-            {"reply": {"FILTER_COUNT": 33}},  # VMs with agents (33/100 = 33%)
-            {"reply": {"FILTER_COUNT": 100}},  # All VMs
-            {"reply": {"FILTER_COUNT": 7}},  # K8S protected (7/9 = 77.78%)
-            {"reply": {"FILTER_COUNT": 9}},  # All K8S
-        ]
-
-        mocker.patch.object(mock_client, "get_webapp_data", side_effect=responses)
-
-        args = {}
-
-        # Mock cloud accounts response
-        accounts_response = {
-            "next_token": "",
-            "values": [
-                {
-                    "account_id": "111",
-                    "account_name": "A1",
-                    "cloud_type": "AWS",
-                    "status": "ENABLED",
-                    "additional_capabilities": {"automation_log_level": "INFO"},
-                }
-            ],
-        }
-        mocker.patch.object(demisto, "_platformAPICall", return_value={"status": 200, "data": json.dumps(accounts_response)})
-
-        result = get_cdr_protection_status_command(mock_client, args)
-
-        assert result.outputs["CloudVMs"]["ProtectionPercentage"] == 33.0
-        assert result.outputs["KubernetesClusters"]["ProtectionPercentage"] == 77.78
-
-    def test_get_cdr_protection_status_command_raw_response_structure(self, mocker):
-        """
-        Given:
-            - Valid API responses.
-        When:
-            - Calling get_cdr_protection_status_command.
-        Then:
-            - Raw response includes all four API call responses.
-        """
-        from CortexPlatformCore import get_cdr_protection_status_command, Client
-
-        mock_client = Client(base_url="", headers={})
-
-        responses = [
-            {"reply": {"FILTER_COUNT": 50}},
-            {"reply": {"FILTER_COUNT": 100}},
-            {"reply": {"FILTER_COUNT": 5}},
-            {"reply": {"FILTER_COUNT": 10}},
-        ]
-
-        mocker.patch.object(mock_client, "get_webapp_data", side_effect=responses)
-
-        args = {}
-
-        # Mock cloud accounts response
-        accounts_response = {
-            "next_token": "",
-            "values": [
-                {
-                    "account_id": "111",
-                    "account_name": "A1",
-                    "cloud_type": "AWS",
-                    "status": "ENABLED",
-                    "additional_capabilities": {"automation_log_level": "INFO"},
-                }
-            ],
-        }
-        mocker.patch.object(demisto, "_platformAPICall", return_value={"status": 200, "data": json.dumps(accounts_response)})
-
-        result = get_cdr_protection_status_command(mock_client, args)
-
-        assert "vms_with_agents" in result.raw_response
-        assert "all_vms" in result.raw_response
-        assert "k8s_protected" in result.raw_response
-        assert "all_k8s" in result.raw_response
-        assert result.raw_response["vms_with_agents"] == responses[0]
-        assert result.raw_response["all_vms"] == responses[1]
-        assert result.raw_response["k8s_protected"] == responses[2]
-        assert result.raw_response["all_k8s"] == responses[3]
-
-    def test_get_cdr_protection_status_command_with_cloud_accounts_logs(self, mocker):
-        """
-        Given:
-            - API returns VM/K8S data and cloud accounts with some not sending logs.
-        When:
-            - Calling get_cdr_protection_status_command.
-        Then:
-            - Returns VM, K8S, and cloud accounts log sending statistics.
-        """
-        from CortexPlatformCore import get_cdr_protection_status_command, Client
-
-        mock_client = Client(base_url="", headers={})
-
-        # Mock VM and K8S responses
-        vm_k8s_responses = [
-            {"reply": {"FILTER_COUNT": 75}},  # VMs with agents
-            {"reply": {"FILTER_COUNT": 100}},  # All VMs
-            {"reply": {"FILTER_COUNT": 8}},  # K8S protected
-            {"reply": {"FILTER_COUNT": 10}},  # All K8S
-        ]
-
-        mocker.patch.object(mock_client, "get_webapp_data", side_effect=vm_k8s_responses)
-
-        # Mock cloud accounts responses with pagination
+        # Mock cloud accounts response with pagination
         accounts_page1 = {
             "next_token": "token123",
             "values": [
@@ -9780,18 +9402,18 @@ class TestGetCDRProtectionStatusCommand:
 
         mocker.patch.object(mock_client, "platform_http_request", side_effect=[accounts_page1, accounts_page2])
 
-        args = {}
+        result = get_cdr_protection_status_command(mock_client)
 
-        result = get_cdr_protection_status_command(mock_client, args)
+        # Verify result is a list of CommandResults
+        assert isinstance(result, list)
+        assert len(result) == 1
 
         # Verify cloud accounts statistics
-        assert result.outputs["CloudAccounts"]["Total"] == 5
-        assert result.outputs["CloudAccounts"]["SendingLogs"] == 2
-        assert result.outputs["CloudAccounts"]["NotSendingLogs"] == 3
-        assert result.outputs["CloudAccounts"]["LogSendingPercentage"] == 40.0  # 2/5 = 40%
+        assert result[0].outputs["CloudAccounts"]["Total"] == 5
+        assert result[0].outputs["CloudAccounts"]["NotSendingLogs"] == 3
 
         # Verify accounts not sending logs list
-        accounts_not_sending = result.outputs["CloudAccounts"]["AccountsNotSendingLogsList"]
+        accounts_not_sending = result[0].outputs["CloudAccounts"]["AccountsNotSendingLogsList"]
         assert len(accounts_not_sending) == 3
         assert accounts_not_sending[0]["account_id"] == "222222222222"
         assert accounts_not_sending[1]["account_id"] == "333333333333"
@@ -9799,9 +9421,8 @@ class TestGetCDRProtectionStatusCommand:
         assert accounts_not_sending[2]["account_id"] == "555555555555"
 
         # Verify readable output includes cloud accounts section
-        assert "Cloud Accounts Log Sending Status" in result.readable_output
-        assert "40.0%" in result.readable_output
-        assert "222222222222" in result.readable_output
+        assert "Cloud Accounts Log Sending Status" in result[0].readable_output
+        assert "222222222222" in result[0].readable_output
 
     def test_get_cdr_protection_status_command_all_accounts_sending_logs(self, mocker):
         """
@@ -9815,16 +9436,6 @@ class TestGetCDRProtectionStatusCommand:
         from CortexPlatformCore import get_cdr_protection_status_command, Client
 
         mock_client = Client(base_url="", headers={})
-
-        # Mock VM and K8S responses
-        vm_k8s_responses = [
-            {"reply": {"FILTER_COUNT": 50}},
-            {"reply": {"FILTER_COUNT": 100}},
-            {"reply": {"FILTER_COUNT": 5}},
-            {"reply": {"FILTER_COUNT": 10}},
-        ]
-
-        mocker.patch.object(mock_client, "get_webapp_data", side_effect=vm_k8s_responses)
 
         # All accounts sending logs
         accounts_response = {
@@ -9849,16 +9460,14 @@ class TestGetCDRProtectionStatusCommand:
 
         mocker.patch.object(mock_client, "platform_http_request", return_value=accounts_response)
 
-        args = {}
-
-        result = get_cdr_protection_status_command(mock_client, args)
+        result = get_cdr_protection_status_command(mock_client)
 
         # Verify 100% coverage
-        assert result.outputs["CloudAccounts"]["Total"] == 2
-        assert result.outputs["CloudAccounts"]["SendingLogs"] == 2
-        assert result.outputs["CloudAccounts"]["NotSendingLogs"] == 0
-        assert result.outputs["CloudAccounts"]["LogSendingPercentage"] == 100.0
-        assert len(result.outputs["CloudAccounts"]["AccountsNotSendingLogsList"]) == 0
+        assert len(result) == 1
+        assert result[0].outputs["CloudAccounts"]["Total"] == 2
+        assert result[0].outputs["CloudAccounts"]["NotSendingLogs"] == 0
+        assert len(result[0].outputs["CloudAccounts"]["AccountsNotSendingLogsList"]) == 0
+        assert "100.0%" in result[0].readable_output
 
     def test_get_cdr_protection_status_command_no_cloud_accounts(self, mocker):
         """
@@ -9867,39 +9476,23 @@ class TestGetCDRProtectionStatusCommand:
         When:
             - Calling get_cdr_protection_status_command.
         Then:
-            - Returns 0% log sending coverage with zero totals.
+            - Returns a note indicating no cloud accounts found.
         """
         from CortexPlatformCore import get_cdr_protection_status_command, Client
 
         mock_client = Client(base_url="", headers={})
-
-        # Mock VM and K8S responses
-        vm_k8s_responses = [
-            {"reply": {"FILTER_COUNT": 50}},
-            {"reply": {"FILTER_COUNT": 100}},
-            {"reply": {"FILTER_COUNT": 5}},
-            {"reply": {"FILTER_COUNT": 10}},
-        ]
-
-        mocker.patch.object(mock_client, "get_webapp_data", side_effect=vm_k8s_responses)
 
         # No accounts
         accounts_response = {"next_token": "", "values": []}
 
         mocker.patch.object(mock_client, "platform_http_request", return_value=accounts_response)
 
-        args = {}
+        result = get_cdr_protection_status_command(mock_client)
 
-        result = get_cdr_protection_status_command(mock_client, args)
-
-        # Verify zero accounts
-        assert result.outputs["CloudAccounts"]["Total"] == 0
-        assert result.outputs["CloudAccounts"]["SendingLogs"] == 0
-        assert result.outputs["CloudAccounts"]["NotSendingLogs"] == 0
-        assert (
-            result.outputs["CloudAccounts"]["LogSendingPercentage"] == 100.0
-        )  # 0 accounts = 100% sending (no accounts not sending)
-        assert len(result.outputs["CloudAccounts"]["AccountsNotSendingLogsList"]) == 0
+        # Verify returns note about no accounts
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert "No Cloud Accounts found" in result[0].readable_output
 
     def test_get_cdr_protection_status_command_pagination_multiple_pages(self, mocker):
         """
@@ -9913,16 +9506,6 @@ class TestGetCDRProtectionStatusCommand:
         from CortexPlatformCore import get_cdr_protection_status_command, Client
 
         mock_client = Client(base_url="", headers={})
-
-        # Mock VM and K8S responses
-        vm_k8s_responses = [
-            {"reply": {"FILTER_COUNT": 50}},
-            {"reply": {"FILTER_COUNT": 100}},
-            {"reply": {"FILTER_COUNT": 5}},
-            {"reply": {"FILTER_COUNT": 10}},
-        ]
-
-        mocker.patch.object(mock_client, "get_webapp_data", side_effect=vm_k8s_responses)
 
         # Three pages of accounts
         page1 = {
@@ -9969,34 +9552,14 @@ class TestGetCDRProtectionStatusCommand:
 
         mocker.patch.object(mock_client, "platform_http_request", side_effect=[page1, page2, page3])
 
-        args = {}
-
-        result = get_cdr_protection_status_command(mock_client, args)
+        result = get_cdr_protection_status_command(mock_client)
 
         # Verify all 250 accounts were retrieved
-        assert result.outputs["CloudAccounts"]["Total"] == 250
+        assert len(result) == 1
+        assert result[0].outputs["CloudAccounts"]["Total"] == 250
         # 125 accounts have even IDs (OFF), 125 have odd IDs (INFO)
-        assert result.outputs["CloudAccounts"]["NotSendingLogs"] == 125
-        assert result.outputs["CloudAccounts"]["SendingLogs"] == 125
-        assert result.outputs["CloudAccounts"]["LogSendingPercentage"] == 50.0
-
-    def test_get_cdr_protection_status_command_invalid_tag_format(self, mocker):
-        """
-        Given:
-            - API call with an invalid tag format (missing colon separator).
-        When:
-            - Calling get_cdr_protection_status_command with tag="invalid_tag".
-        Then:
-            - Raises DemistoException indicating invalid tag format.
-        """
-        from CortexPlatformCore import get_cdr_protection_status_command, Client
-
-        mock_client = Client(base_url="", headers={})
-
-        args = {"tag": "invalid_tag"}
-
-        with pytest.raises(DemistoException, match='Tag format should be "key:value"'):
-            get_cdr_protection_status_command(mock_client, args)
+        assert result[0].outputs["CloudAccounts"]["NotSendingLogs"] == 125
+        assert "50.0%" in result[0].readable_output  # 125/250 = 50% sending
 
 
 class TestGetCloudAccountsLogSendingStatus:
@@ -10044,11 +9607,10 @@ class TestGetCloudAccountsLogSendingStatus:
 
         mocker.patch.object(mock_client, "platform_http_request", return_value=accounts_response)
 
-        total, not_sending_count, percentage, accounts_list = get_cloud_accounts_log_sending_status(mock_client)
+        total, not_sending_count, accounts_list = get_cloud_accounts_log_sending_status(mock_client)
 
         assert total == 3
         assert not_sending_count == 1
-        assert percentage == 33.33
         assert len(accounts_list) == 1
         assert accounts_list[0]["account_id"] == "222222222222"
         assert accounts_list[0]["account_name"] == "Dev Account"
@@ -10101,11 +9663,10 @@ class TestGetCloudAccountsLogSendingStatus:
 
         mocker.patch.object(mock_client, "platform_http_request", side_effect=[page1, page2])
 
-        total, not_sending_count, percentage, accounts_list = get_cloud_accounts_log_sending_status(mock_client)
+        total, not_sending_count, accounts_list = get_cloud_accounts_log_sending_status(mock_client)
 
         assert total == 3
         assert not_sending_count == 2
-        assert percentage == 66.67
         assert len(accounts_list) == 2
 
     def test_get_cloud_accounts_log_sending_status_empty_account_name(self, mocker):
@@ -10143,7 +9704,7 @@ class TestGetCloudAccountsLogSendingStatus:
 
         mocker.patch.object(mock_client, "platform_http_request", return_value=accounts_response)
 
-        total, not_sending_count, percentage, accounts_list = get_cloud_accounts_log_sending_status(mock_client)
+        total, not_sending_count, accounts_list = get_cloud_accounts_log_sending_status(mock_client)
 
         assert len(accounts_list) == 2
         assert accounts_list[0]["account_name"] == "N/A"
@@ -10184,11 +9745,10 @@ class TestGetCloudAccountsLogSendingStatus:
 
         mocker.patch.object(mock_client, "platform_http_request", return_value=accounts_response)
 
-        total, not_sending_count, percentage, accounts_list = get_cloud_accounts_log_sending_status(mock_client)
+        total, not_sending_count, accounts_list = get_cloud_accounts_log_sending_status(mock_client)
 
         assert total == 2
         assert not_sending_count == 0
-        assert percentage == 0.0
         assert len(accounts_list) == 0
 
     def test_get_cloud_accounts_log_sending_status_all_not_sending_logs(self, mocker):
@@ -10226,11 +9786,10 @@ class TestGetCloudAccountsLogSendingStatus:
 
         mocker.patch.object(mock_client, "platform_http_request", return_value=accounts_response)
 
-        total, not_sending_count, percentage, accounts_list = get_cloud_accounts_log_sending_status(mock_client)
+        total, not_sending_count, accounts_list = get_cloud_accounts_log_sending_status(mock_client)
 
         assert total == 2
         assert not_sending_count == 2
-        assert percentage == 100.0
         assert len(accounts_list) == 2
 
     def test_get_cloud_accounts_log_sending_status_missing_additional_capabilities(self, mocker):
@@ -10275,12 +9834,14 @@ class TestGetCloudAccountsLogSendingStatus:
 
         mocker.patch.object(mock_client, "platform_http_request", return_value=accounts_response)
 
-        total, not_sending_count, percentage, accounts_list = get_cloud_accounts_log_sending_status(mock_client)
+        total, not_sending_count, accounts_list = get_cloud_accounts_log_sending_status(mock_client)
 
         assert total == 3
         assert not_sending_count == 1  # Only account 111
         assert len(accounts_list) == 1
         assert accounts_list[0]["account_id"] == "111"
+
+
 def test_get_cases_command_with_ai_summary(mocker: MockerFixture):
     """
     GIVEN:
