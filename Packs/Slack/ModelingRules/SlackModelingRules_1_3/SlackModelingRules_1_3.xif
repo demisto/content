@@ -109,19 +109,19 @@ alter
         get_context_app_scopes != NULL, get_context_app_scopes,
         get_context_app_scopes_bot
     ),
-    xdm.intermediate.identity.app_registration.owners = arraycreate(json_extract_scalar(context, "$['app']['creator']")),
+    xdm.intermediate.identity.app_registration.owners = arraycreate(json_extract_scalar(context, "$['app']['creator']")), //platfrom
     xdm.intermediate.identity.groups = arraycreate(json_extract_scalar(context, "$['app']['team']")),
 
     xdm.target.application.name = json_extract_scalar(entity, "$['app']['name']"),
-    xdm.target.application.bundle_id = json_extract_scalar(entity, "$['app']['id']"),
+    xdm.target.application.bundle_id = json_extract_scalar(entity, "$['app']['id']"), //platform
     xdm.target.identity.identifier = coalesce(
         json_extract_scalar(entity, "$['app']['id']"),
         json_extract_scalar(entity, "$['user']['id']")
     ),
     xdm.target.identity.upn = json_extract_scalar(entity, "$['user']['email']"),
 
-    xdm.target.user.upn = json_extract_scalar(entity, "$['user']['email']"),
-    xdm.target.user.identifier = json_extract_scalar(entity, "$['user']['id']"),
+    //xdm.target.user.upn = json_extract_scalar(entity, "$['user']['email']"),
+    //xdm.target.user.identifier = json_extract_scalar(entity, "$['user']['id']"),
     xdm.target.identity.username = coalesce(
         json_extract_scalar(entity, "$['app']['name']"),
         json_extract_scalar(entity, "$['enterprise']['name']"),
@@ -143,7 +143,7 @@ alter
         get_entity_type = "app", XDM_CONST.IDENTITY_TYPE_APPLICATION,
         XDM_CONST.IDENTITY_TYPE_VIRTUAL
     ),
-    xdm.target.user.groups = arraycreate(json_extract_scalar(entity, "$['user']['team']")),
+//    xdm.target.user.groups = arraycreate(json_extract_scalar(entity, "$['user']['team']")),
     xdm.target.file.filename = json_extract_scalar(entity, "$['file']['name']"),
     xdm.target.file.file_type = json_extract_scalar(entity, "$['file']['filetype']"),
     xdm.target.file.extension = arrayindex(regextract(json_extract_scalar(entity, "$['file']['name']"), "\.(\w+)$"),0),
