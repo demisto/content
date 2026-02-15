@@ -6478,8 +6478,7 @@ def build_ngsiem_search_body(args: dict) -> dict:
     if not query:
         raise ValueError("The 'query' argument is required.")
 
-    limit = arg_to_number(args.get("limit")) or 50
-    query = build_ngsiem_query_with_limit(query, limit)
+    
 
     around_config = assign_params(
         eventId=args.get("around_event_id"),
@@ -6487,6 +6486,10 @@ def build_ngsiem_search_body(args: dict) -> dict:
         numberOfEventsAfter=arg_to_number(args.get("around_number_events_after")),
         timestamp=arg_to_ngsiem_time_spec(args.get("around_timestamp")),
     )
+    
+    if not around_config:
+        limit = arg_to_number(args.get("limit")) or 50
+        query = build_ngsiem_query_with_limit(query, limit)
     demisto.debug(f"around_config: {around_config}")
     body = assign_params(
         queryString=query,
