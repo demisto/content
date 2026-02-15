@@ -5,7 +5,7 @@ name: CreateIACAppsecRule
 display: CAS - Create Iac Appsec Rule 
 description: Creates a new Application Security rule in Cortex Platform. An AppSec rule defines the specific criteria and scanners used to detect vulnerabilities or misconfigurations across your application lifecycle.
 category: Utilities
-requiresuserapproval: false
+requiresuserapproval: true
 marketplaces:
   - platform
 supportedModules:
@@ -28,7 +28,7 @@ args:
   description: >
     A descriptive summary of the rule's objective and expected outcomes.
   type: string
-  required: false
+  required: true
 - name: labels
   underlyingargname: labels
   description: >
@@ -94,6 +94,7 @@ args:
     Example 'definition' string:
     "scope:\n  provider: 'aws'\ndefinition:\n  or:\n      - cond_type: 'attribute'\n          resource_types: ['aws_instance']\n          attribute: 'instance_type'\n          operator: 'equals'\n          value: 't3.micro'"  
   type: string
+  required: true
 outputs:
 - name: Appsec.Rule.RULE_NAME
   description: The name of the Rule.

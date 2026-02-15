@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from datetime import datetime
 import json
 
 
@@ -53,10 +54,13 @@ def main():
         if len(frameworks) == 0 :
             raise DemistoException("Frameworks is required.")
 
+        now = datetime.now()
+        date_time_str = now.strftime("%Y%m%d%H%M%S")
+
         description = args.get("description", "")
         labels = argToList(args.get("labels"))
         payload = {
-            "name": rule_name,
+            "name": rule_name+'-'+date_time_str,
             "description": description,
             "severity": severity,
             "labels": labels,
