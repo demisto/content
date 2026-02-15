@@ -5,7 +5,6 @@ from datetime import datetime, UTC
 from BeyondTrustPrivilegeManagementCloud import (
     Client,
     get_events_command,
-    get_audit_activity_command,
     fetch_events,
     fetch_pm_events,
     fetch_activity_audits,
@@ -125,15 +124,15 @@ def test_get_events_command_default_start_date(client, mocker):
     assert isinstance(result.outputs, list)
 
 
-def test_get_audit_activity_command(client, mocker):
+def test_get_events_command_activity_audits(client, mocker):
     """
     Given:
         - A client object
-        - Arguments with page_size and page_number
+        - Arguments with event_type set to Activity Audits
     When:
-        - get_audit_activity_command is called
+        - get_events_command is called with event_type="Activity Audits"
     Then:
-        - The command should return the expected results
+        - The command should return audit activity results under BeyondTrust.Event prefix
     """
     mock_response = {
         "data": [
@@ -145,38 +144,38 @@ def test_get_audit_activity_command(client, mocker):
     }
     mocker.patch.object(client, "get_audit_activity", return_value=mock_response)
 
-    args = {"page_size": "2", "page_number": "1"}
-    result = get_audit_activity_command(client, args)
+    args = {"event_type": "Activity Audits", "limit": "2"}
+    result = get_events_command(client, args)
 
     outputs = result.outputs
     assert isinstance(outputs, list)
     assert len(outputs) == 2
     assert outputs[0]["id"] == 1
     assert outputs[1]["id"] == 2
+    assert result.outputs_prefix == "BeyondTrust.Event"
 
 
-def test_get_audit_activity_command_with_filters(client, mocker):
+def test_get_events_command_activity_audits_with_start_date(client, mocker):
     """
     Given:
         - A client object
-        - Arguments with date filters
+        - Arguments with event_type Activity Audits and a start_date
     When:
-        - get_audit_activity_command is called
+        - get_events_command is called
     Then:
-        - The command should pass filters to the API
+        - The command should pass the date filter to the audit API
     """
     mock_response = {"data": [{"id": 1, "created": "2022-01-01T00:00:00.000Z"}], "pageCount": 1}
     mocker.patch.object(client, "get_audit_activity", return_value=mock_response)
 
     args = {
-        "page_size": "10",
-        "page_number": "1",
-        "filter_created_dates": "2022-01-01,2022-01-02",
-        "filter_created_selection_mode": "Range",
+        "event_type": "Activity Audits",
+        "limit": "10",
+        "start_date": "2022-01-01T00:00:00.000Z",
     }
-    result = get_audit_activity_command(client, args)
+    result = get_events_command(client, args)
 
-    # Verify the method was called with correct parameters
+    # Verify the method was called
     client.get_audit_activity.assert_called_once()
     assert isinstance(result.outputs, list)
 

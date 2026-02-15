@@ -175,7 +175,7 @@ def test_module(client: Client) -> str:
 
 
 def get_events_command(client: Client, args: dict) -> CommandResults:
-    """Retrieves events from the service.
+    """Retrieves events or activity audits from the service based on event_type.
 
     Args:
         client (Client): The client to use.
@@ -184,48 +184,54 @@ def get_events_command(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults: The command results.
     """
+    event_type = args.get("event_type", "Events")
     start_date = args.get("start_date")
-    limit = min(arg_to_number(args.get("limit", DEFAULT_LIMIT)) or DEFAULT_LIMIT, DEFAULT_LIMIT)
+    limit = arg_to_number(args.get("limit", 50)) or 50
     should_push_events = argToBoolean(args.get("should_push_events", False))
 
-    if not start_date:
-        # Default to 1 hour ago if not provided
-        start_date = (datetime.now(timezone.utc) - timedelta(hours=1)).strftime(DATE_FORMAT)
+    if event_type == "Activity Audits":
+        # For Activity Audits, use the audit activity API
+        limit = min(limit, DEFAULT_PAGE_SIZE)
 
-    response = client.get_events(start_date, limit)
-    events = response.get("events", [])
+        if not start_date:
+            start_date = (datetime.now(timezone.utc) - timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S.%f")
+        else:
+            # Convert ISO format to the format expected by the audit API
+            parsed = dateparser.parse(start_date)
+            if parsed:
+                start_date = parsed.strftime("%Y-%m-%d %H:%M:%S.%f")
+
+        end_date = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f")
+
+        response = client.get_audit_activity(
+            page_size=limit,
+            page_number=1,
+            filter_created_dates=[start_date, end_date],
+            filter_created_selection_mode="Range",
+        )
+        events = response.get("data", [])
+        source_log_type = "activity_audits"
+    else:
+        # For Events, use the events API
+        limit = min(limit, DEFAULT_LIMIT)
+
+        if not start_date:
+            start_date = (datetime.now(timezone.utc) - timedelta(hours=1)).strftime(DATE_FORMAT)
+
+        response = client.get_events(start_date, limit)
+        events = response.get("events", [])
+        source_log_type = "events"
 
     # Add XSIAM fields if pushing events
     if should_push_events:
         for event in events:
             event["_time"] = event.get("created") or event.get("@timestamp")
-            event["source_log_type"] = "events"
+            event["source_log_type"] = source_log_type
             event["vendor"] = VENDOR
             event["product"] = PRODUCT
         send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
     return CommandResults(outputs_prefix="BeyondTrust.Event", outputs_key_field="id", outputs=events, raw_response=response)
-
-
-def get_audit_activity_command(client: Client, args: dict) -> CommandResults:
-    """Retrieves audit activity from the service.
-
-    Args:
-        client (Client): The client to use.
-        args (dict): The command arguments.
-
-    Returns:
-        CommandResults: The command results.
-    """
-    page_size = arg_to_number(args.get("page_size", DEFAULT_PAGE_SIZE)) or DEFAULT_PAGE_SIZE
-    page_number = arg_to_number(args.get("page_number", 1)) or 1
-    filter_created_dates = argToList(args.get("filter_created_dates"))
-    filter_created_selection_mode = args.get("filter_created_selection_mode")
-
-    response = client.get_audit_activity(page_size, page_number, filter_created_dates, filter_created_selection_mode)
-    audits = response.get("data", [])
-
-    return CommandResults(outputs_prefix="BeyondTrust.Audit", outputs_key_field="id", outputs=audits, raw_response=response)
 
 
 def fetch_pm_events(
@@ -471,9 +477,6 @@ def main():
 
         elif command == "beyondtrust-pm-cloud-get-events":
             return_results(get_events_command(client, args))
-
-        elif command == "beyondtrust-pm-cloud-get-audit-activity":
-            return_results(get_audit_activity_command(client, args))
 
         elif command == "fetch-events":
             last_run = demisto.getLastRun()

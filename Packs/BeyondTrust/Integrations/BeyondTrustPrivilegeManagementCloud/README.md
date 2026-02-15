@@ -56,7 +56,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### beyondtrust-pm-cloud-get-events
 
 ***
-Retrieves the list of events by start date from the BeyondTrust PM Cloud.
+Retrieves events or activity audits from BeyondTrust PM Cloud. Use the `event_type` argument to switch between Events and Activity Audits.
 
 #### Base Command
 
@@ -66,8 +66,10 @@ Retrieves the list of events by start date from the BeyondTrust PM Cloud.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| event_type | The type of events to retrieve. Possible values are: Events, Activity Audits. Default is Events. | Optional |
 | start_date | Start Date (UTC) to search events from (Elastic Ingestion Timestamp in UTC). Format: 2022-08-12T17:34:28.694Z. If not provided, defaults to 1 hour ago. | Optional |
-| limit | Maximum records that can be returned. Min size: 1, Max size: 1000. Default is 50. | Optional |
+| limit | Maximum records that can be returned. For Events: max 1000. For Activity Audits: max 200. Default is 50. | Optional |
+| should_push_events | Set to true to push events to XSIAM. Used for debugging. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
@@ -76,12 +78,17 @@ Retrieves the list of events by start date from the BeyondTrust PM Cloud.
 | BeyondTrust.Event.id | String | The ID of the event. |
 | BeyondTrust.Event.created | Date | The creation time of the event. |
 | BeyondTrust.Event.@timestamp | Date | The timestamp of the event. |
+| BeyondTrust.Event.auditType | String | Audit type name (Activity Audits only). |
+| BeyondTrust.Event.details | String | Details of the activity (Activity Audits only). |
+| BeyondTrust.Event.entity | String | Name of Activity Audit entity (Activity Audits only). |
+| BeyondTrust.Event.user | String | Initiated user email or API client identifier (Activity Audits only). |
+| BeyondTrust.Event.changedBy | String | Audit ChangedBy - API or Portal (Activity Audits only). |
 
-#### Command example
+#### Command example (Events)
 
-```!beyondtrust-pm-cloud-get-events start_date="2025-01-01T00:00:00.000Z" limit="10"```
+```!beyondtrust-pm-cloud-get-events event_type="Events" start_date="2025-01-01T00:00:00.000Z" limit="10"```
 
-#### Context Example
+#### Context Example (Events)
 
 ```json
 {
@@ -97,46 +104,16 @@ Retrieves the list of events by start date from the BeyondTrust PM Cloud.
 }
 ```
 
-### beyondtrust-pm-cloud-get-audit-activity
+#### Command example (Activity Audits)
 
-***
-Retrieves list of Details of Activity Audits with pagination (sorting and filtering).
+```!beyondtrust-pm-cloud-get-events event_type="Activity Audits" limit="10"```
 
-#### Base Command
-
-`beyondtrust-pm-cloud-get-audit-activity`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| page_size | The number of records per page. Shouldn't exceed 200. Default is 50. | Optional |
-| page_number | The page number to retrieve from results. Default is 1. | Optional |
-| filter_created_dates | Valid date formats for filter - 2020-12-24, 2020-12-24 19:09:47, 2020-12-24 19:09:47.6816562, 2020-12-24 19:09:47.6816562 +00:00. Can provide multiple dates separated by commas. | Optional |
-| filter_created_selection_mode | The selection mode of date criteria. Possible values are: Single, Multiple, Range. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| BeyondTrust.Audit.id | String | The ID of the audit. |
-| BeyondTrust.Audit.created | Date | The creation time of the audit. |
-| BeyondTrust.Audit.details | String | Details of the activity. |
-| BeyondTrust.Audit.user | String | Initiated user email or API client identifier. |
-| BeyondTrust.Audit.entity | String | Name of Activity Audit entity. |
-| BeyondTrust.Audit.auditType | String | Audit type name. |
-| BeyondTrust.Audit.changedBy | String | Audit ChangedBy (API or Portal). |
-
-#### Command example
-
-```!beyondtrust-pm-cloud-get-audit-activity page_size="10" page_number="1"```
-
-#### Context Example
+#### Context Example (Activity Audits)
 
 ```json
 {
     "BeyondTrust": {
-        "Audit": [
+        "Event": [
             {
                 "id": 123,
                 "created": "2025-01-01T00:00:00.000Z",
