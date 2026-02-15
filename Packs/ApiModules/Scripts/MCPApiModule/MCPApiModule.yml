@@ -10,7 +10,7 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-dockerimage: demisto/mcp:1.0.0.6978288
+dockerimage: demisto/mcp:1.0.0.5982836
 fromversion: 8.13.0
 tests:
 - No test
