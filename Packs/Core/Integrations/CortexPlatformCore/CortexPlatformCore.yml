@@ -2207,7 +2207,7 @@ script:
         - contextPath: Core.Case.host_count
           description: Number of hosts involved in the case.
           type: Number
-        - contextPath: Core.Case.resolved_comment
+        - contextPath: Core.Case.resolve_comment
           description: Comments added when resolving the case. May be null.
           type: String
         - contextPath: Core.Case.resolved_timestamp
