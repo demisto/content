@@ -634,6 +634,8 @@ def main() -> None:
         "UK": "https://api.tmcas.trendmicro.co.uk/v1/",
         "Canada": "https://api-ca.tmcas.trendmicro.com/v1/",
         "India": "https://api-in.tmcas.trendmicro.com/v1/",
+        "Singapore": "https://api-sg.tmcas.trendmicro.com/v1/",
+        "Middle East (UAE)": "https://api-me.tmcas.trendmicro.com/v1/",
     }
     params = demisto.params()
     token = params.get("credentials_token", {}).get("password") or params.get("token")
