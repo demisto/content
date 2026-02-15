@@ -4620,32 +4620,37 @@ def get_email_investigation_summary_command(client: Client, args: dict) -> Comma
 
 
 def decrypt_email_content_command(client: Client, args: dict) -> CommandResults:
-    """Decrypts the encrypted subject and body of a specific email.
+    """Decrypts the encrypted subject and body of one or more emails.
 
     Args:
         client (Client): The Cortex platform client instance.
-        args (dict): Command arguments including internet_message_id.
+        args (dict): Command arguments including internet_message_id (comma-separated list).
 
     Returns:
         CommandResults: The command results containing the decrypted email content.
     """
-    internet_message_id = args.get("internet_message_id", "")
-    if not internet_message_id:
+    internet_message_ids = argToList(args.get("internet_message_id"))
+    if not internet_message_ids:
         raise DemistoException("internet_message_id is required.")
 
-    response = client.decrypt_email_content(internet_message_id)
-    data = response.get("reply", response)
+    all_results = []
+    for message_id in internet_message_ids:
+        response = client.decrypt_email_content(message_id)
+        result = response.get("reply", response)
+        if isinstance(result, dict):
+            result["internet_message_id"] = message_id
+        all_results.append(result)
 
     return CommandResults(
         readable_output=tableToMarkdown(
             "Decrypted Email Content",
-            data,
+            all_results,
             headerTransform=string_to_table_header,
         ),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.DecryptedEmail",
         outputs_key_field="internet_message_id",
-        outputs=data,
-        raw_response=response,
+        outputs=all_results,
+        raw_response=all_results,
     )
 
 
