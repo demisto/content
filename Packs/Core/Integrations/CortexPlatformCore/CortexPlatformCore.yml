@@ -3398,9 +3398,6 @@ script:
           description: |
             The specific problem concentration. Valid values vary based on the selected issue_category (smeArea) such as Communication, Device Control, Dashboard and Reports, etc.
       outputs:
-        - contextPath: Core.SupportTicket.productType
-          description: The product type associated with the ticket.
-          type: String
         - contextPath: Core.SupportTicket.description
           description: The description of the Filed support ticket.
           type: String
