@@ -23,18 +23,21 @@ args:
     A unique name for the AppSec rule following the organization's naming conventions.
   type: string
   required: true
+  isgeneratable: true
 - name: description
   underlyingargname: description
   description: >
     A descriptive summary of the rule's objective and expected outcomes.
   type: string
   required: true
+  isgeneratable: true
 - name: labels
   underlyingargname: labels
   description: >
     A comma-separated list of rule labels to apply the rule to.
   type: string
   required: true
+  isgeneratable: true
 - name: severity
   underlyingargname: severity
   description: >
@@ -42,6 +45,7 @@ args:
     Options: CRITICAL, HIGH, MEDIUM, LOW.
   type: string
   required: true
+  isgeneratable: true
 - name: scanner
   underlyingargname: scanner
   description: >
@@ -49,6 +53,7 @@ args:
     Options: SECRETS, IAC.
   type: string
   required: true
+  isgeneratable: true
 - name: category
   underlyingargname: category
   description: >
@@ -56,6 +61,7 @@ args:
     Options: AI_ML, COMPUTE, IAM, KUBERNETES, LOGGING, MONITORING, NETWORKING, PUBLIC, STORAGE
   type: string
   required: true
+  isgeneratable: true
 - name: sub_category
   underlyingargname: sub_category
   description: >
@@ -72,6 +78,7 @@ args:
     if category is STORAGE: ENCRYPTION, PERMISSIONS, BACKUPS, VERSIONING, REPLICATION, ALERTING, REDUNDANCY.
   type: string
   required: true
+  isgeneratable: true
 - name: frameworks
   underlyingargname: frameworks
   description: >
@@ -94,7 +101,7 @@ args:
     Example 'definition' string:
     "scope:\n  provider: 'aws'\ndefinition:\n  or:\n      - cond_type: 'attribute'\n          resource_types: ['aws_instance']\n          attribute: 'instance_type'\n          operator: 'equals'\n          value: 't3.micro'"  
   type: string
-  required: true
+  isgeneratable: true
 outputs:
 - name: Appsec.Rule.RULE_NAME
   description: The name of the Rule.
