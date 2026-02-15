@@ -4785,24 +4785,17 @@ def main():  # pragma: no cover
             return_results(core_add_assessment_profile_command(client, args))
         elif command == "core-list-compliance-standards":
             return_results(core_list_compliance_standards_command(client, args))
-
         elif command == "core-get-endpoint-update-version":
             return_results(get_endpoint_update_version_command(client, args))
-
         elif command == "core-update-endpoint-version":
             return_results(update_endpoint_version_command(client, args))
         elif command == "core-get-cdr-protection-status":
             if not is_demisto_version_ge("8.14.0"):
                 raise DemistoException("This command is not available for this platform version")
             return_results(get_cdr_protection_status_command(client))
-
-        elif command == "core-xql-generic-query-platform":
-            if not is_demisto_version_ge("8.13.0"):
-                raise DemistoException("This command is not available for this platform version")
         elif command == "core-get-case-resolution-statuses":
             verify_platform_version()
             return_results(get_case_resolution_statuses(client, args))
-
         elif command == "core-xql-generic-query-platform":
             verify_platform_version()
             return_results(xql_query_platform_command(client, args))
