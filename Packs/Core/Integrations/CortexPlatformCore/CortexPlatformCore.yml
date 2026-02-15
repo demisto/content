@@ -3256,8 +3256,7 @@ script:
     - name: core-get-cdr-protection-status
       description: Calculates the CDR (Cloud Detection and Response) protection coverage percentages for cloud accounts. Determines what percentage of cloud accounts are sending logs.
       hidden: true
-      arguments:
-
+      arguments: []
       outputs:
         - contextPath: Core.CDRProtectionStatus.CloudAccounts.Total
           description: Total number of cloud accounts.
