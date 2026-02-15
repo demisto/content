@@ -3277,42 +3277,11 @@ script:
           description: A specific name of a group the user belongs to within this instance.
           type: String
     - name: core-get-cdr-protection-status
-      description: Calculates the CDR (Cloud Detection and Response) protection coverage percentages for cloud VMs, Kubernetes clusters, and cloud accounts. Determines what percentage of assets have protection enabled and what percentage of cloud accounts are sending logs.
+      description: Calculates the CDR (Cloud Detection and Response) protection coverage percentages for cloud accounts. Determines what percentage of cloud accounts are sending logs.
       hidden: true
       arguments:
-        - name: tag
-          description: 'Filter Cloud VMs and Kubernetes Clusters by tag name. Only assets with this tag will be included in the protection status calculation, For example: "name:windows2", "environment:production".'
+
       outputs:
-        - contextPath: Core.CDRProtectionStatus.CloudVMs.Total
-          description: Total number of cloud VM instances (excluding Kubernetes-managed VMs).
-          type: Number
-        - contextPath: Core.CDRProtectionStatus.CloudVMs.Unprotected
-          description: Number of VM instances without agents (unprotected).
-          type: Number
-        - contextPath: Core.CDRProtectionStatus.CloudVMs.UncoveredAssetsList.asset_id
-          description: The unique identifier of the uncovered VM asset.
-          type: String
-        - contextPath: Core.CDRProtectionStatus.CloudVMs.UncoveredAssetsList.asset_name
-          description: The name of the uncovered VM asset.
-          type: String
-        - contextPath: Core.CDRProtectionStatus.CloudVMs.UncoveredAssetsList.provider
-          description: The cloud provider of the uncovered VM asset (e.g., AWS, Azure, GCP).
-          type: String
-        - contextPath: Core.CDRProtectionStatus.KubernetesClusters.Total
-          description: Total number of Kubernetes clusters.
-          type: Number
-        - contextPath: Core.CDRProtectionStatus.KubernetesClusters.Unprotected
-          description: Number of Kubernetes clusters without realtime protection.
-          type: Number
-        - contextPath: Core.CDRProtectionStatus.KubernetesClusters.UncoveredAssetsList.asset_id
-          description: The unique identifier of the uncovered Kubernetes cluster.
-          type: String
-        - contextPath: Core.CDRProtectionStatus.KubernetesClusters.UncoveredAssetsList.asset_name
-          description: The name of the uncovered Kubernetes cluster.
-          type: String
-        - contextPath: Core.CDRProtectionStatus.KubernetesClusters.UncoveredAssetsList.provider
-          description: The cloud provider of the uncovered Kubernetes cluster (e.g., AWS, Azure, GCP).
-          type: String
         - contextPath: Core.CDRProtectionStatus.CloudAccounts.Total
           description: Total number of cloud accounts.
           type: Number
