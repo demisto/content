@@ -1744,7 +1744,7 @@ def get_detections_entities(detections_ids: list):
     return {"resources": combined_resources}
 
 
-def get_cases_data(url_filter: str, limit: int, offset: int) -> tuple[int, list[str]]:
+def get_cases_data(url_filter: str = "", limit: int = 100, offset: int = 0) -> tuple[int, list[str]]:
     """
     Fetches NGSIEM Case ids with provided filter
     :param url_filter: URL filter
@@ -1755,7 +1755,7 @@ def get_cases_data(url_filter: str, limit: int, offset: int) -> tuple[int, list[
         tuple[int, list[str]]: The number of total cases in the filter and the list of cases ids.
     """
     params = {"sort": "created_timestamp.asc", "offset": offset, "limit": limit}
-    endpoint_url = f"/cases/queries/cases/v1?filter={url_filter}"
+    endpoint_url = f"/cases/queries/cases/v1?filter={url_filter}" if url_filter else "/cases/queries/cases/v1"
     response = http_request("GET", endpoint_url, params)
     total_cases: int = demisto.get(response, "meta.pagination.total")
     ids: list[str] = demisto.get(response, "resources", [])
@@ -1857,6 +1857,32 @@ def get_cases_details(ids: list[str]) -> list[dict[str, Any]]:
 
     # Return the combined result.
     return full_cases
+
+
+def add_case_tags(case_id: str, tags: list[str]) -> dict:
+    """
+    Add tags to a case.
+    Args:
+        case_id: The ID of the case to add tags to.
+        tags: The list of tags to add.
+    Returns:
+        dict: The response from the API.
+    """
+    body = {"id": case_id, "tags": tags}
+    return http_request("POST", "/cases/entities/case-tags/v1", json=body)
+
+
+def delete_case_tags(case_id: str, tag: str) -> dict:
+    """
+    Delete a tag from a case.
+    Args:
+        case_id: The ID of the case to delete the tag from.
+        tag: The tag to delete.
+    Returns:
+        dict: The response from the API.
+    """
+    params = {"id": case_id, "tag": tag}
+    return http_request("DELETE", "/cases/entities/case-tags/v1", params=params)
 
 
 def get_detection_entities(incidents_ids: list):
@@ -2390,23 +2416,6 @@ def update_detection_request(ids: list[str], status: str) -> dict:
     return resolve_detection(
         ids=ids, status=status, assigned_to_uuid=None, username=None, show_in_ui=None, comment=None, tag=None
     )
-
-
-def update_ngsiem_case_request(id: str, status: str) -> dict:
-    """
-    Updates a NGSIEM case status
-    :param id: The case ID to update
-    :param status: The new status
-    :return: The response
-    """
-    list_of_stats = STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES
-    if status not in list_of_stats:
-        raise DemistoException(f"CrowdStrike Falcon Error: Status given is {status} and it is not in {list_of_stats}")
-
-    demisto.debug(f"Updating remote ngsiem case with {id=} and {status=}")
-    payload = {"fields": {"status": status}, "id": id}
-
-    return http_request("PATCH", "/cases/entities/cases/v2", data=json.dumps(payload))
 
 
 def update_request_for_multiple_detection_types(ids: list[str], status: str) -> dict:
@@ -3056,9 +3065,9 @@ def update_remote_ngsiem_case(delta, inc_status: IncidentStatus, ngsiem_case_id:
     remote_id = ngsiem_case_id.replace(f"{IncidentType.NGSIEM_CASE.value}:", "", 1)
     if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
         demisto.debug(f"Closing case with remote ID {remote_id} in remote system.")
-        return str(update_ngsiem_case_request(remote_id, "closed"))
+        return str(resolve_case(remote_id, status="closed"))
     elif "status" in delta:
-        return str(update_ngsiem_case_request(remote_id, delta.get("status")))
+        return str(resolve_case(remote_id, status=delta.get("status")))
     return ""
 
 
@@ -5937,6 +5946,217 @@ def list_incident_summaries_command():
     )
 
 
+def cases_to_human_readable(cases):
+    """
+    Converts a list of cases to a human-readable format.
+    Args:
+        cases: A list of cases.
+    Returns:
+        str: The human-readable string.
+    """
+    cases_readable_outputs = []
+    for case in cases:
+        readable_output = assign_params(
+            case_id=case.get("id"),
+            name=case.get("name"),
+            created_time=case.get("created_timestamp"),
+            status=case.get("status"),
+            version=case.get("version"),
+            description=case.get("description"),
+            severity=case.get("severity"),
+            assigned_to=case.get("assigned_to"),
+            tags=case.get("tags"),
+        )
+        demisto.debug(f"appending {readable_output=} to cases_readable_outputs")
+        cases_readable_outputs.append(readable_output)
+    headers = ["case_id", "name", "created_timestamp", "status", "version", "description", "severity", "assigned_to", "tags"]
+    return tableToMarkdown(
+        "CrowdStrike Cases", cases_readable_outputs, headers, removeNull=True, headerTransform=string_to_table_header
+    )
+
+
+def list_case_summaries_command():
+    """
+    Lists case summaries.
+    """
+    args = demisto.args()
+    ids = argToList(args.get("ids"))
+    if not ids:
+        _, ids = get_cases_data()
+
+    demisto.debug(f"About to call get_cases_entities with {ids=}")
+    cases = get_cases_entities(ids)
+    demisto.debug(f"got {cases=}")
+    cases_human_readable = cases_to_human_readable(cases)
+    return CommandResults(
+        readable_output=cases_human_readable,
+        outputs_prefix="CrowdStrike.Case",
+        outputs_key_field="id",
+        outputs=cases,
+    )
+
+
+def get_evidence_for_case_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Get evidence for a specific case.
+    Args:
+        args: The arguments of the command.
+    Returns:
+        CommandResults: The command results object.
+    """
+    case_id = args.get("id")
+    if not case_id:
+        raise ValueError("The 'id' argument is required.")
+
+    cases = get_cases_entities([case_id])
+    if not cases:
+        return CommandResults(readable_output=f"No case found with id {case_id}")
+
+    case = cases[0]
+    evidence = case.get("evidence", {})
+
+    # Prepare Human Readable output
+    alerts = [record.get("selector", {}).get("id") for record in evidence.get("alerts", {}).get("records", [])]
+    events = [record.get("selector", {}).get("id") for record in evidence.get("events", {}).get("records", [])]
+    leads = [record.get("selector", {}).get("id") for record in evidence.get("leads", {}).get("records", [])]
+
+    readable_output = [{"Case Id": case.get("id"), "Case Alerts": alerts, "Case Events": events, "Case Leads": leads}]
+    markdown_output = tableToMarkdown(
+        "Case Evidence", readable_output, headers=["Case Id", "Case Alerts", "Case Events", "Case Leads"], removeNull=True
+    )
+    return CommandResults(
+        outputs_prefix="CrowdStrike.CaseEvidence", outputs=evidence, readable_output=markdown_output, raw_response=case
+    )
+
+
+def add_case_tags_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Add tags to a case.
+    Args:
+        args: The arguments of the command.
+    Returns:
+        CommandResults: The command results object.
+    """
+    case_id = args.get("id")
+    tags = argToList(args.get("tags"))
+
+    if not case_id:
+        raise ValueError("The 'id' argument is required.")
+    if not tags:
+        raise ValueError("The 'tags' argument is required.")
+
+    add_case_tags(case_id, tags)
+    return CommandResults(readable_output="Tags were added successfully.")
+
+
+def delete_case_tags_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Delete a tag from a case.
+    Args:
+        args: The arguments of the command.
+    Returns:
+        CommandResults: The command results object.
+    """
+    case_id = args.get("id")
+    tag = args.get("tag")
+
+    if not case_id:
+        raise ValueError("The 'id' argument is required.")
+    if not tag:
+        raise ValueError("The 'tag' argument is required.")
+
+    delete_case_tags(case_id, tag)
+    return CommandResults(readable_output="Tags were deleted successfully.")
+
+
+def resolve_case(
+    case_id: str,
+    status: str | None = None,
+    name: str | None = None,
+    assigned_to_uuid: str | None = None,
+    description: str | None = None,
+    remove_user_assignment: bool | None = None,
+    severity: int | None = None,
+    template_id: str | None = None,
+) -> dict:
+    """
+    Updates a specific case object using PATCH /cases/entities/cases/v2.
+
+    Args:
+        case_id (str): The ID of the case to patch.
+        status (str | None): The status to set for the case.
+        assigned_to_uuid (str | None): A UUID of a user to assign the case to.
+        description (str | None): A new description for the case.
+        remove_user_assignment (bool): Whether to remove case assignment from current user.
+        severity (int | None): The new case severity rating (10-100).
+        template_id (str | None): The unique ID of the template to apply to the case.
+
+    Returns:
+        dict: The response from the API.
+    """
+    # Build fields dict with API field names, filtering out None values
+    fields = {
+        "status": status,
+        "name": name,
+        "assigned_to_user_uuid": assigned_to_uuid,
+        "description": description,
+        "severity": severity,
+        "template": {"id": template_id} if template_id else None,
+        "remove_user_assignment": remove_user_assignment if remove_user_assignment else None,
+    }
+    fields = {k: v for k, v in fields.items() if v is not None}
+
+    payload = {"id": case_id, "fields": fields}
+    return http_request("PATCH", "/cases/entities/cases/v2", json=payload)
+
+
+def resolve_case_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Command function for cs-falcon-resolve-case.
+    """
+    case_id = args.get("id")
+
+    if not case_id:
+        raise ValueError("The 'id' argument is required.")
+
+    severity = arg_to_number(args.get("severity"))
+    if severity is not None and not (10 <= severity <= 100):
+        raise ValueError("Severity must be an integer between 10 and 100.")
+
+    # We take care of that value seperatly so that it won't appear in the HR unless passed by the user
+    remove_user_assignment_str_value = args.get("remove_user_assignment")
+
+    # Collect changed fields for both API call and display
+    changed_fields: dict[str, Any] = {
+        "status": args.get("status"),
+        "name": args.get("name"),
+        "assigned_to_uuid": args.get("assigned_to_uuid"),
+        "description": args.get("description"),
+        "severity": severity,
+        "template_id": args.get("template_id"),
+    }
+
+    resolve_case(
+        case_id=case_id, remove_user_assignment=argToBoolean(remove_user_assignment_str_value or False), **changed_fields
+    )
+
+    readable_output = f"Case {case_id} was changed successfully"
+    display_data = {"id": case_id, "remove_user_assignment": remove_user_assignment_str_value, **changed_fields}
+
+    if argToBoolean(remove_user_assignment_str_value or False):
+        display_data["assigned_to_uuid"] = "Unassigned"
+
+    table = tableToMarkdown(
+        "Edited Case",
+        display_data,
+        headers=list(changed_fields.keys()),
+        headerTransform=string_to_table_header,
+        removeNull=True,
+    )
+
+    return CommandResults(readable_output=f"{readable_output}\n{table}")
+
+
 def create_host_group_command(
     name: str, group_type: str | None = None, description: str | None = None, assignment_rule: str | None = None
 ) -> CommandResults:
@@ -8137,6 +8357,10 @@ def main():  # pragma: no cover
             return_results(list_detection_summaries_command())
         elif command == "cs-falcon-list-incident-summaries":
             return_results(list_incident_summaries_command())
+        elif command == "cs-falcon-list-case-summaries":
+            return_results(list_case_summaries_command())
+        elif command == "cs-falcon-get-evidence-for-case":
+            return_results(get_evidence_for_case_command(args))
         elif command == "cs-falcon-search-iocs":
             return_results(search_iocs_command(**args))
         elif command == "cs-falcon-get-ioc":
@@ -8324,6 +8548,12 @@ def main():  # pragma: no cover
             fetch_assets_command()
         elif command == "cs-falcon-list-cnapp-alerts":
             return_results(list_cnapp_alerts_command(args=args))
+        elif command == "cs-falcon-add-case-tag":
+            return_results(add_case_tags_command(args))
+        elif command == "cs-falcon-delete-case-tag":
+            return_results(delete_case_tags_command(args))
+        elif command == "cs-falcon-resolve-case":
+            return_results(resolve_case_command(args))
         else:
             raise NotImplementedError(f"CrowdStrike Falcon error: command {command} is not implemented")
     except Exception as e:

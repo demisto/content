@@ -1,7 +1,7 @@
 import pytest
-from CommonServerPython import *
-from CommonServerPython import DemistoException, Common
 from requests.models import Response
+
+from CommonServerPython import *
 
 TAG_IDS_LISTS = [
     ([1, 2, 3], [2, 3, 4, 5], [4, 6, 7], [1, 2, 3], [4, 5], [6, 7]),
@@ -645,6 +645,7 @@ def test_prepare_args_to_search(mocker, demisto_args, expected_args):
     """
     mock_misp(mocker)
     from MISPV3 import prepare_args_to_search
+
     import demistomock
 
     mocker.patch.object(demistomock, "args", return_value=demisto_args)
@@ -664,7 +665,7 @@ def test_build_events_search_response(mocker):
     - Ensure that the output to context data is valid and was parsed correctly.
     """
     mock_misp(mocker)
-    from MISPV3 import build_events_search_response, EVENT_FIELDS
+    from MISPV3 import EVENT_FIELDS, build_events_search_response
 
     search_response = util_load_json("test_data/search_event_by_tag.json")
     search_expected_output = util_load_json("test_data/search_event_by_tag_outputs.json")
@@ -688,7 +689,7 @@ def test_build_events_search_response_without_feed_correlations(mocker):
     - Ensure that the output to context data is valid and was parsed correctly.
     """
     mock_misp(mocker)
-    from MISPV3 import build_events_search_response, EVENT_FIELDS
+    from MISPV3 import EVENT_FIELDS, build_events_search_response
 
     search_response = util_load_json("test_data/search_event_by_tag.json")
     search_expected_output = util_load_json("test_data/search_event_by_tag_no_feed_outputs.json")
@@ -712,7 +713,7 @@ def test_build_attributes_search_response(mocker):
     - Ensure that the output to context data is valid and was parsed correctly.
     """
     mock_misp(mocker)
-    from MISPV3 import build_attributes_search_response, ATTRIBUTE_FIELDS
+    from MISPV3 import ATTRIBUTE_FIELDS, build_attributes_search_response
 
     search_response = util_load_json("test_data/search_attribute_by_type.json")
     search_expected_output = util_load_json("test_data/search_attribute_by_type_outputs.json")
@@ -786,8 +787,8 @@ def test_add_email_object(file_path, expected_output_key, mock_response_key, moc
     - case 2: should return true.
     - case 3: should return true.
     """
-    from MISPV3 import add_email_object
     import pymisp
+    from MISPV3 import add_email_object
 
     event_id = 1231
     demisto_args: dict = {"entry_id": "", "event_id": event_id}
@@ -811,8 +812,8 @@ def test_fail_to_add_email_object(mocker):
     - Ensure that the error code was parsed into the response, was caught and handeled as a DemistoException.
     - case 1: Should catch a DemistoException and return true.
     """
-    from MISPV3 import add_email_object
     import pymisp
+    from MISPV3 import add_email_object
 
     event_id = 1231
     demisto_args: dict = {"entry_id": "", "event_id": event_id}
@@ -1090,9 +1091,9 @@ def test_get_indicator_results(
     """Tests the get indicator results function"""
 
     mock_misp(mocker)
+    import pymisp
     from MISPV3 import get_indicator_results
     from pymisp import ExpandedPyMISP
-    import pymisp
 
     mocker.patch.object(ExpandedPyMISP, "search", return_value={})
     mocker.patch("MISPV3.build_attributes_search_response", return_value={"test": "test"})
@@ -1200,8 +1201,8 @@ def test_change_warninglist_entries(demisto_args: dict, mocker):
     - Ensure that the output is valid and was parsed correctly.
     """
     mock_misp(mocker)
-    from MISPV3 import change_warninglist_command
     import pymisp
+    from MISPV3 import change_warninglist_command
 
     # Load the expected outputs and use them as the mock response
     warninglists_response_data = util_load_json("test_data/change_warninglist_entries_response.json")
@@ -1231,8 +1232,8 @@ def test_change_warninglist_entries(demisto_args: dict, mocker):
 )
 def test_change_warninglist_details(demisto_args: dict, mocker):
     mock_misp(mocker)
-    from MISPV3 import change_warninglist_command
     import pymisp
+    from MISPV3 import change_warninglist_command
 
     # Load the expected outputs and use them as the mock response
     warninglist_response_data = util_load_json("test_data/change_warninglist_details_response.json")
@@ -1253,3 +1254,76 @@ def test_change_warninglist_details(demisto_args: dict, mocker):
     assert result.readable_output == warninglist_readable_output
     assert result.outputs_prefix == "MISP.Warninglist"
     assert result.outputs == warninglist_outputs
+
+
+@pytest.mark.parametrize(
+    "found_related_events, expected_result, test_description",
+    [
+        # Single event scenarios
+        (
+            {"123": {"Event Name": "Test Event High", "Threat Level ID": 1, "Event ID": "123"}},
+            True,
+            "Single event with ThreatLevelID=1 (High) should return True",
+        ),
+        (
+            {"456": {"Event Name": "Test Event Medium", "Threat Level ID": 2, "Event ID": "456"}},
+            True,
+            "Single event with ThreatLevelID=2 (Medium) should return True",
+        ),
+        (
+            {"789": {"Event Name": "Test Event Low", "Threat Level ID": 3, "Event ID": "789"}},
+            True,
+            "Single event with ThreatLevelID=3 (Low) should return True",
+        ),
+        (
+            {"999": {"Event Name": "Test Event Unknown", "Threat Level ID": 4, "Event ID": "999"}},
+            False,
+            "Single event with ThreatLevelID=4 (Unknown) should return False",
+        ),
+        # Multiple events scenarios
+        (
+            {
+                "123": {"Event Name": "Event with High Threat", "Threat Level ID": 1, "Event ID": "123"},
+                "456": {"Event Name": "Event with Medium Threat", "Threat Level ID": 2, "Event ID": "456"},
+                "789": {"Event Name": "Event with Low Threat", "Threat Level ID": 3, "Event ID": "789"},
+            },
+            True,
+            "Multiple events with ThreatLevelID=[1,2,3] should return True (XSUP-61869 scenario)",
+        ),
+        (
+            {
+                "123": {"Event Name": "Event with High Threat", "Threat Level ID": 1, "Event ID": "123"},
+                "999": {"Event Name": "Event with Unknown Threat", "Threat Level ID": 4, "Event ID": "999"},
+            },
+            True,
+            "Multiple events with mixed ThreatLevelID=[1,4] should return True",
+        ),
+        (
+            {
+                "111": {"Event Name": "Event 1 Unknown", "Threat Level ID": 4, "Event ID": "111"},
+                "222": {"Event Name": "Event 2 Unknown", "Threat Level ID": 4, "Event ID": "222"},
+            },
+            False,
+            "Multiple events all with ThreatLevelID=4 should return False",
+        ),
+        # Edge case
+        ({}, False, "Empty events dictionary should return False"),
+    ],
+)
+def test_found_event_with_bad_threat_level_id(mocker, found_related_events, expected_result, test_description):
+    """
+    Given:
+    - Various event scenarios with different ThreatLevelID values
+
+    When:
+    - Checking if any event has a bad threat level ID (1, 2, or 3)
+
+    Then:
+    - Ensure the function correctly identifies bad threat levels
+    - Verifies the fix for XSUP-61869 (type mismatch bug)
+    """
+    mock_misp(mocker)
+    from MISPV3 import found_event_with_bad_threat_level_id
+
+    result = found_event_with_bad_threat_level_id(found_related_events)
+    assert result is expected_result, test_description

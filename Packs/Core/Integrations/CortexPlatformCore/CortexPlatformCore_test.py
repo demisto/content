@@ -9,6 +9,7 @@ from unittest.mock import Mock, patch
 import unittest
 from CortexPlatformCore import (
     get_appsec_suggestion,
+    get_remediation_techniques_suggestion,
     populate_playbook_and_quick_action_suggestions,
     map_qa_name_to_data,
     get_issue_recommendations_command,
@@ -4710,6 +4711,75 @@ class TestGetAppsecSuggestion(unittest.TestCase):
             "suggested_code_block": "new code",
         }
         assert result == expected
+
+
+class TestGetRemediationTechniquesSuggestion(unittest.TestCase):
+    @patch("CortexPlatformCore.demisto")
+    def test_get_remediation_techniques_suggestion_match(self, mock_demisto):
+        """
+        Given:
+            - An issue with asset_types and remediationTechniques that match.
+        When:
+            - Calling get_remediation_techniques_suggestion.
+        Then:
+            - The matching remediation techniques are returned.
+        """
+        issue = {
+            "asset_types": ["AWS EC2 Instance"],
+            "extended_fields": {
+                "remediationTechniques": [
+                    {"techniqueAssetType": "AWS_EC2_INSTANCE", "description": "Fix it"},
+                    {"techniqueAssetType": "AZURE_VM", "description": "Ignore it"},
+                ]
+            },
+        }
+        current_issue_id = "123"
+
+        result = get_remediation_techniques_suggestion(issue, current_issue_id)
+
+        assert len(result) == 1
+        assert result[0]["techniqueAssetType"] == "AWS_EC2_INSTANCE"
+        assert result[0]["description"] == "Fix it"
+
+    @patch("CortexPlatformCore.demisto")
+    def test_get_remediation_techniques_suggestion_no_match(self, mock_demisto):
+        """
+        Given:
+            - An issue with asset_types and remediationTechniques that do not match.
+        When:
+            - Calling get_remediation_techniques_suggestion.
+        Then:
+            - An empty list is returned.
+        """
+        issue = {
+            "asset_types": ["GCP VM"],
+            "extended_fields": {"remediationTechniques": [{"techniqueAssetType": "AWS_EC2_INSTANCE", "description": "Fix it"}]},
+        }
+        current_issue_id = "123"
+
+        result = get_remediation_techniques_suggestion(issue, current_issue_id)
+
+        assert result == []
+
+    @patch("CortexPlatformCore.demisto")
+    def test_get_remediation_techniques_suggestion_missing_remediation_techniques(self, mock_demisto):
+        """
+        Given:
+            - An issue with asset_types but missing remediationTechniques.
+        When:
+            - Calling get_remediation_techniques_suggestion.
+        Then:
+            - An empty list is returned.
+        """
+        issue = {
+            "asset_types": ["AWS EC2 Instance"],
+            "extended_fields": {},
+        }
+        current_issue_id = "123"
+
+        result = get_remediation_techniques_suggestion(issue, current_issue_id)
+
+        assert result == []
 
 
 class TestPopulatePlaybookAndQuickActionSuggestions(unittest.TestCase):

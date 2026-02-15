@@ -166,15 +166,57 @@ def test_get_endpoints_command(mocker):
     """
     from CoreIRApiModule import get_endpoints_command
 
-    mock_endpoints_page_1 = {"reply": {"endpoints": [{"id": 1, "hostname": "endpoint1"}]}}
-    mock_endpoints_page_2 = {"reply": {"endpoints": [{"id": 2, "hostname": "endpoint2"}]}}
+    mock_endpoints_page_1 = {"reply": {"endpoints": [{"endpoint_id": "1", "hostname": "endpoint1"}]}}
+    mock_endpoints_page_2 = {"reply": {"endpoints": [{"endpoint_id": "2", "hostname": "endpoint2"}]}}
     mock_endpoints_page_3 = {"reply": {"endpoints": []}}
     http_request = mocker.patch.object(test_client, "_http_request")
     http_request.side_effect = [mock_endpoints_page_1, mock_endpoints_page_2, mock_endpoints_page_3]
     args = {"all_results": "true"}
     result = get_endpoints_command(test_client, args)
-    assert result.readable_output == "### Endpoints\n|hostname|id|\n|---|---|\n| endpoint1 | 1 |\n| endpoint2 | 2 |\n"
-    assert result.raw_response == [{"id": 1, "hostname": "endpoint1"}, {"id": 2, "hostname": "endpoint2"}]
+    assert len(result.raw_response) == 2
+    assert result.raw_response[0]["endpoint_id"] == "1"
+    assert result.raw_response[1]["endpoint_id"] == "2"
+
+
+def test_get_endpoints_command_with_duplicates(mocker):
+    """
+    Given:
+        - API returns duplicate endpoints across pages (simulating pagination issue).
+    When:
+        - get_endpoints_command is called with all_results=true.
+    Then:
+        - Duplicates should be removed and only unique endpoints returned.
+        - Debug log should indicate duplicates were found and removed.
+    """
+    from CoreIRApiModule import get_endpoints_command
+
+    # Simulate API returning duplicates: endpoint1 appears in both page 1 and page 2
+    mock_endpoints_page_1 = {"reply": {"endpoints": [{"endpoint_id": "1111", "hostname": "endpoint1"}]}}
+    mock_endpoints_page_2 = {
+        "reply": {
+            "endpoints": [{"endpoint_id": "1111", "hostname": "endpoint1"}, {"endpoint_id": "2222", "hostname": "endpoint2"}]
+        }
+    }
+    mock_endpoints_page_3 = {"reply": {"endpoints": []}}
+
+    http_request = mocker.patch.object(test_client, "_http_request")
+    http_request.side_effect = [mock_endpoints_page_1, mock_endpoints_page_2, mock_endpoints_page_3]
+
+    info_mock = mocker.patch.object(demisto, "info")
+
+    args = {"all_results": "true"}
+    result = get_endpoints_command(test_client, args)
+
+    # Verify only unique endpoints are returned
+    assert len(result.raw_response) == 2
+    assert result.raw_response == [
+        {"endpoint_id": "1111", "hostname": "endpoint1"},
+        {"endpoint_id": "2222", "hostname": "endpoint2"},
+    ]
+
+    # Verify deduplication was logged
+    info_calls = [str(call) for call in info_mock.call_args_list]
+    assert any("removed 1 duplicate endpoint(s)" in str(call) for call in info_calls)
 
 
 def test_convert_to_hr_timestamps():
