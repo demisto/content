@@ -3409,7 +3409,7 @@ script:
           type: String
         - contextPath: Core.SupportTicket.DateTimeOfIssue
           description: The timestamp of the issue occurrence.
-          type: Date
+          type: Number
         - contextPath: Core.SupportTicket.IssueImpact
           description: The impact level of the ticket.
           type: String

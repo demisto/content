@@ -4445,7 +4445,7 @@ def core_fill_support_ticket_command(args: Dict[str, Any]) -> CommandResults:
     Includes dependent validation for problem_concentration based on the issue_category.
     """
     product_type = args.get('product_type')
-    description = args.get('description', '')
+    description = args.get('description') or ''
     contact_number = args.get('contact_number')
     issue_impact = args.get('issue_impact')
     issue_category = args.get('issue_category')
