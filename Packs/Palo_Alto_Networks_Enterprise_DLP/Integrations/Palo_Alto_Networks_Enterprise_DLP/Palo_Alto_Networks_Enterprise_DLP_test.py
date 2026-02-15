@@ -368,15 +368,22 @@ def test_query_sleep_time(requests_mock):
     assert time == 10
 
 
-def test_create_incident():
+@pytest.mark.parametrize(
+    "incident_type_input, expected_type",
+    [
+        (None, "Data Loss Prevention"),
+        ("custom type", "custom type"),
+    ],
+)
+def test_create_incident(incident_type_input, expected_type):
     """
     Given:
         - A DLP notification containing an incident.
     When:
-        - Calling `create_incident`.
+        - Calling `create_incident` with or without specifying an incident type.
     Then:
         - Ensure no errors due to the lack of `userId` in `INCIDENT_JSON`.
-        - Ensure the incident is created with the correct field values.
+        - Ensure the incident is created with the correct type.
     """
     # Inputs
     notification = {"incident": INCIDENT_JSON, "previous_notifications": []}
@@ -394,10 +401,16 @@ def test_create_incident():
         "previousNotification": None,
     }
 
+    # Act
+    if incident_type_input is None:
+        result = create_incident(notification, region=region)
+    else:
+        result = create_incident(notification, region=region, incident_type=incident_type_input)
+
     # Assert
-    assert create_incident(notification, region=region) == {
+    assert result == {
         "name": f"Palo Alto Networks DLP Incident {INCIDENT_JSON['incidentId']}",
-        "type": "Data Loss Prevention",
+        "type": expected_type,
         "occurred": occurred_time,
         "rawJSON": json.dumps(raw_data),
         "details": json.dumps(raw_data),
