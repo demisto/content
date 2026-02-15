@@ -427,7 +427,7 @@ Get case information based on the specified filters.
 | Core.Case.critical_severity_issue_count | Number | Number of issues with critical severity. |
 | Core.Case.user_count | Number | Number of users involved in the case. |
 | Core.Case.host_count | Number | Number of hosts involved in the case. |
-| Core.Case.resolved_comment | String | Comments added when resolving the case. May be null. |
+| Core.Case.resolve_comment | String | Comments added when resolving the case. May be null. |
 | Core.Case.resolved_timestamp | Number | Timestamp when the case was resolved. |
 | Core.Case.manual_severity | Number | Severity manually assigned by the user. May be null. |
 | Core.Case.starred | Boolean | Indicates whether the case is starred. |
