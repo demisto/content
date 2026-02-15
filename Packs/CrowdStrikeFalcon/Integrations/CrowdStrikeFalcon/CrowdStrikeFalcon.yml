@@ -5408,9 +5408,9 @@ script:
     - name: around_event_id
       description: The ID of the event to search around. Must be provided together with around_timestamp.
     - name: around_number_events_before
-      description: Number of events to return before the target event. Valid only when around_event_id and around_timestamp are provided; otherwise the command fails.
+      description: Number of events to return before the target event. Requires around_event_id and around_timestamp.
     - name: around_number_events_after
-      description: Number of events to return after the target event. Valid only when around_event_id and around_timestamp are provided; otherwise the command fails.
+      description: Number of events to return after the target event. Requires around_event_id and around_timestamp.
     - name: around_timestamp
       description: Timestamp for around search. Must be provided together with around_event_id.
     - name: ingest_start
