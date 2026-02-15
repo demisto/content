@@ -2101,7 +2101,7 @@ def main() -> None:
     fetch_with_events = params.get("fetch_mode") == "Fetch With Events"
     max_events_fetch = arg_to_number(params.get("max_events_fetch", DEFAULT_EVENTS_FETCH))
     status_filter_list = argToList(params.get("status"))
-    headers = {"__no_session__": "true"}
+    headers = {}  # type: ignore[var-annotated]
 
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
