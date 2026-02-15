@@ -4146,7 +4146,7 @@ script:
       predefined:
       - id
       - name
-    - description: The value of the field to search for.
+    - description: The field value to search for.
       name: value
       required: true
     description: Gets an automation script.
@@ -4159,7 +4159,7 @@ script:
       predefined:
       - id
       - name
-    - description: The value of the field to search for.
+    - description: The field value to search for.
       name: value
       required: true
     description: Deletes an automation script.
@@ -4178,7 +4178,7 @@ script:
       predefined:
       - id
       - name
-    - description: The value of the field to search for.
+    - description: The field value to search for.
       name: value
       required: true
     description: Gets an automation playbook.
@@ -4191,7 +4191,7 @@ script:
       predefined:
       - id
       - name
-    - description: The value of the field to search for.
+    - description: The field value to search for.
       name: value
       required: true
     description: Deletes an automation playbook.
