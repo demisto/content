@@ -553,9 +553,10 @@ def main():  # pragma: no cover
 
         # Validate we got set IDs
         if not set_ids:
-            demisto.error(
-                f"[main] No set IDs were resolved from configured set names: {set_names}. "
-                f"Integration will not fetch any events. Please check set name configuration."
+            raise DemistoException(
+                f"No set IDs were resolved from configured set names: {set_names}. "
+                f"Please verify that the set names in the integration configuration match "
+                f"the actual set names in CyberArk EPM."
             )
 
         if command != "fetch-events" or not demisto.getLastRun():
