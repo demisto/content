@@ -13,9 +13,9 @@ The integration supports three types of authorization:
 To use OAuth 2.0 authorization follow the next steps:
 1. Log in to your ServiceNow instance and create an endpoint for Cortex XSOAR to access your instance (see [Snow OAuth](https://docs.servicenow.com/bundle/xanadu-platform-security/page/administer/security/concept/c_OAuthApplications.html) for more information).
 2. Copy the **Client Id** and **Client Secret** (click the lock next to the client secret to reveal it) that were automatically generated when creating the endpoint into the **Client ID** and **Client Secret** fields of the integration instance configuration.
-3. (Recommended) Enter the ServiceNow account's `Username` and `Password` in the instance configuration. When provided, the integration will automatically perform the initial OAuth login on first use — no manual `!servicenow-oauth-login` command is needed. It will also automatically renew the refresh token when it expires.
-4. Select the `Use OAuth Login` checkbox and click the `Done` button.
-5. If you did **not** provide `Username` and `Password` in step 3, run the command `!servicenow-oauth-login` from the XSOAR CLI and fill in the username and password of the ServiceNow instance. This step generates an access token to the ServiceNow instance and is required only the first time after configuring a new instance in the XSOAR platform. If you provided `Username` and `Password`, this step is handled automatically.
+3. (Recommended) Enter the ServiceNow account **Username** and **Password** in the integration instance configuration. When provided, the integration automatically performs the initial OAuth login on first use. It also automatically renews the refresh token when it expires.
+4. Select the **Use OAuth Login** checkbox and click **Done**.
+5. If you did note provide **Username** and **Password** in step 3, run the `servicenow-oauth-login` command from the Cortex XSOAR CLI and fill in the username and password of the ServiceNow integration instance. This step generates an access token to the ServiceNow instance and is required only the first time after configuring a new integration instance in Cortex XSOAR. If you provided **Username** and **Password**, this step is handled automatically.
 6. (Optional) Test the created instance by running the `!servicenow-oauth-test` command.
 
 **Notes:**
