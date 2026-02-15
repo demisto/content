@@ -1426,7 +1426,11 @@ class ReputationAggregatedCommand(AggregatedCommand):
             )
 
         demisto.debug("Returning a success entry (at least one command succeeded or no hard failures).")
-        return CommandResults(readable_output=human_readable, outputs=final_context)
+        return CommandResults(
+            readable_output=human_readable,
+            outputs=final_context,
+            raw_response=flatten_dict_of_dicts_and_lists(final_context),
+        )
 
     def create_indicators_entry_results(self):
         """
@@ -1796,3 +1800,26 @@ def remove_empty_elements_with_exceptions(d, exceptions: set[str] | None = None)
 
     else:
         return d
+
+
+def flatten_dict_of_dicts_and_lists(data: dict[str, Any]) -> list[dict]:
+    """
+    Flattens a dictionary whose values are either:
+    - A dictionary (e.g., {"Value": "1"}), or
+    - A list of dictionaries (e.g., [{"Value": "2"}, {"Value": "3"}]).
+
+    This is useful when you want to build a "raw" response list that contains all output
+    items without preserving the original top-level keys.
+
+    Returns:
+        A single flat list of dictionaries collected from all values.
+    """
+    out: list[dict] = []
+
+    for v in data.values():
+        if isinstance(v, dict):
+            out.append(v)
+        elif isinstance(v, list):
+            out.extend(item for item in v if isinstance(item, dict))
+
+    return out
