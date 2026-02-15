@@ -9255,9 +9255,9 @@ class TestDynamicUpdateCommands:
             "Rule1,Rule2,Rule3",
             "security",
             b'<show><rule-hit-count><vsys><vsys-name><entry name="vsys3"><rule-base><entry name="security"><rules><list>'
-            b'<member>Rule1</member><member>Rule2</member><member>Rule3</member>'
+            b"<member>Rule1</member><member>Rule2</member><member>Rule3</member>"
             b"</list></rules></entry></rule-base></entry></vsys-name></vsys></rule-hit-count></show>",
-        )
+        ),
     ],
 )
 def test_build_rule_hit_count_xml(vsys, rules, rulebase, expected_cmd):
@@ -9277,7 +9277,7 @@ def test_build_rule_hit_count_xml(vsys, rules, rulebase, expected_cmd):
 
     xml_root = FirewallCommand.build_rule_hit_count_xml(vsys, rulebase, rules)
     cmd = ET.tostring(xml_root, encoding="unicode").encode()
-    
+
     assert cmd == expected_cmd
 
 
@@ -9330,3 +9330,107 @@ def test_get_hitcounts(rulebase_type, unused_only, no_new_hits_since_dt, length_
     )
     assert result is not None
     assert len(result) == length_expected
+
+@pytest.mark.parametrize(
+    "unused_only, no_new_hits_since, expected_count",
+    [
+        # Case 1: unused_only=False, no filter -> all rules returned
+        ("false", None, 4),
+        # Case 2: unused_only=True -> only rules with hit_count=0
+        ("true", None, 2),
+        # Case 3: unused_only=False, no_new_hits_since recent -> only rules older than filter
+        ("false",dateparser.parse("12 hours ago", settings={"TIMEZONE": "UTC"}), 4),
+        # Case 4: unused_only=True, no_new_hits_since recent -> only old unused rules
+        ("true", dateparser.parse("12 hours ago", settings={"TIMEZONE": "UTC"}), 2),
+    ]
+)
+def test_get_hitcounts_filters_param(unused_only, no_new_hits_since, expected_count, mocker):
+    """Test get_hitcounts with different unused_only and no_new_hits_since values."""
+
+    import xml.etree.ElementTree as ET
+    from Panorama import FirewallCommand
+
+    # ----------------------------
+    # Mock topology and firewall
+    # ----------------------------
+    mock_firewall = mocker.Mock()
+    mock_firewall.id = "FW1"
+
+    mock_topology = mocker.Mock()
+    mock_topology.firewalls.return_value = [mock_firewall]
+    mock_topology.panorama_objects = []
+
+    vsys_list = ["vsys1", "vsys2"]
+    mocker.patch.object(FirewallCommand, "get_vsys_list", return_value=vsys_list)
+
+    # ----------------------------
+    # Fake run_op_command returns 2 rules per VSYS
+    # ----------------------------
+    def fake_run_op(firewall, cmd, cmd_xml=False):
+        xml_root = ET.Element("show")
+        rhc = ET.SubElement(xml_root, "rule-hit-count")
+        vsys_elem = ET.SubElement(rhc, "vsys")
+        vsys_name_elem = ET.SubElement(vsys_elem, "vsys-name")
+        entry = ET.SubElement(vsys_name_elem, "entry", name="vsys_placeholder")
+        rb = ET.SubElement(entry, "rule-base")
+        rb_entry = ET.SubElement(rb, "entry", name="security")
+        rules_elem = ET.SubElement(rb_entry, "rules")
+
+        # Helper to add rule entry with all required fields
+        def add_rule(name, hit_count, last_hit_timestamp):
+            rule = ET.SubElement(rules_elem, "entry", name=name)
+            ET.SubElement(rule, "hit_count").text = str(hit_count)
+            ET.SubElement(rule, "last_hit_timestamp").text = last_hit_timestamp
+            # Add required extra fields for ShowRuleHitCountResult
+            ET.SubElement(rule, "latest").text = "false"
+            ET.SubElement(rule, "last_reset_timestamp").text = "0"
+            ET.SubElement(rule, "first_hit_timestamp").text = "0"
+            ET.SubElement(rule, "rule_creation_timestamp").text = "0"
+            ET.SubElement(rule, "rule_modification_timestamp").text = "0"
+
+        # Rule1: hit_count=0, old timestamp (1970)
+        add_rule("Rule1", 0, "0")
+
+        # Rule2: hit_count=5, recent timestamp '2025-03-20T14:52:04Z'
+        add_rule("Rule2", 5, "1742482324")
+
+        return xml_root
+
+
+    mocker.patch("Panorama.run_op_command", side_effect=fake_run_op)
+
+    # Patch demisto
+    mocker.patch("Panorama.demisto.debug")
+    mocker.patch("Panorama.demisto.callingContext", new={"context": {"IntegrationInstance": "test_instance"}})
+
+    # Patch build_rule_hit_count_xml to use original
+    original_build_xml = FirewallCommand.build_rule_hit_count_xml
+    mocker.patch.object(FirewallCommand, "build_rule_hit_count_xml",
+                        side_effect=lambda vsys_name, rb, rules: original_build_xml(vsys_name, rb, rules))
+
+    # ----------------------------
+    # Call function
+    # ----------------------------
+    results = FirewallCommand.get_hitcounts(
+        mock_topology,
+        "security",
+        "all",
+        "Rule1,Rule2",
+        no_new_hits_since=no_new_hits_since,
+        device_filter_string=None,
+        target=None,
+        unused_only=unused_only
+    )
+
+    # ----------------------------
+    # Assert total rules returned
+    # ----------------------------
+    assert len(results) == expected_count
+
+    # Optional: check that returned rules match filters
+    for r in results:
+        if unused_only == "true":
+            assert r.hit_count == 0
+        if no_new_hits_since is not None:
+            last_hit_dt = datetime.strptime(r.last_hit_timestamp, "%Y-%m-%dT%H:%M:%SZ")
+            assert last_hit_dt <= no_new_hits_since

@@ -12185,7 +12185,7 @@ class FirewallCommand:
         return pushed_rulebase_results
 
     @staticmethod
-    def build_rule_hit_count_xml(vsys_name: str, rulebase_type: str, rules_arg:str) -> ET.Element:
+    def build_rule_hit_count_xml(vsys_name: str, rulebase_type: str, rules_arg: str) -> ET.Element:
         xml_root = ET.Element("show")
         xml_rhc = ET.SubElement(xml_root, "rule-hit-count")
         xml_vsys = ET.SubElement(xml_rhc, "vsys")
@@ -12201,6 +12201,7 @@ class FirewallCommand:
             for rule in rules_arg.split(","):
                 ET.SubElement(rule_list, "member").text = rule.strip()
         return xml_root
+
     @staticmethod
     def get_hitcounts(
         topology: Topology,
@@ -12211,7 +12212,7 @@ class FirewallCommand:
         device_filter_string: Optional[str] = None,
         target: Optional[str] = None,
         unused_only: str = "false",
-    ) -> List[ShowRuleHitCountResult] | None:
+    ) -> List[ShowRuleHitCountResult]:
         """
         Runs the `show rule-hit-count` command with VSYS support.
 
@@ -12278,7 +12279,7 @@ class FirewallCommand:
                         # Timestamp Handling: API returns Unix epoch as string
                         try:
                             last_hit_dt = datetime.strptime(result.last_hit_timestamp, DATE_FORMAT)
-                        except (ValueError, TypeError) as e:
+                        except Exception as e:
                             demisto.debug(
                                 f"{debug_prefix} Error while formating {result.last_hit_timestamp=}, Skipping {result.name}\n{str(e)}"
                             )
