@@ -3381,14 +3381,14 @@ script:
             - disabled
             - report
         - auto: PREDEFINED
-          defaultValue: enabled
+          defaultValue: disabled
           description: Scan your endpoints and attached removable drives for dormant malware that is not actively attempting to run. Periodic scan.
           name: on_demand_file_examination
           predefined:
             - disabled
             - enabled
         - auto: PREDEFINED
-          defaultValue: disabled
+          defaultValue: enabled
           description: Scan your endpoints and attached removable drives for dormant malware that is not actively attempting to run. Local scan.
           name: end_user_initiated_local_scan
           predefined:
@@ -3443,11 +3443,11 @@ script:
             - disabled
             - report
         - auto: PREDEFINED
-          defaultValue: block
+          defaultValue: terminateSession
           description: Analyze network packet data to detect malicious behavior.
           name: network_packet_inspection_engine
           predefined:
-            - block
+            - terminateSession
             - disabled
             - report
         - auto: PREDEFINED
@@ -3668,7 +3668,7 @@ script:
           description: Analyze network packet data to detect malicious behavior.
           name: network_packet_inspection_engine
           predefined:
-            - block
+            - terminateSession
             - disabled
             - report
         - auto: PREDEFINED

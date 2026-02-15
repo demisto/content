@@ -67,9 +67,9 @@ WEBAPP_COMMANDS = [
     "core-list-exception-rules",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
-    "core-create-windows-malware-profile",
+    # "core-create-windows-malware-profile",
     "core-update-windows-malware-profile",
-    "core-create-windows-exploit-profile",
+    # "core-create-windows-exploit-profile",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -1000,7 +1000,7 @@ class Client(CoreClient):
     def create_profile(self, profile_data: dict) -> dict:
         return self._http_request(
             method="POST",
-            url_suffix="/profiles/add_profile",
+            url_suffix="/profiles/prevention/add",
             json_data=profile_data,
         )
         
@@ -4570,66 +4570,558 @@ def verify_platform_version(version: str = "8.13.0"):
 
 def create_windows_malware_profile_command(client: Client, args: dict) -> CommandResults:
     profile_name = args.get("profile_name")
-    profile_type = "MALWARE"
-    profile_platform = "AGENT_OS_WINDOWS"
+    profile_type = "Malware"
+    profile_platform = "Windows"
     profile_description = args.get("profile_description", "")
 
     # Template from user
-    profile_modules = {
-        "aspFiles": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "quarantine": {"value": "quarantine_disabled", "isDefault": True, "defaultValue": "quarantine_disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}},
-        "basTools": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}},
-        "uacBypass": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "blockIp": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "whitelistFolders": []},
-        "manualScan": {"mode": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}},
-        "ransomware": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "quarantine": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "smbWhitelist": [], "smbEncryption": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "protectionMode": {"value": "normal", "isDefault": True, "defaultValue": "normal"}},
-        "cryptominers": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "blockIp": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "whitelistFolders": []},
-        "antiTampering": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "blockIp": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "safeMode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "quarantine": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "whitelistFolders": []},
-        "iisProtection": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "blockIp": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "whitelistFolders": []},
-        "scanEndpoints": {"days": ["sun"], "hour": "00:00", "mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "type": "weekly", "weeks": [], "removableMedia": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "whitelistFolders": []},
-        "uefiProtection": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "blockIp": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "whitelistFolders": []},
-        "maliciousDevice": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "blockIp": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "whitelistFolders": []},
-        "networkSignature": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}},
-        "passwordStealing": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "blockIp": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "whitelistFolders": []},
-        "webshellDroppers": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "blockIp": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "whitelistFolders": []},
-        "onWriteProtection": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}},
-        "examineOfficeFiles": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "quarantine": {"value": "quarantine_disabled", "isDefault": True, "defaultValue": "quarantine_disabled"}, "localAnalysis": {"value": True, "isDefault": True, "defaultValue": True}, "networkDrives": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "unknownVerdicts": {"value": False, "isDefault": True, "defaultValue": False}, "whitelistFolders": [], "onWriteProtection": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnLowConfidence": {"value": "lc_local_analysis", "isDefault": True, "defaultValue": "lc_local_analysis"}},
-        "examineScriptFiles": {"mode": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "perl": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "batch": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "shell": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "vbScript": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "javaScript": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "powerShell": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}},
-        "inProcessShellcode": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "blockIp": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "whitelistFolders": [], "processInjection32Bit": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "aiPoweredShellcodeProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}},
-        "examineJScriptFiles": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "quarantine": {"value": "quarantine_disabled", "isDefault": True, "defaultValue": "quarantine_disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}},
-        "ldapQueryProtection": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "ipAllowList": [], "userAllowList": []},
-        "legitimateProcesses": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "allow": []},
-        "examineVBScriptFiles": {"mode": {"value": "report", "isDefault": False, "defaultValue": "block"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "quarantine": {"value": "quarantine_disabled", "isDefault": True, "defaultValue": "quarantine_disabled"}, "localAnalysis": {"value": True, "isDefault": True, "defaultValue": True}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "unknownVerdicts": {"value": False, "isDefault": True, "defaultValue": False}, "whitelistFolders": [], "onWriteProtection": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}},
-        "dynamicSecurityEngine": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "quarantine": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "whitelistFolders": [], "advancedApiMonitoring": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "driversProtectionMode": {"value": "report", "isDefault": True, "defaultValue": "report"}},
-        "examineOtherFileTypes": {"csv": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "lnk": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "msi": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "pdf": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "quarantine": {"value": "quarantine_disabled", "isDefault": True, "defaultValue": "quarantine_disabled"}, "actionOnUnknown": {"value": "unknown_allow", "isDefault": True, "defaultValue": "unknown_allow"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "rtf": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "java": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "mode": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "flash": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "mshta": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "archive": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}},
-        "powerShellScriptFiles": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "quarantine": {"value": "quarantine_disabled", "isDefault": True, "defaultValue": "quarantine_disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnLowConfidence": {"value": "lc_allow", "isDefault": True, "defaultValue": "lc_allow"}},
-        "financialMalwareThreat": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "blockIp": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "whitelistFolders": [], "cryptoWalletProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}},
-        "ldapQueryCollectEvents": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}},
-        "securityMeasuresBypass": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "blockIp": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "whitelistFolders": []},
-        "dynamicDriverProtection": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "blockIp": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "whitelistFolders": []},
-        "dynamicKernelProtection": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}},
-        "examineJavaFilesWindows": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "grayware": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "quarantine_disabled", "isDefault": True, "defaultValue": "quarantine_disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtectionServerPages": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "onWriteProtectionAppExamination": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}},
-        "passwordTheftProtection": {"mode": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}},
-        "examinePortableExecutables": {"mode": {"value": "block", "isDefault": False, "defaultValue": "block"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "grayware": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "quarantine_disabled", "isDefault": True, "defaultValue": "quarantine_disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "whitelistSigners": [], "onWriteProtection": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnLowConfidence": {"value": "lc_local_analysis", "isDefault": True, "defaultValue": "lc_local_analysis"}},
-        "maliciousCausalityChainsResponse": {"mode": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "remoteIpsWhitelist": []}
-    }
+    # profile_modules = {
+    #     "aspFiles": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "quarantine": {"value": "quarantine_disabled", "isDefault": True, "defaultValue": "quarantine_disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}},
+    #     "basTools": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}},
+    #     "uacBypass": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "blockIp": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "whitelistFolders": []},
+    #     "manualScan": {"mode": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}},
+    #     "ransomware": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "quarantine": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "smbWhitelist": [], "smbEncryption": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "protectionMode": {"value": "normal", "isDefault": True, "defaultValue": "normal"}},
+    #     "cryptominers": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "blockIp": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "whitelistFolders": []},
+    #     "antiTampering": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "blockIp": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "safeMode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "quarantine": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "whitelistFolders": []},
+    #     "iisProtection": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "blockIp": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "whitelistFolders": []},
+    #     "scanEndpoints": {"days": ["sun"], "hour": "00:00", "mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "type": "weekly", "weeks": [], "removableMedia": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "whitelistFolders": []},
+    #     "uefiProtection": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "blockIp": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "whitelistFolders": []},
+    #     "maliciousDevice": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "blockIp": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "whitelistFolders": []},
+    #     "networkSignature": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}},
+    #     "passwordStealing": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "blockIp": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "whitelistFolders": []},
+    #     "webshellDroppers": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "blockIp": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "whitelistFolders": []},
+    #     "onWriteProtection": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}},
+    #     "examineOfficeFiles": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "quarantine": {"value": "quarantine_disabled", "isDefault": True, "defaultValue": "quarantine_disabled"}, "localAnalysis": {"value": True, "isDefault": True, "defaultValue": True}, "networkDrives": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "unknownVerdicts": {"value": False, "isDefault": True, "defaultValue": False}, "whitelistFolders": [], "onWriteProtection": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnLowConfidence": {"value": "lc_local_analysis", "isDefault": True, "defaultValue": "lc_local_analysis"}},
+    #     "examineScriptFiles": {"mode": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "perl": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "batch": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "shell": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "vbScript": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "javaScript": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "powerShell": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}},
+    #     "inProcessShellcode": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "blockIp": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "whitelistFolders": [], "processInjection32Bit": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "aiPoweredShellcodeProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}},
+    #     "examineJScriptFiles": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "quarantine": {"value": "quarantine_disabled", "isDefault": True, "defaultValue": "quarantine_disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}},
+    #     "ldapQueryProtection": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "ipAllowList": [], "userAllowList": []},
+    #     "legitimateProcesses": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "allow": []},
+    #     "examineVBScriptFiles": {"mode": {"value": "report", "isDefault": False, "defaultValue": "block"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "quarantine": {"value": "quarantine_disabled", "isDefault": True, "defaultValue": "quarantine_disabled"}, "localAnalysis": {"value": True, "isDefault": True, "defaultValue": True}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "unknownVerdicts": {"value": False, "isDefault": True, "defaultValue": False}, "whitelistFolders": [], "onWriteProtection": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}},
+    #     "dynamicSecurityEngine": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "quarantine": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "whitelistFolders": [], "advancedApiMonitoring": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "driversProtectionMode": {"value": "report", "isDefault": True, "defaultValue": "report"}},
+    #     "examineOtherFileTypes": {"csv": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "lnk": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "msi": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "pdf": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "quarantine": {"value": "quarantine_disabled", "isDefault": True, "defaultValue": "quarantine_disabled"}, "actionOnUnknown": {"value": "unknown_allow", "isDefault": True, "defaultValue": "unknown_allow"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "rtf": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "java": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "mode": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "flash": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "mshta": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "archive": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}},
+    #     "powerShellScriptFiles": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "quarantine": {"value": "quarantine_disabled", "isDefault": True, "defaultValue": "quarantine_disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnLowConfidence": {"value": "lc_allow", "isDefault": True, "defaultValue": "lc_allow"}},
+    #     "financialMalwareThreat": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "blockIp": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "whitelistFolders": [], "cryptoWalletProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}},
+    #     "ldapQueryCollectEvents": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}},
+    #     "securityMeasuresBypass": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "blockIp": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "whitelistFolders": []},
+    #     "dynamicDriverProtection": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "blockIp": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "whitelistFolders": []},
+    #     "dynamicKernelProtection": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}},
+    #     "examineJavaFilesWindows": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "grayware": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "quarantine_disabled", "isDefault": True, "defaultValue": "quarantine_disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtectionServerPages": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "onWriteProtectionAppExamination": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}},
+    #     "passwordTheftProtection": {"mode": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}},
+    #     "examinePortableExecutables": {"mode": {"value": "block", "isDefault": False, "defaultValue": "block"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "grayware": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "quarantine_disabled", "isDefault": True, "defaultValue": "quarantine_disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "whitelistSigners": [], "onWriteProtection": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnLowConfidence": {"value": "lc_local_analysis", "isDefault": True, "defaultValue": "lc_local_analysis"}},
+    #     "maliciousCausalityChainsResponse": {"mode": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "remoteIpsWhitelist": []}
+    # }
+    # profile_modules = {
+    #     "aspFiles": {
+    #         "mode": "disabled",
+    #         "upload": "enabled",
+    #         "actionOnUnknown": "unknown_local_analysis",
+    #     },
+    #     "basTools": {
+    #         "mode": "disabled"
+    #     },
+    #     "uacBypass": {
+    #         "mode": "block",
+    #         "quarantine": "enabled"
+    #     },
+    #     "manualScan": {
+    #         "mode": "enabled"
+    #     },
+    #     "ransomware": {
+    #         "mode": "block",
+    #         "quarantine": "disabled",
+    #         "smbWhitelist": [],
+    #         "smbEncryption": "enabled",
+    #         "protectionMode": "normal"
+    #     },
+    #     "cryptominers": {
+    #         "mode": "block",
+    #         "blockIp": "disabled",
+    #         "quarantine": "enabled",
+    #         "whitelistFolders": []
+    #     },
+    #     "antiTampering": {
+    #         "mode": "block",
+    #         "blockIp": "disabled",
+    #         "safeMode": "block",
+    #         "quarantine": "enabled",
+    #         "whitelistFolders": []
+    #     },
+    #     "iisProtection": {
+    #         "mode": "block",
+    #         "blockIp": "disabled",
+    #         "quarantine": "enabled",
+    #         "whitelistFolders": []
+    #     },
+    #     "scanEndpoints": {
+    #         "days": [
+    #             "sun"
+    #         ],
+    #         "hour": "00:00",
+    #         "mode": "disabled",
+    #         "type": "weekly",
+    #         "weeks": [],
+    #         "removableMedia": "disabled",
+    #         "whitelistFolders": []
+    #     },
+    #     "uefiProtection": {
+    #         "mode": "block",
+    #         "blockIp": "disabled",
+    #         "quarantine": "enabled",
+    #         "whitelistFolders": []
+    #     },
+    #     "maliciousDevice": {
+    #         "mode": "block",
+    #         "blockIp": "disabled",
+    #         "quarantine": "disabled",
+    #         "whitelistFolders": []
+    #     },
+    #     "networkSignature": {
+    #         "mode": "block"
+    #     },
+    #     "passwordStealing": {
+    #         "mode": "block",
+    #         "blockIp": "disabled",
+    #         "quarantine": "enabled",
+    #         "whitelistFolders": []
+    #     },
+    #     "webshellDroppers": {
+    #         "mode": "block",
+    #         "blockIp": "disabled",
+    #         "quarantine": "enabled",
+    #         "whitelistFolders": []
+    #     },
+    #     "onWriteProtection": {
+    #         "mode": "disabled"
+    #     },
+    #     "examineOfficeFiles": {
+    #         "mode": "block",
+    #         "upload": "enabled",
+    #         "quarantine": "quarantine_disabled",
+    #         "localAnalysis": True,
+    #         "networkDrives": "enabled",
+    #         "actionOnUnknown": "unknown_local_analysis",
+    #         "unknownVerdicts": False,
+    #         "whitelistFolders": [],
+    #         "onWriteProtection": "disabled",
+    #         "actionOnLowConfidence": "lc_local_analysis"
+    #     },
+    #     "examineScriptFiles": {
+    #         "mode": "enabled",
+    #         "perl": {
+    #             "mode": "disabled",
+    #             "upload": "disabled",
+    #             "actionOnUnknown": "unknown_local_analysis",
+    #             "whitelistFolders": [],
+    #             "onWriteProtection": "enabled"
+    #         },
+    #         "batch": {
+    #             "mode": "block",
+    #             "upload": "enabled",
+    #             "actionOnUnknown": "unknown_local_analysis",
+    #             "whitelistFolders": [],
+    #             "onWriteProtection": "enabled"
+    #         },
+    #         "shell": {
+    #             "mode": "disabled",
+    #             "upload": "disabled",
+    #             "actionOnUnknown": "unknown_local_analysis",
+    #             "whitelistFolders": [],
+    #             "onWriteProtection": "enabled"
+    #         },
+    #         "vbScript": {
+    #             "mode": "block",
+    #             "upload": "enabled",
+    #             "actionOnUnknown": "unknown_local_analysis",
+    #             "whitelistFolders": [],
+    #             "onWriteProtection": "enabled"
+    #         },
+    #         "javaScript": {
+    #             "mode": "block",
+    #             "upload": "enabled",
+    #             "actionOnUnknown": "unknown_local_analysis",
+    #             "whitelistFolders": [],
+    #             "onWriteProtection": "enabled"
+    #         },
+    #         "powerShell": {
+    #             "mode": "disabled",
+    #             "upload": "disabled",
+    #             "actionOnUnknown": "unknown_local_analysis",
+    #             "whitelistFolders": [],
+    #             "onWriteProtection": "enabled"
+    #         }
+    #     },
+    #     "inProcessShellcode": {
+    #         "mode": "block",
+    #         "blockIp": "disabled",
+    #         "quarantine": "enabled",
+    #         "whitelistFolders": [],
+    #         "processInjection32Bit": "enabled",
+    #         "aiPoweredShellcodeProtection": "enabled"
+    #     },
+    #     "examineJScriptFiles": {
+    #         "mode": "block",
+    #         "upload": "enabled",
+    #         "quarantine": "quarantine_disabled",
+    #         "actionOnUnknown": "unknown_local_analysis",
+    #         "whitelistFolders": [],
+    #         "onWriteProtection": "disabled"
+    #     },
+    #     "ldapQueryProtection": {
+    #         "mode": "block",
+    #         "ipAllowList": [],
+    #         "userAllowList": []
+    #     },
+    #     "legitimateProcesses": {
+    #         "mode": "block",
+    #         "allow": []
+    #     },
+    #     "examineVBScriptFiles": {
+    #         "mode": "report",
+    #         "upload": "enabled",
+    #         "quarantine": "quarantine_disabled",
+    #         "localAnalysis": True,
+    #         "actionOnUnknown": "unknown_local_analysis",
+    #         "unknownVerdicts": False,
+    #         "whitelistFolders": [],
+    #         "onWriteProtection": "disabled"
+    #     },
+    #     "dynamicSecurityEngine": {
+    #         "mode": "block",
+    #         "quarantine": "enabled",
+    #         "whitelistFolders": [],
+    #         "advancedApiMonitoring": "enabled",
+    #         "driversProtectionMode": "report"
+    #     },
+    #     "examineOtherFileTypes": {
+    #         "csv": {
+    #             "mode": "disabled",
+    #             "upload": "disabled",
+    #             "actionOnUnknown": "unknown_local_analysis",
+    #             "whitelistFolders": [],
+    #             "onWriteProtection": "enabled"
+    #         },
+    #         "lnk": {
+    #             "mode": "disabled",
+    #             "upload": "disabled",
+    #             "actionOnUnknown": "unknown_local_analysis",
+    #             "whitelistFolders": [],
+    #             "onWriteProtection": "enabled"
+    #         },
+    #         "msi": {
+    #             "mode": "disabled",
+    #             "upload": "disabled",
+    #             "actionOnUnknown": "unknown_local_analysis",
+    #             "whitelistFolders": [],
+    #             "onWriteProtection": "enabled"
+    #         },
+    #         "pdf": {
+    #             "mode": "disabled",
+    #             "upload": "enabled",
+    #             "quarantine": "quarantine_disabled",
+    #             "actionOnUnknown": "unknown_allow",
+    #             "whitelistFolders": [],
+    #             "onWriteProtection": "enabled"
+    #         },
+    #         "rtf": {
+    #             "mode": "disabled",
+    #             "upload": "disabled",
+    #             "actionOnUnknown": "unknown_local_analysis",
+    #             "whitelistFolders": [],
+    #             "onWriteProtection": "enabled"
+    #         },
+    #         "java": {
+    #             "mode": "disabled",
+    #             "upload": "disabled",
+    #             "actionOnUnknown": "unknown_local_analysis",
+    #             "whitelistFolders": [],
+    #             "onWriteProtection": "enabled"
+    #         },
+    #         "mode": "enabled",
+    #         "flash": {
+    #             "mode": "disabled",
+    #             "upload": "disabled",
+    #             "actionOnUnknown": "unknown_local_analysis",
+    #             "whitelistFolders": [],
+    #             "onWriteProtection": "enabled"
+    #         },
+    #         "mshta": {
+    #             "mode": "block",
+    #             "upload": "enabled",
+    #             "actionOnUnknown": "unknown_local_analysis",
+    #             "whitelistFolders": [],
+    #             "onWriteProtection": "enabled"
+    #         },
+    #         "archive": {
+    #             "mode": "disabled",
+    #             "upload": "disabled",
+    #             "actionOnUnknown": "unknown_local_analysis",
+    #             "whitelistFolders": [],
+    #             "onWriteProtection": "enabled"
+    #         }
+    #     },
+    #     "powerShellScriptFiles": {
+    #         "mode": "block",
+    #         "upload": "enabled",
+    #         "quarantine": "quarantine_disabled",
+    #         "actionOnUnknown": "unknown_local_analysis",
+    #         "whitelistFolders": [],
+    #         "onWriteProtection": "disabled",
+    #         "actionOnLowConfidence": "lc_allow"
+    #     },
+    #     "financialMalwareThreat": {
+    #         "mode": "block",
+    #         "blockIp": "disabled",
+    #         "quarantine": "enabled",
+    #         "whitelistFolders": [],
+    #         "cryptoWalletProtection": "enabled"
+    #     },
+    #     "ldapQueryCollectEvents": {
+    #         "mode": "disabled"
+    #     },
+    #     "securityMeasuresBypass": {
+    #         "mode": "block",
+    #         "blockIp": "disabled",
+    #         "quarantine": "enabled",
+    #         "whitelistFolders": []
+    #     },
+    #     "dynamicDriverProtection": {
+    #         "mode": "block",
+    #         "blockIp": "disabled",
+    #         "quarantine": "disabled",
+    #         "whitelistFolders": []
+    #     },
+    #     "dynamicKernelProtection": {
+    #         "mode": "block"
+    #     },
+    #     "examineJavaFilesWindows": {
+    #         "mode": "disabled",
+    #         "upload": "enabled",
+    #         "grayware": "disabled",
+    #         "quarantine": "quarantine_disabled",
+    #         "actionOnUnknown": "unknown_local_analysis",
+    #         "whitelistFolders": [],
+    #         "onWriteProtectionServerPages": "disabled",
+    #         "onWriteProtectionAppExamination": "disabled"
+    #     },
+    #     "passwordTheftProtection": {
+    #         "mode": "enabled"
+    #     },
+    #     "examinePortableExecutables": {
+    #         "mode": "block",
+    #         "upload": "enabled",
+    #         "grayware": "disabled",
+    #         "quarantine": "quarantine_disabled",
+    #         "actionOnUnknown": "unknown_local_analysis",
+    #         "whitelistFolders": [],
+    #         "whitelistSigners": [],
+    #         "onWriteProtection": "disabled",
+    #         "actionOnLowConfidence": "lc_local_analysis"
+    #     },
+    #     "maliciousCausalityChainsResponse": {
+    #         "mode": "enabled",
+    #         "remoteIpsWhitelist": []
+    #     }
+    # }
 
     # Update modules based on args
-    for module_name, module_data in profile_modules.items():
-        arg_value = args.get(Profile.FIELDS.get(module_name))
-        if arg_value and "mode" in module_data:
-            module_data["mode"]["value"] = arg_value
-            if "safeMode" in module_data:
-                module_data["safeMode"]["value"] = arg_value
+    # for module_name, module_data in profile_modules.items():
+    #     arg_value = args.get(Profile.FIELDS.get(module_name))
+    #     if arg_value and "mode" in module_data:
+    #         module_data["mode"]["value"] = arg_value
+    #         if "safeMode" in module_data:
+    #             module_data["safeMode"]["value"] = arg_value
+    
+    # Configuration for periodic scan to be used when enabled
+    scan_endpoints_periodic_config = {
+        "type": "weekly",
+        "days": ["sun"],
+        "hour": "00:00",
+        "removableMedia": "disabled"
+    }
 
-    payload = {
-        "new_profile_data": {
-            "PROFILE_NAME": profile_name,
-            "PROFILE_TYPE": profile_type,
-            "PROFILE_PLATFORM": profile_platform,
-            "PROFILE_DESCRIPTION": profile_description,
-            "PROFILE_IS_DEFAULT": False,
-            "PROFILE_MODULES": profile_modules
+    scan_endpoints_arg = args.get(Profile.FIELDS.get("scanEndpoints"), "disabled")
+    if scan_endpoints_arg == "enabled":
+        periodic_scan_config = {
+            "mode": "enabled",
+            **scan_endpoints_periodic_config
+        }
+    else:
+        periodic_scan_config = {"mode": "disabled"}
+
+    profile_modules = {
+        "aspFiles": {
+            "mode": args.get(Profile.FIELDS.get("aspFiles"), "disabled"),
+            "upload": "enabled",
+            "actionOnUnknown": "runLocalAnalysis"
+        },
+        "basTools": {
+            "mode": args.get(Profile.FIELDS.get("basTools"), "disabled")
+        },
+        "uacBypass": {
+            "mode": args.get(Profile.FIELDS.get("uacBypass"), "block"),
+            "quarantine": "enabled"
+        },
+        "ransomware": {
+            "mode": args.get(Profile.FIELDS.get("ransomware"), "block"),
+            "quarantine": "disabled",
+            "smbEncryption": "enabled",
+            "protectionMode": "normal"
+        },
+        "cryptominers": {
+            "mode": args.get(Profile.FIELDS.get("cryptominers"), "block"),
+            "quarantine": "enabled"
+        },
+        "antiTampering": {
+            "mode": args.get(Profile.FIELDS.get("antiTampering"), "block"),
+            "safeMode": args.get(Profile.FIELDS.get("antiTampering"), "block"),
+            "quarantine": "enabled"
+        },
+        "iisProtection": {
+            "mode": args.get(Profile.FIELDS.get("iisProtection"), "block"),
+            "quarantine": "enabled"
+        },
+        "scanEndpoints": {
+            "periodicScan": periodic_scan_config,
+            "endUserInitiatedLocalScan": args.get("manualScan", "enabled")
+        },
+        "uefiProtection": {
+            "mode": args.get(Profile.FIELDS.get("uefiProtection"), "block"),
+            "quarantine": "enabled"
+        },
+        "maliciousDevice": {
+            "mode": args.get(Profile.FIELDS.get("maliciousDevice"), "block"),
+            "quarantine": "disabled"
+        },
+        "networkSignature": {
+            "mode": args.get(Profile.FIELDS.get("networkSignature"), "terminateSession")
+        },
+        "passwordStealing": {
+            "mode": args.get(Profile.FIELDS.get("passwordStealing"), "block"),
+            "quarantine": "enabled"
+        },
+        "webshellDroppers": {
+            "mode": args.get(Profile.FIELDS.get("webshellDroppers"), "block"),
+            "quarantine": "enabled"
+        },
+        "onWriteProtection": {
+            "examinePortableExecutables": "disabled",
+            "examineOfficeFiles": "disabled",
+            "powerShellScriptFiles": "disabled",
+            "aspFiles": "disabled",
+            "examineVBScriptFiles": "disabled",
+            "examineJScriptFiles": "disabled"
+        },
+        "examineOfficeFiles": {
+            "mode": args.get(Profile.FIELDS.get("examineOfficeFiles"), "block"),
+            "upload": "enabled",
+            "networkDrives": "enabled",
+            "actionOnUnknown": "runLocalAnalysis",
+            "actionOnLowConfidence": "runLocalAnalysis"
+        },
+        "inProcessShellcode": {
+            "mode": args.get(Profile.FIELDS.get("inProcessShellcode"), "block"),
+            "quarantine": "enabled",
+            "processInjection32Bit": "enabled",
+            "aiPoweredShellcodeProtection": "enabled"
+        },
+        "examineJScriptFiles": {
+            "mode": args.get(Profile.FIELDS.get("examineJScriptFiles"), "block"),
+            "upload": "enabled",
+            "quarantine": "disabled",
+            "actionOnUnknown": "runLocalAnalysis"
+        },
+        "legitimateProcesses": {
+            "mode": args.get(Profile.FIELDS.get("legitimateProcesses"), "block")
+        },
+        "examineVBScriptFiles": {
+            "mode": args.get(Profile.FIELDS.get("examineVBScriptFiles"), "block"),
+            "upload": "enabled",
+            "quarantine": "disabled",
+            "actionOnUnknown": "runLocalAnalysis"
+        },
+        "dynamicSecurityEngine": {
+            "mode": args.get(Profile.FIELDS.get("dynamicSecurityEngine"), "block"),
+            "quarantine": "enabled",
+            "advancedApiMonitoring": "enabled",
+            "driversProtectionMode": "block"
+        },
+        "powerShellScriptFiles": {
+            "mode": args.get(Profile.FIELDS.get("powerShellScriptFiles"), "block"),
+            "upload": "enabled",
+            "quarantine": "disabled",
+            "actionOnUnknown": "runLocalAnalysis"
+        },
+        "financialMalwareThreat": {
+            "mode": args.get(Profile.FIELDS.get("financialMalwareThreat"), "block"),
+            "quarantine": "enabled",
+            "cryptoWalletProtection": "enabled"
+        },
+        "securityMeasuresBypass": {
+            "mode": args.get(Profile.FIELDS.get("securityMeasuresBypass"), "block"),
+            "quarantine": "enabled"
+        },
+        "dynamicDriverProtection": {
+            "mode": args.get(Profile.FIELDS.get("dynamicDriverProtection"), "block"),
+            "quarantine": "disabled"
+        },
+        "dynamicKernelProtection": {
+            "mode": args.get(Profile.FIELDS.get("dynamicKernelProtection"), "block")
+        },
+        "passwordTheftProtection": {
+            "mode": args.get(Profile.FIELDS.get("passwordTheftProtection"), "enabled")
+        },
+        "examinePortableExecutables": {
+            "mode": args.get(Profile.FIELDS.get("examinePortableExecutables"), "block"),
+            "upload": "enabled",
+            "grayware": "disabled",
+            "quarantine": "disabled",
+            "actionOnUnknown": "runLocalAnalysis",
+            "actionOnLowConfidence": "runLocalAnalysis"
+        },
+        "maliciousCausalityChainsResponse": {
+            "mode": args.get(Profile.FIELDS.get("maliciousCausalityChainsResponse"), "enabled")
         }
     }
+
+
+    payload = {
+        "request_data": {
+            "name": profile_name,
+            "profile_type": profile_type,
+            "platform": profile_platform,
+            "description": profile_description,
+            "modules": profile_modules
+        }
+    }
+
+    # for module_name, module_data in profile_modules.items():
+    #     arg_value = args.get(Profile.FIELDS.get(module_name))
+    #     if arg_value and "mode" in module_data:
+    #         module_data["mode"] = arg_value
+    #         if "safeMode" in module_data:
+    #             module_data["safeMode"] = arg_value
+
+    # payload = {
+    #     "new_profile_data": {
+    #         "PROFILE_NAME": profile_name,
+    #         "PROFILE_TYPE": profile_type,
+    #         "PROFILE_PLATFORM": profile_platform,
+    #         "PROFILE_DESCRIPTION": profile_description,
+    #         "PROFILE_IS_DEFAULT": False,
+    #         "PROFILE_MODULES": profile_modules
+    #     }
+    # }
+    # payload = {
+    #     "request_data": {
+    #         "name": profile_name,
+    #         "profile_type": profile_type,
+    #         "platform": profile_platform,
+    #         "description": profile_description,
+    #         # "PROFILE_IS_DEFAULT": False,
+    #         "modules": profile_modules
+    #     }
+    # }
 
     response = client.create_profile(payload).get("reply", "")
 
@@ -4639,6 +5131,7 @@ def create_windows_malware_profile_command(client: Client, args: dict) -> Comman
         outputs={"profile_id": response},
         raw_response={"profile_id": response}
     )
+
 
 def update_windows_malware_profile_command(client, args):
     profile_id = args.get("profile_id")
