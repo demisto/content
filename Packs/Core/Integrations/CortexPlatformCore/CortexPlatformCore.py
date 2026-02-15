@@ -72,7 +72,7 @@ WEBAPP_COMMANDS = [
     "core-get-email-campaign-consolidated-forensic-enrichment",
     "core-execute-email-security-remediation",
 ]
-
+EMAIL_SECURITY = ["core-execute-email-security-remediation", "core-get-email-campaign-consolidated-forensic-enrichment"]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
 ENDPOINT_COMMANDS = ["core-get-endpoint-support-file"]
@@ -1006,7 +1006,7 @@ class Client(CoreClient):
         )
 
     def execute_email_security_remediation(
-        self, internet_message_id: str, external_id: str, action: str
+        self, internet_message_ids: list[str], alert_id: str, action: str
     ) -> dict:
         """
         Execute automated email security remediation action.
@@ -1023,14 +1023,15 @@ class Client(CoreClient):
         Returns:
             dict: Action execution status with success, message, or error fields
         """
+        body = {"internet_message_ids": internet_message_ids,
+                "alert_id": alert_id,
+                "action": {"id": action, "attributes": {}},
+        }
+        demisto.debug(f"body: {body}")
         return self._http_request(
             method="POST",
             url_suffix="/email-security/actions/on-demand",
-            json_data={
-                "internet_message_id": internet_message_id,
-                "external_id": external_id,
-                "action": {"id": action},
-            },
+            json_data=body,
         )
 
 
@@ -4539,6 +4540,7 @@ def init_client(api_type: str) -> Client:
         "appsec": f"{webapp_root}/public_api/appsec",
         "xsoar": "/xsoar",
         "agents": f"{webapp_root}/agents",
+        "email_security": "/api/v1"
     }
 
     # Fallback to public API if the type isn't recognized
@@ -4748,8 +4750,8 @@ def execute_email_security_remediation_command(
         CommandResults object with action execution status
     """
     action = args.get('action', '')
-    internet_message_id = args.get('internet_message_id', '')
-    external_id = args.get('external_id', '')
+    internet_message_ids = argToList(args.get('internet_message_ids', ''))
+    alert_id = args.get('alert_id', '')
     # Validate action is one of the allowed values
     valid_actions = [
         'DeleteEmail',
@@ -4766,7 +4768,7 @@ def execute_email_security_remediation_command(
     
     # Call API via client
     response = client.execute_email_security_remediation(
-        internet_message_id, external_id, action
+        internet_message_ids, alert_id, action
     )
     
     # Process response
@@ -4776,8 +4778,8 @@ def execute_email_security_remediation_command(
     
     # Prepare outputs
     outputs = {
-        'internet_message_id': internet_message_id,
-        'external_id': external_id,
+        'internet_message_ids': internet_message_ids,
+        'alert_id': alert_id,
         'action': action,
         'success': success,
     }
@@ -4801,7 +4803,7 @@ def execute_email_security_remediation_command(
     
     return CommandResults(
         outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.EmailSecurityRemediation',
-        outputs_key_field='external_id',
+        outputs_key_field='alert_id',
         outputs=outputs,
         readable_output=readable_output,
         raw_response=response,
@@ -4886,6 +4888,8 @@ def main():  # pragma: no cover
         api_type = "agents"
     elif command in XSOAR_COMMANDS:
         api_type = "xsoar"
+    elif command in EMAIL_SECURITY:
+        api_type = "email_security"
     else:
         api_type = "public"
 

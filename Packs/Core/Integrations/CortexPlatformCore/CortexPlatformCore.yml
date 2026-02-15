@@ -3450,11 +3450,12 @@ script:
           type: Unknown
     - arguments:
         - description: The Internet Message ID of the email campaign to remediate.
-          name: internet_message_id
+          name: internet_message_ids
+          isArray: true
           required: true
           type: String
         - description: The unique identifier for the alert across all email security module services.
-          name: external_id
+          name: alert_id
           required: true
           type: String
         - description: The remediation action to execute on the email.
@@ -3590,7 +3591,7 @@ script:
           defaultValue: "1"
       name: core-get-email-investigation-summary
       description: Retrieves a summary of phishing email investigation campaigns from Cortex, grouping individual alerts by email message ID to help prioritize investigations based on impact and scale.
-      hidden: false
+      hidden: true
       outputs:
         - contextPath: Core.EmailInvestigationSummary.internet_message_id
           description: The unique identifier of the email message.
