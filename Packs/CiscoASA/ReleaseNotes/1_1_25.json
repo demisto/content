@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "Refactor: Comprehensive update to Cisco ASA parsing and modeling logic."
-}
