@@ -1,26 +1,26 @@
 [MODEL: dataset="storage_scale_raw"]
 alter
     // Map to XDM fields - direct mappings
-    xdm.event.type = "CLI Audit Logs", // Integration API Endpoint - https://www.ibm.com/docs/en/storage-scale/5.2.2?topic=endpoints-cliauditlog-get
+    xdm.event.original_event_type = "CLI Audit Logs", // Integration API Endpoint - https://www.ibm.com/docs/en/storage-scale/5.2.2?topic=endpoints-cliauditlog-get
     xdm.source.process.name = command,
     xdm.source.process.command_line = arguments,
     xdm.source.host.hostname = node,
-    xdm.observer.name = originator,
+    xdm.observer.type = originator,
     xdm.source.process.pid = to_integer(pid),
     // Conditional mappings
     xdm.auth.privilege_level = if(
     user = "root", XDM_CONST.PRIVILEGE_LEVEL_SYSTEM,
     null),
-    xdm.event.original_event_type = if( // Check the Event Type based on command.
-    command in("mmcrnodeclass","mmchlicense","mmaddnode", "mmchcluster", "mmchconfig", "mmchnode", "mmcrcluster", "mmdelnode", "mmgetstate", "mmshutdown","mmstartup"),"Cluster Management", 
-    command in("mmadddisk","mmchdisk","mmcrfs","mmdelfs","mmlsfs","mmmount","mmumount","mmrpldisk"),"File System Management",
-    command in("mmcrfileset","mmlsfileset","mmcrsnapshot","mmdelsnapshot","mmlssnapshot"),"Fileset & Snapshots",
-    command in("mmapplypolicy","mmchpolicy","mmlspolicy"),"ILM & Policy",
-    command in("mmhealth","mmperfmon","gpfs.snap","mmnetverify","mmchqos","mmcheckquota"),"Monitoring & Health",
-    command in("mmces","mmnfs","mmsmb","mms3"), "Protocols (CES)",
-    command in("mmafmconfig","mmafmctl"),"AFM",
+    xdm.event.type = if( // Check the Event Type based on command.
+    command in ("mmcrnodeclass","mmchlicense","mmaddnode", "mmchcluster", "mmchconfig", "mmchnode", "mmcrcluster", "mmdelnode", "mmgetstate", "mmshutdown","mmstartup"),"Cluster Management", 
+    command in ("mmadddisk","mmchdisk","mmcrfs","mmdelfs","mmlsfs","mmmount","mmumount","mmrpldisk"),"File System Management",
+    command in ("mmcrfileset","mmlsfileset","mmcrsnapshot","mmdelsnapshot","mmlssnapshot"),"Fileset & Snapshots",
+    command in ("mmapplypolicy","mmchpolicy","mmlspolicy"),"ILM & Policy",
+    command in ("mmhealth","mmperfmon","gpfs.snap","mmnetverify","mmchqos","mmcheckquota"),"Monitoring & Health",
+    command in ("mmces","mmnfs","mmsmb","mms3"), "Protocols (CES)",
+    command in ("mmafmconfig","mmafmctl"),"AFM",
     command in ("mmgetacl","mmputacl","mmauth","mmkeyserv"), "Security",
-    command in("mmaddcallback"), "Cluster Automation",
+    command in ("mmaddcallback"), "Cluster Automation",
     command in ("mmguiadm","mmadviser"), "GUI & Management",
     command in ("mmcallhome"), "Support",
     command in ("mmcloudgateway","mmcloudaccount"),"Cloud Tiering",
@@ -30,7 +30,7 @@ alter
     command in ("mmbackup","mmrestore","mmxcp"), "Backup",
     command in ("mmcsi"),"Container Integration",
     command in ("mmmsgqueue"),"Auditing",
-    null),
+    "Other"),
     xdm.event.outcome = if( // Check weather the outcome is success or failure.
         to_integer(returnCode) = 0, XDM_CONST.OUTCOME_SUCCESS,
         XDM_CONST.OUTCOME_FAILED
