@@ -1410,6 +1410,23 @@ Decodes URLs that have been rewritten by TAP to their original, target URL.
 ***
 Get compromised accounts.
 
+## Prerequisites for using proofpoint-list-compromised-accounts command
+
+1. Licensing Requirement
+Active License: Your organization must have an active license for the Supplier Threat Protection add-on.
+Note: This is a separate subscription from the standard Targeted Attack Protection (TAP) or Email Fraud Defense (EFD) products.
+2. Service Principal (API Account) Configuration
+You cannot use a standard "SIEM" or "Threat Response" API key. You must ensure your Service Principal has the specific entitlement for Supplier data.
+Access the Admin Console: Log in to the Proofpoint Admin Console.
+Locate/Create Account: Navigate to Settings > Connected Applications (or Service Credentials).
+Required Role: Ensure the Service Principal is assigned the Supplier Threat Protection role/scope.
+Verify: If you are editing an existing key, look for a checkbox or permission set labeled "Supplier Threat Protection" or "Supplier Risk" and ensure it is enabled.
+3. Network Access (Allowlisting)
+Proofpoint APIs are protected by an IP allowlist.
+Identify Source IP: Determine the public IP address of the server or application that will be making the API requests.
+Update Allowlist: In the Proofpoint Admin Console (under the Service Principal settings), add this IP address to the Allowed Source IPs list.
+Critical: Requests from non-allowlisted IPs will result in a 403 Forbidden error, even with valid credentials.
+
 #### Base Command
 
 `proofpoint-list-compromised-accounts`
