@@ -2070,13 +2070,13 @@ def test_process_results_all_cases():
     assert len(processed_vulns) == 1
 
     # Verify first asset (Image)
-    assert processed_assets[0]["_id"] == "sha256:image123"
+    assert processed_assets[0]["asset__id"] == "sha256:image123"
     assert processed_assets[0]["vulnerabilitiesCount"] == 1
     assert processed_vulns[0]["asset__id"] == "sha256:image123"
     assert processed_vulns[0]["cve"] == "CVE-IMAGE-1"
 
     # Verify second asset (Host)
-    assert processed_assets[1]["_id"] == "host-456"
+    assert processed_assets[1]["asset__id"] == "host-456"
     assert processed_assets[1]["osDistro"] == ""
     assert processed_assets[1]["vulnerabilitiesCount"] == 0
 

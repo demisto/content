@@ -3627,7 +3627,8 @@ def process_results(data_list):
     for data in data_list:
         processed_results_list.append(
             {
-                "_id": data.get("_id", ""),
+                "asset__id": data.get("_id", ""),
+                "name": data.get("name", ""),
                 "type": data.get("type", ""),
                 "hostname": data.get("hostname", ""),
                 "scanTime": data.get("scanTime", ""),
