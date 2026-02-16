@@ -1,5 +1,8 @@
 category: Analytics & SIEM
 provider: Fortinet
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: FortiSIEMV2
   version: -1
