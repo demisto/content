@@ -10201,8 +10201,8 @@ def test_ec2_delete_launch_template_command_success_with_id(mocker):
     assert "AWS Deleted Launch Template" in result.readable_output
     assert "lt-delete123" in result.readable_output
     assert mock_client.delete_launch_template.call_args.kwargs
-    assert mock_client.delete_launch_template.call_args.kwargs.get("LaunchTemplateId")
-    assert mock_client.delete_launch_template.call_args.kwargs.get("LaunchTemplateName") is None
+    assert mock_client.delete_launch_template.call_args.kwargs.get("LaunchTemplateId") == "lt-delete123"
+    assert "LaunchTemplateName" not in mock_client.delete_launch_template.call_args.kwargs
     mock_client.delete_launch_template.assert_called_once_with(LaunchTemplateId="lt-delete123")
 
 
@@ -10248,8 +10248,8 @@ def test_ec2_delete_launch_template_command_success_with_name(mocker):
     assert isinstance(result, CommandResults)
     assert result.outputs["LaunchTemplateName"] == "template-to-delete"
     assert "template-to-delete" in result.readable_output
-    assert mock_client.delete_launch_template.call_args.kwargs.get("LaunchTemplateId") is None
-    assert mock_client.delete_launch_template.call_args.kwargs.get("LaunchTemplateName")
+    assert "LaunchTemplateId" not in mock_client.delete_launch_template.call_args.kwargs
+    assert mock_client.delete_launch_template.call_args.kwargs.get("LaunchTemplateName") == "template-to-delete"
     mock_client.delete_launch_template.assert_called_once_with(LaunchTemplateName="template-to-delete")
 
 
