@@ -1404,3 +1404,41 @@ Decodes URLs that have been rewritten by TAP to their original, target URL.
 >|Encoded Url|Decoded Url|
 >|---|---|
 >| https://urldefense.proofpoint.com/v2/url?u=http-3A__links.mkt3337.com_ctt-3Fkn-3D3-26ms-3DMzQ3OTg3MDQS1-26r-3DMzkxNzk3NDkwMDA0S0-26b-3D0-26j-3DMTMwMjA1ODYzNQS2-26mt-3D1-26rt-3D0&d=DwMFaQ&c=Vxt5e0Osvvt2gflwSlsJ5DmPGcPvTRKLJyp031rXjhg&r=MujLDFBJstxoxZI_GKbsW7wxGM7nnIK__qZvVy6j9Wc&m=QJGhloAyfD0UZ6n8r6y9dF-khNKqvRAIWDRU_K65xPI&s=ew-rOtBFjiX1Hgv71XQJ5BEgl9TPaoWRm_Xp9Nuo8bk&e= | http://links.mkt3337.com/ctt?kn=3&ms=MzQ3OTg3MDQS1&r=MzkxNzk3NDkwMDA0S0&b=0&j=MTMwMjA1ODYzNQS2&mt=1&rt=0 |
+
+### proofpoint-list-compromised-accounts
+
+***
+Get compromised accounts.
+
+#### Base Command
+
+`proofpoint-list-compromised-accounts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| start | when to start searching for compromised accounts. | Optional |
+| end | when to stop searching for compromised accounts. | Optional |
+| high_risk | If True, only return results for senders that represent a high risk to the organization default:false. | Optional |
+| page | Which page of results to return. | Optional |
+| limit | The maximum number of results to return default: 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Proofpoint.CompromisedAccount.address | String | Email address of the compromised account. |
+| Proofpoint.CompromisedAccount.observations | array | Observations which led Proofpoint to determine this account was compromised. |
+| Proofpoint.CompromisedAccount.identity | String | Relationship between my organization and the sender. |
+| Proofpoint.CompromisedAccount.timeRanges | array | Provides the time ranges during which a account was compromised. |
+| Proofpoint.CompromisedAccount.threatCategories | array | Unique set of threat categories observed by this sender. |
+| Proofpoint.CompromisedAccount.trafficType | String | Supplier Threat Protection leverages message activity. |
+| Proofpoint.CompromisedAccount.maliciousMessages | Number | Count of malicious messages sent from this sender. |
+| Proofpoint.CompromisedAccount.deliveredMessages | Number | Count of malicious messages sent from this sender that were delivered. |
+| Proofpoint.CompromisedAccount.context | array | Context into why Proofpoint has highlighted this compromised account. |
+| Proofpoint.CompromisedAccount.titles | array | Business titles of the intended recipients for messages from this sender. |
+| Proofpoint.CompromisedAccount.departments | array | Department names of the intended recipients for messages from this sender. |
+| Proofpoint.CompromisedAccount.lastMaliciousMessage | String | datetime of last malicious message sent from this sender. |
+| Proofpoint.CompromisedAccount.dashboardLink | String | URL to Proofpoint TAP Dashboard specific for this sender. |
+| Proofpoint.CompromisedAccount.highRisk | Boolean | Indicates whether this compromised sender represents a high risk to your organization. |
