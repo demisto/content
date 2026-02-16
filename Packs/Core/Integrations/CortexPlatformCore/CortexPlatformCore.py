@@ -4760,7 +4760,7 @@ def create_profile_command(client: Client, args: dict, profile_type: str) -> Com
     response = client.create_profile(payload).get("reply", "")
 
     return CommandResults(
-        readable_output="Profile created successfully.",
+        readable_output=f"Profile {response} created successfully.",
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Profile",
         outputs={"profile_id": response},
         raw_response={"profile_id": response}
@@ -4802,41 +4802,6 @@ def delete_profile_command(client, args):
     profile_ids = argToList(args.get("profile_ids"))
     client.delete_profile(profile_ids)
     return CommandResults(readable_output=f"Profiles {profile_ids} deleted successfully.")
-
-# def create_windows_exploit_profile_command(client: Client, args: dict) -> CommandResults:
-#     profile_name = args.get("profile_name")
-#     profile_type = "Exploit"
-#     profile_platform = "Windows"
-#     profile_description = args.get("profile_description", "")
-
-#     # Template from user
-    
-
-#     # Update modules based on args
-#     # for module_name, module_data in profile_modules.items():
-#     #     arg_value = args.get(Profile.FIELDS.get(module_name))
-#     #     if arg_value and "mode" in module_data:
-#     #         module_data["mode"] = arg_value
-
-#     payload = {
-#         "request_data": {
-#             "name": profile_name,
-#             "profile_type": profile_type,
-#             "platform": profile_platform,
-#             "description": profile_description,
-#             # "PROFILE_IS_DEFAULT": False,
-#             "modules": profile_modules
-#         }
-#     }
-
-#     response = client.create_profile(payload).get("reply", "")
-
-#     return CommandResults(
-#         readable_output="Profile created successfully.",
-#         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Profile",
-#         outputs={"profile_id": response},
-#         raw_response={"profile_id": response}
-#     )
 
 
 def main():  # pragma: no cover

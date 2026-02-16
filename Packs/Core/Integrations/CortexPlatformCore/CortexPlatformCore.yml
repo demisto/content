@@ -3882,7 +3882,7 @@ script:
       description: Updates the provided profile.
       name: core-update-windows-exploit-profile
       outputs: []
-    - argument:
+    - arguments:
         - description: The IDs of the profiles.
           name: profile_ids
           required: true
