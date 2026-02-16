@@ -63,6 +63,7 @@ def integration_context(mocker):
     mocker.patch.object(demisto, "setIntegrationContext", side_effect=set_context)
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "error")
+    mocker.patch("ContentClientApiModule.support_multithreading")
     return store
 
 
@@ -462,7 +463,6 @@ def test_content_client_direct_usage():
     client = ContentClient(
         base_url="https://api.example.com",
         auth_handler=BearerTokenAuthHandler("test_token"),
-        is_multithreaded=False,
     )
 
     response = client.get("/v1/data")
@@ -2593,3 +2593,4 @@ def test_content_client_logger_get_request_id():
     # After generating
     new_id = logger.new_request_id()
     assert logger.get_request_id() == new_id
+
