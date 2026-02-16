@@ -243,6 +243,66 @@ def convert_datetimes_to_iso_safe(data):
     return json.loads(json_string)
 
 
+def create_launch_template_kwargs_builder(args: Dict[str, Any]) -> Dict[str, Any]:
+    kwargs: Dict[str, Any] = {
+        "LaunchTemplateName": args.get("launch_template_name"),
+        "VersionDescription": args.get("version_description"),
+        "LaunchTemplateData": {
+            "BlockDeviceMappings": {
+                "DeviceName": args.get("device_name"),
+                "Ebs": {
+                    "Encrypted": arg_to_bool_or_none(args.get("ebs_encrypted")),
+                    "DeleteOnTermination": arg_to_bool_or_none(args.get("ebs_delete_on_termination")),
+                    "Iops": arg_to_number(args.get("ebs_iops")),
+                    "KmsKeyId": args.get("ebs_kms_key_id"),
+                    "SnapshotId": args.get("ebs_snapshot_id"),
+                    "VolumeSize": arg_to_number(args.get("ebs_volume_size")),
+                    "VolumeType": args.get("ebs_volume_type"),
+                    "EbsCardIndex": arg_to_number(args.get("ebs_card_index")),
+                    "Throughput": arg_to_number(args.get("ebs_throughput")),
+                    "VolumeInitializationRate": arg_to_number(args.get("ebs_initialization_rate"))
+                },
+                "NoDevice": args.get("block_device_mappings_no_device"),
+                "VirtualName": args.get("block_device_mappings_virtual_name"),
+            },
+            "DisableApiTermination": arg_to_bool_or_none(args.get("disable_api_termination")),
+            "EbsOptimized": arg_to_bool_or_none(args.get("ebs_optimized")),
+            "IamInstanceProfile": {"Arn": args.get("iam_instance_profile_arn"),
+                                   "Name": args.get("iam_instance_profile_name")},
+            "ImageId": args.get("image_id"),
+            "InstanceInitiatedShutdownBehavior": args.get("instance_initiated_shutdown_behavior"),
+            "InstanceMarketOptions": {"MarketType": args.get("market_type"), "SpotOptions": {
+                "InstanceInterruptionBehavior": args.get("spot_options_instance_interruption_behavior"),
+                "MaxPrice": args.get("spot_options_max_price"),
+                "SpotInstanceType": args.get("spot_options_instance_type")
+            }},
+            "InstanceType": args.get("instance_type"),
+            "KernelId": args.get("kernel_id"),
+            "KeyName": args.get("key_name"),
+            "Monitoring": {"Enabled": arg_to_bool_or_none(args.get("monitoring"))},
+            "NetworkInterfaces": {
+                "AssociatePublicIpAddress": arg_to_bool_or_none(args.get("network_interfaces_associate_public_ip_address")),
+                "DeleteOnTermination": arg_to_bool_or_none(args.get("network_interfaces_delete_on_termination")),
+                "Description": args.get("network_interfaces_description"),
+                "DeviceIndex": arg_to_number(args.get("network_interfaces_device_index")),
+                "Groups": argToList(args.get("network_interface_groups")),
+                "SubnetId": args.get("subnet_id"),
+                "PrivateIpAddress": args.get("private_ip_address"),
+                "Ipv6AddressCount": arg_to_number(args.get("ipv6_address_count")),
+                "Ipv6Addresses": argToList(args.get("ipv6_addresses")),
+                "NetworkInterfaceId": args.get("network_interface_id"),
+            },
+            "Placement": {"AvailabilityZone": args.get("availability_zone"), "Tenancy": args.get("placement_tenancy")},
+            "RamDiskId": args.get("ram_disk_id"),
+            "SecurityGroups": argToList(args.get("security_groups")),
+            "SecurityGroupIds": argToList(args.get("security_group_ids")),
+            "UserData": args.get("user_data"),
+            "TagSpecifications": [{"ResourceType": "launch-template", "Tags": parse_tag_field(args.get("tags"))}]
+        }
+    }
+    return kwargs
+
+
 class AWSErrorHandler:
     """
     Centralized error handling for AWS boto3 client errors.
@@ -4165,96 +4225,7 @@ class EC2:
         Returns:
             CommandResults: Results containing the created launch template information
         """
-        kwargs: Dict[str, Any] = {
-            "LaunchTemplateName": args.get("launch_template_name"),
-            "VersionDescription": args.get("version_description"),
-        }
-
-        # Either launch_template_id or launch_template_name must be provided
-        if not remove_empty_elements(kwargs):
-            raise DemistoException("Either launch_template_id or launch_template_name must be provided")
-
-        # Build LaunchTemplateData
-        launch_template_data: Dict[str, Any] = {
-            "KernelId": args.get("kernel_id"),
-            "EbsOptimized": arg_to_bool_or_none(args.get("ebs_optimized")),
-            "ImageId": args.get("image_id"),
-            "InstanceType": args.get("instance_type"),
-            "KeyName": args.get("key_name"),
-            "DisableApiTermination": arg_to_bool_or_none(args.get("disable_api_termination")),
-            "InstanceInitiatedShutdownBehavior": args.get("instance_initiated_shutdown_behavior"),
-            "UserData": args.get("user_data"),
-            "SecurityGroupIds": argToList(args.get("security_group_ids")),
-            "SecurityGroups": argToList(args.get("security_groups")),
-            "Monitoring": remove_empty_elements({"Enabled": arg_to_bool_or_none(args.get("monitoring"))}),
-            "IamInstanceProfile": remove_empty_elements(
-                {"Arn": args.get("iam_instance_profile_arn"), "Name": args.get("iam_instance_profile_name")}
-            ),
-            "Placement": remove_empty_elements(
-                {"AvailabilityZone": args.get("availability_zone"), "Tenancy": args.get("placement_tenancy")}
-            ),
-            "RamDiskId": args.get("ram_disk_id"),
-        }
-
-        # Block device mappings
-        block_device_mappings = []
-        if device_name := args.get("device_name"):
-            ebs_config = remove_empty_elements(
-                {
-                    "Encrypted": arg_to_bool_or_none(args.get("ebs_encrypted")),
-                    "DeleteOnTermination": arg_to_bool_or_none(args.get("ebs_delete_on_termination")),
-                    "Iops": arg_to_number(args.get("ebs_iops")),
-                    "KmsKeyId": args.get("ebs_kms_key_id"),
-                    "SnapshotId": args.get("ebs_snapshot_id"),
-                    "VolumeSize": arg_to_number(args.get("ebs_volume_size")),
-                    "VolumeType": args.get("ebs_volume_type"),
-                }
-            )
-            block_device_mappings.append({"DeviceName": device_name, "Ebs": ebs_config})
-
-        if block_device_mappings:
-            launch_template_data["BlockDeviceMappings"] = block_device_mappings
-
-        # Network interfaces
-        network_interfaces = []
-        network_interface_config = remove_empty_elements(
-            {
-                "AssociatePublicIpAddress": arg_to_bool_or_none(args.get("network_interfaces_associate_public_ip_address")),
-                "DeleteOnTermination": arg_to_bool_or_none(args.get("network_interfaces_delete_on_termination")),
-                "Description": args.get("network_interfaces_description"),
-                "DeviceIndex": arg_to_number(args.get("network_interfaces_device_index")),
-                "Groups": argToList(args.get("network_interface_groups")),
-                "SubnetId": args.get("subnet_id"),
-                "PrivateIpAddress": args.get("private_ip_address"),
-            }
-        )
-        if network_interface_config:
-            network_interfaces.append(network_interface_config)
-
-        if network_interfaces:
-            launch_template_data["NetworkInterfaces"] = network_interfaces
-
-        # Tag specifications
-        if tags := args.get("tags"):
-            launch_template_data["TagSpecifications"] = [{"ResourceType": "launch-template", "Tags": parse_tag_field(tags)}]
-
-        # Instance market options (Spot)
-        if market_type := args.get("market_type"):
-            spot_options = remove_empty_elements(
-                {
-                    "SpotInstanceType": args.get("spot_instance_type"),
-                    "MaxPrice": args.get("spot_max_price"),
-                    "InstanceInterruptionBehavior": args.get("spot_instance_interruption_behavior"),
-                }
-            )
-            launch_template_data["InstanceMarketOptions"] = {
-                "MarketType": market_type,
-                "SpotOptions": spot_options,
-            }
-
-        kwargs["LaunchTemplateData"] = remove_empty_elements(launch_template_data)
-
-        remove_nulls_from_dictionary(kwargs)
+        kwargs: Dict[str, Any] = remove_empty_elements(create_launch_template_kwargs_builder(args))
         print_debug_logs(client, f"Creating launch template with parameters: {kwargs}")
 
         response = client.create_launch_template(**kwargs)

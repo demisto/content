@@ -158,25 +158,25 @@ script:
     - description: The name of the Amazon S3 bucket.
       name: bucket
       required: true
-    - description: Weather Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket.
+    - description: Whether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket.
       name: block_public_acls
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - description: Weather Amazon S3 should ignore public ACLs for this bucket and objects in this bucket.
+    - description: Whether Amazon S3 should ignore public ACLs for this bucket and objects in this bucket.
       name: ignore_public_acls
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - description: Weather Amazon S3 should block public bucket policies for this bucket.
+    - description: Whether Amazon S3 should block public bucket policies for this bucket.
       name: block_public_policy
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - description: Weather Amazon S3 should restrict public bucket policies for this bucket.
+    - description: Whether Amazon S3 should restrict public bucket policies for this bucket.
       name: restrict_public_buckets
       auto: PREDEFINED
       predefined:
@@ -539,7 +539,7 @@ script:
     - description: The name of the bucket for which to set the logging parameters.
       name: bucket
       required: true
-    - description: Weather MFA delete is enabled in the bucket versioning configuration. This element is only returned if the bucket has been configured with MFA delete. If the bucket has never been so configured, this element is not returned.
+    - description: Whether MFA delete is enabled in the bucket versioning configuration. This element is only returned if the bucket has been configured with MFA delete. If the bucket has never been so configured, this element is not returned.
       name: mfa_delete
       required: false
     - auto: PREDEFINED
@@ -978,13 +978,13 @@ script:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: Weather IAM user passwords must contain at least one uppercase character from the ISO basic Latin alphabet (A to Z). Can be "True" or "False".
+      description: Whether IAM user passwords must contain at least one uppercase character from the ISO basic Latin alphabet (A to Z). Can be "True" or "False".
       name: require_uppercase_characters
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: Weather IAM user passwords must contain at least one lowercase character from the ISO basic Latin alphabet (a to z). Can be "True" or "False".
+      description: Whether IAM user passwords must contain at least one lowercase character from the ISO basic Latin alphabet (a to z). Can be "True" or "False".
       name: require_lowercase_characters
       predefined:
       - 'true'
@@ -1676,13 +1676,13 @@ script:
       description: 'The DB cluster identifier for the modified cluster. This parameter is not case sensitive and is valid for Aurora DB and Multi-AZ DB cluster types. It must match the identifier of an existing DB cluster.'
       required: true
     - name: deletion_protection
-      description: 'Weather the DB cluster has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled.'
+      description: 'Whether the DB cluster has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled.'
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: enable_iam_database_authentication
-      description: 'Weather to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
+      description: 'Whether to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -3688,21 +3688,21 @@ script:
       description: The name of the Amazon SNS topic defined for notification of log file delivery.
       required: false
     - name: include_global_service_events
-      description: Weather the trail is publishing events from global services such as IAM to the log files.
+      description: Whether the trail is publishing events from global services such as IAM to the log files.
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: is_multi_region_trail
-      description: Weather the trail applies only to the current region or to all regions. The default is false. If the trail exists only in the current region and this value is set to true, shadow trails (replications of the trail) will be created in the other regions. If the trail exists in all regions and this value is set to false, the trail will remain in the region where it was created, and its shadow trails in other regions will be deleted.
+      description: Whether the trail applies only to the current region or to all regions. The default is false. If the trail exists only in the current region and this value is set to true, shadow trails (replications of the trail) will be created in the other regions. If the trail exists in all regions and this value is set to false, the trail will remain in the region where it was created, and its shadow trails in other regions will be deleted.
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: enable_log_file_validation
-      description: Weather log file validation is enabled. The default is false.
+      description: Whether log file validation is enabled. The default is false.
       required: false
       auto: PREDEFINED
       predefined:
@@ -3740,13 +3740,13 @@ script:
       description: Set to True to include AWS API calls from AWS global services such as IAM.
       type: boolean
     - contextPath: AWS.CloudTrail.Trail.IsMultiRegionTrail
-      description: Weather the trail exists only in one region or exists in all regions.
+      description: Whether the trail exists only in one region or exists in all regions.
       type: boolean
     - contextPath: AWS.CloudTrail.Trail.HomeRegion
       description: The region in which the trail was created.
       type: string
     - contextPath: AWS.CloudTrail.Trail.LogFileValidationEnabled
-      description: Weather log file validation is enabled.
+      description: Whether log file validation is enabled.
       type: boolean
     - contextPath: AWS.CloudTrail.Trail.CloudWatchLogsLogGroupArn
       description: Amazon Resource Name (ARN), a unique identifier that represents the log group to which CloudTrail logs will be delivered.
@@ -3761,7 +3761,7 @@ script:
       description: Specifies if the trail has custom event selectors.
       type: boolean
     - contextPath: AWS.CloudTrail.Trail.HasInsightSelectors
-      description: Weather a trail has insight selectors enabled.
+      description: Whether a trail has insight selectors enabled.
       type: boolean
     - contextPath: AWS.CloudTrail.Trail.IsOrganizationTrail
       description: Whether the trail is an organization trail.
@@ -3792,7 +3792,7 @@ script:
         prettypredefined:
           Name: ${asset.xdm.asset.name}
       - name: enable_log_file_validation
-        description: Weather log file validation is enabled.
+        description: Whether log file validation is enabled.
         defaultValue: 'true'
         hidden: true
     outputs:
@@ -10106,6 +10106,21 @@ script:
           - gp3
           - sc1
           - st1
+      - name: ebs_card_index
+        description: The index of the EBS card. Some instance types support multiple EBS cards. The default EBS card index is 0.
+        required: false
+      - name: ebs_throughput
+        description: The throughput to provision for a gp3 volume, with a maximum of 2,000 MiB/s. The minimum value of 125, and maximum value of 2,000.
+        required: false
+      - name: ebs_initialization_rate
+        description: Specifies the Amazon EBS Provisioned Rate for Volume Initialization (volume initialization rate), in MiB/s, at which to download the snapshot blocks from Amazon S3 to the volume.
+        required: false
+      - name: block_device_mappings_no_device
+        description: To omit the device from the block device mapping, specify an empty string.
+        required: false
+      - name: block_device_mappings_virtual_name
+        description: The virtual device name (ephemeralN).
+        required: false
       - name: network_interfaces_associate_public_ip_address
         description: Associates a public IPv4 address with eth0 for a new network interface.
         required: false
@@ -10136,6 +10151,15 @@ script:
       - name: private_ip_address
         description: The primary private IPv4 address of the network interface.
         required: false
+      - name: ipv6_address_count
+        description: The number of IPv6 addresses to assign to a network interface.
+        required: false
+      - name: ipv6_addresses
+        description: One or more specific IPv6 addresses from the IPv6 CIDR block range of your subnet.
+        required: false
+      - name: network_interface_id
+        description: The ID of the network interface.
+        required: false
       - name: availability_zone
         description: The Availability Zone for the instance.
         required: false
@@ -10159,17 +10183,17 @@ script:
         auto: PREDEFINED
         predefined:
           - spot
-      - name: spot_instance_type
+      - name: spot_options_instance_type
         description: The Spot Instance request type.
         required: false
         auto: PREDEFINED
         predefined:
           - one-time
           - persistent
-      - name: spot_max_price
+      - name: spot_options_max_price
         description: The maximum hourly price you're willing to pay for the Spot Instances.
         required: false
-      - name: spot_instance_interruption_behavior
+      - name: spot_options_instance_interruption_behavior
         description: The behavior when a Spot Instance is interrupted.
         required: false
         auto: PREDEFINED
