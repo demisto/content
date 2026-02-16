@@ -1,0 +1,940 @@
+// ==========================================
+// RULE 1: Classification
+// ==========================================
+// Classifies raw ESXi logs into event types using regex patterns for supporting Virtualization Story.
+
+[RULE: esxi_event_classification]
+alter
+    is_command_execution = if(
+        _raw_log ~= "(?i)user\s+\'\w+\'\s+running\s+command\s+\'.+\'" OR
+        _raw_log ~= "\s+(?i)shell\[\d+\]\:\s+\[\w+\]\:\s.+" OR
+        _raw_log ~= "\s+Console\s+log\s+content\s+for\s+the\s+command\s+.+" OR
+        _raw_log ~= "started\s+from\s+\'\w+\'\s+\d+\s+with\s+cmdline\s+\'.+\'\,\s+parent\s+\d+" OR
+        _raw_log ~= "crond\[\d+\]\:\s+USER\s+\w+\s+pid\s+\d+\s+cmd\s+.+"
+        ),
+    is_connection = if(
+        _raw_log ~= "\s+(?i)SSH\s+session\s+was\s+opened\s+" OR
+        _raw_log ~= "\s+(?i)SSH\s+login\s+has\s+failed\s+for\s+" OR
+        _raw_log ~= "session\s+opened\s+for\s+(?:local)?\s*user\s+\w+\s+(?:on|from|by)\s+" OR
+        _raw_log ~= "(?i:rejected|accepted)\s+connection\s+from\s+.*\:\d+" OR
+        _raw_log ~= "Connect\s+from\s+remote\s+socket\s+\(.+\:\d+\)" OR
+        _raw_log ~= "(?:Accepted|Failed|Postponed)\s+keyboard\-interactive\/pam\s+for\s+(?:invalid user |user )?\w+\s+from\s+.+\s+port\s+\d+\s+\w+"
+    ),
+    is_login = if(
+        _raw_log ~= "Accepted\s+password\s+for\s+user\s+\w+\s+from\s+.+session" OR
+        _raw_log ~= "User\s+\w*\@\S*\s+logged\s+in.*" OR
+        _raw_log ~= "Cannot\s+login\s+(?:user\s)?\w*\@\S*"
+    ),
+    is_service_status_changed = if(
+        _raw_log ~= "(?i)The\s+(?i)ESXi\s+command\s+line\s+shell\s+has\s+been\s+\w+" OR
+        _raw_log ~= "Administrator\s+access\s+to\s+the\s+host\s+has\s+been\s+\w+" OR
+        _raw_log ~= "SSH\s+access\s+has\s+been\s+\w+"
+    ),
+    is_fw_status_changed = if(
+        _raw_log ~= "Firewall\s+configuration\s+has\s+changed\.\s+Operation\s+\S+\s+for\s+rule\s+set\s+" OR
+        _raw_log ~= "Firewall\s+has\s+been\s+\w+"
+    ),
+    is_account_operations = if(
+        _raw_log ~= "Password\s+was\s+changed\s+for\s+account\s+\w+\s+on\s+host\s+\S+" OR
+        _raw_log ~= "Account\s+\w+\s+was\s+\w+\s+on\s+host\s+.+"
+    ),
+    is_file_or_datastore = if(
+        _raw_log ~= "Deletion\s+of\s+file\s+or\s+directory\s+\S+\s+from\s+\S+\s+was\s+initiated\s+from" OR
+        _raw_log ~= "File\s+upload\s+to\s+path\s+\'\[\S+\]\S+\'\s+was\s+initiated\s+from\s+\S+\s+and\s+completed"
+    ),
+    is_vm_operations = if(
+        _raw_log ~= "Created\s+virtual\s+machine\s+\w+\s+on\s+\w+" OR
+        _raw_log ~= "\w+\s+on\s+\w+\s+in\s+\S+\s+(?:has|is)?\s+powered\s+(?:on|off)" OR
+        _raw_log ~= "Guest\s+OS\s+(?:reboot|shut down)?\s+for\s+\w+\s+on\s+\w+\s+in" OR
+        _raw_log ~= "(?:Removed|Registered)\s+\w+\s+on\s+\S+\s+(?:in|from)\s+\S+"
+    ),
+    is_task = if(
+        _raw_log ~= "Task\s+Completed\s+\:\s+\S+\-\d+\s+Status\s+\w+"
+    )
+| alter
+    esxi_event_type = if(
+        is_command_execution = TRUE, "Command Execution",
+        is_connection = TRUE, "Connection",
+        is_login = TRUE, "Login",
+        is_service_status_changed = TRUE, "Service Status Changed",
+        is_fw_status_changed = TRUE, "Firewall Status Changed",
+        is_account_operations = TRUE, "Account operations",
+        is_file_or_datastore = TRUE, "File/Datastore Event",
+        is_vm_operations = TRUE, "VM Operations",
+        is_task = TRUE, "Task Events"
+    );
+
+// ==========================================
+// RULE 2: General Field Mapping
+// ==========================================
+// Extracts Syslog priority, facility and severity from the header, and maps them to XDM fields that are mutual to all event types.
+
+[RULE: esxi_general_fields_mapping]
+alter // Extract the <PRI> value from the syslog header
+    syslog_priority = to_integer(parsed_fields -> pri)
+| alter // Extract the syslog facility from the priority value by dividing it by 8
+    syslog_facility = floor(divide(syslog_priority, 8))
+| alter // Extract the severity remainder by subtracting (facility * 8) from the priority
+    syslog_severity = subtract(syslog_priority, multiply(syslog_facility, 8))
+| alter // Convert the numeric severity result back to string for mapping compatibility
+    severity = to_string(syslog_severity),
+    msg = parsed_fields -> msg
+| alter
+    xdm.event.log_level = if(
+        severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY ,
+        severity = "1", XDM_CONST.LOG_LEVEL_ALERT ,
+        severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL,
+        severity = "3", XDM_CONST.LOG_LEVEL_ERROR,
+        severity = "4", XDM_CONST.LOG_LEVEL_WARNING,
+        severity = "5", XDM_CONST.LOG_LEVEL_NOTICE,
+        severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL,
+        severity = "7", XDM_CONST.LOG_LEVEL_DEBUG,
+        severity),
+    xdm.event.description = msg,
+    xdm.event.type = esxi_event_type,
+    xdm.event.format = if(_raw_log ~= "\<\d+\>1", "RFC-5424", _raw_log ~= "\<\d+\>", "RFC-3164"),
+    xdm.event.tags = arraycreate("VIRTUALIZATION");
+
+// ==========================================
+// Modeling Rule
+// ==========================================
+[MODEL: dataset="vmware_esxi_raw"]
+
+// ------------------------------------------
+// Virtualization event type 1: Command Execution
+// ------------------------------------------
+
+// Log pattern 1#: User '<user_name>' running command '<command_line>
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "Command Execution" AND _raw_log ~= "(?i)user\s+\'\w+\'\s+running\s+command\s+\'.+\'"
+| alter // Extract fields
+    process = arrayindex(regextract(parsed_fields -> process_pid, "(.+)\["),0),
+    pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    user_name = arrayindex(regextract(msg, "User\s+\'(\S+)\'\s+"),0),
+    command_line = arrayindex(regextract(msg, "command\s+\'(.+)\'"),0)
+
+| alter // Map to XDM
+    xdm.target.host.hostname = parsed_fields -> hostname,
+    xdm.target.process.name = process,
+    xdm.target.process.pid = to_integer(pid),
+    xdm.target.user.username = user_name,
+    xdm.target.process.command_line = command_line,
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_EXECUTION,
+    xdm.event.operation_sub_type = "User interactive";
+
+// Log pattern 2#: (?i)shell\[<session_id>]: ?(\[<user_name>\]:) <command_line>
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "Command Execution" AND _raw_log ~= "\s+(?i)shell\[\d+\]\:\s+\[\w+\]\:\s.+"
+| alter // Extract fields
+    process = arrayindex(regextract(parsed_fields -> process_pid, "(.+)\["),0),
+    pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    user_name = arrayindex(regextract(msg, "\[(\w+)\]\:"),0),
+    command_line = arrayindex(regextract(msg, "\[\w+\]\:\s(.+)"),0)
+
+| alter // Map to XDM
+    xdm.source.host.hostname = parsed_fields -> hostname,
+    xdm.source.process.name = process,
+    xdm.source.process.pid = to_integer(pid),
+    xdm.source.user.username = user_name,
+    xdm.source.process.command_line = command_line,
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_EXECUTION,
+    xdm.event.operation_sub_type = "User interactive";
+
+// Log pattern 3#: \[script_name\] :: Console log content for the command <command_line>
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "Command Execution" AND _raw_log ~= "\s+Console\s+log\s+content\s+for\s+the\s+command\s+.+"
+| alter // Extract fields
+    process = arrayindex(regextract(parsed_fields -> process_pid, "(.+)\["),0),
+    pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    script_name = arrayindex(regextract(msg, "\[\w+\]\s+\:+\s+\[(.+)\]"),0),
+    command_line = arrayindex(regextract(msg, "command\s+(.+)"),0)
+
+| alter // Map to XDM
+    xdm.target.host.hostname = parsed_fields -> hostname,
+    xdm.target.process.name = process,
+    xdm.target.process.pid = to_integer(pid),
+    xdm.target.virtualization.script_name = script_name,
+    xdm.target.process.command_line = command_line,
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_EXECUTION,
+    xdm.event.operation_sub_type = "Script commands";
+
+// Log format 4#: started from <process_name> <pid> with cmdline '<command_line>', parent <ppid>
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "Command Execution" AND _raw_log ~= "started\s+from\s+\'\w+\'\s+\d+\s+with\s+cmdline\s+\'.+\'\,\s+parent\s+\d+"
+| alter // Extract fields
+    process_name = arrayindex(regextract(msg, "started\s+from\s+\'(\w+)\'"),0),
+    pid = arrayindex(regextract(msg, "started\s+from\s+\'\w+\'\s+(\d+)"),0),
+    command_line = arrayindex(regextract(msg, "with\s+cmdline\s+\'(.+)\'"),0),
+    ppid = arrayindex(regextract(msg, "parent\s+(\d+)"),0)
+
+| alter // Map to XDM
+    xdm.source.host.hostname = parsed_fields -> hostname,
+    xdm.source.process.name = process_name,
+    xdm.source.process.pid = to_integer(pid),
+    xdm.source.process.command_line = command_line,
+    xdm.source.process.parent_id = ppid,
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_PROCESS_START,
+    xdm.event.operation_sub_type = "System process start";
+
+// Log format 5#: crond\[<pid>\]: USER <user_name> pid <pid> cmd <command_line>
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "Command Execution" AND _raw_log ~= "crond\[\d+\]\:\s+USER\s+\w+\s+pid\s+\d+\s+cmd\s+.+"
+| alter // Extract fields
+    process_name = arrayindex(regextract(parsed_fields -> process_pid, "(\w+)\["),0),
+    src_pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    user_name = arrayindex(regextract(msg, "USER\s+(\w+)"),0),
+    pid = arrayindex(regextract(msg, "pid\s+(\d+)"),0),
+    command_line = arrayindex(regextract(msg, "cmd\s+(.+)"),0)
+
+| alter // Map to XDM
+    xdm.source.host.hostname = parsed_fields -> hostname,
+    xdm.source.process.name = process_name,
+    xdm.source.process.pid= to_integer(src_pid),
+    xdm.source.user.username = user_name,
+    xdm.target.process.pid = to_integer(pid),
+    xdm.target.process.command_line = command_line,
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_PROCESS_START,
+    xdm.event.operation_sub_type = "crond process start";
+
+// ------------------------------------------
+// Virtualization event type 2: Connection
+// ------------------------------------------
+
+// Log format 1#: "Event \d+ : SSH session was opened ?for '<user_name>@<source_ip>'."
+// Log format 2#: "Event \d+ : SSH login has failed for '<user_name>@<source_ip>'"
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "Connection" AND _raw_log ~= "\s+(?i)SSH\s+(?:session|login)\s+(?:was|has)\s+(?:opened|failed)\s+for\s+"
+| alter // Extract fields
+    process_name = arrayindex(regextract(parsed_fields -> process_pid, "(\w+)\[*"),0),
+    pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    user_name = arrayindex(regextract(msg, "\'(\w+)\@"),0),
+    source_ip = arrayindex(regextract(msg, "\'\w+\@(.+)?\'"),0),
+    outcome_reason = arrayindex(regextract(msg, "SSH\s+.+"),0)
+
+| alter // Map to XDM
+    xdm.target.host.hostname = parsed_fields -> hostname,
+    xdm.target.process.name = process_name,
+    xdm.target.process.pid = if(pid != null, to_integer(pid), null),
+    xdm.target.user.username = user_name,
+    xdm.source.ipv4 = if(is_ipv4(source_ip) = TRUE, source_ip),
+    xdm.source.ipv6 = if(is_ipv6(source_ip) = TRUE, source_ip),
+    xdm.source.host.ipv4_addresses = if(is_known_private_ipv4(source_ip) = TRUE, arraycreate(source_ip)),
+    xdm.source.host.ipv6_addresses = if(is_known_private_ipv6(source_ip) = TRUE, arraycreate(source_ip)),
+    xdm.source.host.ipv4_public_addresses = if(is_known_private_ipv4(source_ip) = FALSE,arraycreate(source_ip)),
+    xdm.source.host.ipv6_public_addresses = if(is_known_private_ipv6(source_ip) = FALSE, arraycreate(source_ip)),
+    xdm.event.outcome = if(
+        msg ~= "SSH\s+session\s+was\s+opened",XDM_CONST.OUTCOME_SUCCESS,
+        msg ~= "SSH\s+login\s+has\s+failed", XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome_reason = coalesce(outcome_reason,msg),
+    xdm.network.application_protocol = "ssh",
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUTHENTICATION,
+    xdm.event.operation_sub_type = if(
+        msg ~= "SSH\s+session\s+was\s+opened", "ssh opened",
+        msg ~= "SSH\s+login\s+has\s+failed", "ssh failed");
+
+// Log format 3#: "session opened for ?local user <user_name> from [<source_ip>]"
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "Connection" AND _raw_log ~= "session\s+opened\s+for\s+(?:local)?\s*user\s+\w+\s+from\s+"
+| alter // Extract fields
+    process_name = arrayindex(regextract(parsed_fields -> process_pid, "(\w+)\[*"),0),
+    pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    user_name = arrayindex(regextract(msg, "user\s+(\w+)\s+"),0),
+    source_ip = arrayindex(regextract(msg, "user\s+\w+\s+from\s+\[(.+)?\]"),0)
+
+| alter // Map to XDM
+    xdm.target.host.hostname = parsed_fields -> hostname,
+    xdm.target.process.name = process_name,
+    xdm.target.process.pid = to_integer(pid),
+    xdm.source.user.username = user_name,
+    xdm.source.ipv4 = if(is_ipv4(source_ip) = TRUE, source_ip),
+    xdm.source.ipv6 = if(is_ipv6(source_ip) = TRUE, source_ip),
+    xdm.source.host.ipv4_addresses = if(is_known_private_ipv4(source_ip) = TRUE, arraycreate(source_ip)),
+    xdm.source.host.ipv6_addresses = if(is_known_private_ipv6(source_ip) = TRUE, arraycreate(source_ip)),
+    xdm.source.host.ipv4_public_addresses = if(is_known_private_ipv4(source_ip) = FALSE,arraycreate(source_ip)),
+    xdm.source.host.ipv6_public_addresses = if(is_known_private_ipv6(source_ip) = FALSE, arraycreate(source_ip)),
+    xdm.source.user.scope = if(msg ~= "session\s+opened\s+for\s+local\s+user\s+", XDM_CONST.SCOPE_TYPE_LOCAL),
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_CREATE,
+    xdm.event.operation_sub_type = "session opened",
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.event.outcome_reason = msg;
+
+// Log format 4#: "session opened for ?local user <user_name> by (uid=<uid>)"
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "Connection" AND _raw_log ~= "session\s+opened\s+for\s+(?:local)?\s*user\s+\w+\s+by\s+"
+| alter // Extract fields
+    process_name = arrayindex(regextract(parsed_fields -> process_pid, "(\w+)\[*"),0),
+    pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    user_name = arrayindex(regextract(msg, "user\s+(\w+)\s+"),0),
+    uid = arrayindex(regextract(msg, "user\s+\w+\s+by\s+\(uid\=(\d+)"),0),
+    outcome_reason = arrayindex(regextract(msg, "session\s+opened\s+for.+"),0)
+
+| alter // Map to XDM
+    xdm.target.host.hostname = parsed_fields -> hostname,
+    xdm.target.process.name = process_name,
+    xdm.target.process.pid = to_integer(pid),
+    xdm.source.user.username = user_name,
+    xdm.source.user.identifier = uid,
+    xdm.source.user.scope = if(msg ~= "session\s+opened\s+for\s+local\s+user\s+", XDM_CONST.SCOPE_TYPE_LOCAL),
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_CREATE,
+    xdm.event.operation_sub_type = "session opened",
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.event.outcome_reason = coalesce(outcome_reason, msg);
+
+// Log format 5#: "rejected connection from .*<source_ip>.*:<source_port>"
+// Log format 6#: "accepted connection from .*<source_ip>.*:<source_port>"
+// Log format 7#: "Accepted connection from <<ipv6>:<ipv4>>"
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "Connection" AND _raw_log ~= "(?i:rejected|accepted)\s+connection\s+from\s+.*\:\d+"
+| alter // Extract fields
+    process_name = arrayindex(regextract(parsed_fields -> process_pid, "(\w+)\["),0),
+    pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    source_ip = arrayindex(regextract(msg, "connection\s+from\s+[\'\"\<]*(.+?)\:"),0),
+    source_ipv4 = arrayindex(regextract(msg, "[\<\"\'].+\:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(?:\>|\"|\')"),0),
+    source_ipv6 = arrayindex(regextract(msg, "[\<\"\'](.+)\:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:\>|\"|\')"),0),
+    source_port = arrayindex(regextract(msg, "connection\s+from\s+.+\:(\d+)[\"\'\>]"),0),
+    error = arrayindex(regextract(msg, "error\s+\"(.+?)\""),0),
+    server_name = arrayindex(regextract(msg, "ServerName\s+\"([^\"]+)"),0),
+    outcome_reason = arrayindex(regextract(msg, "((?i:rejected|accepted).+)"),0)
+
+| alter // Map to XDM
+    xdm.target.host.hostname = coalesce(server_name, parsed_fields -> hostname),
+    xdm.target.process.name = process_name,
+    xdm.target.process.pid = to_integer(pid),
+    xdm.source.ipv4 = if(is_ipv4(source_ip) = TRUE, source_ip, is_ipv4(source_ipv4) = TRUE, source_ipv4),
+    xdm.source.ipv6 = if(is_ipv6(source_ip) = TRUE, source_ip, is_ipv6(source_ipv6) = TRUE, source_ipv6),
+    xdm.source.host.ipv4_addresses = if(is_known_private_ipv4(source_ip) = TRUE, arraycreate(source_ip), is_known_private_ipv4(source_ipv4) = TRUE, arraycreate(source_ipv4)),
+    xdm.source.host.ipv6_addresses = if(is_known_private_ipv6(source_ip) = TRUE, arraycreate(source_ip), is_known_private_ipv6(source_ipv6) = TRUE, arraycreate(source_ipv6)),
+    xdm.source.host.ipv4_public_addresses = if(is_known_private_ipv4(source_ip) = FALSE,arraycreate(source_ip), is_known_private_ipv4(source_ipv4) = FALSE, arraycreate(source_ipv4)),
+    xdm.source.host.ipv6_public_addresses = if(is_known_private_ipv6(source_ip) = FALSE, arraycreate(source_ip), is_known_private_ipv6(source_ipv6) = FALSE, arraycreate(source_ipv6)),
+    xdm.source.port = to_integer(source_port),
+    xdm.event.outcome_reason = coalesce(error, outcome_reason, msg),
+    xdm.event.outcome = if(
+        msg ~= "accepted", XDM_CONST.OUTCOME_SUCCESS,
+        msg ~= "rejected", XDM_CONST.OUTCOME_FAILED),
+    xdm.event.operation = if(
+        msg ~= "rejected",XDM_CONST.OPERATION_TYPE_REJECT,
+        msg ~= "accepted", XDM_CONST.OPERATION_TYPE_AUTHENTICATION),
+    xdm.event.operation_sub_type = if(
+        msg ~= "rejected","rejected connection",
+        msg ~= "accepted", "accepted connection");
+
+// Log format 8#: "Connect from remote socket (<source_ip>:<source_port>)."
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "Connection" AND _raw_log ~= "Connect\s+from\s+remote\s+socket\s+\(.+\:\d+\)"
+| alter // Extract fields
+    process_name = arrayindex(regextract(parsed_fields -> process_pid, "(\w+)\["),0),
+    pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    source_ip = arrayindex(regextract(msg, "\((.+)?\:"),0),
+    source_port = arrayindex(regextract(msg, "\(.+\:(\d+)"),0)
+
+| alter // Map to XDM
+    xdm.target.host.hostname = parsed_fields -> hostname,
+    xdm.target.process.name = process_name,
+    xdm.target.process.pid = to_integer(pid),
+    xdm.source.ipv4 = if(is_ipv4(source_ip) = TRUE, source_ip),
+    xdm.source.ipv6 = if(is_ipv6(source_ip) = TRUE, source_ip),
+    xdm.source.host.ipv4_addresses = if(is_known_private_ipv4(source_ip) = TRUE, arraycreate(source_ip)),
+    xdm.source.host.ipv6_addresses = if(is_known_private_ipv6(source_ip) = TRUE, arraycreate(source_ip)),
+    xdm.source.host.ipv4_public_addresses = if(is_known_private_ipv4(source_ip) = FALSE,arraycreate(source_ip)),
+    xdm.source.host.ipv6_public_addresses = if(is_known_private_ipv6(source_ip) = FALSE, arraycreate(source_ip)),
+    xdm.source.port = to_integer(source_port),
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.event.outcome_reason = msg,
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_CREATE,
+    xdm.event.operation_sub_type = "remote socket connection";
+
+// Log format 9#: "Accepted keyboard-interactive/pam for <user_name> from <source_ip> port <source_port> <protocol>"
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "Connection" AND _raw_log ~= "Accepted\s+keyboard\-interactive\/pam\s+for\s+(?:invalid user |user )?\w+\s+from\s+.+\s+port\s+\d+\s+\w+"
+| alter // Extract fields
+    process_name = arrayindex(regextract(parsed_fields -> process_pid, "(\w+)\["),0),
+    pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    user_name = arrayindex(regextract(msg, "for\s+(?:user |invalid user )?(\w+)?"),0),
+    source_ip = arrayindex(regextract(msg, "from\s+(\S+)"),0),
+    source_port = arrayindex(regextract(msg, "port\s+(\d+)"),0),
+    protocol = arrayindex(regextract(msg, "port\s+\d+\s+(\w+)"),0)
+
+| alter // Map XDM mapping
+    xdm.target.host.hostname = parsed_fields -> hostname,
+    xdm.target.process.name = process_name,
+    xdm.target.process.pid = to_integer(pid),
+    xdm.source.user.username = user_name,
+    xdm.source.ipv4 = if(is_ipv4(source_ip) = TRUE, source_ip),
+    xdm.source.ipv6 = if(is_ipv6(source_ip) = TRUE, source_ip),
+    xdm.source.host.ipv4_addresses = if(is_known_private_ipv4(source_ip) = TRUE, arraycreate(source_ip)),
+    xdm.source.host.ipv6_addresses = if(is_known_private_ipv6(source_ip) = TRUE, arraycreate(source_ip)),
+    xdm.source.host.ipv4_public_addresses = if(is_known_private_ipv4(source_ip) = FALSE,arraycreate(source_ip)),
+    xdm.source.host.ipv6_public_addresses = if(is_known_private_ipv6(source_ip) = FALSE, arraycreate(source_ip)),
+    xdm.source.port = to_integer(source_port),
+    xdm.network.application_protocol = protocol,
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.event.outcome_reason = msg,
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_CREATE,
+    xdm.event.operation_sub_type = "keyboard interactive session";
+
+// Log format 10#: "Failed|Postponed keyboard-interactive/pam for ?invalid user <user_name> from <source_ip> port <source_port> <protocol>"
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "Connection" AND _raw_log ~= "(?:Failed|Postponed)\s+keyboard\-interactive\/pam\s+for\s+(?:invalid user |user )?\w+\s+from\s+.+\s+port\s+\d+\s+\w+"
+| alter // Extract fields
+    process_name = arrayindex(regextract(parsed_fields -> process_pid, "(\w+)\["),0),
+    pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    user_name = arrayindex(regextract(msg, "for\s+(?:user |invalid user )?(\w+)?"),0),
+    source_ip = arrayindex(regextract(msg, "from\s+(\S+)"),0),
+    source_port = arrayindex(regextract(msg, "port\s+(\d+)"),0),
+    protocol = arrayindex(regextract(msg, "port\s+\d+\s+(\w+)"),0)
+
+| alter // Map to XDM
+    xdm.target.host.hostname = parsed_fields -> hostname,
+    xdm.target.process.name = process_name,
+    xdm.target.process.pid = to_integer(pid),
+    xdm.source.user.username = user_name,
+    xdm.target.ipv4 = if(is_ipv4(source_ip) = TRUE, source_ip),
+    xdm.target.ipv6 = if(is_ipv6(source_ip) = TRUE, source_ip),
+    xdm.target.host.ipv4_addresses = if(is_known_private_ipv4(source_ip) = TRUE, arraycreate(source_ip)),
+    xdm.target.host.ipv6_addresses = if(is_known_private_ipv6(source_ip) = TRUE, arraycreate(source_ip)),
+    xdm.target.host.ipv4_public_addresses = if(is_known_private_ipv4(source_ip) = FALSE,arraycreate(source_ip)),
+    xdm.target.host.ipv6_public_addresses = if(is_known_private_ipv6(source_ip) = FALSE, arraycreate(source_ip)),
+    xdm.target.port = to_integer(source_port),
+    xdm.network.application_protocol = protocol,
+    xdm.event.outcome = XDM_CONST.OUTCOME_FAILED,
+    xdm.event.outcome_reason = msg,
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_CREATE,
+    xdm.event.operation_sub_type = "interactive session failed";
+
+// ------------------------------------------
+// Virtualization event type 3: Login
+// ------------------------------------------
+
+// Log format 1#: "Accepted password for user <user_name> from <source_ip> - session=<session_id>"
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "Login" AND _raw_log ~= "Accepted\s+password\s+for\s+user\s+\w+\s+from\s+.+session"
+| alter // Extract fields
+    process_name = arrayindex(regextract(parsed_fields -> process_pid, "(\w+)\["),0),
+    pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    user_name = arrayindex(regextract(msg, "user\s+(\S+)\s+"),0),
+    source_ip = arrayindex(regextract(msg, "from\s+(\S+)\s+"),0),
+    session_id = arrayindex(regextract(msg, "session\=(\S+)"),0)
+
+| alter // Map to XDM
+    xdm.target.host.hostname = parsed_fields -> hostname,
+    xdm.target.process.name = process_name,
+    xdm.target.process.pid = to_integer(pid),
+    xdm.source.user.username = user_name,
+    xdm.source.ipv4 = if(is_ipv4(source_ip) = TRUE, source_ip),
+    xdm.source.ipv6 = if(is_ipv6(source_ip) = TRUE, source_ip),
+    xdm.source.host.ipv4_addresses = if(is_known_private_ipv4(source_ip) = TRUE, arraycreate(source_ip)),
+    xdm.source.host.ipv6_addresses = if(is_known_private_ipv6(source_ip) = TRUE, arraycreate(source_ip)),
+    xdm.source.host.ipv4_public_addresses = if(is_known_private_ipv4(source_ip) = FALSE,arraycreate(source_ip)),
+    xdm.source.host.ipv6_public_addresses = if(is_known_private_ipv6(source_ip) = FALSE, arraycreate(source_ip)),
+    xdm.network.session_id = session_id,
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.event.outcome_reason = "Accepted password",
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUTHENTICATION,
+    xdm.event.operation_sub_type = "login success";
+
+// Log format 2#: "Event \d+ : "Event \d+ : User <user_name>@<source_ip> logged in ?as ?<user_agent>"
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "Login" AND _raw_log ~= "User\s+\w*\@\S*\s+logged\s+in.*"
+| alter // Extract fields
+    process_name = arrayindex(regextract(parsed_fields -> process_pid, "(\w+)\["),0),
+    pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    user_name = arrayindex(regextract(msg, "User\s+([^@]+)"),0),
+    user_agent = arrayindex(regextract(msg, "logged\s+in\s+(?:as\s*)*(.+)"),0),
+    source_ip = arrayindex(regextract(msg, "\@(\S+)\s+logged"),0),
+    outcome_reason = arrayindex(regextract(msg, "Event\s+\d+\s+\:\s+(User.+)"),0)
+
+| alter // Map to XDM
+    xdm.target.host.hostname = parsed_fields -> hostname,
+    xdm.target.process.name = process_name,
+    xdm.target.process.pid = to_integer(pid),
+    xdm.source.user.username = user_name,
+    xdm.source.ipv4 = if(is_ipv4(source_ip) = TRUE, source_ip),
+    xdm.source.ipv6 = if(is_ipv6(source_ip) = TRUE, source_ip),
+    xdm.source.host.ipv4_addresses = if(is_known_private_ipv4(source_ip) = TRUE, arraycreate(source_ip)),
+    xdm.source.host.ipv6_addresses = if(is_known_private_ipv6(source_ip) = TRUE, arraycreate(source_ip)),
+    xdm.source.host.ipv4_public_addresses = if(is_known_private_ipv4(source_ip) = FALSE,arraycreate(source_ip)),
+    xdm.source.host.ipv6_public_addresses = if(is_known_private_ipv6(source_ip) = FALSE, arraycreate(source_ip)),
+    xdm.source.user_agent = user_agent,
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.event.outcome_reason = coalesce(outcome_reason, msg),
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
+    xdm.event.operation_sub_type = "login success";
+
+// Log format 3#: "Event \d+ : Cannot login ?user <user_name>@<source_ip> ?(: <PLAIN_TEXT_REASON>)"
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "Login" AND _raw_log ~= "Cannot\s+login\s+(?:user\s)?\w*\@\S*"
+| alter // Extract fields
+    process_name1 = arrayindex(regextract(parsed_fields -> process_pid, "(\w+)\["),0),
+    process_name2 = arrayindex(regextract(msg, "(\w+)\["),0),
+    pid1 = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    pid2 = arrayindex(regextract(msg, "\[(\d+)"),0),
+    user_name = arrayindex(regextract(msg, "login\s+(?:user\s*)*([^@]+)"),0),
+    source_ip = arrayindex(regextract(msg, "login.+\@([^:]+)"),0),
+    reason = arrayindex(regextract(msg, "login.+\@\S+\:\s+(.+)"),0)
+
+| alter // Map to XDM
+    xdm.target.host.hostname = parsed_fields -> hostname,
+    xdm.target.process.name = coalesce(process_name2, process_name1),
+    xdm.target.process.pid = coalesce(to_integer(pid2),to_integer(pid1)),
+    xdm.source.user.username = user_name,
+    xdm.source.ipv4 = if(is_ipv4(source_ip) = TRUE, source_ip),
+    xdm.source.ipv6 = if(is_ipv6(source_ip) = TRUE, source_ip),
+    xdm.source.host.ipv4_addresses = if(is_known_private_ipv4(source_ip) = TRUE, arraycreate(source_ip)),
+    xdm.source.host.ipv6_addresses = if(is_known_private_ipv6(source_ip) = TRUE, arraycreate(source_ip)),
+    xdm.source.host.ipv4_public_addresses = if(is_known_private_ipv4(source_ip) = FALSE,arraycreate(source_ip)),
+    xdm.source.host.ipv6_public_addresses = if(is_known_private_ipv6(source_ip) = FALSE, arraycreate(source_ip)),
+    xdm.event.outcome_reason = reason,
+    xdm.event.outcome = XDM_CONST.OUTCOME_FAILED,
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
+    xdm.event.operation_sub_type = "login failed";
+
+// ------------------------------------------
+// Virtualization event type 4: Service Status Changed
+// ------------------------------------------
+
+// Log format 1#: "(?i)The ESX?(i) command line shell has been <enabled_disabled>"
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "Service Status Changed" AND _raw_log ~= "(?i)The\s+(?i)ESXi\s+command\s+line\s+shell\s+has\s+been\s+\w+"
+| alter // Extract fields
+    process_name = arrayindex(regextract(parsed_fields -> process_pid, "(\w+)\["),0),
+    pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    command_line = arrayindex(regextract(msg, "command\s+line\s+(.+?)\s+has"),0),
+    status = arrayindex(regextract(msg, "has\s+been\s+(\w+)"),0),
+    outcome_reason =  arrayindex(regextract(msg, "\:\s(The.+)"),0)
+
+| alter // Map to XDM
+    xdm.source.host.hostname = parsed_fields -> hostname,
+    xdm.source.process.name = process_name,
+    xdm.source.process.pid  = to_integer(pid),
+    xdm.source.process.command_line = command_line,
+    xdm.event.operation_sub_type = status,
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.event.outcome_reason = coalesce(outcome_reason, msg),
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_UPDATE;
+
+// Log format 2#: "Event \d+ : Administrator access to the host has been <enabled_disabled>"
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "Service Status Changed" AND _raw_log ~= "Administrator\s+access\s+to\s+the\s+host\s+has\s+been\s+\w+"
+| alter // Extract fields
+    process_name1 = arrayindex(regextract(parsed_fields -> process_pid, "(\w+)\["),0),
+    process_name2 = arrayindex(regextract(msg, "(\w+)\["),0),
+    pid1 = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    pid2 = arrayindex(regextract(msg, "\[(\d+)"),0),
+    status = arrayindex(regextract(msg, "has\s+been\s+(\w+)"),0),
+    outcome_reason =  arrayindex(regextract(msg, "Event\s+\d+\s+\:\s+(.+)"),0)
+
+| alter // Map to XDM
+    xdm.source.host.hostname = parsed_fields -> hostname,
+    xdm.source.process.name = coalesce(process_name2, process_name1),
+    xdm.source.process.pid = coalesce(to_integer(pid2), to_integer(pid1)),
+    xdm.event.operation_sub_type = status,
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.event.outcome_reason = coalesce(outcome_reason, msg),
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_UPDATE;
+
+// Log format 3#: "Event \d+ : SSH access has been <enabled_disabled>"
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "Service Status Changed" AND _raw_log ~= "SSH\s+access\s+has\s+been\s+\w+"
+| alter // Extract fields
+    process_name1 = arrayindex(regextract(parsed_fields -> process_pid, "(\w+)\["),0),
+    process_name2 = arrayindex(regextract(msg, "(\w+)\["),0),
+    pid1 = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    pid2 = arrayindex(regextract(msg, "\[(\d+)"),0),
+    status = arrayindex(regextract(msg, "has\s+been\s+(\w+)"),0),
+    outcome_reason =  arrayindex(regextract(msg, "\:\s(SSH.+)"),0)
+
+| alter // Map to XDM
+    xdm.source.host.hostname = parsed_fields -> hostname,
+    xdm.source.process.name = coalesce(process_name2, process_name1),
+    xdm.source.process.pid = coalesce(to_integer(pid2), to_integer(pid1)),
+    xdm.event.operation_sub_type = status,
+    xdm.network.application_protocol = "ssh",
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.event.outcome_reason = coalesce(outcome_reason, msg),
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_UPDATE;
+
+// ------------------------------------------
+// Virtualization event type 5: Firewall Status Changed
+// ------------------------------------------
+
+// Log format 1#: "Firewall configuration has changed. Operation <operation> for rule set <rule_set_name> <succeeded_failed>."
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "Firewall Status Changed" AND _raw_log ~= "Firewall\s+configuration\s+has\s+changed\.\s+Operation\s+\S+\s+for\s+rule\s+set\s+"
+| alter // Extract fields
+    process_name = arrayindex(regextract(parsed_fields -> process_pid, "(\w+)\["),0),
+    pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    operation_name = arrayindex(regextract(msg, "Operation\s+\'(.+?)\'"),0),
+    rule_set_name = arrayindex(regextract(msg,"rule\s+set\s+(\S+)\s+" ),0),
+    outcome_reason = arrayindex(regextract(msg, "\:\s+(Firewall.+)"),0)
+
+| alter // Map to XDM
+    xdm.source.host.hostname = parsed_fields -> hostname,
+    xdm.source.process.name = process_name,
+    xdm.source.process.pid = to_integer(pid),
+    xdm.observer.action = operation_name,
+    xdm.network.rule = rule_set_name,
+    xdm.event.outcome = if(
+        msg ~= "rule\s+set\s+\S+\s+succeeded", XDM_CONST.OUTCOME_SUCCESS,
+        msg ~= "rule\s+set\s+\S+\s+fail", XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome_reason = coalesce(outcome_reason, msg),
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_CONFIG_CHANGE,
+    xdm.event.operation_sub_type = "firewall config change";
+
+// Log format 2#: "Event \d+ : Firewall has been <enabled_disabled>."
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "Firewall Status Changed" AND _raw_log ~= "Firewall\s+has\s+been\s+\w+"
+| alter // Extract fields
+    process_name = arrayindex(regextract(parsed_fields -> process_pid, "(\w+)\["),0),
+    pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    outcome_reason = arrayindex(regextract(msg, "\:\s+(Firewall.+)"),0)
+
+| alter // Map to XDM
+    xdm.source.host.hostname = parsed_fields -> hostname,
+    xdm.source.process.name = process_name,
+    xdm.source.process.pid = to_integer(pid),
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.event.outcome_reason = coalesce(outcome_reason, msg),
+    xdm.observer.action = if(
+        msg ~= "disabled", "disabled",
+        msg ~= "enabled", "enabled"),
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_CONFIG_CHANGE,
+    xdm.event.operation_sub_type = "firewall status change";
+
+// ------------------------------------------
+// Virtualization event type 6/7: Account Operations
+// ------------------------------------------
+
+// Log format 1#: "Event \d+ : Password was changed for account <user_name> on host <target_esxi_host>"
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "Account operations" AND _raw_log ~= "Password\s+was\s+changed\s+for\s+account\s+\w+\s+on\s+host\s+\S+"
+| alter // Extract fields
+    process_name1 = arrayindex(regextract(parsed_fields -> process_pid, "(\w+)\["),0),
+    process_name2 = arrayindex(regextract(msg, "(\w+)\["),0),
+    pid1 = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    pid2 = arrayindex(regextract(msg, "\[(\d+)"),0),
+    user_name = arrayindex(regextract(msg, "changed\s+for\s+account\s+(\S+)"),0),
+    target_esxi_host = arrayindex(regextract(msg, "on\s+host\s+(\S+)"),0),
+    outcome_reason = arrayindex(regextract(msg, "\:\s+(Password.+)"),0)
+
+| alter // Map to XDM
+    xdm.source.host.hostname = coalesce(target_esxi_host,parsed_fields -> hostname),
+    xdm.source.process.name = coalesce(process_name2, process_name1),
+    xdm.source.process.pid = coalesce(to_integer(pid2), to_integer(pid1)),
+    xdm.source.user.username = user_name,
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.event.outcome_reason = coalesce(outcome_reason, msg),
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_UPDATE,
+    xdm.event.operation_sub_type = "password change";
+
+// Log format 2#: "Event \d+ : Account <user_name> was created on host <target_esxi_host>"
+// Log format 3#: "Event \d+ : Account <user_name> was removed on host <target_esxi_host>"
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "Account operations" AND _raw_log ~= "Account\s+\w+\s+was\s+\w+\s+on\s+host\s+.+"
+| alter // Extract fields
+    process_name1 = arrayindex(regextract(parsed_fields -> process_pid, "(\w+)\["),0),
+    process_name2 = arrayindex(regextract(msg, "(\w+)\["),0),
+    pid1 = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    pid2 = arrayindex(regextract(msg, "\[(\d+)"),0),
+    user_name = arrayindex(regextract(msg, "Account\s+(\w+)"),0),
+    target_esxi_host = arrayindex(regextract(msg, "on\s+host\s+(\S+)"),0),
+    outcome_reason = arrayindex(regextract(msg, "\:\s+(Account.+)"),0)
+
+| alter // Map to XDM
+    xdm.source.host.hostname = coalesce(target_esxi_host, parsed_fields -> hostname),
+    xdm.source.process.name = coalesce(process_name2, process_name1),
+    xdm.source.process.pid = coalesce(to_integer(pid2), to_integer(pid1)),
+    xdm.source.user.username = user_name,
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.event.outcome_reason = coalesce(outcome_reason, msg),
+    xdm.event.operation = if(
+        msg ~= "was\s+created", XDM_CONST.OPERATION_TYPE_CREATE,
+        msg ~= "was\s+removed" , XDM_CONST.OPERATION_TYPE_DELETE),
+    xdm.event.operation_sub_type = if(
+        msg ~= "was\s+created", "account created",
+        msg ~= "was\s+removed" , "account removed");
+
+// ------------------------------------------
+// Virtualization event type 8: File/Datastore
+// ------------------------------------------
+
+// Log format 1#: "Event \d+ : Deletion of file or directory <file_path> from <location> was initiated from '<user_agent>@<source_ip>' and completed with status '<status>'"
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "File/Datastore Event" AND _raw_log ~= "Deletion\s+of\s+file\s+or\s+directory\s+\S+\s+from\s+\S+\s+was\s+initiated\s+from"
+| alter // Extract fields
+    process_name = arrayindex(regextract(parsed_fields -> process_pid, "(\w+)\["),0),
+    pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    file_path = arrayindex(regextract(msg, "file\s+or\s+directory\s+(\S+)"),0),
+    location = arrayindex(regextract(msg, "Deletion\s+of\s+file\s+or\s+directory\s+\S+\s+from\s+(\S+)\s+"),0),
+    user_agent = arrayindex(regextract(msg, "initiated\s+from\s+\'(.+?)\@"),0),
+    source_ip = arrayindex(regextract(msg, "initiated\s+from\s+\'.+?\@(.+?)\'"),0),
+    outcome_reason = arrayindex(regextract(msg, "\:\s+(Deletion.+)"),0)
+
+| alter // Map to XDM
+    xdm.target.host.hostname = parsed_fields -> hostname,
+    xdm.target.process.name = process_name,
+    xdm.target.process.pid = to_integer(pid),
+    xdm.target.file.path = file_path,
+    xdm.target.virtualization.data_store.name = location,
+    xdm.source.user_agent = user_agent,
+    xdm.source.ipv4 = if(is_ipv4(source_ip) = TRUE, source_ip),
+    xdm.source.ipv6 = if(is_ipv6(source_ip) = TRUE, source_ip),
+    xdm.source.host.ipv4_addresses = if(is_known_private_ipv4(source_ip) = TRUE, arraycreate(source_ip)),
+    xdm.source.host.ipv6_addresses = if(is_known_private_ipv6(source_ip) = TRUE, arraycreate(source_ip)),
+    xdm.source.host.ipv4_public_addresses = if(is_known_private_ipv4(source_ip) = FALSE,arraycreate(source_ip)),
+    xdm.source.host.ipv6_public_addresses = if(is_known_private_ipv6(source_ip) = FALSE, arraycreate(source_ip)),
+    xdm.event.outcome = if(
+        msg ~= "completed\s+with\s+status\s+\'[Ss]uccess", XDM_CONST.OUTCOME_SUCCESS,
+        msg ~= "completed\s+with\s+status\s+\'[Ff]ail", XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome_reason = coalesce(outcome_reason, msg),
+    xdm.event.is_completed = if(msg ~= "and\s+completed", TRUE),
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_FILE_REMOVE,
+    xdm.event.operation_sub_type = "file delete";
+
+// Log format 2#: "Event \d+ : File upload to path '\[<location>\]<file_path>' was initiated from '<user_agent>@<source_ip>' and completed with status '<status>'"
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "File/Datastore Event" AND _raw_log ~= "File\s+upload\s+to\s+path\s+\'\[\S+\]\S+\'\s+was\s+initiated\s+from\s+\S+\s+and\s+completed"
+| alter // Extract fields
+    process_name = arrayindex(regextract(parsed_fields -> process_pid, "(\w+)\["),0),
+    pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    location = arrayindex(regextract(msg, "File\s+upload\s+to\s+path\s+\'\[(\S+)\]"),0),
+    file_path = arrayindex(regextract(msg, "\'\[.+?](\S+)\'"),0),
+    user_agent = arrayindex(regextract(msg, "initiated\s+from\s+\'(.+?)\@"),0),
+    source_ip = arrayindex(regextract(msg, "initiated\s+from\s+\'.*\@(.*?)\'"),0),
+    outcome_reason = arrayindex(regextract(msg, "\:\s+(File.+)"),0)
+
+| alter // Map to XDM
+    xdm.target.host.hostname = parsed_fields -> hostname,
+    xdm.target.process.name = process_name,
+    xdm.target.process.pid = to_integer(pid),
+    xdm.target.virtualization.data_store.name = location,
+    xdm.target.file.path = file_path,
+    xdm.source.user_agent = user_agent,
+    xdm.source.ipv4 = if(is_ipv4(source_ip) = TRUE, source_ip),
+    xdm.source.ipv6 = if(is_ipv6(source_ip) = TRUE, source_ip),
+    xdm.source.host.ipv4_addresses = if(is_known_private_ipv4(source_ip) = TRUE, arraycreate(source_ip)),
+    xdm.source.host.ipv6_addresses = if(is_known_private_ipv6(source_ip) = TRUE, arraycreate(source_ip)),
+    xdm.source.host.ipv4_public_addresses = if(is_known_private_ipv4(source_ip) = FALSE,arraycreate(source_ip)),
+    xdm.source.host.ipv6_public_addresses = if(is_known_private_ipv6(source_ip) = FALSE, arraycreate(source_ip)),
+    xdm.event.outcome = if(
+        msg ~= "completed\s+with\s+status\s+\'[Ss]uccess", XDM_CONST.OUTCOME_SUCCESS,
+        msg ~= "completed\s+with\s+status\s+\'[Ff]ail", XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome_reason = coalesce(outcome_reason, msg),
+    xdm.event.is_completed = if(msg ~= "and\s+completed", TRUE),
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_FILE_WRITE,
+    xdm.event.operation_sub_type = "file upload";
+
+// ------------------------------------------
+// Virtualization event type 9: VM Operations
+// ------------------------------------------
+
+// Log format 1#: Event \d+ : Created virtual machine <vm_name> on <target_esxi_host> in <data_center_name>
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "VM Operations" AND _raw_log ~= "Created\s+virtual\s+machine\s+\w+\s+on\s+\w+"
+| alter // Extract fields
+    process_name = arrayindex(regextract(parsed_fields -> process_pid, "(\w+)\["),0),
+    pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    user = arrayindex(regextract(msg, "user\=([^\]]+)"),0),
+    vm_name = arrayindex(regextract(msg, "virtual\s+machine\s+(\S+)"),0),
+    target_esxi_host = arrayindex(regextract(msg, "virtual\s+machine\s+\S+\s+on\s+([^,]+)"),0),
+    data_center_name = arrayindex(regextract(msg, "virtual\s+machine\s+\S+\s+on\s+\S+\s+in\s+(\S+)"),0),
+    outcome_reason = arrayindex(regextract(msg, "\:\s+(Created.+)"),0)
+
+| alter // Map to XDM
+    xdm.target.host.hostname = coalesce(target_esxi_host, parsed_fields -> hostname),
+    xdm.target.process.name = process_name,
+    xdm.target.process.pid = to_integer(pid),
+    xdm.source.user.username = user,
+    xdm.target.virtualization.vm.hostname = vm_name,
+    xdm.target.virtualization.data_center.name = data_center_name,
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.event.outcome_reason = coalesce(outcome_reason,msg),
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_CREATE,
+    xdm.event.operation_sub_type = "VM Created",
+    xdm.event.original_event_type = "VM Created";
+
+// Log format 2#: "Event \d+ : <vm_name> on <target_esxi_host> in <data_center> has powered on"
+// Log format 3#: "Event \d+ : <vm_name> on <target_esxi_host> in <data_center> is powered off"
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "VM Operations" AND _raw_log ~= "\w+\s+on\s+\w+\s+in\s+\S+\s+(?:has|is)?\s+powered\s+(?:on|off)"
+| alter // Extract fields
+    process_name = arrayindex(regextract(parsed_fields -> process_pid, "(\w+)\["),0),
+    pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    vm_name = arrayindex(regextract(msg, "\:\s+(\S+)"),0),
+    target_esxi_host = arrayindex(regextract(msg, "on\s+(\S+)"),0),
+    data_center_name = arrayindex(regextract(msg, "on\s+\S+\s+in\s+(\S+)"),0),
+    outcome_reason = arrayindex(regextract(msg, "Event\s+\d+\s+\:\s+(.+)"),0)
+
+| alter // Map to XDM
+    xdm.target.host.hostname = coalesce(target_esxi_host, parsed_fields -> hostname),
+    xdm.target.process.name = process_name,
+    xdm.target.process.pid = to_integer(pid),
+    xdm.target.virtualization.vm.hostname = vm_name,
+    xdm.target.virtualization.data_center.name = data_center_name,
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.event.outcome_reason = coalesce(outcome_reason,msg),
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_STATUS_CHANGE,
+    xdm.event.operation_sub_type = if(
+        msg ~= "has\s+powered\s+on", "VM Power On",
+        msg ~= "is\s+powered\s+off",  "VM Power Off"),
+    xdm.event.original_event_type = if(
+        msg ~= "has\s+powered\s+on", "VM Power On",
+        msg ~= "is\s+powered\s+off",  "VM Power Off");
+
+// Log format 4#: "Event \d+ : Guest OS reboot for <vm_name> on <target_esxi_host> in <data_center>"
+// Log format 5#: "Event \d+ : Guest OS shut down for <vm_name> on <target_esxi_host> in <data_center>"
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "VM Operations" AND _raw_log ~= "Guest\s+OS\s+(?:reboot|shut down)?\s+for\s+\w+\s+on\s+\w+\s+in"
+| alter // Extract fields
+    process_name = arrayindex(regextract(parsed_fields -> process_pid, "(\w+)\["),0),
+    pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    user = arrayindex(regextract(msg, "user\=([^\]]+)"),0),
+    vm_name = arrayindex(regextract(msg, "Guest\s+OS\s+(?:reboot|shut down)?\s+for\s+(\w+)\s+"),0),
+    target_esxi_host = arrayindex(regextract(msg, "Guest\s+OS\s+(?:reboot|shut down)?\s+for\s\w+\s+on\s+(\w+)\s+in"),0),
+    data_center_name = arrayindex(regextract(msg, "Guest\s+OS\s+(?:reboot|shut down)?\s+for\s\w+\s+on\s+\w+\s+in\s+(\S+)"),0),
+    outcome_reason = arrayindex(regextract(msg, "Guest\s+OS\s+.+"),0)
+
+| alter // Map to XDM
+    xdm.target.host.hostname = coalesce(target_esxi_host, parsed_fields -> hostname),
+    xdm.target.process.name = process_name,
+    xdm.target.process.pid = to_integer(pid),
+    xdm.source.user.username = user,
+    xdm.target.virtualization.vm.hostname = vm_name,
+    xdm.target.virtualization.data_center.name = data_center_name,
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.event.outcome_reason = coalesce(outcome_reason,msg),
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_STATUS_CHANGE,
+    xdm.event.operation_sub_type = if(
+        msg ~= "Guest\s+OS\s+reboot", "Guest OS VM Reboot",
+        msg ~= "Guest\s+OS\s+shut down", "Guest OS VM Shutdown"),
+    xdm.event.original_event_type = if(
+        msg ~= "Guest\s+OS\s+reboot", "Guest OS VM Reboot",
+        msg ~= "Guest\s+OS\s+shut down", "Guest OS VM Shutdown");
+
+
+// Log format 6#: "Event \d+ : Removed <vm_name> on <target_esxi_host> from <data_center>"
+// Log format 7#: "Event \d+ : Registered <vm_name> on <target_esxi_host> in <data_center>"
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "VM Operations" AND _raw_log ~= "(?:Removed|Registered)\s+\w+\s+on\s+\S+\s+(?:in|from)\s+\S+"
+| alter // Extract fields
+    target_esxi_host = arrayindex(regextract(msg, "(?:Removed|Registered)\s+\w+\s+on\s+(\S+)\s+"),0),
+    process_name = arrayindex(regextract(parsed_fields -> process_pid, "(\w+)\["),0),
+    pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    user = arrayindex(regextract(msg, "user\=([^\]]+)"),0),
+    vm_name = arrayindex(regextract(msg, "(?:Removed|Registered)\s+(\w+)\s+"),0),
+    data_center_name = arrayindex(regextract(msg, "(?:Removed|Registered)\s+\w+\s+on\s+\S+\s+(?:in|from)\s+(\S+)"),0),
+    outcome_reason = arrayindex(regextract(msg, "(?:Removed|Registered)\s+.+"),0)
+
+| alter // Map to XDM
+    xdm.target.host.hostname = coalesce(target_esxi_host, parsed_fields -> hostname),
+    xdm.target.process.name = process_name,
+    xdm.target.process.pid = to_integer(pid),
+    xdm.source.user.username = user,
+    xdm.target.virtualization.vm.hostname = vm_name,
+    xdm.target.virtualization.data_center.name = data_center_name,
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.event.outcome_reason = coalesce(outcome_reason, msg),
+    xdm.event.operation = if(
+        msg ~= "Removed\s+.+", XDM_CONST.OPERATION_TYPE_DELETE,
+        msg ~= "Registered\s+.+", XDM_CONST.OPERATION_TYPE_CONFIG_CHANGE),
+    xdm.event.operation_sub_type = if(
+        msg ~= "Removed\s+.+", "VM Removed",
+        msg ~= "Registered\s+.+","VM Registered"),
+    xdm.event.original_event_type = if(
+        msg ~= "Removed\s+.+", "VM Removed",
+        msg ~= "Registered\s+.+","VM Registered");
+
+// ------------------------------------------
+// Virtualization event type 10: Task Events
+// ------------------------------------------
+
+// Log format: Task Completed : <vcenter_event>-<vcenter_event_unique_task_id> Status <status>
+call esxi_event_classification
+| call esxi_general_fields_mapping
+| filter esxi_event_type = "Task Events" AND _raw_log ~= "Task\s+Completed\s+\:\s+\S+\-\d+\s+Status\s+\w+"
+| alter // Extract fields
+    process_name = arrayindex(regextract(parsed_fields -> process_pid, "(\w+)\["),0),
+    pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    user_name = arrayindex(regextract(msg, "user\=([^\]]+)"),0),
+    vcenter_event = arrayindex(regextract(msg, "Task\s+Completed\s+\:\s+(\S+)\-\d+"),0),
+    vcenter_event_unique_task_id = arrayindex(regextract(msg, "Task\s+Completed\s+\:\s+\S+\-(\d+)"),0),
+    outcome_reason = arrayindex(regextract(msg, "Task\s+Completed.+"),0)
+
+| alter // Map to XDM
+    xdm.target.host.hostname = parsed_fields -> hostname,
+    xdm.target.process.name = process_name,
+    xdm.target.process.pid = to_integer(pid),
+    xdm.source.user.username = user_name,
+    xdm.target.virtualization.task.name = vcenter_event,
+    xdm.target.virtualization.task.id = vcenter_event_unique_task_id,
+    xdm.event.outcome = if(
+        msg ~= "Status\s+[Ss]uccess", XDM_CONST.OUTCOME_SUCCESS,
+        msg ~= "Status\s+[Fa]il", XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome_reason = coalesce(outcome_reason, msg),
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_CREATE,
+    xdm.event.operation_sub_type = "ESXi Task",
+    xdm.event.is_completed = true;
+
+call esxi_event_classification
+| filter esxi_event_type = null
+| alter
+    event_type = arrayindex( regextract(_raw_log ,"\d+-\d+-\d+T\d+:\d+:\d+\.*\d*Z[\s|\|]\s*([a-zA-Z0-9-_]+)"),0),
+    username_1 = arrayindex(regextract(_raw_log ,"User\s\'([a-zA-Z]+)\'"),0),
+    username_2 = arrayindex(regextract(_raw_log ,"for\s+(\S+)\s+from"),0),
+    username_3 = arrayindex(regextract(_raw_log , "[Uu]ser\s+(?:name\:\s+)*(\w+)"),0),
+    command_line = arrayindex( regextract(_raw_log ,"command\s\'([^\']+)\'"),0),
+    source_ip_1 = arrayindex( regextract(_raw_log ,"from\s(\d+\.\d+\.\d+\.\d+)\s"),0),
+    source_ip_2 = arrayindex(regextract(_raw_log, "(\S+)\s+port"),0),
+    source_port = arrayindex( regextract(_raw_log ,"port\s+(\d+)"),0),
+    msg_1 = arrayindex( regextract(_raw_log ,"\:\s+(.*)$"),0),
+    msg_2 = arrayindex( regextract(_raw_log ,"T\d+\:\d+\:\d+\.*\d*Z\|\s[a-zA-Z0-9\-\_]+\|\s\w+\:\s*(.*)"),0),
+    msg_3 = arrayindex(regextract(_raw_log ,"line \d+\:(.*)$"),0),
+    path_1 = arrayindex( regextract(_raw_log ,"path\:\s*(\S+)"),0),
+    path_2 = arrayindex( regextract(_raw_log ,"on\s(\/\S+)"),0),
+    mac_address = arrayindex( regextract(_raw_log , "MAC Address:\s([a-zA-Z0-9]+\:[a-zA-Z0-9]+\:[a-zA-Z0-9]+\:[a-zA-Z0-9]+\:[a-zA-Z0-9]+\:[a-zA-Z0-9]+)"),0)
+| alter
+    msg = coalesce(msg_1, msg_2, msg_3),
+    path = coalesce(path_1, path_2),
+    username = coalesce(username_1, username_2, username_3),
+    source_ip = coalesce(source_ip_1, source_ip_2)
+| alter
+    xdm.event.type = event_type,
+    xdm.source.user.username = username,
+    xdm.target.process.command_line = command_line,
+    xdm.source.ipv4 = if(is_ipv4(source_ip), source_ip),
+    xdm.source.ipv6 = if(is_ipv6(source_ip), source_ip),
+    xdm.source.host.ipv4_addresses = if( is_known_private_ipv4(source_ip), arraycreate(source_ip)),
+    xdm.source.host.ipv6_addresses = if(is_known_private_ipv6(source_ip), arraycreate(source_ip)),
+    xdm.source.host.ipv4_public_addresses = if(is_known_private_ipv4(source_ip) = FALSE, arraycreate(source_ip)),
+    xdm.source.host.ipv6_public_addresses = if(is_known_private_ipv6(source_ip) = FALSE, arraycreate(source_ip)),
+    xdm.source.port = to_number(source_port),
+    xdm.event.description = msg,
+    xdm.target.process.executable.path = path,
+    xdm.source.host.mac_addresses = arraycreate(coalesce(mac_address ,""));
