@@ -564,14 +564,14 @@ def main() -> None:
             use_oauth = True
 
         if use_oauth:
-            client_id = oauth_creds.get("identifier")
-            client_secret = oauth_creds.get("password")
+            client_id = oauth_creds.get("identifier", "")
+            client_secret = oauth_creds.get("password", "")
         else:
             # if username/password are empty - fallback to legacy which populates the oath credentials
             if not username or not password:
                 demisto.debug("Using legacy parameters for username and password")
-                username = oauth_creds.get("identifier")
-                password = oauth_creds.get("password")
+                username = oauth_creds.get("identifier", "")
+                password = oauth_creds.get("password", "")
 
         if use_jwt:
             if not params.get("private_key") or not params.get("kid") or not params.get("sub"):

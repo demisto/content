@@ -3804,8 +3804,8 @@ def main():
         # if are none - fallback to legacy which populates the oauth credentials
         if not username or not password:
             demisto.debug("Using legacy parameters for username and password")
-            username = oauth_creds.get("identifier") or ""
-            password = oauth_creds.get("password") or ""
+            username = oauth_creds.get("identifier", "")
+            password = oauth_creds.get("password", "")
 
     version = params.get("api_version")
 
