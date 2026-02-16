@@ -13,7 +13,7 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-dockerimage: demisto/fastapi:0.123.5.6111791
+dockerimage: devdemisto/fastapi:0.125.0.7175654
 fromversion: 6.8.0
 tests:
 - No tests
