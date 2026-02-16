@@ -9955,7 +9955,6 @@ script:
         description: The value of the tag.
         type: string
 
-
   - name: aws-ec2-launch-template-create
     description: Creates a launch template. A launch template contains the parameters to launch an instance.
     execution: true
@@ -10175,8 +10174,7 @@ script:
         description: The ID of the RAM disk.
         required: false
       - name: tags
-        description: "The tags to apply to the resource. For example, for two keys: 
-        ResourceType:key=<key1 name>,value=<key1 value>;key=<key2 name>,value=<key2 value>
+        description: "The tags to assign to the Elastic IP address. Format: key=<key>,value=<value>;key=<key>,value=<value>."
         required: false
       - name: market_type
         description: The market type.

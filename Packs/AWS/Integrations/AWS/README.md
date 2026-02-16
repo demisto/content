@@ -6,7 +6,7 @@ This integration was integrated and tested with version 1.0.0 of AWS.
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Main Role | Main Role to be used for authentication e.g. 'PowerUserAccess' | False |
-| Deafult AWS Account ID | AWS Account ID used for running integration test |  |
+| Default AWS Account ID | AWS Account ID used for running integration test |  |
 | Role Session Name | Role session name to be used for authentication |  |
 | Role Session Duration | Max role session duration | False |
 | Default AWS Access Key ID | AWS Access Key ID used for authentication when role-based authentication is not available. Must be used together with 'Default AWS Secret Access Key'. If provided, these credentials will be used as a fallback when role assumption fails. | False |
@@ -3503,59 +3503,67 @@ Creates a launch template. A launch template contains the parameters to launch a
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS Region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
-| launch_template_name | A name for the launch template. | Required |
-| version_description | A description for the first version of the launch template. | Optional |
-| kernel_id | The ID of the kernel. | Optional |
-| ebs_optimized | Indicates whether the instance is optimized for Amazon EBS I/O. Possible values are: true, false. | Optional |
-| iam_instance_profile_arn | The Amazon Resource Name (ARN) of the instance profile. | Optional |
-| iam_instance_profile_name | The name of the instance profile. | Optional |
-| image_id | The ID of the AMI. | Optional |
-| instance_type | The instance type. | Optional |
-| key_name | The name of the key pair. | Optional |
-| monitoring | Specify true to enable detailed monitoring. Otherwise, basic monitoring is enabled. Possible values are: true, false. | Optional |
-| disable_api_termination | If set to true, you can't terminate the instance using the Amazon EC2 console, CLI, or API. Possible values are: true, false. | Optional |
-| instance_initiated_shutdown_behavior | Indicates whether an instance stops or terminates when you initiate shutdown from the instance. Possible values are: stop, terminate. | Optional |
-| user_data | The Base64-encoded user data to make available to the instance. | Optional |
-| security_group_ids | A comma-separated list of security group IDs. | Optional |
-| security_groups | A comma-separated list of security group names. | Optional |
-| device_name | The device name (for example, /dev/sdh or xvdh). | Optional |
-| ebs_encrypted | Indicates whether the EBS volume is encrypted. Possible values are: true, false. | Optional |
-| ebs_delete_on_termination | Indicates whether the EBS volume is deleted on instance termination. Possible values are: true, false. | Optional |
-| ebs_iops | The number of I/O operations per second (IOPS) that the volume supports. | Optional |
-| ebs_kms_key_id | The ARN of the AWS Key Management Service (AWS KMS) CMK used for encryption. | Optional |
-| ebs_snapshot_id | The ID of the snapshot. | Optional |
-| ebs_volume_size | The size of the volume, in GiB. | Optional |
-| ebs_volume_type | The volume type. Possible values are: standard, io1, io2, gp2, gp3, sc1, st1. | Optional |
-| network_interfaces_associate_public_ip_address | Associates a public IPv4 address with eth0 for a new network interface. Possible values are: true, false. | Optional |
-| network_interfaces_delete_on_termination | Indicates whether the network interface is deleted when the instance is terminated. Possible values are: true, false. | Optional |
-| network_interfaces_description | A description for the network interface. | Optional |
-| network_interfaces_device_index | The device index for the network interface attachment. | Optional |
-| network_interface_groups | A comma-separated list of security group IDs. | Optional |
-| subnet_id | The ID of the subnet for the network interface. | Optional |
-| private_ip_address | The primary private IPv4 address of the network interface. | Optional |
-| availability_zone | The Availability Zone for the instance. | Optional |
-| placement_tenancy | The tenancy of the instance. Possible values are: default, dedicated, host. | Optional |
-| ram_disk_id | The ID of the RAM disk. | Optional |
-| tags | The tags to apply to the resource. Format ResourceType:key=Name,value=test;key=Owner,value=Bob#ResourceType2:key=Name,value=test2. | Optional |
-| market_type | The market type. Possible values are: spot. | Optional |
-| spot_instance_type | The Spot Instance request type. Possible values are: one-time, persistent. | Optional |
-| spot_max_price | The maximum hourly price you're willing to pay for the Spot Instances. | Optional |
-| spot_instance_interruption_behavior | The behavior when a Spot Instance is interrupted. Possible values are: hibernate, stop, terminate. | Optional |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS Region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| launch_template_name | A name for the launch template. | Required | 
+| version_description | A description for the first version of the launch template. | Optional | 
+| kernel_id | The ID of the kernel. | Optional | 
+| ebs_optimized | Whether the instance is optimized for Amazon EBS I/O. Possible values are: true, false. | Optional | 
+| iam_instance_profile_arn | The Amazon Resource Name (ARN) of the instance profile. | Optional | 
+| iam_instance_profile_name | The name of the instance profile. | Optional | 
+| image_id | The ID of the AMI. | Optional | 
+| instance_type | The instance type. | Optional | 
+| key_name | The name of the key pair. | Optional | 
+| monitoring | Set to true to enable detailed monitoring. Set to false to enable basic monitoring. Possible values are: true, false. | Optional | 
+| disable_api_termination | If set to true, you can't terminate the instance using the Amazon EC2 console, CLI, or API. Possible values are: true, false. | Optional | 
+| instance_initiated_shutdown_behavior | Whether an instance stops or terminates when you initiate shutdown from the instance. Possible values are: stop, terminate. | Optional | 
+| user_data | The Base64-encoded user data to make available to the instance. | Optional | 
+| security_group_ids | A comma-separated list of security group IDs. | Optional | 
+| security_groups | A comma-separated list of security group names. | Optional | 
+| device_name | The device name (for example, /dev/sdh or xvdh). | Optional | 
+| ebs_encrypted | Indicates whether the EBS volume is encrypted. Possible values are: true, false. | Optional | 
+| ebs_delete_on_termination | Indicates whether the EBS volume is deleted on instance termination. Possible values are: true, false. | Optional | 
+| ebs_iops | The number of I/O operations per second (IOPS) that the volume supports. | Optional | 
+| ebs_kms_key_id | The ARN of the AWS Key Management Service (AWS KMS) CMK used for encryption. | Optional | 
+| ebs_snapshot_id | The ID of the snapshot. | Optional | 
+| ebs_volume_size | The size of the volume, in GiB. | Optional | 
+| ebs_volume_type | The volume type. Possible values are: standard, io1, io2, gp2, gp3, sc1, st1. | Optional | 
+| ebs_card_index | The index of the EBS card. Some instance types support multiple EBS cards. The default EBS card index is 0. | Optional | 
+| ebs_throughput | The throughput to provision for a gp3 volume, with a maximum of 2,000 MiB/s. The minimum value of 125, and maximum value of 2,000. | Optional | 
+| ebs_initialization_rate | Specifies the Amazon EBS Provisioned Rate for Volume Initialization (volume initialization rate), in MiB/s, at which to download the snapshot blocks from Amazon S3 to the volume. | Optional | 
+| block_device_mappings_no_device | To omit the device from the block device mapping, specify an empty string. | Optional | 
+| block_device_mappings_virtual_name | The virtual device name (ephemeralN). | Optional | 
+| network_interfaces_associate_public_ip_address | Associates a public IPv4 address with eth0 for a new network interface. Possible values are: true, false. | Optional | 
+| network_interfaces_delete_on_termination | Whether the network interface is deleted when the instance is terminated. Possible values are: true, false. | Optional | 
+| network_interfaces_description | A description for the network interface. | Optional | 
+| network_interfaces_device_index | The device index for the network interface attachment. | Optional | 
+| network_interface_groups | A comma-separated list of security group IDs. | Optional | 
+| subnet_id | The ID of the subnet for the network interface. | Optional | 
+| private_ip_address | The primary private IPv4 address of the network interface. | Optional | 
+| ipv6_address_count | The number of IPv6 addresses to assign to a network interface. | Optional | 
+| ipv6_addresses | One or more specific IPv6 addresses from the IPv6 CIDR block range of your subnet. | Optional | 
+| network_interface_id | The ID of the network interface. | Optional | 
+| availability_zone | The Availability Zone for the instance. | Optional | 
+| placement_tenancy | The tenancy of the instance. Possible values are: default, dedicated, host. | Optional | 
+| ram_disk_id | The ID of the RAM disk. | Optional | 
+| tags | The tags to assign to the Elastic IP address. Format: key=&lt;key&gt;,value=&lt;value&gt;;key=&lt;key&gt;,value=&lt;value&gt;. | Optional | 
+| market_type | The market type. Possible values are: spot. | Optional | 
+| spot_options_instance_type | The Spot Instance request type. Possible values are: one-time, persistent. | Optional | 
+| spot_options_max_price | The maximum hourly price you're willing to pay for the Spot Instances. | Optional | 
+| spot_options_instance_interruption_behavior | The behavior when a Spot Instance is interrupted. Possible values are: hibernate, stop, terminate. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EC2.LaunchTemplates.LaunchTemplateId | string | The ID of the launch template. |
-| AWS.EC2.LaunchTemplates.LaunchTemplateName | string | The name of the launch template. |
-| AWS.EC2.LaunchTemplates.CreateTime | date | The time launch template was created. |
-| AWS.EC2.LaunchTemplates.CreatedBy | string | The principal that created the launch template. |
-| AWS.EC2.LaunchTemplates.DefaultVersionNumber | number | The version number of the default version of the launch template. |
-| AWS.EC2.LaunchTemplates.LatestVersionNumber | number | The version number of the latest version of the launch template. |
-| AWS.EC2.LaunchTemplates.Tags.Key | string | The key of the tag. |
-| AWS.EC2.LaunchTemplates.Tags.Value | string | The value of the tag. |
+| AWS.EC2.LaunchTemplates.LaunchTemplateId | string | The ID of the launch template. | 
+| AWS.EC2.LaunchTemplates.LaunchTemplateName | string | The name of the launch template. | 
+| AWS.EC2.LaunchTemplates.CreateTime | date | The time launch template was created. | 
+| AWS.EC2.LaunchTemplates.CreatedBy | string | The principal that created the launch template. | 
+| AWS.EC2.LaunchTemplates.DefaultVersionNumber | number | The default version number of the launch template. | 
+| AWS.EC2.LaunchTemplates.LatestVersionNumber | number | The latest version number of the launch template. | 
+| AWS.EC2.LaunchTemplates.Tags.Key | string | The key of the tag. | 
+| AWS.EC2.LaunchTemplates.Tags.Value | string | The value of the tag. | 
 
 ### aws-ec2-launch-templates-describe
 

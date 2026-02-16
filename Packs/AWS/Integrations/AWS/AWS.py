@@ -260,22 +260,24 @@ def create_launch_template_kwargs_builder(args: Dict[str, Any]) -> Dict[str, Any
                     "VolumeType": args.get("ebs_volume_type"),
                     "EbsCardIndex": arg_to_number(args.get("ebs_card_index")),
                     "Throughput": arg_to_number(args.get("ebs_throughput")),
-                    "VolumeInitializationRate": arg_to_number(args.get("ebs_initialization_rate"))
+                    "VolumeInitializationRate": arg_to_number(args.get("ebs_initialization_rate")),
                 },
                 "NoDevice": args.get("block_device_mappings_no_device"),
                 "VirtualName": args.get("block_device_mappings_virtual_name"),
             },
             "DisableApiTermination": arg_to_bool_or_none(args.get("disable_api_termination")),
             "EbsOptimized": arg_to_bool_or_none(args.get("ebs_optimized")),
-            "IamInstanceProfile": {"Arn": args.get("iam_instance_profile_arn"),
-                                   "Name": args.get("iam_instance_profile_name")},
+            "IamInstanceProfile": {"Arn": args.get("iam_instance_profile_arn"), "Name": args.get("iam_instance_profile_name")},
             "ImageId": args.get("image_id"),
             "InstanceInitiatedShutdownBehavior": args.get("instance_initiated_shutdown_behavior"),
-            "InstanceMarketOptions": {"MarketType": args.get("market_type"), "SpotOptions": {
-                "InstanceInterruptionBehavior": args.get("spot_options_instance_interruption_behavior"),
-                "MaxPrice": args.get("spot_options_max_price"),
-                "SpotInstanceType": args.get("spot_options_instance_type")
-            }},
+            "InstanceMarketOptions": {
+                "MarketType": args.get("market_type"),
+                "SpotOptions": {
+                    "InstanceInterruptionBehavior": args.get("spot_options_instance_interruption_behavior"),
+                    "MaxPrice": args.get("spot_options_max_price"),
+                    "SpotInstanceType": args.get("spot_options_instance_type"),
+                },
+            },
             "InstanceType": args.get("instance_type"),
             "KernelId": args.get("kernel_id"),
             "KeyName": args.get("key_name"),
@@ -297,8 +299,8 @@ def create_launch_template_kwargs_builder(args: Dict[str, Any]) -> Dict[str, Any
             "SecurityGroups": argToList(args.get("security_groups")),
             "SecurityGroupIds": argToList(args.get("security_group_ids")),
             "UserData": args.get("user_data"),
-            "TagSpecifications": [{"ResourceType": "launch-template", "Tags": parse_tag_field(args.get("tags"))}]
-        }
+            "TagSpecifications": [{"ResourceType": "launch-template", "Tags": parse_tag_field(args.get("tags"))}],
+        },
     }
     return kwargs
 
