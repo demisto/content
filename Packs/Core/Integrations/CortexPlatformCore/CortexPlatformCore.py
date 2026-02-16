@@ -4997,10 +4997,7 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
         return policy
 
     # 1. Parse and validate arguments
-    policy_name = args.get("policy_name")
-    if not policy_name:
-        raise DemistoException("policy_name is required.")
-
+    policy_name = args.get("policy_name", "")
     target_endpoint_names = argToList(args.get("target_endpoint_names", ""))
     target_endpoint_ids = argToList(args.get("target_endpoint_ids", ""))
     platform = args.get("platform", "")
