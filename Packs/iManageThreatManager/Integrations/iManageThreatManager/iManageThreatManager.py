@@ -443,11 +443,11 @@ def _fetch_events_with_pagination(
 
         # Track original batch size before deduplication to determine if more events exist
         original_batch_size = len(batch)
-        
+
         # Deduplicate the batch against events from the previous page
         # This handles cases where events have the same alert_time at page boundaries
         batch = _deduplicate_events(batch, last_page_ids, last_page_time)
-        
+
         events.extend(batch)
         demisto.debug(f"Fetched {len(batch)} events in this batch (after deduplication), total now: {len(events)}")
 
