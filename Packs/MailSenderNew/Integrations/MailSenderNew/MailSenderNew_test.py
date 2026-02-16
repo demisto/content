@@ -125,3 +125,33 @@ def test_attachments(mocker):
 
     assert all(file_name in msg for file_name in ["attach.txt", "test1.txt", "test2.txt"])
     assert all(decode_file_content in msg for decode_file_content in decode_files_content)
+
+
+@pytest.mark.parametrize(
+    "args, params, expected_from",
+    [
+        (
+            {"to": "test@test.com", "subject": "test", "body": "test", "sender": "override@test.com"},
+            {"from": "default@test.com"},
+            "override@test.com",
+        ),
+        ({"to": "test@test.com", "subject": "test", "body": "test"}, {"from": "default@test.com"}, "default@test.com"),
+    ],
+)
+def test_create_msg_sender_override(mocker, args, params, expected_from):
+    """
+    Given:
+        - Case A: 'sender' argument is provided in demisto.args().
+        - Case B: 'sender' argument is NOT provided in demisto.args().
+    When:
+        - Calling create_msg().
+    Then:
+        - In Case A, the 'From' header should be the 'sender' argument.
+        - In Case B, the 'From' header should be the 'from' parameter from the integration configuration.
+    """
+    mocker.patch.object(demisto, "args", return_value=args)
+    mocker.patch.object(demisto, "params", return_value=params)
+
+    (_, _, msg, _, _, _) = MailSenderNew.create_msg()
+
+    assert f"From: {expected_from}" in msg
