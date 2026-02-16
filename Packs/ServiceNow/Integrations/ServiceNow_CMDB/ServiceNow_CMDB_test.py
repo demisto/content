@@ -418,7 +418,7 @@ class TestCredentialFlowEndToEnd:
         When:
             - main() is called with the 'test-module' command.
         Then:
-            - The Client is created with None username/password (from empty oauth_credentials fallback).
+            - The Client is created with empty string username/password (from empty oauth_credentials fallback).
         """
         params = {
             **self.BASE_PARAMS,
@@ -435,9 +435,9 @@ class TestCredentialFlowEndToEnd:
         main()
 
         call_kwargs = client_init_spy.call_args[1]
-        # Falls back to oauth_credentials which are also empty
-        assert call_kwargs["username"] is None
-        assert call_kwargs["password"] is None
+        # Falls back to oauth_credentials which are also empty, .get() returns "" by default
+        assert call_kwargs["username"] == ""
+        assert call_kwargs["password"] == ""
 
     def test_oauth_login_command_with_new_credentials(self, mocker):
         """
