@@ -3446,7 +3446,7 @@ script:
           description: The name of the policy to delete. Either this or policy_id must be provided.
           type: String
         - name: policy_id
-          description: The ID of the policy to delete. Either this or policy_name must be provided. Use this when multiple policies have the same name.
+          description: The ID of the policy to delete. Either this or policy_name must be provided.
           type: String
         - name: platform
           description: The platform type to narrow down the policy search. Required to identify the correct policy.
