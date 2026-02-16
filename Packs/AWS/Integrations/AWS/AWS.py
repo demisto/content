@@ -248,23 +248,25 @@ def create_launch_template_kwargs_builder(args: Dict[str, Any]) -> Dict[str, Any
         "LaunchTemplateName": args.get("launch_template_name"),
         "VersionDescription": args.get("version_description"),
         "LaunchTemplateData": {
-            "BlockDeviceMappings": {
-                "DeviceName": args.get("device_name"),
-                "Ebs": {
-                    "Encrypted": arg_to_bool_or_none(args.get("ebs_encrypted")),
-                    "DeleteOnTermination": arg_to_bool_or_none(args.get("ebs_delete_on_termination")),
-                    "Iops": arg_to_number(args.get("ebs_iops")),
-                    "KmsKeyId": args.get("ebs_kms_key_id"),
-                    "SnapshotId": args.get("ebs_snapshot_id"),
-                    "VolumeSize": arg_to_number(args.get("ebs_volume_size")),
-                    "VolumeType": args.get("ebs_volume_type"),
-                    "EbsCardIndex": arg_to_number(args.get("ebs_card_index")),
-                    "Throughput": arg_to_number(args.get("ebs_throughput")),
-                    "VolumeInitializationRate": arg_to_number(args.get("ebs_initialization_rate")),
-                },
-                "NoDevice": args.get("block_device_mappings_no_device"),
-                "VirtualName": args.get("block_device_mappings_virtual_name"),
-            },
+            "BlockDeviceMappings": [
+                {
+                    "DeviceName": args.get("device_name"),
+                    "Ebs": {
+                        "Encrypted": arg_to_bool_or_none(args.get("ebs_encrypted")),
+                        "DeleteOnTermination": arg_to_bool_or_none(args.get("ebs_delete_on_termination")),
+                        "Iops": arg_to_number(args.get("ebs_iops")),
+                        "KmsKeyId": args.get("ebs_kms_key_id"),
+                        "SnapshotId": args.get("ebs_snapshot_id"),
+                        "VolumeSize": arg_to_number(args.get("ebs_volume_size")),
+                        "VolumeType": args.get("ebs_volume_type"),
+                        "EbsCardIndex": arg_to_number(args.get("ebs_card_index")),
+                        "Throughput": arg_to_number(args.get("ebs_throughput")),
+                        "VolumeInitializationRate": arg_to_number(args.get("ebs_initialization_rate")),
+                    },
+                    "NoDevice": args.get("block_device_mappings_no_device"),
+                    "VirtualName": args.get("block_device_mappings_virtual_name"),
+                }
+            ],
             "DisableApiTermination": arg_to_bool_or_none(args.get("disable_api_termination")),
             "EbsOptimized": arg_to_bool_or_none(args.get("ebs_optimized")),
             "IamInstanceProfile": {"Arn": args.get("iam_instance_profile_arn"), "Name": args.get("iam_instance_profile_name")},
@@ -282,26 +284,31 @@ def create_launch_template_kwargs_builder(args: Dict[str, Any]) -> Dict[str, Any
             "KernelId": args.get("kernel_id"),
             "KeyName": args.get("key_name"),
             "Monitoring": {"Enabled": arg_to_bool_or_none(args.get("monitoring"))},
-            "NetworkInterfaces": {
-                "AssociatePublicIpAddress": arg_to_bool_or_none(args.get("network_interfaces_associate_public_ip_address")),
-                "DeleteOnTermination": arg_to_bool_or_none(args.get("network_interfaces_delete_on_termination")),
-                "Description": args.get("network_interfaces_description"),
-                "DeviceIndex": arg_to_number(args.get("network_interfaces_device_index")),
-                "Groups": argToList(args.get("network_interface_groups")),
-                "SubnetId": args.get("subnet_id"),
-                "PrivateIpAddress": args.get("private_ip_address"),
-                "Ipv6AddressCount": arg_to_number(args.get("ipv6_address_count")),
-                "Ipv6Addresses": argToList(args.get("ipv6_addresses")),
-                "NetworkInterfaceId": args.get("network_interface_id"),
-            },
+            "NetworkInterfaces": [
+                {
+                    "AssociatePublicIpAddress": arg_to_bool_or_none(args.get("network_interfaces_associate_public_ip_address")),
+                    "DeleteOnTermination": arg_to_bool_or_none(args.get("network_interfaces_delete_on_termination")),
+                    "Description": args.get("network_interfaces_description"),
+                    "DeviceIndex": arg_to_number(args.get("network_interfaces_device_index")),
+                    "Groups": argToList(args.get("network_interface_groups")),
+                    "SubnetId": args.get("subnet_id"),
+                    "PrivateIpAddress": args.get("private_ip_address"),
+                    "Ipv6AddressCount": arg_to_number(args.get("ipv6_address_count")),
+                    "Ipv6Addresses": argToList(args.get("ipv6_addresses")),
+                    "NetworkInterfaceId": args.get("network_interface_id"),
+                }
+            ],
             "Placement": {"AvailabilityZone": args.get("availability_zone"), "Tenancy": args.get("placement_tenancy")},
             "RamDiskId": args.get("ram_disk_id"),
             "SecurityGroups": argToList(args.get("security_groups")),
             "SecurityGroupIds": argToList(args.get("security_group_ids")),
             "UserData": args.get("user_data"),
-            "TagSpecifications": [{"ResourceType": "launch-template", "Tags": parse_tag_field(args.get("tags"))}],
         },
     }
+
+    if args.get("tags"):
+        kwargs["TagSpecifications"] = [{"ResourceType": "launch-template", "Tags": parse_tag_field(args.get("tags"))}]
+
     return kwargs
 
 
@@ -4174,7 +4181,7 @@ class EC2:
         if filters_arg := args.get("filters"):
             kwargs["Filters"] = parse_filter_field(filters_arg)
 
-        pagination_kwargs = build_pagination_kwargs(args, minimum_limit=1)
+        pagination_kwargs = build_pagination_kwargs(args, minimum_limit=1, max_limit=200)
         kwargs.update(pagination_kwargs)
 
         remove_nulls_from_dictionary(kwargs)
@@ -4280,8 +4287,12 @@ class EC2:
         }
 
         # Either launch_template_id or launch_template_name must be provided
-        if not remove_empty_elements(kwargs):
-            raise DemistoException("Either launch_template_id or launch_template_name must be provided")
+        # remove_empty_elements returns a NEW dict, so we need to capture it
+        cleaned_kwargs = remove_empty_elements(kwargs)
+        if not cleaned_kwargs or len(cleaned_kwargs) > 1:
+            raise DemistoException("Either launch_template_id or launch_template_name must be provided, but not both.")
+
+        kwargs = cleaned_kwargs
 
         print_debug_logs(client, f"Deleting launch template with parameters: {kwargs}")
         response = client.delete_launch_template(**kwargs)

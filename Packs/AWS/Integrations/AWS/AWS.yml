@@ -9921,7 +9921,7 @@ script:
         required: false
         isArray: true
       - name: limit
-        description: The maximum number of results to return in a single call.
+        description: The maximum number of results to return in a single call. Maximum value of 200.
         required: false
       - name: next_token
         description: The token for the next set of results.
@@ -10182,6 +10182,8 @@ script:
         auto: PREDEFINED
         predefined:
           - spot
+          - capacity-block
+          - interruptible-capacity-reservation
       - name: spot_options_instance_type
         description: The Spot Instance request type.
         required: false
