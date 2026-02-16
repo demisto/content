@@ -10175,7 +10175,8 @@ script:
         description: The ID of the RAM disk.
         required: false
       - name: tags
-        description: The tags to apply to the resource. Format ResourceType:key=Name,value=test;key=Owner,value=Bob#ResourceType2:key=Name,value=test2
+        description: "The tags to apply to the resource. For example, for two keys: 
+        ResourceType:key=<key1 name>,value=<key1 value>;key=<key2 name>,value=<key2 value>
         required: false
       - name: market_type
         description: The market type.
