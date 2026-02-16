@@ -1,7 +1,6 @@
 import pytest
 from iManageThreatManager import (
     Client,
-    test_module_command,
     get_events_command,
     fetch_events_command,
     validate_credentials_for_event_types,
@@ -133,15 +132,36 @@ class TestDeduplicateEvents:
         """
         Given:
             - Events with some duplicate IDs from last run
+            - All events are newer than last_fetch_time
+        When:
+            - Calling _deduplicate_events
+        Then:
+            - Ensure all events are returned (newer events bypass ID check)
+        """
+        events = [
+            {"id": "1", "alert_time": 1000},
+            {"id": "2", "alert_time": 900},
+            {"id": "3", "alert_time": 800},
+        ]
+        last_run_ids = ["2"]
+        # All events are newer than 700, so ID check is bypassed
+        result = _deduplicate_events(events, last_run_ids, 700)
+        assert len(result) == 3
+
+    def test_deduplicate_events_with_duplicates_same_time(self):
+        """
+        Given:
+            - Events at or before last_fetch_time
+            - Some IDs are duplicates from last run
         When:
             - Calling _deduplicate_events
         Then:
             - Ensure duplicates are removed
         """
         events = [
-            {"id": "1", "alert_time": 1000},
-            {"id": "2", "alert_time": 900},
-            {"id": "3", "alert_time": 800},
+            {"id": "1", "alert_time": 700},
+            {"id": "2", "alert_time": 700},
+            {"id": "3", "alert_time": 700},
         ]
         last_run_ids = ["2"]
         result = _deduplicate_events(events, last_run_ids, 700)
@@ -391,11 +411,12 @@ class TestFetchEventsWithPagination:
         When:
             - Calling _fetch_events_with_pagination
         Then:
-            - Ensure pagination stops at limit
+            - Ensure pagination requests only what's needed
         """
-        # Each page returns 90 events
+        # First page: 90 events
         page1 = {"results": [{"id": f"1-{i}", "alert_time": 1000 - i} for i in range(90)]}
-        page2 = {"results": [{"id": f"2-{i}", "alert_time": 910 - i} for i in range(90)]}
+        # Second page: only 10 events requested (remaining = 100 - 90)
+        page2 = {"results": [{"id": f"2-{i}", "alert_time": 910 - i} for i in range(10)]}
 
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
 
@@ -409,14 +430,14 @@ class TestFetchEventsWithPagination:
 
         events = _fetch_events_with_pagination(client, BEHAVIOR_ANALYTICS, 500, 1000, 100)
 
-        # Should stop at 100 (90 from page1 + 10 from page2)
+        # Should have exactly 100 events (90 + 10)
         assert len(events) == 100
 
 
 class TestClient:
     """Tests for Client class methods"""
 
-    def test_get_access_token_from_token_secret(self, client, requests_mock):
+    def test_get_access_token_from_token_secret(self, client, requests_mock, mocker):
         """
         Given:
             - Valid token and secret
@@ -425,6 +446,10 @@ class TestClient:
         Then:
             - Ensure access token is returned
         """
+        # Mock to bypass caching
+        mocker.patch.object(client, "_get_cached_token", return_value=None)
+        mocker.patch.object(client, "_cache_token")
+
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "test_access_token"})
         token = client.get_access_token_from_token_secret()
         assert token == "test_access_token"
@@ -458,6 +483,8 @@ class TestTestModuleCommand:
         Then:
             - Ensure 'ok' is returned
         """
+        from iManageThreatManager import test_module_command
+
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
         requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", json={"results": []})
 
@@ -474,13 +501,15 @@ class TestTestModuleCommand:
         Then:
             - Ensure 'ok' is returned
         """
+        from iManageThreatManager import test_module_command
+
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login", json={"access_token": "user_token"})
         requests_mock.post(f"{BASE_URL}/tm-api/getAddressableAlerts", json={"results": []})
 
         result = test_module_command(client, {}, [ADDRESSABLE_ALERTS])
         assert result == "ok"
 
-    def test_test_module_auth_error(self, client, requests_mock):
+    def test_test_module_auth_error(self, client, requests_mock, mocker):
         """
         Given:
             - Invalid credentials
@@ -489,6 +518,9 @@ class TestTestModuleCommand:
         Then:
             - Ensure authorization error message is returned
         """
+        from iManageThreatManager import test_module_command
+
+        mocker.patch.object(client, "_get_cached_token", return_value=None)
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", status_code=401, text="Unauthorized")
 
         result = test_module_command(client, {}, [BEHAVIOR_ANALYTICS])
@@ -649,7 +681,7 @@ class TestFetchEventsCommand:
         assert len(events) == 0
         assert "last_fetch_BehaviorAnalytics" in next_run
 
-    def test_fetch_events_with_error(self, client, requests_mock):
+    def test_fetch_events_with_error(self, client, requests_mock, mocker, capfd):
         """
         Given:
             - API error during fetch
@@ -658,13 +690,17 @@ class TestFetchEventsCommand:
         Then:
             - Ensure error is handled and last_run is preserved
         """
+        mocker.patch.object(client, "_get_cached_token", return_value=None)
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
         requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", status_code=500, text="Server Error")
 
         last_run = {"last_fetch_BehaviorAnalytics": 1609459200000}
-        next_run, events = fetch_events_command(
-            client=client, last_run=last_run, event_types=[BEHAVIOR_ANALYTICS], max_events_per_type=10
-        )
+
+        # Disable stdout/stderr capture for this test since error logging is expected
+        with capfd.disabled():
+            next_run, events = fetch_events_command(
+                client=client, last_run=last_run, event_types=[BEHAVIOR_ANALYTICS], max_events_per_type=10
+            )
 
         # Should preserve last_run on error
         assert next_run["last_fetch_BehaviorAnalytics"] == 1609459200000

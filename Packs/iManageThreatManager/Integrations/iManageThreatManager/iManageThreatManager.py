@@ -14,7 +14,9 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 VENDOR = "iManage"
 PRODUCT = "Threat"
 MAX_EVENTS_PER_FETCH = 900  # Default events per type
-MAX_PAGE_SIZE = 90  # Maximum page size for Behavior Analytics alerts - Used for all types to simplify pagination logic, even though only Behavior Analytics has this limit
+# Maximum page size for Behavior Analytics alerts
+# Used for all types to simplify pagination logic, even though only Behavior Analytics has this limit
+MAX_PAGE_SIZE = 90
 DEFAULT_TIMEZONE = "UTC"
 SORT_FIELD = "alert_time"  # API filters and sorts by this field only
 SORT_ORDER = -1  # -1 for descending (newest first), 1 for ascending (oldest first)
@@ -185,7 +187,9 @@ class Client(BaseClient):
             json_data={"token": self.token, "secret": self.secret},
             resp_type="json",
         )
-        self._access_token = response.get("access_token", "")
+        self._access_token = response.get("access_token")
+        if not self._access_token:
+            raise DemistoException("Failed to acquire access token: no access_token in response")
 
         # Cache the new token
         self._cache_token(self._access_token, "api_access_token", "api_token_expiry")
@@ -217,7 +221,9 @@ class Client(BaseClient):
             json_data={"username": self.username, "password": self.password},
             resp_type="json",
         )
-        self._user_access_token = response.get("access_token", "")
+        self._user_access_token = response.get("access_token")
+        if not self._user_access_token:
+            raise DemistoException("Failed to acquire user access token: no access_token in response")
 
         # Cache the new token
         self._cache_token(self._user_access_token, "user_access_token", "user_token_expiry")
@@ -290,7 +296,10 @@ def _calculate_timestamp_ms(date_str: str | None, default_hours_ago: int = 0) ->
         int: Timestamp in milliseconds since epoch.
     """
     if date_str:
-        return int(arg_to_datetime(date_str).timestamp() * 1000)
+        dt = arg_to_datetime(date_str)
+        if dt is None:
+            raise ValueError(f"Failed to parse date string: {date_str}")
+        return int(dt.timestamp() * 1000)
 
     base_time = datetime.now()
     if default_hours_ago > 0:
@@ -370,7 +379,7 @@ def _add_fields_to_events(events: List[Dict] | None, source_log_type: str) -> No
     for event in events:
         # IMPORTANT: _time uses update_time, NOT alert_time (which is used for filtering/sorting)
         update_time = event.get("update_time")
-        if update_time and isinstance(update_time, (int, float)):
+        if update_time and isinstance(update_time, int | float):
             try:
                 # update_time is in milliseconds, convert to seconds for datetime
                 event_datetime = datetime.fromtimestamp(update_time / 1000, tz=timezone.utc)
@@ -383,7 +392,7 @@ def _add_fields_to_events(events: List[Dict] | None, source_log_type: str) -> No
 
         # Add _ENTRY_STATUS field by comparing update_time with alert_time
         alert_time = event.get("alert_time")
-        if update_time and alert_time and isinstance(update_time, (int, float)) and isinstance(alert_time, (int, float)):
+        if update_time and alert_time and isinstance(update_time, int | float) and isinstance(alert_time, int | float):
             if update_time == alert_time:
                 event["_ENTRY_STATUS"] = "new"
             elif update_time > alert_time:
@@ -432,7 +441,8 @@ def _fetch_events_with_pagination(
         page_size = min(remaining, MAX_PAGE_SIZE)
 
         demisto.debug(
-            f"Fetching page: start_time={start_time}, end_time={current_end_time}, page_size={page_size}, total_so_far={len(events)}"
+            f"Fetching page: start_time={start_time}, end_time={current_end_time}, "
+            f"page_size={page_size}, total_so_far={len(events)}"
         )
 
         batch = client._fetch_alerts(event_type, start_time, current_end_time, page_size)
@@ -503,12 +513,10 @@ def validate_credentials_for_event_types(client: Client, event_types: List[str])
     missing_creds = []
 
     for event_type in event_types:
-        if event_type == BEHAVIOR_ANALYTICS:
-            if not (client.token and client.secret):
-                missing_creds.append(f"{event_type} requires Token and Secret credentials")
-        elif event_type in [ADDRESSABLE_ALERTS, DETECT_AND_PROTECT_ALERTS]:
-            if not (client.username and client.password):
-                missing_creds.append(f"{event_type} requires Username and Password credentials")
+        if event_type == BEHAVIOR_ANALYTICS and not (client.token and client.secret):
+            missing_creds.append(f"{event_type} requires Token and Secret credentials")
+        elif event_type in [ADDRESSABLE_ALERTS, DETECT_AND_PROTECT_ALERTS] and not (client.username and client.password):
+            missing_creds.append(f"{event_type} requires Username and Password credentials")
 
     if missing_creds:
         error_msg = "Missing required credentials:\n" + "\n".join(f"- {msg}" for msg in missing_creds)
@@ -620,7 +628,7 @@ def fetch_events_command(
 
         # Get source log type for this event type (used for state keys)
         config = EVENT_TYPE_CONFIG.get(event_type, EVENT_TYPE_CONFIG[BEHAVIOR_ANALYTICS])
-        source_log_type = config["source_log_type"]
+        source_log_type = str(config["source_log_type"])
 
         # Get last fetch time and IDs for this event type using source_log_type
         last_fetch_key = f"last_fetch_{source_log_type}"
@@ -703,8 +711,6 @@ def main() -> None:  # pragma: no cover
 
     # Parse connection parameters
     base_url = params.get("url", "").rstrip("/")
-    if not base_url:
-        return_error("Server URL is required")
 
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
@@ -755,12 +761,13 @@ def main() -> None:  # pragma: no cover
             if should_push_events:
                 # Determine source_log_type based on event_type
                 config = EVENT_TYPE_CONFIG.get(event_type, EVENT_TYPE_CONFIG[BEHAVIOR_ANALYTICS])
-                source_log_type_param = config["source_log_type"]
+                source_log_type_param = str(config["source_log_type"])
 
                 _add_fields_to_events(events, source_log_type_param)
                 demisto.debug(f"Sending {len(events)} events to XSIAM.")
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-                results.readable_output += f"\n\n{len(events)} events sent to XSIAM."
+                if results.readable_output:
+                    results.readable_output += f"\n\n{len(events)} events sent to XSIAM."
                 demisto.debug("Events sent to XSIAM successfully")
             return_results(results)
 
@@ -778,7 +785,9 @@ def main() -> None:  # pragma: no cover
             demisto.setLastRun(next_run)
             demisto.debug(f"Setting next run to {next_run}.")
 
-    # Log exceptions and return errors
+        else:
+            raise NotImplementedError(f"Command '{command}' is not implemented.")
+
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
