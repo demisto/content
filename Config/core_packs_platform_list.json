@@ -3,13 +3,6 @@
         {
             "id": "AggregatedScripts",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "xsiam",
                 "edr",
@@ -35,10 +28,6 @@
         {
             "id": "AutoFocus",
             "supportedModules": [
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "cloud",
                 "cloud_runtime_security",
@@ -50,13 +39,6 @@
         {
             "id": "Base",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "asm",
                 "cloud",
@@ -71,12 +53,6 @@
         {
             "id": "CommonPlaybooks",
             "supportedModules": [
-                "C3",
-                "X0",
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "cloud",
                 "cloud_runtime_security",
@@ -87,13 +63,6 @@
         {
             "id": "CommonScripts",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "asm",
                 "exposure_management",
@@ -107,10 +76,6 @@
         {
             "id": "CommonTypes",
             "supportedModules": [
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "xsiam"
             ]
@@ -118,13 +83,6 @@
         {
             "id": "Core",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "exposure_management",
                 "cloud",
@@ -137,10 +95,6 @@
         {
             "id": "CoreAlertFields",
             "supportedModules": [
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "xsiam"
             ]
@@ -148,10 +102,6 @@
         {
             "id": "DemistoLocking",
             "supportedModules": [
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "cloud",
                 "cloud_runtime_security",
@@ -163,13 +113,6 @@
         {
             "id": "DemistoRESTAPI",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "cloud",
                 "cloud_runtime_security",
@@ -181,10 +124,6 @@
         {
             "id": "EDL",
             "supportedModules": [
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "xsiam"
             ]
@@ -192,10 +131,6 @@
         {
             "id": "FeedMitreAttackv2",
             "supportedModules": [
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "xsiam"
             ]
@@ -203,10 +138,6 @@
         {
             "id": "FeedUnit42v2",
             "supportedModules": [
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "xsiam"
             ]
@@ -214,13 +145,6 @@
         {
             "id": "FiltersAndTransformers",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "asm",
                 "exposure_management",
@@ -234,10 +158,6 @@
         {
             "id": "HelloWorld",
             "supportedModules": [
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "xsiam"
             ]
@@ -245,10 +165,6 @@
         {
             "id": "ImageOCR",
             "supportedModules": [
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "xsiam",
                 "edr",
@@ -269,10 +185,6 @@
         {
             "id": "PrismaCloud",
             "supportedModules": [
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "xsiam"
             ]
@@ -280,10 +192,6 @@
         {
             "id": "ThreatIntelligenceManagement",
             "supportedModules": [
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "xsiam"
             ]
@@ -291,10 +199,6 @@
         {
             "id": "Unit42Intel",
             "supportedModules": [
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "xsiam"
             ]
@@ -302,10 +206,6 @@
         {
             "id": "VirusTotal",
             "supportedModules": [
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "xsiam"
             ]
@@ -313,10 +213,6 @@
         {
             "id": "Whois",
             "supportedModules": [
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "xsiam"
             ]
@@ -324,12 +220,6 @@
         {
             "id": "rasterize",
             "supportedModules": [
-                "C3",
-                "X0",
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "edr",
                 "cloud",
@@ -350,13 +240,6 @@
         {
             "id": "Jira",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "cloud",
                 "cloud_runtime_security",
@@ -368,13 +251,6 @@
         {
             "id": "MicrosoftTeams",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "cloud",
                 "cloud_runtime_security",
@@ -386,13 +262,6 @@
         {
             "id": "Unit42ThreatIntelligencebyPaloAltoNetworks",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "cloud",
                 "edr",
@@ -404,13 +273,6 @@
         {
             "id": "Slack",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "cloud",
                 "cloud_runtime_security",
@@ -422,13 +284,6 @@
         {
             "id": "ServiceNow",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "asm",
                 "exposure_management",
@@ -442,9 +297,6 @@
         {
             "id": "AWS",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X5",
                 "agentix",
                 "cloud_posture",
                 "cloud",
@@ -456,9 +308,6 @@
         {
             "id": "GCP",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X5",
                 "cloud_posture",
                 "cloud",
                 "cloud_runtime_security",
@@ -469,9 +318,6 @@
         {
             "id": "Azure",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X5",
                 "cloud_posture",
                 "cloud",
                 "cloud_runtime_security",
@@ -482,13 +328,6 @@
         {
             "id": "CommonDashboards",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "asm",
                 "cloud",
