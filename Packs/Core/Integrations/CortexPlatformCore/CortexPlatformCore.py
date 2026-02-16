@@ -70,6 +70,7 @@ WEBAPP_COMMANDS = [
     "core-update-endpoint-version",
     "core-get-email-investigation-summary",
     "core-get-email-campaign-consolidated-forensic-enrichment",
+    "core-decrypt-email-content",
 ]
 EMAIL_SECURITY = ["core-execute-email-security-remediation"]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
@@ -700,6 +701,21 @@ class Client(CoreClient):
             method="POST",
             url_suffix="/email-security/investigation/phishing-investigation/",
             params=params,
+        )
+
+    def decrypt_email_content(self, internet_message_id: str) -> dict:
+        """Decrypts the encrypted subject and body of an email.
+
+        Args:
+            internet_message_id (str): The unique internet message ID of the email to decrypt.
+
+        Returns:
+            dict: The API response containing the decrypted body and subject.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/email-security/investigation/decrypt_email/",
+            json_data={"internet_message_id": internet_message_id},
         )
 
     def enable_scanners(self, payload: dict, repository_id: str) -> dict:
@@ -4863,6 +4879,41 @@ def get_email_investigation_summary_command(client: Client, args: dict) -> Comma
     )
 
 
+def decrypt_email_content_command(client: Client, args: dict) -> CommandResults:
+    """Decrypts the encrypted subject and body of one or more emails.
+
+    Args:
+        client (Client): The Cortex platform client instance.
+        args (dict): Command arguments including internet_message_id (comma-separated list).
+
+    Returns:
+        CommandResults: The command results containing the decrypted email content.
+    """
+    internet_message_ids = argToList(args.get("internet_message_id"))
+    if not internet_message_ids:
+        raise DemistoException("internet_message_id is required.")
+
+    all_results = []
+    for message_id in internet_message_ids:
+        response = client.decrypt_email_content(message_id)
+        result = response.get("reply", response)
+        if isinstance(result, dict):
+            result["internet_message_id"] = message_id
+        all_results.append(result)
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Decrypted Email Content",
+            all_results,
+            headerTransform=string_to_table_header,
+        ),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.DecryptedEmail",
+        outputs_key_field="internet_message_id",
+        outputs=all_results,
+        raw_response=all_results,
+    )
+
+
 def verify_platform_version(version: str = "8.13.0"):
     if not is_demisto_version_ge(version):
         raise DemistoException("This command is not available for this platform version")
@@ -5012,6 +5063,9 @@ def main():  # pragma: no cover
 
         elif command == "core-get-email-investigation-summary":
             return_results(get_email_investigation_summary_command(client, args))
+
+        elif command == "core-decrypt-email-content":
+            return_results(decrypt_email_content_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
