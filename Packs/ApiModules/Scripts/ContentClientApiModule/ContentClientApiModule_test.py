@@ -9,8 +9,7 @@ from typing import Any
 import demistomock as demisto
 import httpx
 import pytest
-
-respx = pytest.importorskip("respx")
+import respx
 from httpx import Response
 
 
