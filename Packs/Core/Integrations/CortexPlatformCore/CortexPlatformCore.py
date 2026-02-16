@@ -944,7 +944,7 @@ class Client(CoreClient):
             method="POST",
             headers=self._headers,
             url_suffix="/sfdc_support/get_questions_by_sme_area_and_sub_group/",
-            json_data={"smeArea": sme_area, "subGroupName": sub_group},
+            json_data={"request_data":{"sme_area": sme_area, "sub_group": sub_group}}
         )
 
     def get_custom_fields_metadata(self) -> dict[str, Any]:
