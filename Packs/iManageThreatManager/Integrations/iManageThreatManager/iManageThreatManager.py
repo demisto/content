@@ -21,6 +21,10 @@ DEFAULT_TIMEZONE = "UTC"
 SORT_FIELD = "alert_time"  # API filters and sorts by this field only
 SORT_ORDER = -1  # -1 for descending (newest first), 1 for ascending (oldest first)
 
+# Retry configuration for API throttling
+MAX_RETRIES = 3
+RETRY_DELAYS = [30, 60, 90]  # Delays in seconds: 30s, 1min, 1.5min
+
 # Event type configurations: maps event type names to their configuration
 EVENT_TYPE_CONFIG = {
     "Behavior Analytics alerts": {
@@ -162,22 +166,26 @@ class Client(BaseClient):
         demisto.setIntegrationContext(integration_context)
         demisto.debug(f"Cached token under {token_key} (expires at {expiry_time})")
 
-    def get_access_token_from_token_secret(self) -> str:
+    def get_access_token_from_token_secret(self, force_new: bool = False) -> str:
         """
         Acquire a JWT access token using application token and secret.
         Uses cached token from integration context if still valid.
 
+        Args:
+            force_new: If True, forces generation of a new token (ignores cache and instance variable)
+
         Returns:
             str: The JWT access token.
         """
-        if self._access_token:
+        if self._access_token and not force_new:
             return self._access_token
 
-        # Try to get cached token
-        cached_token = self._get_cached_token("api_access_token", "api_token_expiry")
-        if cached_token:
-            self._access_token = cached_token
-            return self._access_token
+        # Try to get cached token (unless force_new is True)
+        if not force_new:
+            cached_token = self._get_cached_token("api_access_token", "api_token_expiry")
+            if cached_token:
+                self._access_token = cached_token
+                return self._access_token
 
         # Request new token
         demisto.debug("Acquiring new JWT access token using application token and secret.")
@@ -196,22 +204,26 @@ class Client(BaseClient):
 
         return self._access_token
 
-    def get_access_token_from_username_password(self) -> str:
+    def get_access_token_from_username_password(self, force_new: bool = False) -> str:
         """
         Acquire a JWT access token using username and password.
         Uses cached token from integration context if still valid.
 
+        Args:
+            force_new: If True, forces generation of a new token (ignores cache and instance variable)
+
         Returns:
             str: The JWT access token.
         """
-        if self._user_access_token:
+        if self._user_access_token and not force_new:
             return self._user_access_token
 
-        # Try to get cached token
-        cached_token = self._get_cached_token("user_access_token", "user_token_expiry")
-        if cached_token:
-            self._user_access_token = cached_token
-            return self._user_access_token
+        # Try to get cached token (unless force_new is True)
+        if not force_new:
+            cached_token = self._get_cached_token("user_access_token", "user_token_expiry")
+            if cached_token:
+                self._user_access_token = cached_token
+                return self._user_access_token
 
         # Request new token
         demisto.debug("Acquiring new JWT access token using username and password.")
@@ -238,7 +250,7 @@ class Client(BaseClient):
         page_size: int = MAX_PAGE_SIZE,
     ) -> List[Dict[str, Any]]:
         """
-        Fetch alerts from iManage Threat Manager for a specific event type.
+        Fetch alerts from iManage Threat Manager for a specific event type with retry logic.
 
         Args:
             event_type: Type of events to fetch (e.g., "Behavior Analytics alerts").
@@ -248,37 +260,88 @@ class Client(BaseClient):
 
         Returns:
             List[Dict[str, Any]]: List of alerts sorted by alert_time (newest first).
+
+        Raises:
+            DemistoException: If all retry attempts fail.
+
+        Note:
+            Implements retry mechanism with exponential backoff for API throttling:
+            - Retry 1: Wait 30s, regenerate token
+            - Retry 2: Wait 60s, regenerate token
+            - Retry 3: Wait 90s, regenerate token
+            - After 3 failures: Raise exception
         """
         # Get configuration for this event type
         config = EVENT_TYPE_CONFIG[event_type]
+        use_token_auth = config["use_token_auth"]
 
         demisto.debug(f"Fetching {event_type} from {start_date} to {end_date} with page size {page_size}.")
 
-        # Get appropriate access token based on auth type
-        access_token = (
-            self.get_access_token_from_token_secret()
-            if config["use_token_auth"]
-            else self.get_access_token_from_username_password()
-        )
+        for attempt in range(MAX_RETRIES + 1):
+            try:
+                # Get appropriate access token based on auth type
+                # Force new token on retries (attempt > 0)
+                access_token = (
+                    self.get_access_token_from_token_secret(force_new=(attempt > 0))
+                    if use_token_auth
+                    else self.get_access_token_from_username_password(force_new=(attempt > 0))
+                )
 
-        response = self._http_request(
-            method="POST",
-            url_suffix=config["url_suffix"],
-            headers={"X-Auth-Token": access_token},
-            json_data={
-                "timezone": DEFAULT_TIMEZONE,
-                "start_date": str(start_date),
-                "end_date": str(end_date),
-                "page_size": min(page_size, MAX_PAGE_SIZE),
-                "sort_field": SORT_FIELD,
-                "sort_order": SORT_ORDER,
-            },
-            resp_type="json",
-        )
+                response = self._http_request(
+                    method="POST",
+                    url_suffix=config["url_suffix"],
+                    headers={"X-Auth-Token": access_token},
+                    json_data={
+                        "timezone": DEFAULT_TIMEZONE,
+                        "start_date": str(start_date),
+                        "end_date": str(end_date),
+                        "page_size": min(page_size, MAX_PAGE_SIZE),
+                        "sort_field": SORT_FIELD,
+                        "sort_order": SORT_ORDER,
+                    },
+                    resp_type="json",
+                )
 
-        alerts = response.get("results", [])
-        demisto.debug(f"Fetched {len(alerts)} {event_type}.")
-        return alerts
+                alerts = response.get("results", [])
+                demisto.debug(f"Fetched {len(alerts)} {event_type}.")
+                return alerts
+
+            except Exception as e:
+                error_str = str(e)
+                # Check if it's a retryable error (401 Unauthorized, 429 Too Many Requests, or 503 Service Unavailable)
+                # 401: Token expired - regenerate token
+                # 429: Rate limiting - wait and retry
+                # 503: Temporary service issue - wait and retry
+                is_retryable = any(
+                    indicator in error_str.lower()
+                    for indicator in [
+                        "401",
+                        "unauthorized",
+                        "429",
+                        "too many requests",
+                        "rate limit",
+                        "503",
+                        "service unavailable",
+                    ]
+                )
+
+                if is_retryable and attempt < MAX_RETRIES:
+                    delay = RETRY_DELAYS[attempt]
+                    demisto.debug(
+                        f"Retryable error on attempt {attempt + 1}/{MAX_RETRIES + 1}. "
+                        f"Waiting {delay} seconds before regenerating token and retrying..."
+                    )
+                    time.sleep(delay)
+                    # Force new token on next iteration
+                    continue
+
+                # Not a retryable error, or max retries exceeded
+                if attempt == MAX_RETRIES and is_retryable:
+                    demisto.error(f"Failed to fetch {event_type} after {MAX_RETRIES + 1} attempts. " f"Last error: {error_str}")
+                raise
+
+        # This should never be reached, but added for type safety
+        raise DemistoException(f"Failed to fetch {event_type} after {MAX_RETRIES + 1} attempts")
 
 
 """ HELPER FUNCTIONS """

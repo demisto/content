@@ -23,7 +23,6 @@ The integration supports two authentication methods:
 
 ### Application Token Authentication (for Behavior Analytics alerts)
 
-
 To generate an application token and secret from the Threat Manager admin console:
 
 1. In iManage Threat Manager, browse to **Configuration** > **System** > **Application Tokens for Utility Access**.
@@ -70,14 +69,6 @@ Gets events from iManage Threat Manager. Manual command to fetch and display eve
 #### Context Output
 
 There is no context output for this command.
-
-
-## Rate Limits
-#TODO improve
-To avoid throttling:
-- **Recommended:** Once per day per enabled user
-- Avoid frequent polling
-- Monitor usage to stay within limits
 
 ## Additional Information
 
