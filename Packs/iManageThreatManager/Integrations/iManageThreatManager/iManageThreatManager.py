@@ -16,7 +16,7 @@ PRODUCT = "Threat"
 MAX_EVENTS_PER_FETCH = 900  # Default events per type
 MAX_PAGE_SIZE = 90  # Maximum page size for Behavior Analytics alerts - Used for all types to simplify pagination logic, even though only Behavior Analytics has this limit
 DEFAULT_TIMEZONE = "UTC"
-SORT_FIELD = "minute_update_time"  # API supports this field (update_time in minutes, loses millisecond precision)
+SORT_FIELD = "alert_time"  # API filters and sorts by this field only
 SORT_ORDER = -1  # -1 for descending (newest first), 1 for ascending (oldest first)
 
 # Event type configurations: maps event type names to their configuration
@@ -45,8 +45,7 @@ BEHAVIOR_ANALYTICS, ADDRESSABLE_ALERTS, DETECT_AND_PROTECT_ALERTS = EVENT_TYPE_C
 
 
 class Client(BaseClient):
-    """Client class to interact with the iManage Threat Manager API
-    """
+    """Client class to interact with the iManage Threat Manager API"""
 
     def __init__(
         self,
@@ -242,11 +241,11 @@ class Client(BaseClient):
             page_size: Number of alerts per page.
 
         Returns:
-            List[Dict[str, Any]]: List of alerts sorted by minute_update_time (newest first).
+            List[Dict[str, Any]]: List of alerts sorted by alert_time (newest first).
         """
         # Get configuration for this event type
         config = EVENT_TYPE_CONFIG[event_type]
-        
+
         demisto.debug(f"Fetching {event_type} from {start_date} to {end_date} with page size {page_size}.")
 
         # Get appropriate access token based on auth type
@@ -276,7 +275,6 @@ class Client(BaseClient):
         return alerts
 
 
-
 """ HELPER FUNCTIONS """
 
 
@@ -293,24 +291,22 @@ def _calculate_timestamp_ms(date_str: str | None, default_hours_ago: int = 0) ->
     """
     if date_str:
         return int(arg_to_datetime(date_str).timestamp() * 1000)
-    
+
     base_time = datetime.now()
     if default_hours_ago > 0:
         base_time -= timedelta(hours=default_hours_ago)
-    
+
     return int(base_time.timestamp() * 1000)
 
 
-def _deduplicate_events(
-    events: List[Dict[str, Any]], last_run_ids: List[str], last_fetch_time: int
-) -> List[Dict[str, Any]]:
+def _deduplicate_events(events: List[Dict[str, Any]], last_run_ids: List[str], last_fetch_time: int) -> List[Dict[str, Any]]:
     """
     Remove duplicate events based on event IDs.
 
     Args:
-        events: List of events to deduplicate (sorted newest first by minute_update_time)
+        events: List of events to deduplicate (sorted newest first by alert_time)
         last_run_ids: List of event IDs from the last run to filter out
-        last_fetch_time: Timestamp in minutes from the last fetch (minute_update_time value)
+        last_fetch_time: Timestamp in milliseconds from the last fetch (alert_time value)
 
     Returns:
         List of deduplicated events
@@ -327,25 +323,25 @@ def _deduplicate_events(
     for i in range(len(events) - 1, -1, -1):
         event = events[i]
         event_id = event.get("id")
-        event_time = event.get("minute_update_time")
+        event_time = event.get("alert_time")
 
         if not event_id:
-            demisto.debug(f"Event at index {i} and at minute_update_time {event_time} has no ID, Adding it without deduplication.")
+            demisto.debug(f"Event at index {i} and at alert_time {event_time} has no ID, Adding it without deduplication.")
             deduplicated.append(event)
             continue
-        
+
         if event_time and event_time > last_fetch_time:
             # Event is newer than last_fetch_time, add it
             deduplicated.append(event)
-            
+
             # Add all remaining events (from index i-1 down to 0) - they're all newer too
             for j in range(i - 1, -1, -1):
                 remaining_event = events[j]
                 deduplicated.append(remaining_event)
-            
+
             demisto.debug(f"Found event newer than last_fetch_time at index {i}, added all {i + 1} newer events")
             break
-        
+
         # Event is at or before last_fetch_time, check against seen IDs
         if event_id not in seen_ids:
             deduplicated.append(event)
@@ -355,7 +351,7 @@ def _deduplicate_events(
 
     # Reverse to maintain original order (newest first)
     deduplicated.reverse()
-    
+
     demisto.debug(f"Deduplication complete: {len(deduplicated)} unique events")
     return deduplicated
 
@@ -372,7 +368,7 @@ def _add_fields_to_events(events: List[Dict] | None, source_log_type: str) -> No
         return
 
     for event in events:
-        # Add _time field
+        # IMPORTANT: _time uses update_time, NOT alert_time (which is used for filtering/sorting)
         update_time = event.get("update_time")
         if update_time and isinstance(update_time, (int, float)):
             try:
@@ -384,6 +380,14 @@ def _add_fields_to_events(events: List[Dict] | None, source_log_type: str) -> No
 
         # Add _source_log_type field
         event["_source_log_type"] = source_log_type
+
+        # Add _ENTRY_STATUS field by comparing update_time with alert_time
+        alert_time = event.get("alert_time")
+        if update_time and alert_time and isinstance(update_time, (int, float)) and isinstance(alert_time, (int, float)):
+            if update_time == alert_time:
+                event["_ENTRY_STATUS"] = "new"
+            elif update_time > alert_time:
+                event["_ENTRY_STATUS"] = "modified"
 
 
 def _fetch_events_with_pagination(
@@ -400,23 +404,36 @@ def _fetch_events_with_pagination(
         limit: Maximum number of events to fetch.
 
     Returns:
-        List of fetched events sorted by minute_update_time (newest first).
-    
+        List of fetched events sorted by alert_time (newest first).
+
     Note:
-        Uses minute_update_time for pagination cursor. This field represents update_time
-        truncated to minutes (update_time // 60000), which the API uses for sorting.
-        The _time field in events uses the precise update_time value.
+        Uses backward time-based pagination (cursor-based pagination using timestamps).
+        The API returns events sorted by alert_time in descending order (newest first).
+
+        Pagination strategy:
+        - Page 1: Fetch events from [start_time, end_time] → Returns newest events first
+        - Page 2: Fetch events from [start_time, oldest_alert_time_from_page_1] → Returns next oldest events
+        - Continue narrowing the end_time window to exclude already-fetched events
+
+        Example: Requesting events from time 100 to 200 with page_size=90:
+        - Page 1: [100, 200] → Events 200, 199, 198...150 (90 events)
+        - Page 2: [100, 150] → Events 149, 148, 147...100 (remaining events)
+
     """
     demisto.debug(f"Fetching {event_type} with pagination (limit={limit}, page_size={MAX_PAGE_SIZE})")
     events: List[Dict[str, Any]] = []
     current_end_time = end_time
+    last_page_ids: List[str] = []  # Track IDs from the last page for deduplication
+    last_page_time = end_time  # Track the oldest timestamp from the last page
 
     while len(events) < limit:
         # Calculate how many more events we need
         remaining = limit - len(events)
         page_size = min(remaining, MAX_PAGE_SIZE)
 
-        demisto.debug(f"Fetching page: start_time={start_time}, end_time={current_end_time}, page_size={page_size}, total_so_far={len(events)}")
+        demisto.debug(
+            f"Fetching page: start_time={start_time}, end_time={current_end_time}, page_size={page_size}, total_so_far={len(events)}"
+        )
 
         batch = client._fetch_alerts(event_type, start_time, current_end_time, page_size)
 
@@ -424,52 +441,48 @@ def _fetch_events_with_pagination(
             demisto.debug("No more events available, stopping pagination")
             break
 
+        # Track original batch size before deduplication to determine if more events exist
+        original_batch_size = len(batch)
+        
+        # Deduplicate the batch against events from the previous page
+        # This handles cases where events have the same alert_time at page boundaries
+        batch = _deduplicate_events(batch, last_page_ids, last_page_time)
+        
         events.extend(batch)
-        demisto.debug(f"Fetched {len(batch)} events in this batch, total now: {len(events)}")
+        demisto.debug(f"Fetched {len(batch)} events in this batch (after deduplication), total now: {len(events)}")
 
-        # If we got fewer events than requested, we've reached the end
-        if len(batch) < page_size:
-            demisto.debug(f"Received {len(batch)} events (less than page_size {page_size}), no more events available")
+        # If the original batch had fewer events than requested, we've reached the end
+        if original_batch_size < page_size:
+            demisto.debug(f"Received {original_batch_size} events (less than page_size {page_size}), no more events available")
             break
 
-        # Update end_time using minute_update_time (the sort field used by the API)
-        # Convert minute_update_time back to milliseconds for the end_date parameter
-        # Subtract 1 minute (60000ms) to avoid fetching events from the same minute again
-        oldest_minute_update_time = batch[-1].get("minute_update_time")
-        if oldest_minute_update_time:
-            # Convert minutes to milliseconds and subtract 1 minute
-            current_end_time = (oldest_minute_update_time * 60000) - 60000
-            demisto.debug(f"Updated end_time to {current_end_time} (oldest minute_update_time - 1 minute) for next page")
+        # Move the end_time cursor backward to the oldest event in this batch
+        # This excludes already-fetched events from the next request
+        # Since events are sorted newest first, batch[-1] is the oldest event in this page
+        oldest_alert_time = batch[-1].get("alert_time")
+        if oldest_alert_time:
+            # Store IDs of events with the oldest alert_time for next iteration's deduplication
+            last_page_ids = []
+            last_page_time = oldest_alert_time
+            for event in reversed(batch):  # Iterate from oldest to newest
+                event_time = event.get("alert_time")
+                if event_time == oldest_alert_time:
+                    event_id = event.get("id")
+                    if event_id:
+                        last_page_ids.append(event_id)
+                else:
+                    # Events are sorted, so we can stop once we pass the oldest_alert_time
+                    break
+
+            current_end_time = oldest_alert_time
+            demisto.debug(
+                f"Updated end_time to {current_end_time} (oldest alert_time), stored {len(last_page_ids)} IDs for deduplication"
+            )
         else:
-            demisto.debug("No minute_update_time in last event, stopping pagination")
+            demisto.debug("No alert_time in last event, stopping pagination")
             break
 
     return events
-
-
-def _fetch_events_for_type(
-    client: Client,
-    event_type: str,
-    last_fetch_time: int,
-    current_time: int,
-    max_events_per_type: int,
-) -> List[Dict[str, Any]]:
-    """
-    Fetch events for a specific event type.
-
-    Args:
-        client: iManage Threat Manager client instance.
-        event_type: Type of events to fetch.
-        last_fetch_time: Last fetch timestamp in milliseconds.
-        current_time: Current timestamp in milliseconds.
-        max_events_per_type: Maximum number of events to fetch.
-
-    Returns:
-        List of fetched alerts.
-    """
-    # Respect the MAX_PAGE_SIZE limit for all event types
-    page_size = min(max_events_per_type, MAX_PAGE_SIZE)
-    return client._fetch_alerts(event_type, last_fetch_time, current_time, page_size)
 
 
 """ COMMAND FUNCTIONS """
@@ -608,7 +621,7 @@ def fetch_events_command(
         # Get source log type for this event type (used for state keys)
         config = EVENT_TYPE_CONFIG.get(event_type, EVENT_TYPE_CONFIG[BEHAVIOR_ANALYTICS])
         source_log_type = config["source_log_type"]
-        
+
         # Get last fetch time and IDs for this event type using source_log_type
         last_fetch_key = f"last_fetch_{source_log_type}"
         last_ids_key = f"last_ids_{source_log_type}"
@@ -626,14 +639,14 @@ def fetch_events_command(
         events: List[Dict[str, Any]] = []
 
         try:
-            # Fetch events for this type
-            events = _fetch_events_for_type(client, event_type, last_fetch_time, current_time, max_events_per_type)
+            # Fetch events for this type with pagination support
+            events = _fetch_events_with_pagination(client, event_type, last_fetch_time, current_time, max_events_per_type)
 
-            demisto.debug(f"Fetched {len(events)} events for {event_type} (before deduplication)")
+            demisto.debug(f"Fetched {len(events)} events for {event_type} (after pagination deduplication)")
 
-            # Deduplicate events based on IDs from last run
+            # Deduplicate events based on IDs from last run (cross-fetch deduplication)
             events = _deduplicate_events(events, last_run_ids, last_fetch_time)
-            demisto.debug(f"After deduplication: {len(events)} events for {event_type}")
+            demisto.debug(f"After cross-fetch deduplication: {len(events)} events for {event_type}")
 
             # Add fields to events before extending
             _add_fields_to_events(events, source_log_type)
@@ -642,32 +655,29 @@ def fetch_events_command(
 
             # Update next run for this event type
             if events:
-                # Since events are sorted newest first by minute_update_time,
-                # the first event has the latest minute_update_time
-                latest_minute_time = events[0].get("minute_update_time", last_fetch_time)
-                next_run[last_fetch_key] = latest_minute_time
+                # Since events are sorted newest first by alert_time,
+                # the first event has the latest alert_time
+                latest_alert_time = events[0].get("alert_time", last_fetch_time)
+                next_run[last_fetch_key] = latest_alert_time
 
-                # Store IDs of events with the latest minute_update_time for deduplication
-                # All events within the same minute will have the same minute_update_time
+                # Store IDs of events with the latest alert_time for deduplication
                 latest_time_event_ids = []
                 for event in events:
-                    event_time = event.get("minute_update_time")
-                    if event_time == latest_minute_time:
+                    event_time = event.get("alert_time")
+                    if event_time == latest_alert_time:
                         event_id = event.get("id")
                         if event_id:
                             latest_time_event_ids.append(event_id)
-                    elif event_time and event_time < latest_minute_time:
+                    elif event_time and event_time < latest_alert_time:
                         # Events are sorted newest first, so we can stop here
                         break
 
                 next_run[last_ids_key] = latest_time_event_ids
-                demisto.debug(f"Stored {len(latest_time_event_ids)} event IDs with minute_update_time {latest_minute_time}")
+                demisto.debug(f"Stored {len(latest_time_event_ids)} event IDs with alert_time {latest_alert_time}")
             else:
-                # No new events, keep the current timestamp and clear IDs
-                # Convert current_time (ms) to minutes for consistency
-                current_minute_time = current_time // 60000
+                # No new events, update timestamp to current time and clear IDs
                 demisto.debug(f"No new events for {event_type}, updating timestamp to current time")
-                next_run[last_fetch_key] = current_minute_time
+                next_run[last_fetch_key] = current_time
                 next_run[last_ids_key] = []
 
         except Exception as e:
@@ -712,7 +722,6 @@ def main() -> None:  # pragma: no cover
         event_types = [BEHAVIOR_ANALYTICS]
 
     max_events_per_type = arg_to_number(params.get("max_events_per_type", MAX_EVENTS_PER_FETCH)) or MAX_EVENTS_PER_FETCH
-    max_events_per_type = min(max_events_per_type, MAX_EVENTS_PER_FETCH)  # Enforce maximum
 
     demisto.debug(f"Command being called is {command}")
     demisto.debug(f"Event types configured: {event_types}, Max events per type: {max_events_per_type}")
@@ -733,7 +742,6 @@ def main() -> None:  # pragma: no cover
             validate_credentials_for_event_types(client, event_types)
 
         if command == "test-module":
-            # This is the call made when pressing the integration Test button.
             result = test_module_command(client, params, event_types)
             return_results(result)
 
