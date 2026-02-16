@@ -1,4 +1,4 @@
-category: Utilities
+category: NonStandardCategory
 provider: Open Source
 sectionorder:
 - Connect
@@ -97,6 +97,10 @@ configuration:
   type: 0
   required: false
   additionalinfo: the token to use for the api
+- display: invalid_display_name
+  name: invalidParam
+  type: 999
+  required: false
 description: This is the Hello World integration for getting started.
 display: HelloWorld
 name: HelloWorld
