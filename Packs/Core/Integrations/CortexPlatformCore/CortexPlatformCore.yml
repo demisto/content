@@ -3351,6 +3351,27 @@ script:
         - contextPath: Core.CaseResolutionStatus.userInput
           description: User input parameters (for pending playbookTask items).
           type: Unknown
+    - name: core-get-ai-model-activity
+      description: Retrieves AI model activity information including usage statistics and inactive status.
+      hidden: false
+      arguments:
+        - name: asset_id
+          description: The unique ID of the AI model asset. Accepts a comma-separated list.
+          required: true
+          isArray: true
+      outputs:
+        - contextPath: Core.AIModelActivity.asset_id
+          description: The unique identifier of the AI model asset.
+          type: String
+        - contextPath: Core.AIModelActivity.last_used
+          description: The timestamp when the model was last used.
+          type: Date
+        - contextPath: Core.AIModelActivity.event_count
+          description: The number of events associated with the model.
+          type: Number
+        - contextPath: Core.AIModelActivity.is_inactive
+          description: Whether the model is currently inactive.
+          type: Boolean
   runonce: false
   script: "-"
   subtype: python3
