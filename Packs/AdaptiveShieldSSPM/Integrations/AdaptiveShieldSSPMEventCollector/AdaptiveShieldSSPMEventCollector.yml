@@ -31,8 +31,8 @@ configuration:
   section: Collect
   required: false
 - display: The maximum number of Security Checks per fetch
-  additionalinfo: 'Maximum number of security check events to fetch per run. The default is 1000.'
-  defaultvalue: '1000'
+  additionalinfo: 'The maximum number of Security Checks per fetch. The default is 5000.'
+  defaultvalue: '5000'
   name: max_fetch
   section: Collect
   type: 0
@@ -67,7 +67,7 @@ script:
     - name: limit
       description: The maximum number of security checks to return.
       defaultValue: 10
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/fastapi:0.123.5.6111791
   runonce: false
   script: '-'
   subtype: python3
