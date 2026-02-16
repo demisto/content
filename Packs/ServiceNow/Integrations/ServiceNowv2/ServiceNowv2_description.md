@@ -20,7 +20,7 @@ To use OAuth 2.0 authorization follow the next steps:
 
 **Notes:**
 1. When running the `!servicenow-oauth-login` command, a refresh token is generated and will be used to produce new access tokens after the current access token has expired.
-2. If the `Username` and `Password` fields are configured, the integration will automatically perform the initial login and renew the refresh token when it expires — no manual commands are needed. Otherwise, you will have to run the `servicenow-oauth-login` command for the initial login and again each time the refresh token expires. We recommend setting the `Refresh Token Lifespan` field in the endpoint created in step 1 to a long period (can be set to several years).
+2. If the `Username` and `Password` fields are configured, the integration will automatically perform the initial login and renew the refresh token when it expires — no manual commands are needed. Otherwise, you will have to run the `servicenow-oauth-login` command for the initial login and again each time the refresh token expires.
 3. The grant type used to get an access token is `Resource owner password credentials`. See the [Snow documentation](https://docs.servicenow.com/bundle/xanadu-platform-security/page/administer/security/concept/c_OAuthApplications.html#d25788e201) for more information.
 
 #### JWT Authentication
