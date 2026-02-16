@@ -7199,7 +7199,8 @@ script:
       - us-gov-east-1
       - us-gov-west-1
     - name: limit
-      description: "Maximum number of functions to return in a single request. Valid range is 1-50. Default: 50."
+      description: "Maximum number of functions to return in a single request. Valid range is 1-50."
+      defaultValue: "50"
       required: false
     - name: next_token
       description: "Token for pagination. Use the value from AWS.Lambda.FunctionsNextToken to retrieve the next page of results."
