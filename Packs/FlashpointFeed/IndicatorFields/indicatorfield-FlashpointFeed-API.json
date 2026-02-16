@@ -1,12 +1,11 @@
 {
-    "id": "indicator_flashpointfeedhtmlmalwaredescription",
+    "id": "indicator_flashpointfeedapi",
     "version": -1,
-    "modified": "2024-07-03T20:12:13.515626871+05:30",
-    "name": "FlashpointFeed HTML Malware Description",
+    "modified": "2025-12-02T17:53:49.91407045+05:30",
+    "name": "FlashpointFeed API",
     "ownerOnly": false,
-    "description": "Malware description for the attribute in HTML format.",
-    "cliName": "flashpointfeedhtmlmalwaredescription",
-    "type": "html",
+    "cliName": "flashpointfeedapi",
+    "type": "url",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -18,20 +17,19 @@
     "content": true,
     "group": 2,
     "hidden": false,
-    "associatedToAll": false,
+    "openEnded": false,
     "associatedTypes": [
-        "Flashpoint Indicator",
+        "Ignite Indicator",
         "IP",
         "Domain",
-        "Email",
         "File",
-        "URL",
-        "Ignite Indicator"
+        "URL"
     ],
+    "associatedToAll": false,
     "unmapped": false,
     "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.1.0"
+    "fromVersion": "6.10.0"
 }
