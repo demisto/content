@@ -1812,7 +1812,7 @@ def flatten_context_values(data: dict[str, Any]) -> list[dict]:
     items without preserving the original top-level keys.
 
     Examples:
-        >>> flatten_dict_of_dicts_and_lists({
+        >>> flatten_context_values({
         ...     "IPEnrichment(val.Value && val.Value == obj.Value)": {"Value": "1"},
         ...     "EndpointData(val.Brand && val.Brand = ... )": [{"Value": "2"}, {"Value": "3"}],
         ... })
