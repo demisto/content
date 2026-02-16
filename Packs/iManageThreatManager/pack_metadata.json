@@ -23,7 +23,6 @@
         "marketplacev2",
         "platform"
     ],
-    # TODO double check
     "supportedModules": [
         "xsiam"
     ]
