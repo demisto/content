@@ -9864,6 +9864,428 @@ script:
         required: true
     outputs: [ ]
 
+  - name: aws-ec2-launch-templates-describe
+    description: Describes one or more launch templates.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS Region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: filters
+        description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
+        required: false
+      - name: launch_template_ids
+        description: A comma-separated list of launch template IDs.
+        required: false
+        isArray: true
+      - name: launch_template_names
+        description: A comma-separated list of launch template names.
+        required: false
+        isArray: true
+      - name: limit
+        description: The maximum number of results to return in a single call.
+        required: false
+      - name: next_token
+        description: The token for the next set of results.
+        required: false
+    outputs:
+      - contextPath: AWS.EC2.LaunchTemplatesNextToken
+        description: Token to use for pagination in subsequent requests.
+        type: String
+      - contextPath: AWS.EC2.LaunchTemplates.LaunchTemplateId
+        description: The ID of the launch template.
+        type: string
+      - contextPath: AWS.EC2.LaunchTemplates.LaunchTemplateName
+        description: The name of the launch template.
+        type: string
+      - contextPath: AWS.EC2.LaunchTemplates.CreateTime
+        description: The time launch template was created.
+        type: date
+      - contextPath: AWS.EC2.LaunchTemplates.CreatedBy
+        description: The principal that created the launch template.
+        type: string
+      - contextPath: AWS.EC2.LaunchTemplates.DefaultVersionNumber
+        description: The default version number of the launch template.
+        type: number
+      - contextPath: AWS.EC2.LaunchTemplates.LatestVersionNumber
+        description: The latest version number of the launch template.
+        type: number
+      - contextPath: AWS.EC2.LaunchTemplates.Tags.Key
+        description: The key of the tag.
+        type: string
+      - contextPath: AWS.EC2.LaunchTemplates.Tags.Value
+        description: The value of the tag.
+        type: string
+
+
+  - name: aws-ec2-launch-template-create
+    description: Creates a launch template. A launch template contains the parameters to launch an instance.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS Region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: launch_template_name
+        description: A name for the launch template.
+        required: true
+      - name: version_description
+        description: A description for the first version of the launch template.
+        required: false
+      - name: kernel_id
+        description: The ID of the kernel.
+        required: false
+      - name: ebs_optimized
+        description: Whether the instance is optimized for Amazon EBS I/O.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: iam_instance_profile_arn
+        description: The Amazon Resource Name (ARN) of the instance profile.
+        required: false
+      - name: iam_instance_profile_name
+        description: The name of the instance profile.
+        required: false
+      - name: image_id
+        description: The ID of the AMI.
+        required: false
+      - name: instance_type
+        description: The instance type.
+        required: false
+      - name: key_name
+        description: The name of the key pair.
+        required: false
+      - name: monitoring
+        description: Set to true to enable detailed monitoring. Set to false to enable basic monitoring.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: disable_api_termination
+        description: If set to true, you can't terminate the instance using the Amazon EC2 console, CLI, or API.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: instance_initiated_shutdown_behavior
+        description: Whether an instance stops or terminates when you initiate shutdown from the instance.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - stop
+          - terminate
+      - name: user_data
+        description: The Base64-encoded user data to make available to the instance.
+        required: false
+      - name: security_group_ids
+        description: A comma-separated list of security group IDs.
+        required: false
+        isArray: true
+      - name: security_groups
+        description: A comma-separated list of security group names.
+        required: false
+        isArray: true
+      - name: device_name
+        description: The device name (for example, /dev/sdh or xvdh).
+        required: false
+      - name: ebs_encrypted
+        description: Indicates whether the EBS volume is encrypted.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: ebs_delete_on_termination
+        description: Indicates whether the EBS volume is deleted on instance termination.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: ebs_iops
+        description: The number of I/O operations per second (IOPS) that the volume supports.
+        required: false
+      - name: ebs_kms_key_id
+        description: The ARN of the AWS Key Management Service (AWS KMS) CMK used for encryption.
+        required: false
+      - name: ebs_snapshot_id
+        description: The ID of the snapshot.
+        required: false
+      - name: ebs_volume_size
+        description: The size of the volume, in GiB.
+        required: false
+      - name: ebs_volume_type
+        description: The volume type.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - standard
+          - io1
+          - io2
+          - gp2
+          - gp3
+          - sc1
+          - st1
+      - name: network_interfaces_associate_public_ip_address
+        description: Associates a public IPv4 address with eth0 for a new network interface.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: network_interfaces_delete_on_termination
+        description: Whether the network interface is deleted when the instance is terminated.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: network_interfaces_description
+        description: A description for the network interface.
+        required: false
+      - name: network_interfaces_device_index
+        description: The device index for the network interface attachment.
+        required: false
+      - name: network_interface_groups
+        description: A comma-separated list of security group IDs.
+        required: false
+        isArray: true
+      - name: subnet_id
+        description: The ID of the subnet for the network interface.
+        required: false
+      - name: private_ip_address
+        description: The primary private IPv4 address of the network interface.
+        required: false
+      - name: availability_zone
+        description: The Availability Zone for the instance.
+        required: false
+      - name: placement_tenancy
+        description: The tenancy of the instance.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - default
+          - dedicated
+          - host
+      - name: ram_disk_id
+        description: The ID of the RAM disk.
+        required: false
+      - name: tags
+        description: "The tags to apply to the resource. For example, for two keys: 
+        ResourceType:key=<key1 name>,value=<key1 value>;key=<key2 name>,value=<key2 value>
+        required: false
+      - name: market_type
+        description: The market type.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - spot
+      - name: spot_instance_type
+        description: The Spot Instance request type.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - one-time
+          - persistent
+      - name: spot_max_price
+        description: The maximum hourly price you're willing to pay for the Spot Instances.
+        required: false
+      - name: spot_instance_interruption_behavior
+        description: The behavior when a Spot Instance is interrupted.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - hibernate
+          - stop
+          - terminate
+    outputs:
+      - contextPath: AWS.EC2.LaunchTemplates.LaunchTemplateId
+        description: The ID of the launch template.
+        type: string
+      - contextPath: AWS.EC2.LaunchTemplates.LaunchTemplateName
+        description: The name of the launch template.
+        type: string
+      - contextPath: AWS.EC2.LaunchTemplates.CreateTime
+        description: The time launch template was created.
+        type: date
+      - contextPath: AWS.EC2.LaunchTemplates.CreatedBy
+        description: The principal that created the launch template.
+        type: string
+      - contextPath: AWS.EC2.LaunchTemplates.DefaultVersionNumber
+        description: The default version number of the launch template.
+        type: number
+      - contextPath: AWS.EC2.LaunchTemplates.LatestVersionNumber
+        description: The latest version number of the launch template.
+        type: number
+      - contextPath: AWS.EC2.LaunchTemplates.Tags.Key
+        description: The key of the tag.
+        type: string
+      - contextPath: AWS.EC2.LaunchTemplates.Tags.Value
+        description: The value of the tag.
+        type: string
+
+  - name: aws-ec2-launch-template-delete
+    description: Deletes a launch template. Deleting a launch template deletes all of its versions.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: launch_template_id
+        description: The ID of the launch template. You must specify either the launch template ID or launch template name, but not both.
+        required: false
+      - name: launch_template_name
+        description: The name of the launch template. You must specify either the launch template ID or launch template name, but not both.
+        required: false
+    outputs:
+      - contextPath: AWS.EC2.DeletedLaunchTemplates.LaunchTemplateId
+        description: The ID of the launch template.
+        type: string
+      - contextPath: AWS.EC2.DeletedLaunchTemplates.LaunchTemplateName
+        description: The name of the launch template.
+        type: string
+      - contextPath: AWS.EC2.DeletedLaunchTemplates.CreateTime
+        description: The time launch template was created.
+        type: date
+      - contextPath: AWS.EC2.DeletedLaunchTemplates.CreatedBy
+        description: The principal that created the launch template.
+        type: string
+      - contextPath: AWS.EC2.DeletedLaunchTemplates.DefaultVersionNumber
+        description: The default version number of the launch template.
+        type: number
+      - contextPath: AWS.EC2.DeletedLaunchTemplates.LatestVersionNumber
+        description: The latest version number of the launch template.
+        type: number
+      - contextPath: AWS.EC2.DeletedLaunchTemplates.Operator
+        description: The entity that manages the launch template.
+        type: Object
+      - contextPath: AWS.EC2.DeletedLaunchTemplates.Tags.Key
+        description: The key of the tag.
+        type: string
+      - contextPath: AWS.EC2.DeletedLaunchTemplates.Tags.Value
+        description: The value of the tag.
+        type: string
+
+
   isfetch: false
   runonce: false
   script: '-'
