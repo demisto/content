@@ -1429,7 +1429,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         return CommandResults(
             readable_output=human_readable,
             outputs=final_context,
-            raw_response=flatten_dict_of_dicts_and_lists(final_context),
+            raw_response=flatten_context_values(final_context),
         )
 
     def create_indicators_entry_results(self):
@@ -1802,7 +1802,7 @@ def remove_empty_elements_with_exceptions(d, exceptions: set[str] | None = None)
         return d
 
 
-def flatten_dict_of_dicts_and_lists(data: dict[str, Any]) -> list[dict]:
+def flatten_context_values(data: dict[str, Any]) -> list[dict]:
     """
     Flattens a dictionary whose values are either:
     - A dictionary (e.g., {"Value": "1"}), or

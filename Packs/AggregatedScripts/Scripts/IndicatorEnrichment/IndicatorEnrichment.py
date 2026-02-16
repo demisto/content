@@ -447,7 +447,7 @@ class ResponseFormatter:
 
         markdown = self._format_markdown(result, request)
         context = self._format_context(result, request)
-        return CommandResults(readable_output=markdown, outputs=context, raw_response=flatten_dict_of_dicts_and_lists(context))
+        return CommandResults(readable_output=markdown, outputs=context, raw_response=flatten_context_values(context))
 
     def _format_markdown(self, result: EnrichmentResult, request: EnrichmentRequest) -> str:
         """Generates the final Markdown string, including notes, results, and error tables."""
