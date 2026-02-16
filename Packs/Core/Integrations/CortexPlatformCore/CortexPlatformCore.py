@@ -50,6 +50,7 @@ APPSEC_SOURCES = [
     "CAS_CI_CD_RISK_SCANNER",
     "CAS_DRIFT_SCANNER",
 ]
+REMEDIATION_TECHNIQUES_SOURCES = ["CIEM_SCANNER", "DATA_POLICY", "AISPM_RULE_ENGINE"]
 WEBAPP_COMMANDS = [
     "core-get-vulnerabilities",
     "core-search-asset-groups",
@@ -997,6 +998,29 @@ def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
     return recommendation
 
 
+def get_remediation_techniques_suggestion(issue: dict, current_issue_id: str) -> list:
+    """
+    Get remediation techniques suggestions based on asset types.
+
+    Args:
+        issue (dict): The issue data.
+        current_issue_id (str): The current issue ID.
+
+    Returns:
+        list: A list of filtered remediation techniques.
+    """
+    asset_types: list = issue.get("asset_types", [])
+    normalized_asset_types = {t.upper().replace(" ", "_") for t in asset_types if t}
+    remediation_techniques_response = issue.get("extended_fields", {}).get("remediationTechniques") or []
+    filtered_techniques = [
+        t
+        for t in remediation_techniques_response
+        if t.get("techniqueAssetType") and t.get("techniqueAssetType").upper() in normalized_asset_types
+    ]
+    demisto.debug(f"Remediation recommendation of {current_issue_id=}: {filtered_techniques}")
+    return filtered_techniques
+
+
 def populate_playbook_and_quick_action_suggestions(
     client: Client, issue_id: str, pb_id_to_data: dict, qa_name_to_data: dict
 ) -> dict:
@@ -1218,6 +1242,7 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
 
     for issue in issue_data:
         current_issue_id = issue.get("internal_id")
+        alert_source = issue.get("alert_source")
 
         # Base recommendation
         recommendation = {
@@ -1238,6 +1263,11 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
         appsec_recommendation = get_appsec_suggestion(client, issue, current_issue_id)
         if appsec_recommendation:
             recommendation.update(appsec_recommendation)
+
+        # --- Remediation Techniques ---
+        elif alert_source in REMEDIATION_TECHNIQUES_SOURCES:
+            filtered_techniques = get_remediation_techniques_suggestion(issue, current_issue_id)
+            recommendation["remediation"] = filtered_techniques or recommendation.get("remediation")
 
         all_recommendations.append(recommendation)
 
@@ -1616,8 +1646,9 @@ def build_get_cases_filter(args: dict) -> FilterBuilder:
     gte_modification_time = args.get("gte_modification_time")
     lte_modification_time = args.get("lte_modification_time")
 
-    status_values = [CaseManagement.STATUS[status] for status in argToList(args.get("status"))]
-    severity_values = [CaseManagement.SEVERITY[severity] for severity in argToList(args.get("severity"))]
+    not_status_values = [CaseManagement.STATUS.get(status) for status in argToList(args.get("not_status"))]
+    status_values = [CaseManagement.STATUS.get(status) for status in argToList(args.get("status"))]
+    severity_values = [CaseManagement.SEVERITY.get(severity) for severity in argToList(args.get("severity"))]
     tag_values = [CaseManagement.TAGS.get(tag, tag) for tag in argToList(args.get("tag"))]
     filter_builder = FilterBuilder()
     filter_builder.add_time_range_field(CaseManagement.FIELDS["creation_time"], gte_creation_time, lte_creation_time)
@@ -1637,6 +1668,7 @@ def build_get_cases_filter(args: dict) -> FilterBuilder:
         since_modification_end_time,
     )
     filter_builder.add_field(CaseManagement.FIELDS["status"], FilterType.EQ, status_values)
+    filter_builder.add_field(CaseManagement.FIELDS["status"], FilterType.NEQ, not_status_values)
     filter_builder.add_field(CaseManagement.FIELDS["severity"], FilterType.EQ, severity_values)
     filter_builder.add_field(
         CaseManagement.FIELDS["case_id_list"],
@@ -1734,7 +1766,7 @@ def get_cases_command(client, args):
     command_results = [
         CommandResults(
             outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CasesMetadata",
-            outputs={"filter_count": filter_count, "returned_count": returned_count},
+            outputs={"filtered_count": filter_count, "returned_count": returned_count},
         )
     ]
 
