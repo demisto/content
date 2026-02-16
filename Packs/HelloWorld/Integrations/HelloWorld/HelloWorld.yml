@@ -50,6 +50,11 @@ configuration:
   type: 9
   hiddenusername: true
   section: Connect
+- display: OAuth2 Authentication
+  name: oauth2_auth
+  type: 17
+  required: true
+  section: Connect
 - defaultvalue: '65'
   display: Score threshold for IP reputation command
   additionalinfo: Set this to determine the HelloWorld score that will determine if an IP is malicious (0-100)
@@ -87,6 +92,11 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+- display: api token
+  name: apiToken
+  type: 0
+  required: false
+  additionalinfo: the token to use for the api
 description: This is the Hello World integration for getting started.
 display: HelloWorld
 name: HelloWorld
