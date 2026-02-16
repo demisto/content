@@ -229,8 +229,15 @@ class ServiceNowClient(BaseClient):
 
     def get_access_token(self, retry_attempted: bool = False):
         """
-        Get an access token that was previously created if it is still valid, else, generate a new access token from
-        the client id, client secret and refresh token.
+        Get an access token that was previously created if it is still valid, else, generate a new access token using
+        one of the following methods (in order of precedence):
+        1. Refresh token - if a refresh token exists in the integration context.
+        2. JWT assertion - if JWT parameters were configured.
+        3. Auto-login - if OAuth is enabled and username/password credentials are available,
+           automatically performs a login to obtain a new refresh token.
+
+        If the refresh token has expired and credentials are available, the method will automatically
+        re-login and retry once.
 
         Args:
             retry_attempted: Internal flag to prevent infinite retry loops. Should not be set by callers.
