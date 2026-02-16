@@ -5,7 +5,9 @@ from iManageThreatManager import (
     get_events_command,
     fetch_events_command,
     validate_credentials_for_event_types,
-    add_fields_to_events,
+    _add_fields_to_events,
+    _deduplicate_events,
+    _fetch_events_with_pagination,
     BEHAVIOR_ANALYTICS,
     ADDRESSABLE_ALERTS,
     DETECT_AND_PROTECT_ALERTS,
@@ -51,7 +53,6 @@ class TestValidateCredentialsForEventTypes:
         Then:
             - Ensure no exception is raised
         """
-        # Should not raise any exception
         validate_credentials_for_event_types(client, [BEHAVIOR_ANALYTICS])
 
     def test_validate_credentials_addressable_alerts_success(self, client):
@@ -64,7 +65,6 @@ class TestValidateCredentialsForEventTypes:
         Then:
             - Ensure no exception is raised
         """
-        # Should not raise any exception
         validate_credentials_for_event_types(client, [ADDRESSABLE_ALERTS])
 
     def test_validate_credentials_missing_token_secret(self):
@@ -117,17 +117,88 @@ class TestValidateCredentialsForEventTypes:
         Then:
             - Ensure no exception is raised
         """
-        # Should not raise any exception
         validate_credentials_for_event_types(
             client,
             [BEHAVIOR_ANALYTICS, ADDRESSABLE_ALERTS, DETECT_AND_PROTECT_ALERTS]
         )
 
 
+class TestDeduplicateEvents:
+    """Tests for _deduplicate_events function"""
+
+    def test_deduplicate_events_no_duplicates(self):
+        """
+        Given:
+            - Events with unique IDs
+            - Empty last_run_ids
+        When:
+            - Calling _deduplicate_events
+        Then:
+            - Ensure all events are returned
+        """
+        events = [
+            {"id": "1", "alert_time": 1000},
+            {"id": "2", "alert_time": 900},
+            {"id": "3", "alert_time": 800},
+        ]
+        result = _deduplicate_events(events, [], 700)
+        assert len(result) == 3
+
+    def test_deduplicate_events_with_duplicates(self):
+        """
+        Given:
+            - Events with some duplicate IDs from last run
+        When:
+            - Calling _deduplicate_events
+        Then:
+            - Ensure duplicates are removed
+        """
+        events = [
+            {"id": "1", "alert_time": 1000},
+            {"id": "2", "alert_time": 900},
+            {"id": "3", "alert_time": 800},
+        ]
+        last_run_ids = ["2"]
+        result = _deduplicate_events(events, last_run_ids, 700)
+        assert len(result) == 2
+        assert result[0]["id"] == "1"
+        assert result[1]["id"] == "3"
+
+    def test_deduplicate_events_newer_than_last_fetch(self):
+        """
+        Given:
+            - Events newer than last_fetch_time
+        When:
+            - Calling _deduplicate_events
+        Then:
+            - Ensure all newer events are returned without checking IDs
+        """
+        events = [
+            {"id": "1", "alert_time": 1000},
+            {"id": "2", "alert_time": 900},
+        ]
+        result = _deduplicate_events(events, ["1", "2"], 800)
+        assert len(result) == 2
+
+    def test_deduplicate_events_without_ids(self):
+        """
+        Given:
+            - Events without ID field
+        When:
+            - Calling _deduplicate_events
+        Then:
+            - Ensure events are kept (cannot deduplicate)
+        """
+        events = [
+            {"alert_time": 1000},
+            {"alert_time": 900},
+        ]
+        result = _deduplicate_events(events, [], 700)
+        assert len(result) == 2
 
 
 class TestAddFieldsToEvents:
-    """Tests for add_fields_to_events function"""
+    """Tests for _add_fields_to_events function"""
 
     def test_add_fields_to_events_with_update_time(self):
         """
@@ -135,7 +206,7 @@ class TestAddFieldsToEvents:
             - Events with update_time
             - Source log type parameter
         When:
-            - Calling add_fields_to_events
+            - Calling _add_fields_to_events
         Then:
             - Ensure _time and _source_log_type fields are added with correct format
         """
@@ -143,7 +214,7 @@ class TestAddFieldsToEvents:
             {"update_time": 1609459200000, "id": "1"},  # 2021-01-01 00:00:00 UTC
             {"update_time": 1609545600000, "id": "2"},  # 2021-01-02 00:00:00 UTC
         ]
-        add_fields_to_events(events, "BehaviorAnalytics")
+        _add_fields_to_events(events, "BehaviorAnalytics")
         assert "_time" in events[0]
         assert "_time" in events[1]
         assert events[0]["_time"] == "2021-01-01T00:00:00Z"
@@ -151,19 +222,48 @@ class TestAddFieldsToEvents:
         assert events[0]["_source_log_type"] == "BehaviorAnalytics"
         assert events[1]["_source_log_type"] == "BehaviorAnalytics"
 
+    def test_add_fields_to_events_entry_status_new(self):
+        """
+        Given:
+            - Events where update_time equals alert_time
+        When:
+            - Calling _add_fields_to_events
+        Then:
+            - Ensure _ENTRY_STATUS is set to 'new'
+        """
+        events = [
+            {"update_time": 1609459200000, "alert_time": 1609459200000, "id": "1"},
+        ]
+        _add_fields_to_events(events, "BehaviorAnalytics")
+        assert events[0]["_ENTRY_STATUS"] == "new"
+
+    def test_add_fields_to_events_entry_status_modified(self):
+        """
+        Given:
+            - Events where update_time is greater than alert_time
+        When:
+            - Calling _add_fields_to_events
+        Then:
+            - Ensure _ENTRY_STATUS is set to 'modified'
+        """
+        events = [
+            {"update_time": 1609545600000, "alert_time": 1609459200000, "id": "1"},
+        ]
+        _add_fields_to_events(events, "BehaviorAnalytics")
+        assert events[0]["_ENTRY_STATUS"] == "modified"
+
     def test_add_fields_to_events_without_update_time(self):
         """
         Given:
             - Events without update_time field
             - Source log type parameter
         When:
-            - Calling add_fields_to_events
+            - Calling _add_fields_to_events
         Then:
             - Ensure _time field is not added but _source_log_type is added
         """
         events = [{"id": "1"}]
-        add_fields_to_events(events, "AddressableAlerts")
-        # Event should not have _time or it should be None
+        _add_fields_to_events(events, "AddressableAlerts")
         assert events[0].get("_time") is None
         assert events[0]["_source_log_type"] == "AddressableAlerts"
 
@@ -173,12 +273,12 @@ class TestAddFieldsToEvents:
             - Empty events list
             - Source log type parameter
         When:
-            - Calling add_fields_to_events
+            - Calling _add_fields_to_events
         Then:
             - Ensure no error is raised
         """
         events = []
-        add_fields_to_events(events, "BehaviorAnalytics")
+        _add_fields_to_events(events, "BehaviorAnalytics")
         assert events == []
 
     def test_add_fields_to_events_none(self):
@@ -187,11 +287,142 @@ class TestAddFieldsToEvents:
             - None as events
             - Source log type parameter
         When:
-            - Calling add_fields_to_events
+            - Calling _add_fields_to_events
         Then:
             - Ensure no error is raised
         """
-        add_fields_to_events(None, "BehaviorAnalytics")
+        _add_fields_to_events(None, "BehaviorAnalytics")
+
+
+class TestFetchEventsWithPagination:
+    """Tests for _fetch_events_with_pagination function"""
+
+    def test_pagination_single_page(self, client, requests_mock):
+        """
+        Given:
+            - Limit of 50 events
+            - API returns 30 events (less than page size)
+        When:
+            - Calling _fetch_events_with_pagination
+        Then:
+            - Ensure pagination stops after first page
+        """
+        mock_response = {
+            "results": [{"id": str(i), "alert_time": 1000 - i} for i in range(30)]
+        }
+        requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
+        requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", json=mock_response)
+
+        events = _fetch_events_with_pagination(client, BEHAVIOR_ANALYTICS, 500, 1000, 50)
+        assert len(events) == 30
+
+    def test_pagination_multiple_pages(self, client, requests_mock):
+        """
+        Given:
+            - Limit of 200 events
+            - API returns 90 events per page (max page size)
+        When:
+            - Calling _fetch_events_with_pagination
+        Then:
+            - Ensure multiple pages are fetched
+        """
+        # First page: 90 events
+        page1 = {"results": [{"id": f"1-{i}", "alert_time": 1000 - i} for i in range(90)]}
+        # Second page: 90 events
+        page2 = {"results": [{"id": f"2-{i}", "alert_time": 910 - i} for i in range(90)]}
+        # Third page: 20 events (less than requested)
+        page3 = {"results": [{"id": f"3-{i}", "alert_time": 820 - i} for i in range(20)]}
+
+        requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
+        
+        # Mock multiple calls with different responses
+        call_count = [0]
+        def custom_matcher(request, context):
+            call_count[0] += 1
+            if call_count[0] == 1:
+                return page1
+            elif call_count[0] == 2:
+                return page2
+            else:
+                return page3
+        
+        requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", json=custom_matcher)
+
+        events = _fetch_events_with_pagination(client, BEHAVIOR_ANALYTICS, 500, 1000, 200)
+        assert len(events) == 200
+
+    def test_pagination_with_deduplication_at_boundary(self, client, requests_mock):
+        """
+        Given:
+            - Events with same alert_time at page boundary
+        When:
+            - Calling _fetch_events_with_pagination
+        Then:
+            - Ensure duplicates at boundary are removed
+        """
+        # First page: last 3 events have alert_time=910
+        page1_events = [{"id": f"1-{i}", "alert_time": 1000 - i} for i in range(87)]
+        page1_events.extend([
+            {"id": "dup-1", "alert_time": 910},
+            {"id": "dup-2", "alert_time": 910},
+            {"id": "dup-3", "alert_time": 910},
+        ])
+        page1 = {"results": page1_events}
+        
+        # Second page: includes the same 3 events plus new ones
+        page2_events = [
+            {"id": "dup-1", "alert_time": 910},
+            {"id": "dup-2", "alert_time": 910},
+            {"id": "dup-3", "alert_time": 910},
+        ]
+        page2_events.extend([{"id": f"2-{i}", "alert_time": 909 - i} for i in range(50)])
+        page2 = {"results": page2_events}
+
+        requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
+        
+        call_count = [0]
+        def custom_matcher(request, context):
+            call_count[0] += 1
+            return page1 if call_count[0] == 1 else page2
+        
+        requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", json=custom_matcher)
+
+        events = _fetch_events_with_pagination(client, BEHAVIOR_ANALYTICS, 500, 1000, 200)
+        
+        # Should have 90 from page1 + 50 new from page2 = 140 (3 duplicates removed)
+        assert len(events) == 140
+        
+        # Verify no duplicate IDs
+        event_ids = [e["id"] for e in events]
+        assert len(event_ids) == len(set(event_ids))
+
+    def test_pagination_stops_when_limit_reached(self, client, requests_mock):
+        """
+        Given:
+            - Limit of 100 events
+            - API has more events available
+        When:
+            - Calling _fetch_events_with_pagination
+        Then:
+            - Ensure pagination stops at limit
+        """
+        # Each page returns 90 events
+        page1 = {"results": [{"id": f"1-{i}", "alert_time": 1000 - i} for i in range(90)]}
+        page2 = {"results": [{"id": f"2-{i}", "alert_time": 910 - i} for i in range(90)]}
+
+        requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
+        
+        call_count = [0]
+        def custom_matcher(request, context):
+            call_count[0] += 1
+            return page1 if call_count[0] == 1 else page2
+        
+        requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", json=custom_matcher)
+
+        events = _fetch_events_with_pagination(client, BEHAVIOR_ANALYTICS, 500, 1000, 100)
+        
+        # Should stop at 100 (90 from page1 + 10 from page2)
+        assert len(events) == 100
 
 
 class TestClient:
@@ -232,7 +463,6 @@ class TestClient:
         assert client._user_access_token == "test_user_access_token"
 
 
-
 class TestTestModuleCommand:
     """Tests for test_module_command function"""
 
@@ -268,7 +498,6 @@ class TestTestModuleCommand:
         result = test_module_command(client, {}, [ADDRESSABLE_ALERTS])
         assert result == "ok"
 
-
     def test_test_module_auth_error(self, client, requests_mock):
         """
         Given:
@@ -298,7 +527,7 @@ class TestGetEventsCommand:
         """
         mock_response = {
             "results": [
-                {"id": "1", "update_time": 1609459200000}
+                {"id": "1", "alert_time": 1609459200000, "update_time": 1609459200000}
             ]
         }
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
@@ -311,53 +540,33 @@ class TestGetEventsCommand:
         assert len(events) == 1
         assert events[0]["id"] == "1"
 
-    def test_get_events_command_addressable_alerts(self, client, requests_mock):
+    def test_get_events_command_with_pagination(self, client, requests_mock):
         """
         Given:
-            - Valid client and Addressable Alerts event type
+            - Limit of 150 events
+            - API returns events in multiple pages
         When:
             - Calling get_events_command
         Then:
-            - Ensure events are returned
+            - Ensure all events are fetched via pagination
         """
-        mock_response = {
-            "results": [
-                {"id": "2", "update_time": 1609459200000}
-            ]
-        }
-        requests_mock.post(f"{BASE_URL}/tm-api/v2/login", json={"access_token": "user_token"})
-        requests_mock.post(f"{BASE_URL}/tm-api/getAddressableAlerts", json=mock_response)
+        page1 = {"results": [{"id": f"1-{i}", "alert_time": 1000 - i} for i in range(90)]}
+        page2 = {"results": [{"id": f"2-{i}", "alert_time": 910 - i} for i in range(60)]}
+
+        requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
+        
+        call_count = [0]
+        def custom_matcher(request, context):
+            call_count[0] += 1
+            return page1 if call_count[0] == 1 else page2
+        
+        requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", json=custom_matcher)
 
         events, results = get_events_command(
             client,
-            {"event_type": ADDRESSABLE_ALERTS, "limit": "10"}
+            {"event_type": BEHAVIOR_ANALYTICS, "limit": "150"}
         )
-        assert len(events) == 1
-        assert events[0]["id"] == "2"
-
-    def test_get_events_command_detect_and_protect(self, client, requests_mock):
-        """
-        Given:
-            - Valid client and Detect and Protect event type
-        When:
-            - Calling get_events_command
-        Then:
-            - Ensure events are returned
-        """
-        mock_response = {
-            "results": [
-                {"id": "3", "update_time": 1609459200000}
-            ]
-        }
-        requests_mock.post(f"{BASE_URL}/tm-api/v2/login", json={"access_token": "user_token"})
-        requests_mock.post(f"{BASE_URL}/tm-api/getDetectAndProtectAlerts", json=mock_response)
-
-        events, results = get_events_command(
-            client,
-            {"event_type": DETECT_AND_PROTECT_ALERTS, "limit": "10"}
-        )
-        assert len(events) == 1
-        assert events[0]["id"] == "3"
+        assert len(events) == 150
 
 
 class TestFetchEventsCommand:
@@ -375,7 +584,7 @@ class TestFetchEventsCommand:
         """
         mock_response = {
             "results": [
-                {"id": "1", "update_time": 1609459200000}
+                {"id": "1", "alert_time": 1609459200000, "update_time": 1609459200000}
             ]
         }
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
@@ -393,6 +602,43 @@ class TestFetchEventsCommand:
         assert "last_fetch_BehaviorAnalytics" in next_run
         assert next_run["last_fetch_BehaviorAnalytics"] == 1609459200000
 
+    def test_fetch_events_with_pagination(self, client, requests_mock):
+        """
+        Given:
+            - max_events_per_type of 200
+            - API returns events in multiple pages
+        When:
+            - Calling fetch_events_command
+        Then:
+            - Ensure pagination is used to fetch all events
+        """
+        page1 = {"results": [{"id": f"1-{i}", "alert_time": 1000 - i, "update_time": 1000 - i} for i in range(90)]}
+        page2 = {"results": [{"id": f"2-{i}", "alert_time": 910 - i, "update_time": 910 - i} for i in range(90)]}
+        page3 = {"results": [{"id": f"3-{i}", "alert_time": 820 - i, "update_time": 820 - i} for i in range(20)]}
+
+        requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
+        
+        call_count = [0]
+        def custom_matcher(request, context):
+            call_count[0] += 1
+            if call_count[0] == 1:
+                return page1
+            elif call_count[0] == 2:
+                return page2
+            else:
+                return page3
+        
+        requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", json=custom_matcher)
+
+        next_run, events = fetch_events_command(
+            client=client,
+            last_run={},
+            event_types=[BEHAVIOR_ANALYTICS],
+            max_events_per_type=200
+        )
+
+        assert len(events) == 200
+
     def test_fetch_events_multiple_types(self, client, requests_mock):
         """
         Given:
@@ -402,8 +648,8 @@ class TestFetchEventsCommand:
         Then:
             - Ensure events from all types are fetched
         """
-        mock_behavior = {"results": [{"id": "1", "update_time": 1609459200000}]}
-        mock_addressable = {"results": [{"id": "2", "update_time": 1609545600000}]}
+        mock_behavior = {"results": [{"id": "1", "alert_time": 1609459200000, "update_time": 1609459200000}]}
+        mock_addressable = {"results": [{"id": "2", "alert_time": 1609545600000, "update_time": 1609545600000}]}
 
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login", json={"access_token": "user_token"})
