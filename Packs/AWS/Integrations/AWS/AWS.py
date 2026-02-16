@@ -6,9 +6,11 @@ from datetime import date, datetime, timedelta, UTC
 from collections.abc import Callable
 from botocore.client import BaseClient as BotoClient
 from botocore.config import Config
-from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError, WaiterError
 from boto3 import Session
+from xml.sax.saxutils import escape
 import re
+import copy
 
 DEFAULT_MAX_RETRIES: int = 5
 DEFAULT_SESSION_NAME = "cortex-session"
@@ -176,7 +178,7 @@ def parse_filter_field(filter_string: str | None):
     You can specify up to 50 filters and up to 200 values per filter in a single request.
     Filter strings can be up to 255 characters in length.
     Args:
-        filter_list: The name and values list
+        filter_string: The name and values list
     Returns:
         A list of dicts with the form {"Name": <key>, "Values": [<value>]}
     """
@@ -240,6 +242,81 @@ def convert_datetimes_to_iso_safe(data):
     """
     json_string = json.dumps(data, cls=ISOEncoder)
     return json.loads(json_string)
+
+
+def read_zip_to_bytes(filename: str) -> bytes:
+    """
+    Reads the entire zip file into a bytes object in chunks.
+
+    Args:
+        filename: Path to the zip file.
+
+    Returns:
+        A bytes object containing the complete zip file content.
+
+    Raises:
+        DemistoException: If an error occurs while reading the file.
+    """
+    try:
+        with open(filename, "rb") as zip_file:
+            data = b""
+            for chunk in iter(lambda: zip_file.read(1024), b""):
+                data += chunk
+        return data
+    except Exception as e:
+        demisto.error(f"Failed to read zip file '{filename}': {str(e)}")
+        raise DemistoException(f"Failed to read zip file '{filename}': {str(e)}")
+
+
+def prepare_create_function_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Prepare arguments to be sent to the Lambda CreateFunction API.
+
+    Args:
+        args: Command arguments dictionary
+
+    Returns:
+        Dictionary of kwargs ready for create_function API call
+    """
+    create_function_api_keys = ["FunctionName", "Runtime", "Role", "Handler", "Description", "PackageType"]
+
+    if code_path := args.get("code"):
+        file_path = demisto.getFilePath(code_path).get("path")
+        method_code = read_zip_to_bytes(file_path)
+        code = {"ZipFile": method_code}
+    elif s3_bucket := args.get("s3_bucket"):
+        code = {"S3Bucket": s3_bucket}
+    else:
+        raise DemistoException("code or s3_bucket must be provided.")
+
+    # Parse environment variables using parse_tag_field and convert to dictionary
+    env_vars = None
+    if args.get("environment"):
+        parsed_env = parse_tag_field(args.get("environment"))
+        env_vars = {item["Key"]: item["Value"] for item in parsed_env}
+
+    kwargs: Dict[str, Any] = {
+        "Code": code,
+        "TracingConfig": {"Mode": args.get("tracing_config") or "Active"},
+        "MemorySize": arg_to_number(args.get("memory_size")) or 128,
+        "Timeout": arg_to_number(args.get("function_timeout")) or 3,
+        "Publish": arg_to_bool_or_none(args.get("publish")),
+        "Environment": {"Variables": env_vars} if env_vars else None,
+        "Tags": parse_tag_field(args.get("tags")) if args.get("tags") else None,
+        "Layers": argToList(args.get("layers")),
+        "VpcConfig": {
+            "SubnetIds": argToList(args.get("subnet_ids")),
+            "SecurityGroupIds": argToList(args.get("security_group_ids")),
+            "Ipv6AllowedForDualStack": arg_to_bool_or_none(args.get("ipv6_allowed_for_dual_stack")),
+        },
+    }
+
+    for key in create_function_api_keys:
+        arg_name = camel_case_to_underscore(key)
+        if arg_name in args:
+            kwargs.update({key: args.get(arg_name)})
+
+    return remove_empty_elements(kwargs)
 
 
 class AWSErrorHandler:
@@ -456,6 +533,107 @@ class S3:
             return CommandResults(readable_output=f"Successfully applied public access block to the {args.get('bucket')} bucket")
 
         raise DemistoException(f"Couldn't apply public access block to the {args.get('bucket')} bucket. {json.dumps(response)}")
+
+    @staticmethod
+    def delete_bucket_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Delete an Amazon S3 bucket.
+
+        Args:
+            client (BotoClient): The boto3 client for S3 service
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the bucket
+
+        Returns:
+            CommandResults: Results of the command execution.
+        """
+        bucket = args.get("bucket")
+
+        print_debug_logs(client, f"Deleting bucket: {bucket}")
+
+        response = client.delete_bucket(Bucket=bucket)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.NO_CONTENT:
+            return CommandResults(readable_output=f"Successfully deleted bucket '{bucket}'")
+        else:
+            return AWSErrorHandler.handle_response_error(response)
+
+    @staticmethod
+    def list_bucket_objects_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        List objects in an Amazon S3 bucket (up to 1000 objects).
+
+        Args:
+            client (BotoClient): The boto3 client for S3 service
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the bucket
+                - prefix (str): Limits the response to keys that begin with the specified prefix
+                - delimiter (str): A delimiter is a character you use to group keys
+                - limit (str): Sets the maximum number of keys returned in the response (default is 1000).
+                - next_token (str): The marker for the next set of results (used for pagination).
+
+        Returns:
+            CommandResults: Results of the command execution including the list of objects and their metadata
+        """
+        bucket = args.get("bucket")
+        prefix = args.get("prefix")
+        delimiter = args.get("delimiter")
+
+        print_debug_logs(client, f"Listing objects from bucket: {bucket}")
+
+        pagination_kwargs = build_pagination_kwargs(
+            args, minimum_limit=1, max_limit=1000, next_token_name="Marker", limit_name="MaxKeys"
+        )
+
+        print_debug_logs(client, f"Created those pagination parameters {pagination_kwargs=}")
+
+        kwargs = {
+            "Bucket": bucket,
+            "Prefix": prefix,
+            "Delimiter": delimiter,
+        }
+        kwargs.update(pagination_kwargs)
+        remove_nulls_from_dictionary(kwargs)
+
+        try:
+            response = client.list_objects(**kwargs)
+
+            if response["ResponseMetadata"]["HTTPStatusCode"] != HTTPStatus.OK:
+                return AWSErrorHandler.handle_response_error(response)
+
+            serialized_response = serialize_response_with_datetime_encoding(response)
+            contents = serialized_response.get("Contents", [])
+
+            if not contents:
+                return CommandResults(readable_output=f"No objects found in bucket {bucket}.")
+
+            table_data = []
+            for obj in contents:
+                table_data.append(
+                    {
+                        "Key": obj.get("Key"),
+                        "Size (Bytes)": obj.get("Size"),
+                        "LastModified": obj.get("LastModified"),
+                        "StorageClass": obj.get("StorageClass"),
+                    }
+                )
+
+            human_readable = tableToMarkdown(
+                f"AWS S3 Bucket Object for Bucket: {bucket}",
+                table_data,
+                headers=["Key", "Size (Bytes)", "LastModified", "StorageClass"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            )
+            return CommandResults(
+                outputs_prefix="AWS.S3.Buckets",
+                outputs_key_field="BucketName",
+                outputs={"BucketName": bucket, "ObjectsNextToken": serialized_response.get("NextMarker"), "Objects": contents},
+                readable_output=human_readable,
+            )
+
+        except Exception as e:
+            raise DemistoException(f"Failed to list objects for bucket {bucket}. Error: {str(e)}")
 
     @staticmethod
     def put_bucket_versioning_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -2463,6 +2641,234 @@ class EC2:
             return AWSErrorHandler.handle_response_error(response)
 
     @staticmethod
+    def describe_addresses_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes one or more Elastic IP addresses.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - filters (str, optional): One or more filters separated by ';'
+                - public_ips (str, optional): Comma-separated list of public IP addresses
+                - allocation_ids (str, optional): Comma-separated list of allocation IDs
+
+        Returns:
+            CommandResults: Results containing Elastic IP address information
+        """
+        kwargs = {}
+
+        # Add filters if provided
+        if filters_arg := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters_arg)
+
+        # Add public IPs if provided
+        if public_ips := args.get("public_ips"):
+            kwargs["PublicIps"] = parse_resource_ids(public_ips)
+
+        # Add allocation IDs if provided
+        if allocation_ids := args.get("allocation_ids"):
+            kwargs["AllocationIds"] = parse_resource_ids(allocation_ids)
+
+        print_debug_logs(client, f"Describing addresses with parameters: {kwargs}")
+        remove_nulls_from_dictionary(kwargs)
+
+        response = client.describe_addresses(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        addresses = response.get("Addresses", [])
+        if not addresses:
+            return CommandResults(readable_output="No Elastic IP addresses were found.")
+
+        # Serialize response to handle datetime objects
+        response = serialize_response_with_datetime_encoding(response)
+        addresses = response.get("Addresses", [])
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.ElasticIPs",
+            outputs_key_field="AllocationId",
+            outputs=addresses,
+            readable_output=tableToMarkdown(
+                "AWS EC2 Elastic IP Addresses",
+                addresses,
+                headers=[
+                    "PublicIp",
+                    "AllocationId",
+                    "Domain",
+                    "InstanceId",
+                    "AssociationId",
+                    "NetworkInterfaceId",
+                    "PrivateIpAddress",
+                ],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def allocate_address_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Allocates an Elastic IP address to your AWS account.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - address (str, optional): The Elastic IP address to recover
+                - public_ipv4_pool (str, optional): The ID of an address pool
+                - network_border_group (str, optional): A unique set of Availability Zones, Local Zones, or Wavelength Zones
+                - customer_owned_ipv4_pool (str, optional): The ID of a customer-owned address pool
+                - tag_specifications (str, optional): Tags to assign to the Elastic IP address
+
+        Returns:
+            CommandResults: Results containing the allocated Elastic IP information
+        """
+        kwargs = {
+            "Address": args.get("address"),
+            "PublicIpv4Pool": args.get("public_ipv4_pool"),
+            "NetworkBorderGroup": args.get("network_border_group"),
+            "CustomerOwnedIpv4Pool": args.get("customer_owned_ipv4_pool"),
+        }
+
+        if tag_specifications := args.get("tag_specifications"):
+            kwargs["TagSpecifications"] = [{"ResourceType": "elastic-ip", "Tags": parse_tag_field(tag_specifications)}]
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Allocating address with parameters: {kwargs}")
+        response = client.allocate_address(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        # Serialize response to handle datetime objects
+        response = serialize_response_with_datetime_encoding(response)
+        outputs = {k: v for k, v in response.items() if k != "ResponseMetadata"}
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.ElasticIPs",
+            outputs_key_field="AllocationId",
+            outputs=outputs,
+            readable_output=tableToMarkdown(
+                "AWS EC2 Allocated Elastic IP",
+                outputs,
+                headers=["PublicIp", "AllocationId", "Domain", "PublicIpv4Pool", "NetworkBorderGroup"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def associate_address_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Associates an Elastic IP address with an instance or a network interface.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - allocation_id (str): The allocation ID (required for VPC)
+                - instance_id (str, optional): The ID of the instance
+                - network_interface_id (str, optional): The ID of the network interface
+                - private_ip_address (str, optional): The primary or secondary private IP address
+                - allow_reassociation (str, optional): Whether to allow reassociation
+        Returns:
+            CommandResults: Results containing the association information
+        """
+        kwargs = {
+            "AllocationId": args.get("allocation_id"),
+            "InstanceId": args.get("instance_id"),
+            "NetworkInterfaceId": args.get("network_interface_id"),
+            "PrivateIpAddress": args.get("private_ip_address"),
+            "AllowReassociation": arg_to_bool_or_none(args.get("allow_reassociation")),
+        }
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Associating address with parameters: {kwargs}")
+
+        response = client.associate_address(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        # Build output data
+        output_data = {
+            "AllocationId": args.get("allocation_id"),
+            "AssociationId": response.get("AssociationId"),
+        }
+        output_data = remove_empty_elements(output_data)
+        return CommandResults(
+            outputs_prefix="AWS.EC2.ElasticIPs",
+            outputs_key_field="AllocationId",
+            outputs=output_data,
+            readable_output=tableToMarkdown(
+                "AWS EC2 Elastic IP Association",
+                output_data,
+                headers=["AllocationId", "AssociationId"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def disassociate_address_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Disassociates an Elastic IP address from the instance or network interface it's associated with.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - association_id (str): The association ID (required for VPC)
+        Returns:
+            CommandResults: Results of the disassociation operation
+        """
+        kwargs = {"AssociationId": args.get("association_id")}
+
+        print_debug_logs(client, f"Disassociating address with parameters: {kwargs}")
+
+        response = client.disassociate_address(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            readable_output=f"Successfully disassociated Elastic IP address (Association ID: {args.get('association_id')})",
+            raw_response=response,
+        )
+
+    @staticmethod
+    def release_address_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Releases the specified Elastic IP address.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - allocation_id (str): The allocation ID (required for VPC)
+                - network_border_group (str, optional): The set of Availability Zones, Local Zones, or Wavelength Zones
+
+        Returns:
+            CommandResults: Results of the release operation
+        """
+        kwargs = {
+            "AllocationId": args.get("allocation_id"),
+            "NetworkBorderGroup": args.get("network_border_group"),
+        }
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Releasing address with parameters: {kwargs}")
+
+        response = client.release_address(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            readable_output=f"Successfully released Elastic IP address (Allocation ID: {args.get('allocation_id')})",
+            raw_response=response,
+        )
+
+    @staticmethod
     def authorize_security_group_egress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Adds the specified outbound (egress) rules to a security group.
@@ -2503,6 +2909,1258 @@ class EC2:
             return CommandResults(readable_output=readable_output, raw_response=response)
         else:
             return AWSErrorHandler.handle_response_error(response)
+
+    @staticmethod
+    def describe_images_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes one or more Amazon Machine Images (AMIs) available to you.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - filters (str, optional): One or more filters separated by ';'
+                - image_ids (str, optional): Comma-separated list of image IDs
+                - owners (str, optional): Comma-separated list of image owners
+                - executable_users (str, optional): Comma-separated list of users with explicit launch permissions
+                - include_deprecated (str, optional): Whether to include deprecated AMIs
+                - include_disabled (str, optional): Whether to include disabled AMIs
+                - limit (int, optional): Maximum number of AMIs to return
+                - next_token (str, optional): The token for the next set of AMIs to return.
+
+        Returns:
+            CommandResults: Results containing AMI information
+        """
+
+        kwargs = {}
+
+        # Add filters if provided
+        if filters_arg := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters_arg)
+
+        # Add image IDs if provided
+        if image_ids := args.get("image_ids"):
+            kwargs["ImageIds"] = parse_resource_ids(image_ids)
+
+        # Add owners if provided
+        if owners := args.get("owners"):
+            kwargs["Owners"] = parse_resource_ids(owners)
+
+        # Add executable users if provided
+        if executable_users := args.get("executable_users"):
+            kwargs["ExecutableUsers"] = parse_resource_ids(executable_users)
+
+        # Add include_deprecated if provided
+        if include_deprecated := args.get("include_deprecated"):
+            kwargs["IncludeDeprecated"] = argToBoolean(include_deprecated)
+
+        # Add include_disabled if provided
+        if include_disabled := args.get("include_disabled"):
+            kwargs["IncludeDisabled"] = argToBoolean(include_disabled)
+
+        pagination_kwargs = build_pagination_kwargs(args, minimum_limit=5)
+        kwargs.update(pagination_kwargs)
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Describing images with parameters: {kwargs}")
+
+        response = client.describe_images(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        images = response.get("Images", [])
+        if not images:
+            return CommandResults(readable_output="No images were found.")
+
+        # Serialize response to handle datetime objects
+        response = serialize_response_with_datetime_encoding(response)
+        images = response.get("Images", [])
+
+        outputs = {
+            "AWS.EC2.Images(val.ImageId && val.ImageId == obj.ImageId)": images,
+            "AWS.EC2(true)": {
+                "ImagesNextPageToken": response.get("NextToken"),
+            },
+        }
+
+        next_token = response.get("NextToken")
+        next_token_text = f"ImagesNextPageToken: {escape(next_token)}" if next_token else ""
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=tableToMarkdown(
+                "AWS EC2 Images",
+                images,
+                headers=["ImageId", "Name", "CreationDate", "State", "Public", "Description"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+                metadata=next_token_text,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def create_image_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - name (str): A name for the new image (required)
+                - instance_id (str): The ID of the instance (required)
+                - description (str, optional): A description for the new image
+                - no_reboot (boolean, optional): By default, Amazon EC2 attempts to shut down and reboot the instance
+                  before creating the image. If set to true, Amazon EC2 won't shut down the instance
+                - block_device_mappings (str, optional): JSON string of block device mappings
+                - tag_specifications (str, optional): Tags to apply to the AMI and snapshots
+
+        Returns:
+            CommandResults: Results containing the created AMI information
+        """
+        kwargs = {
+            "Name": args.get("name"),
+            "InstanceId": args.get("instance_id"),
+            "Description": args.get("description"),
+            "NoReboot": arg_to_bool_or_none(args.get("no_reboot")),
+        }
+
+        # Handle block device mappings if provided
+        if block_device_mappings := args.get("block_device_mappings"):
+            try:
+                kwargs["BlockDeviceMappings"] = (
+                    json.loads(block_device_mappings) if isinstance(block_device_mappings, str) else block_device_mappings
+                )
+            except json.JSONDecodeError as e:
+                raise DemistoException(f"Invalid block_device_mappings JSON: {e}")
+
+        # Handle tag specifications if provided
+        if tag_specifications := args.get("tag_specifications"):
+            kwargs["TagSpecifications"] = [{"ResourceType": "image", "Tags": parse_tag_field(tag_specifications)}]
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Creating image with parameters: {kwargs}")
+
+        response = client.create_image(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        # Serialize response to handle datetime objects
+        response = serialize_response_with_datetime_encoding(response)
+        # Build output data
+        output_data = {
+            "ImageId": response.get("ImageId"),
+            "Name": args.get("name"),
+            "InstanceId": args.get("instance_id"),
+            "Region": args.get("region"),
+        }
+        output_data = remove_empty_elements(output_data)
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Images",
+            outputs_key_field="ImageId",
+            outputs=output_data,
+            readable_output=tableToMarkdown(
+                "AWS EC2 Image Created",
+                output_data,
+                headers=["ImageId", "Name", "InstanceId", "Region"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def deregister_image_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deregisters the specified Amazon Machine Image (AMI).
+
+        After you deregister an AMI, it can't be used to launch new instances. However, it doesn't affect
+        any instances that you've already launched from the AMI.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - image_id (str): The ID of the AMI to deregister (required)
+
+        Returns:
+            CommandResults: Results of the deregistration operation
+        """
+        image_id = args.get("image_id")
+        print_debug_logs(client, f"Deregistering image: {image_id}")
+        response = client.deregister_image(ImageId=image_id)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            readable_output=f"Successfully deregistered AMI: {image_id}",
+            raw_response=response,
+        )
+
+    @staticmethod
+    def copy_image_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Copy an Amazon Machine Image (AMI) from a source region to the current region.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - name (str): Name for the new AMI in the destination region (required)
+                - source_image_id (str): ID of the AMI to copy (required)
+                - source_region (str): Region that contains the AMI to copy (required)
+                - description (str, optional): Description for the new AMI
+                - encrypted (boolean, optional): Whether destination snapshots should be encrypted
+                - kms_key_id (str, optional): KMS key ID for encryption
+                - client_token (str, optional): Idempotency token
+
+        Returns:
+            CommandResults: Results containing the new ImageId and Region
+        """
+        # Validate required parameters
+        name = args.get("name", "")
+        source_image_id = args.get("source_image_id", "")
+        source_region = args.get("source_region", "")
+
+        print_debug_logs(client, f"Copying image {source_image_id} from region {source_region}")
+
+        # Build API parameters
+        kwargs: Dict[str, Any] = {
+            "Name": name,
+            "SourceImageId": source_image_id,
+            "SourceRegion": source_region,
+            "Description": args.get("description"),
+            "Encrypted": arg_to_bool_or_none(args.get("encrypted")),
+            "KmsKeyId": args.get("kms_key_id"),
+            "ClientToken": args.get("client_token"),
+        }
+
+        # Remove None values
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Copying image with parameters: {kwargs}")
+        response = client.copy_image(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        region = args.get("region", "")
+
+        # Prepare outputs
+        outputs = {
+            "ImageId": response["ImageId"],
+            "Name": name,
+            "SourceImageId": source_image_id,
+            "SourceRegion": source_region,
+            "Region": region,
+        }
+
+        # Prepare human-readable output
+        readable_output = tableToMarkdown(
+            "AWS EC2 Image Copy",
+            outputs,
+            headers=["ImageId", "Name", "SourceImageId", "SourceRegion", "Region"],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Images",
+            outputs_key_field="ImageId",
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def image_available_waiter_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Waits until an Amazon Machine Image (AMI) becomes available.
+
+        This command uses AWS EC2's built-in waiter functionality to poll the image state
+        until it reaches the 'available' state. The waiter will check the image status at
+        regular intervals (configurable via waiter_delay) up to a maximum number of attempts
+        (configurable via waiter_max_attempts).
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - filters (str, optional): One or more filters separated by ';'
+                - image_ids (str, optional): Comma-separated list of image IDs to wait for
+                - owners (str, optional): Comma-separated list of image owners
+                - executable_users (str, optional): Comma-separated list of users with explicit launch permissions
+                - waiter_delay (str, optional): Time in seconds to wait between polling attempts (default: 15)
+                - waiter_max_attempts (str, optional): Maximum number of polling attempts (default: 40)
+
+        Returns:
+            CommandResults: Results with success message when image becomes available
+
+        Raises:
+            WaiterError: If the waiter times out or encounters an error
+        """
+        kwargs: Dict[str, Any] = {}
+
+        # Add optional filters
+        if filters := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters)
+
+        # Add optional image IDs
+        if image_ids := args.get("image_ids"):
+            kwargs["ImageIds"] = parse_resource_ids(image_ids)
+
+        # Add optional executable users
+        if executable_users := args.get("executable_users"):
+            kwargs["ExecutableUsers"] = parse_resource_ids(executable_users)
+
+        # Add optional owners
+        if owners := args.get("owners"):
+            kwargs["Owners"] = parse_resource_ids(owners)
+
+        # Configure waiter settings
+        waiter_config: Dict[str, int] = {}
+        if waiter_delay := arg_to_number(args.get("waiter_delay")):
+            waiter_config["Delay"] = waiter_delay
+        if waiter_max_attempts := arg_to_number(args.get("waiter_max_attempts")):
+            waiter_config["MaxAttempts"] = waiter_max_attempts
+
+        if waiter_config:
+            kwargs["WaiterConfig"] = waiter_config
+
+        print_debug_logs(client, f"Waiting for image to become available with parameters: {kwargs}")
+        remove_nulls_from_dictionary(kwargs)
+
+        try:
+            waiter = client.get_waiter("image_available")
+            waiter.wait(**kwargs)
+
+            return CommandResults(readable_output="Image is now available.")
+        except Exception as e:
+            raise DemistoException(f"Waiter error: {str(e)}")
+
+    @staticmethod
+    def monitor_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Enables detailed monitoring for one or more Amazon EC2 instances.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing:
+                - instance_ids (str): Comma-separated list of instance IDs to monitor
+
+        Returns:
+            CommandResults: Results of the operation with monitoring status information
+        """
+        instance_ids = parse_resource_ids(args.get("instance_ids"))
+        print_debug_logs(client, f"Monitoring instance(s): {instance_ids}")
+        response = client.monitor_instances(InstanceIds=instance_ids)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        instance_monitorings = response.get("InstanceMonitorings", [])
+
+        if not instance_monitorings:
+            return CommandResults(readable_output="No instances were monitored.")
+
+        # Format output data
+        readable_data = []
+        for monitoring in instance_monitorings:
+            readable_data.append(
+                {"InstanceId": monitoring.get("InstanceId"), "MonitoringState": monitoring.get("Monitoring", {}).get("State")}
+            )
+
+        readable_output = tableToMarkdown(
+            "Successfully enabled monitoring for instances",
+            readable_data,
+            headers=["InstanceId", "MonitoringState"],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Instances",
+            outputs_key_field="InstanceId",
+            outputs=instance_monitorings,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def unmonitor_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Disables detailed monitoring for one or more Amazon EC2 instances.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing:
+                - instance_ids (str): Comma-separated list of instance IDs to unmonitor
+
+        Returns:
+            CommandResults: Results of the operation with monitoring status information
+        """
+        instance_ids = parse_resource_ids(args.get("instance_ids"))
+        print_debug_logs(client, f"Unmonitoring instance(s): {instance_ids}")
+        response = client.unmonitor_instances(InstanceIds=instance_ids)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        instance_monitorings = response.get("InstanceMonitorings", [])
+
+        if not instance_monitorings:
+            return CommandResults(readable_output="No instances were unmonitored.")
+
+        # Format output data
+        readable_data = []
+        for monitoring in instance_monitorings:
+            readable_data.append(
+                {"InstanceId": monitoring.get("InstanceId"), "MonitoringState": monitoring.get("Monitoring", {}).get("State")}
+            )
+
+        readable_output = tableToMarkdown(
+            "Successfully disabled monitoring for instances",
+            readable_data,
+            headers=["InstanceId", "MonitoringState"],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Instances",
+            outputs_key_field="InstanceId",
+            outputs=instance_monitorings,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def reboot_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Requests a reboot of one or more Amazon EC2 instances.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing:
+                - instance_ids (str): Comma-separated list of instance IDs to reboot
+
+        Returns:
+            CommandResults: Results of the operation with reboot confirmation
+        """
+        instance_ids = parse_resource_ids(args.get("instance_ids"))
+        print_debug_logs(client, f"Rebooting instance(s): {instance_ids}")
+        response = client.reboot_instances(InstanceIds=instance_ids)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            readable_output=f"Successfully initiated reboot for instances: {', '.join(instance_ids)}", raw_response=response
+        )
+
+    @staticmethod
+    def instance_running_waiter_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Waits until EC2 instances are in the 'running' state.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing:
+                - instance_ids (str, optional): Comma-separated list of instance IDs
+                - filters (str, optional): Filters for instances
+                - waiter_delay (int, optional): Delay between attempts in seconds (default: 15)
+                - waiter_max_attempts (int, optional): Maximum number of attempts (default: 40)
+
+        Returns:
+            CommandResults: Results indicating instances are running
+        """
+        kwargs = {}
+
+        if filters := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters)
+
+        if instance_ids := args.get("instance_ids"):
+            kwargs["InstanceIds"] = parse_resource_ids(instance_ids)
+
+        waiter_config = {
+            "Delay": arg_to_number(args.get("waiter_delay", "15")),
+            "MaxAttempts": arg_to_number(args.get("waiter_max_attempts", "40")),
+        }
+        kwargs["WaiterConfig"] = waiter_config
+
+        try:
+            waiter = client.get_waiter("instance_running")
+            waiter.wait(**kwargs)
+            return CommandResults(readable_output="Instance(s) are now running.")
+        except Exception as e:
+            raise DemistoException(f"Waiter error: {str(e)}")
+
+    @staticmethod
+    def instance_status_ok_waiter_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Waits until EC2 instance status checks pass.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing:
+                - instance_ids (str, optional): Comma-separated list of instance IDs
+                - filters (str, optional): Filters for instances
+                - include_all_instances (bool, optional): Specifies whether to include the health status for all
+                 instances or only for those currently running.
+                - waiter_delay (int, optional): Delay between attempts in seconds (default: 15)
+                - waiter_max_attempts (int, optional): Maximum number of attempts (default: 40)
+
+        Returns:
+            CommandResults: Results indicating instance status is OK
+        """
+        kwargs = {"IncludeAllInstances": arg_to_bool_or_none(args.get("include_all_instances"))}
+        # IncludeAllInstances
+        if filters := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters)
+
+        if instance_ids := args.get("instance_ids"):
+            kwargs["InstanceIds"] = parse_resource_ids(instance_ids)
+
+        waiter_config = {
+            "Delay": arg_to_number(args.get("waiter_delay", "15")),
+            "MaxAttempts": arg_to_number(args.get("waiter_max_attempts", "40")),
+        }
+        kwargs["WaiterConfig"] = waiter_config
+        remove_nulls_from_dictionary(kwargs)
+
+        try:
+            waiter = client.get_waiter("instance_status_ok")
+            waiter.wait(**kwargs)
+            return CommandResults(readable_output="Instance status is now OK.")
+        except Exception as e:
+            raise DemistoException(f"Waiter error: {str(e)}")
+
+    @staticmethod
+    def instance_stopped_waiter_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Waits until EC2 instances are in the 'stopped' state.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing:
+                - instance_ids (str, optional): Comma-separated list of instance IDs
+                - filters (str, optional): Filters for instances
+                - waiter_delay (int, optional): Delay between attempts in seconds (default: 15)
+                - waiter_max_attempts (int, optional): Maximum number of attempts (default: 40)
+
+        Returns:
+            CommandResults: Results indicating instances are stopped
+        """
+        kwargs = {}
+
+        if filters := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters)
+
+        if instance_ids := args.get("instance_ids"):
+            kwargs["InstanceIds"] = parse_resource_ids(instance_ids)
+
+        waiter_config = {
+            "Delay": arg_to_number(args.get("waiter_delay", "15")),
+            "MaxAttempts": arg_to_number(args.get("waiter_max_attempts", "40")),
+        }
+        kwargs["WaiterConfig"] = waiter_config
+
+        try:
+            waiter = client.get_waiter("instance_stopped")
+            waiter.wait(**kwargs)
+            return CommandResults(readable_output="Instance(s) are now stopped.")
+        except Exception as e:
+            raise DemistoException(f"Waiter error: {str(e)}")
+
+    @staticmethod
+    def instance_terminated_waiter_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Waits until EC2 instances are in the 'terminated' state.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing:
+                - instance_ids (str, optional): Comma-separated list of instance IDs
+                - filters (str, optional): Filters for instances
+                - waiter_delay (int, optional): Delay between attempts in seconds (default: 15)
+                - waiter_max_attempts (int, optional): Maximum number of attempts (default: 40)
+
+        Returns:
+            CommandResults: Results indicating instances are terminated
+        """
+        kwargs = {}
+
+        if filters := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters)
+
+        if instance_ids := args.get("instance_ids"):
+            kwargs["InstanceIds"] = parse_resource_ids(instance_ids)
+
+        waiter_config = {
+            "Delay": arg_to_number(args.get("waiter_delay", "15")),
+            "MaxAttempts": arg_to_number(args.get("waiter_max_attempts", "40")),
+        }
+        kwargs["WaiterConfig"] = waiter_config
+
+        try:
+            waiter = client.get_waiter("instance_terminated")
+            waiter.wait(**kwargs)
+            return CommandResults(readable_output="Instance(s) are now terminated.")
+        except Exception as e:
+            raise DemistoException(f"Waiter error: {str(e)}")
+
+    @staticmethod
+    def describe_iam_instance_profile_associations_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Describes IAM instance profile associations.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing:
+                - association_ids (str, optional): Comma-separated list of association IDs
+                - filters (str, optional): Filters for associations
+                - limit (int, optional): Maximum number of results
+                - next_token (str, optional): Token for pagination
+
+        Returns:
+            CommandResults: Results containing IAM instance profile association information
+        """
+        kwargs = {}
+
+        if filters := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters)
+
+        if association_ids := args.get("association_ids"):
+            kwargs["AssociationIds"] = parse_resource_ids(association_ids)
+
+        pagination_kwargs = build_pagination_kwargs(args)
+        kwargs.update(pagination_kwargs)
+
+        print_debug_logs(client, f"Describe IAM instance profile associations parameters: {kwargs}")
+        response = client.describe_iam_instance_profile_associations(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        associations = response.get("IamInstanceProfileAssociations", [])
+
+        if not associations:
+            return CommandResults(readable_output="No IAM instance profile associations were found.")
+
+        outputs = {
+            "AWS.EC2.IamInstanceProfileAssociations(val.AssociationId && val.AssociationId == obj.AssociationId)": associations,
+            "AWS.EC2(true)": {"IamInstanceProfileAssociationsNextToken": response.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=tableToMarkdown(
+                "AWS IAM Instance Profile Associations",
+                associations,
+                headers=["AssociationId", "InstanceId", "State", "IamInstanceProfile"],
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def get_password_data_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Retrieves the encrypted administrator password for a running Windows instance.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing:
+                - instance_id (str): The ID of the Windows instance
+
+        Returns:
+            CommandResults: Results containing the password data
+        """
+        instance_id = args.get("instance_id")
+        print_debug_logs(client, f"Get password data for instance {instance_id}")
+        response = client.get_password_data(InstanceId=instance_id)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        # Serialize datetime
+        response = serialize_response_with_datetime_encoding(response)
+
+        password_data = {
+            "InstanceId": response.get("InstanceId"),
+            "PasswordData": response.get("PasswordData"),
+            "Timestamp": response.get("Timestamp"),
+        }
+
+        readable_output = tableToMarkdown(
+            "AWS EC2 Instance Password Data",
+            password_data,
+            headers=["InstanceId", "PasswordData", "Timestamp"],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+
+        outputs = {"PasswordData": password_data, "InstanceId": password_data.get("InstanceId")}
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Instances",
+            outputs_key_field="InstanceId",
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def describe_reserved_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Describes one or more Reserved Instances.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing:
+                - reserved_instances_ids (str, optional): Comma-separated list of Reserved Instance IDs
+                - filters (str, optional): Filters for Reserved Instances
+                - offering_class (str, optional): The offering class (standard or convertible)
+                - offering_type (str, optional): The offering type (Heavy Utilization |
+                 Medium Utilization | Light Utilization | No Upfront | Partial Upfront | All Upfront)
+
+        Returns:
+            CommandResults: Results containing Reserved Instance information
+        """
+        kwargs = {"OfferingClass": args.get("offering_class"), "OfferingType": args.get("offering_type")}
+
+        if filters := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters)
+
+        if reserved_instances_ids := args.get("reserved_instances_ids"):
+            kwargs["ReservedInstancesIds"] = parse_resource_ids(reserved_instances_ids)
+
+        remove_nulls_from_dictionary(kwargs)
+
+        print_debug_logs(client, f"Describing reserved instances with parameters: {kwargs}")
+        response = client.describe_reserved_instances(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        # Serialize datetime objects
+        serialized_response = serialize_response_with_datetime_encoding(response)
+        reserved_instances = serialized_response.get("ReservedInstances", [])
+        print_debug_logs(client, f"Reserved Instances: {reserved_instances}")
+
+        if not reserved_instances:
+            return CommandResults(readable_output="No Reserved Instances were found.")
+
+        readable_output = tableToMarkdown(
+            "AWS EC2 Reserved Instances",
+            reserved_instances,
+            headers=[
+                "ReservedInstancesId",
+                "InstanceType",
+                "InstanceCount",
+                "State",
+                "Start",
+                "End",
+                "Duration",
+                "OfferingClass",
+                "Scope",
+            ],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.ReservedInstances",
+            outputs_key_field="ReservedInstancesId",
+            outputs=reserved_instances,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def describe_volumes_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes the specified EBS volumes or all of your EBS volumes.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including filters and volume IDs
+
+        Returns:
+            CommandResults: Results containing volume information
+        """
+        kwargs = {}
+
+        # Add filters if provided
+        if filters_arg := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters_arg)
+
+        # Add volume IDs if provided
+        if volume_ids := args.get("volume_ids"):
+            kwargs["VolumeIds"] = argToList(volume_ids)
+
+        if not volume_ids:
+            pagination_kwargs = build_pagination_kwargs(args, minimum_limit=5)
+            kwargs.update(pagination_kwargs)
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Describing volumes with parameters: {kwargs}")
+        response = client.describe_volumes(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        volumes = response.get("Volumes", [])
+
+        if not volumes:
+            return CommandResults(readable_output="No EC2 volumes were found.")
+
+        readable_output = tableToMarkdown(
+            "AWS EC2 Volumes",
+            volumes,
+            headers=["VolumeId", "VolumeType", "AvailabilityZone", "Encrypted", "State", "CreateTime"],
+            removeNull=True,
+        )
+
+        outputs = {
+            "AWS.EC2.Volumes(val.VolumeId && val.VolumeId == obj.VolumeId)": volumes,
+            "AWS.EC2(true)": {"VolumesNextToken": response.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def modify_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modifies several parameters of an existing EBS volume, including volume size, volume type, and IOPS capacity.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including volume ID and modification parameters
+
+        Returns:
+            CommandResults: Results containing volume modification information
+        """
+        kwargs = {
+            "VolumeId": args.get("volume_id"),
+            "VolumeType": args.get("volume_type"),
+            "MultiAttachEnabled": arg_to_bool_or_none(args.get("multi_attach_enabled")),
+            "Iops": arg_to_number(args.get("iops")),
+            "Size": arg_to_number(args.get("size")),
+            "Throughput": arg_to_number(args.get("throughput")),
+        }
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Modifying volume with parameters: {kwargs}")
+        response = client.modify_volume(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        volume_modification = response.get("VolumeModification", {})
+        outputs = {
+            "VolumeId": volume_modification.pop("VolumeId", None),
+            "Size": volume_modification.pop("TargetSize", None),
+            "Iops": volume_modification.pop("TargetIops", None),
+            "VolumeType": volume_modification.pop("TargetVolumeType", None),
+            "Throughput": volume_modification.pop("TargetThroughput", None),
+            "MultiAttachEnabled": volume_modification.pop("TargetMultiAttachEnabled", None),
+            "Modification": volume_modification,
+        }
+        remove_nulls_from_dictionary(outputs)
+
+        readable_output = tableToMarkdown(
+            "AWS EC2 Volume Modification",
+            outputs,
+            headers=[
+                "VolumeId",
+                "Size",
+                "Iops",
+                "VolumeType",
+                "Throughput",
+                "MultiAttachEnabled",
+            ],
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Volumes",
+            outputs_key_field="VolumeId",
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def create_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates an EBS volume that can be attached to an instance in the same Availability Zone.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including availability zone and volume parameters
+
+        Returns:
+            CommandResults: Results containing created volume information
+        """
+        kwargs = {
+            "AvailabilityZone": args.get("availability_zone"),
+            "Encrypted": arg_to_bool_or_none(args.get("encrypted")),
+            "KmsKeyId": args.get("kms_key_id"),
+            "OutpostArn": args.get("outpost_arn"),
+            "SnapshotId": args.get("snapshot_id"),
+            "VolumeType": args.get("volume_type"),
+            "MultiAttachEnabled": arg_to_bool_or_none(args.get("multi_attach_enabled")),
+            "ClientToken": args.get("client_token"),
+            "Iops": arg_to_number(args.get("iops")),
+            "Size": arg_to_number(args.get("size")),
+            "Throughput": arg_to_number(args.get("throughput")),
+        }
+
+        if tags := args.get("tags"):
+            kwargs["TagSpecifications"] = [{"ResourceType": "volume", "Tags": parse_tag_field(tags)}]
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Creating volume with parameters: {kwargs}")
+        response = client.create_volume(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+
+        outputs = {k: v for k, v in response.items() if k != "ResponseMetadata"}
+        readable_output = tableToMarkdown(
+            "AWS EC2 Volumes",
+            outputs,
+            headers=["VolumeId", "VolumeType", "AvailabilityZone", "CreateTime", "Encrypted", "Size", "State", "Iops"],
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Volumes",
+            outputs_key_field="VolumeId",
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def attach_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Attaches an EBS volume to a running or stopped instance and exposes it to the instance with the specified device name.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including device, instance ID, and volume ID
+
+        Returns:
+            CommandResults: Results containing volume attachment information
+        """
+        kwargs = {
+            "Device": args.get("device"),
+            "InstanceId": args.get("instance_id"),
+            "VolumeId": args.get("volume_id"),
+        }
+
+        print_debug_logs(client, f"Attaching volume with parameters: {kwargs}")
+        response = client.attach_volume(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        outputs = {k: v for k, v in response.items() if k != "ResponseMetadata"}
+
+        readable_output = tableToMarkdown(
+            "AWS EC2 Volume Attachments",
+            outputs,
+            headers=["VolumeId", "InstanceId", "AttachTime", "Device", "State", "DeleteOnTermination"],
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Volumes",
+            outputs_key_field="VolumeId",
+            outputs={"Attachments": outputs, "VolumeId": response.get("VolumeId")},
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def detach_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Detaches an EBS volume from an instance.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including volume ID and optional parameters
+
+        Returns:
+            CommandResults: Results containing volume detachment information
+        """
+        kwargs = {
+            "VolumeId": args.get("volume_id"),
+            "Force": arg_to_bool_or_none(args.get("force")),
+            "Device": args.get("device"),
+            "InstanceId": args.get("instance_id"),
+        }
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Detaching volume with parameters: {kwargs}")
+        response = client.detach_volume(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+
+        outputs = {k: v for k, v in response.items() if k != "ResponseMetadata"}
+
+        readable_output = tableToMarkdown(
+            "AWS EC2 Volume Attachments",
+            outputs,
+            headers=["VolumeId", "InstanceId", "AttachTime", "Device", "State", "DeleteOnTermination"],
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Volumes",
+            outputs_key_field="VolumeId",
+            outputs={"Attachments": outputs, "VolumeId": response.get("VolumeId")},
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def delete_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deletes the specified EBS volume. The volume must be in the available state (not attached to an instance).
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including volume ID
+
+        Returns:
+            CommandResults: Results with success message
+        """
+        volume_id = args.get("volume_id")
+        print_debug_logs(client, f"Deleting volume: {volume_id}")
+        response = client.delete_volume(VolumeId=volume_id)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(readable_output=f"Successfully deleted volume {volume_id}")
+
+    @staticmethod
+    def describe_snapshots_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes one or more Amazon EBS snapshots available to you.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - filters (str, optional): One or more filters separated by ';'
+                - owner_ids (str, optional): Comma-separated list of snapshot owner IDs
+                - snapshot_ids (str, optional): Comma-separated list of snapshot IDs
+                - restorable_by_user_ids (str, optional): Comma-separated list of user IDs that can create
+                 volumes from the snapshot
+                - limit (int, optional): Maximum number of snapshots to return
+                - next_token (str, optional): Token for pagination
+
+        Returns:
+            CommandResults: Results containing snapshot information including description, encryption status, owner, progress,
+             state, and volume details
+        """
+        kwargs = {}
+        if filters := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters)
+        if owner_ids := args.get("owner_ids"):
+            kwargs["OwnerIds"] = parse_resource_ids(owner_ids)
+        if snapshot_ids := args.get("snapshot_ids"):
+            kwargs["SnapshotIds"] = parse_resource_ids(snapshot_ids)
+        if restorable_by_user_ids := args.get("restorable_by_user_ids"):
+            kwargs["RestorableByUserIds"] = parse_resource_ids(restorable_by_user_ids)
+
+        if not snapshot_ids:
+            pagination_kwargs = build_pagination_kwargs(args)
+            kwargs.update(pagination_kwargs)
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Describing snapshots with parameters: {kwargs}")
+
+        response = client.describe_snapshots(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        snapshots = response.get("Snapshots", [])
+
+        if not snapshots:
+            return CommandResults(readable_output="No snapshots were found.")
+
+        readable_output = tableToMarkdown(
+            "AWS EC2 Snapshots",
+            snapshots,
+            headers=[
+                "SnapshotId",
+                "Description",
+                "VolumeId",
+                "VolumeSize",
+                "Encrypted",
+                "OwnerId",
+                "Progress",
+                "StartTime",
+                "State",
+            ],
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        )
+
+        outputs = {
+            "AWS.EC2.Snapshots(val.SnapshotId && val.SnapshotId == obj.SnapshotId)": snapshots,
+            "AWS.EC2(true)": {"SnapshotsNextPageToken": response.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def delete_snapshot_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deletes the specified Amazon EBS snapshot.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - snapshot_id (str): The ID of the snapshot to delete (required)
+
+        Returns:
+            CommandResults: Results of the deletion operation with success message
+        """
+        snapshot_id = args.get("snapshot_id")
+        print_debug_logs(client, f"Deleting snapshot: {snapshot_id}")
+        response = client.delete_snapshot(SnapshotId=snapshot_id)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(readable_output=f"Successfully deleted snapshot {snapshot_id}", raw_response=response)
+
+    @staticmethod
+    def copy_snapshot_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Copies a point-in-time snapshot of an Amazon EBS volume and stores it in Amazon S3.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - source_snapshot_id (str): The ID of the snapshot to copy (required)
+                - source_region (str): The region containing the source snapshot (required)
+                - description (str, optional): Description for the new snapshot
+                - destination_outpost_arn (str, optional): The ARN of the Outpost to which to copy the snapshot
+                - encrypted (boolean, optional): Whether the destination snapshot should be encrypted
+                - kms_key_id (str, optional): KMS key ID for encryption
+                - presigned_url (str, optional): Pre-signed URL for the copy operation
+                - tag_specifications (str, optional): Tags to apply to the new snapshot
+
+        Returns:
+            CommandResults: Results containing the new snapshot ID and region information
+        """
+        kwargs = {
+            "SourceSnapshotId": args.get("source_snapshot_id"),
+            "SourceRegion": args.get("source_region"),
+            "Description": args.get("description"),
+            "DestinationOutpostArn": args.get("destination_outpost_arn"),
+            "Encrypted": arg_to_bool_or_none(args.get("encrypted")),
+            "KmsKeyId": args.get("kms_key_id"),
+            "PresignedUrl": args.get("presigned_url"),
+        }
+
+        if tag_specifications := args.get("tag_specifications"):
+            kwargs["TagSpecifications"] = [{"ResourceType": "snapshot", "Tags": parse_tag_field(tag_specifications)}]
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Copying snapshot with parameters: {kwargs}")
+
+        response = client.copy_snapshot(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        outputs = {k: v for k, v in response.items() if k != "ResponseMetadata"}
+        readable_output = tableToMarkdown(
+            "Copy AWS EC2 Snapshots", outputs, headers=["SnapshotId"], removeNull=True, headerTransform=pascalToSpace
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Snapshots",
+            outputs_key_field="SnapshotId",
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def snapshot_completed_waiter_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Waits until an Amazon EBS snapshot reaches the completed state.
+
+        This command uses AWS EC2's built-in waiter functionality to poll the snapshot state
+        until it reaches the 'completed' state. The waiter will check the snapshot status at
+        regular intervals (configurable via waiter_delay) up to a maximum number of attempts
+        (configurable via waiter_max_attempts).
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - filters (str, optional): One or more filters separated by ';'
+                - owner_ids (str, optional): Comma-separated list of snapshot owner IDs
+                - snapshot_ids (str, optional): Comma-separated list of snapshot IDs to wait for
+                - restorable_by_user_ids (str, optional): Comma-separated list of user IDs that can create volumes
+                from the snapshot
+                - waiter_delay (str, optional): Time in seconds to wait between polling attempts (default: 15)
+                - waiter_max_attempts (str, optional): Maximum number of polling attempts (default: 40)
+
+        Returns:
+            CommandResults: Results with success message when snapshot is completed
+
+        Raises:
+            WaiterError: If the waiter times out or encounters an error
+        """
+        kwargs = {}
+        if filters := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters)
+        if owner_ids := args.get("owner_ids"):
+            kwargs["OwnerIds"] = parse_resource_ids(owner_ids)
+        if snapshot_ids := args.get("snapshot_ids"):
+            kwargs["SnapshotIds"] = parse_resource_ids(snapshot_ids)
+        if restorable_by_user_ids := args.get("restorable_by_user_ids"):
+            kwargs["RestorableByUserIds"] = parse_resource_ids(restorable_by_user_ids)
+
+        # Configure waiter settings
+        kwargs["WaiterConfig"] = {
+            "Delay": arg_to_number(args.get("waiter_delay")),
+            "MaxAttempts": arg_to_number(args.get("waiter_max_attempts")),
+        }
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Waiting for snapshot completion with parameters: {kwargs}")
+
+        try:
+            waiter = client.get_waiter("snapshot_completed")
+            waiter.wait(**kwargs)
+            return CommandResults(readable_output="Snapshot is now completed.")
+        except WaiterError as e:
+            raise DemistoException(f"Waiter error: {str(e)}")
 
 
 class EKS:
@@ -3912,6 +5570,626 @@ class Lambda:
             raw_response=response,
         )
 
+    @staticmethod
+    def get_function_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Retrieves information about a Lambda function including configuration, code location, and metadata.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including:
+                - function_name (str): The name of the Lambda function
+                - qualifier (str, optional): Version or alias to retrieve
+                - region (str): AWS region
+                - account_id (str): AWS account ID
+
+        Returns:
+            CommandResults: Results containing function configuration, code location, tags, and concurrency settings
+        """
+        # Build API parameters
+        kwargs = {"FunctionName": args.get("function_name")}
+        if qualifier := args.get("qualifier"):
+            kwargs["Qualifier"] = qualifier
+
+        print_debug_logs(client, f"Getting Lambda function with parameters: {kwargs}")
+
+        response = client.get_function(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        # Serialize response with datetime encoding
+        response = serialize_response_with_datetime_encoding(response)
+
+        # Add region to response
+        response["Region"] = args.get("region")
+
+        # Extract configuration for readable output
+        func_config = response.get("Configuration", {})
+        func_config["Location"] = response.get("Code").get("Location")  # type: ignore
+        func_config["Region"] = args.get("region")
+        response["FunctionArn"] = func_config["FunctionArn"]
+        outputs = copy.deepcopy(response)
+        outputs.pop("ResponseMetadata", None)
+
+        human_readable = tableToMarkdown(
+            "AWS Lambda Function",
+            func_config,
+            headerTransform=pascalToSpace,
+            removeNull=True,
+            headers=["FunctionName", "FunctionArn", "Runtime", "Region", "Location"],
+        )
+        return CommandResults(
+            outputs_prefix="AWS.Lambda.Functions",
+            outputs_key_field="FunctionArn",
+            outputs=outputs,
+            readable_output=human_readable,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def list_functions_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Lists Lambda functions in the specified region.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including:
+                - region (str): AWS region
+                - account_id (str): AWS account ID
+                - limit (int, optional): Maximum number of functions to return
+                - next_token (str, optional): Token for pagination
+
+        Returns:
+            CommandResults: Results containing list of Lambda functions with their configurations
+        """
+
+        # Build pagination parameters using build_pagination_kwargs
+        pagination_kwargs = build_pagination_kwargs(
+            args, minimum_limit=1, max_limit=50, next_token_name="Marker", limit_name="MaxItems"
+        )
+
+        print_debug_logs(client, f"Listing Lambda functions with pagination parameters: {pagination_kwargs}")
+
+        response = client.list_functions(**pagination_kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        # Serialize response with datetime encoding
+        serialized_response = serialize_response_with_datetime_encoding(response)
+        functions_list = serialized_response.get("Functions", [])
+        next_marker = serialized_response.get("NextMarker")
+
+        if not functions_list:
+            return CommandResults(readable_output="No Lambda functions found.")
+
+        # Add region to each function
+        for func in functions_list:
+            func["Region"] = args.get("region")
+
+        human_readable = tableToMarkdown(
+            "AWS Lambda Functions",
+            functions_list,
+            headerTransform=pascalToSpace,
+            removeNull=True,
+            headers=["FunctionName", "FunctionArn", "Runtime", "LastModified", "Region"],
+        )
+
+        # Prepare outputs with pagination support
+        outputs = {
+            "AWS.Lambda.Functions(val.FunctionArn && val.FunctionArn == obj.FunctionArn)": functions_list,
+            "AWS.Lambda(true)": {"FunctionsNextToken": next_marker},
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=human_readable,
+            raw_response=serialized_response,
+        )
+
+    @staticmethod
+    def list_aliases_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Lists aliases for a Lambda function.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including:
+                - function_name (str): The name of the Lambda function
+                - function_version (str, optional): Function version to filter aliases
+                - limit (int, optional): Maximum number of aliases to return
+                - next_token (str, optional): Token for pagination
+                - region (str): AWS region
+                - account_id (str): AWS account ID
+
+        Returns:
+            CommandResults: Results containing list of aliases for the function
+        """
+        kwargs = {"FunctionName": args.get("function_name")}
+        if function_version := args.get("function_version"):
+            kwargs["FunctionVersion"] = function_version
+
+        # Build pagination parameters using build_pagination_kwargs
+        pagination_kwargs = build_pagination_kwargs(
+            args, minimum_limit=1, max_limit=10000, next_token_name="Marker", limit_name="MaxItems"
+        )
+        kwargs.update(pagination_kwargs)
+
+        print_debug_logs(client, f"Listing Lambda aliases with parameters: {kwargs}")
+
+        response = client.list_aliases(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        # Serialize response with datetime encoding
+        serialized_response = serialize_response_with_datetime_encoding(response)
+        aliases_list = serialized_response.get("Aliases", [])
+        next_marker = serialized_response.get("NextMarker")
+
+        if not aliases_list:
+            return CommandResults(readable_output=f"No aliases found for function {args.get('function_name')}.")
+
+        # Prepare readable output
+        human_readable = tableToMarkdown(
+            "AWS Lambda Aliases",
+            aliases_list,
+            headerTransform=pascalToSpace,
+            removeNull=True,
+            headers=["AliasArn", "Name", "FunctionVersion"],
+        )
+
+        # Prepare outputs with pagination support
+        outputs = {
+            "AWS.Lambda.Aliases(val.AliasArn && val.AliasArn == obj.AliasArn)": aliases_list,
+            "AWS.Lambda(true)": {"AliasesNextToken": next_marker},
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=human_readable,
+            raw_response=serialized_response,
+        )
+
+    @staticmethod
+    def get_account_settings_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Retrieves account settings for AWS Lambda.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including:
+                - region (str): AWS region
+                - account_id (str): AWS account ID
+
+        Returns:
+            CommandResults: Results containing account limits and usage
+        """
+        print_debug_logs(client, "Getting Lambda account settings")
+
+        response = client.get_account_settings()
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        # Serialize response with datetime encoding
+        serialized_response = serialize_response_with_datetime_encoding(response)
+
+        account_limit = serialized_response.get("AccountLimit", {})
+        account_usage = serialized_response.get("AccountUsage", {})
+
+        # Prepare readable output
+        readable_data = {
+            "AccountLimit": {
+                "TotalCodeSize": str(account_limit.get("TotalCodeSize")),
+                "CodeSizeUnzipped": str(account_limit.get("CodeSizeUnzipped")),
+                "CodeSizeZipped": str(account_limit.get("CodeSizeZipped")),
+                "ConcurrentExecutions": str(account_limit.get("ConcurrentExecutions")),
+                "UnreservedConcurrentExecutions": str(account_limit.get("UnreservedConcurrentExecutions")),
+            },
+            "AccountUsage": {
+                "TotalCodeSize": str(account_usage.get("TotalCodeSize")),
+                "FunctionCount": str(account_usage.get("FunctionCount")),
+            },
+        }
+
+        human_readable = tableToMarkdown(
+            "AWS Lambda Account Settings",
+            readable_data,
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+
+        # Add region and account_id to the root of the output for context
+        output = {
+            "Region": args.get("region"),
+            "AccountId": args.get("account_id"),
+            "AccountLimit": account_limit,
+            "AccountUsage": account_usage,
+        }
+
+        return CommandResults(
+            outputs_prefix="AWS.Lambda.AccountSettings",
+            outputs_key_field="AccountId",
+            outputs=output,
+            readable_output=human_readable,
+            raw_response=serialized_response,
+        )
+
+    @staticmethod
+    def list_versions_by_function_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Lists the versions of a Lambda function and returns the results.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including:
+                - function_name (str): The name of the Lambda function
+                - next_token (str, optional): The token for pagination
+                - limit (int, optional): The maximum number of items to return
+                - region (str): AWS region
+                - account_id (str): AWS account ID
+
+        Returns:
+            CommandResults: Results containing list of function versions with their configurations
+        """
+        kwargs = {"FunctionName": args.get("function_name")}
+
+        # Build pagination parameters using build_pagination_kwargs
+        pagination_kwargs = build_pagination_kwargs(
+            args, minimum_limit=1, max_limit=50, next_token_name="Marker", limit_name="MaxItems"
+        )
+        kwargs.update(pagination_kwargs)
+
+        print_debug_logs(client, f"Listing Lambda function versions with parameters: {kwargs}")
+
+        response = client.list_versions_by_function(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        # Serialize response with datetime encoding
+        serialized_response = serialize_response_with_datetime_encoding(response)
+
+        versions = serialized_response.get("Versions", [])
+        next_marker = serialized_response.get("NextMarker")
+
+        if not versions:
+            return CommandResults(readable_output=f"No versions found for function {args.get('function_name')}.")
+
+        headers = ["FunctionName", "Role", "Runtime", "LastModified", "State", "Description"]
+        human_readable = tableToMarkdown(
+            "AWS Lambda Function Versions",
+            versions,
+            headers=headers,
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+
+        # Prepare output with region context
+        output = {
+            "FunctionVersions": versions,
+            "FunctionArn": versions[0].get("FunctionArn"),
+        }
+
+        outputs = {
+            "AWS.Lambda.Functions(val.FunctionArn && val.FunctionArn == obj.FunctionArn)": output,
+            "AWS.Lambda.Functions(true)": {"FunctionVersionsNextToken": next_marker},
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=human_readable,
+            raw_response=serialized_response,
+        )
+
+    @staticmethod
+    def delete_function_url_config_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Deletes the URL configuration for a Lambda function in AWS.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including:
+                - function_name (str): The name of the Lambda function
+                - qualifier (str, optional): The qualifier of the function
+                - region (str): AWS region
+                - account_id (str): AWS account ID
+
+        Returns:
+            CommandResults: Results of the deletion operation with success message
+        """
+        kwargs = {"FunctionName": args.get("function_name")}
+        if qualifier := args.get("qualifier"):
+            kwargs["Qualifier"] = qualifier
+
+        print_debug_logs(client, f"Deleting Lambda function URL config with parameters: {kwargs}")
+
+        response = client.delete_function_url_config(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            return CommandResults(
+                readable_output=f"Successfully deleted function URL configuration for {args.get('function_name')}"
+            )
+        return None
+
+    @staticmethod
+    def create_function_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Creates a Lambda function from AWS.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including function configuration
+                - function_name (str): The name of the function
+                - runtime (str): The runtime environment
+                - role (str): The ARN of the function's execution role
+                - handler (str): The function entry point
+                - code (str, optional): Entry ID of uploaded ZIP file
+                - s3_bucket (str, optional): S3 bucket containing the code
+                - description (str, optional): Function description
+                - memory_size (int, optional): Memory size in MB (default: 128)
+                - function_timeout (int, optional): Timeout in seconds (default: 3)
+                - publish (bool, optional): Whether to publish the first version
+                - environment (str/dict, optional): Environment variables
+                - tags (str/dict, optional): Tags for the function
+                - layers (list, optional): List of layer ARNs
+                - vpc_config (str/dict, optional): VPC configuration
+                - tracing_config (str, optional): Tracing mode (default: Active)
+                - package_type (str, optional): Deployment package type
+                - region (str): AWS region
+                - account_id (str): AWS account ID
+
+        Returns:
+            CommandResults: Results containing the created function details
+        """
+        kwargs = prepare_create_function_kwargs(args)
+
+        print_debug_logs(client, f"Creating Lambda function: {args.get('function_name')} using {kwargs=}")
+
+        response = client.create_function(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.CREATED:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        # Serialize response with datetime encoding
+        response = serialize_response_with_datetime_encoding(response)
+        outputs = copy.deepcopy(response)
+        outputs.pop("ResponseMetadata", None)
+        # Prepare readable output
+        output_headers = [
+            "FunctionName",
+            "FunctionArn",
+            "Description",
+            "Version",
+        ]
+
+        readable_output = tableToMarkdown(
+            name=f"Created Lambda Function: {args.get('function_name')}",
+            t=outputs,
+            headerTransform=pascalToSpace,
+            removeNull=True,
+            headers=output_headers,
+        )
+        return CommandResults(
+            outputs=outputs,
+            raw_response=response,
+            outputs_prefix="AWS.Lambda.Functions",
+            outputs_key_field="FunctionArn",
+            readable_output=readable_output,
+        )
+
+    @staticmethod
+    def list_layer_versions_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Lists the versions of an Lambda layer.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including:
+                - layer_name (str): The name or ARN of the layer
+                - compatible_runtime (str, optional): A runtime identifier
+                - next_token (str, optional): Pagination token
+                - limit (int, optional): Maximum number of versions to return
+                - compatible_architecture (str, optional): Compatible architecture
+                - region (str): AWS region
+                - account_id (str): AWS account ID
+
+        Returns:
+            CommandResults: Results containing list of layer versions
+        """
+        kwargs = {
+            "LayerName": args.get("layer_name"),
+            "CompatibleRuntime": args.get("compatible_runtime"),
+            "CompatibleArchitecture": args.get("compatible_architecture"),
+        }
+
+        # Build pagination parameters using build_pagination_kwargs
+        pagination_kwargs = build_pagination_kwargs(
+            args, minimum_limit=1, max_limit=50, next_token_name="Marker", limit_name="MaxItems"
+        )
+        kwargs.update(pagination_kwargs)
+
+        remove_nulls_from_dictionary(kwargs)
+
+        print_debug_logs(client, f"Listing Lambda layer versions with parameters: {kwargs}")
+
+        response = client.list_layer_versions(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        # Serialize response with datetime encoding
+        serialized_response = serialize_response_with_datetime_encoding(response)
+
+        layer_versions = serialized_response.get("LayerVersions", [])
+        next_marker = serialized_response.get("NextMarker")
+
+        if not layer_versions:
+            return CommandResults(readable_output=f"No layer versions found for {args.get('layer_name')}.")
+
+        # Prepare outputs
+        outputs = {
+            "AWS.Lambda.LayerVersions(val.LayerVersionArn && val.LayerVersionArn == obj.LayerVersionArn)": layer_versions,
+            "AWS.Lambda.LayerVersions(true)": {"LayerVersionsNextToken": next_marker},
+        }
+
+        headers = ["LayerVersionArn", "Description", "CreatedDate", "Version"]
+
+        readable_output = tableToMarkdown(
+            name="Layer Version List", t=layer_versions, headers=headers, headerTransform=pascalToSpace, removeNull=True
+        )
+
+        return CommandResults(
+            outputs=remove_empty_elements(outputs),
+            outputs_prefix="AWS.Lambda.LayerVersions",
+            raw_response=serialized_response,
+            readable_output=readable_output,
+        )
+
+    @staticmethod
+    def delete_function_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Deletes a Lambda function from AWS.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including:
+                - function_name (str): The name of the Lambda function
+                - qualifier (str, optional): The qualifier of the function
+                - region (str): AWS region
+                - account_id (str): AWS account ID
+
+        Returns:
+            CommandResults: Results of the deletion operation with success message
+        """
+        kwargs = {"FunctionName": args.get("function_name")}
+        if qualifier := args.get("qualifier"):
+            kwargs["Qualifier"] = qualifier
+
+        print_debug_logs(client, f"Deleting Lambda function with parameters: {kwargs}")
+
+        response = client.delete_function(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            return CommandResults(readable_output=f"Successfully deleted Lambda function: {args.get('function_name')}")
+        return None
+
+    @staticmethod
+    def delete_layer_version_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Deletes a version of a Lambda layer.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including:
+                - layer_name (str): The name or ARN of the layer
+                - version_number (int): The version number to delete
+                - region (str): AWS region
+                - account_id (str): AWS account ID
+
+        Returns:
+            CommandResults: Results of the deletion operation with success message
+        """
+        kwargs = {"LayerName": args.get("layer_name"), "VersionNumber": arg_to_number(args.get("version_number"))}
+
+        print_debug_logs(client, f"Deleting Lambda layer version with parameters: {kwargs}")
+
+        response = client.delete_layer_version(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            msg = f"Successfully deleted version {kwargs.get('VersionNumber')} of layer {kwargs.get('LayerName')}"
+            return CommandResults(readable_output=msg)
+        return None
+
+    @staticmethod
+    def publish_layer_version_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Creates a Lambda layer from a ZIP archive.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including:
+                - layer_name (str): The name of the layer
+                - description (str, optional): Description of the layer version
+                - zip_file (str, optional): Entry ID of uploaded ZIP file
+                - s3_bucket (str, optional): S3 bucket containing the layer code
+                - s3_key (str, optional): S3 key of the layer code
+                - s3_object_version (str, optional): S3 object version
+                - compatible_runtimes (list, optional): Compatible runtimes
+                - compatible_architectures (list, optional): Compatible architectures
+                - region (str): AWS region
+                - account_id (str): AWS account ID
+
+        Returns:
+            CommandResults: Results containing the published layer version details
+        """
+
+        # Prepare content configuration
+        content = {}
+        s3_bucket = args.get("s3_bucket")
+        s3_key = args.get("s3_key")
+        s3_object_version = args.get("s3_object_version")
+
+        if zip_file := args.get("zip_file"):
+            file_path = demisto.getFilePath(zip_file).get("path")
+            content["ZipFile"] = read_zip_to_bytes(file_path)
+        elif s3_bucket and s3_key and s3_object_version:
+            content["S3Bucket"] = s3_bucket
+            content["S3Key"] = s3_key
+            content["S3ObjectVersion"] = s3_object_version
+        else:
+            raise DemistoException(
+                "Either zip_file or a combination of s3_bucket, s3_key and s3_object_version must be provided."
+            )
+
+        kwargs = {
+            "LayerName": args.get("layer_name"),
+            "Description": args.get("description", ""),
+            "Content": content,
+            "CompatibleRuntimes": argToList(args.get("compatible_runtimes")),
+            "CompatibleArchitectures": argToList(args.get("compatible_architectures")),
+        }
+
+        remove_nulls_from_dictionary(kwargs)
+
+        print_debug_logs(client, f"Publishing Lambda layer version: {kwargs=}")
+
+        response = client.publish_layer_version(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") not in [HTTPStatus.OK, HTTPStatus.CREATED]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        # Serialize response with datetime encoding
+        outputs = serialize_response_with_datetime_encoding(response)
+        outputs.pop("ResponseMetadata", None)
+
+        # Extract outputs based on headers
+        outputs["Region"] = args.get("region")
+        output_headers = [
+            "LayerVersionArn",
+            "LayerArn",
+            "Description",
+            "CreatedDate",
+            "Version",
+        ]
+        readable_output = tableToMarkdown(
+            name=f"Published Layer Version: {response.get('LayerArn')}",
+            t=outputs,
+            headers=output_headers,
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs=remove_empty_elements(outputs),
+            raw_response=serialize_response_with_datetime_encoding(response),
+            outputs_prefix="AWS.Lambda.LayerVersions",
+            outputs_key_field="LayerVersionArn",
+            readable_output=readable_output,
+        )
+
 
 class ACM:
     service = AWSServices.ACM
@@ -3962,6 +6240,8 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-billing-budget-notification-list": Budgets.billing_budget_notification_list_command,
     "aws-s3-public-access-block-update": S3.put_public_access_block_command,
     "aws-s3-public-access-block-quick-action": S3.put_public_access_block_command,
+    "aws-s3-bucket-delete": S3.delete_bucket_command,
+    "aws-s3-bucket-objects-list": S3.list_bucket_objects_command,
     "aws-s3-bucket-versioning-put": S3.put_bucket_versioning_command,
     "aws-s3-bucket-versioning-enable-quick-action": S3.put_bucket_versioning_command,
     "aws-s3-bucket-logging-put": S3.put_bucket_logging_command,
@@ -4008,6 +6288,25 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-security-group-delete": EC2.delete_security_group_command,
     "aws-ec2-security-groups-describe": EC2.describe_security_groups_command,
     "aws-ec2-security-group-egress-authorize": EC2.authorize_security_group_egress_command,
+    "aws-ec2-images-describe": EC2.describe_images_command,
+    "aws-ec2-image-create": EC2.create_image_command,
+    "aws-ec2-image-deregister": EC2.deregister_image_command,
+    "aws-ec2-image-copy": EC2.copy_image_command,
+    "aws-ec2-image-available-waiter": EC2.image_available_waiter_command,
+    "aws-ec2-instances-monitor": EC2.monitor_instances_command,
+    "aws-ec2-instances-unmonitor": EC2.unmonitor_instances_command,
+    "aws-ec2-instances-reboot": EC2.reboot_instances_command,
+    "aws-ec2-instance-running-waiter": EC2.instance_running_waiter_command,
+    "aws-ec2-instance-status-ok-waiter": EC2.instance_status_ok_waiter_command,
+    "aws-ec2-instance-stopped-waiter": EC2.instance_stopped_waiter_command,
+    "aws-ec2-instance-terminated-waiter": EC2.instance_terminated_waiter_command,
+    "aws-ec2-iam-instance-profile-associations-describe": EC2.describe_iam_instance_profile_associations_command,
+    "aws-ec2-password-data-get": EC2.get_password_data_command,
+    "aws-ec2-reserved-instances-describe": EC2.describe_reserved_instances_command,
+    "aws-ec2-snapshots-describe": EC2.describe_snapshots_command,
+    "aws-ec2-snapshot-delete": EC2.delete_snapshot_command,
+    "aws-ec2-snapshot-copy": EC2.copy_snapshot_command,
+    "aws-ec2-snapshot-completed-waiter": EC2.snapshot_completed_waiter_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
     "aws-eks-enable-control-plane-logging-quick-action": EKS.update_cluster_config_command,
     "aws-eks-disable-public-access-quick-action": EKS.update_cluster_config_command,
@@ -4051,8 +6350,30 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-lambda-policy-get": Lambda.get_policy_command,
     "aws-lambda-invoke": Lambda.invoke_command,
     "aws-lambda-function-url-config-update": Lambda.update_function_url_configuration_command,
+    "aws-lambda-function-get": Lambda.get_function_command,
+    "aws-lambda-functions-list": Lambda.list_functions_command,
+    "aws-lambda-aliases-list": Lambda.list_aliases_command,
+    "aws-lambda-account-settings-get": Lambda.get_account_settings_command,
+    "aws-lambda-function-versions-list": Lambda.list_versions_by_function_command,
+    "aws-lambda-function-url-config-delete": Lambda.delete_function_url_config_command,
+    "aws-lambda-function-create": Lambda.create_function_command,
+    "aws-lambda-layer-version-list": Lambda.list_layer_versions_command,
+    "aws-lambda-function-delete": Lambda.delete_function_command,
+    "aws-lambda-layer-version-delete": Lambda.delete_layer_version_command,
+    "aws-lambda-layer-version-publish": Lambda.publish_layer_version_command,
     "aws-kms-key-rotation-enable": KMS.enable_key_rotation_command,
     "aws-elb-load-balancer-attributes-modify": ELB.modify_load_balancer_attributes_command,
+    "aws-ec2-addresses-describe": EC2.describe_addresses_command,
+    "aws-ec2-address-allocate": EC2.allocate_address_command,
+    "aws-ec2-address-associate": EC2.associate_address_command,
+    "aws-ec2-address-disassociate": EC2.disassociate_address_command,
+    "aws-ec2-address-release": EC2.release_address_command,
+    "aws-ec2-volumes-describe": EC2.describe_volumes_command,
+    "aws-ec2-volume-modify": EC2.modify_volume_command,
+    "aws-ec2-volume-create": EC2.create_volume_command,
+    "aws-ec2-volume-attach": EC2.attach_volume_command,
+    "aws-ec2-volume-detach": EC2.detach_volume_command,
+    "aws-ec2-volume-delete": EC2.delete_volume_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -4088,6 +6409,13 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:DescribeIpamResourceDiscoveries",
     "ec2:DescribeIpamResourceDiscoveryAssociations",
     "ec2:DescribeImages",
+    "ec2:CreateImage",
+    "ec2:DeregisterImage",
+    "ec2:CopyImage",
+    "ec2:DescribeSnapshots",
+    "ec2:DeleteSnapshot",
+    "ec2:CopySnapshot",
+    "ec2:DescribeRegions",
     "eks:DescribeCluster",
     "eks:AssociateAccessPolicy",
     "ec2:CreateSecurityGroup",
@@ -4095,11 +6423,23 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:GetIpamDiscoveredPublicAddresses",
     "ec2:CreateTags",
     "ec2:DeleteSecurityGroup",
+    "ec2:DescribeAddresses",
+    "ec2:AllocateAddress",
+    "ec2:AssociateAddress",
+    "ec2:DisassociateAddress",
+    "ec2:ReleaseAddress",
     "ec2:DescribeInstances",
+    "ec2:DescribeInstanceStatus",
     "ec2:DescribeSecurityGroups",
     "ec2:AuthorizeSecurityGroupEgress",
     "ec2:AuthorizeSecurityGroupIngress",
     "ec2:ModifyInstanceMetadataOptions",
+    "ec2:MonitorInstances",
+    "ec2:UnmonitorInstances",
+    "ec2:RebootInstances",
+    "ec2:DescribeIamInstanceProfileAssociations",
+    "ec2:GetPasswordData",
+    "ec2:DescribeReservedInstances",
     "ec2:DescribeInstances",
     "ec2:StartInstances",
     "ec2:StopInstances",
@@ -4121,6 +6461,8 @@ REQUIRED_ACTIONS: list[str] = [
     "s3:GetBucketPublicAccessBlock",
     "s3:GetEncryptionConfiguration",
     "s3:DeleteBucketPolicy",
+    "s3:ListBuckets",
+    "s3:DeleteBucket",
     "acm:UpdateCertificateOptions",
     "cloudtrail:DescribeTrails",
     "lambda:GetFunctionConfiguration",
@@ -4128,11 +6470,28 @@ REQUIRED_ACTIONS: list[str] = [
     "lambda:GetPolicy",
     "lambda:InvokeFunction",
     "lambda:UpdateFunctionUrlConfig",
+    "lambda:GetFunction",
+    "lambda:ListFunctions",
+    "lambda:ListAliases",
+    "lambda:GetAccountSettings",
+    "lambda:ListVersionsByFunction",
+    "lambda:DeleteFunctionUrlConfig",
+    "lambda:CreateFunction",
+    "lambda:ListLayerVersions",
+    "lambda:DeleteFunction",
+    "lambda:DeleteLayerVersion",
+    "lambda:PublishLayerVersion",
     "elasticloadbalancing:ModifyLoadBalancerAttributes",
     "ce:GetCostAndUsage",
     "ce:GetCostForecast",
     "budgets:DescribeBudgets",
     "budgets:DescribeNotificationsForBudget",
+    "ec2:DescribeVolumes",
+    "ec2:ModifyVolume",
+    "ec2:CreateVolume",
+    "ec2:AttachVolume",
+    "ec2:DetachVolume",
+    "ec2:DeleteVolume",
 ]
 
 COMMAND_SERVICE_MAP = {
