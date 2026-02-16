@@ -338,23 +338,23 @@ Return a list of all existing users in the vault that meet the filter and search
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Retrieve users using filters. Valid values: userType, componentUser. | Optional | 
-| search | Search by the following values: username, first name, last name. | Optional | 
+| filter | Retrieve users using filters. Valid values: userType, componentUser. | Optional |
+| search | Search by the following values: username, first name, last name. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CyberArkPAS.Users.id | Number | The unique IDs of the users. | 
-| CyberArkPAS.Users.username | String | The names of the users. | 
-| CyberArkPAS.Users.source | String | The sources of the users. | 
-| CyberArkPAS.Users.userType | String | The types of the users. | 
-| CyberArkPAS.Users.componentUser | Boolean | Whether the users are component users. | 
-| CyberArkPAS.Users.location | String | The locations in the vault where the users were created. | 
-| CyberArkPAS.Users.personalDetails.firstName | String | The first name of the users. | 
-| CyberArkPAS.Users.personalDetails.middleName | String | The middle name of the users. | 
-| CyberArkPAS.Users.personalDetails.lastName | String | The last name of the users. | 
-| CyberArkPAS.Users.vaultAuthorization | String | The permissions of the users. | 
+| CyberArkPAS.Users.id | Number | The unique IDs of the users. |
+| CyberArkPAS.Users.username | String | The names of the users. |
+| CyberArkPAS.Users.source | String | The sources of the users. |
+| CyberArkPAS.Users.userType | String | The types of the users. |
+| CyberArkPAS.Users.componentUser | Boolean | Whether the users are component users. |
+| CyberArkPAS.Users.location | String | The locations in the vault where the users were created. |
+| CyberArkPAS.Users.personalDetails.firstName | String | The first name of the users. |
+| CyberArkPAS.Users.personalDetails.middleName | String | The middle name of the users. |
+| CyberArkPAS.Users.personalDetails.lastName | String | The last name of the users. |
+| CyberArkPAS.Users.vaultAuthorization | String | The permissions of the users. |
 
 ### Command Example
 
@@ -422,7 +422,6 @@ Return a list of all existing users in the vault that meet the filter and search
 >|---|---|---|---|---|---|---|---|
 >| false | 2 | \ | firstName: <br/>middleName: <br/>lastName:  | CyberArk | Built-InAdmins | Administrator | AddUpdateUsers,<br/>AddSafes,<br/>AddNetworkAreas,<br/>ManageDirectoryMapping,<br/>ManageServerFileCategories,<br/>AuditUsers,<br/>BackupAllSafes,<br/>RestoreAllSafes,<br/>ResetUsersPasswords,<br/>ActivateUsers |
 >| false | 3 | \ | firstName: <br/>middleName: <br/>lastName:  | CyberArk | Built-InAdmins | Auditor | AuditUsers |
-
 
 ### cyberark-pas-user-activate
 
