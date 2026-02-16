@@ -70,9 +70,8 @@ WEBAPP_COMMANDS = [
     "core-update-endpoint-version",
     "core-get-email-investigation-summary",
     "core-get-email-campaign-consolidated-forensic-enrichment",
-    "core-execute-email-security-remediation",
 ]
-EMAIL_SECURITY = ["core-execute-email-security-remediation", "core-get-email-campaign-consolidated-forensic-enrichment"]
+EMAIL_SECURITY = ["core-execute-email-security-remediation"]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
 ENDPOINT_COMMANDS = ["core-get-endpoint-support-file"]
@@ -996,13 +995,14 @@ class Client(CoreClient):
         Returns:
             dict: Consolidated forensic enrichment data
         """
+        body = {"internet_message_id": internet_message_id,
+        "days_timeframe": days_timeframe,
+        }
+        demisto.debug(f"body: {body}")
         return self._http_request(
             method="POST",
             url_suffix="/email-security/investigation/consolidated-forensic-enrichment",
-            json_data={
-                "internet_message_id": internet_message_id,
-                "days_timeframe": days_timeframe,
-            },
+            json_data=body,
         )
 
     def execute_email_security_remediation(
@@ -4643,8 +4643,9 @@ def get_email_campaign_consolidated_forensic_enrichment_command(
     )
     
     demisto.debug(f"get_email_campaign_consolidated_forensic_enrichment response: {response}")
+    
     # Process response - the API returns consolidated data
-    outputs = response if isinstance(response, dict) else {}
+    outputs = response.get("reply", {})
     
     # Create readable output with key forensic categories
     readable_sections = []
@@ -4722,7 +4723,7 @@ def get_email_campaign_consolidated_forensic_enrichment_command(
             tableToMarkdown('Artifacts', artifacts, headerTransform=string_to_table_header)
         )
     
-    readable_output = '\n\n'.join(readable_sections) if readable_sections else 'No forensic data found'
+    readable_output = '\n\n'.join(readable_sections) if readable_sections else 'Forensic data added to context.' if outputs else "No Forensic data found."
     
     return CommandResults(
         outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.EmailCampaignForensics',
@@ -4791,11 +4792,11 @@ def execute_email_security_remediation_command(
     
     # Create readable output
     if success:
-        readable_output = f'✅ Email security remediation action "{action}" executed successfully'
+        readable_output = f'Email security remediation action "{action}" executed successfully'
         if message:
             readable_output += f'\n\nMessage: {message}'
     else:
-        readable_output = f'❌ Email security remediation action "{action}" failed'
+        readable_output = f'Email security remediation action "{action}" failed'
         if error:
             readable_output += f'\n\nError: {error}'
         elif message:
