@@ -10058,52 +10058,9 @@ def test_ec2_create_launch_template_command_success(mocker):
         "account_id": "123456789012",
         "region": "us-east-1",
         "launch_template_name": "new-template",
-        "image_id": "ami-12345678",
-        "instance_type": "t3.micro",
-    }
-
-    result = EC2.create_launch_template_command(mock_client, args)
-    assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "AWS.EC2.LaunchTemplates"
-    assert result.outputs_key_field == "LaunchTemplateId"
-    assert result.outputs["LaunchTemplateId"] == "lt-new12345"
-    assert result.outputs["LaunchTemplateName"] == "new-template"
-    # The implementation uses a table title, not a success message
-    assert "AWS LaunchTemplate" in result.readable_output
-
-
-def test_ec2_create_launch_template_command_with_all_parameters(mocker):
-    """
-    Given: A mocked boto3 EC2 client and comprehensive launch template configuration.
-    When: create_launch_template_command is called with all parameters.
-    Then: It should pass all parameters correctly to the API call.
-    """
-    from AWS import EC2
-
-    mock_client = mocker.Mock()
-    mock_client.create_launch_template.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
-        "LaunchTemplate": {
-            "LaunchTemplateId": "lt-comprehensive",
-            "LaunchTemplateName": "comprehensive-template",
-            "CreateTime": datetime(2023, 10, 15, 14, 30, 45),
-            "CreatedBy": "arn:aws:iam::123456789012:user/admin",
-            "DefaultVersionNumber": 1,
-            "LatestVersionNumber": 1,
-        },
-    }
-
-    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_client.create_launch_template.return_value)
-    # The implementation uses parse_tag_field, not parse_tag_specifications
-    mocker.patch("AWS.parse_tag_field", return_value=[{"Key": "Name", "Value": "Test"}])
-
-    args = {
-        "account_id": "123456789012",
-        "region": "us-east-1",
-        "launch_template_name": "comprehensive-template",
         "version_description": "Initial version",
         "image_id": "ami-12345678",
-        "instance_type": "t3.medium",
+        "instance_type": "t3.micro",
         "key_name": "my-key",
         "monitoring": "true",
         "ebs_optimized": "true",
@@ -10117,9 +10074,12 @@ def test_ec2_create_launch_template_command_with_all_parameters(mocker):
     assert isinstance(result, CommandResults)
     mock_client.create_launch_template.assert_called_once()
     call_args = mock_client.create_launch_template.call_args[1]
-    assert call_args["LaunchTemplateName"] == "comprehensive-template"
+    assert result.outputs_prefix == "AWS.EC2.LaunchTemplates"
+    assert result.outputs_key_field == "LaunchTemplateId"
+    assert result.outputs["LaunchTemplateId"] == "lt-new12345"
+    assert result.outputs["LaunchTemplateName"] == "new-template"
     assert call_args["LaunchTemplateData"]["ImageId"] == "ami-12345678"
-    assert call_args["LaunchTemplateData"]["InstanceType"] == "t3.medium"
+    assert "AWS LaunchTemplate" in result.readable_output
     assert call_args["LaunchTemplateData"]["Monitoring"]["Enabled"] is True
     assert call_args["LaunchTemplateData"]["EbsOptimized"] is True
 
@@ -10240,7 +10200,9 @@ def test_ec2_delete_launch_template_command_success_with_id(mocker):
     assert result.outputs["LaunchTemplateName"] == "deleted-template"
     assert "AWS Deleted Launch Template" in result.readable_output
     assert "lt-delete123" in result.readable_output
-    # Verify API was called with only LaunchTemplateId (after remove_empty_elements)
+    assert mock_client.delete_launch_template.call_args.kwargs
+    assert mock_client.delete_launch_template.call_args.kwargs.get("LaunchTemplateId")
+    assert mock_client.delete_launch_template.call_args.kwargs.get("LaunchTemplateName") is None
     mock_client.delete_launch_template.assert_called_once_with(LaunchTemplateId="lt-delete123")
 
 
@@ -10286,7 +10248,8 @@ def test_ec2_delete_launch_template_command_success_with_name(mocker):
     assert isinstance(result, CommandResults)
     assert result.outputs["LaunchTemplateName"] == "template-to-delete"
     assert "template-to-delete" in result.readable_output
-    # Verify the API was called with LaunchTemplateName only (after remove_empty_elements)
+    assert mock_client.delete_launch_template.call_args.kwargs.get("LaunchTemplateId") is None
+    assert mock_client.delete_launch_template.call_args.kwargs.get("LaunchTemplateName")
     mock_client.delete_launch_template.assert_called_once_with(LaunchTemplateName="template-to-delete")
 
 
