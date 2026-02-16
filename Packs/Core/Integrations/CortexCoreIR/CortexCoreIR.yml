@@ -348,6 +348,8 @@ script:
       predefined:
       - first_seen
       - last_seen
+      - endpoint_id
+      - scan_status
     - auto: PREDEFINED
       description: The order by which to sort results. Can be "asc" (ascending) or "desc" ( descending). Default set to asc.
       name: sort_order
