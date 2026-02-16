@@ -5391,7 +5391,7 @@ script:
       - investigate_view
       defaultValue: search-all
     - name: query
-      description: 'The CQL query to use for the search. Note: Double quotes (“) and backslashes (\) in the queryString must be escaped with a backslash to ensure they are properly interpreted. For more details see: https://library.humio.com/data-analysis/syntax.html.'
+      description: 'The CQL query to use for the search. Note: Double quotes (“) and backslashes (\) in the queryString must be escaped with a backslash to ensure they are properly interpreted. Example: query="#event_simpleName = \"Event_name\""", For more details see: https://library.humio.com/data-analysis/syntax.html.'
       required: true
     - name: start
       description: |
