@@ -3016,6 +3016,7 @@ def test_automation_playbook_delete_command(mocker, field, value):
     mock_delete.assert_called_once_with(expected_request_data)
     assert result.readable_output == "Automation playbook deleted successfully."
 
+
 @pytest.mark.parametrize(
     "args, expected_filters, expected_sort",
     [
@@ -3152,6 +3153,7 @@ def test_case_artifact_list_command(mock_response, expected_count_network, expec
             if expected_count_file > 0:
                 count += 1
             assert len(res) == count
+
 
 @pytest.mark.parametrize(
     "args, expected_request_data",

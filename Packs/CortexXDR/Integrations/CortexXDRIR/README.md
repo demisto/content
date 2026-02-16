@@ -4524,7 +4524,6 @@ Retrieves a list of artifacts for a specific case.
 | PaloAltoNetworksXDR.CaseFileArtifact.alert_count | Number | Number of alerts associated with this file artifact. |
 | PaloAltoNetworksXDR.CaseFileArtifact.low_confidence | Boolean | Indicates if the detection confidence is low. |
 
-
 ### xdr-automation-playbook-create
 
 ***
