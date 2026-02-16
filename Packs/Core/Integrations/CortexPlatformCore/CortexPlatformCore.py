@@ -119,7 +119,7 @@ class Profile:
         "vulnerableApps": "known_vulnerable_processes_protection",
         "osKernelExploits": "operating_system_exploit_protection",
         "additionalProcesses": "exploit_protection_for_additional_processes",
-        "manualScan": "end_user_initiated_local_scan", # for update command 
+        "manualScan": "end_user_initiated_local_scan",  # for update command
     }
 
 
