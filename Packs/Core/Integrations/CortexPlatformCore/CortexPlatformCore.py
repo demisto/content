@@ -69,7 +69,7 @@ WEBAPP_COMMANDS = [
     "core-update-endpoint-version",
     "core-update-windows-malware-profile",
     "core-update-windows-exploit-profile",
-    "core-delete-profile"
+    "core-delete-profile",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -120,6 +120,7 @@ class Profile:
         "osKernelExploits": "operating_system_exploit_protection",
         "additionalProcesses": "exploit_protection_for_additional_processes",
     }
+
 
 class ScriptManagement:
     FIELDS = {
@@ -348,6 +349,7 @@ class AppsecIssues:
         "TOP_URGENT": "Top Urgent",
         "URGENT": "Urgent",
     }
+
 
 ASSET_GROUP_FIELDS = {
     "asset_group_name": "XDM__ASSET_GROUP__NAME",
@@ -1003,21 +1005,21 @@ class Client(CoreClient):
             url_suffix="/profiles/prevention/add",
             json_data=profile_data,
         )
-        
+
     def get_current_profile(self, profile_id: str) -> dict:
         return self._http_request(
             method="POST",
             url_suffix="/profiles/get_profile_view_by_id",
             json_data={"profile_id": profile_id},
         )
-        
+
     def update_profile(self, update_data: dict) -> dict:
         return self._http_request(
             method="POST",
             url_suffix="/profiles/edit_profile",
             json_data=update_data,
         )
-    
+
     def delete_profile(self, profile_ids: list) -> dict:
         return self._http_request(
             method="POST",
@@ -4579,19 +4581,11 @@ def create_profile_modules_by_type(args: dict, type: str):
     profile_modules = {}
     if type == "Malware":
         # Configuration for periodic scan to be used when enabled
-        scan_endpoints_periodic_config = {
-            "type": "weekly",
-            "days": ["sun"],
-            "hour": "00:00",
-            "removableMedia": "disabled"
-        }
+        scan_endpoints_periodic_config = {"type": "weekly", "days": ["sun"], "hour": "00:00", "removableMedia": "disabled"}
 
         scan_endpoints_arg = args.get(Profile.FIELDS.get("scanEndpoints"), "disabled")
         if scan_endpoints_arg == "enabled":
-            periodic_scan_config = {
-                "mode": "enabled",
-                **scan_endpoints_periodic_config
-            }
+            periodic_scan_config = {"mode": "enabled", **scan_endpoints_periodic_config}
         else:
             periodic_scan_config = {"mode": "disabled"}
 
@@ -4599,137 +4593,106 @@ def create_profile_modules_by_type(args: dict, type: str):
             "aspFiles": {
                 "mode": args.get(Profile.FIELDS.get("aspFiles"), "disabled"),
                 "upload": "enabled",
-                "actionOnUnknown": "runLocalAnalysis"
+                "actionOnUnknown": "runLocalAnalysis",
             },
-            "basTools": {
-                "mode": args.get(Profile.FIELDS.get("basTools"), "disabled")
-            },
-            "uacBypass": {
-                "mode": args.get(Profile.FIELDS.get("uacBypass"), "block"),
-                "quarantine": "enabled"
-            },
+            "basTools": {"mode": args.get(Profile.FIELDS.get("basTools"), "disabled")},
+            "uacBypass": {"mode": args.get(Profile.FIELDS.get("uacBypass"), "block"), "quarantine": "enabled"},
             "ransomware": {
                 "mode": args.get(Profile.FIELDS.get("ransomware"), "block"),
                 "quarantine": "disabled",
                 "smbEncryption": "enabled",
-                "protectionMode": "normal"
+                "protectionMode": "normal",
             },
-            "cryptominers": {
-                "mode": args.get(Profile.FIELDS.get("cryptominers"), "block"),
-                "quarantine": "enabled"
-            },
+            "cryptominers": {"mode": args.get(Profile.FIELDS.get("cryptominers"), "block"), "quarantine": "enabled"},
             "antiTampering": {
                 "mode": args.get(Profile.FIELDS.get("antiTampering"), "block"),
                 "safeMode": args.get(Profile.FIELDS.get("antiTampering"), "block"),
-                "quarantine": "enabled"
+                "quarantine": "enabled",
             },
-            "iisProtection": {
-                "mode": args.get(Profile.FIELDS.get("iisProtection"), "block"),
-                "quarantine": "enabled"
-            },
+            "iisProtection": {"mode": args.get(Profile.FIELDS.get("iisProtection"), "block"), "quarantine": "enabled"},
             "scanEndpoints": {
                 "periodicScan": periodic_scan_config,
-                "endUserInitiatedLocalScan": args.get("manualScan", "enabled")
+                "endUserInitiatedLocalScan": args.get("manualScan", "enabled"),
             },
-            "uefiProtection": {
-                "mode": args.get(Profile.FIELDS.get("uefiProtection"), "block"),
-                "quarantine": "enabled"
-            },
-            "maliciousDevice": {
-                "mode": args.get(Profile.FIELDS.get("maliciousDevice"), "block"),
-                "quarantine": "disabled"
-            },
-            "networkSignature": {
-                "mode": args.get(Profile.FIELDS.get("networkSignature"), "terminateSession")
-            },
-            "passwordStealing": {
-                "mode": args.get(Profile.FIELDS.get("passwordStealing"), "block"),
-                "quarantine": "enabled"
-            },
-            "webshellDroppers": {
-                "mode": args.get(Profile.FIELDS.get("webshellDroppers"), "block"),
-                "quarantine": "enabled"
-            },
+            "uefiProtection": {"mode": args.get(Profile.FIELDS.get("uefiProtection"), "block"), "quarantine": "enabled"},
+            "maliciousDevice": {"mode": args.get(Profile.FIELDS.get("maliciousDevice"), "block"), "quarantine": "disabled"},
+            "networkSignature": {"mode": args.get(Profile.FIELDS.get("networkSignature"), "terminateSession")},
+            "passwordStealing": {"mode": args.get(Profile.FIELDS.get("passwordStealing"), "block"), "quarantine": "enabled"},
+            "webshellDroppers": {"mode": args.get(Profile.FIELDS.get("webshellDroppers"), "block"), "quarantine": "enabled"},
             "onWriteProtection": {
                 "examinePortableExecutables": "disabled",
                 "examineOfficeFiles": "disabled",
                 "powerShellScriptFiles": "disabled",
                 "aspFiles": "disabled",
                 "examineVBScriptFiles": "disabled",
-                "examineJScriptFiles": "disabled"
+                "examineJScriptFiles": "disabled",
             },
             "examineOfficeFiles": {
                 "mode": args.get(Profile.FIELDS.get("examineOfficeFiles"), "block"),
                 "upload": "enabled",
                 "networkDrives": "enabled",
                 "actionOnUnknown": "runLocalAnalysis",
-                "actionOnLowConfidence": "runLocalAnalysis"
+                "actionOnLowConfidence": "runLocalAnalysis",
             },
             "inProcessShellcode": {
                 "mode": args.get(Profile.FIELDS.get("inProcessShellcode"), "block"),
                 "quarantine": "enabled",
                 "processInjection32Bit": "enabled",
-                "aiPoweredShellcodeProtection": "enabled"
+                "aiPoweredShellcodeProtection": "enabled",
             },
             "examineJScriptFiles": {
                 "mode": args.get(Profile.FIELDS.get("examineJScriptFiles"), "block"),
                 "upload": "enabled",
                 "quarantine": "disabled",
-                "actionOnUnknown": "runLocalAnalysis"
+                "actionOnUnknown": "runLocalAnalysis",
             },
-            "legitimateProcesses": {
-                "mode": args.get(Profile.FIELDS.get("legitimateProcesses"), "block")
-            },
+            "legitimateProcesses": {"mode": args.get(Profile.FIELDS.get("legitimateProcesses"), "block")},
             "examineVBScriptFiles": {
                 "mode": args.get(Profile.FIELDS.get("examineVBScriptFiles"), "block"),
                 "upload": "enabled",
                 "quarantine": "disabled",
-                "actionOnUnknown": "runLocalAnalysis"
+                "actionOnUnknown": "runLocalAnalysis",
             },
             "dynamicSecurityEngine": {
                 "mode": args.get(Profile.FIELDS.get("dynamicSecurityEngine"), "block"),
                 "quarantine": "enabled",
                 "advancedApiMonitoring": "enabled",
-                "driversProtectionMode": "block"
+                "driversProtectionMode": "block",
             },
             "powerShellScriptFiles": {
                 "mode": args.get(Profile.FIELDS.get("powerShellScriptFiles"), "block"),
                 "upload": "enabled",
                 "quarantine": "disabled",
-                "actionOnUnknown": "runLocalAnalysis"
+                "actionOnUnknown": "runLocalAnalysis",
             },
             "financialMalwareThreat": {
                 "mode": args.get(Profile.FIELDS.get("financialMalwareThreat"), "block"),
                 "quarantine": "enabled",
-                "cryptoWalletProtection": "enabled"
+                "cryptoWalletProtection": "enabled",
             },
             "securityMeasuresBypass": {
                 "mode": args.get(Profile.FIELDS.get("securityMeasuresBypass"), "block"),
-                "quarantine": "enabled"
+                "quarantine": "enabled",
             },
             "dynamicDriverProtection": {
                 "mode": args.get(Profile.FIELDS.get("dynamicDriverProtection"), "block"),
-                "quarantine": "disabled"
+                "quarantine": "disabled",
             },
-            "dynamicKernelProtection": {
-                "mode": args.get(Profile.FIELDS.get("dynamicKernelProtection"), "block")
-            },
-            "passwordTheftProtection": {
-                "mode": args.get(Profile.FIELDS.get("passwordTheftProtection"), "enabled")
-            },
+            "dynamicKernelProtection": {"mode": args.get(Profile.FIELDS.get("dynamicKernelProtection"), "block")},
+            "passwordTheftProtection": {"mode": args.get(Profile.FIELDS.get("passwordTheftProtection"), "enabled")},
             "examinePortableExecutables": {
                 "mode": args.get(Profile.FIELDS.get("examinePortableExecutables"), "block"),
                 "upload": "enabled",
                 "grayware": "disabled",
                 "quarantine": "disabled",
                 "actionOnUnknown": "runLocalAnalysis",
-                "actionOnLowConfidence": "runLocalAnalysis"
+                "actionOnLowConfidence": "runLocalAnalysis",
             },
             "maliciousCausalityChainsResponse": {
                 "mode": args.get(Profile.FIELDS.get("maliciousCausalityChainsResponse"), "enabled")
-            }
+            },
         }
-        
+
     elif type == "Exploit":
         profile_modules = {
             "vulnerableApps": {"mode": args.get(Profile.FIELDS.get("vulnerableApps"), "block"), "javaProtection": "enabled"},
@@ -4738,7 +4701,7 @@ def create_profile_modules_by_type(args: dict, type: str):
             "browserExploitKits": {"mode": args.get(Profile.FIELDS.get("browserExploitKits"), "block")},
             "additionalProcesses": {"mode": args.get(Profile.FIELDS.get("additionalProcesses"), "disabled"), "processes": []},
         }
-    
+
     return profile_modules
 
 
@@ -4754,7 +4717,7 @@ def create_profile_command(client: Client, args: dict, profile_type: str) -> Com
             "profile_type": profile_type,
             "platform": profile_platform,
             "description": profile_description,
-            "modules": profile_modules
+            "modules": profile_modules,
         }
     }
     response = client.create_profile(payload).get("reply", "")
@@ -4763,20 +4726,20 @@ def create_profile_command(client: Client, args: dict, profile_type: str) -> Com
         readable_output=f"Profile {response} created successfully.",
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Profile",
         outputs={"profile_id": response},
-        raw_response={"profile_id": response}
+        raw_response={"profile_id": response},
     )
 
 
 def update_profile_command(client, args):
     profile_id = args.get("profile_id")
-    
+
     current_profile = client.get_current_profile(profile_id)
     if not current_profile or current_profile.get("reply") is None:
         raise DemistoException(f"Profile {profile_id} doesn't exist.")
-    
+
     update_data = current_profile.get("reply", {})
     current_profile_modules = update_data.get("PROFILE_MODULES", {})
-        
+
     for module_name, module_data in current_profile_modules.items():
         arg_value = args.get(Profile.FIELDS.get(module_name))
         if arg_value and "mode" in module_data:
@@ -4786,15 +4749,15 @@ def update_profile_command(client, args):
 
     if profile_name := args.get("profile_name"):
         update_data["PROFILE_NAME"] = profile_name
-    
+
     if profile_description := args.get("profile_description"):
         update_data["PROFILE_DESCRIPTION"] = profile_description
-    
+
     update_data["PROFILE_MODULES"] = current_profile_modules
     update_profile = {"profile_id": profile_id, "update_data": update_data}
-    
+
     client.update_profile(update_profile)
-    
+
     return CommandResults(readable_output=f"Profile {profile_id} updated successfully.")
 
 
@@ -4940,13 +4903,13 @@ def main():  # pragma: no cover
 
         elif command == "core-create-windows-malware-profile":
             return_results(create_profile_command(client, args, "Malware"))
-        
+
         elif command == "core-create-windows-exploit-profile":
             return_results(create_profile_command(client, args, "Exploit"))
-            
+
         elif command == "core-update-windows-malware-profile":
             return_results(update_profile_command(client, args))
-        
+
         elif command == "core-update-windows-exploit-profile":
             return_results(update_profile_command(client, args))
 

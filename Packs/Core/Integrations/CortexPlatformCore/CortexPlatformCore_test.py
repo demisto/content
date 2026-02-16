@@ -9458,6 +9458,7 @@ def test_get_case_resolution_statuses_command(mocker):
 class TestProfileCommands:
     def test_create_profile_modules_by_type_malware_defaults(self):
         from CortexPlatformCore import create_profile_modules_by_type
+
         args = {}
         modules = create_profile_modules_by_type(args, "Malware")
 
@@ -9467,10 +9468,8 @@ class TestProfileCommands:
 
     def test_create_profile_modules_by_type_malware_custom(self):
         from CortexPlatformCore import create_profile_modules_by_type, Profile
-        args = {
-            Profile.FIELDS["scanEndpoints"]: "enabled",
-            Profile.FIELDS["ransomware"]: "report"
-        }
+
+        args = {Profile.FIELDS["scanEndpoints"]: "enabled", Profile.FIELDS["ransomware"]: "report"}
         modules = create_profile_modules_by_type(args, "Malware")
 
         assert modules["scanEndpoints"]["periodicScan"]["mode"] == "enabled"
@@ -9478,6 +9477,7 @@ class TestProfileCommands:
 
     def test_create_profile_modules_by_type_exploit_defaults(self):
         from CortexPlatformCore import create_profile_modules_by_type
+
         args = {}
         modules = create_profile_modules_by_type(args, "Exploit")
 
@@ -9490,10 +9490,7 @@ class TestProfileCommands:
         mock_client = mocker.Mock(spec=Client)
         mock_client.create_profile.return_value = {"reply": "12345"}
 
-        args = {
-            "profile_name": "Test Profile",
-            "profile_description": "Test Description"
-        }
+        args = {"profile_name": "Test Profile", "profile_description": "Test Description"}
 
         result = create_profile_command(mock_client, args, "Malware")
 
@@ -9513,18 +9510,12 @@ class TestProfileCommands:
             "reply": {
                 "PROFILE_NAME": "Old Name",
                 "PROFILE_DESCRIPTION": "Old Desc",
-                "PROFILE_MODULES": {
-                    "ransomware": {"mode": {"value": "block"}}
-                }
+                "PROFILE_MODULES": {"ransomware": {"mode": {"value": "block"}}},
             }
         }
         mock_client.update_profile.return_value = {}
 
-        args = {
-            "profile_id": "12345",
-            "profile_name": "New Name",
-            Profile.FIELDS["ransomware"]: "report"
-        }
+        args = {"profile_id": "12345", "profile_name": "New Name", Profile.FIELDS["ransomware"]: "report"}
 
         result = update_profile_command(mock_client, args)
 
