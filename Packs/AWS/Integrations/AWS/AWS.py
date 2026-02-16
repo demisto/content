@@ -4281,18 +4281,15 @@ class EC2:
         Returns:
             CommandResults: Results of the deletion operation
         """
-        kwargs: Dict[str, Any] = {
-            "LaunchTemplateId": args.get("launch_template_id"),
-            "LaunchTemplateName": args.get("launch_template_name"),
-        }
+        kwargs: Dict[str, Any] = remove_empty_elements(
+            {
+                "LaunchTemplateId": args.get("launch_template_id"),
+                "LaunchTemplateName": args.get("launch_template_name"),
+            }
+        )
 
-        # Either launch_template_id or launch_template_name must be provided
-        # remove_empty_elements returns a NEW dict, so we need to capture it
-        cleaned_kwargs = remove_empty_elements(kwargs)
-        if not cleaned_kwargs or len(cleaned_kwargs) > 1:
+        if not kwargs or len(kwargs) > 1:
             raise DemistoException("Either launch_template_id or launch_template_name must be provided, but not both.")
-
-        kwargs = cleaned_kwargs
 
         print_debug_logs(client, f"Deleting launch template with parameters: {kwargs}")
         response = client.delete_launch_template(**kwargs)

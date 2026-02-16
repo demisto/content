@@ -9923,7 +9923,6 @@ def test_ec2_describe_launch_templates_command_success(mocker):
 
     result = EC2.describe_launch_templates_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    # The implementation returns outputs in dict format with context paths
     assert "AWS.EC2.LaunchTemplates(val.LaunchTemplateId && val.LaunchTemplateId == obj.LaunchTemplateId)" in result.outputs
     assert "AWS.EC2(true)" in result.outputs
     launch_templates = result.outputs[
@@ -10051,7 +10050,6 @@ def test_ec2_create_launch_template_command_success(mocker):
     }
 
     mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_client.create_launch_template.return_value)
-    # Mock parse_tag_field to return empty list when tags is None
     mocker.patch("AWS.parse_tag_field", return_value=[])
 
     args = {
