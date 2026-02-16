@@ -9453,3 +9453,109 @@ def test_get_case_resolution_statuses_command(mocker):
     assert len(result.outputs) == 2
     assert len(result.raw_response) == 2
     assert mock_client.get_case_resolution_statuses.call_count == 2
+
+
+class TestProfileCommands:
+    def test_create_profile_modules_by_type_malware_defaults(self):
+        from CortexPlatformCore import create_profile_modules_by_type
+        args = {}
+        modules = create_profile_modules_by_type(args, "Malware")
+
+        assert modules["scanEndpoints"]["periodicScan"]["mode"] == "disabled"
+        assert modules["aspFiles"]["mode"] == "disabled"
+        assert modules["ransomware"]["mode"] == "block"
+
+    def test_create_profile_modules_by_type_malware_custom(self):
+        from CortexPlatformCore import create_profile_modules_by_type, Profile
+        args = {
+            Profile.FIELDS["scanEndpoints"]: "enabled",
+            Profile.FIELDS["ransomware"]: "report"
+        }
+        modules = create_profile_modules_by_type(args, "Malware")
+
+        assert modules["scanEndpoints"]["periodicScan"]["mode"] == "enabled"
+        assert modules["ransomware"]["mode"] == "report"
+
+    def test_create_profile_modules_by_type_exploit_defaults(self):
+        from CortexPlatformCore import create_profile_modules_by_type
+        args = {}
+        modules = create_profile_modules_by_type(args, "Exploit")
+
+        assert modules["vulnerableApps"]["mode"] == "block"
+        assert modules["logicalExploits"]["mode"] == "block"
+
+    def test_create_profile_command_success(self, mocker):
+        from CortexPlatformCore import create_profile_command, Client
+
+        mock_client = mocker.Mock(spec=Client)
+        mock_client.create_profile.return_value = {"reply": "12345"}
+
+        args = {
+            "profile_name": "Test Profile",
+            "profile_description": "Test Description"
+        }
+
+        result = create_profile_command(mock_client, args, "Malware")
+
+        assert result.outputs["profile_id"] == "12345"
+        assert "Profile 12345 created successfully" in result.readable_output
+
+        mock_client.create_profile.assert_called_once()
+        call_args = mock_client.create_profile.call_args[0][0]
+        assert call_args["request_data"]["name"] == "Test Profile"
+        assert call_args["request_data"]["profile_type"] == "Malware"
+
+    def test_update_profile_command_success(self, mocker):
+        from CortexPlatformCore import update_profile_command, Client, Profile
+
+        mock_client = mocker.Mock(spec=Client)
+        mock_client.get_current_profile.return_value = {
+            "reply": {
+                "PROFILE_NAME": "Old Name",
+                "PROFILE_DESCRIPTION": "Old Desc",
+                "PROFILE_MODULES": {
+                    "ransomware": {"mode": {"value": "block"}}
+                }
+            }
+        }
+        mock_client.update_profile.return_value = {}
+
+        args = {
+            "profile_id": "12345",
+            "profile_name": "New Name",
+            Profile.FIELDS["ransomware"]: "report"
+        }
+
+        result = update_profile_command(mock_client, args)
+
+        assert "Profile 12345 updated successfully" in result.readable_output
+
+        mock_client.update_profile.assert_called_once()
+        call_args = mock_client.update_profile.call_args[0][0]
+        assert call_args["profile_id"] == "12345"
+        assert call_args["update_data"]["PROFILE_NAME"] == "New Name"
+        assert call_args["update_data"]["PROFILE_MODULES"]["ransomware"]["mode"]["value"] == "report"
+
+    def test_update_profile_command_not_found(self, mocker):
+        from CortexPlatformCore import update_profile_command, Client, DemistoException
+
+        mock_client = mocker.Mock(spec=Client)
+        mock_client.get_current_profile.return_value = {"reply": None}
+
+        args = {"profile_id": "12345"}
+
+        with pytest.raises(DemistoException, match="Profile 12345 doesn't exist"):
+            update_profile_command(mock_client, args)
+
+    def test_delete_profile_command_success(self, mocker):
+        from CortexPlatformCore import delete_profile_command, Client
+
+        mock_client = mocker.Mock(spec=Client)
+        mock_client.delete_profile.return_value = {}
+
+        args = {"profile_ids": "12345,67890"}
+
+        result = delete_profile_command(mock_client, args)
+
+        assert "Profiles ['12345', '67890'] deleted successfully" in result.readable_output
+        mock_client.delete_profile.assert_called_once_with(["12345", "67890"])
