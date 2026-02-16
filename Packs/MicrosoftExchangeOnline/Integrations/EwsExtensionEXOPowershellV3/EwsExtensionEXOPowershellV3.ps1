@@ -101,6 +101,9 @@ function ParseMessageTraceToEntryContext([PSObject]$raw_response) {
 }
 
 function ParseRawResponse([PSObject]$response) {
+    if ($null -eq $response) {
+        return @()
+    }
     $items = @()
     ForEach ($item in $response){
         if ($item -Is [HashTable])
@@ -234,12 +237,26 @@ class ExchangeOnlinePowershellV3Client
             "Certificate" = $this.certificate
         }
         try {
-            Connect-ExchangeOnline @cmd_params -ShowBanner:$false -CommandName New-TenantAllowBlockListItems,Get-TenantAllowBlockListItems,Remove-TenantAllowBlockListItems,Get-RemoteDomain,Get-MailboxAuditBypassAssociation,Get-User,Get-FederatedOrganizationIdentifier,Get-FederationTrust,Get-MessageTrace,Get-MessageTraceV2,Set-MailboxJunkEmailConfiguration,Get-Mailbox,Get-MailboxJunkEmailConfiguration,Get-InboxRule,Remove-InboxRule,Export-QuarantineMessage,Get-QuarantineMessage,Release-QuarantineMessage,Disable-InboxRule,Enable-InboxRule,Get-TransportRule,Remove-TransportRule,Disable-TransportRule,Enable-TransportRule,Set-Mailbox -ErrorAction Stop -WarningAction:SilentlyContinue | Out-Null
+            Demisto.Debug("Attempting to connect to Exchange Online for Organization: $($this.organization) with AppID: $($this.app_id)")
+            Connect-ExchangeOnline @cmd_params -ShowBanner:$false -CommandName New-TenantAllowBlockListItems,Get-TenantAllowBlockListItems,Remove-TenantAllowBlockListItems,Get-RemoteDomain,Get-MailboxAuditBypassAssociation,Get-User,Get-FederatedOrganizationIdentifier,Get-FederationTrust,Get-MessageTrace,Get-MessageTraceV2,Set-MailboxJunkEmailConfiguration,Get-Mailbox,Get-MailboxJunkEmailConfiguration,Get-InboxRule,Remove-InboxRule,Export-QuarantineMessage,Get-QuarantineMessage,Release-QuarantineMessage,Disable-InboxRule,Enable-InboxRule,Get-TransportRule,Remove-TransportRule,Disable-TransportRule,Enable-TransportRule,Set-Mailbox -WarningAction:SilentlyContinue | Out-Null
+            Demisto.Debug("Successfully connected to Exchange Online.")
         }
         catch {
             $errorMessage = $_.Exception.Message
-            $stackTrace = $_.ScriptStackTrace
-            throw "Connect-ExchangeOnline failed. \nError: $errorMessage. \nStackTrace: $stackTrace"
+            Demisto.Debug("Connection to Exchange Online failed. Error message: $errorMessage")
+            if ($errorMessage -match "<html" -or $errorMessage -match "<!DOCTYPE html") {
+                Demisto.Debug("Detected HTML response from Exchange Online.")
+                throw "Failed to connect to Exchange Online. The server returned an HTML response instead of JSON. This might indicate a service outage or a proxy/firewall issue. Error: $errorMessage"
+            }
+            elseif ($errorMessage -match "<\?xml") {
+                Demisto.Debug("Detected XML response from Exchange Online.")
+                throw "Failed to connect to Exchange Online. The server returned an XML response instead of JSON. Error: $errorMessage"
+            }
+            elseif ($errorMessage -match "^\s*\{" -eq $false -and $errorMessage -match "^\s*\[" -eq $false -and $errorMessage.Length -gt 0) {
+                Demisto.Debug("Detected non-JSON response from Exchange Online.")
+                throw "Failed to connect to Exchange Online. The server returned a non-JSON response. Error: $errorMessage"
+            }
+            throw $_
         }
     }
     DisconnectSession()
@@ -2701,8 +2718,7 @@ function Main
         switch ($command)
         {
             "test-module" {
-                TestModuleCommand $exo_client
-                return
+                ($human_readable, $entry_context, $raw_response) = TestModuleCommand $exo_client
             }
             "$script:COMMAND_PREFIX-cas-mailbox-list" {
                 ($human_readable, $entry_context, $raw_response) = GetEXOCASMailboxCommand $exo_client $command_arguments
