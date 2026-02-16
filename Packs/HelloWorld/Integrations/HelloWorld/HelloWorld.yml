@@ -143,14 +143,14 @@ script:
   - arguments:
     - description: The alert's ID to add the note to.
       name: alert_id
-      required: true
+      required: false
     - description: The comment to add to the note.
       name: note_text
       required: true
     description: Example of creating a new item in the API.
     name: helloworld-alert-note-create
     outputs:
-    - contextPath: HelloWorld.alert.id
+    - contextPath: alert.id
       description: The ID of the alert.
       type: Number
     - contextPath: HelloWorld.alert.name
