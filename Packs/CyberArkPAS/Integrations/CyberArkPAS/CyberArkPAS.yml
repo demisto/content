@@ -278,41 +278,29 @@ script:
     - contextPath: CyberArkPAS.Users.id
       description: The unique IDs of the users.
       type: Number
-    - contextPath: CyberArkPAS.Users.authenticationMethod
-      description: The authentication method of the user.
+    - contextPath: CyberArkPAS.Users.username
+      description: The names of the users.
       type: String
-    - contextPath: CyberArkPAS.Users.changePassOnNextLogon
-      description: Whether or not the users must change their password.
-      type: Boolean
-    - contextPath: CyberArkPAS.Users.description
-      description: Descriptions of the users.
+    - contextPath: CyberArkPAS.Users.source
+      description: The sources of the users.
       type: String
-    - contextPath: CyberArkPAS.Users.enableUser
-      description: Whether or not the users are enabled.
-      type: Boolean
-    - contextPath: CyberArkPAS.Users.expiryDate
-      description: The expiry dates of the users.
-      type: Number
-    - contextPath: CyberArkPAS.Users.internet.businessEmail
-      description: The email addresses of the users.
-      type: String
-    - contextPath: CyberArkPAS.Users.lastSuccessfulLoginDate
-      description: The last successful login dates of the users.
-      type: Number
-    - contextPath: CyberArkPAS.Users.location
-      description: The locations in the vault where the users were created.
-      type: String
-    - contextPath: CyberArkPAS.Users.personalDetails.profession
-      description: The professions of the users.
-      type: String
-    - contextPath: CyberArkPAS.Users.suspended
-      description: Whether or not the users are suspended.
-      type: Boolean
     - contextPath: CyberArkPAS.Users.userType
       description: The types of the users.
       type: String
-    - contextPath: CyberArkPAS.Users.username
-      description: The names of the users.
+    - contextPath: CyberArkPAS.Users.componentUser
+      description: Whether the users are component users.
+      type: Boolean
+    - contextPath: CyberArkPAS.Users.location
+      description: The locations in the vault where the users were created.
+      type: String
+    - contextPath: CyberArkPAS.Users.personalDetails.firstName
+      description: The first name of the users.
+      type: String
+    - contextPath: CyberArkPAS.Users.personalDetails.middleName
+      description: The middle name of the users.
+      type: String
+    - contextPath: CyberArkPAS.Users.personalDetails.lastName
+      description: The last name of the users.
       type: String
     - contextPath: CyberArkPAS.Users.vaultAuthorization
       description: The permissions of the users.
