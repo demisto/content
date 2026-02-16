@@ -261,7 +261,9 @@ class ServiceNowClient(BaseClient):
                     return self.get_access_token(retry_attempted=True)
 
                 raise Exception(
-                    "Could not create an access token. The user may not be logged in. Please run the oauth-login command, or ensure that username and password parameters are set in your instance configuration to enable auto-login."
+                    "Could not create an access token. The user may not be logged in. "
+                    "Please run the oauth-login command, or ensure that username and password "
+                    "parameters are set in your instance configuration to enable auto-login."
                 )
 
             try:

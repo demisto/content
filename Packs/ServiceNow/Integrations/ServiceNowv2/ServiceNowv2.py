@@ -3778,8 +3778,8 @@ def main():
     oauth_creds = params.get("oauth_credentials", {})
 
     if use_oauth:  # if the `Use OAuth` checkbox was checked, client id & secret should be in the credentials fields
-        client_id = oauth_creds.get("identifier")
-        client_secret = oauth_creds.get("password")
+        client_id = oauth_creds.get("identifier", "")
+        client_secret = oauth_creds.get("password", "")
         oauth_params = {
             "client_id": client_id,
             "client_secret": client_secret,
@@ -3801,11 +3801,11 @@ def main():
             }
 
     else:  # use basic authentication
-        # if are none - fallback to legacy which populates the oath credentials
+        # if are none - fallback to legacy which populates the oauth credentials
         if not username or not password:
             demisto.debug("Using legacy parameters for username and password")
-            username = oauth_creds.get("identifier")
-            password = oauth_creds.get("password")
+            username = oauth_creds.get("identifier") or ""
+            password = oauth_creds.get("password") or ""
 
     version = params.get("api_version")
 
