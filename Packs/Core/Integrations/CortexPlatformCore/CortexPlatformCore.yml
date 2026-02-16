@@ -3576,7 +3576,7 @@ script:
           predefined:
             - disabled
             - enabled
-      description: Creates a new profile.
+      description: Creates a new windows malware profile.
       name: core-create-windows-malware-profile
       outputs:
         - contextPath: Core.Profile.profile_id
@@ -3781,7 +3781,7 @@ script:
           predefined:
             - disabled
             - enabled
-      description: Updates the provided profile.
+      description: Updates the provided windows malware profile.
       name: core-update-windows-malware-profile
       outputs: []
     - arguments:
@@ -3830,7 +3830,7 @@ script:
             - block
             - disabled
             - report
-      description: Creates a new Windows exploit profile.
+      description: Creates a new windows exploit profile.
       name: core-create-windows-exploit-profile
       outputs:
         - contextPath: Core.Profile.profile_id
@@ -3879,7 +3879,7 @@ script:
             - block
             - disabled
             - report
-      description: Updates the provided profile.
+      description: Updates the provided windows exploit profile.
       name: core-update-windows-exploit-profile
       outputs: []
     - arguments:

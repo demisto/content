@@ -92,7 +92,7 @@ class Profile:
         "aspFiles": "asp_aspx_files",
         "powerShellScriptFiles": "powershell_script_files",
         "scanEndpoints": "on_demand_file_examination",
-        "manualScan": "end_user_initiated_local_scan",
+        "endUserInitiatedLocalScan": "end_user_initiated_local_scan",
         "examineVBScriptFiles": "vb_scripts_examination",
         "dynamicSecurityEngine": "global_behavioral_threat_protection_rules",
         "passwordStealing": "credential_gathering_protection",
@@ -119,6 +119,7 @@ class Profile:
         "vulnerableApps": "known_vulnerable_processes_protection",
         "osKernelExploits": "operating_system_exploit_protection",
         "additionalProcesses": "exploit_protection_for_additional_processes",
+        "manualScan": "end_user_initiated_local_scan", # for update command 
     }
 
 
@@ -4577,9 +4578,9 @@ def verify_platform_version(version: str = "8.13.0"):
         raise DemistoException("This command is not available for this platform version")
 
 
-def create_profile_modules_by_type(args: dict, type: str):
+def create_profile_modules_by_type(args: dict, profile_type: str):
     profile_modules = {}
-    if type == "Malware":
+    if profile_type == "Malware":
         # Configuration for periodic scan to be used when enabled
         scan_endpoints_periodic_config = {"type": "weekly", "days": ["sun"], "hour": "00:00", "removableMedia": "disabled"}
 
@@ -4612,7 +4613,7 @@ def create_profile_modules_by_type(args: dict, type: str):
             "iisProtection": {"mode": args.get(Profile.FIELDS.get("iisProtection"), "block"), "quarantine": "enabled"},
             "scanEndpoints": {
                 "periodicScan": periodic_scan_config,
-                "endUserInitiatedLocalScan": args.get("manualScan", "enabled"),
+                "endUserInitiatedLocalScan": args.get(Profile.FIELDS.get("endUserInitiatedLocalScan"), "enabled"),
             },
             "uefiProtection": {"mode": args.get(Profile.FIELDS.get("uefiProtection"), "block"), "quarantine": "enabled"},
             "maliciousDevice": {"mode": args.get(Profile.FIELDS.get("maliciousDevice"), "block"), "quarantine": "disabled"},
@@ -4693,7 +4694,7 @@ def create_profile_modules_by_type(args: dict, type: str):
             },
         }
 
-    elif type == "Exploit":
+    elif profile_type == "Exploit":
         profile_modules = {
             "vulnerableApps": {"mode": args.get(Profile.FIELDS.get("vulnerableApps"), "block"), "javaProtection": "enabled"},
             "logicalExploits": {"mode": args.get(Profile.FIELDS.get("logicalExploits"), "block"), "forbidDllLoad": []},
