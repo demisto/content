@@ -1469,6 +1469,7 @@ class FilterBuilder:
         NIS_EMPTY = ("NIS_EMPTY", "AND")
         ADVANCED_IP_MATCH_EXACT = ("ADVANCED_IP_MATCH_EXACT", "OR")
         RELATIVE_TIMESTAMP = ("RELATIVE_TIMESTAMP", "OR")
+        NEQ = ("NEQ", "AND")
 
     AND = "AND"
     OR = "OR"
