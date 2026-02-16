@@ -1,4 +1,5 @@
 category: Endpoint
+provider: Unisys Corporation
 commonfields:
   id: Unisys Stealth
   version: -1

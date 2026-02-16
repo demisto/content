@@ -4,6 +4,7 @@ commonfields:
 name: AWS Sagemaker
 display: AWS Sagemaker
 category: Data Enrichment & Threat Intelligence
+provider: Amazon
 description: AWS Sagemaker - Demisto Phishing Email Classifier.
 configuration:
 - display: AWS access key

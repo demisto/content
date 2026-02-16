@@ -119,6 +119,7 @@ class RasterizeType(Enum):
     PNG = "png"
     PDF = "pdf"
     JSON = "json"
+    TEXT = "text"
 
 
 # endregion
@@ -329,7 +330,14 @@ class PychromeEventHandler:
 
             safe_sleep(DEFAULT_PAGE_LOAD_TIME / DEFAULT_RETRIES_COUNT + 1)
 
-            frame_url = self.get_frame_tree_url()
+            try:
+                frame_url = self.get_frame_tree_url()
+            except Exception as e:
+                demisto.debug(
+                    f"Error getting frame URL in retry_loading for {self.tab.id=}, {self.path=} "
+                    f"attempt {retry_count}/{DEFAULT_RETRIES_COUNT}: {str(e)}"
+                )
+                frame_url = ""
 
             # If frame_url is empty string, we can't continue retrying - the tab may be in a bad state
             if not frame_url:
@@ -347,7 +355,7 @@ class PychromeEventHandler:
                 return
 
             demisto.debug(
-                "Retry {retry_count}/{DEFAULT_RETRIES_COUNT} failed: Page still showing Chrome error. "
+                f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} failed: Page still showing Chrome error. "
                 f"{self.tab.id=}, {self.path=}"
             )
 
@@ -386,13 +394,264 @@ class PychromeEventHandler:
 
 # endregion
 
+_EXTRACTION_JAVASCRIPT = """
+(function() {
+    // --- JSON Detection and Extraction (First Priority) ---
+    const contentType = (document.contentType ||
+                         document.querySelector('meta[http-equiv="Content-Type"]')?.content ||
+                         '').toLowerCase();
+    const isJson = contentType.includes('application/json') ||
+                   contentType.includes('application/ld+json');
 
-def count_running_chromes(port) -> int:
+    if (isJson) {
+        const jsonContent = document.querySelector('pre') ?
+                            document.querySelector('pre').textContent :
+                            document.body.textContent;
+        return { type: 'json', content: jsonContent };
+    }
+
+    // --- Metadata and Tag Extraction ---
+    let metadataOutput = [];
+
+    // Function to safely extract content from a meta tag
+    function getMetaContent(selector) {
+        const element = document.querySelector(selector);
+        return element ? element.content.trim() : '';
+    }
+
+    // Extract Title, Description, and Tags from the <head>
+    const title = document.title.trim();
+    if (title) metadataOutput.push(`# ${title}`);
+
+    const description = getMetaContent('meta[name="description"]');
+    if (description) metadataOutput.push(`\\n**Description:** ${description}`);
+
+    const ogTags = getMetaContent('meta[property="og:tags"], meta[name="keywords"]');
+    if (ogTags) metadataOutput.push(`\\n**Tags:** ${ogTags}`);
+
+    // Append a separator after metadata
+    if (metadataOutput.length > 0) metadataOutput.push('\\n\\n---\\n\\n');
+
+    // --- HTML/Markdown Extraction ---
+    const MAIN_CONTENT_SELECTORS = 'main, article, [class*="pan-article-content-wrapper"], [class*="post-content"], '
+        + '#main-article-body, .entry-content, #content, #article-body';
+
+    const IGNORE_SELECTORS = 'nav, header, footer, aside, script, style, noscript, form, iframe, button, video, audio, '
+        + '[role="navigation"], [role="banner"], [role="contentinfo"], [role="complementary"], '
+        + '.sidebar, #comments, .comment-area, '
+        + '[class*="table-of-contents"], [id*="table-of-contents"], .article-sidebar-container, '
+        + '.related-content, .widget, .subscribe-form, .product-nav, .additional-resources, .share-buttons, '
+        + '.related-posts, .related-articles, [id^="related-articles"], [id^="related-resources"], '
+        + '[class*="product-list"], [class*="subscribe"], '
+        + '.share-widget, .tag-list, .article-footer, .resources-container, .products-and-services, '
+        + '[class*="nav-column"], [class*="mega-dropdown-menu"], [class*="services-list"], '
+        + '[class*="sub-menu-col"], [class*="tab-pane"], '
+        + '[class*="copyright"], [class*="footer-columns"], .pan-footer-container, [data-type*="script"], '
+        + '[class*="site-nav"], [class*="mobile-header"], [id^="main-nav-menu"]';
+
+    const traversalRoot = document.querySelector(MAIN_CONTENT_SELECTORS) || document.body;
+    const markdownOutput = metadataOutput;
+
+    function traverse(node) {
+        if (node.nodeType === 3) { // TEXT_NODE
+            const text = node.textContent.trim();
+            if (text) markdownOutput.push(text + ' ');
+        } else if (node.nodeType === 1) { // ELEMENT_NODE
+            if (node.matches(IGNORE_SELECTORS)) {
+                 return;
+            }
+
+            const tag = node.tagName.toLowerCase();
+            const children = Array.from(node.childNodes);
+
+            if (tag === 'div' && node.textContent.trim().length === 0 && node.children.length === 0) {
+                 return;
+            }
+
+            let [prefix, suffix, skipChildren] = ['', '', false];
+
+            switch (tag) {
+                case 'h1':
+                case 'h2':
+                case 'h3':
+                case 'h4':
+                case 'h5':
+                case 'h6':
+                    const level = parseInt(tag[1], 10);
+                    [prefix, suffix] = [`\\n\\n${'#'.repeat(level)} `, '\\n\\n'];
+                    break;
+
+                // Table support with proper markdown formatting
+                case 'table':
+                    [prefix, suffix] = ['\\n\\n', '\\n\\n'];
+                    break;
+                case 'thead':
+                    break;
+                case 'tbody':
+                    break;
+                case 'tr':
+                    const isHeaderRow = node.parentNode.tagName.toLowerCase() === 'thead';
+                    if (isHeaderRow) {
+                        // Header row
+                        [prefix, suffix] = ['| ', ' |\\n'];
+                    } else {
+                        // Check if this is first body row (need separator)
+                        const prevRow = node.previousElementSibling;
+                        const needsSeparator = !prevRow || prevRow.parentNode?.tagName?.toLowerCase() === 'thead';
+                        if (needsSeparator) {
+                            const colCount = node.querySelectorAll('td, th').length;
+                            const separator = '|' + ' --- |'.repeat(colCount) + '\\n';
+                            [prefix, suffix] = [separator + '| ', ' |\\n'];
+                        } else {
+                            [prefix, suffix] = ['| ', ' |\\n'];
+                        }
+                    }
+                    break;
+                case 'td':
+                case 'th':
+                    [prefix, suffix] = [' ', ' |'];
+                    break;
+
+                case 'p':
+                case 'div':
+                    [prefix, suffix] = ['\\n\\n', '\\n\\n'];
+                    break;
+
+                case 'li':
+                    const listSymbol = node.parentNode.tagName.toLowerCase() === 'ol'
+                        ? `${Array.from(node.parentNode.children).indexOf(node) + 1}. `
+                        : '* ';
+                    prefix = `\\n${listSymbol}`;
+                    break;
+
+                case 'a':
+                    const href = node.getAttribute('href');
+                    const text = node.textContent.trim();
+                    if (href && text && !href.toLowerCase().startsWith('mailto:')) {
+                        prefix = `[${text}](${href}) `;
+                        skipChildren = true;
+                    } else if (text) {
+                        prefix = text;
+                        skipChildren = true;
+                    }
+                    break;
+                case 'strong':
+                case 'b':
+                    [prefix, suffix] = ['**', '**'];
+                    break;
+                case 'br':
+                case 'hr':
+                    prefix = '\\n';
+                    break;
+                case 'pre':
+                    prefix = '\\n\\n```\\n';
+                    suffix = '\\n```\\n\\n';
+                    break;
+            }
+
+            markdownOutput.push(prefix);
+
+            if (!skipChildren) {
+                children.forEach(traverse);
+            }
+
+            markdownOutput.push(suffix);
+        }
+    }
+
+    traverse(traversalRoot);
+
+    // Final Cleanup
+    let finalContent = markdownOutput.join('').trim();
+
+    finalContent = finalContent.replace(/ +/g, ' ');
+    finalContent = finalContent.replace(/\\n\\n\\n+/g, '\\n\\n');
+    finalContent = finalContent.replace(/[ \\t]*\\n[ \\t]*/g, '\\n');
+    finalContent = finalContent.replace(/ ([.,;:!?])/g, '$1');
+    finalContent = finalContent.replace(/\\*\\*\\n\\n/g, '**');
+    finalContent = finalContent.replace(/\\*\\* \\*\\* /g, ' ');
+
+    // Table cleanup
+    finalContent = finalContent.replace(/\\|(\\s*?)\\|(\\s*?)-\\|/g, '|');
+    finalContent = finalContent.replace(/\\|\\s*?\\n/g, '\\n');
+    finalContent = finalContent.split('\\n').map(line => line.trim()).join('\\n');
+    finalContent = finalContent.trim();
+
+    return { type: 'html', content: finalContent };
+})();
+"""
+
+
+def extract_content_from_tab(tab: pychrome.Tab, navigation_timeout: int) -> tuple[str, str]:
+    """
+    Executes the JavaScript to extract ONLY the structured content string.
+    For JSON content (detected by Content-Type), returns raw JSON. For HTML, returns markdown-formatted content.
+
+    The JavaScript handles both detection and extraction in a single call for optimal performance.
+
+    Returns:
+        tuple[str, str]: A tuple containing:
+            - str: The structured content string (JSON or Markdown).
+            - str: The final URL navigated to (as auxiliary data).
+    """
+    demisto.debug(f"Executing content-only extraction for tab {tab.id}")
+
     try:
-        processes = subprocess.check_output(["ps", "auxww"], stderr=subprocess.STDOUT, text=True).splitlines()
+        frame_tree_result = tab.Page.getFrameTree()
+        final_url = frame_tree_result.get("frameTree", {}).get("frame", {}).get("url", "N/A")
+    except Exception as ex:
+        demisto.debug(f"Could not get frame URL: {ex}")
+        final_url = "N/A"
 
+    try:
+        result = tab.Runtime.evaluate(expression=_EXTRACTION_JAVASCRIPT, returnByValue=True, _timeout=navigation_timeout)
+        extraction_result = result.get("result", {}).get("value", {})
+
+        content_type = extraction_result.get("type", "html")
+        raw_content = extraction_result.get("content", "").strip()
+
+        if content_type == "json":
+            try:
+                parsed_json = json.loads(raw_content)
+                content_string = json.dumps(parsed_json, separators=(", ", ": "), ensure_ascii=False)
+                demisto.debug(f"Successfully parsed and formatted JSON (detected by Content-Type) from {final_url}")
+            except json.JSONDecodeError as json_err:
+                demisto.debug(f"Could not parse JSON from {final_url}: {json_err}, returning raw content")
+                content_string = raw_content
+        else:
+            content_string = raw_content
+
+        if not content_string:
+            raise DemistoException("Extraction failed: Received empty content string from JavaScript execution.")
+
+        return content_string, final_url
+
+    except Exception as ex:
+        demisto.error(f"Failed to extract structured content from tab {tab.id}: {ex}")
+        return f"Extraction Error: {str(ex)}", final_url
+
+
+# endregion
+
+
+def get_chrome_processes(port) -> list:
+    try:
+        processes = []
+        # get all the processes running on the machine
+        for pid in os.listdir("/proc"):
+            if pid.isdigit():
+                try:
+                    with open(f"/proc/{pid}/cmdline") as f:
+                        cmd = f.read().replace("\x00", " ").strip()
+                        if cmd:
+                            processes.append(f"{pid} {cmd}")
+                except Exception:
+                    pass
+
+        # identifiers the relevant chrome processes
         chrome_identifiers = ["chrom", "headless", f"--remote-debugging-port={port}"]
         chrome_renderer_identifiers = ["--type=renderer"]
+        # filter by the identifiers the relevant processes and get it as list
         chrome_processes = [
             process
             for process in processes
@@ -401,20 +660,16 @@ def count_running_chromes(port) -> int:
         ]
 
         demisto.debug(f"Detected {len(chrome_processes)} Chrome processes running on port {port}")
-        return len(chrome_processes)
-
-    except subprocess.CalledProcessError as e:
-        demisto.info(f"Error fetching process list: {e.output}")
-        return 0
+        return chrome_processes
     except Exception as e:
-        demisto.info(f"Unexpected exception when fetching process list, error: {e}")
-        return 0
+        demisto.info(f"Unexpected exception when fetching chrome process list, error: {e}")
+        return []
 
 
 def get_chrome_browser(port: str) -> pychrome.Browser | None:
     # Verify that the process has started
     for attempt in range(DEFAULT_RETRIES_COUNT):
-        running_chromes_count = count_running_chromes(port)
+        running_chromes_count = len(get_chrome_processes(port))
         if running_chromes_count < 1:
             demisto.debug(f"Attempt {attempt + 1}/{DEFAULT_RETRIES_COUNT}: Process not started yet, sleeping...")
             time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS + attempt * 2)
@@ -619,26 +874,15 @@ def terminate_chrome(chrome_port: str = "", killall: bool = False) -> None:  # p
     Returns:
         None
     """
-    # get all the processes running on the machine
-    processes = subprocess.check_output(["ps", "auxww"], stderr=subprocess.STDOUT, text=True).splitlines()
-    # identifiers the relevant chrome processes
-    chrome_renderer_identifiers = ["--type=renderer"]
-    chrome_identifiers = ["chrome", "headless", f"--remote-debugging-port={chrome_port}"]
-    # filter by the identifiers the relevant processes and get it as list
-    process_in_list = [
-        process
-        for process in processes
-        if all(identifier in process for identifier in chrome_identifiers)
-        and not any(identifier in process for identifier in chrome_renderer_identifiers)
-    ]
+    process_in_list = get_chrome_processes(chrome_port)
 
     if killall:
         # fetch the pids of the processes
-        pids = [int(process.split()[1]) for process in process_in_list]
+        pids = [int(process.split()[0]) for process in process_in_list]
     else:
         # fetch the pid of the process. the list contain just one process with the given chrome_port
         process_string_representation = process_in_list[0]
-        pids = [int(process_string_representation.split()[1])]
+        pids = [int(process_string_representation.split()[0])]
 
     for pid in pids:
         # for each pid, get the process by it PID and terminate it
@@ -756,7 +1000,7 @@ def generate_chrome_port() -> str | None:
     random.shuffle(ports_list)
     demisto.debug(f"Searching for Chrome on these ports: {ports_list}")
     for chrome_port in ports_list:
-        len_running_chromes = count_running_chromes(chrome_port)
+        len_running_chromes = len(get_chrome_processes(chrome_port))
         demisto.debug(f"Found {len_running_chromes=} on port {chrome_port}")
 
         if len_running_chromes == 0:
@@ -1029,6 +1273,40 @@ def screenshot_pdf(
     return ret_value, None
 
 
+def extract_text_content(
+    browser: pychrome.Browser, tab: pychrome.Tab, path: str, wait_time: int, navigation_timeout: int
+):  # pragma: no cover
+    """Extracts structured text content from a web page using Chrome browser.
+
+    Args:
+        browser: The Chrome browser instance.
+        tab: The Chrome tab instance.
+        path: The URL or file path to extract content from.
+        wait_time: Time to wait before extracting content.
+        navigation_timeout: Maximum time to wait for page load.
+
+    Returns:
+        tuple: A tuple containing:
+            - str: The extracted content string.
+            - str: The final URL navigated to.
+
+    Raises:
+        DemistoException: If the URL is a mailto or private network URL.
+    """
+    tab_event_handler = navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
+
+    if tab_event_handler.is_mailto or tab_event_handler.is_private_network_url:
+        error_msg = f'Cannot rasterize "mailto:" or private network URLs. URL: {tab_event_handler.document_url}'
+        demisto.info(f"Blocked URL for text extraction - {error_msg}, tab_id={tab.id}")
+        return None, error_msg
+
+    demisto.debug(f"Executing extract_content_from_tab for TEXT, {path=}, {tab.id=}")
+
+    extracted_content, final_url = extract_content_from_tab(tab, navigation_timeout)
+
+    return extracted_content, final_url
+
+
 def rasterize_thread(
     browser: pychrome.Browser,
     chrome_port,
@@ -1080,6 +1358,11 @@ def rasterize_thread(
                 include_url=include_url,
                 include_source=True,
             )
+
+        elif rasterize_type == RasterizeType.TEXT or str(rasterize_type).lower() == RasterizeType.TEXT.value:
+            demisto.debug(f"Executing extract_text_content for TEXT, {path=}, {tab.id=}")
+            return extract_text_content(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout)
+
         else:
             raise DemistoException(f"Unsupported rasterization type: {rasterize_type}.")
 
@@ -1339,7 +1622,7 @@ def perform_rasterize(
         chromedriver = subprocess.check_output(["chromedriver", "--version"], stderr=subprocess.STDOUT, text=True).splitlines()
         chrome_version = subprocess.check_output(["google-chrome", "--version"], stderr=subprocess.STDOUT, text=True).splitlines()
 
-        count_running_chromes(chrome_port)
+        get_chrome_processes(chrome_port)
         demisto.debug(f"{chrome_instances_contents=}")
         demisto.debug(f"ps aux command result:\n{ps_aux_output}")
         demisto.debug(f"chrome_headless.log:\n{chrome_headless_content}")
@@ -1613,6 +1896,84 @@ def rasterize_command():  # pragma: no cover
             demisto.results(res)
 
 
+def rasterize_extract_command():  # pragma: no cover
+    """Extracts structured text content from web pages.
+
+    This command uses Chrome browser to navigate to URLs and extract their text content
+    in a structured markdown format. It processes multiple URLs concurrently and returns
+    the extracted content along with metadata.
+
+    Args:
+        None (uses demisto.args() internally)
+
+    Command Arguments:
+        url: Single URL or list of URLs to extract content from
+        wait_time: Time in seconds to wait before extracting content (default: DEFAULT_WAIT_TIME)
+        max_page_load_time: Maximum time to wait for page load (default: DEFAULT_PAGE_LOAD_TIME)
+
+    Returns:
+        None (uses return_results() to output CommandResults)
+
+    Outputs:
+        For each URL, returns a CommandResults with:
+        - URL: The final URL after any redirects
+        - Content: The extracted markdown-formatted text content
+
+    Raises:
+        Errors are handled internally and returned as CommandResults with ERROR entry type
+    """
+    args = demisto.args()
+    urls = argToList(args.get("url"))
+
+    wait_time = int(args.get("wait_time", DEFAULT_WAIT_TIME))
+    navigation_timeout = int(args.get("max_page_load_time", DEFAULT_PAGE_LOAD_TIME))
+
+    demisto.debug(f"Starting rasterize-extract for URLs: {urls}")
+
+    rasterize_output = perform_rasterize(
+        path=urls, rasterize_type=RasterizeType.TEXT, wait_time=wait_time, navigation_timeout=navigation_timeout
+    )
+
+    results = []
+
+    for index, url in enumerate(urls):
+        result_tuple = rasterize_output[index]
+
+        if isinstance(result_tuple, str):
+            error_msg = result_tuple
+            results.append(
+                CommandResults(
+                    readable_output=f"Error rasterizing {url!r}:\n{error_msg}",
+                    entry_type=EntryType.ERROR,
+                )
+            )
+            continue
+
+        extracted_content, final_url = result_tuple
+
+        if isinstance(extracted_content, str) and extracted_content.startswith("Extraction Error:"):
+            results.append(
+                CommandResults(
+                    readable_output=f"Error extracting content from {url!r}:\n{extracted_content}",
+                    entry_type=EntryType.ERROR,
+                )
+            )
+            continue
+
+        outputs = {"URL": final_url, "Content": extracted_content}
+
+        results.append(
+            CommandResults(
+                outputs=outputs,
+                readable_output=f"### Content Extracted from: {final_url}\n---\n{extracted_content}",
+                outputs_prefix="Rasterize",
+                outputs_key_field="URL",
+            )
+        )
+
+    return_results(results)
+
+
 # endregion
 
 
@@ -1659,6 +2020,9 @@ def main():  # pragma: no cover
 
         elif demisto.command() == "rasterize":
             rasterize_command()
+
+        elif demisto.command() == "rasterize-extract":
+            rasterize_extract_command()
 
         else:
             raise NotImplementedError(f"command {command} is not supported")

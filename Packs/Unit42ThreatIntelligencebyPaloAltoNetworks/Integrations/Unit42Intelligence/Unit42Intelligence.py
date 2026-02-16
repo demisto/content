@@ -63,6 +63,56 @@ VALID_REGIONS = {
 #### HELPER FUNCTIONS ####
 
 
+def parse_url_list(url_input: str | list | None) -> list[str]:
+    """
+    Parse URL input that may contain multiple URLs or a single URL with commas.
+
+    This function intelligently splits URLs by detecting URL patterns to avoid
+    incorrectly splitting URLs that contain commas in their parameters.
+    Supports list inputs (from playbooks), None inputs, and newline separators.
+
+    Args:
+        url_input: String, list, or None containing one or more URLs
+
+    Returns:
+        List of individual URLs
+
+    Examples:
+        >>> parse_url_list("http://example.com,https://test.com")
+        ['http://example.com', 'https://test.com']
+        >>> parse_url_list("https://fonts.googleapis.com/css?family=Roboto:100,100italic,200")
+        ['https://fonts.googleapis.com/css?family=Roboto:100,100italic,200']
+        >>> parse_url_list("http://a.com/path?x=1,2,http://b.com")
+        ['http://a.com/path?x=1,2', 'http://b.com']
+        >>> parse_url_list(["http://example.com", "https://test.com"])
+        ['http://example.com', 'https://test.com']
+        >>> parse_url_list(None)
+        []
+        >>> parse_url_list("ftp://example.com,http://test.com")
+        ['ftp://example.com', 'http://test.com']
+    """
+    if url_input is None:
+        return []
+
+    # Handle list input from playbooks
+    if isinstance(url_input, list):
+        return [url.strip() for url in argToList(url_input) if url and str(url).strip()]
+
+    # Handle string input - split by newlines, then intelligently by commas
+    url_input = str(url_input).strip()
+    if not url_input:
+        return []
+
+    # Split by comma only if followed by a URL scheme (supports all schemes, not just http/https)
+    # This preserves commas within URL parameters
+    all_urls: list[str] = []
+    for line in url_input.split("\n"):
+        if line := line.strip():
+            all_urls.extend(url.strip() for url in re.split(r",\s*(?=[a-zA-Z][a-zA-Z0-9+.-]*://)", line) if url.strip())
+
+    return all_urls
+
+
 def unit42_error_handler(res: requests.Response):
     """
     Custom error handler for Unit 42 API requests.
@@ -82,6 +132,33 @@ def unit42_error_handler(res: requests.Response):
     error_msg += f"Response text - {res.text}"
 
     return_error(error_msg)
+
+
+def encode_url_indicator(indicator_value: str) -> str:
+    """
+    Double-encode URLs to handle special characters like < and >
+
+    Args:
+        indicator_value: The URL to encode
+
+    Returns:
+        Encoded URL string
+    """
+    # Step 1: Parse the URL to separate components
+    parsed = urllib.parse.urlparse(indicator_value)
+
+    # Step 2: Encode special characters in the query string (keeping '=' safe)
+    # This converts query=<test> to query=%3Ctest%3E
+    encoded_query = urllib.parse.quote(parsed.query, safe="=") if parsed.query else ""
+
+    # Step 3: Reconstruct the URL with the encoded query
+    temp_url = urllib.parse.urlunparse(parsed._replace(query=encoded_query))
+
+    # Step 4: Final full URL encoding for the API request
+    # This converts the entire URL including the already-encoded query
+    # Example: https://example.com/search?query=%3Ctest%3E becomes
+    # https%3A%2F%2Fexample.com%2Fsearch%3Fquery%3D%253Ctest%253E
+    return urllib.parse.quote(temp_url, safe="")
 
 
 #### CLIENT CLASS ####
@@ -112,9 +189,7 @@ class Client(BaseClient):
             requests.Response object
         """
         if indicator_type.lower() == "url":
-            # URL-encode the indicator value to handle special characters safely in the API request
-            # Example: "http://example.com/path?param=value" becomes "http%3A%2F%2Fexample.com%2Fpath%3Fparam%3Dvalue"
-            indicator_value = urllib.parse.quote(indicator_value, safe="")
+            indicator_value = encode_url_indicator(indicator_value=indicator_value)
 
         endpoint = LOOKUP_ENDPOINT.format(indicator_type=indicator_type, indicator_value=indicator_value)
 
@@ -192,7 +267,11 @@ def remove_mitre_technique_id_prefix(threat_name: str) -> str:
 
 
 def create_relationships(
-    indicator: str, indicator_type: str, threat_objects: list[dict[str, Any]], create_relationships: bool
+    indicator: str,
+    indicator_type: str,
+    threat_objects: list[dict[str, Any]],
+    create_relationships: bool,
+    reliability: str = DBotScoreReliability.A_PLUS_PLUS,
 ) -> list[EntityRelationship]:
     """
     Create relationships between indicator and threat objects
@@ -202,6 +281,7 @@ def create_relationships(
         indicator_type: Type of indicator
         threat_objects: List of threat object associations
         create_relationships: Whether to create relationships
+        reliability: Source reliability
 
     Returns:
         List of EntityRelationship objects or empty list
@@ -230,7 +310,7 @@ def create_relationships(
             entity_a_type=indicator_type,
             entity_b=threat_name,
             entity_b_type=INDICATOR_TYPE_MAPPING[threat_class],
-            source_reliability=DBotScoreReliability.A_PLUS_PLUS,
+            source_reliability=reliability,
             brand=INTEGRATION_NAME,
         )
         relationships.append(relationship)
@@ -364,7 +444,10 @@ def create_publications(publications_data: list) -> list:
 
 
 def create_threat_object_relationships(
-    threat_obj: dict[str, Any], threat_object_name: str, threat_class: str
+    threat_obj: dict[str, Any],
+    threat_object_name: str,
+    threat_class: str,
+    reliability: str = DBotScoreReliability.A_PLUS_PLUS,
 ) -> list[EntityRelationship]:
     """
     Create threat object relationships from related_threat_objects
@@ -373,6 +456,7 @@ def create_threat_object_relationships(
         threat_obj: The threat object data
         threat_object_name: Name of the threat object
         threat_class: The threat object class
+        reliability: Source reliability
 
     Returns:
         List of EntityRelationship objects
@@ -394,7 +478,7 @@ def create_threat_object_relationships(
                 entity_a_type=INDICATOR_TYPE_MAPPING[threat_class],
                 entity_b=related_name,
                 entity_b_type=INDICATOR_TYPE_MAPPING[related_class],
-                source_reliability=DBotScoreReliability.A_PLUS_PLUS,
+                source_reliability=reliability,
                 brand=INTEGRATION_NAME,
             )
             relationships.append(entity_relationship.to_entry())
@@ -403,7 +487,10 @@ def create_threat_object_relationships(
 
 
 def create_campaigns_relationships(
-    threat_obj: dict[str, Any], threat_object_name: str, threat_class: str
+    threat_obj: dict[str, Any],
+    threat_object_name: str,
+    threat_class: str,
+    reliability: str = DBotScoreReliability.A_PLUS_PLUS,
 ) -> list[EntityRelationship]:
     """
     Create campaigns relationships from campaigns list
@@ -412,6 +499,7 @@ def create_campaigns_relationships(
         threat_obj: The threat object data
         threat_object_name: Name of the threat object
         threat_class: The threat object class
+        reliability: Source reliability
 
     Returns:
         List of EntityRelationship objects
@@ -427,7 +515,7 @@ def create_campaigns_relationships(
                 entity_a_type=INDICATOR_TYPE_MAPPING[threat_class],
                 entity_b=string_to_table_header(campaign),
                 entity_b_type=ThreatIntel.ObjectsNames.CAMPAIGN,
-                source_reliability=DBotScoreReliability.A_PLUS_PLUS,
+                source_reliability=reliability,
                 brand=INTEGRATION_NAME,
             )
             relationships.append(entity_relationship.to_entry())
@@ -436,7 +524,10 @@ def create_campaigns_relationships(
 
 
 def create_attack_patterns_relationships(
-    threat_obj: dict[str, Any], threat_actor_name: str, threat_class: str
+    threat_obj: dict[str, Any],
+    threat_actor_name: str,
+    threat_class: str,
+    reliability: str = DBotScoreReliability.A_PLUS_PLUS,
 ) -> list[EntityRelationship]:
     """
     Create attack patterns relationships from attack patterns associations
@@ -445,6 +536,7 @@ def create_attack_patterns_relationships(
         threat_obj: The threat object data
         threat_actor_name: Name of the threat actor
         threat_class: The threat object class
+        reliability: Source reliability
 
     Returns:
         List of EntityRelationship objects
@@ -471,7 +563,7 @@ def create_attack_patterns_relationships(
                 entity_a_type=INDICATOR_TYPE_MAPPING[threat_class],
                 entity_b=string_to_table_header(pattern_name),
                 entity_b_type=ThreatIntel.ObjectsNames.ATTACK_PATTERN,
-                source_reliability=DBotScoreReliability.A_PLUS_PLUS,
+                source_reliability=reliability,
                 brand=INTEGRATION_NAME,
             )
             relationships.append(entity_relationship.to_entry())
@@ -480,7 +572,10 @@ def create_attack_patterns_relationships(
 
 
 def create_malware_relationships(
-    threat_obj: dict[str, Any], threat_actor_name: str, threat_class: str
+    threat_obj: dict[str, Any],
+    threat_actor_name: str,
+    threat_class: str,
+    reliability: str = DBotScoreReliability.A_PLUS_PLUS,
 ) -> list[EntityRelationship]:
     """
     Create malware relationships from malware_associations
@@ -489,6 +584,7 @@ def create_malware_relationships(
         threat_obj: The threat object data
         threat_actor_name: Name of the threat actor
         threat_class: The threat object class
+        reliability: Source reliability
 
     Returns:
         List of EntityRelationship objects
@@ -508,7 +604,7 @@ def create_malware_relationships(
                 entity_a_type=INDICATOR_TYPE_MAPPING[threat_class],
                 entity_b=string_to_table_header(name),
                 entity_b_type=ThreatIntel.ObjectsNames.MALWARE,
-                source_reliability=DBotScoreReliability.A_PLUS_PLUS,
+                source_reliability=reliability,
                 brand=INTEGRATION_NAME,
             )
             relationships.append(entity_relationship.to_entry())
@@ -521,7 +617,7 @@ def create_malware_relationships(
                     entity_a_type=INDICATOR_TYPE_MAPPING[threat_class],
                     entity_b=string_to_table_header(alias),
                     entity_b_type=ThreatIntel.ObjectsNames.MALWARE,
-                    source_reliability=DBotScoreReliability.A_PLUS_PLUS,
+                    source_reliability=reliability,
                     brand=INTEGRATION_NAME,
                 )
                 relationships.append(entity_relationship.to_entry())
@@ -529,7 +625,12 @@ def create_malware_relationships(
     return relationships
 
 
-def create_tools_relationships(threat_obj: dict[str, Any], threat_actor_name: str, threat_class: str) -> list[EntityRelationship]:
+def create_tools_relationships(
+    threat_obj: dict[str, Any],
+    threat_actor_name: str,
+    threat_class: str,
+    reliability: str = DBotScoreReliability.A_PLUS_PLUS,
+) -> list[EntityRelationship]:
     """
     Create tools relationships from tools associations
 
@@ -537,6 +638,7 @@ def create_tools_relationships(threat_obj: dict[str, Any], threat_actor_name: st
         threat_obj: The threat object data
         threat_actor_name: Name of the threat actor
         threat_class: The threat object class
+        reliability: Source reliability
 
     Returns:
         List of EntityRelationship objects
@@ -554,7 +656,7 @@ def create_tools_relationships(threat_obj: dict[str, Any], threat_actor_name: st
                 entity_a_type=INDICATOR_TYPE_MAPPING[threat_class],
                 entity_b=string_to_table_header(tool_name),
                 entity_b_type=ThreatIntel.ObjectsNames.TOOL,
-                source_reliability=DBotScoreReliability.A_PLUS_PLUS,
+                source_reliability=reliability,
                 brand=INTEGRATION_NAME,
                 fields={"tags": f"mitre-id: {tool.get('mitreid')}" if tool.get("mitreid") else ""},
             )
@@ -564,7 +666,10 @@ def create_tools_relationships(threat_obj: dict[str, Any], threat_actor_name: st
 
 
 def create_vulnerabilities_relationships(
-    threat_obj: dict[str, Any], threat_actor_name: str, threat_class: str
+    threat_obj: dict[str, Any],
+    threat_actor_name: str,
+    threat_class: str,
+    reliability: str = DBotScoreReliability.A_PLUS_PLUS,
 ) -> list[EntityRelationship]:
     """
     Create vulnerabilities relationships from vulnerabilities associations
@@ -573,6 +678,7 @@ def create_vulnerabilities_relationships(
         threat_obj: The threat object data
         threat_actor_name: Name of the threat actor
         threat_class: The threat object class
+        reliability: Source reliability
 
     Returns:
         List of EntityRelationship objects
@@ -590,7 +696,7 @@ def create_vulnerabilities_relationships(
                 entity_a_type=INDICATOR_TYPE_MAPPING[threat_class],
                 entity_b=cve_id.upper(),
                 entity_b_type=FeedIndicatorType.CVE,
-                source_reliability=DBotScoreReliability.A_PLUS_PLUS,
+                source_reliability=reliability,
                 brand=INTEGRATION_NAME,
             )
             relationships.append(entity_relationship.to_entry())
@@ -599,7 +705,10 @@ def create_vulnerabilities_relationships(
 
 
 def create_actor_relationships(
-    threat_obj: dict[str, Any], malware_family_name: str, threat_class: str
+    threat_obj: dict[str, Any],
+    malware_family_name: str,
+    threat_class: str,
+    reliability: str = DBotScoreReliability.A_PLUS_PLUS,
 ) -> list[EntityRelationship]:
     """
     Create actor relationships from actor_associations
@@ -608,6 +717,7 @@ def create_actor_relationships(
         threat_obj: The threat object data
         malware_family_name: Name of the malware family
         threat_class: The threat object class
+        reliability: Source reliability
 
     Returns:
         List of EntityRelationship objects
@@ -628,7 +738,7 @@ def create_actor_relationships(
                     entity_a_type=INDICATOR_TYPE_MAPPING[threat_class],
                     entity_b=string_to_table_header(alias),
                     entity_b_type=ThreatIntel.ObjectsNames.THREAT_ACTOR,
-                    source_reliability=DBotScoreReliability.A_PLUS_PLUS,
+                    source_reliability=reliability,
                     brand=INTEGRATION_NAME,
                 )
                 relationships.append(entity_relationship.to_entry())
@@ -640,7 +750,7 @@ def create_actor_relationships(
                 entity_a_type=INDICATOR_TYPE_MAPPING[threat_class],
                 entity_b=string_to_table_header(name),
                 entity_b_type=ThreatIntel.ObjectsNames.THREAT_ACTOR,
-                source_reliability=DBotScoreReliability.A_PLUS_PLUS,
+                source_reliability=reliability,
                 brand=INTEGRATION_NAME,
             )
             relationships.append(entity_relationship.to_entry())
@@ -648,13 +758,18 @@ def create_actor_relationships(
     return relationships
 
 
-def create_location_indicators_and_relationships(threat_obj: dict[str, Any], threat_actor_name: str) -> list[dict[str, Any]]:
+def create_location_indicators_and_relationships(
+    threat_obj: dict[str, Any],
+    threat_actor_name: str,
+    reliability: str = DBotScoreReliability.A_PLUS_PLUS,
+) -> list[dict[str, Any]]:
     """
     Create location indicators from affected regions and origin field and build relationships
 
     Args:
         threat_obj: The threat object data
         threat_actor_name: Name of the threat actor to create relationships with
+        reliability: Source reliability
 
     Returns:
         List of location indicators with relationships
@@ -685,7 +800,7 @@ def create_location_indicators_and_relationships(threat_obj: dict[str, Any], thr
                 entity_a_type=ThreatIntel.ObjectsNames.THREAT_ACTOR,
                 entity_b=standardized_region,
                 entity_b_type=FeedIndicatorType.Location,
-                source_reliability=DBotScoreReliability.A_PLUS_PLUS,
+                source_reliability=reliability,
                 brand=INTEGRATION_NAME,
             )
 
@@ -755,13 +870,13 @@ def create_threat_object_indicators(
 
         # Create relationships
         relationships = []
-        relationships += create_threat_object_relationships(threat_obj, name, threat_class)
-        relationships += create_campaigns_relationships(threat_obj, name, threat_class)
-        relationships += create_attack_patterns_relationships(threat_obj, name, threat_class)
-        relationships += create_malware_relationships(threat_obj, name, threat_class)
-        relationships += create_tools_relationships(threat_obj, name, threat_class)
-        relationships += create_vulnerabilities_relationships(threat_obj, name, threat_class)
-        relationships += create_actor_relationships(threat_obj, name, threat_class)
+        relationships += create_threat_object_relationships(threat_obj, name, threat_class, reliability)
+        relationships += create_campaigns_relationships(threat_obj, name, threat_class, reliability)
+        relationships += create_attack_patterns_relationships(threat_obj, name, threat_class, reliability)
+        relationships += create_malware_relationships(threat_obj, name, threat_class, reliability)
+        relationships += create_tools_relationships(threat_obj, name, threat_class, reliability)
+        relationships += create_vulnerabilities_relationships(threat_obj, name, threat_class, reliability)
+        relationships += create_actor_relationships(threat_obj, name, threat_class, reliability)
 
         # Create fields with threat object details
         fields = {
@@ -792,13 +907,13 @@ def create_threat_object_indicators(
         indicators.append(indicator_data)
 
         # Create location indicators from affected regions
-        location_indicators = create_location_indicators_and_relationships(threat_obj, name)
+        location_indicators = create_location_indicators_and_relationships(threat_obj, name, reliability)
         indicators.extend(location_indicators)
 
     return indicators
 
 
-def create_context_data(response_data: dict[str, Any]) -> dict[str, Any]:
+def create_context_data(response_data: dict[str, Any], indicator_value: str | None = None) -> dict[str, Any]:
     """
     Create context data for indicators
 
@@ -809,7 +924,7 @@ def create_context_data(response_data: dict[str, Any]) -> dict[str, Any]:
         Dictionary containing context data
     """
     return {
-        "Value": response_data["indicator_value"],
+        "Value": indicator_value or response_data["indicator_value"],
         "Type": INDICATOR_TYPE_MAPPING.get(response_data["indicator_type"]),
         "Verdict": string_to_table_header(response_data["verdict"]),
         "VerdictCategories": list({string_to_table_header(item) for item in response_data["verdict_categories"]}),
@@ -906,7 +1021,7 @@ def ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
     ip_indicator = Common.IP(ip=ip, dbot_score=dbot_score, tags=tags, malware_family=malware_families)
 
     # Create relationships
-    relationships = create_relationships(ip, FeedIndicatorType.IP, threat_objects, create_relationships_flag)
+    relationships = create_relationships(ip, FeedIndicatorType.IP, threat_objects, create_relationships_flag, client.reliability)
 
     # Create indicators from relationships
     if create_threat_object_indicators_flag:
@@ -969,7 +1084,9 @@ def domain_command(client: Client, args: dict[str, Any]) -> CommandResults:
     domain_indicator = Common.Domain(domain=domain, dbot_score=dbot_score, tags=tags, malware_family=malware_families)
 
     # Create relationships
-    relationships = create_relationships(domain, FeedIndicatorType.Domain, threat_objects, create_relationships_flag)
+    relationships = create_relationships(
+        domain, FeedIndicatorType.Domain, threat_objects, create_relationships_flag, client.reliability
+    )
 
     # Create indicators from relationships
     if create_threat_object_indicators_flag:
@@ -1032,7 +1149,9 @@ def url_command(client: Client, args: dict[str, Any]) -> CommandResults:
     url_indicator = Common.URL(url=url, dbot_score=dbot_score, tags=tags, malware_family=malware_families)
 
     # Create relationships
-    relationships = create_relationships(url, FeedIndicatorType.URL, threat_objects, create_relationships_flag)
+    relationships = create_relationships(
+        url, FeedIndicatorType.URL, threat_objects, create_relationships_flag, client.reliability
+    )
 
     # Create indicators from relationships
     if create_threat_object_indicators_flag:
@@ -1040,8 +1159,8 @@ def url_command(client: Client, args: dict[str, Any]) -> CommandResults:
         if threat_indicators:
             demisto.createIndicators(threat_indicators)
 
-    # Create context data
-    context_data = create_context_data(response_data)
+    # Create context data, Use the original URL in the indicator value since the returned URL is encoded.
+    context_data = create_context_data(response_data, indicator_value=url)
 
     readable_output = tableToMarkdown(
         f"Unit 42 Intelligence results for URL: {url}",
@@ -1113,7 +1232,9 @@ def file_command(client: Client, args: dict[str, Any]) -> CommandResults:
     )
 
     # Create relationships
-    relationships = create_relationships(file_hash, FeedIndicatorType.File, threat_objects, create_relationships_flag)
+    relationships = create_relationships(
+        file_hash, FeedIndicatorType.File, threat_objects, create_relationships_flag, client.reliability
+    )
 
     # Create indicators from relationships
     if create_threat_object_indicators_flag:
@@ -1194,7 +1315,8 @@ def main() -> None:
 
         elif command == "url":
             results = []
-            urls = argToList(args.get("url", ""))
+            # Use smart URL parsing to handle URLs with commas in parameters
+            urls = parse_url_list(args.get("url", ""))
             for url in urls:
                 args["url"] = url
                 results.append(url_command(client, args))

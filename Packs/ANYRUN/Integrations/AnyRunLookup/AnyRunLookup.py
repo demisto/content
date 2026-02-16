@@ -5,7 +5,7 @@ from CommonServerPython import *
 from anyrun.connectors import LookupConnector
 from anyrun import RunTimeException
 
-VERSION = "PA-XSOAR:2.1.0"
+VERSION = "PA-XSOAR:2.3.0"
 
 DBOT_SCORE_TYPE_RESOLVER = {
     "destination_ip": DBotScoreType.IP,
@@ -21,6 +21,12 @@ LOOKUP_INDICATOR_TYPE_RESOLVER = {
     "domain_name": "domainName",
     "url": "url",
     "sha256": "sha256",
+}
+
+VERDICT_RESOLVER = {
+    0: "No info",
+    1: "Suspicious",
+    2: "Malicious",
 }
 
 
@@ -194,6 +200,13 @@ def parse_results(report: dict, reliability: str, indicator_value: str, indicato
 
     if tags := report.get("summary", {}).get("tags"):
         output_context["Tags"] = ",".join(tags)
+
+    if industries := report.get("industries", {}):
+        output_context["Industries"] = ",".join(
+            [industry.get("industryName") for industry in sorted(industries, key=lambda x: x.get("confidence", 0), reverse=True)]
+        )
+
+    output_context["Verdict"] = VERDICT_RESOLVER.get(report.get("summary", {}).get("threatLevel", 0), "No info")
 
     return_results(
         CommandResults(

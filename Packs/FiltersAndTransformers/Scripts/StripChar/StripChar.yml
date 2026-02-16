@@ -1,8 +1,8 @@
 args:
-- description: Text to trim (e.g. "~!!~www.mydomain.com~!~!~")
+- description: Text to trim (e.g. "~!!~www.mydomain.com~!~!~").
   name: value
   required: true
-- description: Characters to stripped from the text (e.g. "!~")
+- description: Characters to stripped from the text (e.g. "!~").
   name: chars
   required: true
 comment: |-
@@ -24,4 +24,4 @@ subtype: python3
 tests:
 - stripChars - Test
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.12.6204436

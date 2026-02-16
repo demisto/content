@@ -791,8 +791,11 @@ Searches for Gmail records for a specific Google user.
 | Gmail.Subject | string | The subject of the specific email. |
 | Gmail.Body | string | The content of the email. |
 | Gmail.Attachments | unknown | Attachment details. Attachments IDs are separated by commas. |
+| Gmail.Attachments.ID | String | The email attachment ID (as appear in gmail). |
+| Gmail.Attachments.Name | String | The email attachment name. |
 | Gmail.Headers | unknown | All headers of a specific email \(list\). |
 | Gmail.Mailbox | string | The email mailbox. |
+| GmailEmails.NextPageToken | string | Token used to get the next page of results. |
 | Email.To | String | The recipient of the email. |
 | Email.From | String | The sender of the email. |
 | Email.CC | String | The additional recipient email address \(CC\). |

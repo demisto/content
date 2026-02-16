@@ -4,7 +4,7 @@ import json
 import re
 from collections.abc import Callable
 from operator import itemgetter
-
+from enum import Enum
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
@@ -148,12 +148,19 @@ ALERT_EVENT_AZURE_FIELDS = {
     "tenantId",
 }
 
+COVERAGE_API_FIELDS_MAPPING = {
+    "vendor_name": "asset_provider",
+    "asset_provider": "unified_provider",
+}
+
 # Filter object query operators
 EQ = "EQ"
 NEQ = "NEQ"
 CONTAINS = "CONTAINS"
 IP_MATCH = "IP_MATCH"
 IPLIST_MATCH = "IPLIST_MATCH"
+IS_EMPTY = "IS_EMPTY"
+NIS_EMPTY = "NIS_EMPTY"
 
 RBAC_VALIDATIONS_VERSION = "8.6.0"
 RBAC_VALIDATIONS_BUILD_NUMBER = "992980"
@@ -1431,6 +1438,235 @@ class AlertFilterArg:
         return value
 
 
+class FilterBuilder:
+    """
+    Filter class for creating filter dictionary objects.
+    """
+
+    class FilterType(str, Enum):
+        """
+        Available type options for filter filtering.
+        Each member holds its string value and its logical operator for multi-value scenarios.
+        """
+
+        operator: str
+
+        def __new__(cls, value, operator):
+            obj = str.__new__(cls, value)
+            obj._value_ = value
+            obj.operator = operator
+            return obj
+
+        EQ = ("EQ", "OR")
+        RANGE = ("RANGE", "OR")
+        CONTAINS = ("CONTAINS", "OR")
+        CASE_HOST_EQ = ("CASE_HOSTS_EQ", "OR")
+        CONTAINS_IN_LIST = ("CONTAINS_IN_LIST", "OR")
+        GTE = ("GTE", "OR")
+        ARRAY_CONTAINS = ("ARRAY_CONTAINS", "OR")
+        JSON_WILDCARD = ("JSON_WILDCARD", "OR")
+        IS_EMPTY = ("IS_EMPTY", "OR")
+        NIS_EMPTY = ("NIS_EMPTY", "AND")
+        ADVANCED_IP_MATCH_EXACT = ("ADVANCED_IP_MATCH_EXACT", "OR")
+        RELATIVE_TIMESTAMP = ("RELATIVE_TIMESTAMP", "OR")
+        NEQ = ("NEQ", "AND")
+
+    AND = "AND"
+    OR = "OR"
+    FIELD = "SEARCH_FIELD"
+    TYPE = "SEARCH_TYPE"
+    VALUE = "SEARCH_VALUE"
+
+    class Field:
+        def __init__(self, field_name: str, filter_type: "FilterType", values: Any):
+            self.field_name = field_name
+            self.filter_type = filter_type
+            self.values = values
+
+    class MappedValuesField(Field):
+        def __init__(
+            self,
+            field_name: str,
+            filter_type: "FilterType",
+            values: Any,
+            mappings: dict[str, "FilterType"],
+        ):
+            super().__init__(field_name, filter_type, values)
+            self.mappings = mappings
+
+    def __init__(self, filter_fields: list[Field] | None = None):
+        self.filter_fields = filter_fields or []
+
+    def add_field(self, name: str, type: "FilterType", values: Any, mapper: dict | None = None):
+        """
+        Adds a new field to the filter.
+        Args:
+            name (str): The name of the field.
+            type (FilterType): The type to use for the field.
+            values (Any): The values to filter for.
+            mapper (dict | None): An optional dictionary to map values before filtering.
+        """
+        processed_values = values
+        if mapper:
+            if not isinstance(values, list):
+                values = [values]
+            processed_values = [mapper[v] for v in values if v in mapper]
+
+        self.filter_fields.append(FilterBuilder.Field(name, type, processed_values))
+
+    def add_field_with_mappings(
+        self,
+        name: str,
+        type: "FilterType",
+        values: Any,
+        mappings: dict[str, "FilterType"],
+    ):
+        """
+        Adds a new field to the filter with special value mappings.
+        Args:
+            name (str): The name of the field.
+            type (FilterType): The default filter type for non-mapped values.
+            values (Any): The values to filter for.
+            mappings (dict[str, FilterType]): A dictionary mapping special values to specific filter types.
+                Example:
+                    mappings = {
+                        "unassigned": FilterType.IS_EMPTY,
+                        "assigned": FilterType.NIS_EMPTY,
+                    }
+        """
+        self.filter_fields.append(FilterBuilder.MappedValuesField(name, type, values, mappings))
+
+    def add_time_range_field(self, name: str, start_time: str | None, end_time: str | None):
+        """
+        Adds a time range field to the filter.
+        Args:
+            name (str): The name of the field.
+            start_time (str | None): The start time of the range.
+            end_time (str | None): The end time of the range.
+        """
+        start, end = self._prepare_time_range(start_time, end_time)
+        if start is not None and end is not None:
+            self.add_field(name, FilterType.RANGE, {"from": start, "to": end})
+
+    def to_dict(self) -> dict[str, list]:
+        """
+        Creates a filter dict from a list of Field objects.
+        The filter will require each field to be one of the values provided.
+        Returns:
+            dict[str, list]: Filter object.
+        """
+        filter_structure: dict[str, list] = {FilterBuilder.AND: []}
+
+        for field in self.filter_fields:
+            if not isinstance(field.values, list):
+                values_list = [field.values]
+            else:
+                values_list = field.values
+
+            search_values = []
+            for value in values_list:
+                if value is None:
+                    continue
+
+                current_filter_type = field.filter_type
+                current_value = value
+
+                if isinstance(field, FilterBuilder.MappedValuesField) and value in field.mappings:
+                    current_filter_type = field.mappings[value]
+                    if current_filter_type in [
+                        FilterType.IS_EMPTY,
+                        FilterType.NIS_EMPTY,
+                    ]:
+                        current_value = "<No Value>"
+
+                search_values.append(
+                    {
+                        FilterBuilder.FIELD: field.field_name,
+                        FilterBuilder.TYPE: current_filter_type.value,
+                        FilterBuilder.VALUE: current_value,
+                    }
+                )
+
+            if search_values:
+                search_obj = {field.filter_type.operator: search_values} if len(search_values) > 1 else search_values[0]
+                filter_structure[FilterBuilder.AND].append(search_obj)
+
+        if not filter_structure[FilterBuilder.AND]:
+            filter_structure = {}
+
+        return filter_structure
+
+    @staticmethod
+    def _prepare_time_range(start_time_str: str | None, end_time_str: str | None) -> tuple[int | None, int | None]:
+        """Prepare start and end time from args, parsing relative time strings."""
+        if end_time_str and not start_time_str:
+            raise DemistoException("When 'end_time' is provided, 'start_time' must be provided as well.")
+
+        start_time, end_time = None, None
+
+        if start_time_str:
+            if start_dt := dateparser.parse(str(start_time_str)):
+                start_time = int(start_dt.timestamp() * 1000)
+            else:
+                raise ValueError(f"Could not parse start_time: {start_time_str}")
+
+        if end_time_str:
+            if end_dt := dateparser.parse(str(end_time_str)):
+                end_time = int(end_dt.timestamp() * 1000)
+            else:
+                raise ValueError(f"Could not parse end_time: {end_time_str}")
+
+        if start_time and not end_time:
+            # Set end_time to the current time if only start_time is provided
+            end_time = int(datetime.now().timestamp() * 1000)
+
+        return start_time, end_time
+
+
+FilterType = FilterBuilder.FilterType
+
+
+def build_webapp_request_data(
+    table_name: str,
+    filter_dict: dict,
+    limit: int,
+    sort_field: str | None,
+    on_demand_fields: list | None = None,
+    sort_order: str | None = "DESC",
+    start_page: int = 0,
+) -> dict:
+    """
+    Builds the request data for the generic /api/webapp/get_data endpoint.
+    """
+    sort = (
+        [
+            {
+                "FIELD": COVERAGE_API_FIELDS_MAPPING.get(sort_field, sort_field),
+                "ORDER": sort_order,
+            }
+        ]
+        if sort_field
+        else []
+    )
+    filter_data = {
+        "sort": sort,
+        "paging": {"from": start_page, "to": limit},
+        "filter": filter_dict,
+    }
+    demisto.debug(f"{filter_data=}")
+
+    if on_demand_fields is None:
+        on_demand_fields = []
+
+    return {
+        "type": "grid",
+        "table_name": table_name,
+        "filter_data": filter_data,
+        "jsons": [],
+        "onDemandFields": on_demand_fields,
+    }
+
+
 def catch_and_exit_gracefully(e):
     """
 
@@ -1505,6 +1741,7 @@ def init_filter_args_options() -> dict[str, AlertFilterArg]:
     array = "array"
     dropdown = "dropdown"
     time_frame = "time_frame"
+    constant = "constant"
 
     return {
         "alert_id": AlertFilterArg("internal_id", EQ, array),
@@ -1554,6 +1791,8 @@ def init_filter_args_options() -> dict[str, AlertFilterArg]:
         "not_status": AlertFilterArg("status.progress", NEQ, array, STATUS_PROGRESS),
         "asset_ids": AlertFilterArg("asset_ids", EQ, array),
         "assignee": AlertFilterArg("assigned_to_pretty", CONTAINS, array),
+        "unassigned": AlertFilterArg("assigned_to_pretty", IS_EMPTY, constant),
+        "assigned": AlertFilterArg("assigned_to_pretty", NIS_EMPTY, constant),
     }
 
 
@@ -2048,6 +2287,7 @@ def retrieve_all_endpoints(
     username,
 ):
     endpoints_page = endpoints
+    demisto.debug(f"retrieve_all_endpoints: starting with {len(endpoints)} endpoints from page {page_number}")
     # Continue looping for as long as the latest page of endpoints retrieved is NOT empty
     while endpoints_page:
         page_number += 1
@@ -2072,7 +2312,11 @@ def retrieve_all_endpoints(
             status=status,
             username=username,
         )
+        demisto.debug(f"retrieve_all_endpoints: page {page_number} returned {len(endpoints_page)} endpoints")
+        if endpoints_page:
+            demisto.debug(f"retrieve_all_endpoints: first endpoint ID in page: {endpoints_page[0].get('endpoint_id')}")
         endpoints += endpoints_page
+    demisto.debug(f"retrieve_all_endpoints: finished with total {len(endpoints)} endpoints")
     return endpoints
 
 
@@ -2126,6 +2370,11 @@ def get_endpoints_command(client, args):
     sort_by_first_seen = args.get("sort_by_first_seen")
     sort_by_last_seen = args.get("sort_by_last_seen")
 
+    # When fetching all results without explicit sort, use sort_by_first_seen to ensure stable pagination
+    if all_results and not sort_by_first_seen and not sort_by_last_seen:
+        sort_by_first_seen = "asc"
+        demisto.debug("get_endpoints_command: all_results=true without explicit sort, defaulting to sort_by_first_seen=asc")
+
     username = argToList(args.get("username"))
 
     endpoints = client.get_endpoints(
@@ -2174,6 +2423,23 @@ def get_endpoints_command(client, args):
             status,
             username,
         )
+        # Deduplicate endpoints by endpoint_id to handle any API inconsistencies
+        seen_endpoint_ids = set()
+        unique_endpoints = []
+        duplicates_found = 0
+        for endpoint in endpoints:
+            endpoint_id = endpoint.get("endpoint_id")
+            if endpoint_id not in seen_endpoint_ids:
+                seen_endpoint_ids.add(endpoint_id)
+                unique_endpoints.append(endpoint)
+            else:
+                duplicates_found += 1
+                demisto.debug(f"get_endpoints_command: duplicate endpoint_id found and removed: {endpoint_id}")
+
+        if duplicates_found > 0:
+            demisto.info(f"get_endpoints_command: removed {duplicates_found} duplicate endpoint(s) from results")
+
+        endpoints = unique_endpoints
 
     if convert_timestamp_to_datestring:
         endpoints = convert_timestamps_to_datestring(endpoints)
@@ -2193,7 +2459,9 @@ def get_endpoints_command(client, args):
     if account_context:
         context[Common.Account.CONTEXT_PATH] = account_context
 
-    return CommandResults(readable_output=tableToMarkdown("Endpoints", endpoints), outputs=context, raw_response=endpoints)
+    return CommandResults(
+        readable_output=tableToMarkdown("Endpoints", endpoints, removeNull=True), outputs=context, raw_response=endpoints
+    )
 
 
 def endpoint_alias_change_command(client: CoreClient, **args) -> CommandResults:

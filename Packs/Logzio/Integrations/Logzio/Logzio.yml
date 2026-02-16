@@ -4,6 +4,7 @@ commonfields:
 name: Logz.io
 display: Logz.io
 category: Analytics & SIEM
+provider: Logz.io
 description: Fetch & remediate security incidents identified by Logz.io Cloud SIEM.
 configuration:
 - display: Fetch incidents

@@ -6,14 +6,16 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2d95cfce-5074-486b-8e44-b61162450c72
+    taskid: e7c247c7-d5e6-4971-8a3e-81c66b61ac6c
     type: start
     task:
-      id: 2d95cfce-5074-486b-8e44-b61162450c72
+      id: e7c247c7-d5e6-4971-8a3e-81c66b61ac6c
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "10"
@@ -35,10 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 87cc1eaa-fdca-40b5-82d7-07d59271bca1
+    taskid: 15b4a671-0c10-47d6-8f75-d4b748237765
     type: regular
     task:
-      id: 87cc1eaa-fdca-40b5-82d7-07d59271bca1
+      id: 15b4a671-0c10-47d6-8f75-d4b748237765
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -51,6 +53,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "36"
@@ -63,7 +67,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 370
+          "y": 390
         }
       }
     note: false
@@ -75,10 +79,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 342591d0-82be-412e-86bb-44fdda172516
+    taskid: 8eaea17f-8d75-46dc-860c-14cc3dc965b7
     type: regular
     task:
-      id: 342591d0-82be-412e-86bb-44fdda172516
+      id: 8eaea17f-8d75-46dc-860c-14cc3dc965b7
       version: -1
       name: Run url enrichment script
       description: |-
@@ -88,6 +92,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "6"
@@ -107,7 +113,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 710
+          "y": 760
         }
       }
     note: false
@@ -119,16 +125,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: b37ca6d1-382c-471e-87bc-075f5ffc474e
+    taskid: fb0ed209-62a3-4af4-8fed-de09be714639
     type: condition
     task:
-      id: b37ca6d1-382c-471e-87bc-075f5ffc474e
+      id: fb0ed209-62a3-4af4-8fed-de09be714639
       version: -1
       name: TIM Result exists
       description: Make sure the Virus Total indicator returned from tim
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "7"
@@ -156,7 +164,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 880
+          "y": 945
         }
       }
     note: false
@@ -168,15 +176,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 177cadb6-ef8a-43aa-82a5-4c061bf0b73e
+    taskid: 0b892f9f-f966-47c1-88fd-7d9c8bda7305
     type: title
     task:
-      id: 177cadb6-ef8a-43aa-82a5-4c061bf0b73e
+      id: 0b892f9f-f966-47c1-88fd-7d9c8bda7305
       version: -1
       name: Case 2 - One Brand
       type: title
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "8"
@@ -186,7 +196,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 1050
+          "y": 1130
         }
       }
     note: false
@@ -198,10 +208,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: f1eb19b7-83b9-4460-87e7-a8b63d2284fa
+    taskid: 59ec686c-f4e2-4c44-8ee8-f64a3c4d5106
     type: regular
     task:
-      id: f1eb19b7-83b9-4460-87e7-a8b63d2284fa
+      id: 59ec686c-f4e2-4c44-8ee8-f64a3c4d5106
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -214,6 +224,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "37"
@@ -226,7 +238,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 1210
+          "y": 1300
         }
       }
     note: false
@@ -238,15 +250,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 3749e5a2-c586-4226-8374-1c179283f367
+    taskid: 57be8f70-cd36-44d6-84ce-6b6cb14d52f5
     type: title
     task:
-      id: 3749e5a2-c586-4226-8374-1c179283f367
+      id: 57be8f70-cd36-44d6-84ce-6b6cb14d52f5
       version: -1
       name: Case 1 - Base
       type: title
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "1"
@@ -256,7 +270,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 210
+          "y": 220
         }
       }
     note: false
@@ -268,16 +282,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 4165407c-b775-4187-8d18-c22fc304926c
+    taskid: cb1595fa-ac96-44c4-8c6b-88bcff1c6ba4
     type: condition
     task:
-      id: 4165407c-b775-4187-8d18-c22fc304926c
+      id: cb1595fa-ac96-44c4-8c6b-88bcff1c6ba4
       version: -1
       name: Indicator Main Keys Exists
       description: MaxScore And MaxVerdict enriched for https://google.com
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "7"
@@ -329,7 +345,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 880
+          "y": 945
         }
       }
     note: false
@@ -341,16 +357,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 611d01ce-6a02-49b6-85e6-dc1f43a7f224
+    taskid: 9197c3b1-53d7-44a1-8017-ed3187d631d0
     type: condition
     task:
-      id: 611d01ce-6a02-49b6-85e6-dc1f43a7f224
+      id: 9197c3b1-53d7-44a1-8017-ed3187d631d0
       version: -1
       name: No additional fields
       description: Additional fields empty
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "20"
@@ -368,7 +386,7 @@ tasks:
       {
         "position": {
           "x": 1125,
-          "y": 1720
+          "y": 1855
         }
       }
     note: false
@@ -380,15 +398,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: ae1ad98c-4690-474f-87b4-f9fc15760c98
+    taskid: e07941c5-ed78-4fcd-87cc-713393bf1f8c
     type: title
     task:
-      id: ae1ad98c-4690-474f-87b4-f9fc15760c98
+      id: e07941c5-ed78-4fcd-87cc-713393bf1f8c
       version: -1
       name: Case 3 - External Enrichment
       type: title
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "21"
@@ -398,7 +418,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 1890
+          "y": 2040
         }
       }
     note: false
@@ -410,10 +430,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 81e75c38-f3d3-4366-8dcd-dd8351db15ee
+    taskid: 385fb5bf-bd39-4835-8dad-8d8251c937d7
     type: regular
     task:
-      id: 81e75c38-f3d3-4366-8dcd-dd8351db15ee
+      id: 385fb5bf-bd39-4835-8dad-8d8251c937d7
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -426,6 +446,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "41"
@@ -438,7 +460,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 2050
+          "y": 2210
         }
       }
     note: false
@@ -450,10 +472,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 8ba19624-1587-489c-80f6-ee854c98da25
+    taskid: 41f20e96-42d8-4464-814b-550e8c4b07c3
     type: regular
     task:
-      id: 8ba19624-1587-489c-80f6-ee854c98da25
+      id: 41f20e96-42d8-4464-814b-550e8c4b07c3
       version: -1
       name: Run url enrichment script
       description: |-
@@ -463,6 +485,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "42"
@@ -494,7 +518,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 2390
+          "y": 2580
         }
       }
     note: false
@@ -506,15 +530,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 534b2676-7810-409f-8456-9c52b457eb49
+    taskid: c384e196-9d1d-4615-8572-a6908bb6874b
     type: title
     task:
-      id: 534b2676-7810-409f-8456-9c52b457eb49
+      id: c384e196-9d1d-4615-8572-a6908bb6874b
       version: -1
       name: Case 4 - External Enrichment + Additional Fields
       type: title
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "29"
@@ -524,7 +550,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 2730
+          "y": 2950
         }
       }
     note: false
@@ -536,10 +562,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 3aa3ad40-a438-43e7-8cc5-2c43d78680a8
+    taskid: 3027361d-f54c-4305-8fb9-5622a24fba60
     type: regular
     task:
-      id: 3aa3ad40-a438-43e7-8cc5-2c43d78680a8
+      id: 3027361d-f54c-4305-8fb9-5622a24fba60
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -552,6 +578,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "51"
@@ -564,7 +592,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 2890
+          "y": 3120
         }
       }
     note: false
@@ -576,15 +604,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: a80a7232-0b87-4496-806b-bdca92a5e665
+    taskid: 77c5515b-b67b-4d11-8ff4-6b7624d7cc37
     type: title
     task:
-      id: a80a7232-0b87-4496-806b-bdca92a5e665
+      id: 77c5515b-b67b-4d11-8ff4-6b7624d7cc37
       version: -1
       name: Case 5 - Multiple Inputs
       type: title
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "62"
@@ -594,7 +624,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 3570
+          "y": 3860
         }
       }
     note: false
@@ -606,10 +636,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 16decc15-a882-4d23-8d8c-1f5cb917747a
+    taskid: e63cabb1-688d-4a6c-86e5-709344fccede
     type: regular
     task:
-      id: 16decc15-a882-4d23-8d8c-1f5cb917747a
+      id: e63cabb1-688d-4a6c-86e5-709344fccede
       version: -1
       name: Get Time
       description: |
@@ -618,6 +648,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "5"
@@ -627,7 +659,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 540
+          "y": 575
         }
       }
     note: false
@@ -639,10 +671,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 30dea97e-e7f0-41bb-8ee5-31ab2c15bef8
+    taskid: 7cc6a9b3-faa8-4147-85fa-fa5ccf0945f4
     type: regular
     task:
-      id: 30dea97e-e7f0-41bb-8ee5-31ab2c15bef8
+      id: 7cc6a9b3-faa8-4147-85fa-fa5ccf0945f4
       version: -1
       name: Get Time
       description: |
@@ -651,6 +683,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "38"
@@ -660,7 +694,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 1380
+          "y": 1485
         }
       }
     note: false
@@ -672,10 +706,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 235c555b-c23d-4c1b-8f57-a72667079e0c
+    taskid: efd54861-b360-4cf5-8354-83d9b2ea5100
     type: regular
     task:
-      id: 235c555b-c23d-4c1b-8f57-a72667079e0c
+      id: efd54861-b360-4cf5-8354-83d9b2ea5100
       version: -1
       name: Run url enrichment script
       description: |-
@@ -685,6 +719,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "39"
@@ -707,7 +743,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 1550
+          "y": 1670
         }
       }
     note: false
@@ -719,16 +755,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: f3ddf9aa-4041-4631-89d2-bc781a748b39
+    taskid: 83c9fbce-02a2-45be-8b47-5757ded3990d
     type: condition
     task:
-      id: f3ddf9aa-4041-4631-89d2-bc781a748b39
+      id: 83c9fbce-02a2-45be-8b47-5757ded3990d
       version: -1
       name: AlienVault OTX v2 Result Only
       description: Make sure the Virus Total indicator returned from tim
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "20"
@@ -811,7 +849,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1720
+          "y": 1855
         }
       }
     note: false
@@ -823,16 +861,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: b997f0d8-2d83-417c-802e-f2398154727d
+    taskid: a4e2dcbc-2774-4fc3-87b6-dea5ff31c30a
     type: condition
     task:
-      id: b997f0d8-2d83-417c-802e-f2398154727d
+      id: a4e2dcbc-2774-4fc3-87b6-dea5ff31c30a
       version: -1
       name: Indicator Main Keys Exists
       description: MaxScore And MaxVerdict enriched for https://google.com
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "20"
@@ -887,7 +927,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 1720
+          "y": 1855
         }
       }
     note: false
@@ -899,10 +939,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 96e9a6a3-36aa-4e7c-8ea5-54b4cf7d4efb
+    taskid: f5c2ff22-1000-4675-83f2-ba64a7713c85
     type: regular
     task:
-      id: 96e9a6a3-36aa-4e7c-8ea5-54b4cf7d4efb
+      id: f5c2ff22-1000-4675-83f2-ba64a7713c85
       version: -1
       name: Get Time
       description: |
@@ -911,6 +951,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "23"
@@ -920,7 +962,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 2220
+          "y": 2395
         }
       }
     note: false
@@ -932,16 +974,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: f0e7e76b-7d35-4c0d-8450-a7136126c33f
+    taskid: 8f87dc0a-1018-4465-8806-4e6037ee39a6
     type: condition
     task:
-      id: f0e7e76b-7d35-4c0d-8450-a7136126c33f
+      id: 8f87dc0a-1018-4465-8806-4e6037ee39a6
       version: -1
       name: Indicator Main Keys Exists
       description: MaxScore And MaxVerdict enriched for https://google.com
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "28"
@@ -996,7 +1040,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2560
+          "y": 2765
         }
       }
     note: false
@@ -1008,16 +1052,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: bdfbd6fa-4ec7-4e59-82f6-37c460f9276a
+    taskid: 18e42aec-936a-4660-85ff-6ccb92d86cac
     type: condition
     task:
-      id: bdfbd6fa-4ec7-4e59-82f6-37c460f9276a
+      id: 18e42aec-936a-4660-85ff-6ccb92d86cac
       version: -1
       name: AlienVault OTX v2 Result
       description: Make sure the Virus Total indicator returned from tim
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "28"
@@ -1092,7 +1138,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2560
+          "y": 2765
         }
       }
     note: false
@@ -1104,16 +1150,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 2034e221-3038-453f-8f8b-cfd65d8b0b18
+    taskid: dc0e28d0-aea5-471b-8a18-73d5d27b5b9a
     type: condition
     task:
-      id: 2034e221-3038-453f-8f8b-cfd65d8b0b18
+      id: dc0e28d0-aea5-471b-8a18-73d5d27b5b9a
       version: -1
       name: VirusTotal (API v3) Result
       description: Make sure the Virus Total indicator returned from tim
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "28"
@@ -1190,7 +1238,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 2560
+          "y": 2765
         }
       }
     note: false
@@ -1202,16 +1250,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: a7c8fdd7-057f-47b5-8b23-404dbd5dec5e
+    taskid: bfec531a-800f-4f25-8442-35daa31bf2af
     type: condition
     task:
-      id: a7c8fdd7-057f-47b5-8b23-404dbd5dec5e
+      id: bfec531a-800f-4f25-8442-35daa31bf2af
       version: -1
       name: Indicator Main Keys Exists
       description: MaxScore And MaxVerdict enriched for https://google.com
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "35"
@@ -1266,7 +1316,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3400
+          "y": 3675
         }
       }
     note: false
@@ -1278,16 +1328,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: e3c5b5dd-123c-4d92-8d2d-4abe1b68f9d9
+    taskid: 5175cb80-a438-434a-8bea-a12bb4059d42
     type: condition
     task:
-      id: e3c5b5dd-123c-4d92-8d2d-4abe1b68f9d9
+      id: 5175cb80-a438-434a-8bea-a12bb4059d42
       version: -1
       name: AlienVault OTX v2 Result
       description: Make sure the Virus Total indicator returned from tim
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "35"
@@ -1362,7 +1414,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 3400
+          "y": 3675
         }
       }
     note: false
@@ -1374,16 +1426,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: c98a94c2-1f9a-43c6-8abd-436b34a3af70
+    taskid: 79f92ce4-ec3c-4d86-8bc1-4f8b0f0a2352
     type: condition
     task:
-      id: c98a94c2-1f9a-43c6-8abd-436b34a3af70
+      id: 79f92ce4-ec3c-4d86-8bc1-4f8b0f0a2352
       version: -1
       name: VirusTotal (API v3) Result
       description: Make sure the Virus Total indicator returned from tim
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "35"
@@ -1460,7 +1514,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3400
+          "y": 3675
         }
       }
     note: false
@@ -1472,10 +1526,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 5e20c5f0-a24b-46e8-8438-c4c8ce8011cb
+    taskid: f5173704-6944-43e1-8e6a-f1d7c7481cbc
     type: regular
     task:
-      id: 5e20c5f0-a24b-46e8-8438-c4c8ce8011cb
+      id: f5173704-6944-43e1-8e6a-f1d7c7481cbc
       version: -1
       name: Run url enrichment script
       description: |-
@@ -1485,6 +1539,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "47"
@@ -1516,7 +1572,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 3230
+          "y": 3490
         }
       }
     note: false
@@ -1528,10 +1584,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 67941d27-b73e-4b62-83f3-8cbaeb215571
+    taskid: eec71c3e-b694-4a72-88d1-d4db2ee70930
     type: regular
     task:
-      id: 67941d27-b73e-4b62-83f3-8cbaeb215571
+      id: eec71c3e-b694-4a72-88d1-d4db2ee70930
       version: -1
       name: Get Time
       description: |
@@ -1540,6 +1596,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "50"
@@ -1549,7 +1607,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 3060
+          "y": 3305
         }
       }
     note: false
@@ -1561,15 +1619,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 5e663223-bf6e-4ae5-8e2f-ddb0cf0a94bb
+    taskid: 7ce684dd-2a91-41bd-8bc2-362014a58c1d
     type: title
     task:
-      id: 5e663223-bf6e-4ae5-8e2f-ddb0cf0a94bb
+      id: 7ce684dd-2a91-41bd-8bc2-362014a58c1d
       version: -1
       name: Case 1 - Wrong Brand
       type: title
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "53"
@@ -1579,7 +1639,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 4400
+          "y": 5480
         }
       }
     note: false
@@ -1591,10 +1651,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: f253c8f6-7538-49e1-8063-1f09496aa111
+    taskid: 1dabe6f1-894f-4d68-8ff7-6cb906bc9254
     type: regular
     task:
-      id: f253c8f6-7538-49e1-8063-1f09496aa111
+      id: 1dabe6f1-894f-4d68-8ff7-6cb906bc9254
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -1607,6 +1667,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "54"
@@ -1619,7 +1681,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 4560
+          "y": 5650
         }
       }
     note: false
@@ -1631,10 +1693,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 297a91de-1e91-49ab-83e5-c7b5555b3933
+    taskid: e393cff9-eaa8-477c-83d2-1e09f24ea95b
     type: regular
     task:
-      id: 297a91de-1e91-49ab-83e5-c7b5555b3933
+      id: e393cff9-eaa8-477c-83d2-1e09f24ea95b
       version: -1
       name: Run url enrichment script
       description: |-
@@ -1644,6 +1706,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#error#':
       - "55"
@@ -1677,7 +1741,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 4730
+          "y": 5835
         }
       }
     note: false
@@ -1689,15 +1753,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 43ec7afb-2cf2-43e2-8160-f253c5c4cd1b
+    taskid: 858064e5-368d-4330-8d56-10f0032d9287
     type: title
     task:
-      id: 43ec7afb-2cf2-43e2-8160-f253c5c4cd1b
+      id: 858064e5-368d-4330-8d56-10f0032d9287
       version: -1
       name: Case 2 - Wrong Input
       type: title
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "56"
@@ -1707,7 +1773,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": 4900
+          "y": 6020
         }
       }
     note: false
@@ -1719,10 +1785,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: eb8b4dad-e540-410a-8e7e-975c6a4b6fd6
+    taskid: 83a45728-2e93-4c96-887b-affc450e4dab
     type: regular
     task:
-      id: eb8b4dad-e540-410a-8e7e-975c6a4b6fd6
+      id: 83a45728-2e93-4c96-887b-affc450e4dab
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -1735,6 +1801,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "57"
@@ -1747,7 +1815,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": 5060
+          "y": 6190
         }
       }
     note: false
@@ -1759,10 +1827,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: a795a0b7-7933-4181-8263-84a1c70bf26e
+    taskid: 130f48ac-4e68-467a-89d5-9b0c03e30f12
     type: regular
     task:
-      id: a795a0b7-7933-4181-8263-84a1c70bf26e
+      id: 130f48ac-4e68-467a-89d5-9b0c03e30f12
       version: -1
       name: Run url enrichment script
       description: |-
@@ -1772,6 +1840,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#error#':
       - "59"
@@ -1793,7 +1863,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": 5230
+          "y": 6375
         }
       }
     note: false
@@ -1805,15 +1875,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 9a2fba74-3bbe-4e01-83dd-23111932b144
+    taskid: cfd83c14-cfef-4900-8375-b40a70b90993
     type: condition
     task:
-      id: 9a2fba74-3bbe-4e01-83dd-23111932b144
+      id: cfd83c14-cfef-4900-8375-b40a70b90993
       version: -1
       name: Failure
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1830,7 +1902,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 5400
+          "y": 6560
         }
       }
     note: false
@@ -1842,22 +1914,24 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: bc9a64c5-5323-4275-875f-34b1cf106f16
+    taskid: 6b3c95df-7387-4513-8cf0-25457ae8ae9e
     type: title
     task:
-      id: bc9a64c5-5323-4275-875f-34b1cf106f16
+      id: 6b3c95df-7387-4513-8cf0-25457ae8ae9e
       version: -1
       name: Pass
       type: title
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 5405
+          "y": 6567.5
         }
       }
     note: false
@@ -1869,16 +1943,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: c337e3cb-5e1d-4c65-876b-691c8162bc79
+    taskid: 16ac858b-5d13-4c73-839e-1a7fe526aaea
     type: condition
     task:
-      id: c337e3cb-5e1d-4c65-876b-691c8162bc79
+      id: 16ac858b-5d13-4c73-839e-1a7fe526aaea
       version: -1
       name: No additional fields
       description: Additional fields empty
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "28"
@@ -1896,7 +1972,7 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 2560
+          "y": 2765
         }
       }
     note: false
@@ -1908,16 +1984,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: 151af615-5b96-44fb-8436-529eabe46fad
+    taskid: ce7cb0e4-df5d-4498-81e8-4cd9e224c270
     type: condition
     task:
-      id: 151af615-5b96-44fb-8436-529eabe46fad
+      id: ce7cb0e4-df5d-4498-81e8-4cd9e224c270
       version: -1
       name: Additional Fields Exists
       description: Additional fields empty
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "35"
@@ -1935,7 +2013,7 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 3400
+          "y": 3675
         }
       }
     note: false
@@ -1947,10 +2025,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: 76db3bbc-67e2-40f9-8757-c1a6e00c293b
+    taskid: 8be46062-64d2-4918-8575-2222a749e2ef
     type: regular
     task:
-      id: 76db3bbc-67e2-40f9-8757-c1a6e00c293b
+      id: 8be46062-64d2-4918-8575-2222a749e2ef
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -1963,6 +2041,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "63"
@@ -1975,7 +2055,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 3730
+          "y": 4030
         }
       }
     note: false
@@ -1987,10 +2067,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: ac24a91b-5a23-46f1-8b32-37eae0fc0a2f
+    taskid: 086e258d-668b-4943-8810-018fe0aa0ceb
     type: regular
     task:
-      id: ac24a91b-5a23-46f1-8b32-37eae0fc0a2f
+      id: 086e258d-668b-4943-8810-018fe0aa0ceb
       version: -1
       name: Run url enrichment script
       description: |-
@@ -2000,6 +2080,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "70"
@@ -2019,7 +2101,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 3900
+          "y": 4215
         }
       }
     note: false
@@ -2031,25 +2113,27 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: ba853917-2ac0-4f42-880d-26186bd0443a
+    taskid: 3379b561-ac07-48f3-ae63-e97edc8bec9c
     type: title
     task:
-      id: ba853917-2ac0-4f42-880d-26186bd0443a
+      id: 3379b561-ac07-48f3-ae63-e97edc8bec9c
       version: -1
-      name: Sad Flows
+      name: Case 6 - One Valid One Invalid
       type: title
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "52"
+      - "73"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 695,
-          "y": 4240
+          "y": 4585
         }
       }
     note: false
@@ -2061,15 +2145,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: acf28d72-fa4e-4024-a831-1368d307718b
+    taskid: b7a45795-8efc-4c69-8d8d-e57bc2cfd5d2
     type: condition
     task:
-      id: acf28d72-fa4e-4024-a831-1368d307718b
+      id: b7a45795-8efc-4c69-8d8d-e57bc2cfd5d2
       version: -1
       name: Google Exists
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "69"
@@ -2132,7 +2218,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4070
+          "y": 4400
         }
       }
     note: false
@@ -2144,15 +2230,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: bf7791ff-b62b-4fd7-ba19-a27b61cddebf
+    taskid: 369b1204-2826-48c6-9610-0162ef0921a5
     type: condition
     task:
-      id: bf7791ff-b62b-4fd7-ba19-a27b61cddebf
+      id: 369b1204-2826-48c6-9610-0162ef0921a5
       version: -1
       name: Facebook Exists
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "69"
@@ -2215,7 +2303,303 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 4070
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: dc89f0f2-23d2-418c-8a1e-e61c5dc44921
+    type: title
+    task:
+      id: dc89f0f2-23d2-418c-8a1e-e61c5dc44921
+      version: -1
+      name: Sad Flows
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "52"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 5310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: af5423fd-31b1-47ca-8185-3fd8ca930742
+    type: regular
+    task:
+      id: af5423fd-31b1-47ca-8185-3fd8ca930742
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "74"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 4755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: a62bc248-4be7-4ff2-96d1-468cc54de30a
+    type: regular
+    task:
+      id: a62bc248-4be7-4ff2-96d1-468cc54de30a
+      version: -1
+      name: Run url enrichment script
+      description: |-
+        Running !url-enrichemnt on the base case without external enrichment or additional fields.
+        !url-enrichment url_litst="https://google.com"
+      scriptName: url-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "75"
+      - "76"
+    scriptarguments:
+      additional_fields:
+        simple: "false"
+      external_enrichment:
+        simple: "true"
+      url_list:
+        simple: https://google.com,test
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 4940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 950d6adc-e4d8-43e4-8d8e-048d41ab93da
+    type: condition
+    task:
+      id: 950d6adc-e4d8-43e4-8d8e-048d41ab93da
+      version: -1
+      name: Google Exists
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "72"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: URLEnrichment.Value
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: https://google.com
+            iscontext: true
+          right:
+            value:
+              simple: https://google.com
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: URLEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: https://google.com
+                accessor: MaxScore
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: URLEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: https://google.com
+                accessor: TIMScore
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: bca9c626-6cf9-49fc-9b6f-c2aa9602f6a0
+    type: condition
+    task:
+      id: bca9c626-6cf9-49fc-9b6f-c2aa9602f6a0
+      version: -1
+      name: Invalid Entry Exists
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "72"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: URLEnrichment.Value
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: test
+            iscontext: true
+          right:
+            value:
+              simple: test
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: URLEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: test
+                accessor: Status
+            iscontext: true
+          right:
+            value:
+              simple: Error
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: URLEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: test
+                accessor: Message
+            iscontext: true
+          right:
+            value:
+              simple: Invalid
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 5125
         }
       }
     note: false
@@ -2230,7 +2614,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 5420,
+        "height": 6585,
         "width": 1670,
         "x": 50,
         "y": 50
@@ -2240,7 +2624,4 @@ view: |-
 inputs: []
 outputs: []
 dirtyInputs: true
-marketplaces:
-- platform
-- marketplacev2
-- xsoar
+adopted: true

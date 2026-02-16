@@ -1,0 +1,383 @@
+[
+  "# Evaluation Test: evaluation target: false (bool)",
+  {
+    "args": {
+      "id": "id",
+      "dt_encoding": "raw",
+      "value_dt": "xxx",
+      "eval_dt": null,
+      "eval_key": null,
+      "playbook_id": null
+    },
+    "context": {
+      "xxx": false
+    },
+    "results": {
+      "id": "id",
+      "ok": false
+    }
+  },
+  "# Evaluation Test: evaluation target: true (bool)",
+  {
+    "args": {
+      "id": "id",
+      "dt_encoding": "raw",
+      "value_dt": "xxx",
+      "eval_dt": null,
+      "eval_key": null,
+      "playbook_id": null
+    },
+    "context": {
+      "xxx": true
+    },
+    "results": {
+      "id": "id",
+      "ok": true
+    }
+  },
+  "# Evaluation Test: evaluation target: null",
+  {
+    "args": {
+      "id": "id",
+      "dt_encoding": "raw",
+      "value_dt": "xxx",
+      "eval_dt": null,
+      "eval_key": null,
+      "playbook_id": null
+    },
+    "context": {
+      "xxx": null
+    },
+    "results": {
+      "id": "id",
+      "ok": false
+    }
+  },
+  "# Evaluation Test: evaluation target: 0 (number)",
+  {
+    "args": {
+      "id": "id",
+      "dt_encoding": "raw",
+      "value_dt": "xxx",
+      "eval_dt": null,
+      "eval_key": null,
+      "playbook_id": null
+    },
+    "context": {
+      "xxx": 0
+    },
+    "results": {
+      "id": "id",
+      "ok": false
+    }
+  },
+  "# Evaluation Test: evaluation target: 1 (number)",
+  {
+    "args": {
+      "id": "id",
+      "dt_encoding": "raw",
+      "value_dt": "xxx",
+      "eval_dt": null,
+      "eval_key": null,
+      "playbook_id": null
+    },
+    "context": {
+      "xxx": 1
+    },
+    "results": {
+      "id": "id",
+      "ok": true
+    }
+  },
+  "# Evaluation Test: evaluation target: 0.0 (number)",
+  {
+    "args": {
+      "id": "id",
+      "dt_encoding": "raw",
+      "value_dt": "xxx",
+      "eval_dt": null,
+      "eval_key": null,
+      "playbook_id": null
+    },
+    "context": {
+      "xxx": 0.0
+    },
+    "results": {
+      "id": "id",
+      "ok": false
+    }
+  },
+  "# Evaluation Test: evaluation target: 0.1 (number)",
+  {
+    "args": {
+      "id": "id",
+      "dt_encoding": "raw",
+      "value_dt": "xxx",
+      "eval_dt": null,
+      "eval_key": null,
+      "playbook_id": null
+    },
+    "context": {
+      "xxx": 0.1
+    },
+    "results": {
+      "id": "id",
+      "ok": true
+    }
+  },
+  "# Evaluation Test: evaluation target: empty (string)",
+  {
+    "args": {
+      "id": "id",
+      "dt_encoding": "raw",
+      "value_dt": "xxx",
+      "eval_dt": null,
+      "eval_key": null,
+      "playbook_id": null
+    },
+    "context": {
+      "xxx": ""
+    },
+    "results": {
+      "id": "id",
+      "ok": false
+    }
+  },
+  "# Evaluation Test: evaluation target: false (string)",
+  {
+    "args": {
+      "id": "id",
+      "dt_encoding": "raw",
+      "value_dt": "xxx",
+      "eval_dt": null,
+      "eval_key": null,
+      "playbook_id": null
+    },
+    "context": {
+      "xxx": "false"
+    },
+    "results": {
+      "id": "id",
+      "ok": false
+    }
+  },
+  "# Evaluation Test: evaluation target: true (string)",
+  {
+    "args": {
+      "id": "id",
+      "dt_encoding": "raw",
+      "value_dt": "xxx",
+      "eval_dt": null,
+      "eval_key": null,
+      "playbook_id": null
+    },
+    "context": {
+      "xxx": "true"
+    },
+    "results": {
+      "id": "id",
+      "ok": true
+    }
+  },
+  "# Evaluation Test: evaluation target: xxx (string)",
+  {
+    "args": {
+      "id": "id",
+      "dt_encoding": "raw",
+      "value_dt": "xxx",
+      "eval_dt": null,
+      "eval_key": null,
+      "playbook_id": null
+    },
+    "context": {
+      "xxx": "xxx"
+    },
+    "results": {
+      "id": "id",
+      "ok": true
+    }
+  },
+  "# Evaluation Test: eval_dt: ., result: true",
+  {
+    "args": {
+      "id": "id",
+      "dt_encoding": "raw",
+      "value_dt": "xxx",
+      "eval_dt": ".",
+      "eval_key": null,
+      "playbook_id": null
+    },
+    "context": {
+      "xxx": "true"
+    },
+    "results": {
+      "id": "id",
+      "ok": true
+    }
+  },
+  "# Evaluation Test: eval_dt: ., result: false",
+  {
+    "args": {
+      "id": "id",
+      "dt_encoding": "raw",
+      "value_dt": "xxx",
+      "eval_dt": ".",
+      "eval_key": null,
+      "playbook_id": null
+    },
+    "context": {
+      "xxx": "false"
+    },
+    "results": {
+      "id": "id",
+      "ok": false
+    }
+  },
+  "# Evaluation Test: eval_dt: aaa, eval_key: aaa, result: true",
+  {
+    "args": {
+      "id": "id",
+      "dt_encoding": "raw",
+      "value_dt": "xxx",
+      "eval_dt": "aaa",
+      "eval_key": "aaa",
+      "playbook_id": null
+    },
+    "context": {
+      "xxx": "true"
+    },
+    "results": {
+      "id": "id",
+      "ok": true
+    }
+  },
+  "# Evaluation Test: eval_dt: aaa, eval_key: aaa, result: false",
+  {
+    "args": {
+      "id": "id",
+      "dt_encoding": "raw",
+      "value_dt": "xxx",
+      "eval_dt": "aaa",
+      "eval_key": "aaa",
+      "playbook_id": null
+    },
+    "context": {
+      "xxx": "false"
+    },
+    "results": {
+      "id": "id",
+      "ok": false
+    }
+  },
+  "# Evaluation Test: eval_dt: ., playbook_id: 123, result: true",
+  {
+    "args": {
+      "id": "id",
+      "dt_encoding": "raw",
+      "value_dt": "xxx",
+      "eval_dt": ".",
+      "eval_key": null,
+      "playbook_id": "123"
+    },
+    "context": {
+      "subplaybook-123": {
+        "xxx": "true"
+      }
+    },
+    "results": {
+      "id": "id",
+      "ok": true
+    }
+  },
+  "# Evaluation Test: eval_dt: ., playbook_id: 123, result: false",
+  {
+    "args": {
+      "id": "id",
+      "dt_encoding": "raw",
+      "value_dt": "xxx",
+      "eval_dt": ".",
+      "eval_key": null,
+      "playbook_id": "123"
+    },
+    "context": {
+      "subplaybook-123": {
+        "xxx": "false"
+      }
+    },
+    "results": {
+      "id": "id",
+      "ok": false
+    }
+  },
+  "# dt_encoding Test: raw",
+  {
+    "args": {
+      "id": "id",
+      "dt_encoding": "raw",
+      "value_dt": "xxx",
+      "eval_dt": ".=val",
+      "eval_key": null,
+      "playbook_id": null
+    },
+    "context": {
+      "xxx": "true"
+    },
+    "results": {
+      "id": "id",
+      "ok": true
+    }
+  },
+  "# dt_encoding Test: url",
+  {
+    "args": {
+      "id": "id",
+      "dt_encoding": "url",
+      "value_dt": "%40%40%40",
+      "eval_dt": ".%3Dval",
+      "eval_key": null,
+      "playbook_id": null
+    },
+    "context": {
+      "@@@": "true"
+    },
+    "results": {
+      "id": "id",
+      "ok": true
+    }
+  },
+  "# dt_encoding Test: base64",
+  {
+    "args": {
+      "id": "id",
+      "dt_encoding": "base64",
+      "value_dt": "eHh4",
+      "eval_dt": "Lj12YWw=",
+      "eval_key": null,
+      "playbook_id": null
+    },
+    "context": {
+      "xxx": "true"
+    },
+    "results": {
+      "id": "id",
+      "ok": true
+    }
+  },
+  "# dt_encoding Test: invalid scheme",
+  {
+    "args": {
+      "id": "id",
+      "dt_encoding": "xxx",
+      "value_dt": "xxx",
+      "eval_dt": ".=val",
+      "eval_key": null,
+      "playbook_id": null
+    },
+    "context": {
+      "xxx": "true"
+    },
+    "errors": [
+      "Failed to execute EvaluateContextValue script. Error: Invalid encoding scheme - xxx"
+    ]
+  }
+]

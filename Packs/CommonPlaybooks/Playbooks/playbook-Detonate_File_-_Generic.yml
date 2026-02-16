@@ -864,11 +864,6 @@ tasks:
             value:
               simple: inputs.anyrun_os
             iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: inputs.incident
-            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -989,12 +984,6 @@ inputs:
   required: false
   description: 'Specify ANY.RUN operation system type. Supports: windows, linux, android'
   playbookInputQuery:
-- key: incident
-  value:
-    simple: ${incident}
-  required: false
-  description: Information about the active incident where the found indicators will be linked
-  playbookInputQuery:
 inputSections:
 - inputs:
   - EntryID
@@ -1003,7 +992,6 @@ inputSections:
   description: Generic group for inputs
 - inputs:
   - anyrun_os
-  - incident
   name: ANY.RUN
   description: ANY.RUN group for inputs
 outputs:

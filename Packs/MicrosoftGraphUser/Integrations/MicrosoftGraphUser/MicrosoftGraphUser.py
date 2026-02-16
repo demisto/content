@@ -17,6 +17,42 @@ NO_OUTPUTS: dict = {}
 APP_NAME = "ms-graph-user"
 INVALID_USER_CHARS_REGEX = re.compile(r"[%&*+/=?`{|}]")
 API_VERSION: str = "v1.0"
+DEFAULT_LIMIT = 50
+AUTH_METHODS_FIELD_MAPPING = {
+    "OWNED_DEVICES": {
+        "id": "Device Id",
+        "deviceId": "Azure Device Registration Id",
+        "displayName": "Device Display Name",
+    },
+    "FIDO2": {
+        "id": "Authentication method ID",
+        "displayName": "The display name of the key",
+        "aaGuid": "Authenticator Attestation GUID",
+    },
+    "AUTHENTICATOR": {
+        "id": "Authentication method ID",
+        "displayName": "Device Name",
+        "phoneAppVersion": "Version of the Authenticator app",
+    },
+    "PHONE": {
+        "id": "Phone ID",
+        "phoneNumber": "Phone Number",
+        "phoneType": "Phone Type",
+        "smsSignInState": "Sms SignIn State",
+    },
+    "SOFTWARE_OATH": {
+        "id": "Authentication method ID",
+    },
+    "TEMP_ACCESS_PASS": {
+        "id": "Temporary Access Pass ID",
+        "isUsable": "Authentication method state",
+    },
+    "WINDOWS_HELLO": {
+        "id": "Windows Hello Method ID",
+        "displayName": "Display Name",
+        "keyStrength": "Method Key Strength",
+    },
+}
 
 
 def camel_case_to_readable(text):
@@ -159,6 +195,10 @@ class MsGraphClient:
             body[field] = value
         self.ms_client.http_request(method="PATCH", url_suffix=f"users/{quote(user)}", json_data=body, resp_type="text")
 
+    def force_reset_password(self, user):
+        body = {"passwordProfile": {"forceChangePasswordNextSignIn": True}}
+        self.ms_client.http_request(method="PATCH", url_suffix=f"users/{quote(user)}", json_data=body, resp_type="text")
+
     #  If successful, this method returns 204 No Content response code.
     #  Using resp_type=text to avoid parsing error.
     def password_change_user_saas(
@@ -226,6 +266,16 @@ class MsGraphClient:
             return {"NotFound": e.message}
         except Exception as e:
             raise e
+
+    def get_groups(self, user):
+        group_data = self.ms_client.http_request(method="GET", url_suffix=f"users/{quote(user)}/memberOf")
+        group_data.pop("@odata.context", None)
+        return group_data
+
+    def get_auth_methods(self, user):
+        data = self.ms_client.http_request(method="GET", url_suffix=f"users/{quote(user)}/authentication/methods")
+        data.pop("@odata.context", None)
+        return data.get("value", [])
 
     def list_users(self, properties, page_url, filters):
         if page_url:
@@ -335,6 +385,337 @@ class MsGraphClient:
         url_suffix = f"users/{quote(user_id)}/authentication/temporaryAccessPassMethods/{quote(policy_id)}"
         self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, resp_type="text")
 
+    def list_fido2_methods(self, user_id: str) -> list:
+        """
+        Lists the FIDO2 authentication methods registered to a user, or retrieves a specific method.
+
+        Args:
+            user_id (str): The Azure AD user ID.
+
+        API Reference:
+            List: https://learn.microsoft.com/en-us/graph/api/fido2authenticationmethod-list?view=graph-rest-1.0&tabs=http
+        """
+
+        url_suffix = f"users/{quote(user_id)}/authentication/fido2Methods"
+        res = self.ms_client.http_request(method="GET", url_suffix=url_suffix)
+        return res.get("value", [])
+
+    def get_fido2_method(self, user_id: str, method_id: str) -> dict:
+        """
+        Gets the FIDO2 authentication method registered to a user.
+
+        Args:
+            user_id (str): The Azure AD user ID.
+            method_id (str, optional): The ID of a specific FIDO2 authentication method to retrieve.
+            limit (int, optional): Maximum number of results to return when listing all methods.
+
+        API Reference:
+            Get: https://learn.microsoft.com/en-us/graph/api/fido2authenticationmethod-get?view=graph-rest-1.0&tabs=http
+        """
+        url_suffix = f"users/{quote(user_id)}/authentication/fido2Methods/{method_id}"
+        res = self.ms_client.http_request(method="GET", url_suffix=url_suffix)
+        res.pop("@odata.context", None)
+        return res
+
+    def delete_fido2_method(self, user_id: str, method_id: str):
+        """
+        Deletes a FIDO2 authentication method from a user.
+
+        Args:
+            user_id (str): The Azure AD user ID.
+            method_id (str): The ID of the FIDO2 authentication method to delete.
+
+        API Reference:
+            https://learn.microsoft.com/en-us/graph/api/fido2authenticationmethod-delete?view=graph-rest-1.0&tabs=http
+        """
+        url_suffix = f"users/{quote(user_id)}/authentication/fido2Methods/{quote(method_id)}"
+        self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, return_empty_response=True)
+
+    def list_email_methods(self, user_id: str):
+        """
+        Lists the email authentication methods registered to a user.
+
+        Args:
+            user_id (str): The Azure AD user ID.
+
+        API Reference:
+            https://learn.microsoft.com/en-us/graph/api/authentication-list-emailmethods?view=graph-rest-1.0&tabs=http
+        """
+        url_suffix = f"users/{quote(user_id)}/authentication/emailMethods"
+        res = self.ms_client.http_request(method="GET", url_suffix=url_suffix)
+        return res.get("value", [])
+
+    def get_email_method(self, user_id: str, method_id: str) -> dict:
+        """
+        Retrieves a specific email authentication method for a user.
+
+        Args:
+            user_id (str): The Azure AD user ID.
+            method_id (str): The ID of a specific email authentication method to retrieve.
+
+        API Reference:
+            https://learn.microsoft.com/en-us/graph/api/emailauthenticationmethod-get?view=graph-rest-1.0&tabs=http
+        """
+        url_suffix = f"users/{quote(user_id)}/authentication/emailMethods/{quote(method_id)}"
+        res = self.ms_client.http_request(method="GET", url_suffix=url_suffix)
+        res.pop("@odata.context", None)
+        return res
+
+    def delete_email_method(self, user_id: str, method_id: str):
+        """
+        Deletes an email authentication method from a user.
+
+        Args:
+            user_id (str): The Azure AD user ID.
+            method_id (str): The ID of the email authentication method to delete.
+
+        API Reference:
+            https://learn.microsoft.com/en-us/graph/api/emailauthenticationmethod-delete?view=graph-rest-1.0&tabs=http
+        """
+        url_suffix = f"users/{quote(user_id)}/authentication/emailMethods/{quote(method_id)}"
+        self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, return_empty_response=True)
+
+    def list_authenticator_methods(self, user_id: str, limit: int = DEFAULT_LIMIT, page_url: str = ""):
+        """
+        Lists the Microsoft Authenticator authentication methods registered to a user.
+
+        Args:
+            user_id (str): The Azure AD user ID.
+            limit (int, optional): Maximum number of results to return.
+            page_url (str, optional): URL for the next page of results.
+
+        API Reference:
+            https://learn.microsoft.com/en-us/graph/api/microsoftauthenticatorauthenticationmethod-list?view=graph-rest-1.0&tabs=http
+        """
+        if page_url:
+            response = self.ms_client.http_request(method="GET", full_url=page_url)
+        else:
+            url_suffix = f"users/{quote(user_id)}/authentication/microsoftAuthenticatorMethods"
+            params = {}
+            if limit:
+                params["$top"] = limit
+            response = self.ms_client.http_request(method="GET", url_suffix=url_suffix, params=params)
+
+        next_page_url = response.get("@odata.nextLink")
+        methods = response.get("value", [])
+        return methods, next_page_url
+
+    def get_authenticator_method(self, user_id: str, method_id: str) -> dict:
+        """
+        Retrieves a specific Microsoft Authenticator authentication method for a user.
+
+        Args:
+            user_id (str): The Azure AD user ID.
+            method_id (str): The ID of a specific authenticator method to retrieve.
+
+        API Reference:
+            https://learn.microsoft.com/en-us/graph/api/microsoftauthenticatorauthenticationmethod-get?view=graph-rest-1.0&tabs=http
+        """
+        url_suffix = f"users/{quote(user_id)}/authentication/microsoftAuthenticatorMethods/{quote(method_id)}"
+        res = self.ms_client.http_request(method="GET", url_suffix=url_suffix)
+        res.pop("@odata.context", None)
+        return res
+
+    def delete_authenticator_method(self, user_id: str, method_id: str) -> None:
+        """
+        Deletes a Microsoft Authenticator authentication method from a user.
+
+        Args:
+            user_id (str): The Azure AD user ID.
+            method_id (str): The ID of the Microsoft Authenticator authentication method to delete.
+
+        API Reference:
+            https://learn.microsoft.com/en-us/graph/api/microsoftauthenticatorauthenticationmethod-delete?view=graph-rest-1.0&tabs=http
+        """
+        url_suffix = f"users/{quote(user_id)}/authentication/microsoftAuthenticatorMethods/{quote(method_id)}"
+        self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, return_empty_response=True)
+
+    def list_phone_methods(self, user_id: str, page_url: str = ""):
+        """
+        Lists the phone authentication methods registered to a user.
+
+        Args:
+            user_id (str): The Azure AD user ID.
+            page_url (str, optional): URL for the next page of results.
+
+        API Reference:
+            https://learn.microsoft.com/en-us/graph/api/authentication-list-phonemethods?view=graph-rest-1.0&tabs=http
+        """
+        if page_url:
+            response = self.ms_client.http_request(method="GET", full_url=page_url)
+        else:
+            url_suffix = f"users/{quote(user_id)}/authentication/phoneMethods"
+            response = self.ms_client.http_request(method="GET", url_suffix=url_suffix)
+
+        next_page_url = response.get("@odata.nextLink")
+        methods = response.get("value", [])
+        return methods, next_page_url
+
+    def get_phone_method(self, user_id: str, method_id: str) -> dict:
+        """
+        Retrieves a specific phone authentication method for a user.
+
+        Args:
+            user_id (str): The Azure AD user ID.
+            method_id (str): The ID of a specific phone method to retrieve.
+
+        API Reference:
+            https://learn.microsoft.com/en-us/graph/api/phoneauthenticationmethod-get?view=graph-rest-1.0&tabs=http
+        """
+        url_suffix = f"users/{quote(user_id)}/authentication/phoneMethods/{quote(method_id)}"
+        res = self.ms_client.http_request(method="GET", url_suffix=url_suffix)
+        res.pop("@odata.context", None)
+        return res
+
+    def delete_phone_method(self, user_id: str, method_id: str):
+        """
+        Deletes a phone authentication method from a user.
+
+        Args:
+            user_id (str): The Azure AD user ID.
+            method_id (str): The ID of the phone authentication method to delete.
+
+        API Reference:
+            https://learn.microsoft.com/en-us/graph/api/phoneauthenticationmethod-delete?view=graph-rest-1.0&tabs=http
+        """
+        url_suffix = f"users/{quote(user_id)}/authentication/phoneMethods/{quote(method_id)}"
+        self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, return_empty_response=True)
+
+    def list_software_oath_methods(self, user_id: str):
+        """
+        Lists the software OATH authentication methods registered to a user.
+
+        Args:
+            user_id (str): The Azure AD user ID.
+
+        API Reference:
+            https://learn.microsoft.com/en-us/graph/api/authentication-list-softwareoathmethods?view=graph-rest-1.0&tabs=http
+        """
+        url_suffix = f"users/{quote(user_id)}/authentication/softwareOathMethods"
+        res = self.ms_client.http_request(method="GET", url_suffix=url_suffix)
+        return res.get("value", [])
+
+    def get_software_oath_method(self, user_id: str, method_id: str) -> dict:
+        """
+        Retrieves a specific software OATH authentication method for a user.
+
+        Args:
+            user_id (str): The Azure AD user ID.
+            method_id (str): The ID of a specific software OATH method to retrieve.
+
+        API Reference:
+            https://learn.microsoft.com/en-us/graph/api/softwareoathauthenticationmethod-get?view=graph-rest-1.0&tabs=http
+        """
+        url_suffix = f"users/{quote(user_id)}/authentication/softwareOathMethods/{quote(method_id)}"
+        res = self.ms_client.http_request(method="GET", url_suffix=url_suffix)
+        res.pop("@odata.context", None)
+        return res
+
+    def delete_software_oath_method(self, user_id: str, method_id: str):
+        """
+        Deletes a software OATH authentication method from a user.
+
+        Args:
+            user_id (str): The Azure AD user ID.
+            method_id (str): The ID of the software OATH authentication method to delete.
+
+        API Reference:
+            https://learn.microsoft.com/en-us/graph/api/softwareoathauthenticationmethod-delete?view=graph-rest-1.0&tabs=http
+        """
+        url_suffix = f"users/{quote(user_id)}/authentication/softwareOathMethods/{quote(method_id)}"
+        self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, return_empty_response=True)
+
+    def list_windows_hello_methods(self, user_id: str):
+        """
+        Lists the Windows Hello for Business authentication methods registered to a user.
+
+        Args:
+            user_id (str): The Azure AD user ID.
+
+        API Reference:
+            https://learn.microsoft.com/en-us/graph/api/windowshelloforbusinessauthenticationmethod-list?view=graph-rest-1.0&tabs=http
+        """
+        url_suffix = f"users/{quote(user_id)}/authentication/windowsHelloForBusinessMethods"
+        res = self.ms_client.http_request(method="GET", url_suffix=url_suffix)
+        return res.get("value", [])
+
+    def get_windows_hello_method(self, user_id: str, method_id: str) -> dict:
+        """
+        Retrieves a specific Windows Hello for Business authentication method for a user.
+
+        Args:
+            user_id (str): The Azure AD user ID.
+            method_id (str): The ID of a specific Windows Hello for Business method to retrieve.
+
+        API Reference:
+            https://learn.microsoft.com/en-us/graph/api/windowshelloforbusinessauthenticationmethod-get?view=graph-rest-1.0&tabs=http
+        """
+        url_suffix = f"users/{quote(user_id)}/authentication/windowsHelloForBusinessMethods/{quote(method_id)}"
+        res = self.ms_client.http_request(method="GET", url_suffix=url_suffix)
+        res.pop("@odata.context", None)
+        return res
+
+    def delete_windows_hello_method(self, user_id: str, method_id: str):
+        """
+        Deletes a Windows Hello for Business authentication method from a user.
+
+        Args:
+            user_id (str): The Azure AD user ID.
+            method_id (str): The ID of the Windows Hello for Business authentication method to delete.
+
+        API Reference:
+            https://learn.microsoft.com/en-us/graph/api/windowshelloforbusinessauthenticationmethod-delete?view=graph-rest-1.0&tabs=http
+        """
+        url_suffix = f"users/{quote(user_id)}/authentication/windowsHelloForBusinessMethods/{quote(method_id)}"
+        self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, return_empty_response=True)
+
+    def get_temp_access_pass_method(self, user_id: str, method_id: str) -> dict:
+        """
+        Retrieves a specific temporary access pass authentication method for a user.
+
+        Args:
+            user_id (str): The Azure AD user ID.
+            method_id (str): The ID of a specific temporary access pass method to retrieve.
+
+        Returns:
+            dict: A temporary access pass method object.
+
+        API Reference:
+            https://learn.microsoft.com/en-us/graph/api/temporaryaccesspassauthenticationmethod-get?view=graph-rest-1.0&tabs=http
+        """
+        url_suffix = f"users/{quote(user_id)}/authentication/temporaryAccessPassMethods/{quote(method_id)}"
+        res = self.ms_client.http_request(method="GET", url_suffix=url_suffix)
+        res.pop("@odata.context", None)
+        return res
+
+    def list_owned_devices(self, page_url: str, user_id: str, filters: str, page_size: int):
+        """
+        Lists the devices owned by a user.
+
+        Args:
+            page_url (str): URL for the next page of results (optional).
+            user_id (str): The Azure AD user ID or user principal name.
+            filters (str): OData filter to apply to the results (optional).
+            page_size (int): Maximum number of results to return per page.
+
+        API Reference:
+            https://learn.microsoft.com/en-us/graph/api/user-list-owneddevices?view=graph-rest-1.0&tabs=http
+        """
+        if page_url:
+            response = self.ms_client.http_request(method="GET", full_url=page_url)
+        else:
+            suffix_url = f"users/{quote(user_id)}/ownedDevices"
+            response = self.ms_client.http_request(
+                method="GET",
+                url_suffix=suffix_url,
+                headers={"ConsistencyLevel": "eventual"},
+                params={"$filter": filters, "$count": "true", "$top": page_size},
+            )
+
+        next_page_url = response.get("@odata.nextLink")
+        users = response.get("value")
+        return users, next_page_url
+
 
 def suppress_errors_with_404_code(func):
     def wrapper(client: MsGraphClient, args: dict):
@@ -343,13 +724,16 @@ def suppress_errors_with_404_code(func):
         except NotFoundError as e:
             if client.handle_error:
                 if (user := args.get("user", "___")) in str(e):
-                    human_readable = f"#### User -> {user} does not exist"
+                    if "A key with identifier" in str(e) and (method_id := args.get("method_id")):
+                        human_readable = f"#### Did not find the method_id {method_id} for user {user}"
+                    else:
+                        human_readable = f"#### User -> {user} does not exist"
                     return human_readable
                 elif (manager := args.get("manager", "___")) in str(e):
                     human_readable = f"#### Manager -> {manager} does not exist"
                     return human_readable
                 elif "The specified user could not be found." in str(e.message):
-                    user = args.get("user_id", "___")
+                    user = args.get("user_id") or args.get("user", "___")
                     human_readable = f"#### User -> {user} does not exist"
                     return human_readable
             raise
@@ -461,6 +845,12 @@ def change_password_user_saas_command(client: MsGraphClient, args: dict):
     human_readable = f"User {user} password was changed successfully."
 
     return CommandResults(readable_output=human_readable)
+
+
+def force_reset_password(client: MsGraphClient, args: dict):
+    user = args.get("user")
+    client.force_reset_password(user)
+    return CommandResults(readable_output=f"User {args['user']} will be required to change his password.")
 
 
 def validate_input_password(args: dict[str, Any]) -> str:
@@ -629,6 +1019,41 @@ def get_user_command(client: MsGraphClient, args: dict):
     outputs = {"MSGraphUser": user_outputs, "Account": accounts[0] if accounts else []}
 
     return CommandResults(outputs_key_field="ID", outputs=outputs, readable_output=human_readable, raw_response=user_data)
+
+
+@suppress_errors_with_404_code
+def get_groups_command(client: MsGraphClient, args: Dict):
+    user = args.get("user")
+    group_data = client.get_groups(user)
+
+    user_readable, user_outputs = parse_outputs(group_data.get("value", []))
+    human_readable = tableToMarkdown(name=f"{user} group data", t=user_readable, removeNull=True)
+    outputs = {"ID": user, "Groups": user_outputs}
+
+    return CommandResults(
+        outputs_prefix="MSGraphUserGroups",
+        outputs_key_field="ID",
+        outputs=outputs,
+        readable_output=human_readable,
+        raw_response=group_data,
+    )
+
+
+@suppress_errors_with_404_code
+def get_auth_methods_command(client: MsGraphClient, args: Dict):
+    user = args.get("user")
+    data = client.get_auth_methods(user)
+    readable, outputs = parse_outputs(data)
+    human_readable = tableToMarkdown(name=f"{user} - auth methods", t=readable, removeNull=True)
+    outputs = {"ID": user, "Methods": outputs}
+
+    return CommandResults(
+        outputs_prefix="MSGraphUserAuthMethods",
+        outputs_key_field="ID",
+        outputs=outputs,
+        readable_output=human_readable,
+        raw_response=data,
+    )
 
 
 def list_users_command(client: MsGraphClient, args: dict):
@@ -808,9 +1233,594 @@ def delete_tap_policy_command(client: MsGraphClient, args: dict) -> CommandResul
         CommandResults: Delete the Temporary Access Pass (TAP) police associated with a specific user.
     """
     user_id = args.get("user_id")
-    policy_id = args.get("policy_id")
+    policy_id = args.get("policy_id") or args.get(
+        "method_id"
+    )  # using the same function for msgraph-user-temp-access-pass-method-delete command  # noqa: E501
     client.delete_tap_policy(user_id, policy_id)
-    human_readable = f"Temporary Access Pass Authentication methods policy {policy_id} was successfully deleted."
+    if args.get("policy_id"):
+        human_readable = f"Temporary Access Pass Authentication methods policy {policy_id} was successfully deleted."
+    else:
+        human_readable = (
+            f"The user's Temporary Access Pass Authentication Method object id {policy_id} has been successfully deleted."  # noqa: E501
+        )
+
+    return CommandResults(readable_output=human_readable)
+
+
+@suppress_errors_with_404_code
+def list_owned_device_command(client: MsGraphClient, args: dict) -> CommandResults:
+    """
+    Lists the devices owned by a user.
+
+    Args:
+        client (MsGraphClient): The Microsoft Graph client used to make the API request.
+        args (dict): A dictionary containing the input arguments:
+            - user_id (str, required): The user ID or user principal name
+            - limit (int, optional): Maximum number of results to return
+            - next_page (str, optional): URL for the next page of results
+            - filter (str, optional): Filter to apply to the results
+
+    Returns:
+        CommandResults: The devices owned by the specified user.
+    """
+    user_id = args.get("user", "")
+    next_page = args.get("next_page", "")
+    filters = args.get("filter", "")
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+
+    devices_data, result_next_page = client.list_owned_devices(next_page, user_id, filters, limit)  # type: ignore
+
+    if not devices_data:
+        return CommandResults(readable_output=f"No owned devices found for user {user_id}.")
+    devices_readable, devices_outputs = parse_outputs(devices_data)
+    # Map the field names to custom headers for human readable output
+    field_mapping = AUTH_METHODS_FIELD_MAPPING.get("OWNED_DEVICES", {})
+    devices_readable = map_auth_method_fields_to_readable(devices_data, field_mapping)
+
+    headers = ["Device Id", "Azure Device Registration Id", "Device Display Name"]
+
+    metadata = None
+    if result_next_page:
+        metadata = "To get further results, enter this to the next_page argument:\n" + str(result_next_page)
+        # Add NextPage to outputs if it's a list
+        if isinstance(devices_outputs, list):
+            devices_outputs.insert(0, {"NextPage": result_next_page})
+
+    human_readable = tableToMarkdown(
+        name=f"Owned Devices for User {user_id}:", headers=headers, t=devices_readable, removeNull=True, metadata=metadata
+    )
+
+    return CommandResults(
+        outputs_prefix="MSGraphUser",
+        outputs_key_field="ID",
+        outputs={"OwnedDevice": devices_outputs, "Id": user_id},
+        readable_output=human_readable,
+        raw_response=devices_data,
+    )
+
+
+def map_auth_method_fields_to_readable(data, field_mapping: dict):
+    """
+    Maps authentication method field names to custom human-readable headers.
+    Creates a new dictionary/list to avoid modifying the original data.
+
+    Args:
+        data: A dictionary or list of dictionaries containing authentication method data.
+        field_mapping: A dictionary mapping original field names to custom header names.
+
+    Returns:
+        A new data structure with renamed fields for better readability.
+    """
+
+    def map_single_item(item):
+        """Helper function to map a single dictionary item."""
+        mapped_item = {}
+        for key, value in item.items():
+            # Use the mapping if it exists, otherwise keep the original key
+            mapped_item[field_mapping.get(key, key)] = value
+        return mapped_item
+
+    if isinstance(data, list):
+        return [map_single_item(item) for item in data]
+    else:
+        return map_single_item(data)
+
+
+@suppress_errors_with_404_code
+def list_fido2_method_command(client: MsGraphClient, args: dict) -> CommandResults:
+    """
+    Lists the FIDO2 authentication methods registered to a user, or retrieves a specific method.
+
+    Args:
+        client (MsGraphClient): The Microsoft Graph client used to make the API request.
+        args (dict): A dictionary containing the input arguments:
+            - user (str, required): The user ID or user principal name
+            - method_id (str, optional): The ID of a specific FIDO2 method to retrieve
+            - limit (int, optional): Maximum number of results to return when listing
+
+    Returns:
+        CommandResults: The FIDO2 authentication methods registered to the specified user.
+    """
+    user = args.get("user", "")
+    method_id = args.get("method_id", "")
+
+    if method_id:
+        fido2_data = client.get_fido2_method(user, method_id)
+    else:
+        fido2_data = client.list_fido2_methods(user)  # type: ignore
+
+    if not fido2_data:
+        return CommandResults(readable_output=f"No FIDO2 authentication methods found for user {user}.")
+
+    fido2_readable, fido2_outputs = parse_outputs(fido2_data)
+
+    field_mapping = AUTH_METHODS_FIELD_MAPPING.get("FIDO2", {})
+    fido2_readable = map_auth_method_fields_to_readable(fido2_data, field_mapping)
+
+    headers = ["Authentication method ID", "The display name of the key", "Authenticator Attestation GUID"]
+
+    if method_id:
+        title = f"FIDO2 Authentication Method {method_id} for User {user}:"
+    else:
+        title = f"FIDO2 Authentication Methods for User {user}:"
+
+    human_readable = tableToMarkdown(name=title, headers=headers, t=fido2_readable, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix="MSGraphUser.FIDO2Method",
+        outputs_key_field="ID",
+        outputs=fido2_outputs,
+        readable_output=human_readable,
+        raw_response=fido2_data,
+    )
+
+
+@suppress_errors_with_404_code
+def delete_fido2_method_command(client: MsGraphClient, args: dict) -> CommandResults:
+    """
+    Deletes a FIDO2 authentication method from a user.
+
+    Args:
+        client (MsGraphClient): The Microsoft Graph client used to make the API request.
+        args (dict): A dictionary containing the input arguments:
+            - user (str, required): The user ID or user principal name
+            - method_id (str, required): The ID of the FIDO2 method to delete
+
+    Returns:
+        CommandResults: Confirmation message of the deletion.
+    """
+    user = args.get("user", "")
+    method_id = args.get("method_id", "")
+
+    client.delete_fido2_method(user, method_id)
+    human_readable = f"The user's FIDO2 Security Key Authentication Method {method_id} has been successfully deleted."
+
+    return CommandResults(readable_output=human_readable)
+
+
+@suppress_errors_with_404_code
+def list_email_method_command(client: MsGraphClient, args: dict) -> CommandResults:
+    """
+    Lists the email authentication methods registered to a user, or retrieves a specific method.
+
+    Args:
+        client (MsGraphClient): The Microsoft Graph client used to make the API request.
+        args (dict): A dictionary containing the input arguments:
+            - user (str, required): The user ID or user principal name
+            - method_id (str, optional): The ID of a specific email method to retrieve
+
+    Returns:
+        CommandResults: The email authentication methods registered to the specified user.
+    """
+    user = args.get("user", "")
+    method_id = args.get("method_id", "")
+
+    if method_id:
+        email_data = client.get_email_method(user, method_id)
+    else:
+        email_data = client.list_email_methods(user)
+
+    if not email_data:
+        return CommandResults(readable_output=f"No email authentication methods found for user {user}.")
+
+    email_readable, email_outputs = parse_outputs(email_data)
+
+    headers = ["ID", "Email Address"]
+
+    if method_id:
+        title = f"Email Authentication Method {method_id} for User {user}:"
+    else:
+        title = f"Email Authentication Methods for User {user}:"
+
+    human_readable = tableToMarkdown(name=title, headers=headers, t=email_readable, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix="MSGraphUser.EmailAuthMethod",
+        outputs_key_field="ID",
+        outputs=email_outputs,
+        readable_output=human_readable,
+        raw_response=email_data,
+    )
+
+
+@suppress_errors_with_404_code
+def delete_email_method_command(client: MsGraphClient, args: dict) -> CommandResults:
+    """
+    Deletes an email authentication method from a user.
+
+    Args:
+        client (MsGraphClient): The Microsoft Graph client used to make the API request.
+        args (dict): A dictionary containing the input arguments:
+            - user (str, required): The user ID or user principal name
+            - method_id (str, required): The ID of the email method to delete
+
+    Returns:
+        CommandResults: Confirmation message of the deletion.
+    """
+    user = args.get("user", "")
+    method_id = args.get("method_id", "")
+
+    client.delete_email_method(user, method_id)
+    human_readable = f"The user's Email Authentication Method object {method_id} has been successfully deleted."
+
+    return CommandResults(readable_output=human_readable)
+
+
+@suppress_errors_with_404_code
+def list_authenticator_method_command(client: MsGraphClient, args: dict) -> CommandResults:
+    """
+    Lists the Microsoft Authenticator authentication methods registered to a user, or retrieves a specific method.
+
+    Args:
+        client (MsGraphClient): The Microsoft Graph client used to make the API request.
+        args (dict): A dictionary containing the input arguments:
+            - user (str, required): The user ID or user principal name
+            - method_id (str, optional): The ID of a specific authenticator method to retrieve
+            - limit (int, optional): Maximum number of results to return when listing
+            - next_page (str, optional): URL for the next page of results
+
+    Returns:
+        CommandResults: The Microsoft Authenticator authentication methods registered to the specified user.
+    """
+    user = args.get("user", "")
+    method_id = args.get("method_id", "")
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+    next_page = args.get("next_page", "")
+
+    if method_id:
+        authenticator_data = client.get_authenticator_method(user, method_id)
+        result_next_page = None
+    else:
+        authenticator_data, result_next_page = client.list_authenticator_methods(user, limit, next_page)  # type: ignore
+
+    if not authenticator_data:
+        return CommandResults(readable_output=f"No Microsoft Authenticator authentication methods found for user {user}.")
+
+    authenticator_readable, authenticator_outputs = parse_outputs(authenticator_data)
+
+    # Map the field names to custom headers for human readable output
+    field_mapping = AUTH_METHODS_FIELD_MAPPING.get("AUTHENTICATOR", {})
+    authenticator_readable = map_auth_method_fields_to_readable(authenticator_data, field_mapping)
+
+    headers = ["Authentication method ID", "Device Name", "Version of the Authenticator app"]
+
+    if method_id:
+        title = f"Microsoft Authenticator Authentication Method {method_id} for User {user}:"
+    else:
+        title = f"Microsoft Authenticator Authentication Methods for User {user}:"
+
+    metadata = None
+    if result_next_page:
+        metadata = "To get further results, enter this to the next_page argument:\n" + str(result_next_page)
+        # Add NextPage to outputs if it's a list
+        if isinstance(authenticator_outputs, list):
+            authenticator_outputs.insert(0, {"NextPage": result_next_page})
+
+    human_readable = tableToMarkdown(name=title, headers=headers, t=authenticator_readable, removeNull=True, metadata=metadata)
+
+    return CommandResults(
+        outputs_prefix="MSGraphUser.UserAuthMethod",
+        outputs_key_field="ID",
+        outputs=authenticator_outputs,
+        readable_output=human_readable,
+        raw_response=authenticator_data,
+    )
+
+
+@suppress_errors_with_404_code
+def delete_authenticator_method_command(client: MsGraphClient, args: dict) -> CommandResults:
+    """
+    Deletes a Microsoft Authenticator authentication method from a user.
+
+    Args:
+        client (MsGraphClient): The Microsoft Graph client used to make the API request.
+        args (dict): A dictionary containing the input arguments:
+            - user (str, required): The user ID or user principal name
+            - method_id (str, required): The ID of the authenticator method to delete
+
+    Returns:
+        CommandResults: Confirmation message of the deletion.
+    """
+    user = args.get("user", "")
+    method_id = args.get("method_id", "")
+
+    client.delete_authenticator_method(user, method_id)
+    human_readable = f"Microsoft Authenticator authentication method {method_id} was successfully deleted for user {user}."
+
+    return CommandResults(readable_output=human_readable)
+
+
+@suppress_errors_with_404_code
+def list_phone_method_command(client: MsGraphClient, args: dict) -> CommandResults:
+    """
+    Lists the phone authentication methods registered to a user, or retrieves a specific method.
+
+    Args:
+        client (MsGraphClient): The Microsoft Graph client used to make the API request.
+        args (dict): A dictionary containing the input arguments:
+            - user (str, required): The user ID or user principal name
+            - method_id (str, optional): The ID of a specific phone method to retrieve
+            - next_page (str, optional): URL for the next page of results
+
+    Returns:
+        CommandResults: The phone authentication methods registered to the specified user.
+    """
+    user = args.get("user", "")
+    method_id = args.get("method_id", "")
+    next_page = args.get("next_page", "")
+
+    if method_id:
+        phone_data = client.get_phone_method(user, method_id)
+        result_next_page = None
+    else:
+        phone_data, result_next_page = client.list_phone_methods(user, next_page)
+
+    if not phone_data:
+        return CommandResults(readable_output=f"No phone authentication methods found for user {user}.")
+
+    phone_readable, phone_outputs = parse_outputs(phone_data)
+
+    # Map the field names to custom headers for human readable output
+    field_mapping = AUTH_METHODS_FIELD_MAPPING.get("PHONE", {})
+    phone_readable = map_auth_method_fields_to_readable(phone_data, field_mapping)
+
+    headers = ["Phone ID", "Phone Number", "Phone Type", "Sms SignIn State"]
+
+    if method_id:
+        title = f"Phone Authentication Method {method_id} for User {user}:"
+    else:
+        title = f"Phone Authentication Methods for User {user}:"
+
+    metadata = None
+    if result_next_page:
+        metadata = "To get further results, enter this to the next_page argument:\n" + str(result_next_page)
+        # Add NextPage to outputs if it's a list
+        if isinstance(phone_outputs, list):
+            phone_outputs.insert(0, {"NextPage": result_next_page})
+
+    human_readable = tableToMarkdown(name=title, headers=headers, t=phone_readable, removeNull=True, metadata=metadata)
+
+    return CommandResults(
+        outputs_prefix="MSGraphUser.PhoneAuthMethod",
+        outputs_key_field="Id",
+        outputs=phone_outputs,
+        readable_output=human_readable,
+        raw_response=phone_data,
+    )
+
+
+@suppress_errors_with_404_code
+def delete_phone_method_command(client: MsGraphClient, args: dict) -> CommandResults:
+    """
+    Deletes a phone authentication method from a user.
+
+    Args:
+        client (MsGraphClient): The Microsoft Graph client used to make the API request.
+        args (dict): A dictionary containing the input arguments:
+            - user (str, required): The user ID or user principal name
+            - method_id (str, required): The ID of the phone method to delete
+
+    Returns:
+        CommandResults: Confirmation message of the deletion.
+    """
+    user = args.get("user", "")
+    method_id = args.get("method_id", "")
+
+    client.delete_phone_method(user, method_id)
+    human_readable = f"The user's phone authentication method object id {method_id} has been successfully deleted."
+
+    return CommandResults(readable_output=human_readable)
+
+
+@suppress_errors_with_404_code
+def list_software_oath_method_command(client: MsGraphClient, args: dict) -> CommandResults:
+    """
+    Lists the software OATH authentication methods registered to a user, or retrieves a specific method.
+
+    Args:
+        client (MsGraphClient): The Microsoft Graph client used to make the API request.
+        args (dict): A dictionary containing the input arguments:
+            - user (str, required): The user ID or user principal name
+            - method_id (str, optional): The ID of a specific software OATH method to retrieve
+
+    Returns:
+        CommandResults: The software OATH authentication methods registered to the specified user.
+    """
+    user = args.get("user", "")
+    method_id = args.get("method_id", "")
+
+    if method_id:
+        software_oath_data = client.get_software_oath_method(user, method_id)
+    else:
+        software_oath_data = client.list_software_oath_methods(user)
+
+    if not software_oath_data:
+        return CommandResults(readable_output=f"No software OATH authentication methods found for user {user}.")
+
+    software_oath_readable, software_oath_outputs = parse_outputs(software_oath_data)
+
+    # Map the field names to custom headers for human readable output
+    field_mapping = AUTH_METHODS_FIELD_MAPPING.get("SOFTWARE_OATH", {})
+    software_oath_readable = map_auth_method_fields_to_readable(software_oath_data, field_mapping)
+
+    headers = ["Authentication method ID"]
+
+    if method_id:
+        title = f"Software OATH Authentication Method {method_id} for User {user}:"
+    else:
+        title = f"Software OATH Authentication Methods for User {user}:"
+
+    human_readable = tableToMarkdown(name=title, headers=headers, t=software_oath_readable, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix="MSGraphUser.SoftOathAuthMethod",
+        outputs_key_field="ID",
+        outputs=software_oath_outputs,
+        readable_output=human_readable,
+        raw_response=software_oath_data,
+    )
+
+
+@suppress_errors_with_404_code
+def delete_software_oath_method_command(client: MsGraphClient, args: dict) -> CommandResults:
+    """
+    Deletes a software OATH authentication method from a user.
+
+    Args:
+        client (MsGraphClient): The Microsoft Graph client used to make the API request.
+        args (dict): A dictionary containing the input arguments:
+            - user (str, required): The user ID or user principal name
+            - method_id (str, required): The ID of the software OATH method to delete
+
+    Returns:
+        CommandResults: Confirmation message of the deletion.
+    """
+    user = args.get("user", "")
+    method_id = args.get("method_id", "")
+
+    client.delete_software_oath_method(user, method_id)
+    human_readable = f"The user's Software OATH token authentication method object id {method_id} has been successfully deleted."
+
+    return CommandResults(readable_output=human_readable)
+
+
+@suppress_errors_with_404_code
+def list_temp_access_pass_method_command(client: MsGraphClient, args: dict) -> CommandResults:
+    """
+    Lists the temporary access passwords method from a user.
+
+    Args:
+        client (MsGraphClient): The Microsoft Graph client used to make the API request.
+        args (dict): A dictionary containing the input arguments:
+            - user_id (str, required): The user ID or user principal name
+            - method_id (str, optional): The ID of a specific software OATH method to retrieve
+
+    Returns:
+        CommandResults: The devices owned by the specified user.
+    """
+    user_id = args.get("user", "")
+    method_id = args.get("method_id", "")
+
+    if method_id:
+        temp_access_pass_data = client.get_temp_access_pass_method(user_id, method_id)
+    else:
+        temp_access_pass_data = client.list_tap_policy(user_id)
+
+    if not temp_access_pass_data:
+        return CommandResults(readable_output=f"No Windows Hello for Business authentication methods found for user {user_id}.")
+
+    temp_access_pass_readable, temp_access_pass_outputs = parse_outputs(temp_access_pass_data)
+
+    # Map the field names to custom headers for human readable output
+    field_mapping = AUTH_METHODS_FIELD_MAPPING.get("TEMP_ACCESS_PASS", {})
+    temp_access_pass_readable = map_auth_method_fields_to_readable(temp_access_pass_data, field_mapping)
+
+    headers = ["Temporary Access Pass ID", "Authentication method state"]
+
+    if method_id:
+        title = f"WTemporary Access Pass Method {method_id} for User {user_id}:"
+    else:
+        title = f"Temporary Access Pass Methods for User {user_id}:"
+
+    human_readable = tableToMarkdown(name=title, headers=headers, t=temp_access_pass_readable, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix="MSGraphUser.TempAccessPassAuthMethod",
+        outputs_key_field="ID",
+        outputs=temp_access_pass_outputs,
+        readable_output=human_readable,
+        raw_response=temp_access_pass_data,
+    )
+
+
+@suppress_errors_with_404_code
+def list_windows_hello_method_command(client: MsGraphClient, args: dict) -> CommandResults:
+    """
+    Lists the Windows Hello for Business authentication methods registered to a user, or retrieves a specific method.
+
+    Args:
+        client (MsGraphClient): The Microsoft Graph client used to make the API request.
+        args (dict): A dictionary containing the input arguments:
+            - user (str, required): The user ID or user principal name
+            - method_id (str, optional): The ID of a specific Windows Hello method to retrieve
+
+    Returns:
+        CommandResults: The Windows Hello for Business authentication methods registered to the specified user.
+    """
+    user = args.get("user", "")
+    method_id = args.get("method_id", "")
+
+    if method_id:
+        windows_hello_data = client.get_windows_hello_method(user, method_id)
+    else:
+        windows_hello_data = client.list_windows_hello_methods(user)
+
+    if not windows_hello_data:
+        return CommandResults(readable_output=f"No Windows Hello for Business authentication methods found for user {user}.")
+
+    windows_hello_readable, windows_hello_outputs = parse_outputs(windows_hello_data)
+
+    # Map the field names to custom headers for human readable output
+    field_mapping = AUTH_METHODS_FIELD_MAPPING.get("WINDOWS_HELLO", {})
+    windows_hello_readable = map_auth_method_fields_to_readable(windows_hello_data, field_mapping)
+
+    headers = ["Windows Hello Method ID", "Display Name", "Method Key Strength"]
+
+    if method_id:
+        title = f"Windows Hello for Business Authentication Method {method_id} for User {user}:"
+    else:
+        title = f"Windows Hello for Business Authentication Methods for User {user}:"
+
+    human_readable = tableToMarkdown(name=title, headers=headers, t=windows_hello_readable, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix="MSGraphUser.WindowsHelloAuthMethod",
+        outputs_key_field="ID",
+        outputs=windows_hello_outputs,
+        readable_output=human_readable,
+        raw_response=windows_hello_data,
+    )
+
+
+@suppress_errors_with_404_code
+def delete_windows_hello_method_command(client: MsGraphClient, args: dict) -> CommandResults:
+    """
+    Deletes a Windows Hello for Business authentication method from a user.
+
+    Args:
+        client (MsGraphClient): The Microsoft Graph client used to make the API request.
+        args (dict): A dictionary containing the input arguments:
+            - user (str, required): The user ID or user principal name
+            - method_id (str, required): The ID of the Windows Hello method to delete
+
+    Returns:
+        CommandResults: Confirmation message of the deletion.
+    """
+    user = args.get("user", "")
+    method_id = args.get("method_id", "")
+
+    client.delete_windows_hello_method(user, method_id)
+    human_readable = f"The Windows Hello For Business Authentication Method object id {method_id} has been successfully deleted."
 
     return CommandResults(readable_output=human_readable)
 
@@ -904,12 +1914,15 @@ def main():
         "msgraph-user-terminate-session": disable_user_account_command,
         "msgraph-user-account-disable": disable_user_account_command,
         "msgraph-user-update": update_user_command,
+        "msgraph-user-force-reset-password": force_reset_password,
         "msgraph-user-change-password": change_password_user_saas_command,
         "msgraph-user-change-password-on-premise": change_password_user_on_premise_command,
         "msgraph-user-delete": delete_user_command,
         "msgraph-user-create": create_user_command,
         "msgraph-user-get-delta": get_delta_command,
         "msgraph-user-get": get_user_command,
+        "msgraph-user-get-groups": get_groups_command,
+        "msgraph-user-get-auth-methods": get_auth_methods_command,
         "msgraph-user-list": list_users_command,
         "msgraph-direct-reports": get_direct_reports_command,
         "msgraph-user-get-manager": get_manager_command,
@@ -918,6 +1931,21 @@ def main():
         "msgraph-user-tap-policy-list": list_tap_policy_command,
         "msgraph-user-tap-policy-create": create_tap_policy_command,
         "msgraph-user-tap-policy-delete": delete_tap_policy_command,
+        "msgraph-user-owned-devices-list": list_owned_device_command,
+        "msgraph-user-fido2-method-list": list_fido2_method_command,
+        "msgraph-user-fido2-method-delete": delete_fido2_method_command,
+        "msgraph-user-email-method-list": list_email_method_command,
+        "msgraph-user-email-method-delete": delete_email_method_command,
+        "msgraph-user-authenticator-method-list": list_authenticator_method_command,
+        "msgraph-user-authenticator-method-delete": delete_authenticator_method_command,
+        "msgraph-user-phone-method-list": list_phone_method_command,
+        "msgraph-user-phone-method-delete": delete_phone_method_command,
+        "msgraph-user-software-oath-method-list": list_software_oath_method_command,
+        "msgraph-user-software-oath-method-delete": delete_software_oath_method_command,
+        "msgraph-user-temp-access-pass-method-list": list_temp_access_pass_method_command,
+        "msgraph-user-temp-access-pass-method-delete": delete_tap_policy_command,  # Points to an existing command due to design choices CIAC-12953  # noqa: E501
+        "msgraph-user-windows-hello-method-list": list_windows_hello_method_command,
+        "msgraph-user-windows-hello-method-delete": delete_windows_hello_method_command,
     }
     command = demisto.command()
     LOG(f"Command being called is {command}")

@@ -1,0 +1,79 @@
+{
+    "id": "exampleID12234567890",
+    "brand": "Exxample Brand 1",
+    "company": "Example Company 1",
+    "images": null,
+    "violation": {
+        "id": "exampleID12234567890",
+        "uri": "//example.com",
+        "approveStatus": 1,
+        "approveState": "not_required",
+        "workerCodes": [
+            "domain"
+        ],
+        "scores": [
+            {
+                "score": 100,
+                "type": "domain",
+                "version": 7
+            },
+            {
+                "score": 40,
+                "type": "risk",
+                "version": 7
+            },
+            {
+                "score": 0,
+                "type": "position",
+                "version": 0
+            }
+        ],
+        "status": "no_content",
+        "detected": "2024-11-17T12:07:16+0000",
+        "source": 1,
+        "violationType": "scam",
+        "violationSubtype": "no_violation",
+        "title": "",
+        "description": "",
+        "stages": [
+            {
+                "type": 4,
+                "datetime": "2024-11-17T12:52:59+00:00",
+                "times": 0
+            },
+            {
+                "type": 5,
+                "datetime": "2024-11-17T12:44:03+00:00",
+                "times": 0
+            },
+            {
+                "type": 7,
+                "datetime": "2024-11-18T15:58:56+00:00",
+                "times": 0
+            },
+            {
+                "type": 11,
+                "datetime": "2024-11-17T12:52:59+00:00",
+                "times": 0
+            },
+            {
+                "type": 12,
+                "datetime": "2024-11-17T12:52:59+00:00",
+                "times": 0
+            }
+        ],
+        "tags": null,
+        "firstDetected": null,
+        "firstActive": null,
+        "firstSolved": null,
+        "seqUpdate": 1731945539192272,
+        "dates": {
+            "createdDate": "2024-11-17T12:07:16+00:00",
+            "foundDate": "2024-11-17T12:07:16+00:00",
+            "detectedDate": null,
+            "approvedDate": null,
+            "currentDate": null
+        }
+    },
+    "link": "https://drp.group-ib.com/p/violation/?id=exampleID"
+}

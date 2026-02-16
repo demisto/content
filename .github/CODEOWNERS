@@ -22,7 +22,7 @@
 /Packs/Slack/Integrations/* @amshamah419 @rshunim
 /Packs/SplunkPy/Integrations/SplunkPy/* @ilappe
 /Packs/MicrosoftExchangeOnPremise/Integrations @amshamah419
-/Packs/MicrosoftExchangeOnline/Integrations @amshamah419 @thefrieddan1
+/Packs/MicrosoftExchangeOnline/Integrations @amshamah419
 /Packs/ContentManagement/* @adi88d
 /Packs/TAXIIServer/Integrations/TAXII2Server/* @Ni-Knight
 /Packs/FeedTAXII/Integrations/FeedTAXII2/* @Ni-Knight
@@ -31,8 +31,9 @@
 # Important Scripts
 /Packs/CommonScripts/Scripts/SetGridField/* @melamedbn
 /Packs/CommonScripts/Scripts/ParseEmailFiles/* @moishce
-/Packs/ApiModules/Scripts/MicrosoftApiModule @michal-dagan @inbalapt1
-/Packs/ApiModules/Scripts/MicrosoftGraphMailApiModule @michal-dagan @inbalapt1
+/Packs/ApiModules/Scripts/MicrosoftApiModule @michal-dagan @inbalapt1 @noydavidi
+/Packs/ApiModules/Scripts/MicrosoftGraphMailApiModule @michal-dagan @inbalapt1 @noydavidi
+/Packs/ApiModules/Scripts/EWSApiModule @noydavidi
 /Packs/ApiModules/Scripts/TAXII2ApiModule/* @Ni-Knight
 /Packs/CommonScripts/Scripts/StixCreator/* @Ni-Knight
 
@@ -54,8 +55,8 @@
 /Packs/CommonScripts/Scripts/UnEscapeIPs/* @Ni-Knight
 
 # SDK Related
-.pre-commit-config_template.yaml @SamuelFain @YuvHayun @yedidyacohenpalo
-validation_config.toml @YuvHayun @yedidyacohenpalo
+.pre-commit-config_template.yaml @yedidyacohenpalo
+validation_config.toml @yedidyacohenpalo
 
 # XDR Related
 /Packs/CortexXDR/Integrations/ @jlevypaloalto
@@ -108,23 +109,25 @@ Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavo
 /Packs/Core @JudahSchwartz
 /Packs/CortexXDR @JudahSchwartz
 /Packs/SentinelOne @JudahSchwartz
-/Packs/CrowdstrikeFalcon @JudahSchwartz
-/Packs/CrowdstrikeFalconSandbox @JudahSchwartz
+/Packs/CrowdStrikeFalcon @JudahSchwartz @talzich
+/Packs/CrowdStrikeFalconSandbox @JudahSchwartz
 /Packs/CrowdStrikeFalconStreamingV2 @JudahSchwartz
-/Packs/MicrosoftExchangeOnline @JudahSchwartz
+/Packs/MicrosoftExchangeOnline @JudahSchwartz @noydavidi
 /Packs/AggregatedScripts @JudahSchwartz
-/Packs/MicrosoftExchangeOnPremise/ @JudahSchwartz
-/Packs/Office365AndAzureAuditLog @JudahSchwartz
-/Packs/MicrosoftManagementActivity @JudahSchwartz
-/Packs/Microsoft365Defender @JudahSchwartz
-/Packs/MicrosoftDefenderAdvancedThreatProtection @JudahSchwartz
-/Packs/MicrosoftCloudAppSecurity @JudahSchwartz
-/Packs/AzureSecurityCenter/Integrations/MicrosoftDefenderForCloudEventCollector @JudahSchwartz
-/Packs/FeedAzureADConnectHealth @JudahSchwartz
-/Packs/AzureRiskyUsers @JudahSchwartz
-/Packs/MicrosoftGraphListenenr @JudahSchwartz
-/Packs/MicrosoftGraphUser @JudahSchwartz
-/Packs/MicrosoftGraphMail @JudahSchwartz
+/Packs/MicrosoftExchangeOnPremise/ @JudahSchwartz @noydavidi
+/Packs/Office365AndAzureAuditLog @JudahSchwartz @noydavidi
+/Packs/MicrosoftManagementActivity @JudahSchwartz @noydavidi
+/Packs/Microsoft365Defender @JudahSchwartz @noydavidi
+/Packs/MicrosoftDefenderAdvancedThreatProtection @JudahSchwartz @noydavidi
+/Packs/MicrosoftCloudAppSecurity @JudahSchwartz @noydavidi
+/Packs/AzureSecurityCenter/Integrations/MicrosoftDefenderForCloudEventCollector @JudahSchwartz @noydavidi
+/Packs/FeedAzureADConnectHealth @JudahSchwartz @noydavidi
+/Packs/AzureRiskyUsers @JudahSchwartz @noydavidi
+/Packs/MicrosoftGraphListener @JudahSchwartz @noydavidi
+/Packs/MicrosoftGraphUser @JudahSchwartz @noydavidi
+/Packs/MicrosoftGraphMail @JudahSchwartz @noydavidi
+/Packs/MicrosoftGraphSecurity @JudahSchwartz @noydavidi
+/Packs/MicrosoftGraphFiles @JudahSchwartz @noydavidi
 
 
 /Packs/AWS @Moish-Gilboa
@@ -183,6 +186,5 @@ Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavo
 /Packs/AnsibleAzure @Moish-Gilboa
 /Packs/MicrosoftECM @Moish-Gilboa
 /Packs/MicrosoftGraphDeviceManagement @Moish-Gilboa
-/Packs/MicrosoftGraphFiles @Moish-Gilboa
 /Packs/MicrosoftIntune @Moish-Gilboa
 /Packs/AzureSecurityCenter @Moish-Gilboa

@@ -7,6 +7,7 @@ from Okta_v2 import (
     Client,
     apply_zone_updates,
     assign_group_to_app_command,
+    clear_user_sessions_command,
     create_group_command,
     create_user_command,
     create_zone_command,
@@ -23,6 +24,8 @@ from Okta_v2 import (
     set_password_command,
     update_zone_command,
     verify_push_factor_command,
+    verify_mfa_status_command,
+    extract_user_and_factor_id_from_url,
 )
 
 client = Client(base_url="demisto.com", api_token="XXX")
@@ -788,6 +791,98 @@ def test_verify_push_factor_command(mocker, args, polling_response, result):
 
 
 @pytest.mark.parametrize(
+    "args, polling_time, max_polling_calls, expected_calls, expected_result",
+    [
+        (
+            {"userId": "TestID", "factorId": "FactorID", "polling_time": "2", "max_polling_calls": "3"},
+            2,
+            3,
+            3,
+            "TIMEOUT",
+        ),
+        (
+            {"userId": "TestID", "factorId": "FactorID", "polling_time": "1", "max_polling_calls": "5"},
+            1,
+            5,
+            2,
+            "SUCCESS",
+        ),
+    ],
+)
+def test_verify_push_factor_command_polling_args(mocker, args, polling_time, max_polling_calls, expected_calls, expected_result):
+    """
+    Given:
+    - Arguments for verify_push_factor_command with custom polling_time and max_polling_calls
+
+    When:
+    - Running verify_push_factor_command with these arguments
+
+    Then:
+    - Ensure poll_verify_push is called with the correct polling_time and max_polling_calls
+    - Ensure time.sleep is called the expected number of times with the correct polling_time
+    - Verify the expected result is returned
+    """
+    # Mock the verify_push_factor method to return a response with a poll link
+    mocker.patch.object(client, "verify_push_factor", return_value=verify_push_factor_response)
+
+    # Mock time.sleep to avoid actual waiting during tests
+    mocker.patch("time.sleep")
+
+    # For the first test case (TIMEOUT), all responses should be "WAITING" until timeout
+    # For the second test case (SUCCESS), the second response should be "SUCCESS"
+    if expected_result == "TIMEOUT":
+        waiting_response = {"factorResult": "WAITING"}
+        timeout_response = {"factorResult": "TIMEOUT"}
+
+        # Mock http_request to return "WAITING" for all calls
+        mocker.patch.object(client, "http_request", side_effect=[waiting_response] * max_polling_calls)
+
+        # Mock poll_verify_push to simulate timeout
+        mocker.patch.object(client, "poll_verify_push", return_value=timeout_response)
+    else:
+        # For SUCCESS case, return SUCCESS on the second call
+        success_response = {"factorResult": "SUCCESS"}
+
+        # Mock poll_verify_push to return SUCCESS after some calls
+        mocker.patch.object(client, "poll_verify_push", return_value=success_response)
+
+    # Call the function
+    _, outputs, _ = verify_push_factor_command(client, args)
+
+    # Verify poll_verify_push was called with correct arguments
+    client.poll_verify_push.assert_called_once_with(
+        "https://test.com/api/v1/users/TestID/factors/FactorID/transactions/TransactionID", polling_time, max_polling_calls
+    )
+
+    # Verify the result
+    assert outputs.get("Account(val.ID && val.ID === obj.ID)").get("ID") == "TestID"
+    assert outputs.get("Account(val.ID && val.ID === obj.ID)").get("VerifyPushResult") == expected_result
+
+
+def test_verify_push_factor_command_no_polling(mocker):
+    """
+    Given:
+    - Arguments for verify_push_factor_command with polling set to False
+    When:
+    - Running verify_push_factor_command
+    Then:
+    - Ensure that the polling URL is returned in the outputs and poll_verify_push is not called.
+    """
+    args = {"userId": "TestID", "factorId": "FactorID", "polling": "false"}
+    mocker.patch.object(client, "verify_push_factor", return_value=verify_push_factor_response)
+    mock_poll = mocker.patch.object(client, "poll_verify_push")
+
+    readable, outputs, raw_response = verify_push_factor_command(client, args)
+
+    assert (
+        outputs.get("Okta.PollingStatusURL(true)")
+        == "https://test.com/api/v1/users/TestID/factors/FactorID/transactions/TransactionID"
+    )
+    assert "Push factor challenge has been initiated. To check the push factor challenge status" in readable
+    mock_poll.assert_not_called()
+
+
+@pytest.mark.parametrize(
     "args",
     [({"firstName": "Testush", "lastName": "Test", "email": "test@this.com", "login": "test@this.com", "password": "Aa123456"})],
 )
@@ -1180,3 +1275,166 @@ def test_apply_zone_update_append_with_range():
         "gateways": [{"type": "CIDR", "value": "192.168.1.1/32"}, {"type": "RANGE", "value": "192.168.1.2-192.168.1.10"}],
         "proxies": [{"type": "CIDR", "value": "10.0.0.1/32"}, {"type": "RANGE", "value": "10.0.0.2-10.0.0.5"}],
     }
+
+
+@pytest.mark.parametrize(
+    "group_name, mock_response, expected_id",
+    [
+        (
+            "Existing Group",
+            [{"id": "123", "profile": {"name": "Existing Group"}}],
+            "123",
+        ),
+        (
+            "Non-existent Group",
+            [{"id": "123", "profile": {"name": "Existing Group"}}],
+            None,
+        ),
+        (
+            "Empty Response",
+            [],
+            None,
+        ),
+        (
+            "Multiple Groups",
+            [
+                {"id": "123", "profile": {"name": "Group A"}},
+                {"id": "456", "profile": {"name": "Multiple Groups"}},
+            ],
+            "456",
+        ),
+    ],
+)
+def test_get_group_id(mocker, group_name, mock_response, expected_id):
+    """
+    Given:
+        - A group name to search for.
+    When:
+        - Calling the get_group_id method.
+    Then:
+        - Ensure the correct group ID is returned if found, otherwise None.
+    """
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+    mocker.patch("Okta_v2.encode_string_results", side_effect=lambda x: x)  # Mock encode_string_results
+
+    group_id = client.get_group_id(group_name)
+    assert group_id == expected_id
+
+
+def test_verify_mfa_status_command(mocker):
+    """
+    Given:
+    - polling_url.
+
+    When:
+    - running verify_mfa_status_command.
+
+    Then:
+    - Ensure that the status is returned correctly.
+    """
+    args = {"polling_url": "https://test.com/api/v1/users/TestID/factors/FactorID/transactions/TransactionID"}
+    mock_response = {"id": "TransactionID", "factorResult": "SUCCESS"}
+    mocker.patch.object(client, "get_push_factor_status", return_value=mock_response)
+
+    readable, outputs, raw_response = verify_mfa_status_command(client, args)
+
+    assert "The status of the push factor challenge is SUCCESS" in readable
+    assert outputs.get("Okta.FactorResult(val.ID && val.ID === obj.ID)").get("factorResult") == "SUCCESS"
+    assert outputs.get("Okta.FactorResult(val.ID && val.ID === obj.ID)").get("ID") == "FactorID"
+    assert raw_response == mock_response
+
+
+@pytest.mark.parametrize(
+    "url, expected_user_id, expected_factor_id",
+    [
+        ("https://example.okta.com/api/v1/users/user-id/factors/factor-id", "user-id", "factor-id"),
+        ("https://example.okta.com/api/v1/users/U123/factors/F456/transactions/T789", "U123", "F456"),
+        ("http://localhost/users/me/factors/my-factor", "me", "my-factor"),
+    ],
+)
+def test_extract_user_and_factor_id_from_url_success(url, expected_user_id, expected_factor_id):
+    """
+    Given:
+        - A valid polling URL containing user and factor IDs.
+    When:
+        - Calling extract_user_and_factor_id_from_url.
+    Then:
+        - Ensure the user ID and factor ID are correctly extracted.
+    """
+    user_id, factor_id = extract_user_and_factor_id_from_url(url)
+    assert user_id == expected_user_id
+    assert factor_id == expected_factor_id
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "https://example.okta.com/api/v1/users/user-id",
+        "https://example.okta.com/api/v1/factors/factor-id",
+        "https://example.okta.com/api/v1/something/else",
+        "",
+    ],
+)
+def test_extract_user_and_factor_id_from_url_failure(url):
+    """
+    Given:
+        - An invalid polling URL.
+    When:
+        - Calling extract_user_and_factor_id_from_url.
+    Then:
+        - Ensure a DemistoException is raised.
+    """
+    from CommonServerPython import DemistoException
+
+    with pytest.raises(DemistoException, match="Could not extract user ID and Factor ID from the polling URL"):
+        extract_user_and_factor_id_from_url(url)
+
+
+def test_clear_user_sessions_with_oauth_tokens(mocker):
+    """
+    Given:
+        - Arguments for clear_user_sessions_command with revokeOauthTokens set to true.
+    When:
+        - Running clear_user_sessions_command.
+    Then:
+        - Ensure the clear_user_sessions method is called with revoke_oauth_tokens=True.
+        - Ensure the API is called with the oauthTokens query parameter.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value="")
+    client.request_metadata = {}
+
+    args = {"userId": "TestUserID456", "revokeOauthTokens": "true"}
+    readable_output, outputs, raw_response = clear_user_sessions_command(client, args)
+
+    mock_http_request.assert_called_once_with(
+        method="DELETE",
+        url_suffix="/api/v1/users/TestUserID456/sessions",
+        params={"oauthTokens": True},
+        resp_type="text",
+    )
+    assert "TestUserID456" in readable_output
+
+
+def test_clear_user_sessions_without_oauth_tokens(mocker):
+    """
+    Given:
+        - Arguments for clear_user_sessions_command with revokeOauthTokens set to false.
+    When:
+        - Running clear_user_sessions_command.
+    Then:
+        - Ensure the clear_user_sessions method is called with revoke_oauth_tokens=False.
+        - Ensure the API is called without the oauthTokens query parameter.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value="")
+    client.request_metadata = {}
+
+    args = {"userId": "TestUserID789", "revokeOauthTokens": "false"}
+    readable_output, outputs, raw_response = clear_user_sessions_command(client, args)
+
+    mock_http_request.assert_called_once_with(
+        method="DELETE",
+        url_suffix="/api/v1/users/TestUserID789/sessions",
+        params={"oauthTokens": False},
+        resp_type="text",
+    )
+    assert "TestUserID789" in readable_output

@@ -10,21 +10,23 @@ enabled: true
 args:
 - name: left
   required: true
-  description: Left list
+  description: Left list.
   isArray: true
 - name: right
   required: true
-  description: Right list
+  description: Right list.
   isArray: true
 outputs:
 - contextPath: ListCompare.LeftOnly
-  description: Items only found within the list in the left argument
+  description: Items only found within the list in the left argument.
 - contextPath: ListCompare.RightOnly
-  description: Items only found within the list in the right argument
+  description: Items only found within the list in the right argument.
 - contextPath: ListCompare.Both
-  description: Common items that were found in both lists
+  description: Common items that were found in both lists.
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.12.6204436
 runas: DBotWeakRole
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

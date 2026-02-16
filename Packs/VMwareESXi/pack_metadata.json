@@ -2,16 +2,24 @@
     "name": "VMware ESXi",
     "description": "Modeling Rules for the VMware ESXi logs collector",
     "support": "xsoar",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.11",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Analytics & SIEM"
+        "Endpoint",
+        "IT Services"
     ],
-    "tags": [],
+    "tags": [
+        "IT",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "vSphere",
+        "Hypervisor",
+        "VMvisor"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

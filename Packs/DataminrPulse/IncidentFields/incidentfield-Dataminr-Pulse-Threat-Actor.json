@@ -1,0 +1,103 @@
+{
+    "id": "incident_dataminrpulsethreatactor",
+    "version": -1,
+    "modified": "2025-09-05T13:05:04.980988466+05:30",
+    "name": "Dataminr Pulse Threat Actor",
+    "ownerOnly": false,
+    "cliName": "dataminrpulsethreatactor",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Dataminr Pulse ReGenAI Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "name",
+            "displayName": "Name",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 250,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "summary",
+            "displayName": "Description",
+            "type": "longText",
+            "orgType": "longText",
+            "required": false,
+            "script": "",
+            "width": 500,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "countryOfOrigin",
+            "displayName": "Country of Origin",
+            "type": "longText",
+            "orgType": "longText",
+            "required": false,
+            "script": "",
+            "width": 200,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "aliases",
+            "displayName": "Aliases",
+            "type": "longText",
+            "orgType": "longText",
+            "required": false,
+            "script": "",
+            "width": 250,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "ttps",
+            "displayName": "TTPs",
+            "type": "longText",
+            "orgType": "longText",
+            "required": false,
+            "script": "",
+            "width": 500,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

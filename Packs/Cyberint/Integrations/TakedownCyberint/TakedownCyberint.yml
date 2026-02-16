@@ -7,6 +7,7 @@ fromversion: 6.9.0
 name: Cyberint Takedowns
 display: Cyberint Takedowns
 category: Data Enrichment & Threat Intelligence
+provider: CheckPoint Software Technologies
 description: Use the Cyberint Takedowns integration to manage takedowns requests.
 configuration:
 - display: Cyberint API URL
@@ -269,7 +270,7 @@ script:
     - contextPath: Cyberint.takedowns_submit.id
       description: ID.
       type: String
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.12.6663663
   feed: false
   subtype: python3
 tests:
