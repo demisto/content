@@ -462,6 +462,7 @@ def test_content_client_direct_usage():
     client = ContentClient(
         base_url="https://api.example.com",
         auth_handler=BearerTokenAuthHandler("test_token"),
+        is_multithreaded=False,
     )
 
     response = client.get("/v1/data")
