@@ -1,0 +1,165 @@
+{
+  "reply": {
+    "identification": {
+      "internet_message_id": "<EXAMPLE123456789ABCDEF@example.mail.server.com>",
+      "external_id": "aeafb17c-b581-41b9-a983-ea2c2f3c9829",
+      "lcaas_id": "9993349050354",
+      "observation_time": 1770033633000,
+      "created_time": "2026-02-02T12:00:33Z"
+    },
+    "detection_context": {
+      "alert_name": [
+        "WildFire Malware",
+        "Email was reported by the user as a phishing attempt",
+        "Attachment(s) with potentially malicious MIME type unusual for the organization"
+      ],
+      "alert_full_description": [
+        "* The internet_message_id correlated to this alert is: <EXAMPLE123456789ABCDEF@example.mail.server.com>\n* The email was received from: test-user@example.com\n* Email mailbox has triggered this alert\n* The email was reported as phishing by the user",
+        "Suspicious attachment detected",
+        "* The internet_message_id correlated to this alert is: <EXAMPLE123456789ABCDEF@example.mail.server.com>\n* The email was received from: test-user@example.com\n* Attachments has triggered this alert\n* The list of attachments with potentially malicious MIME types: eml\n* The attachment(s) with a restricted file mime-type: eml"
+      ],
+      "detector_id": "ab4677ec-7ffa-4d53-a92d-2cfa2481f52e",
+      "variation_rule_id": "2f8cea9f-c218-48ca-8251-a6d5d480c777",
+      "original_severity": "SEV_010_INFO",
+      "detection_method": "ANALYTICS_BIOC"
+    },
+    "directionality": {
+      "message_directionality": "internal",
+      "msft_directionality": "INT"
+    },
+    "mail_context": {
+      "folder": "Inbox",
+      "o365_data_is_draft": null,
+      "o365_data_json": {
+        "categories": [],
+        "classification": "focused",
+        "delivery_receipt_requested": false,
+        "followup_flag": {
+          "flag_status": "notFlagged"
+        },
+        "importance": "normal",
+        "is_draft": false,
+        "is_read": true,
+        "last_modified_time": "2026-02-02T12:00:50Z"
+      }
+    },
+    "sender_forensics": {
+      "from_json": {
+        "address": "test-user@example.com",
+        "domain_popularity": 1152,
+        "name": "dev-test-99",
+        "primary_category": "unknown",
+        "recipient_name": "dev-test-99",
+        "risk_level": "high-risk",
+        "root_domain": "crtx-labs.com",
+        "verdict": "unknown"
+      },
+      "sender_json": {
+        "address": "test-user@example.com",
+        "domain_popularity": 1152,
+        "name": "dev-test-99",
+        "primary_category": "unknown",
+        "recipient_name": "dev-test-99",
+        "risk_level": "high-risk",
+        "root_domain": "crtx-labs.com",
+        "verdict": "unknown"
+      },
+      "return_path_data_json": {
+        "address": "test-user@example.com",
+        "domain_popularity": 1152,
+        "primary_category": "unknown",
+        "risk_level": "high-risk",
+        "root_domain": "crtx-labs.com",
+        "verdict": "unknown"
+      },
+      "reply_to_json": [],
+      "internet_message_id_data_json": {
+        "domain_popularity": 440068840,
+        "root_domain": "outlook.com",
+        "verdict": "benign"
+      }
+    },
+    "targeting_scope": {
+      "mailbox_owner": [
+        "test-user@example.com",
+        "phishing@example.com"
+      ],
+      "mailbox_owner_fqdn": "es.crtx-labs.com",
+      "recipients": [
+        {
+          "address": "phishing@es.crtx-labs.com",
+          "domain_popularity": 1152,
+          "name": "Phishing mailbox",
+          "recipient_name": "Phishing mailbox",
+          "root_domain": "crtx-labs.com",
+          "verdict": "unknown"
+        }
+      ],
+      "recipients_count": 1,
+      "cc_recipients": null,
+      "cc_recipients_count": null,
+      "bcc_recipients": null,
+      "bcc_recipients_count": null
+    },
+    "infrastructure": {
+      "sender_ip_received_headers": "fe80::e98e:a3ed:5540:69",
+      "connecting_ip_address": "255.255.255.255",
+      "original_client_ip": null,
+      "sender_ip_as_data_json": {
+        "as_number": null,
+        "domain": null,
+        "is_proxy": null,
+        "isp": null,
+        "organization": null
+      },
+      "sender_ip_location_json": null,
+      "msft_country": null,
+      "sender_ip_enrichment_json": null
+    },
+    "artifacts": {
+      "attachments": [
+        {
+          "attachment_name": "eml",
+          "content_type": "application/octet-stream",
+          "extension": null,
+          "extracted_from_latest_body": true,
+          "hash_str": "98ce2565ba2a1093511315112f556eef4503ad60306970f0320560f3320f3d80",
+          "id": "AAkALgAAAAAAHYQDEapmEc2byACqAC-EWg0A6nLrF0dEa0e3pxnUf19XWAAAYJeHcgAAARIAEAC3YEaHKrejTpoUEm5n2yG0",
+          "last_modified_time": "2026-02-02T12:00:30Z",
+          "name": "eml",
+          "size": 1471430
+        }
+      ],
+      "attachments_count": 1,
+      "url_verdicts_json": [],
+      "urls_count": 0
+    },
+    "authentication": {
+      "arc_headers_data_json": [],
+      "first_authentication_results_json": null,
+      "last_authentication_results_json": {
+        "dkim": "none (message not signed) header.d=none",
+        "dkim_domain": "none",
+        "dkim_outcome": "none",
+        "dmarc": "none action=none header.from=es.crtx-labs.com",
+        "dmarc_action": "none",
+        "dmarc_domain": "es.crtx-labs.com",
+        "dmarc_outcome": "none",
+        "raw": "dkim=none (message not signed) header.d=none;dmarc=none action=none header.from=es.crtx-labs.com;",
+        "source_header": "Authentication-Results"
+      }
+    },
+    "m365_signals": {
+      "microsoft_threat_category": "NONE",
+      "scl": "1",
+      "bcl": "0",
+      "sfty": null,
+      "sfv": "NSPM",
+      "x_customspam": null
+    },
+    "fingerprints": {
+      "subject_hash": "63fea296287f31cdc5458d583114cd9de25fc545486e47aba343bcd73bf5dd3f",
+      "body_hash": "3ebe4a9fd8e1a797992c606690fe58bcde4c454aed441d5cc0aa452bdbf20388"
+    }
+  }
+}
