@@ -19,7 +19,7 @@ urllib3.disable_warnings()
 
 """ GLOBALS/PARAMS """
 
-TEST_QUERY = 'SELECT name FROM `bigquery-public-data.usa_names.usa_1910_2013` WHERE state = "TX" LIMIT 10'
+TEST_QUERY = "SELECT 1"
 
 
 """ HELPER FUNCTIONS """
@@ -424,7 +424,7 @@ def test_module():
         region = params.get("region")
         bigquery_client = start_and_return_bigquery_client(google_service_creds)
         demisto.debug(f"[BigQuery Debug] test-module with {region=}")
-        query_job = bigquery_client.query("SELECT 1", location=region)
+        query_job = bigquery_client.query(TEST_QUERY, location=region)
         query_results = query_job.result()
         results_rows_iterator = iter(query_results)
         next(results_rows_iterator)
