@@ -2593,4 +2593,3 @@ def test_content_client_logger_get_request_id():
     # After generating
     new_id = logger.new_request_id()
     assert logger.get_request_id() == new_id
-
