@@ -12,7 +12,6 @@
                 "ENT_PLUS",
                 "agentix",
                 "xsiam",
-                "edr",
                 "cloud_runtime_security",
                 "cloud"
             ]
@@ -259,10 +258,6 @@
         {
             "id": "Palo_Alto_Networks_WildFire",
             "supportedModules": [
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "agentix",
                 "cloud",
                 "cloud_runtime_security",
@@ -344,12 +339,6 @@
         {
             "id": "CortexResponseAndRemediation",
             "supportedModules": [
-                "C3",
-                "X0",
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS",
                 "cloud",
                 "cloud_runtime_security",
                 "agentix",
