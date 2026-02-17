@@ -4611,6 +4611,16 @@ def verify_platform_version(version: str = "8.13.0"):
 
 
 def create_profile_modules_by_type(args: dict, profile_type: str):
+    """
+    Creates the modules configuration for a profile based on the profile type.
+
+    Args:
+        args (dict): The arguments containing the configuration for the profile modules.
+        profile_type (str): The type of the profile ("Malware" or "Exploit").
+
+    Returns:
+        dict: A dictionary containing the configured modules for the profile.
+    """
     profile_modules = {}
     if profile_type == "Malware":
         # Configuration for periodic scan to be used when enabled
@@ -4739,6 +4749,17 @@ def create_profile_modules_by_type(args: dict, profile_type: str):
 
 
 def create_profile_command(client: Client, args: dict, profile_type: str) -> CommandResults:
+    """
+    Creates a new profile in the Cortex Platform.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): The arguments containing the profile details.
+        profile_type (str): The type of the profile ("Malware" or "Exploit").
+
+    Returns:
+        CommandResults: The command results containing the ID of the created profile.
+    """
     profile_name = args.get("profile_name")
     profile_platform = "Windows"
     profile_description = args.get("profile_description", "")
@@ -4764,6 +4785,16 @@ def create_profile_command(client: Client, args: dict, profile_type: str) -> Com
 
 
 def update_profile_command(client, args):
+    """
+    Updates an existing profile in the Cortex Platform.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): The arguments containing the profile ID and fields to update.
+
+    Returns:
+        CommandResults: The command results indicating the success of the update.
+    """
     profile_id = args.get("profile_id")
 
     current_profile = client.get_current_profile(profile_id)
@@ -4795,6 +4826,16 @@ def update_profile_command(client, args):
 
 
 def delete_profile_command(client, args):
+    """
+    Deletes one or more profiles from the Cortex Platform.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): The arguments containing the profile IDs to delete.
+
+    Returns:
+        CommandResults: The command results indicating the success of the deletion.
+    """
     profile_ids = argToList(args.get("profile_ids"))
     client.delete_profile(profile_ids)
     return CommandResults(readable_output="Your request was sent successfully.")
