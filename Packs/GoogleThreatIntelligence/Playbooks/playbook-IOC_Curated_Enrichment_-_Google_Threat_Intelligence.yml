@@ -457,7 +457,7 @@ inputs:
 - key: resource_type
   value: {}
   required: false
-  description: The type of the resource (ip, domain, url, or hash).
+  description: The type of the resource (IP, domain, URL, or file hash).
   playbookInputQuery:
 outputs: []
 tests:
