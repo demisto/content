@@ -676,7 +676,6 @@ class Client(BaseClient):
             )
 
         if self.use_oauth:  # if user selected the `Use OAuth` checkbox, OAuth2 authentication should be used
-            print(f"init sn client use_oauth {self._username} {self._password} {oauth_params}")
             self.snow_client: ServiceNowClient = ServiceNowClient(
                 username=username,
                 password=password,
@@ -691,7 +690,6 @@ class Client(BaseClient):
             )
 
         else:
-            print(f"iniit reg {self._username} {self._password} ")
             self._auth = (self._username, self._password)
 
     def generic_request(
@@ -3762,7 +3760,6 @@ def main():
     demisto.debug(f"Executing command {command}")
 
     params = demisto.params()
-    print(f"{params}")
     args = demisto.args()
     verify = not params.get("insecure", False)
     use_oauth = params.get("use_oauth", False)
@@ -3779,7 +3776,6 @@ def main():
     password = basic_auth_creds.get("password", "")
 
     oauth_creds = params.get("credentials", {})
-    print(f"oauth_creds = {oauth_creds}")
 
     if use_oauth:  # if the `Use OAuth` checkbox was checked, client id & secret should be in the credentials fields
         client_id = oauth_creds.get("identifier", "")
