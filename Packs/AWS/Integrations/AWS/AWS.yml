@@ -4574,7 +4574,7 @@ script:
       required: false
     - name: launch_template_version
       description: "The launch template version number, $Latest, or $Default."
-      required: false
+      required: true
     - name: tags
       description: "One or more tags to apply to a resource when the resource is being created, separated by ';' (for example, key=<name>;value=<value>)."
       required: false
@@ -10895,6 +10895,696 @@ script:
         description: The ID of the volume.
         required: true
     outputs: [ ]
+
+  - name: aws-ec2-fleet-create
+    description: Launches an EC2 Fleet.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: spot_allocation_strategy
+      description: Indicates how to allocate the target capacity across the Spot pools specified by the Spot Fleet request.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - lowest-price
+      - diversified
+      - capacity-optimized
+      - capacity-optimized-prioritized
+      - price-capacity-optimized
+    - name: instance_interruption_behavior
+      description: The behavior when a Spot Instance is interrupted.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - hibernate
+      - stop
+      - terminate
+    - name: instance_pools_to_use_count
+      description: The number of Spot pools across which to allocate your target Spot capacity.
+      required: false
+    - name: spot_single_instance_type
+      description: Indicates that the fleet uses a single instance type to launch all Spot Instances in the fleet.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: single_availability_zone
+      description: Indicates that the fleet launches all Spot Instances into a single Availability Zone.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: min_target_capacity
+      description: The minimum target capacity for Spot Instances in the fleet. If the minimum target capacity is not reached, the fleet launches no instances.
+      required: false
+    - name: on_demand_allocation_strategy
+      description: The order of the launch template overrides to use in fulfilling On-Demand capacity.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - lowest-price
+      - prioritized
+    - name: on_demand_single_instance_type
+      description: Indicates that the fleet uses a single instance type to launch all On-Demand Instances in the fleet.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: on_demand_single_availability_zone
+      description: Indicates that the fleet launches all On-Demand Instances into a single Availability Zone.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: on_demand_min_target_capacity
+      description: The minimum target capacity for On-Demand Instances in the fleet. If the minimum target capacity is not reached, the fleet launches no instances.
+      required: false
+    - name: on_demand_min_target_capacity
+      description: The maximum amount per hour for On-Demand Instances that you're willing to pay.
+      required: false
+    - name: excess_capacity_termination_policy
+      description: Indicates whether running instances should be terminated if the total target capacity of the EC2 Fleet is decreased below the current size of the EC2 Fleet.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - no-termination
+      - termination
+    - name: launch_template_id
+      description: The ID of the launch template.
+      required: false
+    - name: launch_template_name
+      description: The name of the launch template.
+      required: false
+    - name: launch_template_version
+      description: The version number of the launch template.
+      required: false
+    - name: override_instance_type
+      description: A comma-separated list of instance types for launch template overrides.
+      required: false
+      isArray: true
+    - name: override_max_price
+      description: A comma-separated list of maximum prices per unit hour that you are willing to pay for Spot Instances.
+      required: false
+      isArray: true
+    - name: override_subnet_id
+      description: A comma-separated list of subnet IDs in which to launch the instances.
+      required: false
+      isArray: true
+    - name: override_availability_zone
+      description: A comma-separated list of Availability Zones in which to launch the instances.
+      required: false
+      isArray: true
+    - name: override_weighted_capacity
+      description: A comma-separated list of numbers of units provided by the specified instance types.
+      required: false
+      isArray: true
+    - name: override_priority
+      description: A comma-separated list of priorities for the launch template overrides.
+      required: false
+      isArray: true
+    - name: total_target_capacity
+      description: The number of units to request, filled using DefaultTargetCapacityType.
+      required: true
+    - name: on_demand_target_capacity
+      description: The number of On-Demand units to request.
+      required: false
+    - name: spot_target_capacity
+      description: The number of Spot units to request.
+      required: false
+    - name: default_target_capacity_type
+      description: The default TotalTargetCapacity, which is either Spot or On-Demand.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - spot
+      - on-demand
+    - name: terminate_instances_with_expiration
+      description: Indicates whether running instances should be terminated when the EC2 Fleet expires.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: type
+      description: The type of the request.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - request
+      - maintain
+      - instant
+    - name: valid_from
+      description: The start date and time of the request, in YYYY-MM-DD format.
+      required: false
+    - name: valid_until
+      description: The end date and time of the request, in YYYY-MM-DD format.
+      required: false
+    - name: replace_unhealthy_instances
+      description: Indicates whether EC2 Fleet should replace unhealthy instances.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: tags
+      description: "The tags to apply to the resource. Format: ResourceType:key=Name,value=test;key=Owner,value=Bob#ResourceType2:key=Name,value=test2"
+      required: false
+    outputs:
+    - contextPath: AWS.EC2.Fleet.FleetId
+      description: The ID of the EC2 Fleet.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.LaunchTemplateSpecification.LaunchTemplateId
+      description: The ID of the launch template.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.LaunchTemplateSpecification.LaunchTemplateName
+      description: The name of the launch template.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.LaunchTemplateSpecification.Version
+      description: The version number of the launch template.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.Overrides.InstanceType
+      description: The instance type.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.Overrides.MaxPrice
+      description: The maximum price per unit hour that you are willing to pay for a Spot Instance.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.Overrides.SubnetId
+      description: The ID of the subnet in which to launch the instances.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.Overrides.AvailabilityZone
+      description: The Availability Zone in which to launch the instances.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.Overrides.WeightedCapacity
+      description: The number of units provided by the specified instance type.
+      type: number
+    - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.Overrides.Priority
+      description: The priority for the launch template override.
+      type: number
+    - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.Overrides.Placement.GroupName
+      description: The name of the placement group the instance is in.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.Lifecycle
+      description: Indicates if the instance that could not be launched was a Spot Instance or On-Demand Instance.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.ErrorCode
+      description: The error code that indicates why the instance could not be launched.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.ErrorMessage
+      description: The error message that describes why the instance could not be launched.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.LaunchTemplateSpecification.LaunchTemplateId
+      description: The ID of the launch template.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.LaunchTemplateSpecification.LaunchTemplateName
+      description: The name of the launch template.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.LaunchTemplateSpecification.Version
+      description: The version number of the launch template.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.Overrides.InstanceType
+      description: The instance type.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.Overrides.MaxPrice
+      description: The maximum price per unit hour that you are willing to pay for a Spot Instance.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.Overrides.SubnetId
+      description: The ID of the subnet in which to launch the instances.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.Overrides.AvailabilityZone
+      description: The Availability Zone in which to launch the instances.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.Overrides.WeightedCapacity
+      description: The number of units provided by the specified instance type.
+      type: number
+    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.Overrides.Priority
+      description: The priority for the launch template override.
+      type: number
+    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.Overrides.Placement.GroupName
+      description: The name of the placement group the instance is in.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.Lifecycle
+      description: Indicates if the instance that was launched is a Spot Instance or On-Demand Instance.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.InstanceIds
+      description: The IDs of the instances.
+      type: array
+    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.InstanceType
+      description: The instance type.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.Platform
+      description: The value is Windows for Windows instances; otherwise blank.
+      type: string
+
+  - name: aws-ec2-fleet-delete
+    description: Deletes the specified EC2 Fleet.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: fleet_ids
+      description: A comma-separated list of EC2 Fleet IDs.
+      required: true
+      isArray: true
+    - name: terminate_instances
+      description: Indicates whether to terminate instances for an EC2 Fleet if it is deleted successfully.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: AWS.EC2.DeletedFleets.SuccessfulFleetDeletions.CurrentFleetState
+      description: The current state of the EC2 Fleet.
+      type: string
+    - contextPath: AWS.EC2.DeletedFleets.SuccessfulFleetDeletions.PreviousFleetState
+      description: The previous state of the EC2 Fleet.
+      type: string
+    - contextPath: AWS.EC2.DeletedFleets.SuccessfulFleetDeletions.FleetId
+      description: The ID of the EC2 Fleet.
+      type: string
+    - contextPath: AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.Error.Code
+      description: The error code.
+      type: string
+    - contextPath: AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.Error.Message
+      description: The description for the error code.
+      type: string
+    - contextPath: AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.FleetId
+      description: The ID of the EC2 Fleet.
+      type: string
+
+  - name: aws-ec2-fleets-describe
+    description: Describes one or more of your EC2 Fleets.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: filters
+      description: "One or more filters separated by ';'. See AWS documentation for details & filter options."
+      required: false
+    - name: fleet_ids
+      description: A comma-separated list of EC2 Fleet IDs.
+      required: false
+      isArray: true
+    - name: limit
+      description: The maximum number of results to return in a single call. Specify a value between 1 and 1000.
+      required: false
+    - name: next_token
+      description: The token for the next set of results.
+      required: false
+    outputs:
+    - contextPath: AWS.EC2.FleetNextToken
+      description: The token for the next set of results.
+      type: string
+    - contextPath: AWS.EC2.Fleet.ActivityStatus
+      description: The progress of the EC2 Fleet. If there is an error, the status is error.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Fleets.CreateTime
+      description: The creation date and time of the EC2 Fleet.
+      type: date
+    - contextPath: AWS.EC2.Fleet.Fleets.FleetId
+      description: The ID of the EC2 Fleet.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Fleets.FleetState
+      description: The state of the EC2 Fleet.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Fleets.ClientToken
+      description: Unique, case-sensitive identifier you provide to ensure the idempotency of the request.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Fleets.ExcessCapacityTerminationPolicy
+      description: Indicates whether running instances should be terminated if the target capacity of the EC2 Fleet is decreased below the current size of the EC2 Fleet.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Fleets.FulfilledCapacity
+      description: The number of units fulfilled by this request compared to the set target capacity.
+      type: number
+    - contextPath: AWS.EC2.Fleet.Fleets.FulfilledOnDemandCapacity
+      description: The number of units fulfilled by this request compared to the set target On-Demand capacity.
+      type: number
+    - contextPath: AWS.EC2.Fleet.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification.LaunchTemplateId
+      description: The ID of the launch template.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification.LaunchTemplateName
+      description: The name of the launch template.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification.Version
+      description: The version number of the launch template.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification.Overrides.InstanceType
+      description: The instance type.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification.Overrides.MaxPrice
+      description: The maximum price per unit hour that you are willing to pay for a Spot Instance.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification.Overrides.SubnetId
+      description: The ID of the subnet in which to launch the instances.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification.Overrides.AvailabilityZone
+      description: The Availability Zone in which to launch the instances.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification.Overrides.WeightedCapacity
+      description: The number of units provided by the specified instance type.
+      type: number
+    - contextPath: AWS.EC2.Fleet.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification.Overrides.Priority
+      description: The priority for the launch template override.
+      type: number
+    - contextPath: AWS.EC2.Fleet.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification.Overrides.Placement.GroupName
+      description: The name of the placement group the instance is in.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Fleets.TargetCapacitySpecification.TotalTargetCapacity
+      description: The number of units to request, filled using DefaultTargetCapacityType.
+      type: number
+    - contextPath: AWS.EC2.Fleet.Fleets.TargetCapacitySpecification.OnDemandTargetCapacity
+      description: The number of On-Demand units to request.
+      type: number
+    - contextPath: AWS.EC2.Fleet.Fleets.TargetCapacitySpecification.SpotTargetCapacity
+      description: The maximum number of Spot units to launch.
+      type: number
+    - contextPath: AWS.EC2.Fleet.Fleets.TargetCapacitySpecification.DefaultTargetCapacityType
+      description: The default TotalTargetCapacity, which is either Spot or On-Demand.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Fleets.TerminateInstancesWithExpiration
+      description: Indicates whether running instances should be terminated when the EC2 Fleet expires.
+      type: boolean
+    - contextPath: AWS.EC2.Fleet.Fleets.Type
+      description: The type of request. Indicates whether the EC2 Fleet only requests the target capacity, or also attempts to maintain it.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Fleets.ValidFrom
+      description: The start date and time of the request, in UTC format.
+      type: date
+    - contextPath: AWS.EC2.Fleet.Fleets.ValidUntil
+      description: The end date and time of the request, in UTC format.
+      type: date
+    - contextPath: AWS.EC2.Fleet.Fleets.ReplaceUnhealthyInstances
+      description: Indicates whether EC2 Fleet should replace unhealthy instances.
+      type: boolean
+    - contextPath: AWS.EC2.Fleet.Fleets.SpotOptions.AllocationStrategy
+      description: Indicates how to allocate the target capacity across the Spot pools specified by the Spot Fleet request.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Fleets.SpotOptions.InstanceInterruptionBehavior
+      description: The behavior when a Spot Instance is interrupted. The default is terminate.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Fleets.SpotOptions.InstancePoolsToUseCount
+      description: The number of Spot pools across which to allocate your target Spot capacity.
+      type: number
+    - contextPath: AWS.EC2.Fleet.Fleets.SpotOptions.SingleInstanceType
+      description: Indicates that the fleet uses a single instance type to launch all Spot Instances in the fleet.
+      type: boolean
+    - contextPath: AWS.EC2.Fleet.Fleets.SpotOptions.SingleAvailabilityZone
+      description: Indicates that the fleet launches all Spot Instances into a single Availability Zone.
+      type: boolean
+    - contextPath: AWS.EC2.Fleet.Fleets.SpotOptions.MinTargetCapacity
+      description: The minimum target capacity for Spot Instances in the fleet.
+      type: number
+    - contextPath: AWS.EC2.Fleet.Fleets.OnDemandOptions.AllocationStrategy
+      description: The order of the launch template overrides to use in fulfilling On-Demand capacity.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Fleets.OnDemandOptions.SingleInstanceType
+      description: Indicates that the fleet uses a single instance type to launch all On-Demand Instances in the fleet.
+      type: boolean
+    - contextPath: AWS.EC2.Fleet.Fleets.OnDemandOptions.SingleAvailabilityZone
+      description: Indicates that the fleet launches all On-Demand Instances into a single Availability Zone.
+      type: boolean
+    - contextPath: AWS.EC2.Fleet.Fleets.OnDemandOptions.MinTargetCapacity
+      description: The minimum target capacity for On-Demand Instances in the fleet.
+      type: number
+    - contextPath: AWS.EC2.Fleet.Fleets.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.EC2.Fleet.Fleets.Tags.Value
+      description: The value of the tag.
+      type: string
+
+  - name: aws-ec2-fleet-instances-describe
+    description: Describes the running instances for the specified EC2 Fleet.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: filters
+      description: "One or more filters separated by ';'. See AWS documentation for details & filter options."
+      required: false
+    - name: fleet_id
+      description: The ID of the EC2 Fleet.
+      required: true
+    - name: limit
+      description: The maximum number of results to return in a single call. Specify a value between 1 and 1000.
+      required: false
+    - name: next_token
+      description: The token for the next set of results.
+      required: false
+    outputs:
+    - contextPath: AWS.EC2.Fleet.ActiveInstances.InstanceId
+      description: The ID of the instance.
+      type: string
+    - contextPath: AWS.EC2.Fleet.ActiveInstances.InstanceType
+      description: The instance type.
+      type: string
+    - contextPath: AWS.EC2.Fleet.ActiveInstances.SpotInstanceRequestId
+      description: The ID of the Spot Instance request.
+      type: string
+    - contextPath: AWS.EC2.Fleet.ActiveInstances.InstanceHealth
+      description: The health status of the instance.
+      type: string
+    - contextPath: AWS.EC2.Fleet.NextToken
+      description: The token for the next set of results.
+      type: string
+    - contextPath: AWS.EC2.Fleet.FleetId
+      description: The ID of the EC2 Fleet.
+      type: string
+
+  - name: aws-ec2-fleet-modify
+    description: Modifies the specified EC2 Fleet.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: fleet_id
+      description: The ID of the EC2 Fleet.
+      required: true
+    - name: excess_capacity_termination_policy
+      description: Indicates whether running instances should be terminated if the total target capacity of the EC2 Fleet is decreased below the current size of the EC2 Fleet.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - no-termination
+      - termination
+    - name: total_target_capacity
+      description: The number of units to request, filled using DefaultTargetCapacityType.
+      required: true
+    - name: on_demand_target_capacity
+      description: The number of On-Demand units to request.
+      required: false
+    - name: spot_target_capacity
+      description: The number of Spot units to request.
+      required: false
+    - name: default_target_capacity_type
+      description: The default TotalTargetCapacityType, which is either Spot or On-Demand.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - spot
+      - on-demand
 
   isfetch: false
   runonce: false
