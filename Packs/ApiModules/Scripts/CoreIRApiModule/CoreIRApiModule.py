@@ -192,6 +192,7 @@ class CoreClient(BaseClient):
         json_data=None,  # type: ignore[override]
         params=None,
         data=None,
+        files: dict | None = None,
         timeout=None,
         raise_on_status=False,
         ok_codes=None,
@@ -229,6 +230,10 @@ class CoreClient(BaseClient):
             :param data: The data to send in a 'POST' request.
 
 
+            :type files: ``dict``
+            :param files: The file data to send in a multipart/form-data 'POST' request.
+
+
             :type raise_on_status ``bool``
                 :param raise_on_status: Similar meaning to ``raise_on_redirect``:
                     whether we should raise an exception, or return a response,
@@ -252,6 +257,7 @@ class CoreClient(BaseClient):
                 json_data=json_data,
                 params=params,
                 data=data,
+                files=files,
                 timeout=timeout,
                 raise_on_status=raise_on_status,
                 ok_codes=ok_codes,
@@ -1469,6 +1475,7 @@ class FilterBuilder:
         NIS_EMPTY = ("NIS_EMPTY", "AND")
         ADVANCED_IP_MATCH_EXACT = ("ADVANCED_IP_MATCH_EXACT", "OR")
         RELATIVE_TIMESTAMP = ("RELATIVE_TIMESTAMP", "OR")
+        NEQ = ("NEQ", "AND")
 
     AND = "AND"
     OR = "OR"
@@ -2286,6 +2293,7 @@ def retrieve_all_endpoints(
     username,
 ):
     endpoints_page = endpoints
+    demisto.debug(f"retrieve_all_endpoints: starting with {len(endpoints)} endpoints from page {page_number}")
     # Continue looping for as long as the latest page of endpoints retrieved is NOT empty
     while endpoints_page:
         page_number += 1
@@ -2310,7 +2318,11 @@ def retrieve_all_endpoints(
             status=status,
             username=username,
         )
+        demisto.debug(f"retrieve_all_endpoints: page {page_number} returned {len(endpoints_page)} endpoints")
+        if endpoints_page:
+            demisto.debug(f"retrieve_all_endpoints: first endpoint ID in page: {endpoints_page[0].get('endpoint_id')}")
         endpoints += endpoints_page
+    demisto.debug(f"retrieve_all_endpoints: finished with total {len(endpoints)} endpoints")
     return endpoints
 
 
@@ -2364,6 +2376,11 @@ def get_endpoints_command(client, args):
     sort_by_first_seen = args.get("sort_by_first_seen")
     sort_by_last_seen = args.get("sort_by_last_seen")
 
+    # When fetching all results without explicit sort, use sort_by_first_seen to ensure stable pagination
+    if all_results and not sort_by_first_seen and not sort_by_last_seen:
+        sort_by_first_seen = "asc"
+        demisto.debug("get_endpoints_command: all_results=true without explicit sort, defaulting to sort_by_first_seen=asc")
+
     username = argToList(args.get("username"))
 
     endpoints = client.get_endpoints(
@@ -2412,6 +2429,23 @@ def get_endpoints_command(client, args):
             status,
             username,
         )
+        # Deduplicate endpoints by endpoint_id to handle any API inconsistencies
+        seen_endpoint_ids = set()
+        unique_endpoints = []
+        duplicates_found = 0
+        for endpoint in endpoints:
+            endpoint_id = endpoint.get("endpoint_id")
+            if endpoint_id not in seen_endpoint_ids:
+                seen_endpoint_ids.add(endpoint_id)
+                unique_endpoints.append(endpoint)
+            else:
+                duplicates_found += 1
+                demisto.debug(f"get_endpoints_command: duplicate endpoint_id found and removed: {endpoint_id}")
+
+        if duplicates_found > 0:
+            demisto.info(f"get_endpoints_command: removed {duplicates_found} duplicate endpoint(s) from results")
+
+        endpoints = unique_endpoints
 
     if convert_timestamp_to_datestring:
         endpoints = convert_timestamps_to_datestring(endpoints)
@@ -2431,7 +2465,9 @@ def get_endpoints_command(client, args):
     if account_context:
         context[Common.Account.CONTEXT_PATH] = account_context
 
-    return CommandResults(readable_output=tableToMarkdown("Endpoints", endpoints), outputs=context, raw_response=endpoints)
+    return CommandResults(
+        readable_output=tableToMarkdown("Endpoints", endpoints, removeNull=True), outputs=context, raw_response=endpoints
+    )
 
 
 def endpoint_alias_change_command(client: CoreClient, **args) -> CommandResults:
