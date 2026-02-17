@@ -27,6 +27,16 @@ configuration:
     required: false
     type: 9
     section: Connect
+  - display: Trust any certificate (not secure)
+    name: insecure
+    required: false
+    type: 8
+    section: Connect
+  - display: Use system proxy settings
+    name: proxy
+    required: false
+    type: 8
+    section: Connect
   - display: Fetch events
     name: isFetchEvents
     defaultvalue: "false"
@@ -51,16 +61,6 @@ configuration:
     required: false
     type: 0
     section: Collect
-  - display: Trust any certificate (not secure)
-    name: insecure
-    required: false
-    type: 8
-    section: Connect
-  - display: Use system proxy settings
-    name: proxy
-    required: false
-    type: 8
-    section: Connect
 description: iManage Threat Manager uses modern techniques including machine learning and user Behavior Analytics to protect privileged information against internal and external threat actors.
 display: iManage Threat Manager
 name: iManageThreatManager

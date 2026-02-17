@@ -3,6 +3,8 @@ from CommonServerPython import *
 import urllib3
 import base64
 import json
+import time
+from datetime import UTC
 from typing import Any
 
 # Disable insecure warnings
@@ -88,10 +90,10 @@ class Client(BaseClient):
         Extract expiration timestamp from JWT token.
 
         Args:
-            token: JWT token string (e.g., "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzA3MzMwMjl9.signature")
+            token: JWT token string in format "header.payload.signature"
 
         Returns:
-            int: Expiration timestamp in seconds since epoch (e.g., 1770733029).
+            int: Expiration timestamp in seconds since epoch.
                  Returns current time + 30 minutes (1800 seconds) if extraction fails.
         """
         try:
@@ -107,7 +109,7 @@ class Client(BaseClient):
             if padding != 4:
                 payload += "=" * padding
 
-            decoded = base64.b64decode(payload)
+            decoded = base64.urlsafe_b64decode(payload)
             payload_data = json.loads(decoded)
 
             exp = payload_data.get("exp")
@@ -118,7 +120,7 @@ class Client(BaseClient):
         except Exception as e:
             demisto.debug(f"Failed to extract JWT expiration: {str(e)}, using 30-minute default")
             # Default to 30 minutes from now if extraction fails
-            return int(datetime.now().timestamp()) + 1800
+            return int(datetime.now(tz=UTC).timestamp()) + 1800
 
     def _get_cached_token(self, token_key: str, expiry_key: str) -> str | None:
         """
@@ -134,7 +136,7 @@ class Client(BaseClient):
         integration_context = demisto.getIntegrationContext()
         cached_token = integration_context.get(token_key)
         token_expiry = integration_context.get(expiry_key, 0)
-        current_time = int(datetime.now().timestamp())
+        current_time = int(datetime.now(tz=UTC).timestamp())
 
         # Check if cached token is still valid (with 5 minute buffer to avoid edge cases)
         if cached_token and isinstance(token_expiry, int) and token_expiry > (current_time + 300):
@@ -248,24 +250,27 @@ class Client(BaseClient):
         start_date: int,
         end_date: int,
         page_size: int = MAX_PAGE_SIZE,
+        enable_retries: bool = True,
     ) -> List[Dict[str, Any]]:
         """
-        Fetch alerts from iManage Threat Manager for a specific event type with retry logic.
+        Fetch alerts from iManage Threat Manager for a specific event type with optional retry logic.
 
         Args:
             event_type: Type of events to fetch (e.g., "Behavior Analytics alerts").
             start_date: Timestamp in milliseconds marking the beginning of the alert range.
             end_date: Timestamp in milliseconds marking the end of the alert range.
             page_size: Number of alerts per page.
+            enable_retries: If True, enables retry logic with delays for automated fetch.
+                           If False, fails immediately (for interactive commands).
 
         Returns:
             List[Dict[str, Any]]: List of alerts sorted by alert_time (newest first).
 
         Raises:
-            DemistoException: If all retry attempts fail.
+            DemistoException: If all retry attempts fail or on first error if retries disabled.
 
         Note:
-            Implements retry mechanism with exponential backoff for API throttling:
+            When enable_retries=True, implements retry mechanism with exponential backoff:
             - Retry 1: Wait 30s, regenerate token
             - Retry 2: Wait 60s, regenerate token
             - Retry 3: Wait 90s, regenerate token
@@ -277,7 +282,9 @@ class Client(BaseClient):
 
         demisto.debug(f"Fetching {event_type} from {start_date} to {end_date} with page size {page_size}.")
 
-        for attempt in range(MAX_RETRIES + 1):
+        max_attempts = (MAX_RETRIES + 1) if enable_retries else 1
+
+        for attempt in range(max_attempts):
             try:
                 # Get appropriate access token based on auth type
                 # Force new token on retries (attempt > 0)
@@ -325,23 +332,24 @@ class Client(BaseClient):
                     ]
                 )
 
-                if is_retryable and attempt < MAX_RETRIES:
+                # Only retry if retries are enabled and this is a retryable error
+                if enable_retries and is_retryable and attempt < MAX_RETRIES:
                     delay = RETRY_DELAYS[attempt]
                     demisto.debug(
                         f"Retryable error on attempt {attempt + 1}/{MAX_RETRIES + 1}. "
                         f"Waiting {delay} seconds before regenerating token and retrying..."
                     )
-                    time.sleep(delay)
+                    time.sleep(delay)  # pylint: disable=E9003
                     # Force new token on next iteration
                     continue
 
-                # Not a retryable error, or max retries exceeded
-                if attempt == MAX_RETRIES and is_retryable:
+                # Not a retryable error, retries disabled, or max retries exceeded
+                if attempt == MAX_RETRIES and is_retryable and enable_retries:
                     demisto.error(f"Failed to fetch {event_type} after {MAX_RETRIES + 1} attempts. " f"Last error: {error_str}")
                 raise
 
         # This should never be reached, but added for type safety
-        raise DemistoException(f"Failed to fetch {event_type} after {MAX_RETRIES + 1} attempts")
+        raise DemistoException(f"Failed to fetch {event_type} after {max_attempts} attempts")
 
 
 """ HELPER FUNCTIONS """
@@ -364,7 +372,7 @@ def _calculate_timestamp_ms(date_str: str | None, default_hours_ago: int = 0) ->
             raise ValueError(f"Failed to parse date string: {date_str}")
         return int(dt.timestamp() * 1000)
 
-    base_time = datetime.now()
+    base_time = datetime.now(tz=UTC)
     if default_hours_ago > 0:
         base_time -= timedelta(hours=default_hours_ago)
 
@@ -445,7 +453,7 @@ def _add_fields_to_events(events: List[Dict] | None, source_log_type: str) -> No
         if update_time and isinstance(update_time, int | float):
             try:
                 # update_time is in milliseconds, convert to seconds for datetime
-                event_datetime = datetime.fromtimestamp(update_time / 1000, tz=timezone.utc)
+                event_datetime = datetime.fromtimestamp(update_time / 1000, tz=UTC)
                 event["_time"] = event_datetime.strftime(DATE_FORMAT)
             except (ValueError, OSError) as e:
                 demisto.debug(f"Failed to convert update_time {update_time} to datetime: {str(e)}")
@@ -463,7 +471,7 @@ def _add_fields_to_events(events: List[Dict] | None, source_log_type: str) -> No
 
 
 def _fetch_events_with_pagination(
-    client: Client, event_type: str, start_time: int, end_time: int, limit: int
+    client: Client, event_type: str, start_time: int, end_time: int, limit: int, enable_retries: bool = True
 ) -> List[Dict[str, Any]]:
     """
     Fetch events with pagination support for any event type.
@@ -474,6 +482,8 @@ def _fetch_events_with_pagination(
         start_time: Start timestamp in milliseconds.
         end_time: End timestamp in milliseconds.
         limit: Maximum number of events to fetch.
+        enable_retries: If True, enables retry logic with delays (for fetch-events).
+                       If False, fails immediately (for get-events command).
 
     Returns:
         List of fetched events sorted by alert_time (newest first).
@@ -508,7 +518,7 @@ def _fetch_events_with_pagination(
             f"page_size={page_size}, total_so_far={len(events)}"
         )
 
-        batch = client._fetch_alerts(event_type, start_time, current_end_time, page_size)
+        batch = client._fetch_alerts(event_type, start_time, current_end_time, page_size, enable_retries)
 
         if not batch:
             demisto.debug("No more events available, stopping pagination")
@@ -604,7 +614,7 @@ def test_module_command(client: Client, params: dict[str, Any], event_types: Lis
     try:
         demisto.debug(f"Testing module with event types: {event_types}")
         # Test with a small time window (last hour)
-        end_time = int(datetime.now().timestamp() * 1000)
+        end_time = int(datetime.now(tz=UTC).timestamp() * 1000)
         start_time = end_time - (3600 * 1000)  # 1 hour ago
 
         # Test each configured event type
@@ -649,8 +659,8 @@ def get_events_command(client: Client, args: dict[str, Any]) -> tuple[List[Dict[
     start_time = _calculate_timestamp_ms(from_date, default_hours_ago=1)
     end_time = _calculate_timestamp_ms(to_date)
 
-    # Fetch events with pagination support for all event types
-    events = _fetch_events_with_pagination(client, event_type, start_time, end_time, limit)
+    # Fetch events without retries for interactive command (enable_retries=False)
+    events = _fetch_events_with_pagination(client, event_type, start_time, end_time, limit, enable_retries=False)
 
     demisto.debug(f"Retrieved {len(events)} total events for {event_type}")
     hr = tableToMarkdown(name=f"iManage Threat Manager {event_type}", t=events[:10], removeNull=True)
@@ -684,7 +694,7 @@ def fetch_events_command(
     demisto.debug(f"Starting fetch_events_command with event_types: {event_types}, max_events_per_type: {max_events_per_type}")
     all_events: List[Dict[str, Any]] = []
     next_run: Dict[str, Any] = {}
-    current_time = int(datetime.now().timestamp() * 1000)
+    current_time = int(datetime.now(tz=UTC).timestamp() * 1000)
 
     for event_type in event_types:
         demisto.debug(f"Fetching events for type: {event_type}")
@@ -710,8 +720,10 @@ def fetch_events_command(
         events: List[Dict[str, Any]] = []
 
         try:
-            # Fetch events for this type with pagination support
-            events = _fetch_events_with_pagination(client, event_type, last_fetch_time, current_time, max_events_per_type)
+            # Fetch events for this type with pagination support and retries enabled
+            events = _fetch_events_with_pagination(
+                client, event_type, last_fetch_time, current_time, max_events_per_type, enable_retries=True
+            )
 
             demisto.debug(f"Fetched {len(events)} events for {event_type} (after pagination deduplication)")
 
