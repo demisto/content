@@ -2,6 +2,15 @@
 
 Fetch and manage security alerts from iManage Threat Manager.
 
+## Credentials Required by Event Type
+
+iManage Threat Manager supports different authentication methods depending on the event type you want to fetch:
+
+- **Behavior Analytics alerts**: Requires **Token** and **Secret** credentials
+- **Get Addressable Alerts**: Requires **User Name** and **Password** credentials
+- **Get Detect And Protect Alerts**: Requires **User Name** and **Password** credentials
+
+
 ## Authentication and Authorization
 
 Application tokens are used to validate both the authentication and privilege levels. The application token is used when sending a sign-in request, and an access token is generated in response.

@@ -470,6 +470,70 @@ def _add_fields_to_events(events: List[Dict] | None, source_log_type: str) -> No
                 event["_ENTRY_STATUS"] = "modified"
 
 
+def _update_next_run_state(
+    events: List[Dict[str, Any]],
+    last_fetch_time: int,
+    last_run_ids: List[str],
+) -> tuple[int, List[str]]:
+    """
+    Calculate the next_run state based on fetched events.
+
+    Args:
+        events: List of fetched events (sorted newest first by alert_time).
+        last_fetch_time: Previous fetch timestamp in milliseconds.
+        last_run_ids: List of event IDs from the previous run.
+
+    Returns:
+        tuple: (new_fetch_time, new_ids_list)
+
+    Logic:
+        - No new events: Keep old timestamp and IDs
+        - New events with same timestamp: Keep timestamp, combine old and new IDs
+        - New events with newer timestamp: Update timestamp, replace with new IDs
+    """
+    if not events:
+        # No new events, keep the last fetch time and IDs for next deduplication
+        demisto.debug(f"No new events, keeping last fetch time {last_fetch_time} and {len(last_run_ids)} IDs")
+        return last_fetch_time, last_run_ids
+
+    # Since events are sorted newest first by alert_time, the first event has the latest alert_time
+    latest_alert_time = events[0].get("alert_time", last_fetch_time)
+
+    # Collect IDs of events with the latest alert_time
+    latest_time_event_ids = []
+    for event in events:
+        event_time = event.get("alert_time")
+        if event_time == latest_alert_time:
+            event_id = event.get("id")
+            if event_id:
+                latest_time_event_ids.append(event_id)
+        elif event_time and event_time < latest_alert_time:
+            # Events are sorted newest first, so we can stop here
+            break
+
+    # Determine how to update the IDs based on timestamp comparison
+    if latest_alert_time > last_fetch_time:
+        # New timestamp - replace old IDs with new ones
+        demisto.debug(
+            f"New timestamp {latest_alert_time} > {last_fetch_time}, " f"replaced with {len(latest_time_event_ids)} new IDs"
+        )
+        return latest_alert_time, latest_time_event_ids
+    elif latest_alert_time == last_fetch_time:
+        # Same timestamp - combine old and new IDs (use set to avoid duplicates)
+        combined_ids = list(set(last_run_ids + latest_time_event_ids))
+        demisto.debug(
+            f"Same timestamp {latest_alert_time}, combined IDs: "
+            f"{len(last_run_ids)} old + {len(latest_time_event_ids)} new = {len(combined_ids)} total"
+        )
+        return latest_alert_time, combined_ids
+    else:
+        # This shouldn't happen (latest < last_fetch), but keep old state
+        demisto.debug(
+            f"Unexpected: latest_alert_time {latest_alert_time} < last_fetch_time {last_fetch_time}, " f"keeping old state"
+        )
+        return last_fetch_time, last_run_ids
+
+
 def _fetch_events_with_pagination(
     client: Client, event_type: str, start_time: int, end_time: int, limit: int, enable_retries: bool = True
 ) -> List[Dict[str, Any]]:
@@ -628,10 +692,17 @@ def test_module_command(client: Client, params: dict[str, Any], event_types: Lis
             client._fetch_alerts(event_type, start_time, end_time, 1)
 
     except Exception as e:
-        if "Forbidden" in str(e) or "401" in str(e) or "Unauthorized" in str(e):
-            demisto.debug(f"Authorization error during test: {str(e)}")
-            return "Authorization Error: make sure credentials are correctly set"
-        demisto.debug(f"Test module failed with error: {str(e)}")
+        error_str = str(e)
+        if "Forbidden" in error_str or "401" in error_str or "Unauthorized" in error_str:
+            demisto.debug(f"Authorization error during test: {error_str}")
+            return f"Authorization Error: make sure credentials are correctly set.\n{error_str}"
+        elif "400" in error_str or "BAD REQUEST" in error_str.upper():
+            demisto.debug(f"Bad request error during test: {error_str}")
+            return (
+                f"Authentication Error: Invalid credentials. Please verify your Token/Secret or "
+                f"Username/Password are correct for the selected event types.\n{error_str}"
+            )
+        demisto.debug(f"Test module failed with error: {error_str}")
         raise
 
     demisto.debug("Test module completed successfully")
@@ -741,32 +812,8 @@ def fetch_events_command(
 
             all_events.extend(events)
 
-            # Update next run for this event type
-            if events:
-                # Since events are sorted newest first by alert_time,
-                # the first event has the latest alert_time
-                latest_alert_time = events[0].get("alert_time", last_fetch_time)
-                next_run[last_fetch_key] = latest_alert_time
-
-                # Store IDs of events with the latest alert_time for deduplication
-                latest_time_event_ids = []
-                for event in events:
-                    event_time = event.get("alert_time")
-                    if event_time == latest_alert_time:
-                        event_id = event.get("id")
-                        if event_id:
-                            latest_time_event_ids.append(event_id)
-                    elif event_time and event_time < latest_alert_time:
-                        # Events are sorted newest first, so we can stop here
-                        break
-
-                next_run[last_ids_key] = latest_time_event_ids
-                demisto.debug(f"Stored {len(latest_time_event_ids)} event IDs with alert_time {latest_alert_time}")
-            else:
-                # No new events, update timestamp to current time and clear IDs
-                demisto.debug(f"No new events for {event_type}, updating timestamp to current time")
-                next_run[last_fetch_key] = current_time
-                next_run[last_ids_key] = []
+            # Update next run state for this event type
+            next_run[last_fetch_key], next_run[last_ids_key] = _update_next_run_state(events, last_fetch_time, last_run_ids)
 
         except Exception as e:
             demisto.error(f"Error fetching {event_type}: {str(e)}")

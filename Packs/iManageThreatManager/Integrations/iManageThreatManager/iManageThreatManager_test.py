@@ -7,6 +7,7 @@ from iManageThreatManager import (
     _add_fields_to_events,
     _deduplicate_events,
     _fetch_events_with_pagination,
+    _update_next_run_state,
     BEHAVIOR_ANALYTICS,
     ADDRESSABLE_ALERTS,
     DETECT_AND_PROTECT_ALERTS,
@@ -200,6 +201,120 @@ class TestDeduplicateEvents:
         ]
         result = _deduplicate_events(events, [], 700)
         assert len(result) == 2
+
+
+class TestUpdateNextRunState:
+    """Tests for _update_next_run_state function"""
+
+    def test_no_new_events_keeps_old_state(self):
+        """
+        Given:
+            - Empty events list
+            - Previous fetch time and IDs
+        When:
+            - Calling _update_next_run_state
+        Then:
+            - Ensure old timestamp and IDs are preserved
+        """
+        events = []
+        last_fetch_time = 1000
+        last_run_ids = ["id1", "id2"]
+
+        new_time, new_ids = _update_next_run_state(events, last_fetch_time, last_run_ids)
+
+        assert new_time == 1000
+        assert new_ids == ["id1", "id2"]
+
+    def test_new_events_with_newer_timestamp_replaces_ids(self):
+        """
+        Given:
+            - Events with timestamp newer than last_fetch_time
+            - Previous fetch time and IDs
+        When:
+            - Calling _update_next_run_state
+        Then:
+            - Ensure timestamp is updated and old IDs are replaced with new ones
+        """
+        events = [
+            {"id": "new1", "alert_time": 2000},
+            {"id": "new2", "alert_time": 2000},
+            {"id": "old1", "alert_time": 1500},
+        ]
+        last_fetch_time = 1000
+        last_run_ids = ["id1", "id2"]
+
+        new_time, new_ids = _update_next_run_state(events, last_fetch_time, last_run_ids)
+
+        assert new_time == 2000
+        assert set(new_ids) == {"new1", "new2"}
+        assert "id1" not in new_ids
+        assert "id2" not in new_ids
+
+    def test_new_events_with_same_timestamp_combines_ids(self):
+        """
+        Given:
+            - Events with same timestamp as last_fetch_time
+            - Previous fetch time and IDs
+        When:
+            - Calling _update_next_run_state
+        Then:
+            - Ensure timestamp stays same and old and new IDs are combined
+        """
+        events = [
+            {"id": "new1", "alert_time": 1000},
+            {"id": "new2", "alert_time": 1000},
+        ]
+        last_fetch_time = 1000
+        last_run_ids = ["id1", "id2"]
+
+        new_time, new_ids = _update_next_run_state(events, last_fetch_time, last_run_ids)
+
+        assert new_time == 1000
+        assert set(new_ids) == {"id1", "id2", "new1", "new2"}
+
+    def test_new_events_with_same_timestamp_avoids_duplicate_ids(self):
+        """
+        Given:
+            - Events with same timestamp as last_fetch_time
+            - Some IDs overlap with previous run
+        When:
+            - Calling _update_next_run_state
+        Then:
+            - Ensure IDs are combined without duplicates
+        """
+        events = [
+            {"id": "id1", "alert_time": 1000},  # Duplicate
+            {"id": "new1", "alert_time": 1000},
+        ]
+        last_fetch_time = 1000
+        last_run_ids = ["id1", "id2"]
+
+        new_time, new_ids = _update_next_run_state(events, last_fetch_time, last_run_ids)
+
+        assert new_time == 1000
+        assert set(new_ids) == {"id1", "id2", "new1"}
+        assert len(new_ids) == 3  # No duplicates
+
+    def test_unexpected_older_timestamp_keeps_old_state(self):
+        """
+        Given:
+            - Events with timestamp older than last_fetch_time (unexpected scenario)
+            - Previous fetch time and IDs
+        When:
+            - Calling _update_next_run_state
+        Then:
+            - Ensure old state is preserved
+        """
+        events = [
+            {"id": "old1", "alert_time": 500},
+        ]
+        last_fetch_time = 1000
+        last_run_ids = ["id1", "id2"]
+
+        new_time, new_ids = _update_next_run_state(events, last_fetch_time, last_run_ids)
+
+        assert new_time == 1000
+        assert new_ids == ["id1", "id2"]
 
 
 class TestAddFieldsToEvents:
@@ -562,7 +677,7 @@ class TestClient:
 class TestTestModuleCommand:
     """Tests for test_module_command function"""
 
-    def test_test_module_success_behavior_analytics(self, client, requests_mock):
+    def test_test_module_success_behavior_analytics(self, client, requests_mock, freezer):
         """
         Given:
             - Valid client with token and secret
@@ -574,13 +689,14 @@ class TestTestModuleCommand:
         """
         from iManageThreatManager import test_module_command
 
+        freezer.move_to("2021-01-10T00:00:00Z")
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
         requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", json={"results": []})
 
         result = test_module_command(client, {}, [BEHAVIOR_ANALYTICS])
         assert result == "ok"
 
-    def test_test_module_success_addressable_alerts(self, client, requests_mock):
+    def test_test_module_success_addressable_alerts(self, client, requests_mock, freezer):
         """
         Given:
             - Valid client with username and password
@@ -592,6 +708,7 @@ class TestTestModuleCommand:
         """
         from iManageThreatManager import test_module_command
 
+        freezer.move_to("2021-01-10T00:00:00Z")
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login", json={"access_token": "user_token"})
         requests_mock.post(f"{BASE_URL}/tm-api/getAddressableAlerts", json={"results": []})
 
@@ -627,7 +744,7 @@ class TestTestModuleCommand:
 class TestGetEventsCommand:
     """Tests for get_events_command function"""
 
-    def test_get_events_command_behavior_analytics(self, client, requests_mock):
+    def test_get_events_command_behavior_analytics(self, client, requests_mock, freezer):
         """
         Given:
             - Valid client and Behavior Analytics event type
@@ -636,6 +753,7 @@ class TestGetEventsCommand:
         Then:
             - Ensure events are returned
         """
+        freezer.move_to("2021-01-10T00:00:00Z")
         mock_response = {"results": [{"id": "1", "alert_time": 1609459200000, "update_time": 1609459200000}]}
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
         requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", json=mock_response)
@@ -644,7 +762,7 @@ class TestGetEventsCommand:
         assert len(events) == 1
         assert events[0]["id"] == "1"
 
-    def test_get_events_command_with_pagination(self, client, requests_mock):
+    def test_get_events_command_with_pagination(self, client, requests_mock, freezer):
         """
         Given:
             - Limit of 150 events
@@ -654,6 +772,7 @@ class TestGetEventsCommand:
         Then:
             - Ensure all events are fetched via pagination
         """
+        freezer.move_to("2021-01-10T00:00:00Z")
         page1 = {"results": [{"id": f"1-{i}", "alert_time": 1000 - i} for i in range(90)]}
         page2 = {"results": [{"id": f"2-{i}", "alert_time": 910 - i} for i in range(60)]}
 
@@ -674,7 +793,7 @@ class TestGetEventsCommand:
 class TestFetchEventsCommand:
     """Tests for fetch_events_command function"""
 
-    def test_fetch_events_first_run(self, client, requests_mock):
+    def test_fetch_events_first_run(self, client, requests_mock, freezer):
         """
         Given:
             - Empty last_run (first fetch)
@@ -684,6 +803,9 @@ class TestFetchEventsCommand:
         Then:
             - Ensure events are fetched and next_run is set correctly
         """
+        # Freeze time to a known value (2021-01-10 00:00:00 UTC = 1610236800000 ms)
+        freezer.move_to("2021-01-10T00:00:00Z")
+
         mock_response = {"results": [{"id": "1", "alert_time": 1609459200000, "update_time": 1609459200000}]}
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
         requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", json=mock_response)
@@ -697,7 +819,7 @@ class TestFetchEventsCommand:
         assert "last_fetch_BehaviorAnalytics" in next_run
         assert next_run["last_fetch_BehaviorAnalytics"] == 1609459200000
 
-    def test_fetch_events_with_pagination(self, client, requests_mock):
+    def test_fetch_events_with_pagination(self, client, requests_mock, freezer):
         """
         Given:
             - max_events_per_type of 200
@@ -707,6 +829,7 @@ class TestFetchEventsCommand:
         Then:
             - Ensure pagination is used to fetch all events
         """
+        freezer.move_to("2021-01-10T00:00:00Z")
         page1 = {"results": [{"id": f"1-{i}", "alert_time": 1000 - i, "update_time": 1000 - i} for i in range(90)]}
         page2 = {"results": [{"id": f"2-{i}", "alert_time": 910 - i, "update_time": 910 - i} for i in range(90)]}
         page3 = {"results": [{"id": f"3-{i}", "alert_time": 820 - i, "update_time": 820 - i} for i in range(20)]}
@@ -732,7 +855,7 @@ class TestFetchEventsCommand:
 
         assert len(events) == 200
 
-    def test_fetch_events_multiple_types(self, client, requests_mock):
+    def test_fetch_events_multiple_types(self, client, requests_mock, freezer):
         """
         Given:
             - Multiple event types configured
@@ -741,6 +864,7 @@ class TestFetchEventsCommand:
         Then:
             - Ensure events from all types are fetched
         """
+        freezer.move_to("2021-01-10T00:00:00Z")
         mock_behavior = {"results": [{"id": "1", "alert_time": 1609459200000, "update_time": 1609459200000}]}
         mock_addressable = {"results": [{"id": "2", "alert_time": 1609545600000, "update_time": 1609545600000}]}
 
@@ -757,7 +881,7 @@ class TestFetchEventsCommand:
         assert events[0]["_source_log_type"] == EVENT_TYPE_CONFIG[BEHAVIOR_ANALYTICS]["source_log_type"]
         assert events[1]["_source_log_type"] == EVENT_TYPE_CONFIG[ADDRESSABLE_ALERTS]["source_log_type"]
 
-    def test_fetch_events_no_new_events(self, client, requests_mock):
+    def test_fetch_events_no_new_events(self, client, requests_mock, freezer):
         """
         Given:
             - Last run with previous fetch time
@@ -767,6 +891,7 @@ class TestFetchEventsCommand:
         Then:
             - Ensure empty events list and updated next_run
         """
+        freezer.move_to("2021-01-10T00:00:00Z")
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
         requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", json={"results": []})
 
@@ -778,7 +903,7 @@ class TestFetchEventsCommand:
         assert len(events) == 0
         assert "last_fetch_BehaviorAnalytics" in next_run
 
-    def test_fetch_events_with_error(self, client, requests_mock, mocker, capfd):
+    def test_fetch_events_with_error(self, client, requests_mock, mocker, capfd, freezer):
         """
         Given:
             - API error during fetch
@@ -787,6 +912,7 @@ class TestFetchEventsCommand:
         Then:
             - Ensure error is handled and last_run is preserved
         """
+        freezer.move_to("2021-01-10T00:00:00Z")
         mocker.patch.object(client, "_get_cached_token", return_value=None)
 
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
