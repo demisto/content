@@ -87,11 +87,13 @@ configuration:
   required: false
 - display: Incident type
   name: incidentType
+  section: Collect
   required: false
   type: 13
 - display: Fetch incidents
   name: isFetch
   required: false
+  section: Collect
   type: 8
 description: 'Use Trend Micro Cloud App Security integration to protect against ransomware, phishing, malware, and unauthorized transmission of sensitive data for cloud applications, such as Microsoft 365, Box, Dropbox, Google G Suite and Salesforce.'
 display: Trend Micro Cloud App Security
@@ -582,7 +584,7 @@ script:
     - contextPath: TrendMicroCAS.BlockedList.urls
       description: A list of blocked URLs.
       type: String
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.7090913
   isfetch: true
   runonce: false
   script: '-'
