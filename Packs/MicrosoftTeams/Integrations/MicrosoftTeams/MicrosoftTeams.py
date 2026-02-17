@@ -129,6 +129,7 @@ class GraphPermissions(str, Enum):
     CHANNEL_CREATE = "Channel.Create"
     CHANNELMEMBER_READ_ALL = "ChannelMember.Read.All"
     CHANNELMEMBER_READWRITE_ALL = "ChannelMember.ReadWrite.All"
+    CHANNELMESSAGE_READ_ALL = "ChannelMessage.Read.All"
     CHANNELMESSAGE_SEND = "ChannelMessage.Send"
     CHAT_READ = "Chat.Read"
     CHAT_READBASIC = "Chat.ReadBasic"
@@ -204,6 +205,11 @@ COMMANDS_REQUIRED_PERMISSIONS: dict[str, dict[str, list[GraphPermissions]]] = {
         "microsoft-teams-chat-member-list": [Perms.USER_READ_ALL, Perms.CHAT_READBASIC],
         "microsoft-teams-chat-list": [Perms.USER_READ_ALL, Perms.CHAT_READBASIC],
         "microsoft-teams-chat-message-list": [Perms.USER_READ_ALL, Perms.CHAT_READ],
+        "microsoft-teams-list-messages": [
+            Perms.USER_READ_ALL,
+            Perms.CHAT_READ,
+            Perms.CHANNELMESSAGE_READ_ALL,
+        ],
         "microsoft-teams-chat-update": [Perms.USER_READ_ALL, Perms.CHAT_READWRITE],
         "microsoft-teams-message-update": [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
         "microsoft-teams-integration-health": [],
@@ -255,6 +261,7 @@ COMMANDS_REQUIRED_PERMISSIONS: dict[str, dict[str, list[GraphPermissions]]] = {
         "microsoft-teams-chat-member-list": [],
         "microsoft-teams-chat-list": [],
         "microsoft-teams-chat-message-list": [],
+        "microsoft-teams-list-messages": [Perms.CHANNELMESSAGE_READ_ALL],
         "microsoft-teams-chat-update": [],
         "microsoft-teams-message-update": [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
         "microsoft-teams-integration-health": [],
@@ -1142,23 +1149,21 @@ def integration_health():
 
 def validate_auth_header(headers: dict) -> bool:
     """
-    Validated authorization header provided in the bot activity object
+    Validates authorization header provided in the bot activity object.
+    Uses fail-close approach: returns True ONLY if ALL validations pass.
     :param headers: Bot activity headers
     :return: True if authorized, else False
     """
     parts: list = headers.get("Authorization", "").split(" ")
     if len(parts) != 2:
+        error_message = "Authorization header validation failed - invalid authorization header format"
+        demisto.info(error_message)
         return False
-    scehma: str = parts[0]
+    schema: str = parts[0]
     jwt_token: str = parts[1]
-    if scehma != "Bearer" or not jwt_token:
-        demisto.info("Authorization header validation - failed to verify schema")
-        return False
-
-    decoded_payload: dict = jwt.decode(jwt=jwt_token, options={"verify_signature": False})
-    issuer: str = decoded_payload.get("iss", "")
-    if issuer != "https://api.botframework.com":
-        demisto.info("Authorization header validation - failed to verify issuer")
+    if schema != "Bearer" or not jwt_token:
+        error_message = "Authorization header validation failed - failed to verify schema"
+        demisto.info(error_message)
         return False
 
     integration_context: dict = get_integration_context()
@@ -1181,24 +1186,28 @@ def validate_auth_header(headers: dict) -> bool:
             open_id_url: str = "https://login.botframework.com/v1/.well-known/openidconfiguration"
             response: requests.Response = requests.get(open_id_url, verify=USE_SSL, proxies=PROXIES)
             if not response.ok:
-                demisto.info(f"Authorization header validation failed to fetch open ID config - {response.reason}")
+                error_message = f"Authorization header validation failed to fetch open ID config - {response.reason}"
+                demisto.info(error_message)
                 return False
             response_json: dict = response.json()
             jwks_uri: str = response_json.get("jwks_uri", "")
             keys_response: requests.Response = requests.get(jwks_uri, verify=USE_SSL, proxies=PROXIES)
             if not keys_response.ok:
-                demisto.info(f"Authorization header validation failed to fetch keys - {response.reason}")
+                error_message = f"Authorization header validation failed to fetch keys - {response.reason}"
+                demisto.info(error_message)
                 return False
             keys_response_json: dict = keys_response.json()
             keys = keys_response_json.get("keys", [])
             open_id_metadata["keys"] = keys
         except ValueError:
-            demisto.info("Authorization header validation - failed to parse keys response")
+            error_message = "Authorization header validation failed - failed to parse keys response"
+            demisto.info(error_message)
             return False
 
     if not keys:
         # Didn't get new keys
-        demisto.info("Authorization header validation - failed to get keys")
+        error_message = "Authorization header validation failed - failed to get keys"
+        demisto.info(error_message)
         return False
 
     # Find requested key in new keys
@@ -1209,33 +1218,72 @@ def validate_auth_header(headers: dict) -> bool:
 
     if not key_object:
         # Didn't find requested key in new keys
-        demisto.info("Authorization header validation - failed to find relevant key")
+        error_message = "Authorization header validation failed - failed to find relevant key"
+        demisto.info(error_message)
         return False
 
     endorsements: list = key_object.get("endorsements", [])
     if not endorsements or "msteams" not in endorsements:
-        demisto.info("Authorization header validation - failed to verify endorsements")
+        error_message = "Authorization header validation failed - failed to verify endorsements"
+        demisto.info(error_message)
         return False
 
     public_key = RSAAlgorithm.from_jwk(json.dumps(key_object))
     public_key: RSAPublicKey = cast(RSAPublicKey, public_key)
 
+    # Enable comprehensive JWT validation (defense-in-depth)
     options = {
-        "verify_aud": False,
+        "verify_aud": True,
         "verify_exp": True,
-        "verify_signature": False,
+        "verify_iss": True,
+        "verify_signature": True,
     }
-    decoded_payload = jwt.decode(jwt_token, public_key, options=options)
-
-    audience_claim: str = decoded_payload.get("aud", "")
-    if audience_claim != BOT_ID:
-        demisto.debug(f"failed to verify audience_claim: {audience_claim} with BOT_ID: {BOT_ID}.")
-        demisto.info("Authorization header validation - failed to verify audience_claim")
+    try:
+        decoded_payload = jwt.decode(
+            jwt_token, public_key, algorithms=["RS256"], options=options, audience=BOT_ID, issuer="https://api.botframework.com"
+        )
+    except jwt.InvalidSignatureError:
+        error_message = "Authorization header validation failed - JWT signature verification failed"
+        demisto.info(error_message)
+        return False
+    except jwt.ExpiredSignatureError:
+        error_message = "Authorization header validation failed - JWT token has expired"
+        demisto.info(error_message)
+        return False
+    except jwt.InvalidAudienceError:
+        error_message = "Authorization header validation failed - Invalid audience claim"
+        demisto.info(error_message)
+        return False
+    except jwt.InvalidIssuerError:
+        error_message = "Authorization header validation failed - Invalid issuer claim"
+        demisto.info(error_message)
+        return False
+    except jwt.PyJWTError as e:
+        error_message = f"Authorization header validation failed - JWT validation error: {e}"
+        demisto.info(error_message)
         return False
 
-    integration_context["open_id_metadata"] = json.dumps(open_id_metadata)
-    set_integration_context(integration_context)
-    return True
+    # Explicit fail-close validation (defense-in-depth)
+    # Even though PyJWT validates these, we explicitly check as a second layer of security
+    audience_claim: str = decoded_payload.get("aud", "")
+    issuer_claim: str = decoded_payload.get("iss", "")
+
+    # Fail-close: ALL conditions must be satisfied for token to be valid
+    if audience_claim == BOT_ID and issuer_claim == "https://api.botframework.com":
+        # All validations passed - token is valid
+        integration_context["open_id_metadata"] = json.dumps(open_id_metadata)
+        set_integration_context(integration_context)
+        demisto.debug(f"JWT validation successful - aud={audience_claim}, iss={issuer_claim}")
+        return True
+
+    # Explicit failure - log details for security auditing
+    demisto.info(
+        f"JWT validation failed (fail-close check) - "
+        f"audience: expected={BOT_ID}, actual={audience_claim}, match={audience_claim == BOT_ID} | "
+        f"issuer: expected='https://api.botframework.com', actual={issuer_claim}, "
+        f"match={issuer_claim == 'https://api.botframework.com'} | "
+    )
+    return False
 
 
 """ COMMANDS + REQUESTS FUNCTIONS """
@@ -1509,6 +1557,21 @@ def get_messages_list(chat_id: str, odata_params: dict) -> dict[str, Any]:
     :return: The response body - collection of chatMessage objects.
     """
     url = f"{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/messages"
+    return cast(dict[str, Any], http_request("GET", url, params=odata_params))
+
+
+def get_channel_messages_list(team_id: str, channel_id: str, odata_params: dict, message_id: str = "") -> dict[str, Any]:
+    """
+    Retrieve the list of messages in a channel.
+    :param team_id: The team_id
+    :param channel_id: The channel_id
+    :param odata_params: The OData query parameters.
+    :param message_id: The message_id to get its replies.
+    :return: The response body - collection of chatMessage objects.
+    """
+    url = f"{GRAPH_BASE_URL}/v1.0/teams/{team_id}/channels/{channel_id}/messages"
+    if message_id:
+        url = f"{url}/{message_id}/replies"
     return cast(dict[str, Any], http_request("GET", url, params=odata_params))
 
 
@@ -1893,6 +1956,130 @@ def chat_message_list_command():
         outputs={
             "MicrosoftTeams(true)": {"MessageListNextLink": next_link},
             "MicrosoftTeams.ChatList(val.chatId && val.chatId === obj.chatId)": {"messages": messages_data, "chatId": chat_id},
+        },
+    )
+    return_results(result)
+
+
+def resolve_chat_or_channel(
+    chat_or_channel: str,
+    team_name: str,
+) -> tuple[str, str | None]:
+    """
+    Resolve whether the identifier refers to a chat or a channel.
+
+    Returns:
+        ("chat", chat_id) or ("channel", channel_id)
+
+    Raises:
+        ValueError if channel is intended but team is missing.
+    """
+    # First, try to resolve as channel if team_name is provided
+    if team_name:
+        try:
+            team_id = get_team_aad_id(team_name)
+            channel_id = get_channel_id(chat_or_channel, team_id, investigation_id=None)
+            demisto.debug(f"Resolved {chat_or_channel} as channel {channel_id} in team {team_name}.")
+            return "channel", channel_id
+        except Exception:
+            pass
+
+    # If not channel, try to resolve as chat
+    try:
+        if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW:
+            # Client Credentials flow cannot resolve chats, so we skip this check
+            pass
+        else:
+            chat_id, _ = get_chat_id_and_type(chat_or_channel, create_dm_chat=False)
+            if chat_id:
+                demisto.debug(f"Resolved {chat_or_channel} as chat.")
+                return "chat", chat_id
+    except Exception:
+        pass
+
+    error_message = "Failed to find chat or channel."
+    if not team_name:
+        error_message += " If you are trying to get messages from a channel, please provide the 'team_name'."
+    if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW:
+        error_message += " If you are trying to get messages from a chat, please use the Authorization Code flow."
+
+    raise DemistoException(error_message)
+
+
+def fetch_channel_messages(
+    channel_id: str,
+    team_name: str,
+    top: int,
+    message_id: str = "",
+) -> dict[str, Any]:
+    team_id = get_team_aad_id(team_name)
+    demisto.debug(f"Fetching messages from channel {channel_id} in team {team_name}.")
+    return get_channel_messages_list(
+        team_id=team_id,
+        channel_id=channel_id,
+        odata_params={"$top": top},
+        message_id=message_id,
+    )
+
+
+def list_messages_command():
+    """
+    Retrieve the list of messages in a chat or channel.
+    """
+    args = demisto.args()
+    chat_or_channel = args.get("conversation_id", "")
+    team_name = args.get("team_name", "")
+    message_id = args.get("message_id", "")
+    next_link = args.get("next_link", "")
+
+    limit = arg_to_number(args.get("limit")) or MAX_ITEMS_PER_RESPONSE
+    top = min(MAX_ITEMS_PER_RESPONSE, limit)
+    order_by = args.get("order_by", "lastModifiedDateTime")
+
+    if next_link:
+        messages_list_response = cast(dict[str, Any], http_request("GET", next_link))
+    else:
+        entity_type, resolved_id = resolve_chat_or_channel(chat_or_channel, team_name)
+        if not resolved_id:
+            raise ValueError(f"Could not resolve {chat_or_channel} as a valid chat or channel.")
+
+        if entity_type == "chat":
+            demisto.debug(f"Fetching messages from chat {resolved_id}.")
+            messages_list_response = get_messages_list(
+                chat_id=resolved_id,
+                odata_params={
+                    "$orderBy": f"{order_by} desc",
+                    "$top": top,
+                },
+            )
+        else:
+            messages_list_response = fetch_channel_messages(
+                channel_id=resolved_id,
+                team_name=team_name,
+                top=top,
+                message_id=message_id,
+            )
+
+    messages_data, next_link = pages_puller(messages_list_response, limit)
+
+    hr = [get_message_human_readable(message) for message in messages_data]
+    result = CommandResults(
+        readable_output=tableToMarkdown(f'Messages list in "{chat_or_channel}":', hr, url_keys=["webUrl"], removeNull=True)
+        + (
+            f"\nThere are more results than shown. "
+            f"For more data please enter the next_link argument:\n "
+            f"next_link={next_link}"
+            if next_link
+            else ""
+        ),
+        outputs_key_field="conversationId",
+        outputs={
+            "MicrosoftTeams(true)": {"MessagesListNextLink": next_link},
+            "MicrosoftTeams.MessagesList(val.conversationId && val.conversationId === obj.conversationId)": {
+                "messages": messages_data,
+                "conversationId": chat_or_channel,
+            },
+            "MicrosoftTeams.MessagesListMetadata": {"returned_count": len(messages_data), "filtered_count": limit},
         },
     )
     return_results(result)
@@ -3010,7 +3197,7 @@ def messages() -> Response:
         headers: dict = cast(dict[Any, Any], request.headers)
 
         if validate_auth_header(headers) is False:
-            demisto.info(f"Authorization header failed: {headers!s}")
+            return Response(response="Authorization header validation failed - JWT validation error", status=401)
         else:
             request_body: dict = request.json  # type: ignore[assignment]
             integration_context: dict = get_integration_context()
@@ -3594,6 +3781,7 @@ def main():  # pragma: no cover
         "microsoft-teams-token-permissions-list": token_permissions_list_command,
         "microsoft-teams-create-messaging-endpoint": create_messaging_endpoint_command,
         "microsoft-teams-message-update": message_update_command,
+        "microsoft-teams-list-messages": list_messages_command,
     }
 
     commands_auth_code: dict = {
@@ -3609,7 +3797,6 @@ def main():  # pragma: no cover
 
     """ EXECUTION """
     command: str = demisto.command()
-
     if command != "test-module":  # skipping test-module since it doesn't have integration context
         auth_type_switch_handling()  # handles auth type switch cases
 
