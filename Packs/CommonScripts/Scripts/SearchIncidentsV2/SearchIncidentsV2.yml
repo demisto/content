@@ -17,6 +17,7 @@ args:
   name: reason
 - description: Filter by from date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z).
   name: fromdate
+  defaultValue: "30 days ago"
 - description: Filter by to date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z).
   name: todate
 - description: Filter by from close date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z).
@@ -141,7 +142,7 @@ tags:
 - Utility
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.12.12.5490952
+dockerimage: demisto/python3:3.12.12.7090913
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
