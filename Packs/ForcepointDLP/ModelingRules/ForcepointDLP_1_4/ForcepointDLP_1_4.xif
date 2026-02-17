@@ -65,5 +65,4 @@ filter  _collector_source = "API"
         xdm.event.is_completed = if(uppercase(status) ~= "CLOSE|FALSE.POSITIVE", true, false),
         xdm.event.tags = arraycreate(`tag`),
         xdm.target.file.size=to_integer(transaction_size),
-        xdm.source.sent_packets=to_integer(violation_triggers),
         xdm.event.outcome = if(action in ("AUTHORIZED", "RELEASED", "AUDITED", "ENDPOINT_CONFIRM_CONTINUE"), XDM_CONST.OUTCOME_SUCCESS, action in ("QUARANTINED", "BLOCKED", "ENDPOINT_CONFIRM_ABORT"), XDM_CONST.OUTCOME_FAILED);

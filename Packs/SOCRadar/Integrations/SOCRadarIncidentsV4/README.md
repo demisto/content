@@ -292,7 +292,7 @@ Request assistance from SOCRadar analyst.
 
 ### Assignment & Organization
 
-#### `socradar-change-assignee`
+#### `socradar-add-assignee`
 
 Change alarm assignee(s).(User must be defined the same company)
 
@@ -305,7 +305,7 @@ Change alarm assignee(s).(User must be defined the same company)
 **Example:**
 
 ```
-!socradar-change-assignee alarm_id="81171696" user_emails="analyst1@company.com,analyst2@company.com"
+!socradar-add-assignee alarm_id="81171696" user_emails="analyst1@company.com,analyst2@company.com"
 ```
 
 #### `socradar-add-tag`
@@ -444,7 +444,7 @@ alarm_id = incident.get('dbotMirrorId')
 domain_info = incident.get('CustomFields', {}).get('socradarcontentdns_information')
 
 # Take action
-demisto.executeCommand('socradar-change-assignee', {
+demisto.executeCommand('socradar-add-assignee', {
     'alarm_id': alarm_id,
     'user_emails': 'legal@company.com'
 })
@@ -478,7 +478,7 @@ if company_id == "789":
 else:
     assign_to = "team-b@company.com"
 
-demisto.executeCommand('socradar-change-assignee', {
+demisto.executeCommand('socradar-add-assignee', {
     'alarm_id': incident.get('dbotMirrorId'),
     'user_emails': assign_to
 })
