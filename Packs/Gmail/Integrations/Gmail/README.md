@@ -795,6 +795,7 @@ Searches for Gmail records for a specific Google user.
 | Gmail.Attachments.Name | String | The email attachment name. |
 | Gmail.Headers | unknown | All headers of a specific email \(list\). |
 | Gmail.Mailbox | string | The email mailbox. |
+| GmailEmails.NextPageToken | string | Token used to get the next page of results. |
 | Email.To | String | The recipient of the email. |
 | Email.From | String | The sender of the email. |
 | Email.CC | String | The additional recipient email address \(CC\). |
