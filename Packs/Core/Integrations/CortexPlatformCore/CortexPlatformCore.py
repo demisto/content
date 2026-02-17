@@ -71,7 +71,7 @@ WEBAPP_COMMANDS = [
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
-ENDPOINT_COMMANDS = ["core-get-endpoint-support-file"]
+ENDPOINT_COMMANDS = ["core-get-endpoint-support-file", "core-perform-agent-heartbeat"]
 XSOAR_COMMANDS = ["core-run-playbook", "core-get-case-resolution-statuses"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
@@ -768,6 +768,20 @@ class Client(CoreClient):
             data=request_data,
             headers=self._headers,
             url_suffix="/retrieve_endpoint_tsf",
+        )
+
+    def perform_agent_heartbeat(self, json_data: dict) -> dict:
+        """
+        Perform agent heartbeat.
+        Args:
+            agent_id (str): The agent ID.
+        Returns:
+            dict: The response from the API.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/call_home/",
+            json_data=json_data,
         )
 
     def get_endpoint_update_version(self, request_data):
@@ -2933,6 +2947,38 @@ def get_endpoint_support_file_command(client: Client, args: dict) -> CommandResu
     )
 
 
+def perform_agent_heartbeat_command(client: Client, args: dict) -> CommandResults:
+    """
+    Perform agent heartbeat.
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - agent_id (str): The ID of the agent.
+    Returns:
+        CommandResults: Object containing the formatted output.
+    """
+    agent_id = args.get("agent_id")
+    if not agent_id:
+        raise ValueError("agent_id is required")
+
+    json_data = {
+        "request_data": {
+            "agent_id": agent_id,
+            "call_home_type": 6,
+        }
+    }
+
+    response = client.perform_agent_heartbeat(json_data)
+
+    return CommandResults(
+        readable_output=f"Heartbeat performed successfully for agent {agent_id}",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AgentHeartbeat",
+        outputs=response,
+        raw_response=response,
+    )
+
+
 def get_appsec_issues_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves application security issues based on specified filters across multiple issue types.
@@ -4648,6 +4694,9 @@ def main():  # pragma: no cover
 
         elif command == "core-get-endpoint-support-file":
             return_results(get_endpoint_support_file_command(client, args))
+
+        elif command == "core-perform-agent-heartbeat":
+            return_results(perform_agent_heartbeat_command(client, args))
 
         elif command == "core-list-exception-rules":
             return_results(list_exception_rules_command(client, args))
