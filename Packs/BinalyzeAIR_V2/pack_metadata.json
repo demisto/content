@@ -1,0 +1,21 @@
+{
+    "name": "Binalyze AIR_v2",
+    "description": "Binalyze AIR is the investigation automation platform transforming threat hunting and incident investigations",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Ceyhun CAMLI",
+    "url": "",
+    "email": "",
+    "created": "2026-02-17T13:47:06Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "c3-h2"
+    ]
+}
