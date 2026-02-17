@@ -221,7 +221,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### xdr-get-incidents (Deprecated)
 
 ***
-This command is deprecated please use xdr-case-list instead. Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
+This command is deprecated please use xdr-case-list instead. Returns a list of incidents, which you can filter by a list of incident IDs (max. 1000), the time the incident was last modified, and the time the incident was created.
 If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported.
 
 ##### Required Permissions
@@ -248,7 +248,7 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 | sort_by_modification_time | Sorts returned incidents by the date/time that the incident was last modified ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                    | Optional |
 | sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                          | Optional |
 | page | Page number (for pagination). The default is 0 (the first page). Default is 0.                                                                                                                                             | Optional |
-| limit | Maximum number of incidents to return per page. The default and maximum is 100. Default is 100.                                                                                                                            | Optional |
+| limit | Maximum number of incidents to return per page. The default is 100 and the maximum is 1000. Default is 100.                                                                                                                            | Optional |
 | status | Filters only incidents in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto, resolved_auto_resolve. | Optional |
 | starred | Whether the incident is starred (Boolean value: true or false). Possible values are: true, false.                                                                                                                          | Optional |
 | starred_incidents_fetch_window | Starred fetch window timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 3 days.                                                                                                              | Optional |

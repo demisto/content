@@ -4678,6 +4678,7 @@ def get_incidents_command(client, args):
 
     page = int(args.get("page", 0))
     limit = int(args.get("limit", 100))
+    limit = min(limit, 1000)
 
     # If no filters were given, return a meaningful error message
     if not incident_id_list and (
