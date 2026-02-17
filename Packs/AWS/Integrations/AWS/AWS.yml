@@ -9517,7 +9517,6 @@ script:
 
   - name: aws-ec2-fleet-modify
     description: Modifies the specified EC2 Fleet.
-    execution: true
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -9587,13 +9586,6 @@ script:
       predefined:
       - spot
       - on-demand
-    - name: context
-      description: Reserved.
-      required: false
-    outputs:
-    - contextPath: AWS.EC2.Fleet.Return
-      description: If the request succeeds, the response returns true. If the request fails, no response is returned, and instead an error message is returned.
-      type: boolean
 
   isfetch: false
   runonce: false
