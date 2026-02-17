@@ -243,6 +243,50 @@ def convert_datetimes_to_iso_safe(data):
     return json.loads(json_string)
 
 
+def aws_ec2_block_device_mapping_args_builder(args: Dict[str, Any]) -> Dict[str, Any]:
+    return {
+        "DeviceName": args.get("device_name"),
+        "Ebs": {
+            "Encrypted": arg_to_bool_or_none(args.get("ebs_encrypted")),
+            "DeleteOnTermination": arg_to_bool_or_none(args.get("ebs_delete_on_termination")),
+            "Iops": arg_to_number(args.get("ebs_iops")),
+            "KmsKeyId": args.get("ebs_kms_key_id"),
+            "SnapshotId": args.get("ebs_snapshot_id"),
+            "VolumeSize": arg_to_number(args.get("ebs_volume_size")),
+            "VolumeType": args.get("ebs_volume_type"),
+            "Throughput": arg_to_number(args.get("ebs_throughput")),
+        },
+        "NoDevice": args.get("block_device_mappings_no_device"),
+        "VirtualName": args.get("block_device_mappings_virtual_name"),
+    }
+
+
+def aws_ec2_fleet_command_launch_templates_config_args_builder(args: Dict[str, Any]) -> Dict[str, Any]:
+    return {
+        "LaunchTemplateSpecification": {
+            "LaunchTemplateId": args.get("launch_template_id"),
+            "LaunchTemplateName": args.get("launch_template_name"),
+            "Version": args.get("launch_template_version"),
+        },
+        "Overrides": {
+            "AvailabilityZone": args.get("availability_zone"),
+            "AvailabilityZoneId": args.get("availability_zone_id"),
+            "ImageId": args.get("image_id"),
+            "InstanceType": args.get("instance_type"),
+            "MaxPrice": args.get("max_price"),
+            "Placement": {
+                "GroupId": args.get("placement_group_id"),
+                "GroupName": args.get("placement_group_name"),
+            },
+            "Priority": arg_to_number(args.get("priority")),
+            "SubnetId": args.get("subnet_id"),
+            "WeightedCapacity": arg_to_number(args.get("weighted_capacity")),
+            "BlockDeviceMappings": aws_ec2_block_device_mapping_args_builder(args)
+        }
+    }
+
+
+
 class AWSErrorHandler:
     """
     Centralized error handling for AWS boto3 client errors.
@@ -3683,101 +3727,47 @@ class EC2:
             CommandResults: Results containing the created fleet ID
         """
 
-        kwargs: Dict[str, Any] = {
+        kwargs: Dict[str, Any] = remove_empty_elements({
             "ExcessCapacityTerminationPolicy": args.get("excess_capacity_termination_policy"),
+            "ReplaceUnhealthyInstances": arg_to_bool_or_none(args.get("replace_unhealthy_instances")),
             "TerminateInstancesWithExpiration": arg_to_bool_or_none(args.get("terminate_instances_with_expiration")),
             "Type": args.get("type"),
             "ValidFrom": args.get("valid_from"),
             "ValidUntil": args.get("valid_until"),
-            "ReplaceUnhealthyInstances": arg_to_bool_or_none(args.get("replace_unhealthy_instances")),
-            "SpotOptions": remove_empty_elements({
+            "LaunchTemplateConfigs": aws_ec2_fleet_command_launch_templates_config_args_builder(args),
+            "SpotOptions": {
                 "AllocationStrategy": args.get("spot_allocation_strategy"),
                 "InstanceInterruptionBehavior": args.get("instance_interruption_behavior"),
-                "InstancePoolsToUseCount": args.get("spot_single_instance_type"),
+                "InstancePoolsToUseCount": arg_to_number(args.get("instance_pools_to_use")),
                 "SingleInstanceType": arg_to_bool_or_none(args.get("spot_single_instance_type")),
                 "SingleAvailabilityZone": arg_to_bool_or_none(args.get("single_availability_zone")),
-                "MinTargetCapacity": arg_to_number(args.get("min_target_capacity"))
-            }),
-            "OnDemandOptions": remove_empty_elements({
+                "MinTargetCapacity": arg_to_number(args.get("min_target_capacity")),
+                "MaxTotalPrice": args.get("max_total_price"),
+            },
+            "OnDemandOptions": {
                 "AllocationStrategy": args.get("on_demand_allocation_strategy"),
                 "SingleInstanceType": arg_to_bool_or_none(args.get("on_demand_single_instance_type")),
                 "SingleAvailabilityZone": arg_to_bool_or_none(args.get("on_demand_single_availability_zone")),
                 "MinTargetCapacity": arg_to_number(args.get("on_demand_min_target_capacity")),
                 "MaxTotalPrice": args.get("on_demand_max_total_price"),
-            }),
-        }
-
-        launch_template_spec = remove_empty_elements({
-            "LaunchTemplateId": args.get("launch_template_id"),
-            "LaunchTemplateName": args.get("launch_template_name"),
-            "Version": args.get("launch_template_version")
-        })
-        if not launch_template_spec:
-            raise ValueError("Must specify either 'launch_template_id' or 'launch_template_name' parameter")
-
-        # Build overrides using more Pythonic approach
-        override_fields = {
-            "override_instance_type": ("InstanceType", str),
-            "override_max_price": ("MaxPrice", str),
-            "override_subnet_id": ("SubnetId", str),
-            "override_availability_zone": ("AvailabilityZone", str),
-            "override_weighted_capacity": ("WeightedCapacity", int),
-            "override_priority": ("Priority", int),
-        }
-
-        # Collect all override values as lists with their types
-        override_data = {
-            api_name: (argToList(args.get(arg_name)), value_type)
-            for arg_name, (api_name, value_type) in override_fields.items()
-            if args.get(arg_name)
-        }
-
-        # Determine maximum number of overrides needed
-        max_overrides = max((len(values) for values, _ in override_data.values()), default=0)
-
-        # Build override objects using list comprehension
-        overrides = [
-            remove_empty_elements({
-                api_name: arg_to_number(values[i]) if value_type == int else values[i]
-                for api_name, (values, value_type) in override_data.items()
-                if i < len(values)
-            })
-            for i in range(max_overrides)
-        ]
-
-        # Build launch template configuration
-        kwargs["LaunchTemplateConfigs"] = [remove_empty_elements({
-            "LaunchTemplateSpecification": launch_template_spec,
-            "Overrides": overrides
-        })]
-
-        # Build target capacity specification
-        kwargs["TargetCapacitySpecification"] = remove_empty_elements({
-            "TotalTargetCapacity": arg_to_number(args.get("total_target_capacity")),
-            "OnDemandTargetCapacity": arg_to_number(args.get("on_demand_target_capacity")),
-            "SpotTargetCapacity": arg_to_number(args.get("spot_target_capacity")),
-            "DefaultTargetCapacityType": args.get("default_target_capacity_type"),
+                "CapacityReservationOptions": {"UsageStrategy": args.get("capacity_reservation_strategy")}
+            },
+            "TargetCapacitySpecification": {
+                "TotalTargetCapacity": arg_to_number(args.get("target_capacity")),
+                "DefaultTargetCapacityType": args.get("target_capacity_type"),
+                "OnDemandTargetCapacity": arg_to_number(args.get("on_demand_target_capacity")),
+                "SpotTargetCapacity": arg_to_number(args.get("spot_target_capacity")),
+                "TargetCapacityUnitType": args.get("target_capacity_unit"),
+            },
+            "TagSpecifications": [{"ResourceType": "fleet", "Tags": parse_tag_field(args.get("tags", ""))}]
         })
 
-        # Parse and add tag specifications if provided
-        if tags := args.get("tags"):
-            kwargs["TagSpecifications"] = [
-                {"ResourceType": resource_type, "Tags": parse_tag_field(tags_str)}
-                for tag_spec_str in tags.split("#")
-                if ":" in tag_spec_str
-                for resource_type, tags_str in [tag_spec_str.split(":", 1)]
-            ]
-
-        # Clean up None values and execute API call
-        kwargs = remove_empty_elements(kwargs)
         print_debug_logs(client, f"Creating fleet with parameters: {kwargs}")
-
         response = client.create_fleet(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        # Serialize and prepare response
         response = serialize_response_with_datetime_encoding(response)
         outputs = {k: v for k, v in response.items() if k != "ResponseMetadata"}
 
@@ -3977,14 +3967,7 @@ class EC2:
                 "DefaultTargetCapacityType": args.get("default_target_capacity_type"),
                 "TargetCapacityUnitType": args.get("target_capacity_unit"),
             },
-            "LaunchTemplateConfig": {
-                "LaunchTemplateSpecification": {
-                    "LaunchTemplateId": args.get("launch_template_id"),
-                    "LaunchTemplateName": args.get("launch_template_name"),
-                    "Version": args.get("launch_template_version")
-                },
-                "Overrides": ""
-            }
+            "LaunchTemplateConfig": aws_ec2_fleet_command_launch_templates_config_args_builder(args)
         })
 
         print_debug_logs(client, f"Modifying fleet with parameters: {kwargs}")
