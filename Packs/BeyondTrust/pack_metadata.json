@@ -1,0 +1,19 @@
+{
+    "name": "BeyondTrust",
+    "description": "BeyondTrust Privilege Management Cloud (PM Cloud) integration for retrieving audit events and activity logs.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.beyondtrust.com/",
+    "email": "",
+    "categories": [
+        "Endpoint"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}
