@@ -134,6 +134,8 @@ class ServiceNowClient(BaseClient):
             "password": password,
             "grant_type": "password",
         }
+
+        print(data)
         try:
             headers = {"Content-Type": "application/x-www-form-urlencoded"}
             res = super()._http_request(method="POST", url_suffix=OAUTH_URL, resp_type="response", headers=headers, data=data)

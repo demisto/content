@@ -185,7 +185,7 @@ def test_force_default_url_arg(mocker: MockerFixture, requests_mock: MockerCore)
         return_value={
             "isFetch": True,
             "url": url,
-            "oauth_credentials": {
+            "credentials": {
                 "identifier": "identifier",
                 "password": "password",
             },
@@ -1454,7 +1454,7 @@ def test_incident_name_is_initialized(mocker, requests_mock):
         return_value={
             "isFetch": True,
             "url": url,
-            "oauth_credentials": {
+            "credentials": {
                 "identifier": "identifier",
                 "password": "password",
             },
@@ -1657,7 +1657,7 @@ def test_oauth_authentication(mocker, requests_mock):
         "params",
         return_value={
             "url": url,
-            "oauth_credentials": {"identifier": "client_id", "password": "client_secret"},
+            "credentials": {"identifier": "client_id", "password": "client_secret"},
             "use_oauth": True,
             "file_tag_from_service_now": "FromServiceNow",
             "file_tag": "ForServiceNow",
@@ -4020,7 +4020,7 @@ def test_client_jwt_param_usage(mocker):
 
 
 class TestCredentialFlowEndToEnd:
-    """End-to-end tests for the new basic_credentials / oauth_credentials flow in ServiceNowv2 main()."""
+    """End-to-end tests for the new basic_credentials / credentials flow in ServiceNowv2 main()."""
 
     BASE_PARAMS = {
         "url": "https://test.service-now.com",
@@ -4051,7 +4051,7 @@ class TestCredentialFlowEndToEnd:
         params = {
             **self.BASE_PARAMS,
             "basic_credentials": {"identifier": "basic_user", "password": "basic_pass"},
-            "oauth_credentials": {"identifier": "oauth_id", "password": "oauth_secret"},
+            "credentials": {"identifier": "oauth_id", "password": "oauth_secret"},
         }
         mocker.patch.object(demisto, "params", return_value=params)
         mocker.patch.object(demisto, "command", return_value="test-module")
@@ -4074,18 +4074,18 @@ class TestCredentialFlowEndToEnd:
         """
         Given:
             - basic_credentials param is empty (no username/password).
-            - oauth_credentials param has identifier and password.
+            - credentials param has identifier and password.
             - OAuth is not enabled.
         When:
             - main() is called with the 'test-module' command.
         Then:
-            - The request uses basic auth with legacy fallback from oauth_credentials.
+            - The request uses basic auth with legacy fallback from credentials.
         """
         url = "https://test.service-now.com"
         params = {
             **self.BASE_PARAMS,
             "basic_credentials": {},
-            "oauth_credentials": {"identifier": "legacy_user", "password": "legacy_pass"},
+            "credentials": {"identifier": "legacy_user", "password": "legacy_pass"},
         }
         mocker.patch.object(demisto, "params", return_value=params)
         mocker.patch.object(demisto, "command", return_value="test-module")
@@ -4104,11 +4104,11 @@ class TestCredentialFlowEndToEnd:
         assert "Basic" in auth
         return_outputs_mock.assert_called_once()
 
-    def test_oauth_uses_oauth_credentials_for_client_id_secret(self, mocker, requests_mock):
+    def test_oauth_uses_credentials_for_client_id_secret(self, mocker, requests_mock):
         """
         Given:
             - use_oauth is True.
-            - oauth_credentials provides client_id (identifier) and client_secret (password).
+            - credentials provides client_id (identifier) and client_secret (password).
         When:
             - main() is called with the 'servicenow-oauth-test' command.
         Then:
@@ -4119,7 +4119,7 @@ class TestCredentialFlowEndToEnd:
             **self.BASE_PARAMS,
             "use_oauth": True,
             "basic_credentials": {"identifier": "basic_user", "password": "basic_pass"},
-            "oauth_credentials": {"identifier": "my_client_id", "password": "my_client_secret"},
+            "credentials": {"identifier": "my_client_id", "password": "my_client_secret"},
         }
         mocker.patch.object(demisto, "params", return_value=params)
         mocker.patch.object(demisto, "command", return_value="servicenow-oauth-test")
@@ -4150,7 +4150,7 @@ class TestCredentialFlowEndToEnd:
             "use_jwt": True,
             "use_oauth": True,
             "basic_credentials": {},
-            "oauth_credentials": {"identifier": "id", "password": "secret"},
+            "credentials": {"identifier": "id", "password": "secret"},
         }
         mocker.patch.object(demisto, "params", return_value=params)
         mocker.patch.object(demisto, "command", return_value="test-module")
@@ -4162,18 +4162,18 @@ class TestCredentialFlowEndToEnd:
         """
         Given:
             - basic_credentials has username but no password.
-            - oauth_credentials has identifier and password.
+            - credentials has identifier and password.
             - OAuth is not enabled.
         When:
             - main() is called with the 'test-module' command.
         Then:
-            - The Client falls back to oauth_credentials for both username and password.
+            - The Client falls back to credentials for both username and password.
         """
         url = "https://test.service-now.com"
         params = {
             **self.BASE_PARAMS,
             "basic_credentials": {"identifier": "partial_user", "password": ""},
-            "oauth_credentials": {"identifier": "fallback_user", "password": "fallback_pass"},
+            "credentials": {"identifier": "fallback_user", "password": "fallback_pass"},
         }
         mocker.patch.object(demisto, "params", return_value=params)
         mocker.patch.object(demisto, "command", return_value="test-module")
@@ -4186,7 +4186,7 @@ class TestCredentialFlowEndToEnd:
 
         main()
 
-        # Verify basic auth was used (fallback to oauth_credentials)
+        # Verify basic auth was used (fallback to credentials)
         assert requests_mock.called
         auth = requests_mock.request_history[0].headers.get("Authorization", "")
         assert "Basic" in auth

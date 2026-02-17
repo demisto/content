@@ -26,7 +26,7 @@ configuration:
   section: Connect
 - display: Client ID/JWT Audience (aud)
   displaypassword: Client Secret
-  name: oauth_credentials
+  name: credentials
   type: 9
   required: false
   section: Connect

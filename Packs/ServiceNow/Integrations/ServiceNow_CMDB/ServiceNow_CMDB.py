@@ -553,7 +553,7 @@ def main() -> None:
     username = basic_auth_creds.get("identifier", "")
     password = basic_auth_creds.get("password", "")
 
-    oauth_creds = params.get("oauth_credentials", {})
+    oauth_creds = params.get("credentials", {})
 
     try:
         # use jwt only with OAuth
