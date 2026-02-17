@@ -32,13 +32,6 @@ In order to use the CrowdStrike Falcon integration, the API client and secret mu
 
 - When encountering HTTP 429 response error code from CrowdStrike Falcon, use an engine as explained in this [link](<~XSIAM> https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Engines </~XSIAM> <~XSOAR> https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Engines </~XSOAR>).
 
-### Fetch Assets
-
-- Integration supports **fetch-assets** option. CrowdStrike Falcon assets and vulnerabilities can be fetched and ingest into XSIAM Unified Asset Inventory.
-Supported asset types include:
-  - Spotlight
-  - CNAPP Alerts
-
 
 <~XSOAR>
 
@@ -56,3 +49,10 @@ Optional types are:
   - Third Party Detection
   Records from the detection endpoint of the *CrowdStrike Falcon* UI could be of types: Endpoint Detection and OFP Detection.
 </~XSOAR>
+
+### Fetch Assets
+
+- Integration supports **fetch-assets** option. CrowdStrike Falcon assets and vulnerabilities can be fetched and ingest into XSIAM Unified Asset Inventory.
+Supported asset types include:
+  - Spotlight
+  - CNAPP Alerts
