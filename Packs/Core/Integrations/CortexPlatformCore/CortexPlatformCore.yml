@@ -2488,11 +2488,11 @@ script:
       - cloud_runtime_security
       - xsiam
       - edr
-    - name: core-perform-agent-heartbeat
-      description: Perform agent heartbeat.
+    - name: core-perform-endpoint-heartbeat
+      description: Perform endpoint heartbeat.
       arguments:
-        - name: agent_id
-          description: The ID of the agent.
+        - name: endpoint_id
+          description: The ID of the endpoint.
           required: true
       outputs: []
     - name: core-update-case
