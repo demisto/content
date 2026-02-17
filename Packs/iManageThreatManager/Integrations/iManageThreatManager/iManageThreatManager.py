@@ -539,6 +539,11 @@ def _fetch_events_with_pagination(
             demisto.debug(f"Received {original_batch_size} events (less than page_size {page_size}), no more events available")
             break
 
+        # If batch is empty after deduplication, stop pagination
+        if not batch:
+            demisto.debug("Batch is empty after deduplication, stopping pagination")
+            break
+
         # Move the end_time cursor backward to the oldest event in this batch
         # This excludes already-fetched events from the next request
         # Since events are sorted newest first, batch[-1] is the oldest event in this page

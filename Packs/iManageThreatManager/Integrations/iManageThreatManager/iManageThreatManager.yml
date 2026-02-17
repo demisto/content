@@ -57,8 +57,7 @@ configuration:
   - display: Maximum number of events per type
     name: max_events_per_type
     defaultvalue: "900"
-    additionalinfo: Default and maximum is 900 events to fetch for each type. The page_size limit of 90 is applied only to Behavior Analytics alerts. It is not enforced for Addressable Alerts and Detect And Protect Alerts.
-    required: false
+    additionalinfo: Default and maximum is 900 events to fetch for each type.
     type: 0
     section: Collect
 description: iManage Threat Manager uses modern techniques including machine learning and user Behavior Analytics to protect privileged information against internal and external threat actors.

@@ -1,3 +1,7 @@
+## iManage Threat Manager
+
+Fetch and manage security alerts from iManage Threat Manager.
+
 ## Authentication and Authorization
 
 Application tokens are used to validate both the authentication and privilege levels. The application token is used when sending a sign-in request, and an access token is generated in response.
