@@ -3691,7 +3691,7 @@ script:
     - contextPath: GitHub.File.deleted
       description: True if the file was deleted.
       type: boolean
-  dockerimage: demisto/auth-utils:1.0.0.5633969
+  dockerimage: demisto/auth-utils:1.0.0.6111183
   isfetch: true
   runonce: false
   script: '-'
