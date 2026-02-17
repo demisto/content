@@ -91,7 +91,7 @@ Gets a list of endpoints, according to the passed filters. If there are no filte
 | last_seen_lte | All the agents that were last seen before {last_seen_lte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional |
 | page | Page number (for pagination). The default is 0 (the first page). Default is 0. | Optional |
 | limit | Maximum number of endpoints to return per page. The default and maximum is 30. Default is 30. | Optional |
-| sort_by | Specifies whether to sort endpoints by the first time or last time they were seen. Can be "first_seen" or "last_seen". Possible values are: first_seen, last_seen. | Optional |
+| sort_by | Sorts the endpoints by the selected field. Possible values are: first_seen, last_seen, endpoint_id. | Optional |
 | sort_order | The order by which to sort results. Can be "asc" (ascending) or "desc" ( descending). Default set to asc. Possible values are: asc, desc. Default is asc. | Optional |
 | status | A comma-separated list of endpoints statuses to filter. Possible values are: connected, disconnected, lost, uninstalled. | Optional |
 | username | The usernames to query for, accepts a single user, or comma-separated list of usernames. | Optional |

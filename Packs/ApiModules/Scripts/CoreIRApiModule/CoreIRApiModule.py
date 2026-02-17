@@ -2459,7 +2459,7 @@ def get_endpoints_command(client, args):
         context[Common.Account.CONTEXT_PATH] = account_context
 
     return CommandResults(
-        readable_output=tableToMarkdown("Endpoints", endpoints, removeNull=True), outputs=context, raw_response=endpoints
+        readable_output=tableToMarkdown("Endpoints", endpoints, headers=["endpoint_id","assigned_extensions_policy","last_seen","first_seen"],removeNull=True), outputs=context, raw_response=endpoints
     )
 
 
