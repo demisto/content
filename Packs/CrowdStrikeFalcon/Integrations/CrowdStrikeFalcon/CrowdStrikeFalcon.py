@@ -6524,6 +6524,7 @@ def process_ngsiem_search_completion(response: dict, args: dict) -> PollResult:
         demisto.debug(f"Returned {len(events)} results from NGSIEM search")
 
         hr_keys = ["id", "event_simpleName", "user.name", "host.hostname", "timestamp"]
+
         def header_transform(header: str) -> str:
             return header.replace("_", " ").replace(".", " ").title()
 
