@@ -239,6 +239,11 @@ configuration:
 - additionalinfo: 'Define how to close the mirrored incidents from Cortex XSOAR into Defender with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Cortex XSOAR close reason}={Defender close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Defender. Not following this format will result in closing the incident with a default close reason. Example: "Resolved=Other,Duplicate=Other". Refer to ../README.md for possible close-reasons - `Defender Incident Mirroring`.'
   name: custom_xsoar_to_defender_close_reason_mapping
   type: 0
+  section: Collect
+  advanced: true
+  hidden:
+  - marketplacev2
+  - platform
   required: false
   display: Custom close-reason mapping (XSOAR -> Defender mirrored incident)
 - additionalinfo: 'Define how to close the mirrored incidents from Defender into Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Defender close reason}={Cortex XSOAR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Defender. Not following this format will result in closing the incident with a default close reason. Example: “Known Issue=Resolved, Duplicate Incident=Other". Refer to ../README.md for possible close-reasons - `Defender Incident Mirroring`.'
