@@ -1,4 +1,5 @@
 import pytest
+from freezegun import freeze_time
 from iManageThreatManager import (
     Client,
     get_events_command,
@@ -677,7 +678,8 @@ class TestClient:
 class TestTestModuleCommand:
     """Tests for test_module_command function"""
 
-    def test_test_module_success_behavior_analytics(self, client, requests_mock, freezer):
+    @freeze_time("2021-01-10T00:00:00Z")
+    def test_test_module_success_behavior_analytics(self, client, requests_mock):
         """
         Given:
             - Valid client with token and secret
@@ -689,14 +691,14 @@ class TestTestModuleCommand:
         """
         from iManageThreatManager import test_module_command
 
-        freezer.move_to("2021-01-10T00:00:00Z")
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
         requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", json={"results": []})
 
         result = test_module_command(client, {}, [BEHAVIOR_ANALYTICS])
         assert result == "ok"
 
-    def test_test_module_success_addressable_alerts(self, client, requests_mock, freezer):
+    @freeze_time("2021-01-10T00:00:00Z")
+    def test_test_module_success_addressable_alerts(self, client, requests_mock):
         """
         Given:
             - Valid client with username and password
@@ -708,7 +710,6 @@ class TestTestModuleCommand:
         """
         from iManageThreatManager import test_module_command
 
-        freezer.move_to("2021-01-10T00:00:00Z")
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login", json={"access_token": "user_token"})
         requests_mock.post(f"{BASE_URL}/tm-api/getAddressableAlerts", json={"results": []})
 
@@ -744,7 +745,8 @@ class TestTestModuleCommand:
 class TestGetEventsCommand:
     """Tests for get_events_command function"""
 
-    def test_get_events_command_behavior_analytics(self, client, requests_mock, freezer):
+    @freeze_time("2021-01-10T00:00:00Z")
+    def test_get_events_command_behavior_analytics(self, client, requests_mock):
         """
         Given:
             - Valid client and Behavior Analytics event type
@@ -753,7 +755,6 @@ class TestGetEventsCommand:
         Then:
             - Ensure events are returned
         """
-        freezer.move_to("2021-01-10T00:00:00Z")
         mock_response = {"results": [{"id": "1", "alert_time": 1609459200000, "update_time": 1609459200000}]}
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
         requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", json=mock_response)
@@ -762,7 +763,8 @@ class TestGetEventsCommand:
         assert len(events) == 1
         assert events[0]["id"] == "1"
 
-    def test_get_events_command_with_pagination(self, client, requests_mock, freezer):
+    @freeze_time("2021-01-10T00:00:00Z")
+    def test_get_events_command_with_pagination(self, client, requests_mock):
         """
         Given:
             - Limit of 150 events
@@ -772,7 +774,6 @@ class TestGetEventsCommand:
         Then:
             - Ensure all events are fetched via pagination
         """
-        freezer.move_to("2021-01-10T00:00:00Z")
         page1 = {"results": [{"id": f"1-{i}", "alert_time": 1000 - i} for i in range(90)]}
         page2 = {"results": [{"id": f"2-{i}", "alert_time": 910 - i} for i in range(60)]}
 
@@ -793,7 +794,8 @@ class TestGetEventsCommand:
 class TestFetchEventsCommand:
     """Tests for fetch_events_command function"""
 
-    def test_fetch_events_first_run(self, client, requests_mock, freezer):
+    @freeze_time("2021-01-10T00:00:00Z")
+    def test_fetch_events_first_run(self, client, requests_mock):
         """
         Given:
             - Empty last_run (first fetch)
@@ -803,10 +805,8 @@ class TestFetchEventsCommand:
         Then:
             - Ensure events are fetched and next_run is set correctly
         """
-        # Freeze time to a known value (2021-01-10 00:00:00 UTC = 1610236800000 ms)
-        freezer.move_to("2021-01-10T00:00:00Z")
-
-        mock_response = {"results": [{"id": "1", "alert_time": 1609459200000, "update_time": 1609459200000}]}
+        # Frozen time: 2021-01-10 00:00:00 UTC = 1610236800000 ms
+        mock_response = {"results": [{"id": "1", "alert_time": 1610200000000, "update_time": 1610200000000}]}
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
         requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", json=mock_response)
 
@@ -817,9 +817,10 @@ class TestFetchEventsCommand:
         assert len(events) == 1
         assert events[0]["_source_log_type"] == EVENT_TYPE_CONFIG[BEHAVIOR_ANALYTICS]["source_log_type"]
         assert "last_fetch_BehaviorAnalytics" in next_run
-        assert next_run["last_fetch_BehaviorAnalytics"] == 1609459200000
+        assert next_run["last_fetch_BehaviorAnalytics"] == 1610200000000
 
-    def test_fetch_events_with_pagination(self, client, requests_mock, freezer):
+    @freeze_time("2021-01-10T00:00:00Z")
+    def test_fetch_events_with_pagination(self, client, requests_mock):
         """
         Given:
             - max_events_per_type of 200
@@ -829,7 +830,6 @@ class TestFetchEventsCommand:
         Then:
             - Ensure pagination is used to fetch all events
         """
-        freezer.move_to("2021-01-10T00:00:00Z")
         page1 = {"results": [{"id": f"1-{i}", "alert_time": 1000 - i, "update_time": 1000 - i} for i in range(90)]}
         page2 = {"results": [{"id": f"2-{i}", "alert_time": 910 - i, "update_time": 910 - i} for i in range(90)]}
         page3 = {"results": [{"id": f"3-{i}", "alert_time": 820 - i, "update_time": 820 - i} for i in range(20)]}
@@ -855,7 +855,8 @@ class TestFetchEventsCommand:
 
         assert len(events) == 200
 
-    def test_fetch_events_multiple_types(self, client, requests_mock, freezer):
+    @freeze_time("2021-01-10T00:00:00Z")
+    def test_fetch_events_multiple_types(self, client, requests_mock):
         """
         Given:
             - Multiple event types configured
@@ -864,7 +865,6 @@ class TestFetchEventsCommand:
         Then:
             - Ensure events from all types are fetched
         """
-        freezer.move_to("2021-01-10T00:00:00Z")
         mock_behavior = {"results": [{"id": "1", "alert_time": 1609459200000, "update_time": 1609459200000}]}
         mock_addressable = {"results": [{"id": "2", "alert_time": 1609545600000, "update_time": 1609545600000}]}
 
@@ -881,7 +881,8 @@ class TestFetchEventsCommand:
         assert events[0]["_source_log_type"] == EVENT_TYPE_CONFIG[BEHAVIOR_ANALYTICS]["source_log_type"]
         assert events[1]["_source_log_type"] == EVENT_TYPE_CONFIG[ADDRESSABLE_ALERTS]["source_log_type"]
 
-    def test_fetch_events_no_new_events(self, client, requests_mock, freezer):
+    @freeze_time("2021-01-10T00:00:00Z")
+    def test_fetch_events_no_new_events(self, client, requests_mock):
         """
         Given:
             - Last run with previous fetch time
@@ -891,7 +892,6 @@ class TestFetchEventsCommand:
         Then:
             - Ensure empty events list and updated next_run
         """
-        freezer.move_to("2021-01-10T00:00:00Z")
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
         requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", json={"results": []})
 
@@ -903,7 +903,8 @@ class TestFetchEventsCommand:
         assert len(events) == 0
         assert "last_fetch_BehaviorAnalytics" in next_run
 
-    def test_fetch_events_with_error(self, client, requests_mock, mocker, capfd, freezer):
+    @freeze_time("2021-01-10T00:00:00Z")
+    def test_fetch_events_with_error(self, client, requests_mock, mocker, capfd):
         """
         Given:
             - API error during fetch
@@ -912,7 +913,6 @@ class TestFetchEventsCommand:
         Then:
             - Ensure error is handled and last_run is preserved
         """
-        freezer.move_to("2021-01-10T00:00:00Z")
         mocker.patch.object(client, "_get_cached_token", return_value=None)
 
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
