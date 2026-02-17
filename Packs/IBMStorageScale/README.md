@@ -57,7 +57,7 @@ This can typically be done during user creation or by modifying the user's prope
 
 This integration collects data from the following IBM Storage Scale API endpoint:
 
-* `GET /scalemgmt/v2/cliauditlog`
+- `GET /scalemgmt/v2/cliauditlog`
 
 For more information, see the official API documentation: [cliauditlog GET](https://www.ibm.com/docs/en/storage-scale/latest/rest-api-reference/cliauditlog_get.html).
 
@@ -65,8 +65,8 @@ For more information, see the official API documentation: [cliauditlog GET](http
 
 To achieve high throughput, the integration does not fetch event pages sequentially. Instead, it uses an asynchronous producer-consumer model:
 
-* A **producer** task discovers the URLs for subsequent pages of events.
-* A pool of **consumer** tasks concurrently fetches the data from those URLs.
+- A **producer** task discovers the URLs for subsequent pages of events.
+- A pool of **consumer** tasks concurrently fetches the data from those URLs.
 
 This allows the integration to overlap network requests, significantly reducing the time it takes to collect a large volume of events compared to traditional, one-at-a-time fetching.
 
@@ -74,9 +74,9 @@ This allows the integration to overlap network requests, significantly reducing 
 
 IBM Storage Scale's `entryTime` values are matched using a regular-expression filter constructed by the integration. To ensure the filter aligns with how timestamps are stored on the server, you can set the "Server Timezone" parameter. The integration:
 
-* Stores all internal timestamps (like last run) in UTC.
-* Converts the fetch time window into the configured server timezone when constructing the `entryTime` regex filter.
-* Supports both IANA timezone names and fixed numeric offsets.
+- Stores all internal timestamps (like last run) in UTC.
+- Converts the fetch time window into the configured server timezone when constructing the `entryTime` regex filter.
+- Supports both IANA timezone names and fixed numeric offsets.
 
 If no timezone is provided, the integration defaults to UTC.
 
@@ -154,12 +154,12 @@ This command has no arguments.
 
 ## Troubleshooting
 
-* **Authorization Error**: If you receive an authorization error (e.g., 401 or 403 status code), verify that the provided username and password are correct and that the user has been assigned the **ProtocolAdmin** role.
+- **Authorization Error**: If you receive an authorization error (e.g., 401 or 403 status code), verify that the provided username and password are correct and that the user has been assigned the **ProtocolAdmin** role.
 
-* **Connection Error**: If the integration cannot connect to the server, ensure the **Server URL** is correct, accessible from the XSIAM engine, and that there are no firewalls blocking the connection.
+- **Connection Error**: If the integration cannot connect to the server, ensure the **Server URL** is correct, accessible from the XSIAM engine, and that there are no firewalls blocking the connection.
 
-* **Certificate Validation Error**: If you see an SSL/TLS error, it means the XSIAM engine does not trust the certificate presented by the API server. For production environments, the best practice is to import the server's root CA certificate into the XSIAM trusted certificate store. As a temporary or non-production workaround, you can select the **Trust any certificate (not secure)** option.
+- **Certificate Validation Error**: If you see an SSL/TLS error, it means the XSIAM engine does not trust the certificate presented by the API server. For production environments, the best practice is to import the server's root CA certificate into the XSIAM trusted certificate store. As a temporary or non-production workaround, you can select the **Trust any certificate (not secure)** option.
 
-* **Fetch Cycle Reached Limit**: If you see a log message stating "Fetch cycle reached the event limit," it means there were more events on the server than the `Maximum number of events per fetch` value. The collector will pick up where it left off on the next cycle. If this message appears frequently, consider increasing the `max_fetch` parameter or decreasing the fetch interval.
+- **Fetch Cycle Reached Limit**: If you see a log message stating "Fetch cycle reached the event limit," it means there were more events on the server than the `Maximum number of events per fetch` value. The collector will pick up where it left off on the next cycle. If this message appears frequently, consider increasing the `max_fetch` parameter or decreasing the fetch interval.
 
 </~XSIAM>
