@@ -21,7 +21,6 @@ from slack_sdk.models.blocks import (
     PlainTextInputElement,
 )
 from slack_sdk.models.views import View
-from slack_sdk.web.slack_response import SlackResponse
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CortexAssistantApiModule import *
@@ -168,15 +167,18 @@ def create_rich_cell(text: str) -> dict:
     Creates a Slack table cell with rich text formatting support.
 
     Determines whether to use raw_text (for plain text) or rich_text_section
-    (for formatted text with bold, italic, links, etc.).
+    (for formatted text with bold, italic, etc.).
+
+    Note: Slack table cells do NOT support link elements inside rich_text_section.
+    If a cell contains a link, we fall back to raw_text to avoid invalid_blocks errors.
 
     Args:
         text: Cell content (may contain markdown formatting)
 
     Returns:
         Slack table cell dictionary:
-        - {"type": "raw_text", "text": "..."} for plain text
-        - {"type": "rich_text_section", "elements": [...]} for formatted text
+        - {"type": "raw_text", "text": "..."} for plain text or text with links
+        - {"type": "rich_text_section", "elements": [...]} for formatted text (bold, italic, etc.)
 
     Example:
         >>> create_rich_cell("Plain text")
@@ -184,17 +186,26 @@ def create_rich_cell(text: str) -> dict:
 
         >>> create_rich_cell("**Bold** text")
         {"type": "rich_text_section", "elements": [...]}
+
+        >>> create_rich_cell("https://example.com")
+        {"type": "raw_text", "text": "https://example.com"}
     """
     elements = parse_to_rich_text_elements(text)
 
-    # Check if any element has styling or is a link
-    has_rich_features = any(e.get("style") or e.get("type") == "link" for e in elements)
+    # Check if any element is a link - Slack table cells don't support link elements
+    has_links = any(e.get("type") == "link" for e in elements)
+    if has_links:
+        # Fall back to raw_text for cells with links (Slack limitation)
+        return {"type": "raw_text", "text": text if text else " "}
+
+    # Check if any element has styling (bold, italic, code, etc.)
+    has_rich_features = any(e.get("style") for e in elements)
 
     if not has_rich_features:
         # Use raw_text for better performance with plain text
         return {"type": "raw_text", "text": text if text else " "}
 
-    # Use rich_text_section for formatted content
+    # Use rich_text_section for formatted content (no links)
     return RichTextSectionElement(elements=elements).to_dict()
 
 
@@ -366,6 +377,7 @@ def process_text_part(text: str) -> List[Dict]:
     # Regex patterns for line types
     CODE_BLOCK_PLACEHOLDER_PATTERN = r"__CODE_BLOCK_(\d+)__"
     HEADER_PATTERN = r"^(#{1,6})\s+(.+)"  # # Header or ## Header, etc.
+    DIVIDER_PATTERN = r"^---+$"  # --- or ---- (horizontal rule)
     BULLET_LIST_PATTERN = r"^[-*]\s+(.+)"  # - item or * item
     NUMBERED_LIST_PATTERN = r"^(\d+)\.\s+(.+)"  # 1. item
 
@@ -399,12 +411,24 @@ def process_text_part(text: str) -> List[Dict]:
             flush_list()
             continue
 
+        # Check for horizontal rule / divider (---)
+        if re.match(DIVIDER_PATTERN, stripped_line):
+            flush_paragraph()
+            flush_list()
+            sub_blocks.append(DividerBlock().to_dict())
+            continue
+
         # Check line type and process accordingly
         if header_match := re.match(HEADER_PATTERN, stripped_line):
             # Header line (# text)
             flush_paragraph()
             flush_list()
             header_content = header_match.group(2)
+            # Remove markdown formatting from header (e.g., **bold**)
+            header_content = re.sub(r"\*\*(.+?)\*\*", r"\1", header_content)  # Remove **bold**
+            header_content = re.sub(r"__(.+?)__", r"\1", header_content)  # Remove __italic__
+            header_content = re.sub(r"_(.+?)_", r"\1", header_content)  # Remove _italic_
+            header_content = re.sub(r"`(.+?)`", r"\1", header_content)  # Remove `code`
             sub_blocks.append({"type": "header", "text": {"type": "plain_text", "text": header_content, "emoji": True}})
 
         elif bullet_list_match := re.match(BULLET_LIST_PATTERN, stripped_line):
@@ -438,7 +462,7 @@ def process_text_part(text: str) -> List[Dict]:
     return sub_blocks
 
 
-def prepare_slack_message(message: str, message_type: str, is_update: bool = False) -> Tuple[List, List]:
+def prepare_slack_message(message: str, message_type: str) -> Tuple[List, List]:
     """
     Converts markdown-formatted message to Slack Block Kit format.
 
@@ -458,7 +482,6 @@ def prepare_slack_message(message: str, message_type: str, is_update: bool = Fal
     Args:
         message: Markdown-formatted message text
         message_type: Message type from AssistantMessageType enum
-        is_update: True if updating existing step message, False for new message
 
     Returns:
         Tuple of (blocks, attachments):
@@ -469,10 +492,10 @@ def prepare_slack_message(message: str, message_type: str, is_update: bool = Fal
         ValueError: If message_type is not a valid AssistantMessageType value
 
     Example:
-        >>> prepare_slack_message("# Title\\n\\n- Item 1", "model", False)
+        >>> prepare_slack_message("# Title\\n\\n- Item 1", "model")
         ([{"type": "header", ...}, {"type": "rich_text", ...}], [])
 
-        >>> prepare_slack_message("Step 1", "step", False)
+        >>> prepare_slack_message("Step 1", "step")
         ([], [{"color": "#D1D2D3", "blocks": [...]}])
     """
     # Validate message_type using enum
@@ -514,22 +537,12 @@ def prepare_slack_message(message: str, message_type: str, is_update: bool = Fal
     # Step 3: Wrap blocks in attachments based on message type
 
     if AssistantMessageType.is_step_type(message_type):
-        # Step/Thought messages: wrap in gray attachment for subtle appearance
-        if is_update:
-            # For updates, add divider before new content
-            blocks.insert(0, DividerBlock().to_dict())
-            attachment_blocks = blocks
-        else:
-            # For first message, add "Plan (updating...)" header
-            attachment_blocks = [
-                ContextBlock(
-                    elements=[
-                        MarkdownTextObject(
-                            text=f"{SlackAssistantMessages.PLAN_ICON} {SlackAssistantMessages.PLAN_LABEL_UPDATING}"
-                        )
-                    ]
-                ).to_dict()
-            ] + blocks
+        # Step/Thought messages: wrap in gray attachment with "Plan" header
+        attachment_blocks = [
+            ContextBlock(
+                elements=[MarkdownTextObject(text=f"{SlackAssistantMessages.PLAN_ICON} {SlackAssistantMessages.PLAN_LABEL}")]
+            ).to_dict()
+        ] + blocks
 
         attachments = [
             {
@@ -646,7 +659,6 @@ def get_approval_buttons_block() -> List[dict]:
                     text=PlainTextObject(text=AssistantMessages.APPROVAL_PROCEED_BUTTON),
                     style="primary",
                     action_id=AssistantActionIds.APPROVAL_YES.value,
-                    value="assistant-sensitive-action-btn-yes",
                     confirm=ConfirmObject(
                         title=PlainTextObject(text=AssistantMessages.APPROVAL_CONFIRM_TITLE),
                         text=MarkdownTextObject(text=AssistantMessages.APPROVAL_CONFIRM_TEXT),
@@ -658,7 +670,6 @@ def get_approval_buttons_block() -> List[dict]:
                     text=PlainTextObject(text=AssistantMessages.APPROVAL_CANCEL_BUTTON),
                     style="danger",
                     action_id=AssistantActionIds.APPROVAL_NO.value,
-                    value="assistant-sensitive-action-btn-no",
                 ),
             ],
         ).to_dict(),
@@ -781,48 +792,6 @@ def is_assistant_modal_submission(data_type: str, view: dict) -> bool:
         callback_id = view.get("callback_id", "")
         return callback_id == AssistantActionIds.FEEDBACK_MODAL_CALLBACK_ID
     return False
-
-
-def merge_attachment_blocks(history_response: SlackResponse, new_attachments: list[dict]) -> list[dict]:
-    """
-    Intelligently merges attachment blocks by appending new blocks to existing attachment.
-
-    This function handles the case where we want to update a message with new content
-    without creating duplicate attachments. It extracts existing attachments from the
-    history response and appends the blocks from new_attachments to the blocks array
-    of the first existing attachment.
-
-    Args:
-        history_response: The Slack API response from conversations.replies
-        new_attachments: List of new attachment dictionaries to merge
-
-    Returns:
-        List of merged attachments with combined blocks
-
-    Example:
-        history_response = {"messages": [{"attachments": [{"color": "#D1D2D3", "blocks": [block1, block2]}]}]}
-        new_attachments = [{"color": "#D1D2D3", "blocks": [block3]}]
-        result = [{"color": "#D1D2D3", "blocks": [block1, block2, block3]}]
-    """
-    # Extract existing attachments from history response
-    existing_attachments = []
-    messages: list[dict[str, Any]] = history_response.get("messages", [])
-    if messages:
-        existing_attachments = messages[-1].get("attachments", [])
-
-    if not existing_attachments:
-        return new_attachments
-
-    if not new_attachments:
-        return existing_attachments
-
-    # Append new blocks to the first existing attachment
-    for new_attachment in new_attachments:
-        new_blocks = new_attachment.get("blocks", [])
-        if new_blocks:
-            existing_attachments[0].setdefault("blocks", []).extend(new_blocks)
-
-    return existing_attachments
 
 
 def normalize_slack_message_from_user(text: str) -> str:

@@ -245,19 +245,18 @@ class SlackAssistantHandler(AssistantMessagingHandler):
         """
         return normalize_slack_message_from_user(text)
 
-    def prepare_message_blocks(self, message: str, message_type: str, is_update: bool = False) -> tuple:
+    def prepare_message_blocks(self, message: str, message_type: str) -> tuple:
         """
         Prepare Slack-specific message blocks.
 
         Args:
             message: The message text
             message_type: The message type
-            is_update: Whether this is an update to existing message (True) or new message (False)
 
         Returns:
             Tuple of (blocks, attachments)
         """
-        return prepare_slack_message(message, message_type, is_update)
+        return prepare_slack_message(message, message_type)
 
     def create_agent_selection_ui(self, agents: list) -> list:
         """
@@ -293,7 +292,7 @@ class SlackAssistantHandler(AssistantMessagingHandler):
         return get_feedback_buttons_block(message_id)
 
     def post_agent_response_sync(
-        self, channel_id: str, thread_id: str, blocks: list, attachments: list, agent_name: str = ""
+        self, channel_id: str, thread_id: str, blocks: list, attachments: list, agent_name: str = "", fallback_text: str = ""
     ) -> dict:
         """
         Send a new message to Slack.
@@ -304,71 +303,26 @@ class SlackAssistantHandler(AssistantMessagingHandler):
             thread_id: The thread ID
             blocks: Message blocks
             attachments: Message attachments
+            agent_name: Optional agent name for bot display
+            fallback_text: Plain text to use if blocks/attachments fail
 
         Returns:
             Response dict with 'ts' if successful
         """
-        response = send_message_to_destinations([channel_id], "", thread_id, blocks, attachments, bot_name=agent_name)
-        if response:
-            return {"ts": response.get("ts")}
-        return {}
-
-    def update_existing_message(
-        self,
-        channel_id: str,
-        thread_id: str,
-        message_ts: str,
-        attachments: list,
-    ) -> bool:
-        """
-        Update an existing Slack message.
-        Implements the abstract method from AssistantMessagingHandler.
-
-        Args:
-            channel_id: The channel ID
-            thread_id: The thread ID
-            message_ts: The message timestamp to update
-            attachments: New attachments
-
-        Returns:
-            True if successful, False otherwise
-        """
         try:
-            # Get the current message to preserve existing content
-            history_response = send_slack_request_sync(
-                CLIENT,
-                "conversations.replies",
-                http_verb="GET",
-                body={"channel": channel_id, "ts": thread_id, "latest": message_ts, "limit": 1, "inclusive": True},
-            )
-            # Intelligently merge blocks from new attachments into existing attachment
-            combined_attachments = merge_attachment_blocks(history_response, attachments)
-            send_slack_request_sync(
-                CLIENT,
-                "chat.update",
-                body={"channel": channel_id, "ts": message_ts, "text": "", "attachments": combined_attachments},
-            )
-            return True
-        except Exception as e:
-            demisto.error(f"Failed to update message: {e}")
-            return False
-
-    def finalize_plan_header(
-        self,
-        channel_id: str,
-        thread_id: str,
-        step_message_ts: str,
-    ):
-        """
-        Finalize the plan header (remove "updating..." indicator).
-        Implements the abstract method from AssistantMessagingHandler.
-
-        Args:
-            channel_id: The channel ID
-            thread_id: The thread ID
-            step_message_ts: The step message timestamp
-        """
-        finalize_plan_message(channel_id, thread_id, step_message_ts)
+            response = send_message_to_destinations([channel_id], "", thread_id, blocks, attachments, bot_name=agent_name)
+            if response:
+                return {"ts": response.get("ts")}
+            return {}
+        except SlackApiError as e:
+            # If blocks/attachments are invalid, send as plain text
+            if "invalid_blocks" in str(e):
+                demisto.error(f"Invalid blocks format, sending as plain text: {e}")
+                if fallback_text:
+                    response = send_message_to_destinations([channel_id], fallback_text, thread_id, bot_name=agent_name)
+                    if response:
+                        return {"ts": response.get("ts")}
+            raise
 
     def update_context(self, context_updates: dict):
         """
@@ -484,54 +438,6 @@ class SlackAssistantHandler(AssistantMessagingHandler):
             return ""
 
 
-def finalize_plan_message(channel_id: str, thread_id: str, step_message_ts: str):
-    """
-    Updates the Plan header to remove "updating..." indicator when plan is complete.
-
-    Args:
-        channel_id: The channel ID
-        thread_id: The thread ID
-        step_message_ts: The timestamp of the step message to update
-    """
-    try:
-        # Get the step message
-        history_response = send_slack_request_sync(
-            CLIENT,
-            "conversations.replies",
-            http_verb="GET",
-            body={"channel": channel_id, "ts": thread_id, "latest": step_message_ts, "limit": 1, "inclusive": True},
-        )
-        messages: list[dict[str, Any]] = history_response.get("messages", [])
-        if not messages:
-            return
-
-        existing_attachments = messages[-1].get("attachments", [])
-        if not existing_attachments or not existing_attachments[0].get("blocks"):
-            return
-
-        # Update the first block (Plan header) to remove "updating..."
-        first_block = existing_attachments[0]["blocks"][0]
-        if first_block.get("type") == "context":
-            elements = first_block.get("elements", [])
-            if elements and "text" in elements[0]:
-                # Replace "Plan (updating...)" with "Plan"
-                original_text = elements[0]["text"]
-                updated_text = original_text.replace(
-                    SlackAssistantMessages.PLAN_LABEL_UPDATING, SlackAssistantMessages.PLAN_LABEL
-                )
-                if original_text != updated_text:
-                    elements[0]["text"] = updated_text
-                    # Update the message
-                    send_slack_request_sync(
-                        CLIENT,
-                        "chat.update",
-                        body={"channel": channel_id, "ts": step_message_ts, "text": "", "attachments": existing_attachments},
-                    )
-                    demisto.debug("Updated Plan header to remove 'updating...' indicator")
-    except Exception as e:
-        demisto.error(f"Failed to finalize Plan message: {e}")
-
-
 # Create a global instance of the handler
 slack_assistant_handler = SlackAssistantHandler()
 
@@ -557,6 +463,9 @@ def send_agent_response():
     thread_id = str(args["thread_id"])
     assistant_id_key = f"{channel_id}_{thread_id}"
 
+    # Get user_id from assistant context if available
+    user_id = assistant_context.get(assistant_id_key, {}).get("user", "")
+
     # Call the handler's send_agent_response method
     slack_assistant_handler.send_agent_response(
         channel_id=channel_id,
@@ -568,6 +477,7 @@ def send_agent_response():
         assistant_context=assistant_context,
         assistant_id_key=assistant_id_key,
         agent_name=bot_name,
+        user_id=user_id,
     )
 
 
@@ -2107,7 +2017,7 @@ async def handle_assistant_interactions(
     """
     if not ENABLED_AI_ASSISTANT:
         return
-    # if bool(channel and channel[0] == 'D'): return TODO
+
     # Check if this is a modal submission (e.g., feedback modal)
     view = data.get("view", {})
     is_modal_submission = is_assistant_modal_submission(data_type, view)

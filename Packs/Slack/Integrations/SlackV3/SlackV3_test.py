@@ -5740,3 +5740,75 @@ async def test_handle_assistant_interactions_saves_context_when_modified(mocker:
     await handle_assistant_interactions(data, event, "U123", [], "event")
 
     assert demisto.setIntegrationContext.call_count == 1
+
+
+@pytest.mark.asyncio
+async def test_post_agent_response_sync_with_invalid_blocks_fallback(mocker):
+    """
+    Given:
+        Invalid blocks that cause SlackApiError.
+    When:
+        Posting agent response.
+    Then:
+        Falls back to sending plain text message.
+    """
+    import SlackV3
+    from slack_sdk.errors import SlackApiError
+
+    # First call fails with invalid_blocks, second call succeeds
+    mocker.patch.object(
+        SlackV3,
+        "send_message_to_destinations",
+        side_effect=[SlackApiError("invalid_blocks", {"error": "invalid_blocks"}), {"ts": "1234567890.123456"}],
+    )
+    mocker.patch.object(demisto, "error")
+
+    handler = SlackV3.slack_assistant_handler
+    result = handler.post_agent_response_sync(
+        channel_id="C123",
+        thread_id="thread123",
+        blocks=[{"invalid": "block"}],
+        attachments=[],
+        agent_name="Test Agent",
+        fallback_text="This is the fallback message",
+    )
+
+    assert result == {"ts": "1234567890.123456"}
+    assert SlackV3.send_message_to_destinations.call_count == 2
+    # Second call should use fallback_text
+    second_call = SlackV3.send_message_to_destinations.call_args_list[1]
+    assert second_call[0][1] == "This is the fallback message"
+
+
+def test_send_agent_response_adds_user_mention_for_model_type(mocker):
+    """
+    Given:
+        Model type message with user_id in assistant context.
+    When:
+        Calling send_agent_response command.
+    Then:
+        Adds user mention at beginning of blocks.
+    """
+    import SlackV3
+    from SlackV3 import send_agent_response
+
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "channel_id": "C123",
+            "thread_id": "1234567890.123456",
+            "message": "Test response",
+            "message_type": "model",
+            "completed": "true",
+        },
+    )
+    mocker.patch.object(
+        demisto, "getIntegrationContext", return_value={"assistant_context": '{"C123_1234567890.123456": {"user": "U123"}}'}
+    )
+    mocker.patch.object(SlackV3.slack_assistant_handler, "send_agent_response")
+
+    send_agent_response()
+
+    call_args = SlackV3.slack_assistant_handler.send_agent_response.call_args[1]
+    assert call_args["user_id"] == "U123"

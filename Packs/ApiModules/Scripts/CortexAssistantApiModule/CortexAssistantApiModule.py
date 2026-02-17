@@ -175,8 +175,8 @@ class AssistantActionIds(str, Enum):
     """
 
     AGENT_SELECTION = "agent_selection"
-    APPROVAL_YES = "yes_btn"
-    APPROVAL_NO = "no_btn"
+    APPROVAL_YES = "assistant_sensitive_action_approve"
+    APPROVAL_NO = "assistant_sensitive_action_reject"
     FEEDBACK = "assistant_feedback"
 
     # Special constants (not enum values)
@@ -208,6 +208,9 @@ class AssistantMessages:
 
     # Commands
     RESET_SESSION_COMMAND = "reset session"
+
+    # Default message when only bot is mentioned
+    DEFAULT_BOT_MENTION_MESSAGE = "Hello"
 
     # Thinking indicator (shown while waiting for AI response)
     THINKING_INDICATOR = ":thought_balloon: Thinking..."
@@ -454,7 +457,7 @@ class AssistantMessagingHandler:
         """
         raise NotImplementedError("Subclass must implement normalize_message_from_user()")
 
-    def prepare_message_blocks(self, message: str, message_type: str, is_update: bool = False) -> tuple:
+    def prepare_message_blocks(self, message: str, message_type: str) -> tuple:
         """
         Prepare platform-specific message blocks.
         Must be implemented by subclass.
@@ -462,7 +465,6 @@ class AssistantMessagingHandler:
         Args:
             message: The message text
             message_type: The message type
-            is_update: Whether this is an update to existing message (True) or new message (False)
 
         Returns:
             Tuple of (blocks, attachments)
@@ -512,6 +514,7 @@ class AssistantMessagingHandler:
         blocks: list,
         attachments: list,
         agent_name: str = "",
+        fallback_text: str = "",
     ) -> Optional[dict]:
         """
         Send a new agent message to the platform.
@@ -523,111 +526,13 @@ class AssistantMessagingHandler:
             blocks: Message blocks
             attachments: Message attachments
             agent_name: Optional agent name to display (e.g., "Security Analyst")
+            fallback_text: Plain text to use if blocks/attachments fail
 
         Returns:
             Response dict with 'ts' (message timestamp) if successful, None otherwise
         """
         raise NotImplementedError("Subclass must implement post_agent_response_sync()")
 
-    def update_existing_message(
-        self,
-        channel_id: str,
-        thread_id: str,
-        message_ts: str,
-        attachments: list,
-    ) -> bool:
-        """
-        Update an existing message.
-        Must be implemented by subclass.
-
-        Args:
-            channel_id: The channel ID
-            thread_id: The thread ID
-            message_ts: The message timestamp to update
-            attachments: New attachments
-
-        Returns:
-            True if successful, False otherwise
-        """
-        raise NotImplementedError("Subclass must implement update_existing_message()")
-
-    def finalize_plan_header(
-        self,
-        channel_id: str,
-        thread_id: str,
-        step_message_ts: str,
-    ):
-        """
-        Finalize the plan header (remove "updating..." indicator).
-        Must be implemented by subclass.
-
-        Args:
-            channel_id: The channel ID
-            thread_id: The thread ID
-            step_message_ts: The step message timestamp
-        """
-        raise NotImplementedError("Subclass must implement finalize_plan_header()")
-
-    def send_or_update_agent_response(
-        self,
-        channel_id: str,
-        thread_id: str,
-        message_type: str,
-        blocks: list,
-        attachments: list,
-        assistant: dict,
-        assistant_id_key: str,
-        agent_name: str = "",
-    ) -> dict:
-        """
-        Send or update an agent response based on message type.
-        Platform-agnostic implementation that uses platform-specific methods.
-
-        Args:
-            channel_id: The channel ID
-            thread_id: The thread ID
-            message_type: The message type
-            blocks: Message blocks
-            attachments: Message attachments
-            assistant: The assistant context
-            assistant_id_key: The conversation key
-            agent_name: Optional agent name to display (e.g., "Security Analyst")
-
-        Returns:
-            Updated assistant dictionary
-        """
-        step_message_ts = assistant.get(assistant_id_key, {}).get("step_message_ts")
-
-        if AssistantMessageType.is_step_type(message_type):
-            # For step types, update existing message if it exists, otherwise create new one
-            if step_message_ts:
-                # Update existing step message
-                demisto.debug(f"Updating step message {step_message_ts}")
-                success = self.update_existing_message(channel_id, thread_id, step_message_ts, attachments)
-                if not success:
-                    # Fallback: send as new message
-                    demisto.error("Failed to update step message, sending as new message")
-                    response = self.post_agent_response_sync(channel_id, thread_id, blocks, attachments, agent_name)
-                    if response and assistant_id_key in assistant:
-                        assistant[assistant_id_key]["step_message_ts"] = response.get("ts")
-            else:
-                # Send new step message and save its timestamp
-                response = self.post_agent_response_sync(channel_id, thread_id, blocks, attachments, agent_name)
-                if response and assistant_id_key in assistant:
-                    assistant[assistant_id_key]["step_message_ts"] = response.get("ts")
-        else:
-            # For non-step types (model, approval, error), always send as new message
-            self.post_agent_response_sync(channel_id, thread_id, blocks, attachments, agent_name)
-
-            # Finalize Plan message when sending final response
-            if AssistantMessageType.is_model_type(message_type) and assistant_id_key in assistant:
-                # Update Plan header to remove "updating..." if step_message_ts exists
-                if step_message_ts:
-                    self.finalize_plan_header(channel_id, thread_id, step_message_ts)
-                # Clear step_message_ts
-                assistant[assistant_id_key].pop("step_message_ts", None)
-
-        return assistant
 
     def update_context(self, context_updates: dict):
         """
@@ -1188,10 +1093,8 @@ class AssistantMessagingHandler:
                         "thread_id": thread_id,
                         "message": "Yes" if is_approved else "No",
                         "username": user_email,
-                        "is_approved": is_approved,
                     },
                 )
-
                 backend_response = self.handle_backend_response(raw_response, "sendToConversation (approval)")
 
                 if backend_response.success:
@@ -1354,7 +1257,7 @@ class AssistantMessagingHandler:
 
         # Replace bot mention with friendly display name for backend
         bot_mention = self.format_user_mention(bot_id)
-        text_cleaned = text.replace(bot_mention, "") or "Hi"  # TODO AssistantMessages.BOT_DISPLAY_NAME).strip()
+        text_cleaned = text.replace(bot_mention, "") or AssistantMessages.DEFAULT_BOT_MENTION_MESSAGE
 
         # Normalize message for backend (decode HTML entities, preserve structure)
         text_normalized = self.normalize_message_from_user(text_cleaned)
@@ -1495,6 +1398,7 @@ class AssistantMessagingHandler:
         assistant_context: dict | None = None,
         assistant_id_key: str = "",
         agent_name: str = "",
+        user_id: str = "",
     ) -> dict:
         """
         Sends an agent response and updates the Assistant status accordingly.
@@ -1510,6 +1414,7 @@ class AssistantMessagingHandler:
             assistant_context: The assistant context dictionary
             assistant_id_key: The unique key for this conversation
             agent_name: Optional agent name to display in message (e.g., "Security Analyst")
+            user_id: Optional user ID to mention in model responses
 
         Returns:
             Updated assistant dictionary
@@ -1538,15 +1443,8 @@ class AssistantMessagingHandler:
         message = message.replace('\\"', '"')
         message = message.replace("\\'", "'")
 
-        # Check if this is an update (step_message_ts exists in assistant)
-        is_update = (
-            assistant_context.get(assistant_id_key, {}).get("step_message_ts") is not None
-            if AssistantMessageType.is_step_type(message_type)
-            else False
-        )
-
         # Prepare blocks and attachments using platform-specific method
-        blocks, attachments = self.prepare_message_blocks(message, message_type, is_update)
+        blocks, attachments = self.prepare_message_blocks(message, message_type)
         if not blocks:
             blocks = []
 
@@ -1558,7 +1456,14 @@ class AssistantMessagingHandler:
         if AssistantMessageType.is_model_type(message_type):
             # MODEL TYPES - Final responses
             should_release_lock = completed
-            # Add feedback buttons for final responses
+
+            # Add user mention at the beginning of the message so the user gets notified
+            if user_id:
+                user_mention_block = {
+                    "type": "section",
+                    "text": {"type": "mrkdwn", "text": self.format_user_mention(user_id)},
+                }
+                blocks.insert(0, user_mention_block)
 
             if AssistantMessageType.is_approval_type(message_type):
                 # APPROVAL - Sensitive action requiring approval
@@ -1588,9 +1493,9 @@ class AssistantMessagingHandler:
                 # Remove thinking_message_ts from context
                 assistant_context[assistant_id_key].pop("thinking_message_ts", None)
 
-        # Send or update message using platform-specific method
-        assistant_context = self.send_or_update_agent_response(
-            channel_id, thread_id, message_type, blocks, attachments, assistant_context, assistant_id_key, agent_name
+        # Send message using platform-specific method
+        self.post_agent_response_sync(
+            channel_id, thread_id, blocks, attachments, agent_name, fallback_text=message
         )
 
         # Update context based on message type

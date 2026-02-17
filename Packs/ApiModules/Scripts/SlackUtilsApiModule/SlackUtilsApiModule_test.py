@@ -15,7 +15,6 @@ from SlackUtilsApiModule import (
     is_bot_mention,
     is_assistant_interactive_response,
     is_assistant_modal_submission,
-    merge_attachment_blocks,
     normalize_slack_message_from_user,
 )
 from CortexAssistantApiModule import AssistantActionIds, AssistantMessageType
@@ -214,6 +213,34 @@ def test_create_rich_cell_formatted_text():
     result = create_rich_cell("**Bold text**")
     assert result["type"] == "rich_text_section"
     assert "elements" in result
+
+
+def test_create_rich_cell_with_url_falls_back_to_raw_text():
+    """
+    Given:
+        Cell text containing a URL.
+    When:
+        Creating rich cell.
+    Then:
+        Returns raw_text type (Slack table cells don't support link elements).
+    """
+    result = create_rich_cell("https://example.com/incident-view?caseId=1")
+    assert result["type"] == "raw_text"
+    assert result["text"] == "https://example.com/incident-view?caseId=1"
+
+
+def test_create_rich_cell_with_markdown_link_falls_back_to_raw_text():
+    """
+    Given:
+        Cell text containing a markdown link.
+    When:
+        Creating rich cell.
+    Then:
+        Returns raw_text type (Slack table cells don't support link elements).
+    """
+    result = create_rich_cell("[Click here](https://example.com)")
+    assert result["type"] == "raw_text"
+    assert result["text"] == "[Click here](https://example.com)"
 
 
 def test_create_rich_cell_empty():
@@ -520,6 +547,7 @@ def test_get_approval_buttons_block():
 
     assert len(result) == 4
     assert result[0]["type"] == "header"
+    assert result[0]["text"]["text"] == "Sensitive action detected"
     assert result[1]["type"] == "divider"
     assert result[2]["type"] == "section"
     assert result[3]["type"] == "actions"
@@ -688,65 +716,6 @@ def test_is_assistant_modal_submission_wrong_type():
 
 
 # ============================================================================
-# Test merge_attachment_blocks
-# ============================================================================
-
-
-def test_merge_attachment_blocks_with_existing():
-    """
-    Given:
-        History response with existing attachments and new attachments.
-    When:
-        Merging attachment blocks.
-    Then:
-        Appends new blocks to existing attachment.
-    """
-    history_response = {"messages": [{"attachments": [{"color": "#D1D2D3", "blocks": [{"type": "section", "text": "Block 1"}]}]}]}
-    new_attachments = [{"color": "#D1D2D3", "blocks": [{"type": "section", "text": "Block 2"}]}]
-
-    result = merge_attachment_blocks(history_response, new_attachments)
-
-    assert len(result) == 1
-    assert len(result[0]["blocks"]) == 2
-
-
-def test_merge_attachment_blocks_no_existing():
-    """
-    Given:
-        History response without attachments and new attachments.
-    When:
-        Merging attachment blocks.
-    Then:
-        Returns new attachments.
-    """
-    history_response = {"messages": [{}]}
-    new_attachments = [{"color": "#D1D2D3", "blocks": []}]
-
-    result = merge_attachment_blocks(history_response, new_attachments)
-    assert result == new_attachments
-
-
-def test_merge_attachment_blocks_empty_history():
-    """
-    Given:
-        Empty history response and new attachments.
-    When:
-        Merging attachment blocks.
-    Then:
-        Returns new attachments.
-    """
-    history_response = {"messages": []}
-    new_attachments = [{"color": "#D1D2D3", "blocks": []}]
-
-    result = merge_attachment_blocks(history_response, new_attachments)
-    assert result == new_attachments
-
-
-# ============================================================================
-# Test normalize_slack_message_from_user
-# ============================================================================
-
-
 def test_normalize_slack_message_from_user_html_entities():
     """
     Given:
@@ -784,3 +753,66 @@ def test_normalize_slack_message_from_user_empty():
     """
     result = normalize_slack_message_from_user("")
     assert result == ""
+
+
+def test_process_text_part_divider():
+    """
+    Given:
+        Text with horizontal rule (---).
+    When:
+        Processing text part.
+    Then:
+        Returns divider block.
+    """
+    result = process_text_part("---")
+    assert len(result) == 1
+    assert result[0]["type"] == "divider"
+
+
+def test_process_text_part_header_with_bold():
+    """
+    Given:
+        Header with bold markdown inside.
+    When:
+        Processing text part.
+    Then:
+        Returns header block with bold formatting removed.
+    """
+    result = process_text_part("### **Case Details**")
+    assert len(result) == 1
+    assert result[0]["type"] == "header"
+    assert result[0]["text"]["text"] == "Case Details"
+
+
+def test_process_text_part_header_with_multiple_formatting():
+    """
+    Given:
+        Header with multiple markdown formats.
+    When:
+        Processing text part.
+    Then:
+        Returns header block with all formatting removed.
+    """
+    result = process_text_part("## **Bold** and `code` and _italic_")
+    assert len(result) == 1
+    assert result[0]["type"] == "header"
+    assert result[0]["text"]["text"] == "Bold and code and italic"
+
+
+def test_process_text_part_complex_with_dividers():
+    """
+    Given:
+        Text with headers, dividers, and content.
+    When:
+        Processing text part.
+    Then:
+        Returns blocks in correct order with dividers.
+    """
+    text = "### **Case Details**\n\n---\n\nSome content"
+    result = process_text_part(text)
+
+    assert len(result) == 3
+    assert result[0]["type"] == "header"
+    assert result[0]["text"]["text"] == "Case Details"
+    assert result[1]["type"] == "divider"
+    assert result[2]["type"] == "rich_text"
