@@ -13,6 +13,21 @@ from CymulateV3 import (
 )
 
 
+def pytest_collection_modifyitems(config, items):
+    """
+    Filter out tests that are collected from non-test files.
+    This prevents pytest from collecting test_module from CymulateV3.py.
+    """
+    filtered_items = []
+    for item in items:
+        # item.location is a tuple: (file_path, line_number, function_name)
+        file_path = item.location[0] if item.location else ""
+        # Only keep items from test files
+        if file_path.endswith("_test.py"):
+            filtered_items.append(item)
+    items[:] = filtered_items
+
+
 @pytest.fixture
 def mock_client():
     """Create a Cymulate client with base URL and dummy token."""
