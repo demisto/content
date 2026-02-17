@@ -208,7 +208,7 @@ There is no context output for this command.
 ### aws-rds-db-instance-modify
 
 ***
-Modifies an Amazon RDS DB instance. Allows to change various settings of an existing DB instance, such as instance class, storage capacity, security groups, and other configuration parameters.
+Modifies an existing Amazon RDS DB instance. Allows updating various settings, including the instance class, storage capacity, security groups, and other configuration parameters, without the need to create a new instance.
 
 #### Base Command
 
@@ -221,14 +221,15 @@ Modifies an Amazon RDS DB instance. Allows to change various settings of an exis
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
 | db_instance_identifier | The identifier of DB instance to modify. This value is stored as a lowercase string. | Required |
-| publicly_accessible | Specifies whether the DB instance is publicly accessible. Possible values are: true, false. | Optional |
-| apply_immediately | Specifies whether the modifications in this request and any pending modifications are asynchronously applied as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If this parameter is disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance , or the next failure reboot. Possible values are: true, false. | Optional |
-| copy_tags_to_snapshot | Specifies whether to copy all tags from the DB instance to snapshots of the DB instance. By default, tags aren’t copied. Possible values are: true, false. | Optional |
+| publicly_accessible | Wether the DB instance is publicly accessible. Possible values are: true, false. | Optional |
+| apply_immediately | Wether the modifications in this request and any pending modifications are asynchronously applied as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If this parameter is disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance , or the next failure reboot. Possible values are: true, false. | Optional |
+| copy_tags_to_snapshot | Wether to copy all tags from the DB instance to snapshots of the DB instance. By default, tags aren’t copied. Possible values are: true, false. | Optional |
 | backup_retention_period | The number of days to retain automated backups. Setting this parameter to a positive number enables backups. Setting this parameter to 0 disables automated backups. | Optional |
-| enable_iam_database_authentication | Specifies whether to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled. Possible values are: true, false. | Optional |
-| deletion_protection | Specifies whether the DB instance has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled. For more information, see Deleting a DB Instance. Possible values are: true, false. | Optional |
-| auto_minor_version_upgrade | Specifies whether minor version upgrades are applied automatically to the DB instance during the maintenance window. An outage occurs when all the following conditions are met: The automatic upgrade is enabled for the maintenance window. A newer minor version is available. RDS has enabled automatic patching for the engine version. If any of the preceding conditions isn’t met, Amazon RDS applies the change as soon as possible and doesn’t cause an outage. For an RDS Custom DB instance, don’t enable this setting. Otherwise, the operation returns an error. Possible values are: true, false. | Optional |
-| multi_az | Specifies whether the DB instance is a Multi-AZ deployment. Changing this parameter doesn’t result in an outage. The change is applied during the next maintenance window unless the ApplyImmediately parameter is enabled for this request. This setting doesn’t apply to RDS Custom DB instances. Possible values are: true, false. | Optional |
+| enable_iam_database_authentication | Wether to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled. Possible values are: true, false. | Optional |
+| deletion_protection | Wether the DB instance has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled. For more information, see Deleting a DB Instance. Possible values are: true, false. | Optional |
+| auto_minor_version_upgrade | Specifies whether minor version upgrades are applied automatically to the DB instance during the maintenance window. Behavior: An outage occurs only if automatic upgrades are enabled for the maintenance window, a newer minor version is available, and RDS has enabled automatic patching for the engine version; otherwise, changes are applied as soon as possible without causing an outage. Note: Do not enable for RDS Custom DB instances (operation will fail). Possible values are: true, false. | Optional |
+| multi_az | Behavior: Specifies whether the DB instance is a Multi-AZ deployment. Changing this parameter does not cause an outage and is applied during the next maintenance window unless ApplyImmediately is enabled. Not applicable to RDS Custom DB instances. Possible values are: true, false. | Optional |
+| vpc_security_group_ids | A list of Amazon EC2 VPC security groups to associate with this DB instance. This setting doesn’t apply to the following DB instances: Amazon Aurora, RDS Custom. | Optional |
 
 #### Context Output
 
@@ -583,31 +584,6 @@ Modifies settings for an Amazon RDS DB cluster. Allows you to update cluster set
 | db_cluster_identifier | The DB cluster identifier for the cluster being modified. This parameter isn’t case-sensitive. Valid for Cluster Type: Aurora DB clusters and Multi-AZ DB clusters Constraints: Must match the identifier of an existing DB cluster. | Required |
 | deletion_protection | Specifies whether the DB cluster has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled. Possible values are: true, false. | Optional |
 | enable_iam_database_authentication | Specifies whether to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled. Possible values are: true, false. | Optional |
-
-#### Context Output
-
-There is no context output for this command.
-
-### aws-s3-public-access-block-update
-
-***
-Create or Modify the PublicAccessBlock configuration for an Amazon S3 bucket.
-
-#### Base Command
-
-`aws-s3-public-access-block-update`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
-| bucket | The name of the Amazon S3 bucket. | Required |
-| block_public_acls | Specifies whether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket. Possible values are: true, false. | Optional |
-| ignore_public_acls | Specifies whether Amazon S3 should ignore public ACLs for this bucket and objects in this bucket. Possible values are: true, false. | Optional |
-| block_public_policy | Specifies whether Amazon S3 should block public bucket policies for this bucket. Possible values are: true, false. | Optional |
-| restrict_public_buckets | Specifies whether Amazon S3 should restrict public bucket policies for this bucket. Possible values are: true, false. | Optional |
 
 #### Context Output
 
@@ -2897,14 +2873,13 @@ Delete AWS S3 bucket, the bucket must be empty from files.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| bucket | The name of S3 bucket. | Required | 
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| bucket | The name of S3 bucket. | Required |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
 
 #### Context Output
 
 There is no context output for this command.
-
 
 ### aws-s3-bucket-objects-list
 
@@ -2919,26 +2894,27 @@ Returns some or all (up to 1,000) of the objects in a bucket.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| bucket | The name of S3 bucket. | Required | 
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
-| delimiter | A delimiter is a character (like a slash /) used to bundle files into folders. It turns a long list of file names into an organized, clickable hierarchy. | Optional | 
-| prefix | Restricts the response to include only those keys that begin with the specified string. This is commonly used to filter results to a specific folder or category. | Optional | 
-| next_token | The next_token is the marker where you want Amazon S3 to start listing from. Amazon S3 starts listing after this specified key. Marker can be any key in the bucket. | Optional | 
-| limit | Specifies the maximum number of keys to return in the response, ranging from 1 to 1,000. Default: 50. | Optional | 
+| bucket | The name of S3 bucket. | Required |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| delimiter | A delimiter is a character (like a slash /) used to bundle files into folders. It turns a long list of file names into an organized, clickable hierarchy. | Optional |
+| prefix | Restricts the response to include only those keys that begin with the specified string. This is commonly used to filter results to a specific folder or category. | Optional |
+| next_token | The next_token is the marker where you want Amazon S3 to start listing from. Amazon S3 starts listing after this specified key. Marker can be any key in the bucket. | Optional |
+| limit | Specifies the maximum number of keys to return in the response, ranging from 1 to 1,000. Default: 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.S3.Buckets.BucketName | String | The name of S3 bucket. | 
-| AWS.S3.Buckets.Objects.Key | String | The name of S3 object. | 
-| AWS.S3.Buckets.Objects.Size | Number | Object size in bytes. | 
-| AWS.S3.Buckets.Objects.LastModified | String | Last date object was modified. | 
-| AWS.S3.Buckets.Objects.StorageClass | String | The storage class of the object. | 
-| AWS.S3.Buckets.Objects.ChecksumType | Array | The checksum algorithm used to calculate the object checksum. | 
-| AWS.S3.Buckets.Objects.ETag | String | The entity tag \(hash\) of the object. | 
-| AWS.S3.Buckets.ObjectsNextToken | String | Token to use for pagination in subsequent requests. | 
+| AWS.S3.Buckets.BucketName | String | The name of S3 bucket. |
+| AWS.S3.Buckets.Objects.Key | String | The name of S3 object. |
+| AWS.S3.Buckets.Objects.Size | Number | Object size in bytes. |
+| AWS.S3.Buckets.Objects.LastModified | String | Last date object was modified. |
+| AWS.S3.Buckets.Objects.StorageClass | String | The storage class of the object. |
+| AWS.S3.Buckets.Objects.ChecksumType | Array | The checksum algorithm used to calculate the object checksum. |
+| AWS.S3.Buckets.Objects.ETag | String | The entity tag \(hash\) of the object. |
+| AWS.S3.Buckets.ObjectsNextToken | String | Token to use for pagination in subsequent requests. |
+
 ### aws-ec2-images-describe
 
 ***
@@ -2952,62 +2928,62 @@ Describes the specified images (AMIs, AKIs, and ARIs) available to you or all of
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
-| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). See AWS documentation for details &amp; filter options. | Optional | 
-| image_ids | A comma-separated list of image IDs to describe. | Optional | 
-| owners | Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon \| aws-marketplace \| microsoft). Omitting this option returns all images for which you have launch permissions, regardless of ownership. Separated by a comma. | Optional | 
-| executable_users | Scopes the images by users with explicit launch permissions. Specify an AWS account ID, self (the sender of the request), or all (public AMIs). Separated by a comma. | Optional | 
-| include_deprecated | Specifies whether to include deprecated AMIs. If not specified, the default behavior is determined by the AWS API. Possible values are: true, false. | Optional | 
-| include_disabled | Specifies whether to include disabled AMIs. If not specified, the default behavior is determined by the AWS API. Possible values are: true, false. | Optional | 
-| limit | Maximum number of AMIs to be returned in response. | Optional | 
-| next_token | The token for the next set of AMIs to return. Use value from AWS.EC2.ImagesNextPageToken if available; otherwise, use the token from the output file header. | Optional | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). See AWS documentation for details &amp; filter options. | Optional |
+| image_ids | A comma-separated list of image IDs to describe. | Optional |
+| owners | Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon \| aws-marketplace \| microsoft). Omitting this option returns all images for which you have launch permissions, regardless of ownership. Separated by a comma. | Optional |
+| executable_users | Scopes the images by users with explicit launch permissions. Specify an AWS account ID, self (the sender of the request), or all (public AMIs). Separated by a comma. | Optional |
+| include_deprecated | Specifies whether to include deprecated AMIs. If not specified, the default behavior is determined by the AWS API. Possible values are: true, false. | Optional |
+| include_disabled | Specifies whether to include disabled AMIs. If not specified, the default behavior is determined by the AWS API. Possible values are: true, false. | Optional |
+| limit | Maximum number of AMIs to be returned in response. | Optional |
+| next_token | The token for the next set of AMIs to return. Use value from AWS.EC2.ImagesNextPageToken if available; otherwise, use the token from the output file header. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EC2.Images.Architecture | string | The architecture of the image. | 
-| AWS.EC2.Images.CreationDate | date | The date and time the image was created. | 
-| AWS.EC2.Images.ImageId | string | The ID of the AMI. | 
-| AWS.EC2.Images.ImageLocation | string | The location of the AMI. | 
-| AWS.EC2.Images.ImageType | string | The type of image. | 
-| AWS.EC2.Images.Public | boolean | Indicates whether the image has public launch permissions. | 
-| AWS.EC2.Images.KernelId | string | The kernel associated with the image, if any. | 
-| AWS.EC2.Images.OwnerId | string | The AWS account ID of the image owner. | 
-| AWS.EC2.Images.Platform | string | The value is Windows for Windows AMIs; otherwise blank. | 
-| AWS.EC2.Images.ProductCodes.ProductCodeId | string | The product code. | 
-| AWS.EC2.Images.ProductCodes.ProductCodeType | string | The type of product code. | 
-| AWS.EC2.Images.RamdiskId | string | The RAM disk associated with the image, if any. | 
-| AWS.EC2.Images.State | string | The current state of the AMI. | 
-| AWS.EC2.Images.BlockDeviceMappings.DeviceName | string | The device name. | 
-| AWS.EC2.Images.BlockDeviceMappings.VirtualName | string | The virtual device name. | 
-| AWS.EC2.Images.BlockDeviceMappings.Ebs.Encrypted | boolean | Indicates whether the EBS volume is encrypted. | 
-| AWS.EC2.Images.BlockDeviceMappings.Ebs.DeleteOnTermination | boolean | Indicates whether the EBS volume is deleted upon instance termination. | 
-| AWS.EC2.Images.BlockDeviceMappings.Ebs.Iops | number | The number of input/output operations per second \(IOPS\). | 
-| AWS.EC2.Images.BlockDeviceMappings.Ebs.KmsKeyId | string | Identifier for a user-managed CMK under which the EBS volume is encrypted. | 
-| AWS.EC2.Images.BlockDeviceMappings.Ebs.SnapshotId | string | The ID of the snapshot. | 
-| AWS.EC2.Images.BlockDeviceMappings.Ebs.VolumeSize | number | The size of the EBS volume, in GiB. | 
-| AWS.EC2.Images.BlockDeviceMappings.Ebs.VolumeType | string | The volume type. | 
-| AWS.EC2.Images.BlockDeviceMappings.NoDevice | string | Suppresses the specified device included in the block device mapping. | 
-| AWS.EC2.Images.Description | string | The description of the AMI. | 
-| AWS.EC2.Images.EnaSupport | boolean | Specifies whether enhanced networking with ENA is enabled. | 
-| AWS.EC2.Images.Hypervisor | string | The hypervisor type of the image. | 
-| AWS.EC2.Images.ImageOwnerAlias | string | The AWS account alias or AWS account ID of the AMI owner. | 
-| AWS.EC2.Images.Name | string | The name of the AMI. | 
-| AWS.EC2.Images.RootDeviceName | string | The device name of the root device volume. | 
-| AWS.EC2.Images.RootDeviceType | string | The type of root device used by the AMI. | 
-| AWS.EC2.Images.SriovNetSupport | string | Indicates whether enhanced networking with the Intel 82599 VF interface is enabled. | 
-| AWS.EC2.Images.StateReason.Code | string | The reason code for the state change. | 
-| AWS.EC2.Images.StateReason.Message | string | The message for the state change. | 
-| AWS.EC2.Images.Tags.Key | string | The key of the tag. | 
-| AWS.EC2.Images.Tags.Value | string | The value of the tag. | 
-| AWS.EC2.Images.VirtualizationType | string | The type of virtualization of the AMI. | 
-| AWS.EC2.Images.BootMode | string | The boot mode of the image. | 
-| AWS.EC2.Images.DeprecationTime | string | The date and time to deprecate the AMI. | 
-| AWS.EC2.Images.ImdsSupport | string | If v2.0, it indicates that IMDSv2 is specified in the AMI. | 
-| AWS.EC2.Images.SourceInstanceId | string | The ID of the instance that the AMI was created from. | 
-| AWS.EC2.Images.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
+| AWS.EC2.Images.Architecture | string | The architecture of the image. |
+| AWS.EC2.Images.CreationDate | date | The date and time the image was created. |
+| AWS.EC2.Images.ImageId | string | The ID of the AMI. |
+| AWS.EC2.Images.ImageLocation | string | The location of the AMI. |
+| AWS.EC2.Images.ImageType | string | The type of image. |
+| AWS.EC2.Images.Public | boolean | Indicates whether the image has public launch permissions. |
+| AWS.EC2.Images.KernelId | string | The kernel associated with the image, if any. |
+| AWS.EC2.Images.OwnerId | string | The AWS account ID of the image owner. |
+| AWS.EC2.Images.Platform | string | The value is Windows for Windows AMIs; otherwise blank. |
+| AWS.EC2.Images.ProductCodes.ProductCodeId | string | The product code. |
+| AWS.EC2.Images.ProductCodes.ProductCodeType | string | The type of product code. |
+| AWS.EC2.Images.RamdiskId | string | The RAM disk associated with the image, if any. |
+| AWS.EC2.Images.State | string | The current state of the AMI. |
+| AWS.EC2.Images.BlockDeviceMappings.DeviceName | string | The device name. |
+| AWS.EC2.Images.BlockDeviceMappings.VirtualName | string | The virtual device name. |
+| AWS.EC2.Images.BlockDeviceMappings.Ebs.Encrypted | boolean | Indicates whether the EBS volume is encrypted. |
+| AWS.EC2.Images.BlockDeviceMappings.Ebs.DeleteOnTermination | boolean | Indicates whether the EBS volume is deleted upon instance termination. |
+| AWS.EC2.Images.BlockDeviceMappings.Ebs.Iops | number | The number of input/output operations per second \(IOPS\). |
+| AWS.EC2.Images.BlockDeviceMappings.Ebs.KmsKeyId | string | Identifier for a user-managed CMK under which the EBS volume is encrypted. |
+| AWS.EC2.Images.BlockDeviceMappings.Ebs.SnapshotId | string | The ID of the snapshot. |
+| AWS.EC2.Images.BlockDeviceMappings.Ebs.VolumeSize | number | The size of the EBS volume, in GiB. |
+| AWS.EC2.Images.BlockDeviceMappings.Ebs.VolumeType | string | The volume type. |
+| AWS.EC2.Images.BlockDeviceMappings.NoDevice | string | Suppresses the specified device included in the block device mapping. |
+| AWS.EC2.Images.Description | string | The description of the AMI. |
+| AWS.EC2.Images.EnaSupport | boolean | Specifies whether enhanced networking with ENA is enabled. |
+| AWS.EC2.Images.Hypervisor | string | The hypervisor type of the image. |
+| AWS.EC2.Images.ImageOwnerAlias | string | The AWS account alias or AWS account ID of the AMI owner. |
+| AWS.EC2.Images.Name | string | The name of the AMI. |
+| AWS.EC2.Images.RootDeviceName | string | The device name of the root device volume. |
+| AWS.EC2.Images.RootDeviceType | string | The type of root device used by the AMI. |
+| AWS.EC2.Images.SriovNetSupport | string | Indicates whether enhanced networking with the Intel 82599 VF interface is enabled. |
+| AWS.EC2.Images.StateReason.Code | string | The reason code for the state change. |
+| AWS.EC2.Images.StateReason.Message | string | The message for the state change. |
+| AWS.EC2.Images.Tags.Key | string | The key of the tag. |
+| AWS.EC2.Images.Tags.Value | string | The value of the tag. |
+| AWS.EC2.Images.VirtualizationType | string | The type of virtualization of the AMI. |
+| AWS.EC2.Images.BootMode | string | The boot mode of the image. |
+| AWS.EC2.Images.DeprecationTime | string | The date and time to deprecate the AMI. |
+| AWS.EC2.Images.ImdsSupport | string | If v2.0, it indicates that IMDSv2 is specified in the AMI. |
+| AWS.EC2.Images.SourceInstanceId | string | The ID of the instance that the AMI was created from. |
+| AWS.EC2.Images.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
 
 ### aws-ec2-image-create
 
@@ -3022,23 +2998,23 @@ Creates an Amazon Machine Image (AMI) from an Amazon EBS-backed instance. The in
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
-| name | A name for the new image. | Required | 
-| instance_id | The ID of the instance. | Required | 
-| description | A description for the new image. | Optional | 
-| no_reboot | By default, Amazon EC2 attempts to shut down and reboot the instance before creating the image. If the No Reboot option is set, Amazon EC2 doesn't shut down the instance before creating the image. Possible values are: true, false. | Optional | 
-| block_device_mappings | The block devices for the instance in JSON format. | Optional | 
-| tag_specifications | The tags to apply to the AMI and snapshots on creation. Must be separated by a semicolon (;) and specified using the format "key=key,value=val". | Optional | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| name | A name for the new image. | Required |
+| instance_id | The ID of the instance. | Required |
+| description | A description for the new image. | Optional |
+| no_reboot | By default, Amazon EC2 attempts to shut down and reboot the instance before creating the image. If the No Reboot option is set, Amazon EC2 doesn't shut down the instance before creating the image. Possible values are: true, false. | Optional |
+| block_device_mappings | The block devices for the instance in JSON format. | Optional |
+| tag_specifications | The tags to apply to the AMI and snapshots on creation. Must be separated by a semicolon (;) and specified using the format "key=key,value=val". | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EC2.Images.ImageId | string | The ID of the new AMI. | 
-| AWS.EC2.Images.Name | string | The name of the new AMI. | 
-| AWS.EC2.Images.InstanceId | string | The ID of the instance used to create the AMI. | 
-| AWS.EC2.Images.Region | string | The AWS region where the AMI was created. | 
+| AWS.EC2.Images.ImageId | string | The ID of the new AMI. |
+| AWS.EC2.Images.Name | string | The name of the new AMI. |
+| AWS.EC2.Images.InstanceId | string | The ID of the instance used to create the AMI. |
+| AWS.EC2.Images.Region | string | The AWS region where the AMI was created. |
 
 ### aws-ec2-image-deregister
 
@@ -3053,9 +3029,9 @@ Deregisters the specified Amazon Machine Image (AMI). After you deregister an AM
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
-| image_id | The ID of the AMI to deregister. | Required | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| image_id | The ID of the AMI to deregister. | Required |
 
 #### Context Output
 
@@ -3074,25 +3050,25 @@ Initiates the copy of an AMI from the specified source region to the current reg
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
-| name | A name for the new AMI in the destination region. | Required | 
-| source_image_id | The ID of the AMI to copy. | Required | 
-| source_region | The name of the region that contains the AMI to copy. | Required | 
-| description | A description for the new AMI in the destination region. | Optional | 
-| encrypted | Specifies whether the destination snapshots of the copied image should be encrypted. Possible values are: true, false. | Optional | 
-| kms_key_id | The identifier of the symmetric AWS KMS key to use when creating encrypted volumes. If this parameter is not specified, your AWS managed key for Amazon EBS is used. | Optional | 
-| client_token | Unique, case-sensitive identifier you provide to ensure idempotency of the request. | Optional | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| name | A name for the new AMI in the destination region. | Required |
+| source_image_id | The ID of the AMI to copy. | Required |
+| source_region | The name of the region that contains the AMI to copy. | Required |
+| description | A description for the new AMI in the destination region. | Optional |
+| encrypted | Specifies whether the destination snapshots of the copied image should be encrypted. Possible values are: true, false. | Optional |
+| kms_key_id | The identifier of the symmetric AWS KMS key to use when creating encrypted volumes. If this parameter is not specified, your AWS managed key for Amazon EBS is used. | Optional |
+| client_token | Unique, case-sensitive identifier you provide to ensure idempotency of the request. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EC2.Images.ImageId | string | The ID of the new AMI. | 
-| AWS.EC2.Images.Name | string | The name of the new AMI. | 
-| AWS.EC2.Images.SourceImageId | string | The ID of the source AMI. | 
-| AWS.EC2.Images.SourceRegion | string | The source region from which the AMI was copied. | 
-| AWS.EC2.Images.Region | string | The region to which the AMI was copied. | 
+| AWS.EC2.Images.ImageId | string | The ID of the new AMI. |
+| AWS.EC2.Images.Name | string | The name of the new AMI. |
+| AWS.EC2.Images.SourceImageId | string | The ID of the source AMI. |
+| AWS.EC2.Images.SourceRegion | string | The source region from which the AMI was copied. |
+| AWS.EC2.Images.Region | string | The region to which the AMI was copied. |
 
 ### aws-ec2-image-available-waiter
 
@@ -3107,15 +3083,779 @@ Waits until an AMI is in the 'available' state. This command polls the AMI statu
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
-| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). See AWS documentation for details &amp; filter options. | Optional | 
-| image_ids | A comma-separated list of image IDs to wait for. | Optional | 
-| owners | Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon \| aws-marketplace \| microsoft). Separated by a comma. | Optional | 
-| executable_users | Scopes the images by users with explicit launch permissions. Specify an AWS account ID, self (the sender of the request), or all (public AMIs). Separated by a comma. | Optional | 
-| waiter_delay | The amount of time in seconds to wait between attempts. Default is 15 seconds. Default is 15. | Optional | 
-| waiter_max_attempts | The maximum number of attempts to check the image status. Default is 40 attempts. Default is 40. | Optional | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). See AWS documentation for details &amp; filter options. | Optional |
+| image_ids | A comma-separated list of image IDs to wait for. | Optional |
+| owners | Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon \| aws-marketplace \| microsoft). Separated by a comma. | Optional |
+| executable_users | Scopes the images by users with explicit launch permissions. Specify an AWS account ID, self (the sender of the request), or all (public AMIs). Separated by a comma. | Optional |
+| waiter_delay | The amount of time in seconds to wait between attempts. Default is 15 seconds. Default is 15. | Optional |
+| waiter_max_attempts | The maximum number of attempts to check the image status. Default is 40 attempts. Default is 40. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
+### aws-ec2-volumes-describe
+
+***
+Describes the specified EBS volumes or all of your EBS volumes.
+
+#### Base Command
+
+`aws-ec2-volumes-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. This is used when running commands across multiple accounts. | Required |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). See AWS documentation for details &amp; filter options. | Optional |
+| volume_ids | A comma-separated list of volume IDs. | Optional |
+| limit | The maximum number of records to return. The valid range is 5-1000. | Optional |
+| next_token | The token returned from a previous paginated request. Pagination continues from the end of the items returned by the previous request. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Volumes.Attachments.AttachTime | date | The timestamp when the attachment was initiated. |
+| AWS.EC2.Volumes.Attachments.Device | string | The device name. |
+| AWS.EC2.Volumes.Attachments.InstanceId | string | The ID of the instance. |
+| AWS.EC2.Volumes.Attachments.State | string | The attachment state of the volume. |
+| AWS.EC2.Volumes.Attachments.VolumeId | string | The ID of the volume. |
+| AWS.EC2.Volumes.Attachments.DeleteOnTermination | boolean | Indicates whether the EBS volume is deleted on instance termination. |
+| AWS.EC2.Volumes.AvailabilityZone | string | The Availability Zone for the volume. |
+| AWS.EC2.Volumes.CreateTime | date | The time stamp when volume creation was initiated. |
+| AWS.EC2.Volumes.Encrypted | boolean | Indicates whether the volume is encrypted. |
+| AWS.EC2.Volumes.KmsKeyId | string | The Amazon Resource Name \(ARN\) of the AWS Key Management Service \(AWS KMS\) customer master key \(CMK\) that was used to protect the volume encryption key for the volume. |
+| AWS.EC2.Volumes.OutpostArn | string | The Amazon Resource Name \(ARN\) of the Outpost. |
+| AWS.EC2.Volumes.Size | number | The size of the volume, in GiBs. |
+| AWS.EC2.Volumes.SnapshotId | string | The snapshot from which the volume was created, if applicable. |
+| AWS.EC2.Volumes.State | string | The volume state. |
+| AWS.EC2.Volumes.VolumeId | string | The ID of the volume. |
+| AWS.EC2.Volumes.Iops | number | The number of I/O operations per second \(IOPS\). |
+| AWS.EC2.Volumes.Tags.Key | string | The key of the tag. |
+| AWS.EC2.Volumes.Tags.Value | string | The value of the tag. |
+| AWS.EC2.Volumes.VolumeType | string | The volume type. |
+| AWS.EC2.Volumes.FastRestored | boolean | Indicates whether the volume was created using fast snapshot restore. |
+| AWS.EC2.Volumes.MultiAttachEnabled | boolean | Indicates whether Amazon EBS Multi-Attach is enabled. |
+| AWS.EC2.Volumes.Throughput | number | The throughput that the volume supports, in MiB/s. |
+| AWS.EC2.Volumes.SseType | string | Reserved for future use. |
+| AWS.EC2.VolumesNextToken | String | Token to use for pagination in subsequent requests. |
+
+### aws-ec2-volume-modify
+
+***
+You can modify several parameters of an existing EBS volume, including volume size, volume type, and IOPS capacity.
+
+#### Base Command
+
+`aws-ec2-volume-modify`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. This is used when running commands across multiple accounts. | Required |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| volume_id | The ID of the volume. | Required |
+| size | Target size in GiB of the volume to be modified. | Optional |
+| volume_type | Target EBS volume type of the volume to be modified. The API does not support modifications for volume type standard. Possible values are: gp2, gp3, io1, io2, sc1, st1. | Optional |
+| iops | Target IOPS rate of the volume to be modified. | Optional |
+| throughput | Target throughput of the volume to be modified, in MiB/s. Valid only for gp3 volumes. | Optional |
+| multi_attach_enabled | Specifies whether to enable Amazon EBS Multi-Attach. Valid only for io1 and io2 volumes. Possible values are: true, false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Volumes.VolumeId | string | The ID of the volume. |
+| AWS.EC2.Volumes.Modification.ModificationState | string | The current modification state. |
+| AWS.EC2.Volumes.Modification.StatusMessage | string | A status message about the modification progress or failure. |
+| AWS.EC2.Volumes.Size | number | The target size of the volume, in GiB. |
+| AWS.EC2.Volumes.Iops | number | The target IOPS rate of the volume. |
+| AWS.EC2.Volumes.VolumeType | string | The target EBS volume type of the volume. |
+| AWS.EC2.Volumes.Throughput | number | The target throughput of the volume, in MiB/s. |
+| AWS.EC2.Volumes.MultiAttachEnabled | boolean | The target setting for Amazon EBS Multi-Attach. |
+| AWS.EC2.Volumes.Modification.OriginalSize | number | The original size of the volume, in GiB. |
+| AWS.EC2.Volumes.Modification.OriginalIops | number | The original IOPS rate of the volume. |
+| AWS.EC2.Volumes.Modification.OriginalVolumeType | string | The original EBS volume type of the volume. |
+| AWS.EC2.Volumes.Modification.OriginalThroughput | number | The original throughput of the volume, in MiB/s. |
+| AWS.EC2.Volumes.Modification.OriginalMultiAttachEnabled | boolean | The original setting for Amazon EBS Multi-Attach. |
+| AWS.EC2.Volumes.Modification.Progress | number | The modification progress, from 0 to 100 percent complete. |
+| AWS.EC2.Volumes.Modification.StartTime | date | The modification start time. |
+| AWS.EC2.Volumes.Modification.EndTime | date | The modification completion or failure time. |
+
+### aws-ec2-volume-create
+
+***
+Creates an EBS volume that can be attached to an instance in the same Availability Zone.
+
+#### Base Command
+
+`aws-ec2-volume-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. This is used when running commands across multiple accounts. | Required |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| availability_zone | The Availability Zone in which to create the volume. | Required |
+| encrypted | Specifies whether the volume should be encrypted. Possible values are: true, false. | Optional |
+| iops | The number of I/O operations per second (IOPS). For gp3, io1, and io2 volumes, this represents the number of IOPS that are provisioned for the volume. | Optional |
+| kms_key_id | The identifier of the AWS KMS key to use for Amazon EBS encryption. If this parameter is not specified, your AWS managed key for Amazon EBS is used. | Optional |
+| outpost_arn | The Amazon Resource Name (ARN) of the Outpost. | Optional |
+| size | The size of the volume, in GiBs. You must specify either a snapshot ID or a volume size. | Optional |
+| snapshot_id | The snapshot from which to create the volume. You must specify either a snapshot ID or a volume size. | Optional |
+| volume_type | The volume type. Possible values are: standard, io1, io2, gp2, gp3, sc1, st1. | Optional |
+| throughput | The throughput to provision for a volume, with a maximum of 1,000 MiB/s. This parameter is valid only for gp3 volumes. | Optional |
+| multi_attach_enabled | Indicates whether to enable Amazon EBS Multi-Attach. If you enable Multi-Attach, you can attach the volume to up to 16 Nitro-based instances in the same Availability Zone. This parameter is supported with io1 and io2 volumes only. Possible values are: true, false. | Optional |
+| tags | One or more tags. Example key=Name,value=test;key=Owner,value=Bob. | Optional |
+| client_token | Unique, case-sensitive identifier that you provide to ensure the idempotency of the request. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Volumes.Attachments.AttachTime | date | The timestamp when the attachment was initiated. |
+| AWS.EC2.Volumes.Attachments.Device | string | The device name. |
+| AWS.EC2.Volumes.Attachments.InstanceId | string | The ID of the instance. |
+| AWS.EC2.Volumes.Attachments.State | string | The attachment state of the volume. |
+| AWS.EC2.Volumes.Attachments.VolumeId | string | The ID of the volume. |
+| AWS.EC2.Volumes.Attachments.DeleteOnTermination | boolean | Indicates whether the EBS volume is deleted on instance termination. |
+| AWS.EC2.Volumes.AvailabilityZone | string | The Availability Zone for the volume. |
+| AWS.EC2.Volumes.CreateTime | date | The time stamp when volume creation was initiated. |
+| AWS.EC2.Volumes.Encrypted | boolean | Indicates whether the volume is encrypted. |
+| AWS.EC2.Volumes.KmsKeyId | string | The Amazon Resource Name \(ARN\) of the AWS Key Management Service \(AWS KMS\) customer master key \(CMK\) that was used to protect the volume encryption key for the volume. |
+| AWS.EC2.Volumes.OutpostArn | string | The Amazon Resource Name \(ARN\) of the Outpost. |
+| AWS.EC2.Volumes.Size | number | The size of the volume, in GiBs. |
+| AWS.EC2.Volumes.SnapshotId | string | The snapshot from which the volume was created, if applicable. |
+| AWS.EC2.Volumes.State | string | The volume state. |
+| AWS.EC2.Volumes.VolumeId | string | The ID of the volume. |
+| AWS.EC2.Volumes.Iops | number | The number of I/O operations per second \(IOPS\). |
+| AWS.EC2.Volumes.Tags.Key | string | The key of the tag. |
+| AWS.EC2.Volumes.Tags.Value | string | The value of the tag. |
+| AWS.EC2.Volumes.VolumeType | string | The volume type. |
+| AWS.EC2.Volumes.FastRestored | boolean | Indicates whether the volume was created using fast snapshot restore. |
+| AWS.EC2.Volumes.MultiAttachEnabled | boolean | Indicates whether Amazon EBS Multi-Attach is enabled. |
+| AWS.EC2.Volumes.Throughput | number | The throughput that the volume supports, in MiB/s. |
+| AWS.EC2.Volumes.SseType | string | Reserved for future use. |
+
+### aws-ec2-volume-attach
+
+***
+Attaches an EBS volume to a running or stopped instance and exposes it to the instance with the specified device name.
+
+#### Base Command
+
+`aws-ec2-volume-attach`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. This is used when running commands across multiple accounts. | Required |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| device | The device name (for example, /dev/sdh or xvdh). | Required |
+| instance_id | The ID of the instance. | Required |
+| volume_id | The ID of the EBS volume. The volume and instance must be within the same Availability Zone. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Volumes.VolumeId | string | The ID of the volume. |
+| AWS.EC2.Volumes.Attachments.AttachTime | date | The timestamp when the attachment was initiated. |
+| AWS.EC2.Volumes.Attachments.Device | string | The device name. |
+| AWS.EC2.Volumes.Attachments.InstanceId | string | The ID of the instance. |
+| AWS.EC2.Volumes.Attachments.State | string | The attachment state of the volume. |
+| AWS.EC2.Volumes.Attachments.VolumeId | string | The ID of the volume. |
+| AWS.EC2.Volumes.Attachments.DeleteOnTermination | boolean | Indicates whether the EBS volume is deleted on instance termination. |
+| AWS.EC2.Volumes.Attachments.AssociatedResource | string | The ARN of the Amazon ECS or Fargate task to which the volume is attached. |
+| AWS.EC2.Volumes.Attachments.InstanceOwningService | string | The service principal of Amazon Web Services service that owns the underlying instance to which the volume is attached. |
+
+### aws-ec2-volume-detach
+
+***
+Detaches an EBS volume from an instance.
+
+#### Base Command
+
+`aws-ec2-volume-detach`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. This is used when running commands across multiple accounts. | Required |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| volume_id | The ID of the volume. | Required |
+| force | Forces detachment if the previous detachment attempt did not occur cleanly. This option can lead to data loss or a corrupted file system. Use this option only as a last resort to detach a volume from a failed instance. Possible values are: true, false. | Optional |
+| device | The device name (for example, /dev/sdh or xvdh). | Optional |
+| instance_id | The ID of the instance. If you are detaching a Multi-Attach enabled volume, you must specify an instance ID. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Volumes.VolumeId | string | The ID of the volume. |
+| AWS.EC2.Volumes.Attachments.AttachTime | date | The timestamp when the attachment was initiated. |
+| AWS.EC2.Volumes.Attachments.Device | string | The device name. |
+| AWS.EC2.Volumes.Attachments.InstanceId | string | The ID of the instance. |
+| AWS.EC2.Volumes.Attachments.State | string | The attachment state of the volume. |
+| AWS.EC2.Volumes.Attachments.VolumeId | string | The ID of the volume. |
+| AWS.EC2.Volumes.Attachments.DeleteOnTermination | boolean | Indicates whether the EBS volume is deleted on instance termination. |
+| AWS.EC2.Volumes.Attachments.AssociatedResource | string | The ARN of the Amazon ECS or Fargate task to which the volume is attached. |
+| AWS.EC2.Volumes.Attachments.InstanceOwningService | string | The AWS service principal that owns the instance to which the volume is attached. |
+
+### aws-ec2-volume-delete
+
+***
+Deletes the specified EBS volume. The volume must be in the available state (not attached to an instance).
+
+#### Base Command
+
+`aws-ec2-volume-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. This is used when running commands across multiple accounts. | Required |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| volume_id | The ID of the volume. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-snapshots-describe
+
+***
+Describes the EBS snapshots available to you or all snapshots accessible in your environment.
+
+#### Base Command
+
+`aws-ec2-snapshots-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). See AWS documentation for details &amp; filter options. | Optional |
+| limit | The maximum number of snapshots to return for this request. This value can be between 5 and 1000. | Optional |
+| next_token | The token returned from the previous paginated request. Use it to continue retrieving results from where the last request ended. | Optional |
+| owner_ids | A comma-separated list of possible owners IDs. Scopes the results to snapshots with the specified owners. | Optional |
+| restorable_by_user_ids | A comma-separated list of IDs of the AWS accounts that can create volumes from the snapshot. | Optional |
+| snapshot_ids | A comma-separated list of snapshot IDs. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Snapshots.DataEncryptionKeyId | string | The data encryption key identifier for the snapshot. |
+| AWS.EC2.Snapshots.Description | string | The description for the snapshot. |
+| AWS.EC2.Snapshots.Encrypted | boolean | Indicates whether the snapshot is encrypted. |
+| AWS.EC2.Snapshots.KmsKeyId | string | The Amazon Resource Name \(ARN\) of the AWS KMS key that was used to protect the volume encryption key for the parent volume. |
+| AWS.EC2.Snapshots.OwnerId | string | The ID of the AWS account that owns the EBS snapshot. |
+| AWS.EC2.Snapshots.Progress | string | The progress of the snapshot, as a percentage. |
+| AWS.EC2.Snapshots.SnapshotId | string | The ID of the snapshot. Each snapshot receives a unique identifier when it is created. |
+| AWS.EC2.Snapshots.StartTime | date | The time stamp when the snapshot was initiated. |
+| AWS.EC2.Snapshots.State | string | The snapshot state. |
+| AWS.EC2.Snapshots.StateMessage | string | Encrypted Amazon EBS snapshots are copied asynchronously. If a snapshot copy operation fails, this field displays error state details to help you diagnose why the error occurred. |
+| AWS.EC2.Snapshots.VolumeId | string | The ID of the volume that was used to create the snapshot. |
+| AWS.EC2.Snapshots.VolumeSize | number | The size of the volume, in GiB. |
+| AWS.EC2.Snapshots.OwnerAlias | string | The AWS owner alias, from an Amazon-maintained list \(amazon\). This is not the user-configured AWS account alias set using the IAM console. |
+| AWS.EC2.Snapshots.OutpostArn | string | The ARN of the Outpost on which the snapshot is stored. |
+| AWS.EC2.Snapshots.Tags.Key | string | The key of the tag. |
+| AWS.EC2.Snapshots.Tags.Value | string | The value of the tag. |
+| AWS.EC2.Snapshots.StorageTier | string | The storage tier in which the snapshot is stored. |
+| AWS.EC2.Snapshots.RestoreExpiryTime | date | Only for archived snapshots that are temporarily restored. Indicates the date and time when a temporarily restored snapshot will be automatically re-archived. |
+| AWS.EC2.Snapshots.SseType | string | Reserved for future use. |
+| AWS.EC2.SnapshotsNextPageToken | string | Next page token for pagination. |
+
+### aws-ec2-snapshot-delete
+
+***
+Deletes the specified snapshot.
+
+#### Base Command
+
+`aws-ec2-snapshot-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| snapshot_id | The ID of the EBS snapshot. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-snapshot-copy
+
+***
+Copies a point-in-time snapshot of an EBS volume and stores it in Amazon S3. You can copy a snapshot within the same Region, from one Region to another, or from a Region to an Outpost.
+
+#### Base Command
+
+`aws-ec2-snapshot-copy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| source_snapshot_id | The ID of the EBS snapshot to copy. | Required |
+| source_region | The ID of the Region that contains the snapshot to be copied. | Required |
+| description | A description for the EBS snapshot. | Optional |
+| destination_outpost_arn | The Amazon Resource Name (ARN) of the Outpost where the snapshot will be copied. | Optional |
+| encrypted | Use this parameter to encrypt a copy of an unencrypted snapshot when encryption-by-default is not enabled. Otherwise, omit it. Possible values are: true, false. | Optional |
+| kms_key_id | The identifier of the AWS KMS key to use for Amazon EBS encryption. If this parameter is not specified, your AWS managed key for Amazon EBS is used. | Optional |
+| presigned_url | When you copy an encrypted source snapshot using the Amazon EC2 Query API, you must supply a pre-signed URL. | Optional |
+| tag_specifications | The tags to apply to the new snapshot. The tags must be separated by a semicolon (;) and specified using the format "key=key,values=val". | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Snapshots.SnapshotId | string | The ID of the new snapshot. |
+| AWS.EC2.Snapshots.Tags.Key | string | The key of the tag. |
+| AWS.EC2.Snapshots.Tags.Value | string | The value of the tag. |
+
+### aws-ec2-snapshot-completed-waiter
+
+***
+A waiter function that waits until the snapshot is complete.
+
+#### Base Command
+
+`aws-ec2-snapshot-completed-waiter`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). See AWS documentation for details &amp; filter options. | Optional |
+| owner_ids | A comma-separated list of possible owners IDs. Scopes the results to snapshots with the specified owners. | Optional |
+| restorable_by_user_ids | A comma-separated list of IDs of the AWS accounts that can create volumes from the snapshot. | Optional |
+| snapshot_ids | A comma-separated list of snapshot IDs. | Optional |
+| waiter_delay | The amount of time in seconds to wait between attempts. Default 15. Default is 15. | Optional |
+| waiter_max_attempts | The maximum number of attempts to be made. Default 40. Default is 40. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-lambda-function-get
+
+***
+Returns information about the function or the specified version, including a link to download the deployment package (valid for 10 minutes). If a version is specified, only version-specific details are returned.
+
+#### Base Command
+
+`aws-lambda-function-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| function_name | The name of the Lambda function, version, or alias. | Required |
+| qualifier | Specify a version or alias to get details about a published version of the function. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.Functions.Configuration.FunctionName | string | The name of the function. |
+| AWS.Lambda.Functions.Configuration.FunctionArn | string | The function's Amazon Resource Name \(ARN\). |
+| AWS.Lambda.Functions.Configuration.Runtime | string | The identifier of the function's runtime. |
+| AWS.Lambda.Functions.Configuration.Role | string | The function's execution role. |
+| AWS.Lambda.Functions.Configuration.Handler | string | The function that Lambda calls to begin running your function. |
+| AWS.Lambda.Functions.Configuration.CodeSize | number | The size of the function's deployment package, in bytes. |
+| AWS.Lambda.Functions.Configuration.Description | string | The function's description. |
+| AWS.Lambda.Functions.Configuration.Timeout | number | The amount of time in seconds that Lambda allows a function to run before stopping it. |
+| AWS.Lambda.Functions.Configuration.MemorySize | number | The amount of memory available to the function at runtime. |
+| AWS.Lambda.Functions.Configuration.LastModified | string | The date and time that the function was last updated, in ISO-8601 format. |
+| AWS.Lambda.Functions.Configuration.CodeSha256 | string | The SHA256 hash of the function's deployment package. |
+| AWS.Lambda.Functions.Configuration.Version | string | The version of the Lambda function. |
+| AWS.Lambda.Functions.Configuration.VpcConfig.SubnetIds | array | A list of VPC subnet IDs. |
+| AWS.Lambda.Functions.Configuration.VpcConfig.SecurityGroupIds | array | A list of VPC security group IDs. |
+| AWS.Lambda.Functions.Configuration.VpcConfig.VpcId | string | The ID of the VPC. |
+| AWS.Lambda.Functions.Code.RepositoryType | string | The repository from which you can download the function. |
+| AWS.Lambda.Functions.Code.Location | string | The presigned URL you can use to download the function's .zip file. |
+| AWS.Lambda.Functions.Tags | object | The function's tags. |
+| AWS.Lambda.Functions.Concurrency.ReservedConcurrentExecutions | number | The number of concurrent executions that are reserved for this function. |
+| AWS.Lambda.Functions.Region | string | The AWS Region. |
+
+### aws-lambda-functions-list
+
+***
+Returns a list of your Lambda functions. For each function, the response includes the function configuration information.
+
+#### Base Command
+
+`aws-lambda-functions-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| limit | Maximum number of functions to return in a single request. Valid range is 1-50. Default: 50. | Optional |
+| next_token | Token for pagination. Use the value from AWS.Lambda.FunctionsNextToken to retrieve the next page of results. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.Functions.FunctionName | string | The name of the function. |
+| AWS.Lambda.Functions.FunctionArn | string | The function's Amazon Resource Name. |
+| AWS.Lambda.Functions.Runtime | string | The runtime environment for the Lambda function. |
+| AWS.Lambda.Functions.Role | string | The function's execution role. |
+| AWS.Lambda.Functions.Handler | string | The function Lambda calls to begin executing your function. |
+| AWS.Lambda.Functions.CodeSize | number | The size of the function's deployment package in bytes. |
+| AWS.Lambda.Functions.Description | string | The function's description. |
+| AWS.Lambda.Functions.Timeout | number | The amount of time that Lambda allows a function to run before terminating it. |
+| AWS.Lambda.Functions.MemorySize | number | The memory allocated to the function. |
+| AWS.Lambda.Functions.LastModified | date | The date and time that the function was last updated, in ISO-8601 format \(YYYY-MM-DDThh:mm:ss.sTZD\). |
+| AWS.Lambda.Functions.CodeSha256 | string | The SHA256 hash of the function's deployment package. |
+| AWS.Lambda.Functions.Version | string | The version of the Lambda function. |
+| AWS.Lambda.Functions.VpcConfig.SubnetIds | string | A list of VPC subnet IDs. |
+| AWS.Lambda.Functions.VpcConfig.SecurityGroupIds | string | A list of VPC security groups IDs. |
+| AWS.Lambda.Functions.VpcConfig.VpcId | string | The ID of the VPC. |
+| AWS.Lambda.Functions.DeadLetterConfig.TargetArn | string | The Amazon Resource Name \(ARN\) of an Amazon SQS queue or Amazon SNS topic. |
+| AWS.Lambda.Functions.Environment.Variables | string | Environment variable key-value pairs. |
+| AWS.Lambda.Functions.Environment.Error.ErrorCode | string | The error code for environment variables that could not be applied. |
+| AWS.Lambda.Functions.Environment.Error.Message | string | The error message for environment variables that could not be applied. |
+| AWS.Lambda.Functions.KMSKeyArn | string | The KMS key used to encrypt the function's environment variables. Only returned if you've configured a customer managed CMK. |
+| AWS.Lambda.Functions.TracingConfig.Mode | string | The function's AWS X-Ray tracing configuration mode. |
+| AWS.Lambda.Functions.MasterArn | string | The ARN of the master function. |
+| AWS.Lambda.Functions.RevisionId | string | Represents the latest updated revision of the function or alias. |
+| AWS.Lambda.Functions.LayerVersions.Arn | string | The Amazon Resource Name \(ARN\) of the function layer. |
+| AWS.Lambda.Functions.LayerVersions.CodeSize | string | The size of the layer archive in bytes. |
+| AWS.Lambda.Functions.Region | string | The AWS Region. |
+| AWS.Lambda.FunctionsNextToken | string | Token to use for pagination in subsequent requests. |
+
+### aws-lambda-aliases-list
+
+***
+Returns a list of aliases created for a Lambda function.
+
+#### Base Command
+
+`aws-lambda-aliases-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| function_name | The name of the Lambda function. | Required |
+| function_version | Specify a function version to only list aliases that invoke that version. | Optional |
+| limit | The maximum number of aliases to return (default is 50, maximum is 10000). Default is 50. | Optional |
+| next_token | Specify the pagination token that was returned by a previous request to retrieve the next page of results. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.Aliases.AliasArn | string | Lambda function ARN that is qualified using the alias name as the suffix. |
+| AWS.Lambda.Aliases.Name | string | Alias name. |
+| AWS.Lambda.Aliases.FunctionVersion | string | Function version to which the alias points. |
+| AWS.Lambda.Aliases.Description | string | Alias description. |
+| AWS.Lambda.Aliases.RoutingConfig.AdditionalVersionWeights | string | The name of the second alias, and the percentage of traffic that is routed to it. |
+| AWS.Lambda.Aliases.RevisionId | string | Represents the latest updated revision of the function or alias. |
+| AWS.Lambda.AliasesNextToken | unknown | The pagination token for the next set of aliases. |
+
+### aws-lambda-account-settings-get
+
+***
+Retrieves details about the account's limits and usage in an AWS Region.
+
+#### Base Command
+
+`aws-lambda-account-settings-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.AccountSettings.AccountLimit.TotalCodeSize | number | The amount of storage space that you can use for all deployment packages and layer archives. |
+| AWS.Lambda.AccountSettings.AccountLimit.CodeSizeUnzipped | number | The maximum size of your function's code and layers when they're extracted. |
+| AWS.Lambda.AccountSettings.AccountLimit.CodeSizeZipped | number | The maximum size of a deployment package when it's uploaded directly to AWS Lambda. Use Amazon S3 for larger files. |
+| AWS.Lambda.AccountSettings.AccountLimit.ConcurrentExecutions | number | The maximum number of simultaneous function executions. |
+| AWS.Lambda.AccountSettings.AccountLimit.UnreservedConcurrentExecutions | number | The maximum number of simultaneous function executions, minus the capacity that's reserved for individual functions with PutFunctionConcurrency. |
+| AWS.Lambda.AccountSettings.AccountUsage.TotalCodeSize | number | The amount of storage space, in bytes, that's being used by deployment packages and layer archives. |
+| AWS.Lambda.AccountSettings.AccountUsage.FunctionCount | number | The number of Lambda functions. |
+| AWS.Lambda.AccountSettings.Region | string | The AWS Region. |
+| AWS.Lambda.AccountSettings.AccountId | string | The AWS account ID. |
+
+### aws-lambda-function-versions-list
+
+***
+Returns a list of versions, with the version-specific configuration of each.
+
+#### Base Command
+
+`aws-lambda-function-versions-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| function_name | The name of the Lambda function. | Required |
+| next_token | Specify the pagination token that's returned by a previous request to retrieve the next page of results. | Optional |
+| limit | The maximum number of versions to return. Note that the maximum limit is 50 items in each response. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.Functions.FunctionVersionsNextToken | String | The pagination token that's included if more results are available. |
+| AWS.Lambda.Functions.FunctionArn | String | The function's Amazon Resource Name \(ARN\). |
+| AWS.Lambda.Functions.FunctionVersions.FunctionArn | String | The function's Amazon Resource Name \(ARN\). |
+| AWS.Lambda.Functions.FunctionVersions.Runtime | String | The identifier of the function's runtime. Runtime is required if the deployment package is a .zip file archive. |
+| AWS.Lambda.Functions.FunctionVersions.Role | String | The function's execution role. |
+| AWS.Lambda.Functions.FunctionVersions.Handler | String | The function that Lambda calls to begin running your function. |
+| AWS.Lambda.Functions.FunctionVersions.CodeSize | Number | The size of the function's deployment package, in bytes. |
+| AWS.Lambda.Functions.FunctionVersions.Description | String | The function's description. |
+| AWS.Lambda.Functions.FunctionVersions.Timeout | Number | The amount of time in seconds that Lambda allows a function to run before stopping it. |
+| AWS.Lambda.Functions.FunctionVersions.MemorySize | Number | The amount of memory available to the function at runtime. |
+| AWS.Lambda.Functions.FunctionVersions.LastModified | String | The date and time that the function was last updated, in ISO-8601 format \(YYYY-MM-DDThh:mm:ss.sTZD\). |
+| AWS.Lambda.Functions.FunctionVersions.CodeSha256 | String | The SHA256 hash of the function's deployment package. |
+| AWS.Lambda.Functions.FunctionVersions.Version | String | The version of the Lambda function. |
+| AWS.Lambda.Functions.FunctionVersions.VpcConfig.SubnetIds | String | A list of VPC subnet IDs. |
+| AWS.Lambda.Functions.FunctionVersions.VpcConfig.SecurityGroupIds | String | A list of VPC security group IDs. |
+| AWS.Lambda.Functions.FunctionVersions.VpcConfig.VpcId | String | The ID of the VPC. |
+| AWS.Lambda.Functions.FunctionVersions.DeadLetterConfig.TargetArn | String | The Amazon Resource Name \(ARN\) of an Amazon SQS queue or Amazon SNS topic. |
+| AWS.Lambda.Functions.FunctionVersions.Environment.Variables | String | Environment variable key-value pairs. Omitted from CloudTrail logs. |
+| AWS.Lambda.Functions.FunctionVersions.Environment.Error.ErrorCode | String | The error code for environment variables that couldn't be applied. |
+| AWS.Lambda.Functions.FunctionVersions.Environment.Error.Message | String | The error message for environment variables that couldn't be applied. |
+| AWS.Lambda.Functions.FunctionVersions.KMSKeyArn | String | The ARN of the KMS key used to encrypt the function's environment variables. |
+| AWS.Lambda.Functions.FunctionVersions.TracingConfig.Mode | String | The tracing mode for the Lambda function. |
+| AWS.Lambda.Functions.FunctionVersions.MasterArn | String | The ARN of the main function for Lambda@Edge functions. |
+| AWS.Lambda.Functions.FunctionVersions.State | String | The current state of the function. When the state is Inactive, you can reactivate the function by invoking it. |
+| AWS.Lambda.Functions.FunctionVersions.StateReason | String | The reason for the function's current state. |
+| AWS.Lambda.Functions.FunctionVersions.StateReasonCode | String | The reason code for the current state of the function. |
+| AWS.Lambda.Functions.FunctionVersions.LastUpdateStatus | String | The status of the last update that was performed on the function. This is first set to Successful after function creation completes. |
+| AWS.Lambda.Functions.FunctionVersions.LastUpdateStatusReason | String | The reason for the last update that was performed on the function. |
+| AWS.Lambda.Functions.FunctionVersions.LastUpdateStatusReasonCode | String | The reason code for the last update operation status. |
+| AWS.Lambda.Functions.FunctionVersions.PackageType | String | The type of deployment package. Set to Image for container image and set Zip for .zip file archive. |
+
+### aws-lambda-function-url-config-delete
+
+***
+Deletes a Lambda function URL. When you delete a function URL, you can't recover it. Creating a new function URL results in a different URL address.
+
+#### Base Command
+
+`aws-lambda-function-url-config-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| function_name | The name of the Lambda function. | Required |
+| qualifier | The alias name or version number. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-lambda-function-create
+
+***
+Creates a Lambda function. To create a function, you need a deployment package and an execution role.
+
+#### Base Command
+
+`aws-lambda-function-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| function_name | The name of the Lambda function. | Required |
+| runtime | The runtime environment for the function. | Required |
+| handler | The name of the method within your code that Lambda calls to execute your function. Example: lambda_function.lambda_handler. | Required |
+| role | The Amazon Resource Name (ARN) of the function's execution role. | Required |
+| code | Entry ID of the uploaded base64-encoded contents of the deployment package. | Optional |
+| s3_bucket | An Amazon S3 bucket in the same Amazon Web Services Region as your function. The bucket can be in a different Amazon Web Services account. | Optional |
+| description | A description of the function. | Optional |
+| function_timeout | The amount of time (in seconds) that Lambda allows a function to run before stopping it. Default is 3. | Optional |
+| memory_size | The amount of memory (in MB) available to the function at runtime. Default is 128. | Optional |
+| publish | Set to true to publish the first version of the function during creation. Possible values are: true, false. | Optional |
+| subnet_ids | A comma-separated list of VPC subnet IDs. | Optional |
+| security_group_ids | A comma-separated list of VPC security group IDs. | Optional |
+| ipv6_allowed_for_dual_stack | Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets. Possible values are: true, false. | Optional |
+| package_type | The type of deployment package. Possible values are: Image, Zip. | Optional |
+| environment | The environment variables for the function. Must be separated by a semicolon (;) and specified using the format "key=DB_HOST,value=localhost;key=DEBUG,value=true". | Optional |
+| tracing_config | The tracing configuration for the function. Set to Active to sample and trace a subset of incoming requests with X-Ray. Possible values are: Active, PassThrough. Default is Active. | Optional |
+| tags | The list of tags to apply to the function. Must be separated by a semicolon (;) and specified using the format "key=abc,value=123;key=fed,value=456". | Optional |
+| layers | A list of function layers to add to the function's execution environment. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.Functions.FunctionName | string | The name of the function. |
+| AWS.Lambda.Functions.FunctionArn | string | The function's Amazon Resource Name \(ARN\). |
+| AWS.Lambda.Functions.Runtime | string | The identifier of the function's runtime. |
+| AWS.Lambda.Functions.Role | string | The function's execution role. |
+| AWS.Lambda.Functions.Handler | string | The function that Lambda calls to begin running your function. |
+| AWS.Lambda.Functions.CodeSize | number | The size of the function's deployment package, in bytes. |
+| AWS.Lambda.Functions.Description | string | The function's description. |
+| AWS.Lambda.Functions.Timeout | number | The amount of time in seconds that Lambda allows a function to run before stopping it. |
+| AWS.Lambda.Functions.MemorySize | number | The amount of memory available to the function at runtime. |
+| AWS.Lambda.Functions.Version | string | The version of the Lambda function. |
+| AWS.Lambda.Functions.VpcConfig.SubnetIds | array | A list of VPC subnet IDs. |
+| AWS.Lambda.Functions.VpcConfig.SecurityGroupIds | array | A list of VPC security group IDs. |
+| AWS.Lambda.Functions.VpcConfig.VpcId | string | The ID of the VPC. |
+| AWS.Lambda.Functions.VpcConfig.Ipv6AllowedForDualStack | boolean | Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets. |
+| AWS.Lambda.Functions.PackageType | string | The type of deployment package. Set to Image for container image and set Zip for .zip file archive. |
+| AWS.Lambda.Functions.LastModified | string | The date and time that the function was last updated, in ISO-8601 format. |
+| AWS.Lambda.Functions.Region | string | The AWS Region. |
+
+### aws-lambda-layer-version-list
+
+***
+Lists the versions of an Lambda layer.
+
+#### Base Command
+
+`aws-lambda-layer-version-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| layer_name | The name or Amazon Resource Name (ARN) of the layer. | Required |
+| compatible_runtime | A runtime identifier. For example, java21. | Optional |
+| next_token | A pagination token returned by a previous call. | Optional |
+| limit | The maximum number of versions to return. Note that the maximum limit is 50 items in each response. Default is 50. | Optional |
+| compatible_architecture | The compatible instruction set architecture. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.LayerVersions.VersionsNextToken | string | A pagination token returned when the response doesn't contain all versions. |
+| AWS.Lambda.LayerVersions.LayerVersionArn | string | The ARN of the layer version. |
+| AWS.Lambda.LayerVersions.Version | number | The version number. |
+| AWS.Lambda.LayerVersions.Description | string | The description of the version. |
+| AWS.Lambda.LayerVersions.CreatedDate | string | The date that the version was created, in ISO 8601 format. |
+| AWS.Lambda.LayerVersions.CompatibleRuntimes | array | The layer's compatible runtimes. |
+| AWS.Lambda.LayerVersions.LicenseInfo | string | The layer's open-source license. |
+| AWS.Lambda.LayerVersions.CompatibleArchitectures | array | A list of compatible instruction set architectures. |
+
+### aws-lambda-function-delete
+
+***
+Deletes a Lambda function.
+
+#### Base Command
+
+`aws-lambda-function-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| function_name | The name of the Lambda function or version. | Required |
+| qualifier | Specify a version to delete. You can't delete a version that an alias references. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-lambda-layer-version-delete
+
+***
+Deletes a version of a Lambda layer.
+
+#### Base Command
+
+`aws-lambda-layer-version-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| layer_name | The name or Amazon Resource Name (ARN) of the layer. | Required |
+| version_number | The version number to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-lambda-layer-version-publish
+
+***
+Creates a Lambda layer from a ZIP archive.
+
+#### Base Command
+
+`aws-lambda-layer-version-publish`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| layer_name | The name of the layer. | Required |
+| description | The description of the version. | Optional |
+| zip_file | The entry ID of the uploaded ZIP file containing the layer code. | Optional |
+| s3_bucket | The Amazon S3 bucket of the layer archive. | Optional |
+| s3_key | The Amazon S3 key of the layer archive. | Optional |
+| s3_object_version | For versioned objects, the version of the layer archive object to use. | Optional |
+| compatible_runtimes | A list of compatible function runtimes. | Optional |
+| compatible_architectures | A list of compatible instruction set architectures. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.LayerVersions.LayerVersionArn | string | The ARN of the layer version. |
+| AWS.Lambda.LayerVersions.LayerArn | string | The ARN of the layer. |
+| AWS.Lambda.LayerVersions.Description | string | The description of the version. |
+| AWS.Lambda.LayerVersions.CreatedDate | string | The date that the layer version was created, in ISO 8601 format. |
+| AWS.Lambda.LayerVersions.Version | number | The version number. |
+| AWS.Lambda.LayerVersions.CompatibleRuntimes | array | The layer's compatible runtimes. |
+| AWS.Lambda.LayerVersions.CompatibleArchitectures | array | A list of compatible instruction set architectures. |
+| AWS.Lambda.LayerVersions.Region | string | The AWS Region. |
