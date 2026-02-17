@@ -706,10 +706,21 @@ Fetches a conversation's history of messages and events
 | conversation_id   | The ID of the conversation. Either this or *conversation_name* is required. If both are provided, *conversation_id* takes precedence.                                        | Optional     |
 | limit             | Set this argument to specify how many results to return.                                                                                                                     | Optional     |
 | from_time         | Lower bound for conversation history (sent to Slack 'oldest' query parameter). Returns messages with time stamp ≥ this value. Accepts Unix timestamp or ISO strings (e.g., "1727448000.000200", "2025-10-12T09:00:00+03:00"). Results are returned in descending order. | Optional     |
+| page_token        | Token to retrieve the next page of results.                                                                                                                                  | Optional     |
 
 #### Context Output
 
-There is no context output for this command.
+| **Path**                          | **Type** | **Description**                                      |
+|-----------------------------------|----------|------------------------------------------------------|
+| Slack.Messages.Type               | string   | The type of the message (e.g., message, file_share, etc.). |
+| Slack.Messages.Text               | string   | The text content of the message.                     |
+| Slack.Messages.UserId             | string   | The user ID of the message sender.                   |
+| Slack.Messages.Name               | string   | The username of the message sender.                  |
+| Slack.Messages.FullName           | string   | The full name of the message sender.                 |
+| Slack.Messages.TimeStamp          | string   | The timestamp of the message.                        |
+| Slack.Messages.HasReplies         | string   | Whether the message has replies.                     |
+| Slack.Messages.ThreadTimeStamp    | string   | The thread timestamp of the message.                 |
+| SlackConversationHistory.NextPageToken   | string   | Token to retrieve the next page of results.          |
 
 ### slack-get-conversation-replies
 

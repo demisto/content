@@ -2822,16 +2822,20 @@ def resolve_conversation_id_from_name(channel_name):
     return channel_id
 
 
-def conversation_history():
+def conversation_history() -> None:
     """
-    Fetches a conversation's history of messages
-    and events
+    Fetches a conversation's history of messages and events.
+
+    Raises:
+        ValueError: If neither conversation_id nor conversation_name is provided.
+        DemistoException: If the Slack API returns an error.
     """
     args = demisto.args()
     conversation_id = args.get("channel_id") or args.get("conversation_id")
     conversation_name = args.get("conversation_name")
     limit = arg_to_number(args.get("limit"))
     from_time = args.get("from_time")
+    page_token = args.get("page_token")
 
     if not conversation_id and not conversation_name:
         raise ValueError("Either conversation_id or conversation_name must be provided.")
@@ -2843,41 +2847,50 @@ def conversation_history():
     if from_time:
         body["oldest"] = to_unix_seconds_str(from_time)
 
-    readable_output = ""
+    if page_token:
+        body["cursor"] = page_token
+
     raw_response = send_slack_request_sync(CLIENT, "conversations.history", http_verb="GET", body=body)
-    messages = raw_response.get("messages", "")
+
     if not raw_response.get("ok"):
         raise DemistoException(
             f'An error occurred while listing conversation history: {raw_response.get("error")}', res=raw_response
         )
+
+    messages: Any = raw_response.get("messages", [])
+    response_metadata: dict = raw_response.get("response_metadata", {})  # type: ignore[assignment]
+    cursor: str = response_metadata.get("next_cursor", "")
+
+    # Normalize messages to list
     if isinstance(messages, dict):
         messages = [messages]
     if not isinstance(messages, list):
         raise DemistoException(
             f'An error occurred while listing conversation history: {raw_response.get("error")}', res=raw_response
         )
-    context = []  # type: List
+
+    context: List[Dict[str, Any]] = []
     for message in messages:
         thread_ts = "N/A"
         has_replies = "No"
         name = "N/A"
         full_name = "N/A"
+
         if "subtype" not in message:
             user_id = message.get("user")
             user_details_response = send_slack_request_sync(CLIENT, "users.info", http_verb="GET", body={"user": user_id})
-            user_details = user_details_response.get("user")
-            full_name = user_details.get("real_name")
-            name = user_details.get("name")
+            user_details: dict = user_details_response.get("user", {})  # type: ignore[assignment]
+            full_name = user_details.get("real_name", "N/A")
+            name = user_details.get("name", "N/A")
             if "thread_ts" in message:
-                thread_ts = message.get("thread_ts")
+                thread_ts = message.get("thread_ts", "N/A")
                 has_replies = "Yes"
         elif "thread_ts" in message:
-            thread_ts = message.get("thread_ts")
+            thread_ts = message.get("thread_ts", "N/A")
             has_replies = "Yes"
-            full_name = message.get("username")
-            name = message.get("username")
-            thread_ts = message.get("thread_ts")
-            has_replies = "Yes"
+            full_name = message.get("username", "N/A")
+            name = message.get("username", "N/A")
+
         entry = {
             "Type": message.get("type"),
             "Text": message.get("text"),
@@ -2889,17 +2902,30 @@ def conversation_history():
             "ThreadTimeStamp": thread_ts,
         }
         context.append(entry)
+
     readable_output = tableToMarkdown(f"Channel details from Channel ID - {conversation_id}", context)
-    demisto.results(
-        {
-            "Type": entryTypes["note"],
-            "Contents": messages,
-            "EntryContext": {"Slack.Messages": context},
-            "ContentsFormat": formats["json"],
-            "HumanReadable": readable_output,
-            "ReadableContentsFormat": formats["markdown"],
-        }
-    )
+
+    results = [
+        CommandResults(
+            outputs_prefix="Slack.Messages",
+            outputs_key_field="TimeStamp",
+            outputs=context,
+            readable_output=readable_output,
+            raw_response=messages,
+        )
+    ]
+
+    # Add pagination token if present
+    if cursor:
+        results.append(
+            CommandResults(
+                outputs_prefix="SlackConversationHistory",
+                outputs_key_field="NextPageToken",
+                outputs={"NextPageToken": cursor},
+            )
+        )
+
+    return_results(results)
 
 
 def conversation_replies():
