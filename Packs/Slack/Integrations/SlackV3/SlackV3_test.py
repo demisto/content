@@ -5167,15 +5167,8 @@ def test_conversation_replies(mocker):
 SAMPLE_PAYLOAD = json.loads(load_test_data("./test_data/entitlement_response_payload.txt"))
 
 
-@pytest.fixture
-async def client_session():
-    session = aiohttp.ClientSession()
-    yield session
-    await session.close()
-
-
 @pytest.mark.asyncio
-async def test_listen(client_session):
+async def test_listen():
     """
     Unit test for the `listen` function in the `SlackV3` module. This test case verifies that the function handles
     Slack events correctly.
