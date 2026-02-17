@@ -1,0 +1,364 @@
+[
+    {
+        "value": "0.0.0.1",
+        "type": "IP",
+        "rawJSON": {
+            "id": "dummy-id-1",
+            "type": "ipv4",
+            "value": "0.0.0.1",
+            "href": "https://api.example.com/indicators/dummy-id-1",
+            "entity_type": "indicator",
+            "score": {
+                "value": "malicious",
+                "last_scored_at": "2026-01-01T00:00:00Z"
+            },
+            "modified_at": "2026-01-01T00:00:00Z",
+            "created_at": "2026-01-01T00:00:00Z",
+            "last_seen_at": "2026-01-01T00:00:00Z",
+            "sort_date": "2026-01-01T00:00:00Z",
+            "platform_urls": {
+                "ignite": "https://app.example.com/iocs/dummy-id-1"
+            },
+            "apt_description": "N/A",
+            "external_references": [
+                {
+                    "source_name": "Dummy Source",
+                    "url": "https://dummy.example.com"
+                }
+            ],
+            "hashes": {
+                "md5": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "sha1": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+            },
+            "malware_description": "Dummy malware description goes here.",
+            "mitre_attack_ids": [
+                {
+                    "id": "T0001",
+                    "name": "Dummy Technique",
+                    "tactics": [
+                        "Defense-Evasion"
+                    ],
+                    "tactic": "Defense-Evasion"
+                },
+                {
+                    "id": "T0002",
+                    "name": "Dummy Discovery",
+                    "tactics": [
+                        "Discovery"
+                    ],
+                    "tactic": "Discovery"
+                }
+            ],
+            "relationships": {
+                "iocs": [
+                    {
+                        "id": "dummy-related-id-1",
+                        "type": "file",
+                        "value": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+                        "href": "https://api.example.com/indicators/dummy-related-id-1"
+                    }
+                ]
+            },
+            "sightings": [
+                {
+                    "id": "dummy-sighting-1",
+                    "href": "https://api.example.com/sightings/dummy-sighting-1",
+                    "source": "dummy_source",
+                    "sighted_at": "2026-01-01T00:00:00Z",
+                    "tags": [
+                        "malware:dummy-malware",
+                        "source:dummy_source"
+                    ],
+                    "related_iocs": [
+                        {
+                            "id": "dummy-related-id-1",
+                            "type": "file",
+                            "value": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+                            "href": "https://api.example.com/indicators/dummy-related-id-1"
+                        }
+                    ],
+                    "mitre_attack_ids": [
+                        {
+                            "id": "T0001",
+                            "name": "Dummy Technique",
+                            "tactics": [
+                                "Defense-Evasion"
+                            ],
+                            "tactic": "Defense-Evasion"
+                        },
+                        {
+                            "id": "T0002",
+                            "name": "Dummy Discovery",
+                            "tactics": [
+                                "Discovery"
+                            ],
+                            "tactic": "Discovery"
+                        }
+                    ],
+                    "apt_description": "N/A",
+                    "malware_description": "N/A",
+                    "description": "Observation: dummy-malware [2026-01-01T00:00:00Z]"
+                }
+            ],
+            "latest_sighting": {
+                "id": "dummy-sighting-1",
+                "href": "https://api.example.com/sightings/dummy-sighting-1",
+                "source": "dummy_source",
+                "sighted_at": "2026-01-01T00:00:00Z",
+                "tags": [
+                    "malware:dummy-malware",
+                    "source:dummy_source"
+                ],
+                "related_iocs": [
+                    {
+                        "id": "dummy-related-id-1",
+                        "type": "file",
+                        "value": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+                        "href": "https://api.example.com/indicators/dummy-related-id-1"
+                    }
+                ],
+                "mitre_attack_ids": [
+                    {
+                        "id": "T0001",
+                        "name": "Dummy Technique",
+                        "tactics": [
+                            "Defense-Evasion"
+                        ],
+                        "tactic": "Defense-Evasion"
+                    },
+                    {
+                        "id": "T0002",
+                        "name": "Dummy Discovery",
+                        "tactics": [
+                            "Discovery"
+                        ],
+                        "tactic": "Discovery"
+                    }
+                ],
+                "apt_description": "N/A",
+                "malware_description": "N/A",
+                "description": "Observation: dummy-malware [2026-01-01T00:00:00Z]"
+            },
+            "total_sightings": 1
+        },
+        "fields": {
+            "tags": [],
+            "flashpointfeedindicatorid": "dummy-id-1",
+            "flashpointfeedindicatortype": "ipv4",
+            "flashpointfeedapi": "https://api.example.com/indicators/dummy-id-1",
+            "flashpointfeedlastscoredate": "2026-01-01T00:00:00Z",
+            "flashpointfeedmodifieddate": "2026-01-01T00:00:00Z",
+            "flashpointfeedcreateddate": "2026-01-01T00:00:00Z",
+            "flashpointfeedlastseendate": "2026-01-01T00:00:00Z",
+            "flashpointfeedplatformurl": "https://app.example.com/iocs/dummy-id-1",
+            "flashpointfeedscorevalue": "malicious",
+            "flashpointfeedaptdescription": "N/A",
+            "flashpointfeedexternalreferences": [
+                {
+                    "source_name": "Dummy Source",
+                    "url": "https://dummy.example.com"
+                }
+            ],
+            "md5": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "sha1": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "flashpointfeedhtmlmalwaredescription": "Dummy malware description goes here.",
+            "flashpointfeedmitreattackids": [
+                {
+                    "id": "T0001",
+                    "name": "Dummy Technique",
+                    "tactics": [
+                        "Defense-Evasion"
+                    ],
+                    "tactic": "Defense-Evasion"
+                },
+                {
+                    "id": "T0002",
+                    "name": "Dummy Discovery",
+                    "tactics": [
+                        "Discovery"
+                    ],
+                    "tactic": "Discovery"
+                }
+            ],
+            "flashpointfeedsightings": [
+                {
+                    "id": "dummy-sighting-1",
+                    "href": "https://api.example.com/sightings/dummy-sighting-1",
+                    "source": "dummy_source",
+                    "sighted_at": "2026-01-01T00:00:00Z",
+                    "tags": [
+                        "malware:dummy-malware",
+                        "source:dummy_source"
+                    ],
+                    "related_iocs": [
+                        {
+                            "id": "dummy-related-id-1",
+                            "type": "file",
+                            "value": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+                            "href": "https://api.example.com/indicators/dummy-related-id-1"
+                        }
+                    ],
+                    "mitre_attack_ids": [
+                        {
+                            "id": "T0001",
+                            "name": "Dummy Technique",
+                            "tactics": [
+                                "Defense-Evasion"
+                            ],
+                            "tactic": "Defense-Evasion"
+                        },
+                        {
+                            "id": "T0002",
+                            "name": "Dummy Discovery",
+                            "tactics": [
+                                "Discovery"
+                            ],
+                            "tactic": "Discovery"
+                        }
+                    ],
+                    "apt_description": "N/A",
+                    "malware_description": "N/A",
+                    "description": "Observation: dummy-malware [2026-01-01T00:00:00Z]"
+                }
+            ],
+            "flashpointfeedlatestsighting": {
+                "id": "dummy-sighting-1",
+                "href": "https://api.example.com/sightings/dummy-sighting-1",
+                "source": "dummy_source",
+                "sighted_at": "2026-01-01T00:00:00Z",
+                "tags": [
+                    "malware:dummy-malware",
+                    "source:dummy_source"
+                ],
+                "related_iocs": [
+                    {
+                        "id": "dummy-related-id-1",
+                        "type": "file",
+                        "value": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+                        "href": "https://api.example.com/indicators/dummy-related-id-1"
+                    }
+                ],
+                "mitre_attack_ids": [
+                    {
+                        "id": "T0001",
+                        "name": "Dummy Technique",
+                        "tactics": [
+                            "Defense-Evasion"
+                        ],
+                        "tactic": "Defense-Evasion"
+                    },
+                    {
+                        "id": "T0002",
+                        "name": "Dummy Discovery",
+                        "tactics": [
+                            "Discovery"
+                        ],
+                        "tactic": "Discovery"
+                    }
+                ],
+                "apt_description": "N/A",
+                "malware_description": "N/A",
+                "description": "Observation: dummy-malware [2026-01-01T00:00:00Z]"
+            },
+            "flashpointfeedtotalsightings": 1,
+            "trafficlightprotocol": "AMBER"
+        }
+    },
+    {
+        "value": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "type": "File",
+        "rawJSON": {
+            "id": "dummy-id-2",
+            "type": "file",
+            "value": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+            "href": "https://api.example.com/indicators/dummy-id-2",
+            "entity_type": "indicator",
+            "score": {
+                "value": "unknown",
+                "last_scored_at": "2026-01-01T00:00:00Z"
+            },
+            "modified_at": "2026-01-01T00:00:00Z",
+            "created_at": "2026-01-01T00:00:00Z",
+            "last_seen_at": "2026-01-01T00:00:00Z",
+            "sort_date": "2026-01-01T00:00:00Z",
+            "platform_urls": {
+                "ignite": "https://app.example.com/iocs/dummy-id-2"
+            },
+            "hashes": {
+                "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+            },
+            "sightings": [
+                {
+                    "id": "dummy-sighting-2",
+                    "href": "https://api.example.com/sightings/dummy-sighting-2",
+                    "source": "dummy_source",
+                    "sighted_at": "2026-01-01T00:00:00Z",
+                    "tags": [
+                        "malware:dummy-malware-2",
+                        "source:dummy_source"
+                    ],
+                    "description": "Observation: dummy-malware-2 [2026-01-01T00:00:00Z]"
+                }
+            ],
+            "latest_sighting": {
+                "id": "dummy-sighting-2",
+                "href": "https://api.example.com/sightings/dummy-sighting-2",
+                "source": "dummy_source",
+                "sighted_at": "2026-01-01T00:00:00Z",
+                "tags": [
+                    "malware:dummy-malware-2",
+                    "source:dummy_source"
+                ],
+                "description": "Observation: dummy-malware-2 [2026-01-01T00:00:00Z]"
+            },
+            "total_sightings": 1
+        },
+        "fields": {
+            "tags": [],
+            "flashpointfeedindicatorid": "dummy-id-2",
+            "flashpointfeedindicatortype": "file",
+            "flashpointfeedapi": "https://api.example.com/indicators/dummy-id-2",
+            "flashpointfeedlastscoredate": "2026-01-01T00:00:00Z",
+            "flashpointfeedmodifieddate": "2026-01-01T00:00:00Z",
+            "flashpointfeedcreateddate": "2026-01-01T00:00:00Z",
+            "flashpointfeedlastseendate": "2026-01-01T00:00:00Z",
+            "flashpointfeedplatformurl": "https://app.example.com/iocs/dummy-id-2",
+            "flashpointfeedscorevalue": "unknown",
+            "flashpointfeedaptdescription": null,
+            "flashpointfeedexternalreferences": null,
+            "md5": null,
+            "sha1": null,
+            "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+            "flashpointfeedhtmlmalwaredescription": null,
+            "flashpointfeedmitreattackids": null,
+            "flashpointfeedsightings": [
+                {
+                    "id": "dummy-sighting-2",
+                    "href": "https://api.example.com/sightings/dummy-sighting-2",
+                    "source": "dummy_source",
+                    "sighted_at": "2026-01-01T00:00:00Z",
+                    "tags": [
+                        "malware:dummy-malware-2",
+                        "source:dummy_source"
+                    ],
+                    "description": "Observation: dummy-malware-2 [2026-01-01T00:00:00Z]"
+                }
+            ],
+            "flashpointfeedlatestsighting": {
+                "id": "dummy-sighting-2",
+                "href": "https://api.example.com/sightings/dummy-sighting-2",
+                "source": "dummy_source",
+                "sighted_at": "2026-01-01T00:00:00Z",
+                "tags": [
+                    "malware:dummy-malware-2",
+                    "source:dummy_source"
+                ],
+                "description": "Observation: dummy-malware-2 [2026-01-01T00:00:00Z]"
+            },
+            "flashpointfeedtotalsightings": 1,
+            "trafficlightprotocol": "AMBER"
+        }
+    }
+]
