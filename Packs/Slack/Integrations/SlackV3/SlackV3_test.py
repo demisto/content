@@ -2,7 +2,6 @@ import json as js
 import threading
 from unittest.mock import MagicMock
 from datetime import datetime, UTC
-import aiohttp
 import pytest
 import slack_sdk
 from CommonServerPython import *
