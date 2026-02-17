@@ -6,6 +6,7 @@
     "name": "Google Threat Intelligence DTM Alert",
     "prevName": "Google Threat Intelligence DTM Alert",
     "color": "#0171c2",
+    "playbookId": "DTM Alert Incident Response - Google Threat Intelligence",
     "hours": 0,
     "days": 0,
     "weeks": 0,
@@ -24,12 +25,22 @@
     "extractSettings": {
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {
+            "details": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
             "gtidtmalertaidocsummary": {
                 "extractAsIsIndicatorTypeId": "",
                 "isExtractingAllIndicatorTypes": true,
                 "extractIndicatorTypesIDs": []
             },
             "gtidtmalertanalysis": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "gtidtmalertattachments": {
                 "extractAsIsIndicatorTypeId": "",
                 "isExtractingAllIndicatorTypes": true,
                 "extractIndicatorTypesIDs": []
@@ -95,6 +106,11 @@
                 "extractIndicatorTypesIDs": []
             },
             "gtidtmalerttopics": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "name": {
                 "extractAsIsIndicatorTypeId": "",
                 "isExtractingAllIndicatorTypes": true,
                 "extractIndicatorTypesIDs": []

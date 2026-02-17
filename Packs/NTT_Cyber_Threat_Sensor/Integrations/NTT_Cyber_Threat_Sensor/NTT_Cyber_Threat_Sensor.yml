@@ -4,7 +4,8 @@ commonfields:
 name: NTT Cyber Threat Sensor
 display: NTT Cyber Threat Sensor
 category: Network Security
-description: Retrieve alerts and recommendations from NTT CTS
+provider: NTT Group
+description: Retrieve alerts and recommendations from NTT CTS.
 configuration:
 - display: 'The API key for accessing CTS over AWS '
   name: APIKEY
@@ -57,20 +58,20 @@ script:
     - name: event_id
       required: true
       isArray: true
-      description: ID of the incident from whom to fetch blobs for
+      description: ID of the incident from whom to fetch blobs for.
     - name: timestamp
-      description: ISO timestamp for when alert was triggered
+      description: ISO timestamp for when alert was triggered.
       isArray: true
       required: true
     outputs:
     - contextPath: CTS.FetchBlob
-      description: True if there are blobs to fetch
+      description: True if there are blobs to fetch.
       type: boolean
     - contextPath: CTS.Blob.ID
-      description: ID of the incident
+      description: ID of the incident.
       type: string
     - contextPath: CTS.Blob.Status
-      description: hold to wait and release to run
+      description: Hold to wait and release to run.
       type: string
     description: Check if blobs is available
     execution: true
@@ -78,7 +79,7 @@ script:
     arguments:
     - name: event_id
       required: true
-      description: ID of the incident from whom to fetch blobs for
+      description: ID of the incident from whom to fetch blobs for.
     outputs:
     - contextPath: File.Size
       description: The size of the file.
@@ -111,7 +112,7 @@ script:
       description: The file extension.
       type: string
     - contextPath: CTS.HasBlob
-      description: If one or more blobs exist then True
+      description: If one or more blobs exist then True.
       type: boolean
     description: Collecting blobs, most commonly pcap from an incident
     execution: true

@@ -1,4 +1,5 @@
 category: IT Services
+provider: Google
 commonfields:
   id: Google Resource Manager
   version: -1
@@ -59,7 +60,7 @@ configuration:
   type: 8
 
   required: false
-description: Google Cloud Platform Resource Manager
+description: Google Cloud Platform Resource Manager.
 display: Google Resource Manager
 name: Google Resource Manager
 script:
@@ -68,7 +69,7 @@ script:
     - defaultValue: ''
       description: |-
         The unique, user-assigned ID of the Project. It must be 6 to 30 lowercase letters, digits, or hyphens. It must start with a letter. Trailing hyphens are prohibited.
-        Example: tokyo-rain-123
+        Example: tokyo-rain-123.
       name: project_id
       predefined: ['']
       required: true
@@ -88,7 +89,7 @@ script:
     - defaultValue: ''
       description: |-
         The user-assigned display name of the Project. It must be 4 to 30 characters. Supported characters: lowercase and uppercase letters, numbers, hyphens, single-quotes, double-quotes, spaces, and exclamation points.
-        Example: My Project
+        Example: My Project.
       name: name
       predefined: []
     - defaultValue: ''
@@ -197,7 +198,7 @@ script:
       description: The Project lifecycle state.
       type: String
     - contextPath: GRM.Project.CreateTime
-      description: The time the resource was created
+      description: The time the resource was created.
       type: Date
     - contextPath: GRM.Project.Label
       description: The labels associated with this Project.
@@ -212,14 +213,14 @@ script:
     - defaultValue: ''
       description: |-
         The unique ID of the Project to update.
-        Example: tokyo-rain-123
+        Example: tokyo-rain-123.
       name: project_id
       predefined: []
       required: true
     - defaultValue: ''
       description: |-
         The string to update the Project name with. It must be 4 to 30 characters. Supported characters are: lowercase and uppercase letters, numbers, hyphens, single-quotes, double-quotes, spaces, and exclamation points.
-        Example: My Project
+        Example: My Project.
       name: name
       predefined: []
     - defaultValue: ''
@@ -330,7 +331,7 @@ script:
     - defaultValue: ''
       description: |-
         The unique ID of the Project to delete.
-        Example: tokyo-rain-123
+        Example: tokyo-rain-123.
       name: project_id
       predefined: []
       required: true
@@ -366,7 +367,7 @@ script:
     - defaultValue: ''
       description: |-
         The unique ID of the Project to restore.
-        Example: tokyo-rain-123
+        Example: tokyo-rain-123.
       name: project_id
       predefined: []
       required: true

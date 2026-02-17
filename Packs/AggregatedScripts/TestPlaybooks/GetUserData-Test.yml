@@ -5,15 +5,14 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 84d1ec15-46ee-4f1e-8595-86dbe68ad529
+    taskid: 6126ec61-9cb2-4a52-8496-27a0d2cf1110
     type: start
     task:
-      id: 84d1ec15-46ee-4f1e-8595-86dbe68ad529
+      id: 6126ec61-9cb2-4a52-8496-27a0d2cf1110
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -35,20 +34,24 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: b3245423-f23b-4cf7-b95b-d63e6bfce081
+    taskid: 9ce19f75-7c26-4e09-8e61-82951fb235fd
     type: regular
     task:
-      id: b3245423-f23b-4cf7-b95b-d63e6bfce081
+      id: 9ce19f75-7c26-4e09-8e61-82951fb235fd
       version: -1
       name: Delete Context
-      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
       - "3"
     scriptarguments:
       all:
@@ -69,44 +72,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: 077f186e-0176-415a-8219-0411ffebeeec
-    type: regular
-    task:
-      id: 077f186e-0176-415a-8219-0411ffebeeec
-      version: -1
-      name: AWS-IAM list users
-      description: Lists the IAM users, returns all users in the AWS account.
-      script: '|||aws-iam-list-users'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 690,
-          "y": 330
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: f0aee5e9-485d-4bbf-b34b-82ff4ea8b45d
+    taskid: 165651c6-514b-45cb-8e6e-8813c9758393
     type: regular
     task:
-      id: f0aee5e9-485d-4bbf-b34b-82ff4ea8b45d
+      id: 165651c6-514b-45cb-8e6e-8813c9758393
       version: -1
       name: MSG list users
       description: |-
@@ -137,16 +108,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 3b18a4c1-6d3a-4cf0-9f23-c77374f5b3c4
+    taskid: f02cd4bd-add5-40ac-84c1-605a804b7f3d
     type: title
     task:
-      id: 3b18a4c1-6d3a-4cf0-9f23-c77374f5b3c4
+      id: f02cd4bd-add5-40ac-84c1-605a804b7f3d
       version: -1
       name: Case 1 - Base case, no additional args
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -168,13 +138,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 550bad1f-4aa4-4dfd-ba4f-cfffd2d88ab3
+    taskid: 3bd8f610-402f-4066-88e1-26664685c128
     type: regular
     task:
-      id: 550bad1f-4aa4-4dfd-ba4f-cfffd2d88ab3
+      id: 3bd8f610-402f-4066-88e1-26664685c128
       version: -1
       name: GetUserData
-      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
+      description: This script gathers user data from multiple integrations and returns
+        an Account entity with consolidated information to the context.
       scriptName: get-user-data
       type: regular
       iscommand: false
@@ -213,10 +184,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: bcf8529b-fb6a-4453-a3e4-840e9d0b9a53
+    taskid: e5bda91a-9055-4462-8db7-602fbb99da2d
     type: condition
     task:
-      id: bcf8529b-fb6a-4453-a3e4-840e9d0b9a53
+      id: e5bda91a-9055-4462-8db7-602fbb99da2d
       version: -1
       name: Verify Outputs
       type: condition
@@ -267,25 +238,6 @@ tasks:
           right:
             value:
               simple: Active Directory Query v2
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: UserData
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: UserData.Status
-                      iscontext: true
-                    right:
-                      value:
-                        simple: found
-                accessor: Brand
-            iscontext: true
-          right:
-            value:
-              simple: AWS - IAM
       - - operator: notContainsGeneral
           left:
             value:
@@ -313,7 +265,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2"
+              simple: "1"
       - - operator: notContainsGeneral
           left:
             value:
@@ -339,16 +291,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 73f073ce-6771-4369-9a5b-e198c9e47e5d
+    taskid: 875b86df-3928-4330-89a3-563afa204fe2
     type: title
     task:
-      id: 73f073ce-6771-4369-9a5b-e198c9e47e5d
+      id: 875b86df-3928-4330-89a3-563afa204fe2
       version: -1
       name: Case 2 - Running with Brands & additional info
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -370,13 +321,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: d5ca811b-35f5-4b3a-9764-76a4e51575d4
+    taskid: 96e93b32-e618-4a16-8da9-228c7e8b1bdb
     type: regular
     task:
-      id: d5ca811b-35f5-4b3a-9764-76a4e51575d4
+      id: 96e93b32-e618-4a16-8da9-228c7e8b1bdb
       version: -1
       name: Clear GetUserData results
-      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -405,13 +361,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: b217d524-4206-4fd2-845d-f411cfcc5722
+    taskid: cfa1b0ca-c379-44d7-8f30-ef58e98417b1
     type: regular
     task:
-      id: b217d524-4206-4fd2-845d-f411cfcc5722
+      id: cfa1b0ca-c379-44d7-8f30-ef58e98417b1
       version: -1
       name: GetUserData
-      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
+      description: This script gathers user data from multiple integrations and returns
+        an Account entity with consolidated information to the context.
       scriptName: get-user-data
       type: regular
       iscommand: false
@@ -448,10 +405,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 1342554e-84cf-40f3-8b04-8e6a9ea1706f
+    taskid: 6632d91a-119b-4ff6-8397-d2d1c8236272
     type: condition
     task:
-      id: 1342554e-84cf-40f3-8b04-8e6a9ea1706f
+      id: 6632d91a-119b-4ff6-8397-d2d1c8236272
       version: -1
       name: Verify Outputs
       type: condition
@@ -502,16 +459,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 0ccb2c17-9e11-45b4-b09e-428bfb4ad874
+    taskid: 5028cf36-2ed0-4d0e-835e-a050c2da4a55
     type: title
     task:
-      id: 0ccb2c17-9e11-45b4-b09e-428bfb4ad874
+      id: 5028cf36-2ed0-4d0e-835e-a050c2da4a55
       version: -1
       name: Case 3 - Failing with no args
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -533,13 +489,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: dcf3bc4d-5b90-4a6c-8756-0414d2c5cc6d
+    taskid: dd44039c-4947-4ed9-8fec-0ff18f6349f0
     type: regular
     task:
-      id: dcf3bc4d-5b90-4a6c-8756-0414d2c5cc6d
+      id: dd44039c-4947-4ed9-8fec-0ff18f6349f0
       version: -1
       name: Clear GetUserData results
-      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -568,13 +529,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: dfc8c302-5485-4657-99fa-35a30e02b881
+    taskid: eb59a709-8a4f-4e76-84fd-3bee6b4581c5
     type: regular
     task:
-      id: dfc8c302-5485-4657-99fa-35a30e02b881
+      id: eb59a709-8a4f-4e76-84fd-3bee6b4581c5
       version: -1
       name: GetUserData
-      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
+      description: This script gathers user data from multiple integrations and returns
+        an Account entity with consolidated information to the context.
       scriptName: get-user-data
       type: regular
       iscommand: false
@@ -604,16 +566,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 46bd9236-4182-415f-9ab6-260a6366f618
+    taskid: 1575e5b4-2150-4bdd-8940-957fb37bae83
     type: title
     task:
-      id: 46bd9236-4182-415f-9ab6-260a6366f618
+      id: 1575e5b4-2150-4bdd-8940-957fb37bae83
       version: -1
       name: Case 4 - Failing with unknown args
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "18"
@@ -635,13 +596,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 948d9340-027d-474d-835a-a5193ff46b2c
+    taskid: 22aa4fdc-d39c-4c57-81c0-e6cb16733484
     type: regular
     task:
-      id: 948d9340-027d-474d-835a-a5193ff46b2c
+      id: 22aa4fdc-d39c-4c57-81c0-e6cb16733484
       version: -1
       name: Clear GetUserData results
-      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -670,13 +636,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: aa25bcf2-4e5c-499b-b5d7-2a2c65d122ee
+    taskid: e1943bd2-fa94-4c9f-87b7-c3cc570987c8
     type: regular
     task:
-      id: aa25bcf2-4e5c-499b-b5d7-2a2c65d122ee
+      id: e1943bd2-fa94-4c9f-87b7-c3cc570987c8
       version: -1
       name: GetUserData
-      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
+      description: This script gathers user data from multiple integrations and returns
+        an Account entity with consolidated information to the context.
       scriptName: get-user-data
       type: regular
       iscommand: false
@@ -709,16 +676,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 56c044d3-a475-4798-bb8e-d051bb9a278a
+    taskid: 0c7ab919-76e3-47fd-8326-67218ce6b0be
     type: title
     task:
-      id: 56c044d3-a475-4798-bb8e-d051bb9a278a
+      id: 0c7ab919-76e3-47fd-8326-67218ce6b0be
       version: -1
       name: Finish
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -737,10 +703,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 42ed370c-005c-4e49-9d83-07b6f10be5ee
+    taskid: 7059ded0-a109-4caf-9a09-b3b7fe90839b
     type: condition
     task:
-      id: 42ed370c-005c-4e49-9d83-07b6f10be5ee
+      id: 7059ded0-a109-4caf-9a09-b3b7fe90839b
       version: -1
       name: Verify Outputs
       type: condition
@@ -794,7 +760,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2750,
-        "width": 830,
+        "width": 600,
         "x": 240,
         "y": 30
       }

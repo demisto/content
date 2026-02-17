@@ -1,4 +1,5 @@
 category: Utilities
+provider: Orca Security
 sectionorder:
 - Connect
 - Collect
@@ -205,7 +206,7 @@ script:
       description: Basic information of the file.
       type: string
     description: Downloads a capture file from CS Enterprise.
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.12.7090913
   isfetch: true
   runonce: false
   script: '-'

@@ -394,7 +394,8 @@ Get case information based on the specified filters.
 | page | Page number (for pagination). The default is 0 (the first page). Default is 0. | Optional |
 | limit | Maximum number of cases to return per page. The default and maximum value is 60. Default is 60. | Optional |
 | case_domain | A comma-separated list of domains to filter cases by. | Optional |
-| status | A comma-separated list of case statuses to filter cases by. Possible values are: new, under_investigation, resolved. | Optional |
+| status | A comma-separated list of case statuses to filter cases by. Possible values are: new, in_progress, resolved. | Optional |
+| not_status | A comma-separated list of case statuses to exclude. Possible values are: new, in_progress, resolved. | Optional |
 | severity | A comma-separated list of severity levels to filter cases by. Possible values are: low, medium, high, critical. | Optional |
 | asset_ids | A comma-separated list of Asset IDs associated with the case by which to filter the cases. | Optional |
 | asset_groups | A comma-separated list of Asset Group IDs, where the case is filtered by the assets contained within those groups. | Optional |
@@ -498,8 +499,8 @@ Retrieves vulnerabilities based on specified filters.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of vulnerabilities to return. Default is 50. | Optional |
-| sort_field | The field by which to sort the results. Default is LAST_OBSERVED. | Optional |
-| sort_order | The order in which to sort the results. Possible values are: DESC, ASC. | Optional |
+| sort_field | The field by which to sort the results. Possible values are: PLATFORM_SEVERITY, CVSS_SCORE, EPSS_SCORE, CORTEX_VULNERABILITY_RISK_SCORE, LAST_OBSERVED. Default is LAST_OBSERVED. | Optional |
+| sort_order | The order in which to sort the results. Possible values are: DESC, ASC. Default is DESC. | Optional |
 | cve_id | The CVE ID. Accepts a comma-separated list. | Optional |
 | issue_id | The issue ID. Accepts a comma-separated list. | Optional |
 | cvss_score_gte | The minimum CVSS score. | Optional |
@@ -512,7 +513,10 @@ Retrieves vulnerabilities based on specified filters.
 | start_time | The start time for filtering according to case creation time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025. | Optional |
 | end_time | The end time for filtering according to case creation time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025. | Optional |
 | severity | The severity of the vulnerability issue. Possible values are: info, low, medium, high, critical. | Optional |
-| assignee | The email of the user assigned to the vulnerability. Accepts a comma-separated list. <br/>Use 'unassigned' for unassigned vulnerabilities or 'assigned' for all assigned vulnerabilities.<br/>. | Optional |
+| assignee | The email of the user assigned to the vulnerability. Accepts a comma-separated list. Use 'unassigned' for unassigned vulnerabilities or 'assigned' for all assigned vulnerabilities. | Optional |
+| finding_sources | The finding sources of the vulnerability. Accepts a comma-separated list. Possible values are: CORTEX_AGENT, CORTEX_AGENTLESS_SCANNER, CORTEX_ATTACK_SURFACE_MANAGEMENT, CORTEX_ATTACK_SURFACE_TESTING, CORTEX_CLI_SCANNER, CORTEX_CONTAINER_REGISTRY_SCANNER, CORTEX_NETWORK_SCANNER, CORTEX_SERVERLESS_FUNCTION_SCANNER, QUALYS, TENABLE. | Optional |
+| cvrs_gte | The minimum risk score assigned to the vulnerability (range 0-100). | Optional |
+| compensating_controls_effective_coverage | The assessed effectiveness and coverage of detected compensating controls. Possible values are: EFFECTIVE, EFFECTIVE_REQUIRES_CONFIGURATION_UPDATE, EFFECTIVE_REQUIRES_CONTENT_UPDATE, EXPLOIT_CONFIRMED, EXPLOIT_UNREACHABLE, NOT_INSTALLED, NO_CONTROLS_FOUND, UNKNOWN_COVERAGE. | Optional |
 
 #### Context Output
 
@@ -533,6 +537,18 @@ Retrieves vulnerabilities based on specified filters.
 | Core.VulnerabilityIssue.HAS_KEV | Boolean | Indicates if the vulnerability is a Known Exploited Vulnerability \(KEV\). |
 | Core.VulnerabilityIssue.EXPLOITABLE | Boolean | Indicates if the vulnerability is exploitable. |
 | Core.VulnerabilityIssue.ASSET_IDS | String | The unique identifier for the asset. |
+| Core.VulnerabilityIssue.FINDING_SOURCES | String | The finding sources that originally generated the security finding of the vulnerability. |
+| Core.VulnerabilityIssue.COMPENSATING_CONTROLS_DETECTED_COVERAGE | String | The coverage status of detected compensating controls, mirroring the input parameter enum values. |
+| Core.VulnerabilityIssue.CORTEX_VULNERABILITY_RISK_SCORE | Number | The risk score assigned to the vulnerability. |
+| Core.VulnerabilityIssue.FIX_VERSIONS | Array | The package versions that contain a fix for the vulnerability. |
+| Core.VulnerabilityIssue.ASSET_TYPES | Array | The types of assets affected by the vulnerability. |
+| Core.VulnerabilityIssue.COMPENSATING_CONTROLS_DETECTED_CONTROLS | Array | The compensating controls that were detected for the vulnerability. |
+| Core.VulnerabilityIssue.EXPLOIT_LEVEL | String | The exploitability level or status of the vulnerability. |
+| Core.VulnerabilityIssue.ISSUE_NAME | String | The name of the vulnerability issue. |
+| Core.VulnerabilityIssue.PACKAGE_IN_USE | Boolean | Indicates whether the vulnerable package is actively used in the environment. |
+| Core.VulnerabilityIssue.PROVIDERS | Array | The providers or sources of the vulnerability information. |
+| Core.VulnerabilityIssue.OS_FAMILY | String | The operating system family of the affected asset. |
+| Core.VulnerabilityIssue.IMAGE | String | Information related to the affected container or system image. |
 
 ### core-search-assets
 

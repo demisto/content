@@ -4,6 +4,7 @@ commonfields:
 name: Service Manager
 display: Micro Focus Service Manager
 category: Case Management
+provider: OpenText
 description: Service Manager By Micro Focus (Formerly HPE Software).
 configuration:
 - display: Server URL (e.g. https://192.168.0.1:13080)
@@ -632,4 +633,6 @@ script:
     - contextPath: HPSM.ServiceRequest.Title
       description: Incident title.
     description: Creates a new service request.
+tests:
+- No tests
 fromversion: 5.0.0
