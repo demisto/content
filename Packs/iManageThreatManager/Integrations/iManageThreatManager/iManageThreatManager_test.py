@@ -286,6 +286,7 @@ class TestAddFieldsToEvents:
         _add_fields_to_events(events, "BehaviorAnalytics")
         assert events == []
 
+
 class TestFetchEventsWithPagination:
     """Tests for _fetch_events_with_pagination function"""
 
@@ -318,16 +319,16 @@ class TestFetchEventsWithPagination:
         # Mock _fetch_alerts to return dummy data
         mock_fetch = mocker.patch.object(
             client,
-            '_fetch_alerts',
+            "_fetch_alerts",
             side_effect=[
                 [{"id": f"1-{i}", "alert_time": 1000 - i} for i in range(90)],
                 [{"id": f"2-{i}", "alert_time": 910 - i} for i in range(90)],
                 [{"id": f"3-{i}", "alert_time": 820 - i} for i in range(90)],
-            ]
+            ],
         )
 
         _fetch_events_with_pagination(client, BEHAVIOR_ANALYTICS, 500, 1000, 200)
-        
+
         assert mock_fetch.call_count == 3
         # Verify page_size parameter in each call
         assert mock_fetch.call_args_list[0][0][3] == 90  # First call
@@ -345,11 +346,13 @@ class TestFetchEventsWithPagination:
         """
         # First page: last 3 events have alert_time=910
         page1 = [{"id": f"1-{i}", "alert_time": 1000 - i} for i in range(87)]
-        page1.extend([
-            {"id": "dup-1", "alert_time": 910},
-            {"id": "dup-2", "alert_time": 910},
-            {"id": "dup-3", "alert_time": 910},
-        ])
+        page1.extend(
+            [
+                {"id": "dup-1", "alert_time": 910},
+                {"id": "dup-2", "alert_time": 910},
+                {"id": "dup-3", "alert_time": 910},
+            ]
+        )
 
         # Second page: includes the same 3 duplicate events plus new ones
         page2 = [
@@ -359,7 +362,7 @@ class TestFetchEventsWithPagination:
         ]
         page2.extend([{"id": f"2-{i}", "alert_time": 909 - i} for i in range(50)])
 
-        mocker.patch.object(client, '_fetch_alerts', side_effect=[page1, page2])
+        mocker.patch.object(client, "_fetch_alerts", side_effect=[page1, page2])
 
         events = _fetch_events_with_pagination(client, BEHAVIOR_ANALYTICS, 500, 1000, 200)
 
@@ -380,11 +383,11 @@ class TestFetchEventsWithPagination:
         """
         mock_fetch = mocker.patch.object(
             client,
-            '_fetch_alerts',
+            "_fetch_alerts",
             side_effect=[
                 [{"id": f"1-{i}", "alert_time": 1000 - i} for i in range(90)],  # Page 1: 90 events
-                [{"id": f"2-{i}", "alert_time": 910 - i} for i in range(10)],   # Page 2: 10 events
-            ]
+                [{"id": f"2-{i}", "alert_time": 910 - i} for i in range(10)],  # Page 2: 10 events
+            ],
         )
 
         events = _fetch_events_with_pagination(client, BEHAVIOR_ANALYTICS, 500, 1000, 100)
@@ -531,7 +534,6 @@ class TestClient:
         mocker.patch("time.sleep")
         mocker.patch.object(client, "_get_cached_token", return_value=None)
         mocker.patch.object(client, "_cache_token")
-        mocker.patch("demisto.error")
 
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
         requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", status_code=429, json={"error": "Too Many Requests"})
@@ -610,7 +612,6 @@ class TestTestModuleCommand:
         mocker.patch("time.sleep")
         mocker.patch.object(client, "_get_cached_token", return_value=None)
         mocker.patch.object(client, "_cache_token")
-        mocker.patch("demisto.error")  # Mock error logging
 
         def login_matcher(request, context):
             return {"access_token": "token"}
@@ -786,7 +787,6 @@ class TestFetchEventsCommand:
             - Ensure error is handled and last_run is preserved
         """
         mocker.patch.object(client, "_get_cached_token", return_value=None)
-        mocker.patch("demisto.error")  # Mock error logging
 
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
         requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", status_code=500, text="Server Error")
