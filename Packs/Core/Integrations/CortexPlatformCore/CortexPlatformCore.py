@@ -5136,13 +5136,13 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
 
 def delete_endpoint_policy_command(client: Client, args: dict) -> CommandResults:
     """
-    Deletes an existing endpoint policy from the policy table.
+    Deletes one or more existing endpoint policies from the policy table.
 
     This command:
     1. Fetches the current policy table and hash
-    2. Identifies the policy to delete by name or ID
-    3. Validates the policy can be deleted (not default policy)
-    4. Removes the policy and updates the table
+    2. Identifies policies to delete by names or IDs
+    3. Validates policies can be deleted (not default policies)
+    4. Removes the policies and updates the table
 
     Args:
         client: The Cortex Platform client instance.
@@ -5152,37 +5152,48 @@ def delete_endpoint_policy_command(client: Client, args: dict) -> CommandResults
         CommandResults: Results object with success message and deleted policy details.
 
     Raises:
-        DemistoException: If required parameters are missing, policy not found,
+        DemistoException: If required parameters are missing, policies not found,
                          or multiple policies match the criteria.
     """
 
-    def find_policy_to_delete(
+    def find_policies_to_delete(
         platform_policies: list[dict],
-        policy_name: str | None,
-        policy_id: str | None,
+        policy_names: list[str],
+        policy_ids: list[str],
         platform: str,
-    ) -> dict:
-        """Find the policy to delete based on name or ID."""
-        if policy_id:
-            matching_policies = [p for p in platform_policies if str(p.get("ID")) == str(policy_id)]
-            identifier = f"ID '{policy_id}'"
+    ) -> list[dict]:
+        """Find the policies to delete based on names or IDs."""
+        policies_to_delete = []
+        
+        if policy_ids:
+            # Delete by IDs
+            for policy_id in policy_ids:
+                matching_policies = [p for p in platform_policies if str(p.get("ID")) == str(policy_id)]
+                
+                if not matching_policies:
+                    raise DemistoException(f"No policy found with ID '{policy_id}' for platform '{platform}'.")
+                
+                policies_to_delete.append(matching_policies[0])
         else:
-            matching_policies = [p for p in platform_policies if p.get("NAME") == policy_name]
-            identifier = f"name '{policy_name}'"
-
-        if not matching_policies:
-            raise DemistoException(f"No policy found with {identifier} for platform '{platform}'.")
-
-        if len(matching_policies) > 1:
-            policy_details = "\n".join(
-                [f"  - Name: {p.get('NAME')}, ID: {p.get('ID')}, Priority: {p.get('PRIORITY')}" for p in matching_policies]
-            )
-            raise DemistoException(
-                f"Multiple policies found with {identifier} for platform '{platform}':\n{policy_details}\n"
-                f"Please use policy_id to specify which one to delete."
-            )
-
-        return matching_policies[0]
+            # Delete by names
+            for policy_name in policy_names:
+                matching_policies = [p for p in platform_policies if p.get("NAME") == policy_name]
+                
+                if not matching_policies:
+                    raise DemistoException(f"No policy found with name '{policy_name}' for platform '{platform}'.")
+                
+                if len(matching_policies) > 1:
+                    policy_details = "\n".join(
+                        [f"  - Name: {p.get('NAME')}, ID: {p.get('ID')}, Priority: {p.get('PRIORITY')}" for p in matching_policies]
+                    )
+                    raise DemistoException(
+                        f"Multiple policies found with name '{policy_name}' for platform '{platform}':\n{policy_details}\n"
+                        f"Please use policy_id to specify which one to delete."
+                    )
+                
+                policies_to_delete.append(matching_policies[0])
+        
+        return policies_to_delete
 
     def validate_policy_deletable(policy: dict, platform: str) -> None:
         """Validate that a policy can be deleted."""
@@ -5190,20 +5201,22 @@ def delete_endpoint_policy_command(client: Client, args: dict) -> CommandResults
         priority = policy.get("PRIORITY")
 
         if priority == DEFAULT_POLICY_PRIORITY:
+            policy_name = policy.get("NAME")
             raise DemistoException(
-                f"Cannot delete the default policy (priority {DEFAULT_POLICY_PRIORITY}) for platform '{platform}'. "
+                f"Cannot delete the default policy '{policy_name}' (priority {DEFAULT_POLICY_PRIORITY}) for platform '{platform}'. "
                 f"Default policies are system-level and cannot be removed."
             )
 
-    # === Main Command Logic ===
-
     # 1. Parse and validate arguments
-    policy_name = args.get("policy_name")
-    policy_id = args.get("policy_id")
+    policy_names = argToList(args.get("policy_name"))
+    policy_ids = argToList(args.get("policy_id"))
     platform = args.get("platform", "")
 
-    if not policy_name and not policy_id:
+    if not policy_names and not policy_ids:
         raise DemistoException("Either policy_name or policy_id must be provided to identify the policy to delete.")
+
+    if policy_names and policy_ids:
+        raise DemistoException("Cannot provide both policy_name and policy_id. Please use one or the other.")
 
     # 2. Validate platform
     platform_value = validate_platform(platform)
@@ -5218,24 +5231,33 @@ def delete_endpoint_policy_command(client: Client, args: dict) -> CommandResults
     if not platform_policies:
         raise DemistoException(f"No policies found for platform '{platform}'.")
 
-    # 5. Find the policy to delete
-    policy_to_delete = find_policy_to_delete(platform_policies, policy_name, policy_id, platform)
+    # 5. Find the policies to delete
+    policies_to_delete = find_policies_to_delete(platform_policies, policy_names, policy_ids, platform)
 
-    # 6. Validate policy can be deleted
-    validate_policy_deletable(policy_to_delete, platform)
+    # 6. Validate all policies can be deleted
+    for policy in policies_to_delete:
+        validate_policy_deletable(policy, platform)
 
     # 7. Extract policy details for output
-    policy_to_delete_name = policy_to_delete.get("NAME")
-    policy_to_delete_id = policy_to_delete.get("ID")
-    policy_to_delete_priority = policy_to_delete.get("PRIORITY")
+    deleted_policies_info = []
+    for policy in policies_to_delete:
+        policy_info = {
+            "PolicyName": policy.get("NAME"),
+            "PolicyID": policy.get("ID"),
+            "Platform": platform,
+            "Priority": policy.get("PRIORITY"),
+            "Deleted": True,
+        }
+        deleted_policies_info.append(policy_info)
+        demisto.debug(
+            f"Deleting policy: Name='{policy_info['PolicyName']}', "
+            f"ID={policy_info['PolicyID']}, Priority={policy_info['Priority']}"
+        )
 
-    demisto.debug(
-        f"Deleting policy: Name='{policy_to_delete_name}', " f"ID={policy_to_delete_id}, Priority={policy_to_delete_priority}"
-    )
-
-    # 8. Remove policy from list
-    updated_policies = [p for p in current_policies if p != policy_to_delete]
-    demisto.debug(f"Policies count after deletion: {len(updated_policies)} (removed 1)")
+    # 8. Remove policies from list
+    policies_to_delete_set = set(id(p) for p in policies_to_delete)
+    updated_policies = [p for p in current_policies if id(p) not in policies_to_delete_set]
+    demisto.debug(f"Policies count after deletion: {len(updated_policies)} (removed {len(policies_to_delete)})")
 
     # 9. Update policy table
     update_payload = {
@@ -5247,27 +5269,31 @@ def delete_endpoint_policy_command(client: Client, args: dict) -> CommandResults
     response = client.update_agent_policy(update_payload)
 
     # 10. Build outputs
-    readable_output = (
-        f"Successfully deleted endpoint policy:\n"
-        f"- Name: {policy_to_delete_name}\n"
-        f"- ID: {policy_to_delete_id}\n"
-        f"- Platform: {platform}\n"
-        f"- Priority: {policy_to_delete_priority}"
-    )
-
-    outputs = {
-        "PolicyName": policy_to_delete_name,
-        "PolicyID": policy_to_delete_id,
-        "Platform": platform,
-        "Priority": policy_to_delete_priority,
-        "Deleted": True,
-    }
+    if len(deleted_policies_info) == 1:
+        # Single policy deleted - use original format
+        policy_info = deleted_policies_info[0]
+        readable_output = (
+            f"Successfully deleted endpoint policy:\n"
+            f"- Name: {policy_info['PolicyName']}\n"
+            f"- ID: {policy_info['PolicyID']}\n"
+            f"- Platform: {platform}\n"
+            f"- Priority: {policy_info['Priority']}"
+        )
+    else:
+        # Multiple policies deleted
+        readable_output = f"Successfully deleted {len(deleted_policies_info)} endpoint policies:\n\n"
+        for policy_info in deleted_policies_info:
+            readable_output += (
+                f"- Name: {policy_info['PolicyName']}, "
+                f"ID: {policy_info['PolicyID']}, "
+                f"Priority: {policy_info['Priority']}\n"
+            )
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.DeletedEndpointPolicy",
         outputs_key_field="PolicyID",
-        outputs=outputs,
+        outputs=deleted_policies_info,
         raw_response=response,
     )
 

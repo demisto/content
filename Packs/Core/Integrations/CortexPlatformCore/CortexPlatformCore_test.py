@@ -9954,6 +9954,225 @@ class TestDeleteEndpointPolicyCommand:
         with pytest.raises(DemistoException, match="Either policy_name or policy_id must be provided"):
             delete_endpoint_policy_command(mock_client, args)
 
+    def test_delete_endpoint_policy_multiple_by_names_success(self, mocker: MockerFixture):
+        """
+        GIVEN:
+            Valid arguments with multiple policy_names to delete.
+        WHEN:
+            delete_endpoint_policy_command is called.
+        THEN:
+            All policies are deleted successfully.
+        """
+        from CortexPlatformCore import delete_endpoint_policy_command, Client
+
+        mock_client = Client(base_url="", headers={})
+
+        # Mock existing policies
+        current_policies = [
+            {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 0, "NAME": "Default Policy", "ID": "default-id"},
+            {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 1, "NAME": "Test Policy 1", "ID": "test-id-1"},
+            {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 2, "NAME": "Test Policy 2", "ID": "test-id-2"},
+            {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 3, "NAME": "Test Policy 3", "ID": "test-id-3"},
+        ]
+        policy_hash = "test_hash"
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, policy_hash))
+        mocker.patch("CortexPlatformCore.validate_platform", return_value="AGENT_OS_WINDOWS")
+
+        mock_update = mocker.patch.object(mock_client, "update_agent_policy", return_value={"success": True})
+
+        args = {
+            "policy_name": "Test Policy 1,Test Policy 2",
+            "platform": "windows",
+        }
+
+        result = delete_endpoint_policy_command(mock_client, args)
+
+        assert "Successfully deleted 2 endpoint policies" in result.readable_output
+        assert "Test Policy 1" in result.readable_output
+        assert "Test Policy 2" in result.readable_output
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["PolicyName"] == "Test Policy 1"
+        assert result.outputs[0]["PolicyID"] == "test-id-1"
+        assert result.outputs[1]["PolicyName"] == "Test Policy 2"
+        assert result.outputs[1]["PolicyID"] == "test-id-2"
+        assert result.outputs[0]["Deleted"] is True
+        assert result.outputs[1]["Deleted"] is True
+
+        # Verify update was called with policies removed
+        mock_update.assert_called_once()
+        update_payload = mock_update.call_args[0][0]
+        assert len(update_payload["DATA"]) == 2  # Default policy and Test Policy 3 remain
+        remaining_names = [p["NAME"] for p in update_payload["DATA"]]
+        assert "Default Policy" in remaining_names
+        assert "Test Policy 3" in remaining_names
+        assert "Test Policy 1" not in remaining_names
+        assert "Test Policy 2" not in remaining_names
+
+    def test_delete_endpoint_policy_multiple_by_ids_success(self, mocker: MockerFixture):
+        """
+        GIVEN:
+            Valid arguments with multiple policy_ids to delete.
+        WHEN:
+            delete_endpoint_policy_command is called.
+        THEN:
+            All policies are deleted successfully.
+        """
+        from CortexPlatformCore import delete_endpoint_policy_command, Client
+
+        mock_client = Client(base_url="", headers={})
+
+        current_policies = [
+            {"PLATFORM": "AGENT_OS_LINUX", "PRIORITY": 0, "NAME": "Default Policy", "ID": "default-id"},
+            {"PLATFORM": "AGENT_OS_LINUX", "PRIORITY": 1, "NAME": "Policy A", "ID": "id-a"},
+            {"PLATFORM": "AGENT_OS_LINUX", "PRIORITY": 2, "NAME": "Policy B", "ID": "id-b"},
+            {"PLATFORM": "AGENT_OS_LINUX", "PRIORITY": 3, "NAME": "Policy C", "ID": "id-c"},
+        ]
+        policy_hash = "test_hash"
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, policy_hash))
+        mocker.patch("CortexPlatformCore.validate_platform", return_value="AGENT_OS_LINUX")
+
+        mock_update = mocker.patch.object(mock_client, "update_agent_policy", return_value={"success": True})
+
+        args = {
+            "policy_id": "id-a,id-b,id-c",
+            "platform": "linux",
+        }
+
+        result = delete_endpoint_policy_command(mock_client, args)
+
+        assert "Successfully deleted 3 endpoint policies" in result.readable_output
+        assert len(result.outputs) == 3
+        assert result.outputs[0]["PolicyID"] == "id-a"
+        assert result.outputs[1]["PolicyID"] == "id-b"
+        assert result.outputs[2]["PolicyID"] == "id-c"
+
+        # Verify only default policy remains
+        mock_update.assert_called_once()
+        update_payload = mock_update.call_args[0][0]
+        assert len(update_payload["DATA"]) == 1
+        assert update_payload["DATA"][0]["NAME"] == "Default Policy"
+
+    def test_delete_endpoint_policy_multiple_one_not_found(self, mocker: MockerFixture):
+        """
+        GIVEN:
+            Arguments with multiple policy names where one doesn't exist.
+        WHEN:
+            delete_endpoint_policy_command is called.
+        THEN:
+            DemistoException is raised indicating which policy was not found.
+        """
+        from CortexPlatformCore import delete_endpoint_policy_command, Client
+
+        mock_client = Client(base_url="", headers={})
+
+        current_policies = [
+            {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 0, "NAME": "Default Policy", "ID": "default-id"},
+            {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 1, "NAME": "Test Policy 1", "ID": "test-id-1"},
+        ]
+        policy_hash = "test_hash"
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, policy_hash))
+        mocker.patch("CortexPlatformCore.validate_platform", return_value="AGENT_OS_WINDOWS")
+
+        args = {
+            "policy_name": "Test Policy 1,Nonexistent Policy",
+            "platform": "windows",
+        }
+
+        with pytest.raises(DemistoException, match="No policy found with name 'Nonexistent Policy'"):
+            delete_endpoint_policy_command(mock_client, args)
+
+    def test_delete_endpoint_policy_multiple_one_is_default(self, mocker: MockerFixture):
+        """
+        GIVEN:
+            Arguments with multiple policy names where one is the default policy.
+        WHEN:
+            delete_endpoint_policy_command is called.
+        THEN:
+            DemistoException is raised indicating default policy cannot be deleted.
+        """
+        from CortexPlatformCore import delete_endpoint_policy_command, Client
+
+        mock_client = Client(base_url="", headers={})
+
+        current_policies = [
+            {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 0, "NAME": "Default Policy", "ID": "default-id"},
+            {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 1, "NAME": "Test Policy 1", "ID": "test-id-1"},
+        ]
+        policy_hash = "test_hash"
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, policy_hash))
+        mocker.patch("CortexPlatformCore.validate_platform", return_value="AGENT_OS_WINDOWS")
+
+        args = {
+            "policy_id": "default-id,test-id-1",
+            "platform": "windows",
+        }
+
+        with pytest.raises(DemistoException, match="Cannot delete the default policy"):
+            delete_endpoint_policy_command(mock_client, args)
+
+    def test_delete_endpoint_policy_both_name_and_id_provided(self, mocker: MockerFixture):
+        """
+        GIVEN:
+            Arguments with both policy_name and policy_id provided.
+        WHEN:
+            delete_endpoint_policy_command is called.
+        THEN:
+            DemistoException is raised indicating only one should be provided.
+        """
+        from CortexPlatformCore import delete_endpoint_policy_command, Client
+
+        mock_client = Client(base_url="", headers={})
+
+        args = {
+            "policy_name": "Test Policy",
+            "policy_id": "test-id",
+            "platform": "windows",
+        }
+
+        with pytest.raises(DemistoException, match="Cannot provide both policy_name and policy_id"):
+            delete_endpoint_policy_command(mock_client, args)
+
+    def test_delete_endpoint_policy_single_policy_output_format(self, mocker: MockerFixture):
+        """
+        GIVEN:
+            Arguments with a single policy to delete.
+        WHEN:
+            delete_endpoint_policy_command is called.
+        THEN:
+            Output format matches the original single-policy format.
+        """
+        from CortexPlatformCore import delete_endpoint_policy_command, Client
+
+        mock_client = Client(base_url="", headers={})
+
+        current_policies = [
+            {"PLATFORM": "AGENT_OS_MAC", "PRIORITY": 0, "NAME": "Default Policy", "ID": "default-id"},
+            {"PLATFORM": "AGENT_OS_MAC", "PRIORITY": 1, "NAME": "Single Policy", "ID": "single-id"},
+        ]
+        policy_hash = "test_hash"
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, policy_hash))
+        mocker.patch("CortexPlatformCore.validate_platform", return_value="AGENT_OS_MAC")
+        mocker.patch.object(mock_client, "update_agent_policy", return_value={"success": True})
+
+        args = {
+            "policy_name": "Single Policy",
+            "platform": "mac",
+        }
+
+        result = delete_endpoint_policy_command(mock_client, args)
+
+        # Verify single policy uses original format (not "deleted X policies")
+        assert "Successfully deleted endpoint policy:" in result.readable_output
+        assert "- Name: Single Policy" in result.readable_output
+        assert "- ID: single-id" in result.readable_output
+        assert "- Platform: mac" in result.readable_output
+        assert "- Priority: 1" in result.readable_output
+
+        # Verify outputs is a list with one item
+        assert isinstance(result.outputs, list)
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["PolicyName"] == "Single Policy"
+
 
 class TestValidateProfilePlatformCompatibility:
     """Test cases for validate_profile_platform_compatibility function."""

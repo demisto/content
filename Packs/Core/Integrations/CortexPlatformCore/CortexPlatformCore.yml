@@ -3356,7 +3356,7 @@ script:
       hidden: false
       arguments:
         - name: policy_name
-          description: The name for the new endpoint policy. Must be unique and descriptive.
+          description: The name for the new endpoint policy.
           required: true
           type: String
         - name: target_endpoint_names
@@ -3380,10 +3380,10 @@ script:
             - serverless
           type: String
         - name: description
-          description: Optional description of the policy's purpose and scope.
+          description: Description of the policy's purpose and scope.
           type: String
         - name: priority
-          description: The priority level for the policy (higher numbers = higher priority). If not specified, automatically assigns the next available priority for the platform. If the specified priority already exists for this platform, existing policies will be shifted up automatically.
+          description: The priority level for the policy (higher numbers indicate higher priority). If not specified, the system automatically assigns the highest priority available for the platform. If the specified priority already exists, existing policies will be shifted down automatically.
           type: Number
         - name: exploit_profile
           description: The name of the exploit protection profile to use. Default is "Default".
@@ -3439,15 +3439,17 @@ script:
           description: The policy description.
           type: String
     - name: core-delete-endpoint-policy
-      description: Deletes an existing endpoint policy from the policy table.
+      description: Deletes one or more existing endpoint policies from the policy table.
       hidden: false
       arguments:
         - name: policy_name
-          description: The name of the policy to delete. Either this or policy_id must be provided.
+          description: A comma-separated list of the policy names to delete. Either this or policy_id must be provided.
           type: String
+          isArray: true
         - name: policy_id
-          description: The ID of the policy to delete. Either this or policy_name must be provided.
+          description: A comma-separated list of the policy IDs to delete. Either this or policy_name must be provided.
           type: String
+          isArray: true
         - name: platform
           description: The platform type to narrow down the policy search. Required to identify the correct policy.
           required: true
