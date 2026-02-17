@@ -40,11 +40,13 @@ class BackendResponse:
         success: Whether the operation succeeded
         error_type: Type of error if failed (None if successful)
         error_message: Detailed error message if failed (None if successful)
+        error_code: Error code from backend if failed (None if successful)
     """
 
     success: bool
     error_type: BackendErrorType | None = None
     error_message: str | None = None
+    error_code: int | None = None
 
 
 class AssistantStatus(str, Enum):
@@ -681,34 +683,34 @@ class AssistantMessagingHandler:
             if error_code == 103000:
                 demisto.debug(f"LLM not enabled for {operation}: {error_msg}")
                 return BackendResponse(
-                    success=False, error_type=BackendErrorType.LLM_NOT_ENABLED, error_message=error_msg
+                    success=False, error_type=BackendErrorType.LLM_NOT_ENABLED, error_message=error_msg, error_code=error_code
                 )
             # Permission errors (103102-103103)
             elif error_code == 103102:
                 demisto.debug(f"User not found for {operation}: {error_msg}")
                 return BackendResponse(
-                    success=False, error_type=BackendErrorType.USER_NOT_FOUND, error_message=error_msg
+                    success=False, error_type=BackendErrorType.USER_NOT_FOUND, error_message=error_msg, error_code=error_code
                 )
             elif error_code == 103103:
                 demisto.debug(f"Permission denied for {operation}: {error_msg}")
                 return BackendResponse(
-                    success=False, error_type=BackendErrorType.PERMISSION_DENIED, error_message=error_msg
+                    success=False, error_type=BackendErrorType.PERMISSION_DENIED, error_message=error_msg, error_code=error_code
                 )
             # Conversation errors (103201-103205)
             elif error_code == 103201:
                 demisto.debug(f"Conversation not found for {operation}: {error_msg}")
                 return BackendResponse(
-                    success=False, error_type=BackendErrorType.CONVERSATION_NOT_FOUND, error_message=error_msg
+                    success=False, error_type=BackendErrorType.CONVERSATION_NOT_FOUND, error_message=error_msg, error_code=error_code
                 )
             elif error_code == 103204:
                 demisto.debug(f"Wrong user for {operation}: {error_msg}")
                 return BackendResponse(
-                    success=False, error_type=BackendErrorType.WRONG_USER, error_message=error_msg
+                    success=False, error_type=BackendErrorType.WRONG_USER, error_message=error_msg, error_code=error_code
                 )
             else:
                 # Unknown error code or no error code
                 demisto.error(f"Backend {operation} failed with error_code={error_code}: {error_msg}")
-                return BackendResponse(success=False, error_type=BackendErrorType.UNKNOWN, error_message=error_msg)
+                return BackendResponse(success=False, error_type=BackendErrorType.UNKNOWN, error_message=error_msg, error_code=error_code)
         else:
             error_msg = f"Unexpected response type: {type(response)}"
             demisto.error(f"Backend {operation} returned unexpected response: {response}")
@@ -1041,6 +1043,8 @@ class AssistantMessagingHandler:
         action_id = action.get("action_id", "")
         action_value = action.get("value", "")
 
+        demisto.debug(f"Handling action: {action_id} with value: {action_value}")
+
         # OPTION 1: Feedback Buttons
         if action_id == AssistantActionIds.FEEDBACK.value:
             # Value format: "positive-message_id" or "negative-message_id"
@@ -1350,7 +1354,7 @@ class AssistantMessagingHandler:
 
         # Replace bot mention with friendly display name for backend
         bot_mention = self.format_user_mention(bot_id)
-        text_cleaned = text.replace(bot_mention, AssistantMessages.BOT_DISPLAY_NAME).strip()
+        text_cleaned = text.replace(bot_mention, "") or "Hi"  # TODO AssistantMessages.BOT_DISPLAY_NAME).strip()
 
         # Normalize message for backend (decode HTML entities, preserve structure)
         text_normalized = self.normalize_message_from_user(text_cleaned)
@@ -1444,33 +1448,34 @@ class AssistantMessagingHandler:
         else:
             # Handle errors - determine message and whether it should be ephemeral
             error_msg = None
-            is_ephemeral = True
+            is_ephemeral = False
             
             if backend_response.error_type == BackendErrorType.LLM_NOT_ENABLED:
                 # 103000 - LLM not enabled (public message)
                 demisto.debug("LLM not enabled in Cortex platform")
                 error_msg = AssistantMessages.LLM_NOT_ENABLED
-                is_ephemeral = False  # Public so everyone sees the configuration issue
             elif backend_response.error_type == BackendErrorType.USER_NOT_FOUND:
                 # 103102 - User not found in system (public message with user tag)
                 demisto.debug(f"User {user_email} not found in system")
                 user_mention = self.format_user_mention(user_id)
                 error_msg = f"{user_mention} {AssistantMessages.USER_NOT_FOUND}"
-                is_ephemeral = False  # Public so user sees they're tagged
             elif backend_response.error_type == BackendErrorType.PERMISSION_DENIED:
                 # 103103 - User lacks assistant permissions (public message with user tag)
                 demisto.debug(f"User {user_email} lacks assistant permissions")
                 user_mention = self.format_user_mention(user_id)
                 error_msg = f"{user_mention} {AssistantMessages.NO_ASSISTANT_PERMISSIONS}"
-                is_ephemeral = False  # Public so user sees they're tagged
             elif backend_response.error_type == BackendErrorType.WRONG_USER:
                 # 103204 - Wrong user (thread locked to another user)
+                is_ephemeral = True
                 demisto.debug(f"Thread {thread_id} is locked to another user")
                 error_msg = AssistantMessages.THREAD_LOCKED_TO_ANOTHER_USER.format(bot_tag=self.format_user_mention(bot_id))
             else:
                 # Other error (conversation not found, system errors, etc.)
                 demisto.error(f"Backend sendToConversation failed: {backend_response.error_message}")
                 error_msg = AssistantMessages.SYSTEM_ERROR
+                # Add error code to help with debugging
+                if backend_response.error_code:
+                    error_msg = f"{error_msg} (Error code: {backend_response.error_code})"
             
             # Send error message
             await self.send_message_async(
@@ -1554,13 +1559,15 @@ class AssistantMessagingHandler:
             # MODEL TYPES - Final responses
             should_release_lock = completed
             # Add feedback buttons for final responses
+
+            if AssistantMessageType.is_approval_type(message_type):
+                # APPROVAL - Sensitive action requiring approval
+                should_release_lock = False
+                blocks.extend(self.create_approval_ui())
+                new_status = AssistantStatus.AWAITING_SENSITIVE_ACTION_APPROVAL.value
+
             if message_id:
                 blocks.append(self.create_feedback_ui(message_id))
-
-        elif AssistantMessageType.is_approval_type(message_type):
-            # APPROVAL - Sensitive action requiring approval
-            blocks.extend(self.create_approval_ui())
-            new_status = AssistantStatus.AWAITING_SENSITIVE_ACTION_APPROVAL.value
 
         elif AssistantMessageType.is_step_type(message_type):
             # STEP TYPES - Plan steps

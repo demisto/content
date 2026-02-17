@@ -2107,7 +2107,7 @@ async def handle_assistant_interactions(
     """
     if not ENABLED_AI_ASSISTANT:
         return
-
+    # if bool(channel and channel[0] == 'D'): return TODO
     # Check if this is a modal submission (e.g., feedback modal)
     view = data.get("view", {})
     is_modal_submission = is_assistant_modal_submission(data_type, view)

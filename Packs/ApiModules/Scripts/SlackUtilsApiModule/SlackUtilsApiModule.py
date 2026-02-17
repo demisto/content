@@ -232,6 +232,9 @@ def parse_md_table_to_slack_table(md_text: str) -> dict | None:
             "rows": [[{"type": "raw_text", "text": "A"}, ...], ...]
         }
     """
+    if not md_text or not md_text.strip():
+        return None
+
     lines = [line.strip() for line in md_text.strip().split("\n")]
     if not lines:
         return None
