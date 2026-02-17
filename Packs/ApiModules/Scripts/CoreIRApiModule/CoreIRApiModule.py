@@ -2366,13 +2366,15 @@ def get_endpoints_command(client, args):
     last_seen_lte = arg_to_timestamp(arg=args.get("last_seen_lte"), arg_name="last_seen_lte")
 
     sort_by = args.get("sort_by")
-    sort_order = args.get("sort_order", "asc")
+    sort_order = args.get("sort_order")
 
     # When fetching all results without explicit sort, use sort_by first_seen to ensure stable pagination
-    if all_results and not sort_by:
+    if all_results and not sort_by and not sort_order:
         sort_by = "first_seen"
         sort_order = "asc"
-        demisto.debug("get_endpoints_command: all_results=true without explicit sort, defaulting to sort_by=first_seen, sort_order=asc")
+        demisto.debug(
+            "get_endpoints_command: all_results=true without explicit sort, defaulting to sort_by=first_seen, sort_order=asc"
+        )
 
     username = argToList(args.get("username"))
 
@@ -2459,7 +2461,7 @@ def get_endpoints_command(client, args):
         context[Common.Account.CONTEXT_PATH] = account_context
 
     return CommandResults(
-        readable_output=tableToMarkdown("Endpoints", endpoints, headers=["endpoint_id","assigned_extensions_policy","last_seen","first_seen"],removeNull=True), outputs=context, raw_response=endpoints
+        readable_output=tableToMarkdown("Endpoints", endpoints, removeNull=True), outputs=context, raw_response=endpoints
     )
 
 
