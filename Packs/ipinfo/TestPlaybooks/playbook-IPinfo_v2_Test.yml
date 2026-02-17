@@ -260,12 +260,12 @@ tasks:
             value:
               simple: DBotScore.Reliability
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isEmpty
           left:
             value:
               simple: DBotScore.Type
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isEmpty
           left:
             value:
               simple: DBotScore.Vendor
