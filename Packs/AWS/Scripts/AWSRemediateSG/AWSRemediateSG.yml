@@ -1,11 +1,11 @@
 args:
-- description: The AWS Account ID.
+- description: The AWS account ID.
   name: account_id
   required: true
-- description: The EC2 Resource ID whose Security Groups are to be remediated.
+- description: The EC2 resource ID to remediate security groups for.
   name: resource_id
   required: true
-- description: The Security Group ID(s) to be recreated, given as a comma separated list.
+- description: A comma-separated list of security group IDs to recreate.
   name: sg_list
   required: true
   isArray: true
@@ -19,7 +19,7 @@ args:
   - tcp
   - udp
   required: true
-- description: Region where EC2 instance resides.
+- description: The region where the EC2 instance resides.
   name: region
   auto: PREDEFINED
   required: true
@@ -56,11 +56,11 @@ args:
   - me-south-1
   - me-central-1
   - sa-east-1
-- description: One or more tags to apply to re-created Security Groups. Must be separated by a semicolon (;) and specified using the format "key=abc,value=123;key=fed,value=456".
+- description: The tags to apply to the recreated security groups. Use the format `key=abc,value=123;key=fed,value=456`, with tags separated by a semicolon (;).
   name: tags
-- description: The AWS Integration Instance to use.
+- description: The AWS integration instance to use.
   name: integration_instance
-comment: Automation to duplicate Security Groups with rules modified to remove public exposure of the given port.  The updated list of security groups can then be used to remediate public exposure of an AWS resource by replacing the current list.
+comment: Duplicates security groups and modifies rules to remove public exposure for the specified port. The updated security groups can then be used to remediate public exposure of an AWS resource by replacing the existing list.
 commonfields:
   id: AWSRemediateSG
   version: -1
@@ -93,7 +93,7 @@ outputs:
   description: 'ID of the original security group before remediation.'
   type: String
 - contextPath: AWSPublicExposure.SGReplacements.ResourceID
-  description: 'The EC2 Resource ID whose Security Groups are to be remediated.'
+  description: 'The EC2 resource ID to remediate security groups for.'
   type: String
 - contextPath: AWSPublicExposure.SGReplacements.UpdatedSGList
   description: 'List of Security Groups to associate to the EC2 resource after remediation.'
