@@ -6688,7 +6688,7 @@ There is no context output for this command.
 ### cs-falcon-search-ngsiem-events
 
 ***
-Search NGSIEM historical events. Requires NGSIEM scope with read/write permissions.
+Search NGSIEM historical events. Requires NGSIEM scope with read and write permissions.
 
 #### Base Command
 
@@ -6709,8 +6709,6 @@ Search NGSIEM historical events. Requires NGSIEM scope with read/write permissio
 | ingest_start | The start of the search window, based on the event ingesttimestamp.<br/>Note: ingest_end must be strictly greater than ingest_start.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000). | Optional |
 | ingest_end | The end of the search window, based on the event ingesttimestamp.<br/>Note: ingest_end must be strictly greater than ingest_start.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000). | Optional |
 | use_ingest_time | When true, the server uses ingest_start/ingest_end as the query window. when false (or not set), it uses start/end. If both windows are provided, results are constrained by BOTH (AND). Possible values are: true, false. | Optional |
-| time_zone | The time zone to use if start and end times are not specified in milliseconds. Time zones are provided in "area/location" format. Example: UTC. | Optional |
-| time_zone_offset_minutes | The time zone offset must be provided in minutes. For example, if your time zone is UTC+2:00, you would pass a value of 120. | Optional |
 | limit | Maximum number of events to return. Ignored when any around_* parameter is specified. Default is 50. | Optional |
 | interval | Interval between polling attempts in seconds. To prevent search timeouts, set this value within the 60–90 second range. Default is 60. | Optional |
 | timeout | Timeout for polling in seconds. Default is 600. | Optional |

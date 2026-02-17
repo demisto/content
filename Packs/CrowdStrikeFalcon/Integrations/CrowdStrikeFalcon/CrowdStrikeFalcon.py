@@ -6387,23 +6387,15 @@ def get_ngsiem_search_results_request(repository: str, job_id: str) -> dict:
 
 def clean_ngsiem_rawstring_field(events: list[dict]) -> list[dict]:
     """
-    Safely decode @rawstring if it contains stringified JSON.
+    Clean the @rawstring field by replacing escaped '\\&' sequences with '&'.
+
+    The NGSIEM API may return @rawstring values containing '\\&' (literal backslash + ampersand).
+    This replacement ensures the string is clean before the whole event is later serialized with json.dumps.
     """
     for event in events:
         raw = event.get("@rawstring")
-        if not raw:
-            continue
-        if isinstance(raw, str):
-            try:
-                decoded = json.loads(raw)
-                event["@rawstring"] = decoded
-            except json.JSONDecodeError:
-                fixed = raw.replace("\\&", "&")
-                try:
-                    event["@rawstring"] = json.loads(fixed)
-                except json.JSONDecodeError:
-                    # if raw is string will keep it as is
-                    event["@rawstring"] = raw
+        if isinstance(raw, str) and "\\&" in raw:
+            event["@rawstring"] = raw.replace("\\&", "&")
     return events
 
 
@@ -6472,11 +6464,42 @@ def build_ngsiem_search_body(args: dict) -> dict:
         ingestStart=arg_to_timestamp(args.get("ingest_start")),
         ingestEnd=arg_to_timestamp(args.get("ingest_end")),
         useIngestTime=argToBoolean(args.get("use_ingest_time")) if args.get("use_ingest_time") else None,
-        timeZone=args.get("time_zone"),
-        timeZoneOffsetMinutes=arg_to_number(args.get("time_zone_offset_minutes")),
         around=around_config,
     )
     return body
+
+
+def build_ngsiem_hr_rows(events: list[dict], hr_keys: list[str]) -> list[dict]:
+    """
+    Build human-readable table rows from NGSIEM events.
+
+    For each desired key, resolves the value by trying the bare key first,
+    then falling back to the '@' and '#' prefixed variants.
+    Converts epoch-ms timestamp values to ISO 8601 date strings.
+
+    Args:
+        events: The raw event dicts (not modified).
+        hr_keys: The unprefixed keys to extract for display.
+
+    Returns:
+        list[dict]: A list of dicts ready for tableToMarkdown (HR only).
+    """
+    hr_rows: list[dict] = []
+    for event in events:
+        row: dict[str, Any] = {}
+        for key in hr_keys:
+            val = event.get(key) or event.get(f"@{key}") or event.get(f"#{key}")
+            if key == "timestamp" and val is not None:
+                try:
+                    if isinstance(val, (int, float)):
+                        val = timestamp_to_datestring(val)
+                    elif isinstance(val, str) and val.isdigit():
+                        val = timestamp_to_datestring(int(val))
+                except Exception:
+                    demisto.debug(f"Failed to convert timestamp {val} to date string")
+            row[key] = val
+        hr_rows.append(row)
+    return hr_rows
 
 
 def process_ngsiem_search_completion(response: dict, args: dict) -> PollResult:
@@ -6499,23 +6522,16 @@ def process_ngsiem_search_completion(response: dict, args: dict) -> PollResult:
     if events:
         events = clean_ngsiem_rawstring_field(events)
         demisto.debug(f"Returned {len(events)} results from NGSIEM search")
-        table_headers = [
-            "timestamp",
-            "user.name",
-            "host.hostname",
-            "event_simpleName",
-            "id",
-        ]
 
+        hr_keys = ["id", "event_simpleName", "user.name", "host.hostname", "timestamp"]
         def header_transform(header: str) -> str:
-            clean = header.lstrip("#@")
-            return clean.replace("_", " ").replace(".", " ").title()
+            return header.replace("_", " ").replace(".", " ").title()
 
         hr = tableToMarkdown(
             name=f"NGSIEM Events (Total: {len(events)})",
-            t=events,
+            t=build_ngsiem_hr_rows(events, hr_keys),
             headerTransform=header_transform,
-            headers=table_headers,
+            headers=hr_keys,
             removeNull=True,
         )
     else:
@@ -8806,7 +8822,7 @@ def main():  # pragma: no cover
         elif command == "cs-falcon-resolve-case":
             return_results(resolve_case_command(args))
         elif command == "cs-falcon-search-ngsiem-events":
-            return_results(cs_falcon_search_ngsiem_events_command(args=args))
+            return_results(cs_falcon_search_ngsiem_events_command(args))
         else:
             raise NotImplementedError(f"CrowdStrike Falcon error: command {command} is not implemented")
     except Exception as e:

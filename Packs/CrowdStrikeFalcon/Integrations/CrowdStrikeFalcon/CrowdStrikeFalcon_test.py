@@ -8632,10 +8632,17 @@ def test_resolve_case_command(requests_mock):
 @pytest.mark.parametrize(
     "events, expected_rawstring",
     [
-        ([{"@rawstring": '{"key": "value"}'}], {"key": "value"}),
-        ([{"@rawstring": "plain text not json"}], "plain text not json"),
+        # \& in string is replaced with &
+        ([{"@rawstring": "foo\\&bar"}], "foo&bar"),
+        # Multiple \& occurrences are all replaced
+        ([{"@rawstring": "a\\&b\\&c"}], "a&b&c"),
+        # String without \& is left unchanged
+        ([{"@rawstring": "plain text no escape"}], "plain text no escape"),
+        # Empty string stays empty
         ([{"@rawstring": ""}], ""),
+        # Non-string @rawstring (dict) is left unchanged
         ([{"@rawstring": {"already": "parsed"}}], {"already": "parsed"}),
+        # Event without @rawstring is left unchanged
         ([{"some_field": "value"}], None),
     ],
 )
@@ -8646,7 +8653,8 @@ def test_clean_ngsiem_rawstring_field(events, expected_rawstring):
     When:
         - Running clean_ngsiem_rawstring_field.
     Then:
-        - The @rawstring field is processed correctly (decoded JSON, kept as string, or unchanged).
+        - Literal '\\&' sequences in string @rawstring values are replaced with '&'.
+        - Non-string or missing @rawstring values are left unchanged.
     """
     from CrowdStrikeFalcon import clean_ngsiem_rawstring_field
 
@@ -8914,3 +8922,70 @@ def test_cs_falcon_search_ngsiem_events_command_merged(
         assert expect_hr in result.readable_output
     if expect_job_id is not None:
         assert args["job_id"] == expect_job_id
+
+
+@pytest.mark.parametrize(
+    "events, hr_keys, expected_rows",
+    [
+        # Bare key preferred over @key and #key
+        ([{"id": "bare", "@id": "at", "#id": "hash"}], ["id"], [{"id": "bare"}]),
+        # Falls back to @key when bare key missing
+        ([{"@id": "at_val"}], ["id"], [{"id": "at_val"}]),
+        # Missing key entirely → None
+        ([{"other": "x"}], ["id"], [{"id": None}]),
+        # Timestamp int epoch-ms → date string
+        ([{"timestamp": 1700000000000}], ["timestamp"], "date_str"),
+        # Timestamp numeric string → date string
+        ([{"timestamp": "1700000000000"}], ["timestamp"], "date_str"),
+        # Timestamp float epoch-ms → date string
+        ([{"#timestamp": 1700000000000.0}], ["timestamp"], "date_str"),
+        # Timestamp non-numeric string → passthrough
+        ([{"@timestamp": "2023-01-01T00:00:00Z"}], ["timestamp"], [{"timestamp": "2023-01-01T00:00:00Z"}]),
+    ],
+)
+def test_build_ngsiem_hr_rows(events, hr_keys, expected_rows):
+    """
+    Given:
+        - Events with various key patterns (bare, @-prefixed, #-prefixed, missing)
+          and timestamp values (int, float, numeric string, non-numeric string).
+    When:
+        - Running build_ngsiem_hr_rows.
+    Then:
+        - Key resolution: bare key > @key > #key > None.
+        - Timestamp conversion: int/float/numeric-string epoch-ms → ISO date string;
+          non-numeric string passes through unchanged.
+    """
+    from CrowdStrikeFalcon import build_ngsiem_hr_rows
+
+    rows = build_ngsiem_hr_rows(events, hr_keys)
+    if expected_rows == "date_str":
+        # For epoch-ms inputs, just verify it was converted to a date string containing the year
+        assert isinstance(rows[0]["timestamp"], str)
+        assert "2023" in rows[0]["timestamp"]
+    else:
+        assert rows == expected_rows
+
+
+def test_build_ngsiem_hr_rows_multiple_events_and_keys():
+    """
+    Given:
+        - Multiple events with mixed key resolution and timestamp formats.
+    When:
+        - Running build_ngsiem_hr_rows with several hr_keys.
+    Then:
+        - Each event row resolves keys correctly and timestamps are handled per type.
+    """
+    from CrowdStrikeFalcon import build_ngsiem_hr_rows
+
+    events = [
+        {"id": "evt1", "@timestamp": 1700000000000, "#event_simpleName": "DNS"},
+        {"#id": "evt2", "timestamp": "not-a-number", "event_simpleName": "HTTP"},
+    ]
+    rows = build_ngsiem_hr_rows(events, ["id", "timestamp", "event_simpleName"])
+    assert len(rows) == 2
+    assert rows[0]["id"] == "evt1"
+    assert isinstance(rows[0]["timestamp"], str) and "2023" in rows[0]["timestamp"]
+    assert rows[0]["event_simpleName"] == "DNS"
+    assert rows[1]["id"] == "evt2"
+    assert rows[1]["timestamp"] == "not-a-number"
+    assert rows[1]["event_simpleName"] == "HTTP"
