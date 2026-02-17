@@ -6723,11 +6723,11 @@ Search NGSIEM historical events. Requires NGSIEM scope with read and write permi
 
 #### Command Example
 
-`!cs-falcon-search-ngsiem-events query="#event_simpleName = \"Event_name\"" repository="search-all" start="1d" end="now" limit=2 interval=5 timeout=20`
+`!cs-falcon-search-ngsiem-events query="#event_simpleName = \"Event_name\"" repository="search-all" start="1d" end="now" limit=2 interval=60 timeout=120`
 
-`!cs-falcon-search-ngsiem-events query="*" repository="search-all" start="7d" end="now" around_event_id="aaa" around_number_events_before=1 around_number_events_after=1 around_timestamp=1700000000000 interval=5 timeout=20`
+`!cs-falcon-search-ngsiem-events query="*" repository="search-all" start="7d" end="now" around_event_id="aaa" around_number_events_before=1 around_number_events_after=1 around_timestamp=1700000000000 interval=60 timeout=120`
 
-`!cs-falcon-search-ngsiem-events query="id=aaaaa_anchor_event" repository="search-all" ingest_start=1700000000000 ingest_end=1700000002000 use_ingest_time=true limit=2 interval=5 timeout=20`
+`!cs-falcon-search-ngsiem-events query="id=aaaaa_anchor_event" repository="search-all" ingest_start=1700000000000 ingest_end=1700000002000 use_ingest_time=true limit=2 interval=60 timeout=120`
 
 #### Context Example
 

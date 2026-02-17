@@ -8984,7 +8984,8 @@ def test_build_ngsiem_hr_rows_multiple_events_and_keys():
     rows = build_ngsiem_hr_rows(events, ["id", "timestamp", "event_simpleName"])
     assert len(rows) == 2
     assert rows[0]["id"] == "evt1"
-    assert isinstance(rows[0]["timestamp"], str) and "2023" in rows[0]["timestamp"]
+    assert isinstance(rows[0]["timestamp"], str)
+    assert "2023" in rows[0]["timestamp"]
     assert rows[0]["event_simpleName"] == "DNS"
     assert rows[1]["id"] == "evt2"
     assert rows[1]["timestamp"] == "not-a-number"

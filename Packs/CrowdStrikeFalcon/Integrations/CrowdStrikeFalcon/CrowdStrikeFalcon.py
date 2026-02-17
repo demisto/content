@@ -6451,7 +6451,7 @@ def build_ngsiem_search_body(args: dict) -> dict:
         timestamp=arg_to_timestamp(args.get("around_timestamp")),
     )
 
-    if not around_config:
+    if not around_config.get("numberOfEventsBefore") and not around_config.get("numberOfEventsAfter"):
         # If an "around" is used (around_number_events_before/after), adding `limit` would override/ignore the config,
         # so we only set `limit` when "around" is not used.
         limit = arg_to_number(args.get("limit")) or 50
@@ -6491,7 +6491,7 @@ def build_ngsiem_hr_rows(events: list[dict], hr_keys: list[str]) -> list[dict]:
             val = event.get(key) or event.get(f"@{key}") or event.get(f"#{key}")
             if key == "timestamp" and val is not None:
                 try:
-                    if isinstance(val, (int, float)):
+                    if isinstance(val, (int | float)):
                         val = timestamp_to_datestring(val)
                     elif isinstance(val, str) and val.isdigit():
                         val = timestamp_to_datestring(int(val))
