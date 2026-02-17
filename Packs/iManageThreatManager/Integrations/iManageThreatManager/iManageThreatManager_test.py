@@ -538,9 +538,8 @@ class TestClient:
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
         requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", status_code=429, json={"error": "Too Many Requests"})
 
-        with capfd.disabled():
-            with pytest.raises(DemistoException):
-                client._fetch_alerts(BEHAVIOR_ANALYTICS, 500, 1000, 10)
+        with capfd.disabled(), pytest.raises(DemistoException):
+            client._fetch_alerts(BEHAVIOR_ANALYTICS, 500, 1000, 10)
 
     def test_fetch_alerts_no_retry_on_other_errors(self, client, requests_mock, mocker):
         """
