@@ -242,7 +242,7 @@ configuration:
     to override the default close reason mapping defined by Cortex XSOAR. Note that
     the mapping must be configured accordingly with the existing close reasons in
     Cortex XSOAR and Defender. Not following this format will result in closing the
-    incident with a default close reason. Example: "Resolved=Other,Duplicate=Other".
+    incident with a default close reason. Example: "True Positive=TruePositive-Other,False Positive=FalsePositive-Other".
     Refer to ../README.md for possible close-reasons - `Defender Incident Mirroring`.'
   name: custom_xsoar_to_defender_close_reason_mapping
   type: 0
