@@ -436,6 +436,18 @@ PARAMS_GET_EVENTS = [
         [EVENTS[1]],
         1,
     ),
+    (
+        {
+            "vm-uuid": "123",
+            "user": "",
+            "start_date": "2019-10-23T00:00:00",
+            "end_date": "2021-12-16T12:00:00",
+            "event-type": "reboot VM",
+            "limit": "50",
+        },
+        [EVENTS[1]],
+        1,
+    ),
 ]
 
 PARAMS_GET_PRIORITY = [
