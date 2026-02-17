@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: "fix-update-apimodule"
+  CURRENT_BRANCH_NAME: $INFRA_BRANCH
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "fix-update-apimodule"
+    ref: $INFRA_BRANCH
     project: "${CI_PROJECT_NAMESPACE}/infra"
