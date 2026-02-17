@@ -864,10 +864,7 @@ def agentixCommands(command, args):
         "resetConversation": {"success": True},
         "rateMessage": {"success": True},
     }
-    if commands.get(command):
-        return commands.get(command, {})
-
-    return {}
+    return commands.get(command, {})
 
 
 def getParam(param):
