@@ -522,7 +522,7 @@ class TestClient:
         assert len(alerts) == 1
         assert call_count[0] == 2
 
-    def test_fetch_alerts_retry_exhausted(self, client, requests_mock, mocker):
+    def test_fetch_alerts_retry_exhausted(self, client, requests_mock, mocker, capfd):
         """
         Given:
             - API returns HTTP 429 on all attempts
@@ -538,8 +538,9 @@ class TestClient:
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
         requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", status_code=429, json={"error": "Too Many Requests"})
 
-        with pytest.raises(DemistoException):
-            client._fetch_alerts(BEHAVIOR_ANALYTICS, 500, 1000, 10)
+        with capfd.disabled():
+            with pytest.raises(DemistoException):
+                client._fetch_alerts(BEHAVIOR_ANALYTICS, 500, 1000, 10)
 
     def test_fetch_alerts_no_retry_on_other_errors(self, client, requests_mock, mocker):
         """
@@ -598,7 +599,7 @@ class TestTestModuleCommand:
         result = test_module_command(client, {}, [ADDRESSABLE_ALERTS])
         assert result == "ok"
 
-    def test_test_module_auth_error(self, client, requests_mock, mocker):
+    def test_test_module_auth_error(self, client, requests_mock, mocker, capfd):
         """
         Given:
             - Invalid credentials
@@ -619,8 +620,9 @@ class TestTestModuleCommand:
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json=login_matcher)
         requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", status_code=401, text="Unauthorized")
 
-        result = test_module_command(client, {}, [BEHAVIOR_ANALYTICS])
-        assert "Authorization Error" in result
+        with capfd.disabled():
+            result = test_module_command(client, {}, [BEHAVIOR_ANALYTICS])
+            assert "Authorization Error" in result
 
 
 class TestGetEventsCommand:
@@ -777,7 +779,7 @@ class TestFetchEventsCommand:
         assert len(events) == 0
         assert "last_fetch_BehaviorAnalytics" in next_run
 
-    def test_fetch_events_with_error(self, client, requests_mock, mocker):
+    def test_fetch_events_with_error(self, client, requests_mock, mocker, capfd):
         """
         Given:
             - API error during fetch
@@ -793,9 +795,10 @@ class TestFetchEventsCommand:
 
         last_run = {"last_fetch_BehaviorAnalytics": 1609459200000}
 
-        next_run, events = fetch_events_command(
-            client=client, last_run=last_run, event_types=[BEHAVIOR_ANALYTICS], max_events_per_type=10
-        )
+        with capfd.disabled():
+            next_run, events = fetch_events_command(
+                client=client, last_run=last_run, event_types=[BEHAVIOR_ANALYTICS], max_events_per_type=10
+            )
 
         # Should preserve last_run on error
         assert next_run["last_fetch_BehaviorAnalytics"] == 1609459200000
