@@ -1,6 +1,5 @@
 import traceback
 from datetime import datetime, timezone, timedelta
-from typing import Any
 
 import urllib3
 from CommonServerPython import *  # pylint: disable=unused-wildcard-import
@@ -52,15 +51,17 @@ class Client(BaseClient):
         GET /v2/assessments/launched
         List completed assessments with date filters.
         """
-        params = remove_empty_elements({
-            "fromDate": from_date,
-            "toDate": to_date,
-            "status": status or ["completed"],
-            "limit": limit,
-            "cursor": cursor,
-            "sortBy": "created",
-            "sortOrder": "desc",
-        })
+        params = remove_empty_elements(
+            {
+                "fromDate": from_date,
+                "toDate": to_date,
+                "status": status or ["completed"],
+                "limit": limit,
+                "cursor": cursor,
+                "sortBy": "created",
+                "sortOrder": "desc",
+            }
+        )
         demisto.debug(f"/v2/assessments/launched {params=}")
         return self._http_request(
             method="GET",
@@ -79,10 +80,12 @@ class Client(BaseClient):
         GET /v2/assessments/launched/{id}/findings
         Get findings for a specific assessment.
         """
-        params = remove_empty_elements({
-            "limit": limit,
-            "cursor": cursor,
-        })
+        params = remove_empty_elements(
+            {
+                "limit": limit,
+                "cursor": cursor,
+            }
+        )
         demisto.debug(f"/v2/assessments/launched/{assessment_id}/findings {params=}")
         return self._http_request(
             method="GET",
@@ -119,16 +122,18 @@ def test_module(client: Client) -> str:
             limit=1,
         )
     except DemistoException as err:
-        if err.res:
-            if err.res.status_code == 401:
-                test_message = "Authorization Error: make sure API Key is correctly set."
-            else:
+        if err.res and err.res.status_code == 401:
+            test_message = "Authorization Error: make sure API Key is correctly set."
+        elif "401" in str(err):
+            test_message = "Authorization Error: make sure API Key is correctly set."
+        else:
+            if err.res:
                 try:
                     test_message = str(err.res.json())
                 except Exception:
                     test_message = f"Error: {str(err)}"
-        else:
-            test_message = f"Error: {str(err)}"
+            else:
+                test_message = f"Error: {str(err)}"
     return test_message
 
 
@@ -182,9 +187,7 @@ def fetch_incidents(
                     f"Processing {len(assessments)} assessments collected so far."
                 )
                 break
-            raise DemistoException(
-                f"Error fetching assessments. Original error: {e}"
-            )
+            raise DemistoException(f"Error fetching assessments. Original error: {e}")
 
         batch = response.get("data", [])
         assessments.extend(batch)
@@ -205,17 +208,20 @@ def fetch_incidents(
         assessment_created = arg_to_datetime(assessment_created_str)
 
         # Skip already processed assessments (date-based deduplication)
-        if last_assessment_date and assessment_created:
-            if assessment_created <= last_assessment_date:
-                demisto.debug(f"fetch_incidents: skipping old assessment {assessment_id}")
-                continue
+        if last_assessment_date and assessment_created and assessment_created <= last_assessment_date:
+            demisto.debug(f"fetch_incidents: skipping old assessment {assessment_id}")
+            continue
 
         demisto.debug(f"fetch_incidents: processing {assessment_name} ({assessment_id})")
 
         # Update latest assessment date
-        if assessment_created:
-            if latest_assessment_date is None or assessment_created > latest_assessment_date:
-                latest_assessment_date = assessment_created
+        if assessment_created and (latest_assessment_date is None or assessment_created > latest_assessment_date):
+            latest_assessment_date = assessment_created
+
+        # Skip if assessment_id is missing
+        if not assessment_id:
+            demisto.debug(f"fetch_incidents: skipping assessment with missing ID: {assessment_name}")
+            continue
 
         # Fetch findings for this assessment with pagination
         findings: list[dict] = []
@@ -228,10 +234,7 @@ def fetch_incidents(
                     cursor=findings_cursor,
                 )
             except Exception as e:
-                demisto.debug(
-                    f"fetch_incidents: error fetching findings for {assessment_id} "
-                    f"(treated as transient): {e}"
-                )
+                demisto.debug(f"fetch_incidents: error fetching findings for {assessment_id} " f"(treated as transient): {e}")
                 demisto.error(
                     f"fetch_incidents: transient error fetching findings for assessment {assessment_id}. "
                     f"Processing {len(findings)} findings collected so far."
@@ -257,7 +260,6 @@ def fetch_incidents(
                 if THREAT_FEED_IOC_TAG not in tags:
                     continue
 
-            finding_id = finding.get("_id")
             finding_name = finding.get("findingName", "Unknown")
             finding_date_str = finding.get("date")
             finding_date = normalize_to_utc(arg_to_datetime(finding_date_str))
@@ -268,11 +270,13 @@ def fetch_incidents(
             finding["_assessment_id"] = assessment_id
             finding["_assessment_name"] = assessment_name
 
-            incidents.append({
-                "name": f"Cymulate Finding - {assessment_name} - {finding_name}",
-                "occurred": finding_date.strftime(XSOAR_DATE_FORMAT) if finding_date else end_time_str,
-                "rawJSON": json.dumps(finding),
-            })
+            incidents.append(
+                {
+                    "name": f"Cymulate Finding - {assessment_name} - {finding_name}",
+                    "occurred": finding_date.strftime(XSOAR_DATE_FORMAT) if finding_date else end_time_str,
+                    "rawJSON": json.dumps(finding),
+                }
+            )
 
             if len(incidents) >= max_fetch:
                 break
@@ -323,9 +327,7 @@ def main() -> None:
             if not first_fetch:
                 raise DemistoException("First fetch time must be specified.")
 
-            fetch_category = FETCH_CATEGORY_MAPPING.get(
-                params.get("fetch_category"), FETCH_CATEGORY_ALL
-            )
+            fetch_category = FETCH_CATEGORY_MAPPING.get(params.get("fetch_category"), FETCH_CATEGORY_ALL)
 
             incidents, last_run = fetch_incidents(
                 client=client,

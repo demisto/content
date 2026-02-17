@@ -1,16 +1,14 @@
-import json
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 from unittest.mock import MagicMock
 
 import pytest
 from freezegun import freeze_time
 from requests.exceptions import ChunkedEncodingError
 from CommonServerPython import *
-from Cymulate_v3 import (
+from CymulateV3 import (
     Client,
     fetch_incidents,
     test_module,
-    FETCH_CATEGORY_ALL,
     FETCH_CATEGORY_THREAT_FEED_IOCS,
 )
 
@@ -19,7 +17,7 @@ from Cymulate_v3 import (
 def mock_client():
     """Create a Cymulate client with base URL and dummy token."""
     return Client(
-        base_url="https://cymulate.test",
+        base_url="https://api.cymulate.com",
         token="dummy-token",
         verify=False,
         proxy=False,
@@ -29,9 +27,9 @@ def mock_client():
 @pytest.fixture
 def mock_demisto(monkeypatch):
     """Mock all demisto functions needed for fetch_incidents."""
-    monkeypatch.setattr("Cymulate_v3.demisto.getLastRun", lambda: {})
-    monkeypatch.setattr("Cymulate_v3.demisto.debug", lambda _: None)
-    monkeypatch.setattr("Cymulate_v3.demisto.error", lambda _: None)
+    monkeypatch.setattr("CymulateV3.demisto.getLastRun", dict)
+    monkeypatch.setattr("CymulateV3.demisto.debug", lambda _: None)
+    monkeypatch.setattr("CymulateV3.demisto.error", lambda _: None)
 
 
 # ========================================================================
@@ -43,7 +41,7 @@ def mock_demisto(monkeypatch):
 def test_test_module_success(requests_mock, mock_client):
     """Test test_module returns 'ok' on success."""
     requests_mock.get(
-        "https://cymulate.test/v2/assessments/launched",
+        "https://api.cymulate.com/v2/assessments/launched",
         json={"data": []},
         status_code=200,
     )
@@ -55,7 +53,7 @@ def test_test_module_success(requests_mock, mock_client):
 def test_test_module_401_error(requests_mock, mock_client):
     """Test test_module returns auth error on 401."""
     requests_mock.get(
-        "https://cymulate.test/v2/assessments/launched",
+        "https://api.cymulate.com/v2/assessments/launched",
         status_code=401,
     )
     result = test_module(mock_client)
@@ -72,7 +70,7 @@ def test_fetch_incidents_happy_path(requests_mock, mock_client, mock_demisto):
     """Test fetch with assessments containing Not Prevented findings."""
     # Mock list_assessments
     requests_mock.get(
-        "https://cymulate.test/v2/assessments/launched",
+        "https://api.cymulate.com/v2/assessments/launched",
         json={
             "data": [
                 {
@@ -88,7 +86,7 @@ def test_fetch_incidents_happy_path(requests_mock, mock_client, mock_demisto):
 
     # Mock get_assessment_findings
     requests_mock.get(
-        "https://cymulate.test/v2/assessments/launched/assessment-1/findings",
+        "https://api.cymulate.com/v2/assessments/launched/assessment-1/findings",
         json={
             "findings": [
                 {
@@ -138,7 +136,7 @@ def test_fetch_incidents_happy_path(requests_mock, mock_client, mock_demisto):
 def test_fetch_incidents_empty_assessments(requests_mock, mock_client, mock_demisto):
     """Test fetch with no assessments returns empty."""
     requests_mock.get(
-        "https://cymulate.test/v2/assessments/launched",
+        "https://api.cymulate.com/v2/assessments/launched",
         json={"data": [], "nextCursor": None},
     )
 
@@ -157,7 +155,7 @@ def test_fetch_incidents_empty_assessments(requests_mock, mock_client, mock_demi
 def test_fetch_incidents_threat_feed_filter(requests_mock, mock_client, mock_demisto):
     """Test fetch_category=threat_feed_iocs only returns tagged findings."""
     requests_mock.get(
-        "https://cymulate.test/v2/assessments/launched",
+        "https://api.cymulate.com/v2/assessments/launched",
         json={
             "data": [
                 {
@@ -172,7 +170,7 @@ def test_fetch_incidents_threat_feed_filter(requests_mock, mock_client, mock_dem
     )
 
     requests_mock.get(
-        "https://cymulate.test/v2/assessments/launched/assessment-1/findings",
+        "https://api.cymulate.com/v2/assessments/launched/assessment-1/findings",
         json={
             "findings": [
                 {
@@ -210,14 +208,14 @@ def test_fetch_incidents_threat_feed_filter(requests_mock, mock_client, mock_dem
 def test_fetch_incidents_dedup_via_assessment_date(requests_mock, mock_client, monkeypatch):
     """Test deduplication: assessments older than last_assessment_date are skipped."""
     monkeypatch.setattr(
-        "Cymulate_v3.demisto.getLastRun",
+        "CymulateV3.demisto.getLastRun",
         lambda: {"last_assessment_date": "2025-11-06T10:00:00.000000Z"},
     )
-    monkeypatch.setattr("Cymulate_v3.demisto.debug", lambda _: None)
-    monkeypatch.setattr("Cymulate_v3.demisto.error", lambda _: None)
+    monkeypatch.setattr("CymulateV3.demisto.debug", lambda _: None)
+    monkeypatch.setattr("CymulateV3.demisto.error", lambda _: None)
 
     requests_mock.get(
-        "https://cymulate.test/v2/assessments/launched",
+        "https://api.cymulate.com/v2/assessments/launched",
         json={
             "data": [
                 {
@@ -238,7 +236,7 @@ def test_fetch_incidents_dedup_via_assessment_date(requests_mock, mock_client, m
     )
 
     requests_mock.get(
-        "https://cymulate.test/v2/assessments/launched/new-assessment/findings",
+        "https://api.cymulate.com/v2/assessments/launched/new-assessment/findings",
         json={
             "findings": [
                 {
@@ -311,18 +309,20 @@ def test_fetch_incidents_transient_error_with_partial_data(mock_client, mock_dem
     monkeypatch.setattr(
         mock_client,
         "get_assessment_findings",
-        MagicMock(return_value={
-            "findings": [
-                {
-                    "_id": "f1",
-                    "findingName": "Finding",
-                    "status": "Not Prevented",
-                    "date": "2025-11-06T10:05:00.000Z",
-                    "tags": [],
-                },
-            ],
-            "nextCursor": None,
-        }),
+        MagicMock(
+            return_value={
+                "findings": [
+                    {
+                        "_id": "f1",
+                        "findingName": "Finding",
+                        "status": "Not Prevented",
+                        "date": "2025-11-06T10:05:00.000Z",
+                        "tags": [],
+                    },
+                ],
+                "nextCursor": None,
+            }
+        ),
     )
 
     first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=timezone.utc)
@@ -340,7 +340,7 @@ def test_fetch_incidents_pagination_assessments(requests_mock, mock_client, mock
     """Test pagination of assessments (multi-page)."""
     # Page 1
     requests_mock.get(
-        "https://cymulate.test/v2/assessments/launched",
+        "https://api.cymulate.com/v2/assessments/launched",
         [
             {
                 "json": {
@@ -373,7 +373,7 @@ def test_fetch_incidents_pagination_assessments(requests_mock, mock_client, mock
 
     # Findings for assessment-1
     requests_mock.get(
-        "https://cymulate.test/v2/assessments/launched/assessment-1/findings",
+        "https://api.cymulate.com/v2/assessments/launched/assessment-1/findings",
         json={
             "findings": [
                 {
@@ -390,7 +390,7 @@ def test_fetch_incidents_pagination_assessments(requests_mock, mock_client, mock
 
     # Findings for assessment-2
     requests_mock.get(
-        "https://cymulate.test/v2/assessments/launched/assessment-2/findings",
+        "https://api.cymulate.com/v2/assessments/launched/assessment-2/findings",
         json={
             "findings": [
                 {
@@ -419,7 +419,7 @@ def test_fetch_incidents_pagination_assessments(requests_mock, mock_client, mock
 def test_fetch_incidents_max_fetch_cap(requests_mock, mock_client, mock_demisto):
     """Test that max_fetch limits the number of incidents returned."""
     requests_mock.get(
-        "https://cymulate.test/v2/assessments/launched",
+        "https://api.cymulate.com/v2/assessments/launched",
         json={
             "data": [
                 {
@@ -445,7 +445,7 @@ def test_fetch_incidents_max_fetch_cap(requests_mock, mock_client, mock_demisto)
     ]
 
     requests_mock.get(
-        "https://cymulate.test/v2/assessments/launched/assessment-1/findings",
+        "https://api.cymulate.com/v2/assessments/launched/assessment-1/findings",
         json={"findings": findings, "nextCursor": None},
     )
 
@@ -463,7 +463,7 @@ def test_fetch_incidents_max_fetch_cap(requests_mock, mock_client, mock_demisto)
 def test_fetch_incidents_findings_pagination(requests_mock, mock_client, mock_demisto):
     """Test pagination of findings within an assessment."""
     requests_mock.get(
-        "https://cymulate.test/v2/assessments/launched",
+        "https://api.cymulate.com/v2/assessments/launched",
         json={
             "data": [
                 {
@@ -479,7 +479,7 @@ def test_fetch_incidents_findings_pagination(requests_mock, mock_client, mock_de
 
     # Page 1 of findings
     requests_mock.get(
-        "https://cymulate.test/v2/assessments/launched/assessment-1/findings",
+        "https://api.cymulate.com/v2/assessments/launched/assessment-1/findings",
         [
             {
                 "json": {
