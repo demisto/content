@@ -5432,7 +5432,7 @@ script:
       - 'true'
       - 'false'
     - name: limit
-      description: Maximum number of events to return. Ignored when any around_* parameter is specified.
+      description: Maximum number of events to return. Ignored when around_number_events_before or around_number_events_after parameters are specified.
       defaultValue: '50'
     - name: interval
       description: Interval between polling attempts in seconds. To prevent search timeouts, set this value within the 60–90 second range.

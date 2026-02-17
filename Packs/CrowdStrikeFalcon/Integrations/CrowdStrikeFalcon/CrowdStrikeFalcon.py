@@ -6441,9 +6441,6 @@ def build_ngsiem_search_body(args: dict) -> dict:
         dict: The request body.
     """
     query = args.get("query", "")
-    if not query:
-        raise ValueError("The 'query' argument is required.")
-
     around_config = assign_params(
         eventId=args.get("around_event_id"),
         numberOfEventsBefore=arg_to_number(args.get("around_number_events_before")),
