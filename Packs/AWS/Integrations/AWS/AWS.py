@@ -337,6 +337,57 @@ def aws_ec2_block_device_mapping_args_builder(args: Dict[str, Any]) -> Dict[str,
     }
 
 
+def create_launch_template_kwargs_builder(args: Dict[str, Any]) -> Dict[str, Any]:
+    kwargs: Dict[str, Any] = {
+        "LaunchTemplateName": args.get("launch_template_name"),
+        "VersionDescription": args.get("version_description"),
+        "LaunchTemplateData": {
+            "BlockDeviceMappings": aws_ec2_block_device_mapping_args_builder(args),
+            "DisableApiTermination": arg_to_bool_or_none(args.get("disable_api_termination")),
+            "EbsOptimized": arg_to_bool_or_none(args.get("ebs_optimized")),
+            "IamInstanceProfile": {"Arn": args.get("iam_instance_profile_arn"), "Name": args.get("iam_instance_profile_name")},
+            "ImageId": args.get("image_id"),
+            "InstanceInitiatedShutdownBehavior": args.get("instance_initiated_shutdown_behavior"),
+            "InstanceMarketOptions": {
+                "MarketType": args.get("market_type"),
+                "SpotOptions": {
+                    "InstanceInterruptionBehavior": args.get("spot_options_instance_interruption_behavior"),
+                    "MaxPrice": args.get("spot_options_max_price"),
+                    "SpotInstanceType": args.get("spot_options_instance_type"),
+                },
+            },
+            "InstanceType": args.get("instance_type"),
+            "KernelId": args.get("kernel_id"),
+            "KeyName": args.get("key_name"),
+            "Monitoring": {"Enabled": arg_to_bool_or_none(args.get("monitoring"))},
+            "NetworkInterfaces": [
+                {
+                    "AssociatePublicIpAddress": arg_to_bool_or_none(args.get("network_interfaces_associate_public_ip_address")),
+                    "DeleteOnTermination": arg_to_bool_or_none(args.get("network_interfaces_delete_on_termination")),
+                    "Description": args.get("network_interfaces_description"),
+                    "DeviceIndex": arg_to_number(args.get("network_interfaces_device_index")),
+                    "Groups": argToList(args.get("network_interface_groups")),
+                    "SubnetId": args.get("subnet_id"),
+                    "PrivateIpAddress": args.get("private_ip_address"),
+                    "Ipv6AddressCount": arg_to_number(args.get("ipv6_address_count")),
+                    "Ipv6Addresses": argToList(args.get("ipv6_addresses")),
+                    "NetworkInterfaceId": args.get("network_interface_id"),
+                }
+            ],
+            "Placement": {"AvailabilityZone": args.get("availability_zone"), "Tenancy": args.get("placement_tenancy")},
+            "RamDiskId": args.get("ram_disk_id"),
+            "SecurityGroups": argToList(args.get("security_groups")),
+            "SecurityGroupIds": argToList(args.get("security_group_ids")),
+            "UserData": args.get("user_data"),
+        },
+    }
+
+    if args.get("tags"):
+        kwargs["TagSpecifications"] = [{"ResourceType": "launch-template", "Tags": parse_tag_field(args.get("tags"))}]
+
+    return kwargs
+
+
 def aws_ec2_fleet_command_launch_templates_config_args_builder(args: Dict[str, Any]) -> Dict[str, Any]:
     return {
         "LaunchTemplateSpecification": {
@@ -360,6 +411,7 @@ def aws_ec2_fleet_command_launch_templates_config_args_builder(args: Dict[str, A
             "BlockDeviceMappings": aws_ec2_block_device_mapping_args_builder(args)
         }
     }
+
 
 class AWSErrorHandler:
     """
