@@ -1,6 +1,7 @@
 import json
 import os
-from unittest.mock import patch
+from datetime import datetime, timedelta, timezone
+from unittest.mock import MagicMock, patch
 
 import pytest
 from CommonServerPython import *
@@ -11,6 +12,7 @@ ACCOUNT_ID = "account_id"
 ZONE_ID = "zone_id"
 """CONSTANTS"""
 BASE_URL = "https://example.com:443"
+RSSO_URL = "https://rsso-server.example.com:8443/rsso"
 USERNAME = "MOCK_USER"
 PASSWORD = "XXX"
 TOKEN = "XXX-XXXX"
@@ -29,19 +31,21 @@ def load_mock_response(file_name: str) -> str:
         return json.loads(mock_file.read())
 
 
-def mock_access_token(client, username: str, password: str):
+def mock_jwt_token(self):
     return TOKEN
 
 
 @pytest.fixture(autouse=True)
-@patch("BmcITSM.Client.retrieve_access_token", mock_access_token)
+@patch("BmcITSM.AuthClient._retrieve_jwt_token", mock_jwt_token)
 def mock_client():
     """
     Mock client
     """
-    from BmcITSM import Client
+    from BmcITSM import AuthClient, Client
 
-    return Client(BASE_URL, USERNAME, PASSWORD, verify=False, proxy=False)
+    auth_client = AuthClient(server_url=BASE_URL, verify=False, proxy=False, username=USERNAME, password=PASSWORD)
+    auth_header = auth_client.get_authorization_header()
+    return Client(server_url=BASE_URL, auth_header=auth_header, verify=False, proxy=False)
 
 
 """ TESTING INTEGRATION COMMANDS"""
@@ -1590,3 +1594,381 @@ def test_worklog_attachment_get(
 
     result = worklog_attachment_get_command(mock_client, command_arguments)
     assert result[0].get("File") == file_name
+
+
+""" TESTING OAUTH FUNCTIONS """
+
+
+class TestGenerateLoginUrlCommand:
+    """Tests for the generate_login_url_command function."""
+
+    def test_generate_login_url_command_success(self):
+        """
+        Given:
+            - A valid RSSO URL, client ID, and redirect URI.
+        When:
+            - generate_login_url_command is called.
+        Then:
+            - The returned CommandResults contains the correct authorization URL.
+        """
+        from BmcITSM import generate_login_url_command
+
+        result = generate_login_url_command(
+            rsso_url="https://rsso-server.example.com:8443/rsso",
+            client_id="my-client-id",
+            redirect_uri="https://oauth.pstmn.io/v1/callback",
+        )
+
+        assert "oauth2/authorize" in result.readable_output
+        assert "client_id=my-client-id" in result.readable_output
+        assert "redirect_uri=https://oauth.pstmn.io/v1/callback" in result.readable_output
+        assert "response_type=code" in result.readable_output
+
+    def test_generate_login_url_command_missing_client_id(self):
+        """
+        Given:
+            - No client ID is provided.
+        When:
+            - generate_login_url_command is called.
+        Then:
+            - A DemistoException is raised.
+        """
+        from BmcITSM import generate_login_url_command
+
+        with pytest.raises(DemistoException, match="Client ID"):
+            generate_login_url_command(
+                rsso_url="https://rsso-server.example.com:8443/rsso",
+                client_id=None,
+                redirect_uri="https://oauth.pstmn.io/v1/callback",
+            )
+
+    def test_generate_login_url_command_missing_redirect_uri(self):
+        """
+        Given:
+            - No redirect URI is provided.
+        When:
+            - generate_login_url_command is called.
+        Then:
+            - A DemistoException is raised.
+        """
+        from BmcITSM import generate_login_url_command
+
+        with pytest.raises(DemistoException, match="Redirect URI"):
+            generate_login_url_command(
+                rsso_url="https://rsso-server.example.com:8443/rsso",
+                client_id="my-client-id",
+                redirect_uri=None,
+            )
+
+    def test_generate_login_url_command_invalid_rsso_url(self):
+        """
+        Given:
+            - An RSSO URL that doesn't end with /rsso.
+        When:
+            - generate_login_url_command is called.
+        Then:
+            - A DemistoException is raised about invalid URL format.
+        """
+        from BmcITSM import generate_login_url_command
+
+        with pytest.raises(DemistoException, match="must end with"):
+            generate_login_url_command(
+                rsso_url="https://rsso-server.example.com:8443/invalid",
+                client_id="my-client-id",
+                redirect_uri="https://oauth.pstmn.io/v1/callback",
+            )
+
+
+class TestIsTokenExpired:
+    """Tests for the is_token_expired function."""
+
+    def test_token_not_expired(self):
+        """
+        Given:
+            - A token expiration time 10 minutes in the future.
+        When:
+            - is_token_expired is called.
+        Then:
+            - Returns False (token is still valid).
+        """
+        from BmcITSM import is_token_expired
+
+        future_time = (datetime.now(timezone.utc) + timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        assert is_token_expired(future_time) is False
+
+    def test_token_expired(self):
+        """
+        Given:
+            - A token expiration time 10 minutes in the past.
+        When:
+            - is_token_expired is called.
+        Then:
+            - Returns True (token is expired).
+        """
+        from BmcITSM import is_token_expired
+
+        past_time = (datetime.now(timezone.utc) - timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        assert is_token_expired(past_time) is True
+
+    def test_token_expires_within_buffer(self):
+        """
+        Given:
+            - A token expiration time 30 seconds in the future (within 1-minute buffer).
+        When:
+            - is_token_expired is called.
+        Then:
+            - Returns True (token is considered expired due to buffer).
+        """
+        from BmcITSM import is_token_expired
+
+        near_future = (datetime.now(timezone.utc) + timedelta(seconds=30)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        assert is_token_expired(near_future) is True
+
+    def test_token_empty_string(self):
+        """
+        Given:
+            - An empty string for expiration time.
+        When:
+            - is_token_expired is called.
+        Then:
+            - Returns True (treated as expired).
+        """
+        from BmcITSM import is_token_expired
+
+        assert is_token_expired("") is True
+
+    def test_token_malformed_date(self):
+        """
+        Given:
+            - A malformed date string.
+        When:
+            - is_token_expired is called.
+        Then:
+            - Returns True (treated as expired).
+        """
+        from BmcITSM import is_token_expired
+
+        assert is_token_expired("not-a-date") is True
+
+
+class TestGetOAuthToken:
+    """Tests for the Client._get_oauth_token method."""
+
+    @staticmethod
+    def _create_oauth_auth_client_instance():
+        """Helper to create a bare AuthClient instance for OAuth testing."""
+        from BmcITSM import AuthClient
+
+        auth_client = AuthClient.__new__(AuthClient)
+        auth_client._use_oauth = True
+        auth_client._rsso_url = RSSO_URL
+        auth_client._client_id = "test-client-id"
+        auth_client._client_secret = "test-client-secret"
+        auth_client._redirect_uri = "https://oauth.pstmn.io/v1/callback"
+        auth_client._auth_code = "test-auth-code"
+        auth_client._verify = False
+        auth_client._proxies = {}
+        return auth_client
+
+    def test_get_oauth_token_uses_cached_token(self):
+        """
+        Given:
+            - A valid, non-expired access token in integration context.
+        When:
+            - _get_oauth_token is called.
+        Then:
+            - Returns the cached access token without making API calls.
+        """
+        future_time = (datetime.now(timezone.utc) + timedelta(minutes=30)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        mock_context = {
+            "oauth_access_token": "cached-access-token",
+            "oauth_access_token_expires_in": future_time,
+            "oauth_refresh_token": "cached-refresh-token",
+            "oauth_refresh_token_expires_in": future_time,
+        }
+
+        auth_client = self._create_oauth_auth_client_instance()
+
+        with patch("BmcITSM.get_integration_context", return_value=mock_context), \
+             patch("BmcITSM.set_integration_context"):
+            token = auth_client._get_oauth_token()
+
+        assert token == "cached-access-token"
+
+    def test_get_oauth_token_refresh_flow(self):
+        """
+        Given:
+            - An expired access token but a valid refresh token in integration context.
+        When:
+            - _get_oauth_token is called.
+        Then:
+            - Uses the refresh token to get a new access token.
+        """
+        past_time = (datetime.now(timezone.utc) - timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        future_time = (datetime.now(timezone.utc) + timedelta(hours=12)).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+        mock_context = {
+            "oauth_access_token": "expired-access-token",
+            "oauth_access_token_expires_in": past_time,
+            "oauth_refresh_token": "valid-refresh-token",
+            "oauth_refresh_token_expires_in": future_time,
+        }
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            "access_token": "new-access-token",
+            "refresh_token": "new-refresh-token",
+            "expires_in": 3600,
+        }
+
+        auth_client = self._create_oauth_auth_client_instance()
+        auth_client._auth_code = None
+
+        mock_set_ctx = MagicMock()
+        with patch("BmcITSM.get_integration_context", return_value=mock_context), \
+             patch("BmcITSM.set_integration_context", mock_set_ctx), \
+             patch("BmcITSM.requests.post", return_value=mock_response):
+            token = auth_client._get_oauth_token()
+
+        assert token == "new-access-token"
+        # Verify the context was updated
+        stored_ctx = mock_set_ctx.call_args[0][0]
+        assert stored_ctx["oauth_access_token"] == "new-access-token"
+        assert stored_ctx["oauth_refresh_token"] == "new-refresh-token"
+
+    def test_get_oauth_token_auth_code_exchange(self):
+        """
+        Given:
+            - No valid tokens in integration context, but an authorization code is provided.
+        When:
+            - _get_oauth_token is called.
+        Then:
+            - Exchanges the authorization code for tokens.
+        """
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            "access_token": "new-access-token",
+            "refresh_token": "new-refresh-token",
+            "expires_in": 3600,
+        }
+
+        auth_client = self._create_oauth_auth_client_instance()
+
+        mock_post = MagicMock(return_value=mock_response)
+        with patch("BmcITSM.get_integration_context", return_value={}), \
+             patch("BmcITSM.set_integration_context"), \
+             patch("BmcITSM.requests.post", mock_post):
+            token = auth_client._get_oauth_token()
+
+        assert token == "new-access-token"
+
+        # Verify the POST request was made with correct data
+        call_kwargs = mock_post.call_args
+        post_data = call_kwargs[1].get("data") or call_kwargs[0][1] if len(call_kwargs[0]) > 1 else call_kwargs[1]["data"]
+        assert post_data["grant_type"] == "authorization_code"
+        assert post_data["code"] == "test-auth-code"
+        assert post_data["client_id"] == "test-client-id"
+
+    def test_get_oauth_token_no_tokens_no_code(self):
+        """
+        Given:
+            - No valid tokens in integration context and no authorization code.
+        When:
+            - _get_oauth_token is called.
+        Then:
+            - Raises DemistoException with instructions to run generate-login-url.
+        """
+        auth_client = self._create_oauth_auth_client_instance()
+        auth_client._auth_code = None
+
+        with patch("BmcITSM.get_integration_context", return_value={}), \
+             patch("BmcITSM.set_integration_context"):
+            with pytest.raises(DemistoException, match="bmc-itsm-generate-login-url"):
+                auth_client._get_oauth_token()
+
+    def test_get_oauth_token_auth_code_exchange_failure(self):
+        """
+        Given:
+            - No valid tokens and an authorization code that fails to exchange.
+        When:
+            - _get_oauth_token is called.
+        Then:
+            - Raises DemistoException with the error details.
+        """
+        mock_response = MagicMock()
+        mock_response.status_code = 400
+        mock_response.text = '{"error": "invalid_grant", "error_description": "Authorization code expired"}'
+
+        auth_client = self._create_oauth_auth_client_instance()
+        auth_client._auth_code = "expired-auth-code"
+
+        with patch("BmcITSM.get_integration_context", return_value={}), \
+             patch("BmcITSM.set_integration_context"), \
+             patch("BmcITSM.requests.post", return_value=mock_response):
+            with pytest.raises(DemistoException, match="Failed to exchange authorization code"):
+                auth_client._get_oauth_token()
+
+
+class TestClientOAuthInit:
+    """Tests for Client initialization with OAuth."""
+
+    def test_auth_client_oauth_sets_bearer_header(self):
+        """
+        Given:
+            - OAuth is enabled with valid tokens in integration context.
+        When:
+            - AuthClient.get_authorization_header() is called.
+        Then:
+            - The returned header uses Bearer token format.
+        """
+        from BmcITSM import AuthClient
+
+        future_time = (datetime.now(timezone.utc) + timedelta(minutes=30)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        mock_context = {
+            "oauth_access_token": "my-oauth-token",
+            "oauth_access_token_expires_in": future_time,
+            "oauth_refresh_token": "my-refresh-token",
+            "oauth_refresh_token_expires_in": future_time,
+        }
+
+        with patch("BmcITSM.get_integration_context", return_value=mock_context), \
+             patch("BmcITSM.set_integration_context"):
+            auth_client = AuthClient(
+                server_url=BASE_URL,
+                verify=False,
+                proxy=False,
+                use_oauth=True,
+                client_id="test-client-id",
+                client_secret="test-client-secret",
+                redirect_uri="https://oauth.pstmn.io/v1/callback",
+                auth_code="test-auth-code",
+                rsso_url=RSSO_URL,
+            )
+            auth_header = auth_client.get_authorization_header()
+
+        assert auth_header["Authorization"] == "Bearer my-oauth-token"
+
+    @patch("BmcITSM.AuthClient._retrieve_jwt_token", mock_jwt_token)
+    def test_auth_client_jwt_sets_arjwt_header(self):
+        """
+        Given:
+            - OAuth is not enabled (default behavior).
+        When:
+            - AuthClient.get_authorization_header() is called.
+        Then:
+            - The returned header uses AR-JWT token format.
+        """
+        from BmcITSM import AuthClient
+
+        auth_client = AuthClient(
+            server_url=BASE_URL,
+            verify=False,
+            proxy=False,
+            username=USERNAME,
+            password=PASSWORD,
+        )
+        auth_header = auth_client.get_authorization_header()
+
+        assert auth_header["Authorization"] == f"AR-JWT {TOKEN}"

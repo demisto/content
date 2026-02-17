@@ -1,6 +1,6 @@
 from collections.abc import Callable
 from copy import deepcopy
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -282,6 +282,8 @@ DEFAULT_MAX_FETCH = 50
 DEFAULT_LIMIT = 50
 ALL_OPTION = "All"
 TOKEN_EXPIRE_TIME = 3600
+ACCESS_TOKEN_DEFAULT_EXPIRE_TIME_MINUTES = 60
+REFRESH_TOKEN_DEFAULT_EXPIRE_TIME_DAYS = 60
 TICKET_PREFIX_LEN = 3
 COMMON_TICKET_CONTEXT_FIELDS = {prop_name: prop_name for prop_name in COMMON_PROPERTIES}
 ALL_TICKETS = [
@@ -342,29 +344,65 @@ MIRROR_DIRECTION_MAPPING = {
 }
 
 
-class Client(BaseClient):
+class AuthClient(BaseClient):
     """
-    BmcITSM API Client
+    BMC Helix ITSM Authentication Client.
+
+    Responsible for obtaining and managing authentication tokens.
+    Supports two authentication modes:
+        1. Basic/JWT: Uses server_url, username, and password to get an AR-JWT token.
+        2. OAuth 2.0: Uses rsso_url, client_id, client_secret, redirect_uri, and auth_code
+           to get a Bearer token from the BMC Helix Single Sign-On (RSSO) server.
     """
 
-    def __init__(self, server_url: str, username: str, password: str, verify: str, proxy: str):
-        """initializing a client instance with authentication header"""
-        super().__init__(base_url=urljoin(server_url, "api"), verify=verify, proxy=proxy)
-        jwt_token = self.retrieve_access_token(username, password)
-        self._headers = {}
-        self._headers["Authorization"] = f"AR-JWT {jwt_token}"
-        add_sensitive_log_strs(jwt_token)
+    def __init__(
+        self,
+        server_url: str,
+        verify: bool = False,
+        proxy: bool = False,
+        use_oauth: bool = False,
+        username: str = None,
+        password: str = None,
+        client_id: str = None,
+        client_secret: str = None,
+        redirect_uri: str = None,
+        auth_code: str = None,
+        rsso_url: str = None,
+    ):
+        super().__init__(base_url="", verify=verify, proxy=proxy)
+        self._server_url = server_url
+        self._use_oauth = use_oauth
+        self._username = username
+        self._password = password
+        self._client_id = client_id
+        self._client_secret = client_secret
+        self._redirect_uri = redirect_uri
+        self._auth_code = auth_code
+        self._rsso_url = rsso_url
 
-    def retrieve_access_token(self, username: str, password: str) -> str:
+    def get_authorization_header(self) -> dict:
         """
-        Retrieve JWT token from BmcITSM API.
-
-        Args:
-            username (str): Client username.
-            password (str): Client password.
+        Returns the appropriate Authorization header based on the authentication mode.
 
         Returns:
-            str: Authorized access token.
+            dict: A dictionary containing the Authorization header, e.g.
+                  {"Authorization": "AR-JWT <token>"} or {"Authorization": "Bearer <token>"}.
+        """
+        if self._use_oauth:
+            oauth_token = self._get_oauth_token()
+            add_sensitive_log_strs(oauth_token)
+            return {"Authorization": f"Bearer {oauth_token}"}
+        else:
+            jwt_token = self._retrieve_jwt_token()
+            add_sensitive_log_strs(jwt_token)
+            return {"Authorization": f"AR-JWT {jwt_token}"}
+
+    def _retrieve_jwt_token(self) -> str:
+        """
+        Retrieve JWT token from BmcITSM API using username/password.
+
+        Returns:
+            str: Authorized AR-JWT access token.
         """
         integration_context = get_integration_context()
         now = int(datetime.now().timestamp())
@@ -373,9 +411,9 @@ class Client(BaseClient):
 
         try:
             token = self._http_request(
-                "POST",
-                "jwt/login",
-                data={"username": username, "password": password},
+                method = "POST",
+                url_suffix = urljoin(self._server_url, "api/jwt/login"),
+                data={"username": self._username, "password": self._password},
                 resp_type="text",
             )
 
@@ -388,8 +426,131 @@ class Client(BaseClient):
             return token
         except DemistoException as exception:
             raise ValueError(
-                f"Authentication failed. Please Check the server url or validate your crdentials. {exception!s}"
+                f"Authentication failed. Please Check the server url or validate your credentials. {exception!s}"
             ) from exception
+
+    def _get_oauth_token(self) -> str:
+        """
+        Manages the OAuth 2.0 token lifecycle from BMC Helix Single Sign-On (RSSO) server.
+
+        Token flow logic:
+            1. Check integration_context for a valid, non-expired access_token -> return it.
+            2. If access token is expired but refresh_token exists and is valid -> use refresh token flow.
+            3. If no valid tokens exist but auth_code is provided -> exchange authorization code for tokens.
+            4. If none of the above -> raise error instructing user to run !bmc-itsm-generate-login-url.
+
+        Returns:
+            str: A valid OAuth access token.
+        """
+        try:
+            token_url = urljoin(self._rsso_url, "oauth2/token")
+            headers = {"Content-Type": "application/x-www-form-urlencoded"}
+
+            integration_context = get_integration_context()
+            access_token = integration_context.get("oauth_access_token", "")
+            access_token_expires_in = integration_context.get("oauth_access_token_expires_in", "")
+            refresh_token = integration_context.get("oauth_refresh_token", "")
+            refresh_token_expires_in = integration_context.get("oauth_refresh_token_expires_in", "")
+
+            # 1. Check if token exists and is still valid
+            if access_token and not is_token_expired(access_token_expires_in):
+                demisto.debug("[_get_oauth_token] - Using existing access token from integration context.")
+                return access_token
+
+            # 2. Token expired, but refresh token is valid -> refresh
+            if refresh_token and not is_token_expired(refresh_token_expires_in):
+                demisto.debug("[_get_oauth_token] - Access token expired, but refresh token valid. Attempting refresh.")
+                data = {
+                    "grant_type": "refresh_token",
+                    "refresh_token": refresh_token,
+                    "client_id": self._client_id,
+                }
+                try:
+                    response = self._http_request(method="POST", url_suffix=token_url, headers=headers, data=data, resp_type="json")
+                    self._store_oauth_tokens(integration_context, response)
+                    demisto.debug("[_get_oauth_token] - Access token refreshed successfully.")
+                    return integration_context["oauth_access_token"]
+                except Exception as e:
+                    # If refresh fails, clear the refresh token to force new auth code exchange
+                    demisto.debug(f"[_get_oauth_token] - Refresh failed, clearing refresh token.\n{str(e)}")
+                    integration_context.update({"oauth_refresh_token": "", "oauth_refresh_token_expires_in": ""})
+                    set_integration_context(integration_context)
+
+            # 3. No valid tokens -> exchange authorization code (Generate a new token)
+            if self._auth_code:
+                demisto.debug("[_get_oauth_token] - Exchanging authorization code for tokens.")
+                data = {
+                    "grant_type": "authorization_code",
+                    "code": self._auth_code,
+                    "client_id": self._client_id,
+                    "redirect_uri": self._redirect_uri,
+                }
+                try:
+                    response = self._http_request(method="POST", url_suffix=token_url, headers=headers, data=data, resp_type="json")
+                    self._store_oauth_tokens(integration_context, response)
+                    demisto.debug("[_get_oauth_token] - Authorization code exchanged successfully.")
+                    return integration_context["oauth_access_token"]
+                except Exception as e:
+                    demisto.debug(f"[_get_oauth_token] - Authorization code exchange failed:\n{str(e)}")
+                    raise DemistoException(
+                        f"Failed to exchange authorization code for access token.\n{str(e)}"
+                    )
+
+            # 4. No auth code and no valid tokens
+            raise DemistoException(
+                "No valid OAuth tokens found and no authorization code parameter provided.\n"
+                "Please run the !bmc-itsm-generate-login-url command to obtain an authorization code, "
+                "then paste it into the instance configuration 'Authorization Code' field."
+            )
+
+        except DemistoException:
+            raise
+        except Exception as e:
+            demisto.debug(f"[_get_oauth_token] error: {e!s}")
+            raise DemistoException(f"OAuth authentication failed: {e!s}") from e
+
+    @staticmethod
+    def _store_oauth_tokens(integration_context: dict, token_data: dict) -> None:
+        """
+        Stores OAuth tokens in the integration context.
+
+        Args:
+            integration_context (dict): The current integration context.
+            token_data (dict): The token response from the OAuth server.
+        """
+        now = datetime.now(timezone.utc)
+        access_token_expiry = (now + timedelta(minutes=ACCESS_TOKEN_DEFAULT_EXPIRE_TIME_MINUTES)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        refresh_token_expiry = (now + timedelta(days=REFRESH_TOKEN_DEFAULT_EXPIRE_TIME_DAYS)).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+        integration_context.update({
+            "oauth_access_token": token_data.get("access_token"),
+            "oauth_refresh_token": token_data.get("refresh_token"),
+            "oauth_access_token_expires_in": access_token_expiry,
+            "oauth_refresh_token_expires_in": refresh_token_expiry,
+        })
+        set_integration_context(integration_context)
+
+
+class Client(BaseClient):
+    """
+    BmcITSM API Client.
+
+    Handles all API requests to BMC Helix ITSM.
+    Authentication is injected via the auth_header parameter.
+    """
+
+    def __init__(self, server_url: str, auth_header: dict, verify: bool = False, proxy: bool = False):
+        """
+        Initialize the API client with a pre-built authorization header.
+
+        Args:
+            server_url (str): The BMC Helix ITSM base URL.
+            auth_header (dict): The authorization header dict, e.g. {"Authorization": "AR-JWT <token>"}.
+            verify (bool): Whether to verify SSL certificates.
+            proxy (bool): Whether to use proxy settings.
+        """
+        super().__init__(base_url=urljoin(server_url, "api"), verify=verify, proxy=proxy)
+        self._headers = auth_header
 
     def list_request(self, form: str, query: str = None) -> Dict[str, Any]:
         """
@@ -4132,6 +4293,70 @@ def update_remote_ticket(client: Client, ticket_type: str, args: Dict[str, Any])
     ticket_type_to_update_command[ticket_type](client, args)
 
 
+def generate_login_url_command(rsso_url: str, client_id: str, redirect_uri: str) -> CommandResults:
+    """
+    Generate the login URL for the OAuth 2.0 Authorization Code flow.
+
+    Args:
+        rsso_url (str): The BMC Helix Single Sign-On server url used to authenticate users and issue OAuth 2.0 security tokens.
+        client_id (str): The OAuth Client ID.
+        redirect_uri (str): The OAuth Redirect URI.
+
+    Returns:
+        CommandResults: A CommandResults object with the login URL.
+    """
+    
+    if not client_id or not redirect_uri or not rsso_url:
+        demisto.debug("[generate_login_url_command] - client_id, rsso_server or redirect_uri are missing.")
+        raise DemistoException("Please provide Client ID, OpenID Issuer URL and Redirect URI in the integration parameters before running bmc-itsm-generate-login-url.")
+
+    is_valid_rsso_url = rsso_url.endswith("/rsso") or rsso_url.endswith("/rsso/")
+    if not is_valid_rsso_url:
+        demisto.debug(f"[generate_login_url_command] - invalid {rsso_url=}")
+        raise DemistoException("OpenID Issuer URL parameter must end with '/rsso'.")
+
+    base_auth_url=urljoin(rsso_url, "oauth2/authorize")
+    authorization_url = f"{base_auth_url}?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
+
+    readable_output = (
+        f"Click on the [login URL]({authorization_url}) to obtain an authorization code.\n\n"
+        f"You will be automatically redirected to a link to the configured Redirect URI with a `code` parameter.\n"
+        f"Copy the `code` value and paste it into the **Authorization Code** field in the instance configuration.\n\n"
+        f"Then click **Test** or run any command to complete the OAuth setup."
+    )
+
+    return CommandResults(readable_output=readable_output)
+
+
+def is_token_expired(expires_in: str) -> bool:
+    """
+    Check if an OAuth token is expired.
+
+    Args:
+        expires_in (str): ISO format datetime string representing when the token expires (UTC).
+
+    Returns:
+        bool: True if token is expired or will expire within 1 minute, False otherwise.
+    """
+    if not expires_in:
+        return True
+    try:
+        expiration_time = datetime.strptime(expires_in, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+        
+        # Subtract 1 min to refresh slightly early and avoid expiration issues.
+        current_time_with_buffer = datetime.now(timezone.utc) + timedelta(minutes=1)
+
+        if expiration_time > current_time_with_buffer:
+            demisto.debug(f"[is_token_expired] - Token still valid (expires at {expires_in}).")
+            return False
+        else:
+            demisto.debug("[is_token_expired] - Token expired.")
+            return True
+    except (ValueError, TypeError) as e:
+        demisto.debug(f"[is_token_expired] - Error parsing expiration time: {e}. Treating as expired.")
+        return True
+
+# TODO: edit this function to check auth checkbox and verify the needed parameters are configured.
 def test_module(client: Client) -> None:
     """
     Validates the correctness of the instance parameter and connectivity to
@@ -4140,6 +4365,19 @@ def test_module(client: Client) -> None:
     Args:
         client (Client): BMC ITSM API client.
     """
+    # # Validate that authentication parameters are provided
+    # if use_oauth:
+    #     if not client_id:
+    #         raise ValueError(
+    #             "Client ID is required when 'Use OAuth' is selected. "
+    #             "Please configure it in the instance settings."
+    #         )
+    # else:
+    #     if not username or not password:
+    #         raise ValueError(
+    #             "Username and Password are required when 'Use OAuth' is not selected. "
+    #             "Please configure credentials in the instance settings."
+    #         )
     client.list_request("COM:Company")
     return_results("ok")
 
@@ -4153,9 +4391,20 @@ def main() -> None:
     url = params["url"]
     verify_certificate: bool = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    credentials = params.get("credentials")
-    username = credentials.get("identifier")  # type: ignore[union-attr]
-    password = credentials.get("password")  # type: ignore[union-attr]
+
+    # OAuth parameters
+    use_oauth = params.get("use_oauth", False)
+    oauth_credentials = params.get("credentials_oauth2", {})
+    client_id = oauth_credentials.get("identifier")
+    client_secret = oauth_credentials.get("password")
+    redirect_uri = params.get("redirect_uri")
+    auth_code = params.get("auth_code")
+    rsso_url = params.get("rsso_url")
+
+    # Basic auth credentials
+    credentials = params.get("credentials", {})
+    username = credentials.get("identifier", "")
+    password = credentials.get("password", "")
 
     max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_MAX_FETCH))
     first_fetch = params.get("first_fetch")
@@ -4177,7 +4426,33 @@ def main() -> None:
 
     try:
         requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]
-        client: Client = Client(url, username, password, verify=verify_certificate, proxy=proxy)  # type: ignore[arg-type]
+
+        # This command is onlt for generate auth code, there is no need to build the Clients yet.
+        if command == "bmc-itsm-generate-login-url":
+            return_results(generate_login_url_command(rsso_url, client_id, redirect_uri))  # type: ignore[arg-type]
+
+        # Create AuthClient to handle authentication (determine the correct auth header)
+        auth_client = AuthClient(
+            server_url=url,
+            verify=verify_certificate,
+            proxy=proxy,  # type: ignore[arg-type]
+            use_oauth=use_oauth,
+            username=username,
+            password=password,
+            client_id=client_id,
+            client_secret=client_secret,
+            redirect_uri=redirect_uri,
+            auth_code=auth_code,
+            rsso_url=rsso_url,
+        )
+        auth_header = auth_client.get_authorization_header()
+
+        client: Client = Client(
+            server_url=url,
+            auth_header=auth_header,
+            verify=verify_certificate,
+            proxy=proxy,  # type: ignore[arg-type]
+        )
 
         commands = {
             "bmc-itsm-ticket-list": ticket_list_command,
