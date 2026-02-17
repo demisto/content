@@ -1,9 +1,9 @@
 {
-    "description": "",
+    "description": "Maps incoming Cymulate assessment finding data to Cortex XSOAR incident fields for the Cymulate Assessment Findings incident type.",
     "feed": false,
-    "id": "Cymulate Findings - Incoming Mapper",
+    "id": "Cymulate Assessment Findings - Incoming Mapper",
     "mapping": {
-        "Cymulate Finding": {
+        "Cymulate Assessment Findings": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Asset Name": {
@@ -233,15 +233,6 @@
                 "Tags": {
                     "simple": "tags"
                 },
-                "dbotMirrorDirection": {
-                    "simple": "mirror_direction"
-                },
-                "dbotMirrorId": {
-                    "simple": "_id"
-                },
-                "dbotMirrorInstance": {
-                    "simple": "mirror_instance"
-                },
                 "severity": {
                     "complex": {
                         "filters": [],
@@ -333,7 +324,7 @@
             }
         }
     },
-    "name": "Cymulate Findings - Incoming Mapper",
+    "name": "Cymulate Assessment Findings - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"

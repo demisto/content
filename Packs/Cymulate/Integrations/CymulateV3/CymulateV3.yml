@@ -1,0 +1,75 @@
+category: Deception & Breach Simulation
+commonfields:
+  id: cymulate_v3
+  version: -1
+configuration:
+- name: credentials
+  displaypassword: API token
+  type: 9
+  hiddenusername: true
+  required: false
+  section: Connect
+- name: base_url
+  defaultvalue: https://api.app.cymulate.com/
+  display: Base URL
+  type: 0
+  required: false
+  section: Connect
+- name: isFetch
+  display: Fetch incidents
+  type: 8
+  required: false
+  section: Collect
+- name: fetch_category
+  additionalinfo: Select which findings to fetch. "All" fetches all Not Prevented findings. "Threat Feed IOCs" fetches only findings tagged as Threat Feed IOC.
+  display: Fetch category
+  options:
+  - All
+  - Threat Feed IOCs
+  type: 15
+  required: false
+  defaultvalue: All
+  section: Collect
+- name: first_fetch
+  defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  type: 0
+  required: false
+  section: Collect
+- name: max_fetch
+  additionalinfo: Maximum number of incidents to return per fetch run. Default 25.
+  defaultvalue: "25"
+  display: Max Fetch
+  type: 0
+  required: false
+  section: Collect
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  required: false
+  section: Connect
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  required: false
+  section: Connect
+- display: Incident type
+  defaultvalue: Cymulate Assessment Findings
+  name: incidentType
+  type: 13
+  section: Collect
+  required: false
+description: This integration fetches findings from completed Cymulate assessments as Cortex XSOAR incidents using the V2 Assessment API.
+display: Cymulate v3
+defaultmapperin: Cymulate Assessment Findings - Incoming Mapper
+name: cymulate_v3
+script:
+  commands: []
+  dockerimage: demisto/python3:3.10.13.72123
+  isfetch: true
+  script: "-"
+  subtype: python3
+  type: python
+tests:
+- Cymulate v3 - Full Flow
+fromversion: 6.10.0
