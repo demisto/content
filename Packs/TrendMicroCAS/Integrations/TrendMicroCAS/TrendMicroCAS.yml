@@ -19,6 +19,8 @@ configuration:
   - UK
   - Canada
   - India
+  - Singapore
+  - Middle East (UAE)
   required: true
   type: 15
   section: Connect
