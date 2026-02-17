@@ -1,21 +1,24 @@
 Threat Intelligence Feed provide data on the known indicators of compromise: malicious IPs, URLs, Domains
 
-## Generate Basic auth token
+## Generate your API key
 
-Please Contact your ANY.RUN account manager to get your basic token
+Please contact your ANY.RUN account manager to get your API key.
+> **Warning**
+>
+> Prefixed API keys and Basic Authentication for TI Feeds will not be supported in future releases.
 
 ## Configure ANY.RUN Feed in Cortex
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for ANY.RUN.
 3. Click **Add instance** to create and configure a new integration instance.
-4. Insert ANY.RUN TI Feed Basic Token into the **Password** parameter
+4. Insert ANY.RUN TI Feeds API key into the **Password** parameter.
 5. Please use "ANY.RUN" as username.
 6. Click **Test** to validate the URLs, token, and connection.
 
-| **Parameter**    | **Description**                                                                                                                                                | **Required** |
-|------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| Password         | Example. Basic с2vtio5fbl...l0Rvaag==                                                                                                                          | True |
+| **Parameter**    | **Description**                  | **Required** |
+|------------------|----------------------------------| --- |
+| Password         | Example: WmNfqnpo...2Sjon7mtvm8e | True |
 
 ## Commands
 

@@ -338,10 +338,6 @@ def fetch_incidents(
 
     ids = [item.get("name") for item in incidents]
     demisto.info(f"fetch-incidents {ids=}")
-    if "imported_ids" not in last_run:
-        last_run["imported_ids"] = []
-    last_run["imported_ids"].extend(ids)
-    next_run["imported_ids"] = last_run["imported_ids"]
 
     return next_run, incidents
 
