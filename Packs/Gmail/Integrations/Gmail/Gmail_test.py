@@ -1123,3 +1123,68 @@ def test_send_mail_sender_display_name(mocker, display_name):
         expected_from_header = "sender@example.com"
 
     assert f"from: {expected_from_header}" in message_str
+
+
+def test_search_command_with_next_page_token(mocker):
+    """
+    Tests search_command function with nextPageToken.
+        Given:
+            - A search query that returns results with a nextPageToken.
+        When:
+            - Executing search_command function.
+        Then:
+            - The result contains the nextPageToken in the context.
+    """
+    import Gmail
+    from Gmail import search_command
+
+    mocker.patch.object(
+        Gmail,
+        "search",
+        return_value=(
+            [input_data.first_message],
+            "subject:test",
+            "next_page_token_123",
+        ),
+    )
+
+    mocker.patch.object(demisto, "args", return_value={"user-id": "test@example.com", "subject": "test", "max-results": "100"})
+
+    result = search_command()
+
+    assert result is not None
+    assert "EntryContext" in result
+    assert "GmailEmails" in result["EntryContext"]
+    assert result["EntryContext"]["GmailEmails"]["NextPageToken"] == "next_page_token_123"
+
+
+def test_search_command_without_next_page_token(mocker):
+    """
+    Tests search_command function without nextPageToken.
+        Given:
+            - A search query that returns results without a nextPageToken.
+        When:
+            - Executing search_command function.
+        Then:
+            - The result does not contain the nextPageToken in the context.
+    """
+    import Gmail
+    from Gmail import search_command
+
+    mocker.patch.object(
+        Gmail,
+        "search",
+        return_value=(
+            [input_data.first_message],
+            "subject:test",
+            None,
+        ),
+    )
+
+    mocker.patch.object(demisto, "args", return_value={"user-id": "test@example.com", "subject": "test", "max-results": "100"})
+
+    result = search_command()
+
+    assert result is not None
+    assert "EntryContext" in result
+    assert "GmailEmails" not in result["EntryContext"]
