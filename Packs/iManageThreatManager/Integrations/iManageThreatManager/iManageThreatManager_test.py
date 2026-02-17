@@ -306,43 +306,35 @@ class TestFetchEventsWithPagination:
         events = _fetch_events_with_pagination(client, BEHAVIOR_ANALYTICS, 500, 1000, 50)
         assert len(events) == 30
 
-    def test_pagination_multiple_pages(self, client, requests_mock):
+    def test_pagination_multiple_pages(self, client, mocker):
         """
         Given:
             - Limit of 200 events
-            - API returns 90 events per page (max page size)
         When:
             - Calling _fetch_events_with_pagination
         Then:
-            - Ensure multiple pages are fetched
+            - Ensure _fetch_alerts is called 3 times with page_size: 90, 90, 20
         """
-        # First page: 90 events
-        page1 = {"results": [{"id": f"1-{i}", "alert_time": 1000 - i} for i in range(90)]}
-        # Second page: 90 events
-        page2 = {"results": [{"id": f"2-{i}", "alert_time": 910 - i} for i in range(90)]}
-        # Third page: 20 events (less than requested)
-        page3 = {"results": [{"id": f"3-{i}", "alert_time": 820 - i} for i in range(20)]}
+        # Mock _fetch_alerts to return dummy data
+        mock_fetch = mocker.patch.object(
+            client,
+            '_fetch_alerts',
+            side_effect=[
+                [{"id": f"1-{i}", "alert_time": 1000 - i} for i in range(90)],
+                [{"id": f"2-{i}", "alert_time": 910 - i} for i in range(90)],
+                [{"id": f"3-{i}", "alert_time": 820 - i} for i in range(90)],
+            ]
+        )
 
-        requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
+        _fetch_events_with_pagination(client, BEHAVIOR_ANALYTICS, 500, 1000, 200)
+        
+        assert mock_fetch.call_count == 3
+        # Verify page_size parameter in each call
+        assert mock_fetch.call_args_list[0][0][3] == 90  # First call
+        assert mock_fetch.call_args_list[1][0][3] == 90  # Second call
+        assert mock_fetch.call_args_list[2][0][3] == 20  # Third call
 
-        # Mock multiple calls with different responses
-        call_count = [0]
-
-        def custom_matcher(request, context):
-            call_count[0] += 1
-            if call_count[0] == 1:
-                return page1
-            elif call_count[0] == 2:
-                return page2
-            else:
-                return page3
-
-        requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", json=custom_matcher)
-
-        events = _fetch_events_with_pagination(client, BEHAVIOR_ANALYTICS, 500, 1000, 200)
-        assert len(events) == 200
-
-    def test_pagination_with_deduplication_at_boundary(self, client, requests_mock):
+    def test_pagination_with_deduplication_at_boundary(self, client, mocker):
         """
         Given:
             - Events with same alert_time at page boundary
@@ -352,72 +344,54 @@ class TestFetchEventsWithPagination:
             - Ensure duplicates at boundary are removed
         """
         # First page: last 3 events have alert_time=910
-        page1_events = [{"id": f"1-{i}", "alert_time": 1000 - i} for i in range(87)]
-        page1_events.extend(
-            [
-                {"id": "dup-1", "alert_time": 910},
-                {"id": "dup-2", "alert_time": 910},
-                {"id": "dup-3", "alert_time": 910},
-            ]
-        )
-        page1 = {"results": page1_events}
+        page1 = [{"id": f"1-{i}", "alert_time": 1000 - i} for i in range(87)]
+        page1.extend([
+            {"id": "dup-1", "alert_time": 910},
+            {"id": "dup-2", "alert_time": 910},
+            {"id": "dup-3", "alert_time": 910},
+        ])
 
-        # Second page: includes the same 3 events plus new ones
-        page2_events = [
+        # Second page: includes the same 3 duplicate events plus new ones
+        page2 = [
             {"id": "dup-1", "alert_time": 910},
             {"id": "dup-2", "alert_time": 910},
             {"id": "dup-3", "alert_time": 910},
         ]
-        page2_events.extend([{"id": f"2-{i}", "alert_time": 909 - i} for i in range(50)])
-        page2 = {"results": page2_events}
+        page2.extend([{"id": f"2-{i}", "alert_time": 909 - i} for i in range(50)])
 
-        requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
-
-        call_count = [0]
-
-        def custom_matcher(request, context):
-            call_count[0] += 1
-            return page1 if call_count[0] == 1 else page2
-
-        requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", json=custom_matcher)
+        mocker.patch.object(client, '_fetch_alerts', side_effect=[page1, page2])
 
         events = _fetch_events_with_pagination(client, BEHAVIOR_ANALYTICS, 500, 1000, 200)
 
         # Should have 90 from page1 + 50 new from page2 = 140 (3 duplicates removed)
         assert len(events) == 140
-
         # Verify no duplicate IDs
         event_ids = [e["id"] for e in events]
         assert len(event_ids) == len(set(event_ids))
 
-    def test_pagination_stops_when_limit_reached(self, client, requests_mock):
+    def test_pagination_stops_when_limit_reached(self, client, mocker):
         """
         Given:
             - Limit of 100 events
-            - API has more events available
         When:
             - Calling _fetch_events_with_pagination
         Then:
-            - Ensure pagination requests only what's needed
+            - Ensure pagination stops at limit with page_size: 90, 10
         """
-        # First page: 90 events
-        page1 = {"results": [{"id": f"1-{i}", "alert_time": 1000 - i} for i in range(90)]}
-        # Second page: only 10 events requested (remaining = 100 - 90)
-        page2 = {"results": [{"id": f"2-{i}", "alert_time": 910 - i} for i in range(10)]}
-
-        requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
-
-        call_count = [0]
-
-        def custom_matcher(request, context):
-            call_count[0] += 1
-            return page1 if call_count[0] == 1 else page2
-
-        requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", json=custom_matcher)
+        mock_fetch = mocker.patch.object(
+            client,
+            '_fetch_alerts',
+            side_effect=[
+                [{"id": f"1-{i}", "alert_time": 1000 - i} for i in range(90)],  # Page 1: 90 events
+                [{"id": f"2-{i}", "alert_time": 910 - i} for i in range(10)],   # Page 2: 10 events
+            ]
+        )
 
         events = _fetch_events_with_pagination(client, BEHAVIOR_ANALYTICS, 500, 1000, 100)
 
-        # Should have exactly 100 events (90 + 10)
+        assert mock_fetch.call_count == 2
+        assert mock_fetch.call_args_list[0][0][3] == 90  # First call: page_size=90
+        assert mock_fetch.call_args_list[1][0][3] == 10  # Second call: page_size=10 (remaining)
         assert len(events) == 100
 
 
@@ -545,7 +519,7 @@ class TestClient:
         assert len(alerts) == 1
         assert call_count[0] == 2
 
-    def test_fetch_alerts_retry_exhausted(self, client, requests_mock, mocker, capfd):
+    def test_fetch_alerts_retry_exhausted(self, client, requests_mock, mocker):
         """
         Given:
             - API returns HTTP 429 on all attempts
@@ -557,13 +531,13 @@ class TestClient:
         mocker.patch("time.sleep")
         mocker.patch.object(client, "_get_cached_token", return_value=None)
         mocker.patch.object(client, "_cache_token")
+        mocker.patch("demisto.error")
 
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
         requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", status_code=429, json={"error": "Too Many Requests"})
 
-        with capfd.disabled():
-            with pytest.raises(DemistoException):
-                client._fetch_alerts(BEHAVIOR_ANALYTICS, 500, 1000, 10)
+        with pytest.raises(DemistoException):
+            client._fetch_alerts(BEHAVIOR_ANALYTICS, 500, 1000, 10)
 
     def test_fetch_alerts_no_retry_on_other_errors(self, client, requests_mock, mocker):
         """
@@ -622,7 +596,7 @@ class TestTestModuleCommand:
         result = test_module_command(client, {}, [ADDRESSABLE_ALERTS])
         assert result == "ok"
 
-    def test_test_module_auth_error(self, client, requests_mock, mocker, capfd):
+    def test_test_module_auth_error(self, client, requests_mock, mocker):
         """
         Given:
             - Invalid credentials
@@ -633,9 +607,10 @@ class TestTestModuleCommand:
         """
         from iManageThreatManager import test_module_command
 
-        mocker.patch("time.sleep")  # Mock sleep since retry will be attempted
+        mocker.patch("time.sleep")
         mocker.patch.object(client, "_get_cached_token", return_value=None)
         mocker.patch.object(client, "_cache_token")
+        mocker.patch("demisto.error")  # Mock error logging
 
         def login_matcher(request, context):
             return {"access_token": "token"}
@@ -643,10 +618,8 @@ class TestTestModuleCommand:
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json=login_matcher)
         requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", status_code=401, text="Unauthorized")
 
-        # Disable stdout/stderr capture since error logging is expected during retries
-        with capfd.disabled():
-            result = test_module_command(client, {}, [BEHAVIOR_ANALYTICS])
-            assert "Authorization Error" in result
+        result = test_module_command(client, {}, [BEHAVIOR_ANALYTICS])
+        assert "Authorization Error" in result
 
 
 class TestGetEventsCommand:
@@ -803,7 +776,7 @@ class TestFetchEventsCommand:
         assert len(events) == 0
         assert "last_fetch_BehaviorAnalytics" in next_run
 
-    def test_fetch_events_with_error(self, client, requests_mock, mocker, capfd):
+    def test_fetch_events_with_error(self, client, requests_mock, mocker):
         """
         Given:
             - API error during fetch
@@ -813,16 +786,16 @@ class TestFetchEventsCommand:
             - Ensure error is handled and last_run is preserved
         """
         mocker.patch.object(client, "_get_cached_token", return_value=None)
+        mocker.patch("demisto.error")  # Mock error logging
+
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
         requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", status_code=500, text="Server Error")
 
         last_run = {"last_fetch_BehaviorAnalytics": 1609459200000}
 
-        # Disable stdout/stderr capture for this test since error logging is expected
-        with capfd.disabled():
-            next_run, events = fetch_events_command(
-                client=client, last_run=last_run, event_types=[BEHAVIOR_ANALYTICS], max_events_per_type=10
-            )
+        next_run, events = fetch_events_command(
+            client=client, last_run=last_run, event_types=[BEHAVIOR_ANALYTICS], max_events_per_type=10
+        )
 
         # Should preserve last_run on error
         assert next_run["last_fetch_BehaviorAnalytics"] == 1609459200000
