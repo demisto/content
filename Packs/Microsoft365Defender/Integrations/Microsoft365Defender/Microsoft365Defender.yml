@@ -193,6 +193,16 @@ configuration:
   - marketplacev2
   - platform
   required: false
+- display: Enable custom XSOAR to Defender Close Reason
+  name: custom_xsoar_to_defender_close_reason
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Enable custom Defender to XSOAR Close Reason
+  name: custom_defender_to_xsoar_close_reason
+  defaultvalue: "false"
+  type: 8
+  required: false
 - additionalinfo: Outgoing Mirroring - when selected, closing the Cortex XSOAR incident is mirrored in Microsoft 365 Defender.
   defaultvalue: 'false'
   display: Close Mirrored Microsoft 365 Defender Incidents
