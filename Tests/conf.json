@@ -160,10 +160,6 @@
         },
         {
             "integrations": "CrowdstrikeFalcon",
-            "playbookID": "Test Playbook - CrowdStrike Falcon - Get Detections by Incident"
-        },
-        {
-            "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test Playbook - CrowdStrike Falcon - Get Endpoint Forensics Data"
         },
         {
@@ -6147,7 +6143,8 @@
         "OpenPhish Test Playbook": "API issue CIAC-13583",
         "SaasSecurity-Test": "blocked by SCA-8028",
         "Mail-Listener Test Playbook": " invalid creds CRTX-171878",
-        "DbotPredictOufOfTheBoxTest": "Script DBotPredictOutOfTheBox is deprecated"
+        "DbotPredictOufOfTheBoxTest": "Script DBotPredictOutOfTheBox is deprecated",
+        "Gmail Single User - Test": "CIAC-11417"
     },
     "skipped_integrations": {
         "qualys_fim": "No Instance",
