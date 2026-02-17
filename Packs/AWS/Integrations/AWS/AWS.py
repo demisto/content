@@ -6685,7 +6685,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-volume-attach": EC2.attach_volume_command,
     "aws-ec2-volume-detach": EC2.detach_volume_command,
     "aws-ec2-volume-delete": EC2.delete_volume_command,
-    "aws-ec2-fleet-create": EC2.create_fleet_command,
+        "aws-ec2-fleet-create": EC2.create_fleet_command,
     "aws-ec2-fleet-delete": EC2.delete_fleet_command,
     "aws-ec2-fleets-describe": EC2.describe_fleets_command,
     "aws-ec2-fleet-instances-describe": EC2.describe_fleet_instances_command,
