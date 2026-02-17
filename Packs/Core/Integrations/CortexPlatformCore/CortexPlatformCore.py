@@ -4797,7 +4797,7 @@ def update_profile_command(client, args):
 def delete_profile_command(client, args):
     profile_ids = argToList(args.get("profile_ids"))
     client.delete_profile(profile_ids)
-    return CommandResults(readable_output=f"Profiles {profile_ids} deleted successfully.")
+    return CommandResults(readable_output="Your request was sent successfully.")
 
 
 def main():  # pragma: no cover

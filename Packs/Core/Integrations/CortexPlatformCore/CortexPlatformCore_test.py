@@ -9618,5 +9618,5 @@ class TestProfileCommands:
 
         result = delete_profile_command(mock_client, args)
 
-        assert "Profiles ['12345', '67890'] deleted successfully" in result.readable_output
+        assert "Your request was sent successfully." in result.readable_output
         mock_client.delete_profile.assert_called_once_with(["12345", "67890"])
