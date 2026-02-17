@@ -9523,3 +9523,49 @@ def test_get_case_resolution_statuses_command(mocker):
     assert len(result.outputs) == 2
     assert len(result.raw_response) == 2
     assert mock_client.get_case_resolution_statuses.call_count == 2
+
+
+def test_perform_endpoint_heartbeat_command_success(mocker):
+    """
+    Given:
+        - A client and valid arguments with an endpoint ID.
+    When:
+        - perform_endpoint_heartbeat_command is called.
+    Then:
+        - The client's perform_endpoint_heartbeat method is called with the correct JSON data.
+        - A CommandResults object is returned with a success message.
+    """
+    from CortexPlatformCore import perform_endpoint_heartbeat_command, Client, CALL_HOME_TYPE_HEARTBEAT
+
+    mock_client = mocker.Mock(spec=Client)
+    args = {"endpoint_id": "endpoint-123"}
+
+    result = perform_endpoint_heartbeat_command(mock_client, args)
+
+    expected_json_data = {
+        "request_data": {
+            "endpoint_id": "endpoint-123",
+            "call_home_type": CALL_HOME_TYPE_HEARTBEAT,
+        }
+    }
+
+    mock_client.perform_endpoint_heartbeat.assert_called_once_with(expected_json_data)
+    assert result.readable_output == "Heartbeat performed successfully for endpoint endpoint-123"
+
+
+def test_perform_endpoint_heartbeat_command_missing_id(mocker):
+    """
+    Given:
+        - A client and arguments missing the endpoint ID.
+    When:
+        - perform_endpoint_heartbeat_command is called.
+    Then:
+        - A ValueError is raised indicating that endpoint_id is required.
+    """
+    from CortexPlatformCore import perform_endpoint_heartbeat_command, Client
+
+    mock_client = mocker.Mock(spec=Client)
+    args = {}
+
+    with pytest.raises(ValueError, match="endpoint_id is required"):
+        perform_endpoint_heartbeat_command(mock_client, args)

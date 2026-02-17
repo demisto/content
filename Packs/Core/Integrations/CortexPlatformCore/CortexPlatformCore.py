@@ -24,6 +24,7 @@ SECONDS_IN_DAY = 86400  # Number of seconds in one day
 MIN_DIFF_SECONDS = 2 * 3600  # Minimum allowed difference = 2 hours
 MAX_GET_SYSTEM_USERS_LIMIT = 50
 MAX_GET_EXCEPTION_RULES_LIMIT = 100
+CALL_HOME_TYPE_HEARTBEAT = 6
 
 
 ASSET_FIELDS = {
@@ -774,7 +775,7 @@ class Client(CoreClient):
         """
         Perform endpoint heartbeat.
         Args:
-            json_data.
+            json_data (dict[str, Any]): The json data containing endpoint information.
         Returns:
             dict: The response from the API.
         """
@@ -2965,7 +2966,7 @@ def perform_endpoint_heartbeat_command(client: Client, args: dict) -> CommandRes
     json_data = {
         "request_data": {
             "endpoint_id": endpoint_id,
-            "call_home_type": 6,
+            "call_home_type": CALL_HOME_TYPE_HEARTBEAT,
         }
     }
 
