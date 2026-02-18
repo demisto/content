@@ -69,10 +69,12 @@ WEBAPP_COMMANDS = [
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
     "core-get-email-investigation-summary",
-    "core-get-email-campaign-consolidated-forensic-enrichment",
     "core-decrypt-email-content",
+    "core-get-email-campaign-consolidated-forensic-enrichment",
 ]
-EMAIL_SECURITY = ["core-execute-email-security-remediation"]
+EMAIL_SECURITY = [
+    "core-execute-email-security-remediation",
+]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
 ENDPOINT_COMMANDS = ["core-get-endpoint-support-file"]
@@ -1013,15 +1015,13 @@ class Client(CoreClient):
             "internet_message_id": internet_message_id,
             "days_timeframe": days_timeframe,
         }
-        demisto.debug(f"body: {body}")
         return self._http_request(
             method="POST",
-            # url_suffix="/email-security/investigation/consolidated-forensic-enrichment",
-            full_url="/api/webapp/email-security/investigation/consolidated-forensic-enrichment",
+            url_suffix="/email-security/investigation/consolidated-forensic-enrichment",
             json_data=body,
         )
 
-    def execute_email_security_remediation(self, internet_message_ids: list[str], alert_id: str, action: str) -> dict:
+    def execute_email_security_remediation(self, internet_message_id: list[str], issue_id: str, action: str) -> dict:
         """
         Execute automated email security remediation action.
 
@@ -1037,16 +1037,14 @@ class Client(CoreClient):
         Returns:
             dict: Action execution status with success, message, or error fields
         """
-        body = {
-            "internet_message_ids": internet_message_ids,
-            "alert_id": alert_id,
-            "action": {"id": action, "attributes": {}},
-        }
-        demisto.debug(f"body: {body}")
         return self._http_request(
             method="POST",
             url_suffix="/email-security/actions/on-demand",
-            json_data=body,
+            json_data={
+                "internet_message_ids": internet_message_id,
+                "alert_id": issue_id,
+                "action": {"id": action, "attributes": {}},
+            },
         )
 
 
@@ -4556,6 +4554,7 @@ def init_client(api_type: str) -> Client:
         "xsoar": "/xsoar",
         "agents": f"{webapp_root}/agents",
         "email_security": "/api/v1",
+        "email_security_webapp": f"{webapp_root}/public_api/v1",
     }
 
     # Fallback to public API if the type isn't recognized
@@ -4624,6 +4623,23 @@ def get_case_resolution_statuses(client, args):
     )
 
 
+def get_days_timeframe(from_time: str) -> int:
+    SECONDS_IN_A_DAY = 86400
+    MILLISECONDS_IN_A_SECOND = 1000
+
+    start_time_ms, _ = FilterBuilder._prepare_time_range(from_time, None)
+
+    if start_time_ms is None:
+        raise ValueError("Could not determine start time")
+
+    now_ms = int(datetime.now().timestamp() * 1000)
+
+    diff_ms = now_ms - start_time_ms
+    days = diff_ms / (SECONDS_IN_A_DAY * MILLISECONDS_IN_A_SECOND)
+
+    return int(days)
+
+
 def get_email_campaign_consolidated_forensic_enrichment_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get consolidated forensic enrichment for an email campaign.
@@ -4640,22 +4656,12 @@ def get_email_campaign_consolidated_forensic_enrichment_command(client: Client, 
         CommandResults object with consolidated forensic enrichment data
     """
     internet_message_id = args.get("internet_message_id", "")
-    days_timeframe = arg_to_number(args.get("days_timeframe"))
-
-    # Validate days_timeframe is a positive integer
-    if days_timeframe is not None and days_timeframe <= 0:
-        raise DemistoException("days_timeframe must be a positive integer")
-
-    # Ensure days_timeframe has a valid value (YAML enforces required, but be safe)
-    if days_timeframe is None:
-        raise DemistoException("days_timeframe is required and must be a valid number")
-
-    # Call API via client
-    response = client.get_email_campaign_consolidated_forensic_enrichment(internet_message_id, int(days_timeframe))
+    days_timeframe = get_days_timeframe(args.get("from_time", "last 30 days"))
+    demisto.debug(f"Timeframe set to {days_timeframe} days.")
+    response = client.get_email_campaign_consolidated_forensic_enrichment(internet_message_id, days_timeframe)
 
     demisto.debug(f"get_email_campaign_consolidated_forensic_enrichment response: {response}")
 
-    # Process response - the API returns consolidated data with nested structure
     outputs = response.get("reply", {})
 
     # Create readable output with key forensic categories
@@ -4667,7 +4673,7 @@ def get_email_campaign_consolidated_forensic_enrichment_command(client: Client, 
         identification = {
             "internet_message_id": identification_data.get("internet_message_id"),
             "lcaas_id": identification_data.get("lcaas_id"),
-            "external_id": identification_data.get("external_id"),
+            "issue_id": identification_data.get("alert_id"),
             "observation_time": identification_data.get("observation_time"),
             "created_time": identification_data.get("created_time"),
         }
@@ -4677,8 +4683,8 @@ def get_email_campaign_consolidated_forensic_enrichment_command(client: Client, 
     detection_context_data = outputs.get("detection_context", {})
     if detection_context_data:
         detection = {
-            "alert_name": detection_context_data.get("alert_name"),
-            "alert_full_description": detection_context_data.get("alert_full_description"),
+            "issue_name": detection_context_data.get("alert_name"),
+            "issue_full_description": detection_context_data.get("alert_full_description"),
             "detector_id": detection_context_data.get("detector_id"),
             "variation_rule_id": detection_context_data.get("variation_rule_id"),
             "original_severity": detection_context_data.get("original_severity"),
@@ -4799,8 +4805,9 @@ def execute_email_security_remediation_command(client: Client, args: dict[str, A
         CommandResults object with action execution status
     """
     action = args.get("action", "")
-    internet_message_ids = argToList(args.get("internet_message_ids", ""))
-    alert_id = args.get("alert_id", "")
+    internet_message_id = argToList(args.get("internet_message_id", ""))
+    issue_id = args.get("issue_id", "")
+
     # Validate action is one of the allowed values
     valid_actions = [
         "DeleteEmail",
@@ -4813,44 +4820,23 @@ def execute_email_security_remediation_command(client: Client, args: dict[str, A
     if action not in valid_actions:
         raise DemistoException(f'Invalid action "{action}". Must be one of: {", ".join(valid_actions)}')
 
-    # Call API via client
-    response = client.execute_email_security_remediation(internet_message_ids, alert_id, action)
+    response = client.execute_email_security_remediation(internet_message_id, issue_id, action)
 
-    # Process response
-    success = response.get("success", False)
-    message = response.get("message", "")
-    error = response.get("error", "")
-
-    # Prepare outputs
+    resultMessage = (
+        f"Action triggered for the following message ID: {internet_message_id}. Visit the Action Center to check the status."
+    )
     outputs = {
-        "internet_message_ids": internet_message_ids,
-        "alert_id": alert_id,
+        "internet_message_id": internet_message_id,
+        "issue_id": issue_id,
         "action": action,
-        "success": success,
+        "result_message": resultMessage,
     }
-
-    if message:
-        outputs["message"] = message
-    if error:
-        outputs["error"] = error
-
-    # Create readable output
-    if success:
-        readable_output = f'Email security remediation action "{action}" executed successfully'
-        if message:
-            readable_output += f"\n\nMessage: {message}"
-    else:
-        readable_output = f'Email security remediation action "{action}" failed'
-        if error:
-            readable_output += f"\n\nError: {error}"
-        elif message:
-            readable_output += f"\n\nMessage: {message}"
 
     return CommandResults(
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.EmailSecurityRemediation",
-        outputs_key_field="alert_id",
+        outputs_key_field="issue_id",
         outputs=outputs,
-        readable_output=readable_output,
+        readable_output=resultMessage,
         raw_response=response,
     )
 

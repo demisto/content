@@ -3302,10 +3302,11 @@ script:
           name: internet_message_id
           required: true
           type: String
-        - description: Number of days to look back when searching for related issues. Must be a positive integer.
-          name: days_timeframe
+        - description: 'Timeframe to look back when searching for related issues. Supports both numeric values (e.g., "7", "30") and natural language (e.g., "last week", "last month", "2 weeks ago", "30 days"). Examples: "7" (7 days), "30" (30 days), "last week" (~7 days), "last month" (~30 days), "2 weeks ago" (~14 days).'
+          name: from_time
           required: true
-          type: Number
+          defaultValue: "30"
+          type: String
       name: core-get-email-campaign-consolidated-forensic-enrichment
       description: Aggregates, deduplicates, and presents a unified forensic view of an entire email campaign by merging telemetry from all associated issues sharing the same internet_message_id.
       hidden: false
@@ -3450,12 +3451,11 @@ script:
           type: Unknown
     - arguments:
         - description: The Internet Message ID of the email campaign to remediate.
-          name: internet_message_ids
-          isArray: true
+          name: internet_message_id
           required: true
           type: String
         - description: The unique identifier for the alert across all email security module services.
-          name: alert_id
+          name: issue_id
           required: true
           type: String
         - description: The remediation action to execute on the email.
@@ -3470,26 +3470,20 @@ script:
             - MoveEmailToFolder
             - TagEmailAsPhishing
       name: core-execute-email-security-remediation
-      description: Triggers automated email security remediation actions such as deleting, undeleting, moving, or tagging emails based on the security verdict.
+      description: Triggers automated email security remediation, including actions to delete, undelete, move, or tag messages as phishing.
       hidden: false
       outputs:
         - contextPath: Core.EmailSecurityRemediation.internet_message_id
           description: The Internet Message ID of the email that was remediated.
           type: String
-        - contextPath: Core.EmailSecurityRemediation.external_id
+        - contextPath: Core.EmailSecurityRemediation.issue_id
           description: The unique identifier for the alert across all email security services.
           type: String
         - contextPath: Core.EmailSecurityRemediation.action
           description: The remediation action that was executed.
           type: String
-        - contextPath: Core.EmailSecurityRemediation.success
-          description: Boolean indicating whether the remediation action was successful.
-          type: Boolean
-        - contextPath: Core.EmailSecurityRemediation.message
-          description: Success message from the remediation action (present when successful).
-          type: String
-        - contextPath: Core.EmailSecurityRemediation.error
-          description: Error message from the remediation action (present when failed).
+        - contextPath: Core.EmailSecurityRemediation.result_message
+          description: The result message confirming the triggered remediation action and follow-up instructions in the Action Center.
           type: String
     - arguments:
         - description: A comma separated list of case ids to retrieve resolution statuses for.

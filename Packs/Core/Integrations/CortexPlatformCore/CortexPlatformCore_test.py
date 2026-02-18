@@ -9528,7 +9528,7 @@ def test_get_case_resolution_statuses_command(mocker):
 def test_get_email_campaign_consolidated_forensic_enrichment_command_success(mocker: MockerFixture):
     """
     Given:
-        A mocked client and valid arguments with internet_message_id and days_timeframe.
+        A mocked client and valid arguments with internet_message_id and from_time.
     When:
         The get_email_campaign_consolidated_forensic_enrichment_command function is called.
     Then:
@@ -9543,7 +9543,7 @@ def test_get_email_campaign_consolidated_forensic_enrichment_command_success(moc
 
     args = {
         "internet_message_id": "<EXAMPLE123456789ABCDEF@example.mail.server.com>",
-        "days_timeframe": "7",
+        "from_time": "7 days",
     }
 
     result = get_email_campaign_consolidated_forensic_enrichment_command(mock_client, args)
@@ -9568,27 +9568,55 @@ def test_get_email_campaign_consolidated_forensic_enrichment_command_success(moc
     assert result.outputs["artifacts"]["attachments_count"] == 1
 
 
-def test_get_email_campaign_consolidated_forensic_enrichment_command_invalid_days_timeframe(mocker: MockerFixture):
+def test_get_email_campaign_consolidated_forensic_enrichment_command_with_natural_language(mocker: MockerFixture):
     """
     Given:
-        A mocked client and arguments with invalid days_timeframe (negative or zero).
+        A mocked client and arguments with natural language from_time.
     When:
         The get_email_campaign_consolidated_forensic_enrichment_command function is called.
     Then:
-        A DemistoException is raised indicating days_timeframe must be positive.
+        The natural language is parsed to days and the command executes successfully.
     """
-    from CortexPlatformCore import get_email_campaign_consolidated_forensic_enrichment_command, Client, DemistoException
+    from CortexPlatformCore import get_email_campaign_consolidated_forensic_enrichment_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {"reply": {"identification": {"internet_message_id": "<test@example.com>"}}}
+    mocker.patch.object(mock_client, "get_email_campaign_consolidated_forensic_enrichment", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Mock table")
+
+    # Mock get_days_timeframe to return 30 days directly
+    mocker.patch("CortexPlatformCore.get_days_timeframe", return_value=30)
+
+    args = {
+        "internet_message_id": "<test@example.com>",
+        "from_time": "last month",
+    }
+
+    result = get_email_campaign_consolidated_forensic_enrichment_command(mock_client, args)
+
+    # Verify the client was called with parsed days (30)
+    mock_client.get_email_campaign_consolidated_forensic_enrichment.assert_called_once_with("<test@example.com>", 30)
+    assert result.outputs_prefix == "Core.EmailCampaignForensics"
+
+
+def test_get_email_campaign_consolidated_forensic_enrichment_command_invalid_days_timeframe(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client and arguments with invalid from_time (results in negative or zero days).
+    When:
+        The get_email_campaign_consolidated_forensic_enrichment_command function is called.
+    Then:
+        A ValueError is raised from get_days_timeframe.
+    """
+    from CortexPlatformCore import get_email_campaign_consolidated_forensic_enrichment_command, Client
 
     mock_client = Client(base_url="", headers={})
 
-    # Test with zero
-    args = {"internet_message_id": "<test@example.com>", "days_timeframe": "0"}
-    with pytest.raises(DemistoException, match="days_timeframe must be a positive integer"):
-        get_email_campaign_consolidated_forensic_enrichment_command(mock_client, args)
+    # Test with invalid timeframe that can't be parsed
+    mocker.patch("CortexPlatformCore.FilterBuilder._prepare_time_range", return_value=(None, None))
 
-    # Test with negative
-    args = {"internet_message_id": "<test@example.com>", "days_timeframe": "-5"}
-    with pytest.raises(DemistoException, match="days_timeframe must be a positive integer"):
+    args = {"internet_message_id": "<test@example.com>", "from_time": "invalid"}
+    with pytest.raises(ValueError, match="Could not determine start time"):
         get_email_campaign_consolidated_forensic_enrichment_command(mock_client, args)
 
 
@@ -9607,7 +9635,7 @@ def test_get_email_campaign_consolidated_forensic_enrichment_command_empty_respo
     mock_response = {"reply": {}}
     mocker.patch.object(mock_client, "get_email_campaign_consolidated_forensic_enrichment", return_value=mock_response)
 
-    args = {"internet_message_id": "<test@example.com>", "days_timeframe": "7"}
+    args = {"internet_message_id": "<test@example.com>", "from_time": "7 days"}
 
     result = get_email_campaign_consolidated_forensic_enrichment_command(mock_client, args)
 
@@ -9643,7 +9671,7 @@ def test_get_email_campaign_consolidated_forensic_enrichment_command_partial_dat
     mocker.patch.object(mock_client, "get_email_campaign_consolidated_forensic_enrichment", return_value=mock_response)
     mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Mock table")
 
-    args = {"internet_message_id": "<test@example.com>", "days_timeframe": "7"}
+    args = {"internet_message_id": "<test@example.com>", "from_time": "7 days"}
 
     result = get_email_campaign_consolidated_forensic_enrichment_command(mock_client, args)
 
@@ -9682,7 +9710,7 @@ def test_get_email_campaign_consolidated_forensic_enrichment_command_all_categor
     mocker.patch.object(mock_client, "get_email_campaign_consolidated_forensic_enrichment", return_value=mock_response)
     mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Mock table")
 
-    args = {"internet_message_id": "<test@example.com>", "days_timeframe": "7"}
+    args = {"internet_message_id": "<test@example.com>", "from_time": "7 days"}
 
     result = get_email_campaign_consolidated_forensic_enrichment_command(mock_client, args)
 
@@ -9701,7 +9729,7 @@ def test_get_email_campaign_consolidated_forensic_enrichment_command_all_categor
 def test_execute_email_security_remediation_command_success(mocker: MockerFixture):
     """
     Given:
-        A mocked client and valid arguments with action, internet_message_ids, and alert_id.
+        A mocked client and valid arguments with action, internet_message_id, and issue_id.
     When:
         The execute_email_security_remediation_command function is called.
     Then:
@@ -9718,21 +9746,19 @@ def test_execute_email_security_remediation_command_success(mocker: MockerFixtur
 
     args = {
         "action": "DeleteEmail",
-        "internet_message_ids": "<test1@example.com>,<test2@example.com>",
-        "alert_id": "alert-123",
+        "internet_message_id": "<test1@example.com>,<test2@example.com>",
+        "issue_id": "issue-123",
     }
 
     result = execute_email_security_remediation_command(mock_client, args)
 
     # Verify outputs structure
     assert result.outputs_prefix == "Core.EmailSecurityRemediation"
-    assert result.outputs_key_field == "alert_id"
+    assert result.outputs_key_field == "issue_id"
     assert result.outputs["action"] == "DeleteEmail"
-    assert result.outputs["alert_id"] == "alert-123"
-    assert result.outputs["success"] is True
-    assert result.outputs["message"] == "Email deleted successfully"
-    assert result.outputs["internet_message_ids"] == ["<test1@example.com>", "<test2@example.com>"]
-    assert "executed successfully" in result.readable_output
+    assert result.outputs["issue_id"] == "issue-123"
+    assert result.outputs["internet_message_id"] == ["<test1@example.com>", "<test2@example.com>"]
+    assert "Action triggered" in result.readable_output
 
 
 def test_execute_email_security_remediation_command_invalid_action(mocker: MockerFixture):
@@ -9750,8 +9776,8 @@ def test_execute_email_security_remediation_command_invalid_action(mocker: Mocke
 
     args = {
         "action": "InvalidAction",
-        "internet_message_ids": "<test@example.com>",
-        "alert_id": "alert-123",
+        "internet_message_id": "<test@example.com>",
+        "issue_id": "issue-123",
     }
 
     with pytest.raises(DemistoException, match='Invalid action "InvalidAction"'):
@@ -9784,14 +9810,13 @@ def test_execute_email_security_remediation_command_all_valid_actions(mocker: Mo
     for action in valid_actions:
         args = {
             "action": action,
-            "internet_message_ids": "<test@example.com>",
-            "alert_id": "alert-123",
+            "internet_message_id": "<test@example.com>",
+            "issue_id": "issue-123",
         }
 
         result = execute_email_security_remediation_command(mock_client, args)
 
         assert result.outputs["action"] == action
-        assert result.outputs["success"] is True
 
 
 def test_execute_email_security_remediation_command_failure_response(mocker: MockerFixture):
@@ -9801,7 +9826,7 @@ def test_execute_email_security_remediation_command_failure_response(mocker: Moc
     When:
         The execute_email_security_remediation_command function is called.
     Then:
-        The failure is properly handled and error is included in outputs.
+        The response is returned with the raw response data.
     """
     from CortexPlatformCore import execute_email_security_remediation_command, Client
 
@@ -9814,22 +9839,20 @@ def test_execute_email_security_remediation_command_failure_response(mocker: Moc
 
     args = {
         "action": "DeleteEmail",
-        "internet_message_ids": "<test@example.com>",
-        "alert_id": "alert-123",
+        "internet_message_id": "<test@example.com>",
+        "issue_id": "issue-123",
     }
 
     result = execute_email_security_remediation_command(mock_client, args)
 
-    assert result.outputs["success"] is False
-    assert result.outputs["error"] == "Failed to delete email: Email not found"
-    assert "failed" in result.readable_output
-    assert "Failed to delete email: Email not found" in result.readable_output
+    assert result.outputs["issue_id"] == "issue-123"
+    assert "Action triggered" in result.readable_output
 
 
 def test_execute_email_security_remediation_command_multiple_message_ids(mocker: MockerFixture):
     """
     Given:
-        A mocked client and arguments with multiple internet_message_ids.
+        A mocked client and arguments with multiple internet_message_id.
     When:
         The execute_email_security_remediation_command function is called.
     Then:
@@ -9843,8 +9866,8 @@ def test_execute_email_security_remediation_command_multiple_message_ids(mocker:
 
     args = {
         "action": "TagEmailAsPhishing",
-        "internet_message_ids": "<msg1@example.com>,<msg2@example.com>,<msg3@example.com>",
-        "alert_id": "alert-456",
+        "internet_message_id": "<msg1@example.com>,<msg2@example.com>,<msg3@example.com>",
+        "issue_id": "issue-456",
     }
 
     result = execute_email_security_remediation_command(mock_client, args)
@@ -9852,13 +9875,13 @@ def test_execute_email_security_remediation_command_multiple_message_ids(mocker:
     # Verify client was called with correct parameters
     mock_execute.assert_called_once_with(
         ["<msg1@example.com>", "<msg2@example.com>", "<msg3@example.com>"],
-        "alert-456",
+        "issue-456",
         "TagEmailAsPhishing",
     )
 
     # Verify outputs
-    assert len(result.outputs["internet_message_ids"]) == 3
-    assert result.outputs["internet_message_ids"] == ["<msg1@example.com>", "<msg2@example.com>", "<msg3@example.com>"]
+    assert len(result.outputs["internet_message_id"]) == 3
+    assert result.outputs["internet_message_id"] == ["<msg1@example.com>", "<msg2@example.com>", "<msg3@example.com>"]
 
 
 def test_execute_email_security_remediation_command_with_message_no_error(mocker: MockerFixture):
@@ -9868,7 +9891,7 @@ def test_execute_email_security_remediation_command_with_message_no_error(mocker
     When:
         The execute_email_security_remediation_command function is called.
     Then:
-        The message is included in outputs and readable output.
+        The result message is included in outputs and readable output.
     """
     from CortexPlatformCore import execute_email_security_remediation_command, Client
 
@@ -9881,15 +9904,14 @@ def test_execute_email_security_remediation_command_with_message_no_error(mocker
 
     args = {
         "action": "MoveEmailToFolder",
-        "internet_message_ids": "<test@example.com>",
-        "alert_id": "alert-789",
+        "internet_message_id": "<test@example.com>",
+        "issue_id": "issue-789",
     }
 
     result = execute_email_security_remediation_command(mock_client, args)
 
-    assert result.outputs["message"] == "3 emails were successfully moved to Junk folder"
-    assert "3 emails were successfully moved to Junk folder" in result.readable_output
-    assert "error" not in result.outputs
+    assert result.outputs["issue_id"] == "issue-789"
+    assert "Action triggered" in result.readable_output
 
 
 def test_execute_email_security_remediation_command_failure_with_message(mocker: MockerFixture):
@@ -9899,7 +9921,7 @@ def test_execute_email_security_remediation_command_failure_with_message(mocker:
     When:
         The execute_email_security_remediation_command function is called.
     Then:
-        The message is included in failure output.
+        The result message is included in output.
     """
     from CortexPlatformCore import execute_email_security_remediation_command, Client
 
@@ -9912,16 +9934,14 @@ def test_execute_email_security_remediation_command_failure_with_message(mocker:
 
     args = {
         "action": "UndeleteEmail",
-        "internet_message_ids": "<test@example.com>",
-        "alert_id": "alert-999",
+        "internet_message_id": "<test@example.com>",
+        "issue_id": "issue-999",
     }
 
     result = execute_email_security_remediation_command(mock_client, args)
 
-    assert result.outputs["success"] is False
-    assert result.outputs["message"] == "Partial failure: 2 of 3 emails processed"
-    assert "failed" in result.readable_output
-    assert "Partial failure: 2 of 3 emails processed" in result.readable_output
+    assert result.outputs["issue_id"] == "issue-999"
+    assert "Action triggered" in result.readable_output
 
 
 def test_get_email_investigation_summary_command_success(mocker: MockerFixture):
