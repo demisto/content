@@ -2,337 +2,349 @@
     "description": "Maps incoming Cymulate assessment finding data to Cortex XSOAR incident fields for the Cymulate Assessment Findings incident type.",
     "feed": false,
     "id": "Cymulate Assessment Findings - Incoming Mapper",
-    "mapping": {
-        "Cymulate Assessment Findings": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
-                "Asset Name": {
-                    "simple": "asset"
-                },
-                "Cymulate Affected Assets": {
-                    "simple": "affectedAsset"
-                },
-                "Cymulate Assessment ID": {
-                    "simple": "assessmentID"
-                },
-                "Cymulate Assessment Name": {
-                    "simple": "assessmentName"
-                },
-                "Cymulate Finding Name": {
-                    "simple": "findingName"
-                },
-                "Cymulate Attack Type": {
-                    "simple": "attackType"
-                },
-                "Cymulate CIS Compliance Support": {
-                    "complex": {
-                        "filters": [],
-                        "root": "cisControls",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "headers": {},
-                                    "is_auto_json_transform": {},
-                                    "json_transform_properties": {},
-                                    "title": {},
-                                    "url_keys": {}
-                                },
-                                "operator": "JsonToTable"
-                            }
-                        ]
-                    }
-                },
-                "Cymulate Compliance Support": {
-                    "complex": {
-                        "filters": [],
-                        "root": "nistControls",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "headers": {},
-                                    "is_auto_json_transform": {},
-                                    "json_transform_properties": {},
-                                    "title": {
-                                        "value": {
-                                            "simple": "nistControls"
-                                        }
-                                    },
-                                    "url_keys": {}
-                                },
-                                "operator": "JsonToTable"
-                            }
-                        ]
-                    }
-                },
-                "Cymulate Defense Bypassed": {
-                    "simple": "defenceBypassed"
-                },
-                "Cymulate Environment": {
-                    "simple": "env"
-                },
-                "Cymulate Finding Type": {
-                    "simple": "type"
-                },
-                "Cymulate Mitigation Type": {
-                    "simple": "mitigationType"
-                },
-                "Cymulate Module": {
-                    "simple": "module.displayName"
-                },
-                "Cymulate Nist Compliance Support": {
-                    "complex": {
-                        "filters": [],
-                        "root": "nistControls",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "headers": {},
-                                    "is_auto_json_transform": {},
-                                    "json_transform_properties": {},
-                                    "title": {},
-                                    "url_keys": {}
-                                },
-                                "operator": "JsonToTable"
-                            }
-                        ]
-                    }
-                },
-                "Cymulate Softwares": {
-                    "complex": {
-                        "filters": [],
-                        "root": "softwares",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "headers": {},
-                                    "is_auto_json_transform": {},
-                                    "json_transform_properties": {},
-                                    "title": {},
-                                    "url_keys": {}
-                                },
-                                "operator": "JsonToTable"
-                            }
-                        ]
-                    }
-                },
-                "Cymulate Status": {
-                    "simple": "status"
-                },
-                "Cymulate Template Name": {
-                    "simple": "assessmentName"
-                },
-                "Cymulate Test Case": {
-                    "simple": "testCase"
-                },
-                "Event ID": {
-                    "simple": "_id"
-                },
-                "File Name": {
-                    "simple": "file.name"
-                },
-                "MITRE Tactic ID": {
-                    "simple": "tactics.[].mitreID"
-                },
-                "MITRE Tactic Name": {
-                    "simple": "tactics.[].name"
-                },
-                "MITRE Technique ID": {
-                    "simple": "techniques.[].mitreID"
-                },
-                "MITRE Technique Name": {
-                    "simple": "techniques.[].name"
-                },
-                "OS": {
-                    "simple": "os.[0]"
-                },
-                "Resource Name": {
-                    "simple": "resource"
-                },
-                "Risk Name": {
-                    "complex": {
-                        "filters": [],
-                        "root": "risk",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "limit": {},
-                                    "replaceWith": {
-                                        "value": {
-                                            "simple": "Info"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "value": {
-                                            "simple": "0"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {},
-                                    "replaceWith": {
-                                        "value": {
-                                            "simple": "Low"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "value": {
-                                            "simple": "1"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {},
-                                    "replaceWith": {
-                                        "value": {
-                                            "simple": "Medium"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "value": {
-                                            "simple": "2"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {},
-                                    "replaceWith": {
-                                        "value": {
-                                            "simple": "High"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "value": {
-                                            "simple": "3"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {},
-                                    "replaceWith": {
-                                        "value": {
-                                            "simple": "Critical"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "value": {
-                                            "simple": "4"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            }
-                        ]
-                    }
-                },
-                "Scenario": {
-                    "simple": "scenarioName"
-                },
-                "Tags": {
-                    "simple": "tags"
-                },
-                "severity": {
-                    "complex": {
-                        "filters": [],
-                        "root": "risk",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "limit": {},
-                                    "replaceWith": {
-                                        "value": {
-                                            "simple": "Informational"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "value": {
-                                            "simple": "0"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {},
-                                    "replaceWith": {
-                                        "value": {
-                                            "simple": "Low"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "value": {
-                                            "simple": "1"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {},
-                                    "replaceWith": {
-                                        "value": {
-                                            "simple": "Medium"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "value": {
-                                            "simple": "2"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {},
-                                    "replaceWith": {
-                                        "value": {
-                                            "simple": "High"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "value": {
-                                            "simple": "3"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {},
-                                    "replaceWith": {
-                                        "value": {
-                                            "simple": "Critical"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "value": {
-                                            "simple": "4"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            }
-                        ]
-                    }
-                }
-            }
-        }
-    },
+	"mapping": {
+		"Cymulate Assessment Findings": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Asset Name": {
+					"simple": "asset"
+				},
+				"Cymulate Affected Assets": {
+					"simple": "affectedAsset"
+				},
+				"Cymulate Assessment ID": {
+					"simple": "assessmentID"
+				},
+				"Cymulate Assessment Name": {
+					"simple": "assessmentName"
+				},
+				"Cymulate Attack Type": {
+					"simple": "attackType"
+				},
+				"Cymulate CIS Compliance Support": {
+					"complex": {
+						"filters": [],
+						"root": "cisControls",
+						"transformers": [
+							{
+								"args": {
+									"headers": {},
+									"is_auto_json_transform": {},
+									"json_transform_properties": {},
+									"title": {},
+									"url_keys": {}
+								},
+								"operator": "JsonToTable"
+							}
+						]
+					}
+				},
+				"Cymulate Compliance Support": {
+					"complex": {
+						"filters": [],
+						"root": "nistControls",
+						"transformers": [
+							{
+								"args": {
+									"headers": {},
+									"is_auto_json_transform": {},
+									"json_transform_properties": {},
+									"title": {
+										"value": {
+											"simple": "nistControls"
+										}
+									},
+									"url_keys": {}
+								},
+								"operator": "JsonToTable"
+							}
+						]
+					}
+				},
+				"Cymulate Defense Bypassed": {
+					"simple": "defenceBypassed"
+				},
+				"Cymulate Environment": {
+					"simple": "env"
+				},
+				"Cymulate Finding Name": {
+					"simple": "findingName"
+				},
+				"Cymulate Finding Type": {
+					"simple": "type"
+				},
+				"Cymulate Mitigation Type": {
+					"simple": "mitigationType"
+				},
+				"Cymulate Module": {
+					"simple": "module.displayName"
+				},
+				"Cymulate Nist Compliance Support": {
+					"complex": {
+						"filters": [],
+						"root": "nistControls",
+						"transformers": [
+							{
+								"args": {
+									"headers": {},
+									"is_auto_json_transform": {},
+									"json_transform_properties": {},
+									"title": {},
+									"url_keys": {}
+								},
+								"operator": "JsonToTable"
+							}
+						]
+					}
+				},
+				"Cymulate Softwares": {
+					"complex": {
+						"filters": [],
+						"root": "softwares",
+						"transformers": [
+							{
+								"args": {
+									"headers": {},
+									"is_auto_json_transform": {},
+									"json_transform_properties": {},
+									"title": {},
+									"url_keys": {}
+								},
+								"operator": "JsonToTable"
+							}
+						]
+					}
+				},
+				"Cymulate Status": {
+					"simple": "status"
+				},
+				"Cymulate Template Name": {
+					"simple": "assessmentName"
+				},
+				"Cymulate Test Case": {
+					"simple": "testCase"
+				},
+				"Event ID": {
+					"simple": "_id"
+				},
+				"File Name": {
+					"simple": "file.name"
+				},
+				"MITRE Tactic ID": {
+					"simple": "tactics.[].mitreID"
+				},
+				"MITRE Tactic Name": {
+					"simple": "tactics.[].name"
+				},
+				"MITRE Technique ID": {
+					"simple": "techniques.[].mitreID"
+				},
+				"MITRE Technique Name": {
+					"simple": "techniques.[].name"
+				},
+				"OS": {
+					"simple": "os.[0]"
+				},
+				"Resource Name": {
+					"simple": "resource"
+				},
+				"Risk Name": {
+					"complex": {
+						"filters": [],
+						"root": "risk",
+						"transformers": [
+							{
+								"args": {
+									"limit": {},
+									"replaceWith": {
+										"value": {
+											"simple": "Info"
+										}
+									},
+									"toReplace": {
+										"value": {
+											"simple": "0"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {},
+									"replaceWith": {
+										"value": {
+											"simple": "Low"
+										}
+									},
+									"toReplace": {
+										"value": {
+											"simple": "1"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {},
+									"replaceWith": {
+										"value": {
+											"simple": "Medium"
+										}
+									},
+									"toReplace": {
+										"value": {
+											"simple": "2"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {},
+									"replaceWith": {
+										"value": {
+											"simple": "High"
+										}
+									},
+									"toReplace": {
+										"value": {
+											"simple": "3"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {},
+									"replaceWith": {
+										"value": {
+											"simple": "Critical"
+										}
+									},
+									"toReplace": {
+										"value": {
+											"simple": "4"
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					}
+				},
+				"SHA1": {
+					"simple": "sha1"
+				},
+				"SHA256": {
+					"simple": "sha256"
+				},
+                "MD5": {
+					"simple": "md5"
+				},
+				"Scenario": {
+					"simple": "scenarioName"
+				},
+				"Tags": {
+					"simple": "tags"
+				},
+				"URLs": {
+					"simple": "resource"
+				},
+				"severity": {
+					"complex": {
+						"filters": [],
+						"root": "risk",
+						"transformers": [
+							{
+								"args": {
+									"limit": {},
+									"replaceWith": {
+										"value": {
+											"simple": "Informational"
+										}
+									},
+									"toReplace": {
+										"value": {
+											"simple": "0"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {},
+									"replaceWith": {
+										"value": {
+											"simple": "Low"
+										}
+									},
+									"toReplace": {
+										"value": {
+											"simple": "1"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {},
+									"replaceWith": {
+										"value": {
+											"simple": "Medium"
+										}
+									},
+									"toReplace": {
+										"value": {
+											"simple": "2"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {},
+									"replaceWith": {
+										"value": {
+											"simple": "High"
+										}
+									},
+									"toReplace": {
+										"value": {
+											"simple": "3"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {},
+									"replaceWith": {
+										"value": {
+											"simple": "Critical"
+										}
+									},
+									"toReplace": {
+										"value": {
+											"simple": "4"
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					}
+				}
+			}
+		}
+	},
     "name": "Cymulate Assessment Findings - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,

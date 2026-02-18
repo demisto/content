@@ -7,8 +7,37 @@
     "detached": false,
     "disabled": false,
     "extractSettings": {
-        "fieldCliNameToExtractSettings": {},
-        "mode": "All"
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {
+            "md5": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "File"
+                ]
+            },
+            "sha1": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "File"
+                ]
+            },
+            "sha256": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "File"
+                ]
+            },
+            "urls": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "urlRep"
+                ]
+            }
+        }
     },
     "hours": 0,
     "hoursR": 0,
