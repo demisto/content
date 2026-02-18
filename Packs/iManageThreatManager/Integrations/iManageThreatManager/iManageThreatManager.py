@@ -527,9 +527,9 @@ def _update_next_run_state(
         )
         return latest_alert_time, combined_ids
     else:
-        # Workaround for API bug: API returns recently-updated events even if alert_time < start_date
+        # Workaround for API bug: API may return recently-updated events even if alert_time < start_date
         # Combine IDs to prevent re-fetching the same events
-        demisto.debug(f"alert_time {latest_alert_time} < last_fetch_time {last_fetch_time}, combining IDs")
+        demisto.debug(f"Unexpected behavior: alert_time {latest_alert_time} < last_fetch_time {last_fetch_time}, combining IDs")
         combined_ids = list(set(last_run_ids + latest_time_event_ids))
         return last_fetch_time, combined_ids
 
