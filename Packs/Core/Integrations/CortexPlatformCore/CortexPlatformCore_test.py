@@ -9572,6 +9572,16 @@ class TestProfileCommands:
         assert call_args["request_data"]["name"] == "Test Profile"
         assert call_args["request_data"]["profile_type"] == "Malware"
 
+    def test_create_profile_command_invalid_arg(self, mocker):
+        from CortexPlatformCore import create_profile_command, Client, DemistoException
+
+        mock_client = mocker.Mock(spec=Client)
+
+        args = {"profile_name": "Test Profile", "ransomware_protection": "invalid_value"}
+
+        with pytest.raises(DemistoException, match="Invalid value 'invalid_value' for argument 'ransomware_protection'"):
+            create_profile_command(mock_client, args, "Malware")
+
     def test_update_profile_command_success(self, mocker):
         from CortexPlatformCore import update_profile_command, Client, Profile
 
@@ -9596,6 +9606,16 @@ class TestProfileCommands:
         assert call_args["profile_id"] == "12345"
         assert call_args["update_data"]["PROFILE_NAME"] == "New Name"
         assert call_args["update_data"]["PROFILE_MODULES"]["ransomware"]["mode"]["value"] == "report"
+
+    def test_update_profile_command_invalid_arg(self, mocker):
+        from CortexPlatformCore import update_profile_command, Client, DemistoException
+
+        mock_client = mocker.Mock(spec=Client)
+
+        args = {"profile_id": "12345", "ransomware_protection": "invalid_value"}
+
+        with pytest.raises(DemistoException, match="Invalid value 'invalid_value' for argument 'ransomware_protection'"):
+            update_profile_command(mock_client, args)
 
     def test_update_profile_command_not_found(self, mocker):
         from CortexPlatformCore import update_profile_command, Client, DemistoException

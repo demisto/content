@@ -123,6 +123,42 @@ class Profile:
         "manualScan": "end_user_initiated_local_scan",  # for update command
     }
 
+    VALIDATION = {
+        "asp_aspx_files": ["block", "disabled", "report"],
+        "breach_attack_simulation_tools_settings": ["enabled", "disabled"],
+        "uac_bypass_prevention": ["block", "disabled", "report"],
+        "on_demand_file_examination": ["disabled", "enabled"],
+        "end_user_initiated_local_scan": ["disabled", "enabled"],
+        "ransomware_protection": ["block", "disabled", "report"],
+        "cryptominers_protection": ["block", "disabled", "report"],
+        "anti_tampering_protection": ["block", "disabled", "report"],
+        "iis_protection": ["block", "disabled", "report"],
+        "uefi_protection": ["block", "disabled", "report"],
+        "malicious_device_prevention": ["block", "disabled", "report"],
+        "network_packet_inspection_engine": ["terminateSession", "disabled", "report"],
+        "credential_gathering_protection": ["block", "disabled", "report"],
+        "anti_webshell_protection": ["block", "disabled", "report"],
+        "office_files_with_macros_examination": ["block", "disabled", "report"],
+        "in_process_shellcode_protection": ["block", "disabled", "report"],
+        "jscript_file_examination": ["block", "disabled", "report"],
+        "malicious_child_process_protection": ["block", "disabled", "report"],
+        "vb_scripts_examination": ["block", "disabled", "report"],
+        "global_behavioral_threat_protection_rules": ["block", "disabled", "report"],
+        "powershell_script_files": ["block", "disabled", "report"],
+        "financial_malware_threat_protection": ["block", "disabled", "report"],
+        "security_measures_bypass": ["block", "disabled", "report"],
+        "dynamic_driver_protection": ["block", "disabled", "report"],
+        "dynamic_kernel_protection": ["block", "disabled", "report"],
+        "password_theft_protection": ["disabled", "enabled"],
+        "portable_executables_and_dll_examination": ["block", "disabled", "report"],
+        "respond_to_malicious_causality_chains": ["disabled", "enabled"],
+        "browser_exploits_protection": ["block", "disabled", "report"],
+        "logical_exploits_protection": ["block", "disabled", "report"],
+        "known_vulnerable_processes_protection": ["block", "disabled", "report"],
+        "operating_system_exploit_protection": ["block", "disabled", "report"],
+        "exploit_protection_for_additional_processes": ["block", "disabled", "report"],
+    }
+
 
 class ScriptManagement:
     FIELDS = {
@@ -4748,6 +4784,19 @@ def create_profile_modules_by_type(args: dict, profile_type: str):
     return profile_modules
 
 
+def validate_profile_args(args: dict):
+    """
+    Validates that the arguments provided in args match the predefined values in Profile.VALIDATION.
+    """
+    for arg, value in args.items():
+        if arg in Profile.VALIDATION:
+            allowed_values = Profile.VALIDATION[arg]
+            if value not in allowed_values:
+                raise DemistoException(
+                    f"Invalid value '{value}' for argument '{arg}'. Allowed values are: {', '.join(allowed_values)}."
+                )
+
+
 def create_profile_command(client: Client, args: dict, profile_type: str) -> CommandResults:
     """
     Creates a new profile in the Cortex Platform.
@@ -4760,6 +4809,7 @@ def create_profile_command(client: Client, args: dict, profile_type: str) -> Com
     Returns:
         CommandResults: The command results containing the ID of the created profile.
     """
+    validate_profile_args(args)
     profile_name = args.get("profile_name")
     profile_platform = "Windows"
     profile_description = args.get("profile_description", "")
@@ -4795,6 +4845,7 @@ def update_profile_command(client, args):
     Returns:
         CommandResults: The command results indicating the success of the update.
     """
+    validate_profile_args(args)
     profile_id = args.get("profile_id")
 
     current_profile = client.get_current_profile(profile_id)
