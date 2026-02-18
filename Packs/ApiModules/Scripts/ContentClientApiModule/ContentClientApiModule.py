@@ -6,31 +6,25 @@ import threading
 import time
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from typing import (
     Any,
-    Callable,
-    Dict,
     Final,
-    List,
-    MutableMapping,
-    Optional,
-    Tuple,
-    Type,
 )
+from collections.abc import Callable, MutableMapping
 
 import anyio
 import demistomock as demisto
 import httpx
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field  # pylint: disable=E0611
 from CommonServerPython import *  # noqa: F401,F403
 from CommonServerUserPython import *  # noqa: F401,F403
 
 # Type aliases for better readability
-HeadersType = Dict[str, str]
-ParamsType = Dict[str, Any]
-JsonType = Dict[str, Any]
-StatusCodesType = Tuple[int, ...]
+HeadersType = dict[str, str]
+ParamsType = dict[str, Any]
+JsonType = dict[str, Any]
+StatusCodesType = tuple[int, ...]
 
 # Constants
 DEFAULT_USER_AGENT: Final[str] = "ContentClient/1.0"
@@ -40,7 +34,7 @@ def _now() -> float:
     return time.monotonic()
 
 
-def _ensure_dict(value: Optional[MutableMapping[str, Any]]) -> Dict[str, Any]:
+def _ensure_dict(value: MutableMapping[str, Any] | None) -> dict[str, Any]:
     if value is None:
         return {}
     return dict(value)
@@ -83,7 +77,7 @@ def _get_value_by_path(obj: Any, path: str) -> Any:
     return current
 
 
-def _extract_list(data: Any, path: Optional[str]) -> List[Any]:
+def _extract_list(data: Any, path: str | None) -> list[Any]:
     extracted = _get_value_by_path(data, path) if path else data
     if extracted is None:
         return []
@@ -92,12 +86,12 @@ def _extract_list(data: Any, path: Optional[str]) -> List[Any]:
     if isinstance(extracted, dict):
         return [extracted]
     # Handle primitive types explicitly
-    if isinstance(extracted, (str, int, float, bool)):
+    if isinstance(extracted, str | int | float | bool):
         return [extracted]
     return [extracted]
 
 
-def _parse_retry_after(response: Optional[httpx.Response]) -> Optional[float]:
+def _parse_retry_after(response: httpx.Response | None) -> float | None:
     if not response:
         return None
     retry_after = response.headers.get("Retry-After")
@@ -107,8 +101,8 @@ def _parse_retry_after(response: Optional[httpx.Response]) -> Optional[float]:
         return float(retry_after)
     except ValueError:
         try:
-            parsed = datetime.strptime(retry_after, "%a, %d %b %Y %H:%M:%S GMT").replace(tzinfo=timezone.utc)
-            return max(0.0, (parsed - datetime.now(timezone.utc)).total_seconds())
+            parsed = datetime.strptime(retry_after, "%a, %d %b %Y %H:%M:%S GMT").replace(tzinfo=UTC)
+            return max(0.0, (parsed - datetime.now(UTC)).total_seconds())
         except ValueError:
             return None
 
@@ -119,7 +113,7 @@ def _parse_retry_after(response: Optional[httpx.Response]) -> Optional[float]:
 class ContentClientError(DemistoException):
     """Base error for all content client failures."""
 
-    def __init__(self, message: str, response: Optional[httpx.Response] = None):
+    def __init__(self, message: str, response: httpx.Response | None = None):
         super().__init__(message)
         self.response = response
 
@@ -186,8 +180,8 @@ class RetryPolicy(BaseModel):
     multiplier: float = Field(2.0, ge=1.0)
     max_delay: float = Field(60.0, gt=0)
     jitter: float = Field(0.2, ge=0.0, le=1.0)
-    retryable_status_codes: Tuple[int, ...] = (408, 413, 425, 429, 500, 502, 503, 504)
-    retryable_exceptions: Tuple[Type[Exception], ...] = (
+    retryable_status_codes: tuple[int, ...] = (408, 413, 425, 429, 500, 502, 503, 504)
+    retryable_exceptions: tuple[type[Exception], ...] = (
         httpx.ConnectError,
         httpx.ReadTimeout,
         httpx.WriteTimeout,
@@ -196,7 +190,7 @@ class RetryPolicy(BaseModel):
     )
     respect_retry_after: bool = True
 
-    def next_delay(self, attempt: int, retry_after: Optional[float] = None) -> float:
+    def next_delay(self, attempt: int, retry_after: float | None = None) -> float:
         """Calculate the next delay for retry with exponential backoff and jitter.
 
         Args:
@@ -245,7 +239,7 @@ class CircuitBreaker:
     def __init__(self, policy: CircuitBreakerPolicy) -> None:
         self.policy: CircuitBreakerPolicy = policy
         self._failure_count: int = 0
-        self._opened_at: Optional[float] = None
+        self._opened_at: float | None = None
         self._half_open: bool = False
         self._lock: threading.Lock = threading.Lock()
 
@@ -360,7 +354,7 @@ class TimeoutSettings(BaseModel):
     read: float = Field(60.0, gt=0)
     write: float = Field(60.0, gt=0)
     pool: float = Field(60.0, gt=0)
-    execution: Optional[float] = Field(None, gt=0)
+    execution: float | None = Field(None, gt=0)
     safety_buffer: float = Field(30.0, gt=0)
 
     def as_httpx(self) -> httpx.Timeout:
@@ -383,14 +377,14 @@ class ContentClientState:
         metadata: Custom metadata dictionary for storing additional state.
     """
 
-    cursor: Optional[str] = None
-    page: Optional[int] = None
-    offset: Optional[int] = None
-    last_event_id: Optional[str] = None
-    partial_results: List[Any] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    cursor: str | None = None
+    page: int | None = None
+    offset: int | None = None
+    last_event_id: str | None = None
+    partial_results: list[Any] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert state to a dictionary for serialization.
 
         Returns:
@@ -406,7 +400,7 @@ class ContentClientState:
         }
 
     @classmethod
-    def from_dict(cls, raw: Optional[Dict[str, Any]]) -> "ContentClientState":
+    def from_dict(cls, raw: dict[str, Any] | None) -> "ContentClientState":
         """Create a ContentClientState from a dictionary.
 
         Args:
@@ -444,17 +438,17 @@ class ContentClientContextStore:
         self.max_retries: int = max_retries
         self._lock: threading.Lock = threading.Lock()
 
-    def read(self) -> Dict[str, Any]:
+    def read(self) -> dict[str, Any]:
         """Read the current integration context.
 
         Returns:
             The integration context dictionary.
         """
         with self._lock:
-            context: Dict[str, Any] = demisto.getIntegrationContext() or {}
+            context: dict[str, Any] = demisto.getIntegrationContext() or {}
             return context
 
-    def write(self, data: Dict[str, Any]) -> None:
+    def write(self, data: dict[str, Any]) -> None:
         """Write data to the integration context with retry logic.
 
         Uses thread-safe locking to prevent race conditions.
@@ -465,7 +459,7 @@ class ContentClientContextStore:
         Raises:
             Exception: If all retry attempts fail.
         """
-        last_error: Optional[Exception] = None
+        last_error: Exception | None = None
         with self._lock:
             for attempt in range(self.max_retries):
                 try:
@@ -509,7 +503,7 @@ class APIKeyAuthHandler(AuthHandler):
             or if the key is empty.
     """
 
-    def __init__(self, key: str, header_name: Optional[str] = None, query_param: Optional[str] = None):
+    def __init__(self, key: str, header_name: str | None = None, query_param: str | None = None):
         super().__init__()
         if not key:
             raise ContentClientConfigurationError("APIKeyAuthHandler requires a non-empty key")
@@ -601,10 +595,10 @@ class OAuth2ClientCredentialsHandler(AuthHandler):
         token_url: str,
         client_id: str,
         client_secret: str,
-        scope: Optional[str] = None,
-        audience: Optional[str] = None,
-        auth_params: Optional[Dict[str, str]] = None,
-        context_store: Optional[Any] = None,
+        scope: str | None = None,
+        audience: str | None = None,
+        auth_params: dict[str, str] | None = None,
+        context_store: Any | None = None,
         token_timeout: float = 30.0,
     ):
         super().__init__()
@@ -625,7 +619,7 @@ class OAuth2ClientCredentialsHandler(AuthHandler):
         self.token_timeout = token_timeout
         self.name = "oauth2_client_credentials"
 
-        self._access_token: Optional[str] = None
+        self._access_token: str | None = None
         self._expires_at: float = 0
         self._lock: threading.Lock = threading.Lock()  # Thread-safe lock
 
@@ -760,11 +754,11 @@ class StructuredLogEntry:
     - Additional custom fields for debugging
     """
 
-    def __init__(self, severity: str, message: str, client_name: str, request_id: Optional[str] = None, **kwargs: Any) -> None:
-        self.entry: Dict[str, Any] = {
+    def __init__(self, severity: str, message: str, client_name: str, request_id: str | None = None, **kwargs: Any) -> None:
+        self.entry: dict[str, Any] = {
             "severity": severity.upper(),
             "message": message,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "labels": {
                 "client_name": client_name,
                 "component": "ContentClient",
@@ -789,7 +783,7 @@ class StructuredLogEntry:
         """Convert to JSON string for logging."""
         return json.dumps(self.entry, default=str)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return self.entry
 
@@ -797,12 +791,12 @@ class StructuredLogEntry:
 def create_http_request_log(
     method: str,
     url: str,
-    status: Optional[int] = None,
-    latency_ms: Optional[float] = None,
-    request_size: Optional[int] = None,
-    response_size: Optional[int] = None,
-    user_agent: Optional[str] = None,
-) -> Dict[str, Any]:
+    status: int | None = None,
+    latency_ms: float | None = None,
+    request_size: int | None = None,
+    response_size: int | None = None,
+    user_agent: str | None = None,
+) -> dict[str, Any]:
     """Create an httpRequest object following Google Cloud Logging format.
 
     This format is recognized by Google Cloud Logs Explorer and enables
@@ -820,7 +814,7 @@ def create_http_request_log(
     Returns:
         Dictionary in Google Cloud httpRequest format
     """
-    http_request: Dict[str, Any] = {
+    http_request: dict[str, Any] = {
         "requestMethod": method.upper(),
         "requestUrl": url,
     }
@@ -847,9 +841,9 @@ def create_http_request_log(
 def create_error_log(
     error_type: str,
     error_message: str,
-    stack_trace: Optional[str] = None,
-    error_code: Optional[str] = None,
-) -> Dict[str, Any]:
+    stack_trace: str | None = None,
+    error_code: str | None = None,
+) -> dict[str, Any]:
     """Create an error object for structured logging.
 
     Args:
@@ -861,7 +855,7 @@ def create_error_log(
     Returns:
         Dictionary with error details
     """
-    error: Dict[str, Any] = {
+    error: dict[str, Any] = {
         "type": error_type,
         "message": error_message,
     }
@@ -884,15 +878,15 @@ class RequestTrace:
 
     method: str
     url: str
-    headers: Dict[str, str]
-    params: Dict[str, Any]
-    body: Optional[Any]
+    headers: dict[str, str]
+    params: dict[str, Any]
+    body: Any | None
     timestamp: float
-    response_status: Optional[int] = None
-    response_headers: Optional[Dict[str, str]] = None
-    response_body: Optional[Any] = None
-    elapsed_ms: Optional[float] = None
-    error: Optional[str] = None
+    response_status: int | None = None
+    response_headers: dict[str, str] | None = None
+    response_body: Any | None = None
+    elapsed_ms: float | None = None
+    error: str | None = None
     retry_attempt: int = 0
 
 
@@ -901,12 +895,12 @@ class DiagnosticReport:
     """Comprehensive diagnostic report for troubleshooting."""
 
     content_item_name: str
-    configuration: Dict[str, Any]
-    request_traces: List[RequestTrace]
-    state_snapshots: List[Dict[str, Any]]
-    performance_metrics: Dict[str, Any]
-    errors: List[Dict[str, Any]]
-    recommendations: List[str]
+    configuration: dict[str, Any]
+    request_traces: list[RequestTrace]
+    state_snapshots: list[dict[str, Any]]
+    performance_metrics: dict[str, Any]
+    errors: list[dict[str, Any]]
+    recommendations: list[str]
     timestamp: float
 
 
@@ -946,14 +940,14 @@ class ContentClientLogger:
         self.client_name: str = client_name
         self.diagnostic_mode: bool = diagnostic_mode
         self.structured_logging: bool = structured_logging
-        self._traces: List[RequestTrace] = []
-        self._errors: List[Dict[str, Any]] = []
-        self._performance: Dict[str, List[float]] = {
+        self._traces: list[RequestTrace] = []
+        self._errors: list[dict[str, Any]] = []
+        self._performance: dict[str, list[float]] = {
             "request_times": [],
             "pagination_times": [],
             "auth_times": [],
         }
-        self._current_request_id: Optional[str] = None
+        self._current_request_id: str | None = None
 
     def new_request_id(self) -> str:
         """Generate a new request ID for correlation.
@@ -964,7 +958,7 @@ class ContentClientLogger:
         self._current_request_id = str(uuid.uuid4())[:8]
         return self._current_request_id
 
-    def get_request_id(self) -> Optional[str]:
+    def get_request_id(self) -> str | None:
         """Get the current request ID.
 
         Returns:
@@ -972,7 +966,7 @@ class ContentClientLogger:
         """
         return self._current_request_id
 
-    def debug(self, message: str, extra: Optional[Dict[str, Any]] = None) -> None:
+    def debug(self, message: str, extra: dict[str, Any] | None = None) -> None:
         """Log a debug message (only in diagnostic mode)."""
         if self.diagnostic_mode:
             if self.structured_logging:
@@ -987,7 +981,7 @@ class ContentClientLogger:
             else:
                 demisto.debug(self._format("DEBUG", message, extra))
 
-    def info(self, message: str, extra: Optional[Dict[str, Any]] = None) -> None:
+    def info(self, message: str, extra: dict[str, Any] | None = None) -> None:
         """Log an info message."""
         if self.structured_logging:
             log_entry = StructuredLogEntry(
@@ -1001,7 +995,7 @@ class ContentClientLogger:
         else:
             demisto.info(self._format("INFO", message, extra))
 
-    def warning(self, message: str, extra: Optional[Dict[str, Any]] = None) -> None:
+    def warning(self, message: str, extra: dict[str, Any] | None = None) -> None:
         """Log a warning message."""
         if self.structured_logging:
             log_entry = StructuredLogEntry(
@@ -1015,7 +1009,7 @@ class ContentClientLogger:
         else:
             demisto.debug(self._format("WARNING", message, extra))
 
-    def error(self, message: str, extra: Optional[Dict[str, Any]] = None) -> None:
+    def error(self, message: str, extra: dict[str, Any] | None = None) -> None:
         """Log an error message."""
         if self.structured_logging:
             error_info = None
@@ -1050,12 +1044,12 @@ class ContentClientLogger:
         self,
         method: str,
         url: str,
-        status: Optional[int] = None,
-        latency_ms: Optional[float] = None,
-        request_size: Optional[int] = None,
-        response_size: Optional[int] = None,
+        status: int | None = None,
+        latency_ms: float | None = None,
+        request_size: int | None = None,
+        response_size: int | None = None,
         retry_attempt: int = 0,
-        error: Optional[str] = None,
+        error: str | None = None,
     ) -> None:
         """Log an HTTP request with structured format for Google Cloud.
 
@@ -1091,7 +1085,7 @@ class ContentClientLogger:
             severity = "WARNING" if status < 500 else "ERROR"
             message = f"HTTP {method} {url} returned {status}"
 
-        extra: Dict[str, Any] = {
+        extra: dict[str, Any] = {
             "http_request": http_request,
             "retry_attempt": retry_attempt,
         }
@@ -1149,9 +1143,9 @@ class ContentClientLogger:
         self,
         method: str,
         url: str,
-        headers: Dict[str, str],
-        params: Dict[str, Any],
-        body: Optional[Any] = None,
+        headers: dict[str, str],
+        params: dict[str, Any],
+        body: Any | None = None,
         retry_attempt: int = 0,
     ) -> RequestTrace:
         """Create a trace record for an HTTP request.
@@ -1198,7 +1192,7 @@ class ContentClientLogger:
         self,
         trace: RequestTrace,
         status: int,
-        headers: Dict[str, str],
+        headers: dict[str, str],
         body: Any,
         elapsed_ms: float,
     ) -> None:
@@ -1224,7 +1218,7 @@ class ContentClientLogger:
         self,
         trace: RequestTrace,
         error: str,
-        elapsed_ms: Optional[float] = None,
+        elapsed_ms: float | None = None,
     ) -> None:
         trace.error = error
         if elapsed_ms:
@@ -1243,11 +1237,11 @@ class ContentClientLogger:
 
     def get_diagnostic_report(
         self,
-        configuration: Dict[str, Any],
-        state_snapshots: Optional[List[Dict[str, Any]]] = None,
+        configuration: dict[str, Any],
+        state_snapshots: list[dict[str, Any]] | None = None,
     ) -> DiagnosticReport:
         # Calculate performance metrics
-        perf_metrics: Dict[str, Any] = {}
+        perf_metrics: dict[str, Any] = {}
         if self._performance["request_times"]:
             times = self._performance["request_times"]
             perf_metrics["avg_request_time_ms"] = sum(times) / len(times)
@@ -1256,10 +1250,10 @@ class ContentClientLogger:
             perf_metrics["total_requests"] = len(times)
 
         # Generate recommendations
-        recommendations: List[str] = []
+        recommendations: list[str] = []
 
         if self._errors:
-            error_types: Dict[str, int] = {}
+            error_types: dict[str, int] = {}
             for err in self._errors:
                 err_type = err.get("context", {}).get("error_type", "unknown")
                 error_types[err_type] = error_types.get(err_type, 0) + 1
@@ -1292,7 +1286,7 @@ class ContentClientLogger:
             timestamp=_now(),
         )
 
-    def _format(self, level: str, message: str, extra: Optional[Dict[str, Any]]) -> str:
+    def _format(self, level: str, message: str, extra: dict[str, Any] | None) -> str:
         if not extra:
             return f"[ContentClient:{self.client_name}:{level}] {message}"
         try:
@@ -1302,7 +1296,7 @@ class ContentClientLogger:
         return f"[ContentClient:{self.client_name}:{level}] {message} | extra={extra_str}"
 
 
-def _create_rate_limiter(policy: Optional[RateLimitPolicy]) -> Optional[TokenBucketRateLimiter]:
+def _create_rate_limiter(policy: RateLimitPolicy | None) -> TokenBucketRateLimiter | None:
     """Create a rate limiter from policy if enabled.
 
     Factory function that encapsulates the rate limiter creation logic,
@@ -1340,18 +1334,18 @@ class ContentClient:
         verify: bool = True,
         proxy: bool = False,
         ok_codes: StatusCodesType = (),
-        headers: Optional[HeadersType] = None,
-        auth: Optional[Tuple[str, str]] = None,
+        headers: HeadersType | None = None,
+        auth: tuple[str, str] | None = None,
         timeout: float = 60.0,
         # New optional parameters (backward compatible):
-        auth_handler: Optional[AuthHandler] = None,
-        retry_policy: Optional[RetryPolicy] = None,
-        rate_limiter: Optional[RateLimitPolicy] = None,
-        circuit_breaker: Optional[CircuitBreakerPolicy] = None,
+        auth_handler: AuthHandler | None = None,
+        retry_policy: RetryPolicy | None = None,
+        rate_limiter: RateLimitPolicy | None = None,
+        circuit_breaker: CircuitBreakerPolicy | None = None,
         diagnostic_mode: bool = False,
         client_name: str = "ContentClient",
         is_multithreaded: bool = True,
-        reuse_client: bool = True
+        reuse_client: bool = True,
     ) -> None:
         """Initialize ContentClient with BaseClient-compatible parameters.
 
@@ -1379,7 +1373,7 @@ class ContentClient:
         self._verify: bool = verify
         self._ok_codes: StatusCodesType = ok_codes
         self._headers: HeadersType = headers or {}
-        self._auth: Optional[Tuple[str, str]] = auth
+        self._auth: tuple[str, str] | None = auth
         self.timeout: float = timeout
         self._closed: bool = False
         self._is_multithreaded: bool = is_multithreaded
@@ -1394,11 +1388,11 @@ class ContentClient:
             skip_cert_verification()
 
         # Enhanced features (optional, backward compatible)
-        self._auth_handler: Optional[AuthHandler] = auth_handler
-        self._retry_policy: RetryPolicy = retry_policy if retry_policy is not None else RetryPolicy()
-        self._rate_limiter: Optional[TokenBucketRateLimiter] = _create_rate_limiter(rate_limiter)
+        self._auth_handler: AuthHandler | None = auth_handler
+        self._retry_policy: RetryPolicy = retry_policy if retry_policy is not None else RetryPolicy()  # type: ignore[call-arg]
+        self._rate_limiter: TokenBucketRateLimiter | None = _create_rate_limiter(rate_limiter)
         self._circuit_breaker: CircuitBreaker = CircuitBreaker(
-            circuit_breaker if circuit_breaker is not None else CircuitBreakerPolicy()
+            circuit_breaker if circuit_breaker is not None else CircuitBreakerPolicy()  # type: ignore[call-arg]
         )
         self._diagnostic_mode = diagnostic_mode
 
@@ -1431,8 +1425,11 @@ class ContentClient:
             current_loop = None
 
         # Check if we need to create a new client
-        if not hasattr(self._local_storage, "client") or self._local_storage.client is None or \
-                getattr(self._local_storage, "client_event_loop", None) != current_loop:
+        if (
+            not hasattr(self._local_storage, "client")
+            or self._local_storage.client is None
+            or getattr(self._local_storage, "client_event_loop", None) != current_loop
+        ):
             # Close existing client if any
             if getattr(self._local_storage, "client", None) is not None:
                 try:
@@ -1541,26 +1538,26 @@ class ContentClient:
         self,
         method: str,
         url_suffix: str = "",
-        full_url: Optional[str] = None,
-        headers: Optional[HeadersType] = None,
-        auth: Optional[Tuple[str, str]] = None,
-        json_data: Optional[JsonType] = None,
-        params: Optional[ParamsType] = None,
-        data: Optional[Any] = None,
-        files: Optional[Dict[str, Any]] = None,
-        timeout: Optional[float] = None,
+        full_url: str | None = None,
+        headers: HeadersType | None = None,
+        auth: tuple[str, str] | None = None,
+        json_data: JsonType | None = None,
+        params: ParamsType | None = None,
+        data: Any | None = None,
+        files: dict[str, Any] | None = None,
+        timeout: float | None = None,
         resp_type: str = "json",
-        ok_codes: Optional[StatusCodesType] = None,
+        ok_codes: StatusCodesType | None = None,
         return_empty_response: bool = False,
         retries: int = 0,
-        status_list_to_retry: Optional[List[int]] = None,
+        status_list_to_retry: list[int] | None = None,
         backoff_factor: float = 5.0,
         backoff_jitter: float = 0.0,
         raise_on_redirect: bool = False,
         raise_on_status: bool = False,
-        error_handler: Optional[Callable[[httpx.Response], None]] = None,
-        empty_valid_codes: Optional[List[int]] = None,
-        params_parser: Optional[Callable[[ParamsType], ParamsType]] = None,
+        error_handler: Callable[[httpx.Response], None] | None = None,
+        empty_valid_codes: list[int] | None = None,
+        params_parser: Callable[[ParamsType], ParamsType] | None = None,
         with_metrics: bool = False,
         **kwargs: Any,
     ) -> httpx.Response:
@@ -1621,7 +1618,7 @@ class ContentClient:
 
         attempt = 0
         last_error: Exception = Exception("Unknown error")
-        trace: Optional[RequestTrace] = None
+        trace: RequestTrace | None = None
 
         # Determine max attempts
         # If retries param is passed (BaseClient style), use it. Otherwise use retry_policy.
@@ -1824,26 +1821,26 @@ class ContentClient:
         self,
         method: str,
         url_suffix: str = "",
-        full_url: Optional[str] = None,
-        headers: Optional[HeadersType] = None,
-        auth: Optional[Tuple[str, str]] = None,
-        json_data: Optional[JsonType] = None,
-        params: Optional[ParamsType] = None,
-        data: Optional[Any] = None,
-        files: Optional[Dict[str, Any]] = None,
-        timeout: Optional[float] = None,
+        full_url: str | None = None,
+        headers: HeadersType | None = None,
+        auth: tuple[str, str] | None = None,
+        json_data: JsonType | None = None,
+        params: ParamsType | None = None,
+        data: Any | None = None,
+        files: dict[str, Any] | None = None,
+        timeout: float | None = None,
         resp_type: str = "json",
-        ok_codes: Optional[StatusCodesType] = None,
+        ok_codes: StatusCodesType | None = None,
         return_empty_response: bool = False,
         retries: int = 0,
-        status_list_to_retry: Optional[List[int]] = None,
+        status_list_to_retry: list[int] | None = None,
         backoff_factor: float = 5.0,
         backoff_jitter: float = 0.0,
         raise_on_redirect: bool = False,
         raise_on_status: bool = False,
-        error_handler: Optional[Callable[[httpx.Response], None]] = None,
-        empty_valid_codes: Optional[List[int]] = None,
-        params_parser: Optional[Callable[[ParamsType], ParamsType]] = None,
+        error_handler: Callable[[httpx.Response], None] | None = None,
+        empty_valid_codes: list[int] | None = None,
+        params_parser: Callable[[ParamsType], ParamsType] | None = None,
         with_metrics: bool = False,
         **kwargs: Any,
     ) -> Any:
@@ -1937,14 +1934,13 @@ class ContentClient:
             finally:
                 # Clean up the client after each sync request only if reuse_client is False
                 # When reuse_client is True (default), the client is kept open for better performance
-                if not self._reuse_client:
-                    if hasattr(self._local_storage, "client") and self._local_storage.client is not None:
-                        try:
-                            await self._local_storage.client.aclose()
-                        except Exception:
-                            pass
-                        self._local_storage.client = None
-                        self._local_storage.client_event_loop = None
+                if not self._reuse_client and hasattr(self._local_storage, "client") and self._local_storage.client is not None:
+                    try:
+                        await self._local_storage.client.aclose()
+                    except Exception:
+                        pass
+                    self._local_storage.client = None
+                    self._local_storage.client_event_loop = None
 
         # Check if we're already in an async context
         try:
@@ -1958,7 +1954,7 @@ class ContentClient:
             return asyncio.run(_do_request())
 
     # Standard HTTP verb helpers
-    def get(self, url_suffix: str, params: Optional[ParamsType] = None, **kwargs: Any) -> Any:
+    def get(self, url_suffix: str, params: ParamsType | None = None, **kwargs: Any) -> Any:
         """Execute a GET request.
 
         Args:
@@ -1973,7 +1969,7 @@ class ContentClient:
             kwargs["resp_type"] = "response"
         return self._http_request("GET", url_suffix, params=params, **kwargs)
 
-    def post(self, url_suffix: str, json_data: Optional[JsonType] = None, **kwargs: Any) -> Any:
+    def post(self, url_suffix: str, json_data: JsonType | None = None, **kwargs: Any) -> Any:
         """Execute a POST request.
 
         Args:
@@ -1988,7 +1984,7 @@ class ContentClient:
             kwargs["resp_type"] = "response"
         return self._http_request("POST", url_suffix, json_data=json_data, **kwargs)
 
-    def put(self, url_suffix: str, json_data: Optional[JsonType] = None, **kwargs: Any) -> Any:
+    def put(self, url_suffix: str, json_data: JsonType | None = None, **kwargs: Any) -> Any:
         """Execute a PUT request.
 
         Args:
@@ -2003,7 +1999,7 @@ class ContentClient:
             kwargs["resp_type"] = "response"
         return self._http_request("PUT", url_suffix, json_data=json_data, **kwargs)
 
-    def patch(self, url_suffix: str, json_data: Optional[JsonType] = None, **kwargs: Any) -> Any:
+    def patch(self, url_suffix: str, json_data: JsonType | None = None, **kwargs: Any) -> Any:
         """Execute a PATCH request.
 
         Args:
@@ -2051,7 +2047,7 @@ class ContentClient:
             configuration={"name": self.logger.client_name, "base_url": self._base_url, "timeout": self.timeout}
         )
 
-    def diagnose_error(self, error: Exception) -> Dict[str, str]:
+    def diagnose_error(self, error: Exception) -> dict[str, str]:
         """Diagnose an error and provide a solution recommendation.
 
         Args:
@@ -2074,14 +2070,14 @@ class ContentClient:
             return {"issue": "Configuration error", "solution": "Check integration parameters."}
         return {"issue": "Unexpected error", "solution": f"Check logs for details: {str(error)}"}
 
-    def health_check(self) -> Dict[str, Any]:
+    def health_check(self) -> dict[str, Any]:
         """Perform a health check on the client.
 
         Returns:
             A dictionary with 'status', 'configuration_valid', 'warnings', and 'metrics'.
         """
         status: str = "healthy"
-        warnings: List[str] = []
+        warnings: list[str] = []
 
         if self.execution_metrics.auth_error > 0:
             status = "degraded"
