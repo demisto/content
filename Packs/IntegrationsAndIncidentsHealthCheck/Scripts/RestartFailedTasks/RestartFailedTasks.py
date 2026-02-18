@@ -39,7 +39,7 @@ def remove_exclusion(failed_tasks: list, playbook_exclusion: list):
 
     for playbook in playbook_exclusion:
         for task in failed_tasks:
-            if playbook in task["Playbook Name"]:
+            if task and playbook in task["Playbook Name"]:
                 failed_tasks.remove(task)
     return failed_tasks
 
@@ -60,29 +60,30 @@ def restart_tasks(failed_tasks: list, sleep_time: int, group_size: int):
     restarted_tasks = []
     is_xsoar_version_6_2 = is_demisto_version_ge("6.2")
     for task in failed_tasks:
-        task_id, incident_id, playbook_name, task_name = (
-            task["Task ID"],
-            task["Incident ID"],
-            task["Playbook Name"],
-            task["Task Name"],
-        )
-        demisto.info(f"Restarting task with id: {task_id} and incident id: {incident_id}")
-        demisto.executeCommand("taskReopen", {"id": task_id, "incidentId": incident_id})
-        body = {"invId": incident_id, "inTaskID": task_id}
+        if task:
+            task_id, incident_id, playbook_name, task_name = (
+                task["Task ID"],
+                task["Incident ID"],
+                task["Playbook Name"],
+                task["Task Name"],
+            )
+            demisto.info(f"Restarting task with id: {task_id} and incident id: {incident_id}")
+            demisto.executeCommand("taskReopen", {"id": task_id, "incidentId": incident_id})
+            body = {"invId": incident_id, "inTaskID": task_id}
 
-        if is_xsoar_version_6_2:
-            body = {"taskinfo": body}
+            if is_xsoar_version_6_2:
+                body = {"taskinfo": body}
 
-        demisto.executeCommand("core-api-post", {"uri": "inv-playbook/task/execute", "body": json.dumps(body)})
-        restarted_tasks.append(
-            {"IncidentID": incident_id, "TaskID": task_id, "PlaybookName": playbook_name, "TaskName": task_name}
-        )
-        restarted_tasks_count += 1
+            demisto.executeCommand("core-api-post", {"uri": "inv-playbook/task/execute", "body": json.dumps(body)})
+            restarted_tasks.append(
+                {"IncidentID": incident_id, "TaskID": task_id, "PlaybookName": playbook_name, "TaskName": task_name}
+            )
+            restarted_tasks_count += 1
 
-        # Sleep if the group size has been hit
-        if restarted_tasks_count % group_size == 0:
-            demisto.info("Sleeping")
-            time.sleep(sleep_time)  # pylint: disable=E9003
+            # Sleep if the group size has been hit
+            if restarted_tasks_count % group_size == 0:
+                demisto.info("Sleeping")
+                time.sleep(sleep_time)  # pylint: disable=E9003
 
     return restarted_tasks_count, restarted_tasks
 
