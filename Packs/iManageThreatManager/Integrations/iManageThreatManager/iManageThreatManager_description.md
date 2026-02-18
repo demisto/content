@@ -33,5 +33,3 @@ To generate an application token and secret from the Threat Manager admin consol
    - By default, application tokens expire after 1400 minutes (1 day). The maximum value is 525600 (365 days).
 6. Select **Generate Token**.
 7. The New Token dialog shows the generated application token and secret.
-
-
