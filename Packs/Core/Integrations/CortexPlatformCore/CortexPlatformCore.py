@@ -4788,13 +4788,17 @@ def validate_profile_args(args: dict):
     """
     Validates that the arguments provided in args match the predefined values in Profile.VALIDATION.
     """
+    invalid_args = []
     for arg, value in args.items():
         if arg in Profile.VALIDATION:
             allowed_values = Profile.VALIDATION[arg]
             if value not in allowed_values:
-                raise DemistoException(
+                invalid_args.append(
                     f"Invalid value '{value}' for argument '{arg}'. Allowed values are: {', '.join(allowed_values)}."
                 )
+
+    if invalid_args:
+        raise DemistoException("\n".join(invalid_args))
 
 
 def create_profile_command(client: Client, args: dict, profile_type: str) -> CommandResults:
