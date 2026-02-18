@@ -12,6 +12,15 @@
                 "Cymulate Affected Assets": {
                     "simple": "affectedAsset"
                 },
+                "Cymulate Assessment ID": {
+                    "simple": "assessmentID"
+                },
+                "Cymulate Assessment Name": {
+                    "simple": "assessmentName"
+                },
+                "Cymulate Finding Name": {
+                    "simple": "findingName"
+                },
                 "Cymulate Attack Type": {
                     "simple": "attackType"
                 },

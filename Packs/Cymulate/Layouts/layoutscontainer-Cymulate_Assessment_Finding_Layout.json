@@ -304,7 +304,7 @@
 				"sections": [
 					{
 						"displayType": "CARD",
-						"h": 4,
+						"h": 5,
 						"hideName": false,
 						"i": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-4eac02c0-8665-11f0-b686-b13ef3e1a186",
 						"items": [
@@ -323,6 +323,17 @@
 								"fieldId": "cymulatestatus",
 								"height": 53,
 								"id": "80cfb440-8665-11f0-b686-b13ef3e1a186",
+								"index": 1,
+								"listId": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-4eac02c0-8665-11f0-b686-b13ef3e1a186",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cymulatefindingname",
+								"height": 53,
+								"id": "d2d10f50-0cbb-11f1-9015-2d50d30ae55b",
 								"index": 2,
 								"listId": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-4eac02c0-8665-11f0-b686-b13ef3e1a186",
 								"sectionItemType": "field",
@@ -333,7 +344,7 @@
 								"fieldId": "cymulatemodule",
 								"height": 53,
 								"id": "70fd4230-8665-11f0-b686-b13ef3e1a186",
-								"index": 2,
+								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -343,7 +354,7 @@
 								"fieldId": "cymulatetestcase",
 								"height": 53,
 								"id": "1a5c7920-867c-11f0-9f84-378864c285d8",
-								"index": 3,
+								"index": 4,
 								"listId": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-4eac02c0-8665-11f0-b686-b13ef3e1a186",
 								"sectionItemType": "field",
 								"startCol": 0
@@ -354,7 +365,7 @@
 								"fieldId": "cymulateattacktype",
 								"height": 53,
 								"id": "91967160-8665-11f0-b686-b13ef3e1a186",
-								"index": 4,
+								"index": 5,
 								"listId": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-4eac02c0-8665-11f0-b686-b13ef3e1a186",
 								"sectionItemType": "field",
 								"startCol": 0
@@ -364,7 +375,7 @@
 								"fieldId": "mitretacticid",
 								"height": 53,
 								"id": "c653b780-867b-11f0-9f84-378864c285d8",
-								"index": 5,
+								"index": 6,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -374,8 +385,17 @@
 								"fieldId": "mitretechniqueid",
 								"height": 53,
 								"id": "d35cf770-867b-11f0-9f84-378864c285d8",
-								"index": 6,
+								"index": 7,
 								"listId": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-4eac02c0-8665-11f0-b686-b13ef3e1a186",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 1,
+								"fieldId": "cymulateassessmentid",
+								"height": 53,
+								"id": "cec23dd0-0cbb-11f1-9015-2d50d30ae55b",
+								"index": 8,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -396,7 +416,7 @@
 								"fieldId": "riskname",
 								"height": 53,
 								"id": "7af1a100-8665-11f0-b686-b13ef3e1a186",
-								"index": 2,
+								"index": 1,
 								"listId": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-4eac02c0-8665-11f0-b686-b13ef3e1a186",
 								"sectionItemType": "field",
 								"startCol": 1
@@ -407,7 +427,7 @@
 								"fieldId": "cymulatefindingtype",
 								"height": 53,
 								"id": "a11433c0-8665-11f0-b686-b13ef3e1a186",
-								"index": 2,
+								"index": 3,
 								"listId": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-4eac02c0-8665-11f0-b686-b13ef3e1a186",
 								"sectionItemType": "field",
 								"startCol": 1
@@ -418,7 +438,7 @@
 								"fieldId": "cymulateaffectedassets",
 								"height": 53,
 								"id": "a9d89e10-8665-11f0-b686-b13ef3e1a186",
-								"index": 4,
+								"index": 5,
 								"listId": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-4eac02c0-8665-11f0-b686-b13ef3e1a186",
 								"sectionItemType": "field",
 								"startCol": 1
@@ -429,7 +449,7 @@
 								"fieldId": "mitretacticname",
 								"height": 53,
 								"id": "c7c1ed80-867b-11f0-9f84-378864c285d8",
-								"index": 5,
+								"index": 6,
 								"listId": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-4eac02c0-8665-11f0-b686-b13ef3e1a186",
 								"sectionItemType": "field",
 								"startCol": 1
@@ -440,7 +460,18 @@
 								"fieldId": "mitretechniquename",
 								"height": 53,
 								"id": "d65a0ad0-867b-11f0-9f84-378864c285d8",
-								"index": 6,
+								"index": 7,
+								"listId": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-4eac02c0-8665-11f0-b686-b13ef3e1a186",
+								"sectionItemType": "field",
+								"startCol": 1
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cymulateassessmentname",
+								"height": 53,
+								"id": "d1523780-0cbb-11f1-9015-2d50d30ae55b",
+								"index": 8,
 								"listId": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-4eac02c0-8665-11f0-b686-b13ef3e1a186",
 								"sectionItemType": "field",
 								"startCol": 1
@@ -457,7 +488,7 @@
 					},
 					{
 						"displayType": "CARD",
-						"h": 2,
+						"h": 3,
 						"hideName": false,
 						"i": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-5c162760-8665-11f0-b686-b13ef3e1a186",
 						"items": [
@@ -598,7 +629,7 @@
 						"static": false,
 						"w": 1,
 						"x": 1,
-						"y": 2
+						"y": 3
 					},
 					{
 						"displayType": "CARD",
@@ -629,7 +660,7 @@
 								],
 								"height": 106,
 								"id": "0898f760-867a-11f0-b281-bbc850e31c0b",
-								"index": 0,
+								"index": 1,
 								"listId": "caseinfoid-eb595371-8679-11f0-b281-bbc850e31c0b",
 								"sectionItemType": "field",
 								"startCol": 0
@@ -669,7 +700,7 @@
 						"static": false,
 						"w": 3,
 						"x": 0,
-						"y": 4
+						"y": 5
 					},
 					{
 						"displayType": "CARD",
@@ -684,7 +715,7 @@
 						"static": false,
 						"w": 1,
 						"x": 2,
-						"y": 2
+						"y": 3
 					}
 				],
 				"type": "custom"
