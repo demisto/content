@@ -169,9 +169,10 @@ alter // init aliases for root level & common objects for supporting both camelC
     xdm.alert.original_alert_id = finding_id,
     xdm.alert.risks = if(array_length(service_evidence_threat_intelligence_details) > 0, service_evidence_threat_intelligence_details),
     xdm.alert.severity = if( // https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_findings.html#guardduty_findings-severity
-        finding_severity >= 7, "High", 
+        finding_severity >= 9, "Critical",
+        finding_severity >= 7 and finding_severity <= 8.9 , "High",
         finding_severity >= 4 and finding_severity <= 6.9 , "Medium", 
-        finding_severity >= 1 and finding_severity <= 3.9 , "Low", 
+        finding_severity >= 1 and finding_severity <= 3.9 , "Low",
         to_string(finding_severity)),
     xdm.alert.subcategory = finding_type,
     xdm.auth.auth_method = resource_rdsDbUserDetails_auth_method,
