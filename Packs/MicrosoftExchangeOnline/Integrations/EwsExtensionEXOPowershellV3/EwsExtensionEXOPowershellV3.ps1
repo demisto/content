@@ -693,7 +693,7 @@ class ExchangeOnlinePowershellV3Client
                 $cmd_params.User = $user
             }
             if ($release_to_all) {
-                $cmd_params.ReleaseToAll = $release_to_all
+                $cmd_params.ReleaseToAll = $null
             }
             if ($identities) {
                 $identities = $identities.Split(",").Trim()
@@ -2207,7 +2207,7 @@ function EXOGetQuarantineMessageCommand {
         EntityType = $kwargs.entity_type
         RecipientAddress = $kwargs.recipient_address
         SenderAddress = $kwargs.sender_address
-        TeamsConversationTypes = $kwargs.teams_conversation_types
+        TeamsConversationTypes = ArgToList $kwargs.teams_conversation_types
         Direction = $kwargs.direction
         Domain = $kwargs.domain
         EndExpiresDate = $kwargs.end_expires_date
@@ -2218,8 +2218,8 @@ function EXOGetQuarantineMessageCommand {
         Page = $kwargs.page
         PageSize = $kwargs.page_size
         PolicyName = $kwargs.policy_name
-        PolicyTypes = $kwargs.policy_types
-        QuarantineTypes = $kwargs.quarantine_types
+        PolicyTypes = ArgToList $kwargs.policy_types
+        QuarantineTypes = ArgToList $kwargs.quarantine_types
         RecipientTag = $kwargs.recipient_tag
         ReleaseStatus = $kwargs.release_status
         Reported = if ($kwargs.reported -eq "true") { $true } else { $false }
