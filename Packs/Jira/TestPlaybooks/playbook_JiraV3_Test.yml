@@ -495,12 +495,12 @@ tasks:
             value:
               simple: ${Ticket.[0].timetracking.rawData}
             iscontext: true
-      - - operator: isExists
+      - - operator: isEmpty
           left:
             value:
               simple: ${Ticket.[1].issuelinks.rawData}
             iscontext: true
-      - - operator: isExists
+      - - operator: isEmpty
           left:
             value:
               simple: ${Ticket.[1].issuelinks.issueFieldDisplayName}
