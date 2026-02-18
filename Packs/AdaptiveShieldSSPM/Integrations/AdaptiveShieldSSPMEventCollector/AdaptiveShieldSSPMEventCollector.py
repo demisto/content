@@ -1,6 +1,7 @@
 import demistomock as demisto
 import traceback
 import urllib3
+from datetime import datetime, timedelta, timezone
 from urllib.parse import urlparse, parse_qs
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from ContentClientApiModule import *  # noqa # pylint: disable=unused-wildcard-import
@@ -23,27 +24,27 @@ dummy_res = {
     "data": [
         {
             "id": "00001",
-            "creation_date":"2023-11-22T05:52:34Z",
+            "creation_date":"2026-11-22T05:52:34Z",
         },
         {
             "id": "111",
-            "creation_date":"2023-11-22T05:52:34Z",
+            "creation_date":"2026-11-23T05:52:34Z",
         },
         {
             "id": "222",
-            "creation_date":"2023-11-22T05:52:34Z",
+            "creation_date":"2026-12-01T05:52:34Z",
         },
         {
             "id": "333",
-            "creation_date":"2023-11-22T05:52:34Z",
+            "creation_date":"2026-12-01T05:52:34Z",
         },
         {
             "id": "444",
-            "creation_date":"2023-11-22T05:52:34Z",
+            "creation_date":"2026-12-02T05:52:34Z",
         },
         {
             "id": "555",
-            "creation_date":"2023-11-22T05:52:34Z",
+            "creation_date":"2026-12-03T05:52:34Z",
         }
     ],
     "total_size": 252,
@@ -54,27 +55,27 @@ dummy_res2 = {
     "data": [
         {
             "id": "666",
-            "creation_date":"2023-11-22T05:52:34Z",
+            "creation_date":"2026-12-04T05:52:34Z",
         },
         {
             "id": "777",
-            "creation_date":"2023-11-22T05:52:34Z",
+            "creation_date":"2026-12-05T05:52:34Z",
         },
         {
             "id": "888",
-            "creation_date":"2023-11-22T05:52:34Z",
+            "creation_date":"2026-12-06T05:52:34Z",
         },
         {
             "id": "999",
-            "creation_date":"2023-11-22T05:52:34Z",
+            "creation_date":"2026-12-07T05:52:34Z",
         },
         {
             "id": "1010",
-            "creation_date":"2023-11-22T05:52:34Z",
+            "creation_date":"2026-12-08T05:52:34Z",
         }
     ],
     "total_size": 252,
-    "next_page_uri": "https://api.adaptive-shield.com/api/v1/accounts/{{accountId}}/security_checks?offset=100&limit=100",
+    # "next_page_uri": "https://api.adaptive-shield.com/api/v1/accounts/{{accountId}}/security_checks?offset=100&limit=100",
 }
 
 
@@ -195,9 +196,11 @@ class Client(ContentClient):
 
         demisto.debug(f"Fetching security checks with {params=}")
 
+        #TODO: remove
         if offset:
             return dummy_res2
         return dummy_res
+
         # response = self._http_request(
         #     method="GET",
         #     url_suffix=f"/api/v1/accounts/{self.account_id}/security_checks",
@@ -211,6 +214,7 @@ class Client(ContentClient):
         max_fetch: int,
         last_run_date: str | None = None,
         last_fetched_ids: list[str] | None = None,
+        start_date: str | None = None,
     ) -> list[dict]:
         """Fetch security checks with pagination support.
 
@@ -221,6 +225,7 @@ class Client(ContentClient):
             max_fetch: Maximum total number of events to collect.
             last_run_date: ISO 8601 timestamp of the last fetched event's creation_date.
             last_fetched_ids: List of event IDs fetched at the last_run_date timestamp.
+            start_date: ISO 8601 timestamp. Events before this date are skipped.
 
         Returns:
             List of security check event dicts with '_time' field set.
@@ -243,6 +248,10 @@ class Client(ContentClient):
             for item in items:
                 event_time = item.get(TIME_FIELD)
                 event_id = item.get("id")
+
+                # Skip events after start_date
+                if start_date and event_time and event_time < start_date:
+                    continue
 
                 # Skip events older than or equal to last run date
                 if last_run_date and event_time:
@@ -331,13 +340,15 @@ def fetch_events_command(client: Client, max_fetch: int, last_run: dict) -> tupl
     """
     last_run_date = last_run.get("last_run_date")
     last_fetched_ids = last_run.get("last_fetched_ids", [])
+    start_date = (datetime.now(tz=timezone.utc) - timedelta(minutes=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    demisto.debug(f"Fetching events with {last_run_date=}, last_fetched_ids count={len(last_fetched_ids)}")
+    demisto.debug(f"Fetching events with {last_run_date=}, last_fetched_ids count={len(last_fetched_ids)}, {start_date=}")
 
     events = client.get_security_checks_with_pagination(
         max_fetch=max_fetch,
         last_run_date=last_run_date,
         last_fetched_ids=last_fetched_ids,
+        start_date=start_date,
     )
 
     if events:
