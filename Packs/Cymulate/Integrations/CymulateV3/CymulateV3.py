@@ -229,8 +229,9 @@ def fetch_incidents(
         assessment_created_str = assessment.get("createdAt")
         assessment_created = arg_to_datetime(assessment_created_str)
 
-        # Skip fully-processed assessments (strict less-than avoids missing the boundary)
-        if last_assessment_date and assessment_created and assessment_created < last_assessment_date:
+        # Skip assessments at or before the watermark — last_assessment_date is set to the
+        # createdAt of the last FULLY processed assessment, so <= is correct here.
+        if last_assessment_date and assessment_created and assessment_created <= last_assessment_date:
             demisto.debug(f"fetch_incidents: skipping old assessment {assessment_id}")
             continue
 

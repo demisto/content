@@ -526,10 +526,11 @@ def test_fetch_incidents_findings_pagination(requests_mock, mock_client, mock_de
 
 @freeze_time("2025-11-06T12:00:00Z")
 def test_fetch_incidents_boundary_dedup(requests_mock, mock_client, monkeypatch):
-    """Test that an assessment with createdAt exactly equal to last_assessment_date is processed.
+    """Test that an assessment with createdAt exactly equal to last_assessment_date is skipped.
 
-    With strict < (not <=), boundary assessments are processed rather than skipped,
-    preventing data loss when an assessment lands exactly on the watermark timestamp.
+    last_assessment_date is the createdAt of the last FULLY processed assessment.
+    Using <= means the boundary assessment is correctly skipped (already done),
+    preventing the infinite re-processing loop seen in production.
     """
     monkeypatch.setattr(
         "CymulateV3.demisto.getLastRun",
@@ -548,20 +549,26 @@ def test_fetch_incidents_boundary_dedup(requests_mock, mock_client, monkeypatch)
                     "createdAt": "2025-11-06T10:00:00.000Z",  # exactly equal to last_assessment_date
                     "status": "completed",
                 },
+                {
+                    "id": "new-assessment",
+                    "name": "New Assessment",
+                    "createdAt": "2025-11-06T11:00:00.000Z",  # strictly after watermark
+                    "status": "completed",
+                },
             ],
             "nextCursor": None,
         },
     )
 
     requests_mock.get(
-        "https://api.cymulate.com/v2/assessments/launched/boundary-assessment/findings",
+        "https://api.cymulate.com/v2/assessments/launched/new-assessment/findings",
         json={
             "findings": [
                 {
-                    "_id": "boundary-finding",
-                    "findingName": "Boundary Finding",
+                    "_id": "new-finding",
+                    "findingName": "New Finding",
                     "status": "Not Prevented",
-                    "date": "2025-11-06T10:05:00.000Z",
+                    "date": "2025-11-06T11:05:00.000Z",
                     "tags": [],
                 },
             ],
@@ -576,9 +583,9 @@ def test_fetch_incidents_boundary_dedup(requests_mock, mock_client, monkeypatch)
         max_fetch=200,
     )
 
-    # Assessment at exact boundary timestamp should be processed, not skipped
+    # Boundary assessment skipped (already processed); only the newer one is fetched
     assert len(incidents) == 1
-    assert "Boundary Finding" in incidents[0]["name"]
+    assert "New Finding" in incidents[0]["name"]
 
 
 @freeze_time("2025-11-06T12:00:00Z")
