@@ -4,6 +4,7 @@ commonfields:
 name: CyberArkISP
 display: CyberArk Identity Security Platform
 category: Identity and Access Management
+provider: CyberArk
 description: CyberArk Identity Security Platform secures human and machine identities across hybrid/multi-cloud environments with intelligent privilege controls, AI-driven threat detection, and Zero Trust enforcement.
 sectionorder:
 - Connect
