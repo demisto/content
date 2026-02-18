@@ -1,0 +1,38 @@
+{
+    "<Vendor>_<Product>_raw": {
+      "_raw_log": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }    
+
+OR
+{
+    "<Vendor>_<Product>_raw": {         
+        "field_json": {
+            "type": "string",
+            "is_array": false
+        },
+        "field_str": {
+            "type": "string",
+            "is_array": false
+        },
+        "field_int": {
+            "type": "int",
+            "is_array": false
+        },
+        "field_float": {
+            "type": "float",
+            "is_array": false
+        },
+        "field_datetime": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "field_bool": {
+            "type": "boolean",
+            "is_array": false
+        }
+    }
+}
