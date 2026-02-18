@@ -16,7 +16,7 @@ This integration fetches findings from completed Cymulate assessments as Cortex 
 To generate an API key from your Cymulate instance:
 
 1. Connect to your Cymulate instance.
-2. Go to your **profile** > **Settings** > **Cymulate API**.
+2. Go to your **profile** &gt; **Settings** &gt; **Cymulate API**.
 3. Click **Add API key** button.
 4. Give the API key a name.
 5. Enable the required API endpoints.
@@ -26,8 +26,8 @@ To generate an API key from your Cymulate instance:
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| API token | Cymulate API token used for authentication (sent as `x-token`). | False |
-| Base URL | Cymulate API base URL (for example: `https://api.app.cymulate.com`). | False |
+| API token | Cymulate API token used for authentication (sent as `x-token`). | True |
+| Base URL | Cymulate API base URL (for example: `https://api.app.cymulate.com`). | True |
 | Fetch incidents | When enabled, fetches Cymulate assessment findings as Cortex XSOAR incidents. | False |
 | Fetch category | **All** fetches all "Not Prevented" findings. **Threat Feed IOCs** fetches only findings tagged as Threat Feed IOC. Default: All. | False |
 | First fetch timestamp | First time to fetch incidents from (e.g., `12 hours`, `7 days`). | False |

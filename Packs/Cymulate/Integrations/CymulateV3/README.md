@@ -24,7 +24,7 @@ The integration includes transient error handling for network issues, ensuring s
 
 ## Configure Cymulate v3 in Cortex XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** &gt; **Integrations** &gt; **Servers &amp; Services**.
 2. Search for **Cymulate v3**.
 3. Click **Add instance**.
 4. Configure the parameters below.
@@ -35,11 +35,11 @@ The integration includes transient error handling for network issues, ensuring s
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| API token | Cymulate API token used for authentication (sent as `x-token`). | False |
-| Base URL | Cymulate API base URL (for example: `https://api.app.cymulate.com`). | False |
+| API token | Cymulate API token used for authentication (sent as `x-token`). | True |
+| Base URL | Cymulate API base URL (for example: `https://api.app.cymulate.com`). | True |
 | Fetch incidents | When enabled, fetches Cymulate assessment findings as Cortex XSOAR incidents. | False |
 | Fetch category | **All** fetches all "Not Prevented" findings. **Threat Feed IOCs** fetches only findings tagged as Threat Feed IOC. Default: All. | False |
 | First fetch timestamp (number and time unit, e.g., `12 hours`, `7 days`) | First time to fetch incidents from. | False |
-| Max Fetch | Maximum number of incidents to return per fetch run. Default: 25. | False |
+| Max Fetch | Maximum number of incidents to return per fetch run. Maximun: 100. Default: 25. | False |
 | Trust any certificate (not secure) | If checked, SSL certificate verification is disabled. | False |
 | Use system proxy settings | Use the system proxy settings for HTTP/S requests. | False |

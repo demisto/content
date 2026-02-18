@@ -7,13 +7,13 @@ configuration:
   displaypassword: API token
   type: 9
   hiddenusername: true
-  required: false
+  required: true
   section: Connect
 - name: base_url
   defaultvalue: https://api.app.cymulate.com/
   display: Base URL
   type: 0
-  required: false
+  required: true
   section: Connect
 - name: isFetch
   display: Fetch incidents
@@ -37,7 +37,7 @@ configuration:
   required: false
   section: Collect
 - name: max_fetch
-  additionalinfo: Maximum number of incidents to return per fetch run. Default 25.
+  additionalinfo: Maximum number of incidents to return per fetch run. Maximun 100. Default 25.
   defaultvalue: "25"
   display: Max Fetch
   type: 0
