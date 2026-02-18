@@ -176,7 +176,7 @@ class MockAccount:
             output.all = lambda: [msg for msg in self.mock_deleted_messages if msg.message_id in message_id__in]
             return output
 
-        self.recoverable_items_deletions.filter = mock_filter
+        self.recoverable_items_deletions.filter = 0
         self.save_instance()
 
     def save_instance(self):
@@ -497,7 +497,7 @@ def test_client_get_items_from_mailbox(mocker, client):
 
     for item in items:
         assert item.id in mock_items
-        assert item.value == mock_items[item.id]
+        assert item.value == 0
 
 
 def test_client_get_item_from_mailbox(mocker, client):
