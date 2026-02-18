@@ -15,22 +15,27 @@ jobs:
         with:
           fetch-depth: 100 # to speed up. changed-files will fetch more if necessary
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.x"
-
-      - name: Get changed files
+      - name: Get changed protected files
         id: changed-files
         uses: tj-actions/changed-files@v46.0.1 # disable-secrets-detection
         with:
           files: |
             .gitlab/ci/.gitlab-ci.yml
 
+      - name: Get changed external-only protected files
+        if: github.event.pull_request.head.repo.full_name != github.repository
+        id: changed-external-files
+        uses: tj-actions/changed-files@v46.0.1 # disable-secrets-detection
+        with:
+          files: |
+            AGENTS.md
+
       - name: Prevent changing protected files
-        if: steps.changed-files.outputs.any_changed == 'true'
+        if: >-
+          steps.changed-files.outputs.any_changed == 'true' ||
+          steps.changed-external-files.outputs.any_changed == 'true'
         env:
-          FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+          FILES: ${{ steps.changed-files.outputs.all_changed_files }} ${{ steps.changed-external-files.outputs.all_changed_files }}
         run: |
           for file in ${FILES}; do
             echo "::error file=$file,line=1,endLine=1,title=Protected file modified::This file should not be changed in master.%0AIf you are sure it's necessary, ask for a force merge and explain the rationale."
