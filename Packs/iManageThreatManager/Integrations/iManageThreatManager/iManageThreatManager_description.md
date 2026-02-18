@@ -26,19 +26,12 @@ If the user becomes enabled again, or the role is re-added to the user, the appl
 To generate an application token and secret from the Threat Manager admin console:
 
 1. In iManage Threat Manager, browse to **Configuration** > **System** > **Application Tokens for Utility Access**.
-
 2. Select **New Token**. The New Token dialog opens.
-
 3. In the **Token Name** field, enter a unique name for this application token.
-
 4. Select the **Export Alert List** permission.
-
 5. In **Token Expiry Time in minutes**, enter the number of minutes before this token becomes invalid.
-
-   By default, application tokens expire after 1400 minutes (1 day). The maximum value is 525600 (365 days).
-
+   - By default, application tokens expire after 1400 minutes (1 day). The maximum value is 525600 (365 days).
 6. Select **Generate Token**.
-
-The New Token dialog shows the generated application token and secret.
+7. The New Token dialog shows the generated application token and secret.
 
 
