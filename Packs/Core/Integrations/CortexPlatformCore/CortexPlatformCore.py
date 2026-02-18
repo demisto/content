@@ -4855,6 +4855,33 @@ def execute_email_security_remediation_command(client: Client, args: dict[str, A
     )
 
 
+def timeframe_to_days(timeframe: str) -> int:
+    """Convert a relative timeframe string to an integer number of days.
+
+    Uses arg_to_datetime to parse relative date expressions (e.g. "1 day",
+    "3 weeks ago", "30 days") and computes the number of whole days between
+    the parsed date and now.
+
+    Args:
+        timeframe (str): A relative date string such as "1 day", "3 weeks ago", "30 days".
+
+    Returns:
+        int: The number of days represented by the timeframe (minimum 1).
+
+    Raises:
+        DemistoException: If the timeframe string cannot be parsed.
+    """
+    parsed_date = arg_to_datetime(timeframe)
+    if not parsed_date:
+        raise DemistoException(
+            f'Failed to parse timeframe "{timeframe}". '
+            'Please use a valid relative date format (e.g. "1 day", "3 weeks ago", "30 days").'
+        )
+    now = datetime.now(parsed_date.tzinfo)
+    delta = now - parsed_date
+    return max(int(delta.total_seconds() / 86400), 1)
+
+
 def get_email_investigation_summary_command(client: Client, args: dict) -> CommandResults:
     """Retrieves phishing email investigation summary campaigns from Cortex.
 
@@ -4863,7 +4890,7 @@ def get_email_investigation_summary_command(client: Client, args: dict) -> Comma
 
     Args:
         client (Client): The Cortex platform client instance.
-        args (dict): Command arguments including days_timeframe, detection_method,
+        args (dict): Command arguments including timeframe, detection_method,
                     min_severity, min_severity_phishing, page_size, page_number.
 
     Returns:
@@ -4879,8 +4906,11 @@ def get_email_investigation_summary_command(client: Client, args: dict) -> Comma
     min_severity = args.get("min_severity")
     min_severity_phishing = args.get("min_severity_phishing")
 
+    timeframe = args.get("timeframe")
+    days_timeframe = timeframe_to_days(timeframe) if timeframe else None
+
     params = assign_params(
-        days_timeframe=arg_to_number(args.get("days_timeframe")),
+        days_timeframe=days_timeframe,
         detection_method=args.get("detection_method"),
         min_severity=phishing_severity_mapping.get(min_severity, min_severity) if min_severity else None,
         min_severity_phishing=phishing_severity_mapping.get(min_severity_phishing, min_severity_phishing)

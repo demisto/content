@@ -1,4 +1,5 @@
 import json
+from datetime import timedelta
 
 import pytest
 from pytest_mock import MockerFixture
@@ -9956,9 +9957,10 @@ def test_get_email_investigation_summary_command_success(mocker: MockerFixture):
     }
     mocker.patch.object(mock_client, "get_email_investigation_summary", return_value=mock_response)
     mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Mock table")
+    mocker.patch("CortexPlatformCore.timeframe_to_days", return_value=7)
 
     args = {
-        "days_timeframe": "7",
+        "timeframe": "7 days",
         "detection_method": "ANALYTICS_BIOC",
         "min_severity": "medium",
         "page_size": "50",
@@ -9972,6 +9974,76 @@ def test_get_email_investigation_summary_command_success(mocker: MockerFixture):
     assert len(result.outputs) == 2
     assert result.outputs[0]["internet_message_id"] == "<test1@example.com>"
     assert result.outputs[1]["campaign_size"] == 3
+
+
+@pytest.mark.parametrize(
+    "timeframe_input, expected_days",
+    [
+        ("30 days", 30),
+        ("1 day", 1),
+        ("2 weeks", 14),
+        ("3 weeks ago", 21),
+    ],
+)
+def test_timeframe_to_days(mocker: MockerFixture, timeframe_input, expected_days):
+    """
+    Given:
+        A relative timeframe string.
+    When:
+        The timeframe_to_days function is called.
+    Then:
+        The correct number of days is returned.
+    """
+    from CortexPlatformCore import timeframe_to_days
+    from datetime import datetime, timezone
+
+    now = datetime(2026, 2, 18, 12, 0, 0, tzinfo=timezone.utc)
+    parsed = now - timedelta(days=expected_days)
+    mocker.patch("CortexPlatformCore.arg_to_datetime", return_value=parsed)
+    mocker.patch("CortexPlatformCore.datetime")
+    mocker.patch("CortexPlatformCore.datetime.now", return_value=now)
+
+    result = timeframe_to_days(timeframe_input)
+    assert result == expected_days
+
+
+def test_timeframe_to_days_invalid_input(mocker: MockerFixture):
+    """
+    Given:
+        An invalid timeframe string that cannot be parsed.
+    When:
+        The timeframe_to_days function is called.
+    Then:
+        A DemistoException is raised.
+    """
+    from CortexPlatformCore import timeframe_to_days, DemistoException
+
+    mocker.patch("CortexPlatformCore.arg_to_datetime", return_value=None)
+
+    with pytest.raises(DemistoException, match='Failed to parse timeframe'):
+        timeframe_to_days("invalid_timeframe")
+
+
+def test_timeframe_to_days_minimum_one_day(mocker: MockerFixture):
+    """
+    Given:
+        A very short timeframe (e.g. "1 hour") that results in less than 1 day.
+    When:
+        The timeframe_to_days function is called.
+    Then:
+        The minimum value of 1 is returned.
+    """
+    from CortexPlatformCore import timeframe_to_days
+    from datetime import datetime, timezone
+
+    now = datetime(2026, 2, 18, 12, 0, 0, tzinfo=timezone.utc)
+    parsed = now - timedelta(hours=1)
+    mocker.patch("CortexPlatformCore.arg_to_datetime", return_value=parsed)
+    mocker.patch("CortexPlatformCore.datetime")
+    mocker.patch("CortexPlatformCore.datetime.now", return_value=now)
+
+    result = timeframe_to_days("1 hour")
+    assert result == 1
 
 
 def test_decrypt_email_content_command_success(mocker: MockerFixture):

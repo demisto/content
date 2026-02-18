@@ -3546,13 +3546,13 @@ script:
           description: User input parameters (for pending playbookTask items).
           type: Unknown
     - arguments:
-        - description: Number of days to look back for issues.
-          name: days_timeframe
+        - description: 'Time to look back for issues. Supports relative date (for example: "1 day", "3 weeks ago"). The default is 30 days.'
+          name: timeframe
+          defaultValue: '30'
           required: false
         - description: "The source of the alerts to be clustered."
           name: detection_method
           required: false
-          defaultValue: USER_REPORTED_PHISHING
           auto: PREDEFINED
           predefined:
             - EMAIL_ATTACHMENT
@@ -3574,7 +3574,6 @@ script:
         - description: "Minimum severity for phishing-specific filtering."
           name: min_severity_phishing
           required: false
-          defaultValue: low
           auto: PREDEFINED
           predefined:
             - info
@@ -3584,7 +3583,6 @@ script:
         - description: Number of results per page.
           name: page_size
           required: false
-          defaultValue: "100"
         - description: Page number for pagination.
           name: page_number
           required: false
@@ -3614,9 +3612,6 @@ script:
         - contextPath: Core.EmailInvestigationSummary.unique_attachments_count
           description: The number of distinct files attached to the email.
           type: Number
-        - contextPath: Core.EmailInvestigationSummary.detection_methods_with_ids
-          description: Comma-separated list of detection methods with their issue IDs.
-          type: String
     - arguments:
         - description: The unique internet message ID of the email to decrypt. Accepts a comma-separated list.
           name: internet_message_id
