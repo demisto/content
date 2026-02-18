@@ -806,7 +806,9 @@ class TestFetchEventsCommand:
             - Ensure events are fetched and next_run is set correctly
         """
         # Frozen time: 2021-01-10 00:00:00 UTC = 1610236800000 ms
-        mock_response = {"results": [{"id": "1", "alert_time": 1610200000000, "update_time": 1610200000000}]}
+        # First fetch lookback: 1 hour = 1610236800000 - 3600000 = 1610233200000 ms
+        # Mock event must be AFTER 1610233200000 to be included
+        mock_response = {"results": [{"id": "1", "alert_time": 1610235000000, "update_time": 1610235000000}]}
         requests_mock.post(f"{BASE_URL}/tm-api/v2/login/api_token", json={"access_token": "token"})
         requests_mock.post(f"{BASE_URL}/tm-api/getAlertList", json=mock_response)
 
@@ -817,7 +819,7 @@ class TestFetchEventsCommand:
         assert len(events) == 1
         assert events[0]["_source_log_type"] == EVENT_TYPE_CONFIG[BEHAVIOR_ANALYTICS]["source_log_type"]
         assert "last_fetch_BehaviorAnalytics" in next_run
-        assert next_run["last_fetch_BehaviorAnalytics"] == 1610200000000
+        assert next_run["last_fetch_BehaviorAnalytics"] == 1610235000000
 
     @freeze_time("2021-01-10T00:00:00Z")
     def test_fetch_events_with_pagination(self, client, requests_mock):
