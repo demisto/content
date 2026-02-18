@@ -576,6 +576,7 @@ class ExchangeOnlinePowershellV3Client
             $cmd_params = @{ }
             if ($identities)
             {
+                $identities = $identities.Split(",").Trim()
                 $cmd_params.Identities = $identities
             }
             if ($identity)
@@ -695,6 +696,7 @@ class ExchangeOnlinePowershellV3Client
                 $cmd_params.ReleaseToAll = $release_to_all
             }
             if ($identities) {
+                $identities = $identities.Split(",").Trim()
                 $cmd_params.Identities = $identities
             }
             if ($identity) {
