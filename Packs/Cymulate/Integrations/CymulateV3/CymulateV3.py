@@ -7,9 +7,10 @@ from CommonServerPython import *  # pylint: disable=unused-wildcard-import
 
 urllib3.disable_warnings()
 
+# Used for API query parameters (fromDate/toDate) — second precision is sufficient.
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
+# Used wherever full sub-second precision must be preserved (lastRun watermark, incident occurred).
 DATE_FORMAT_MS = "%Y-%m-%dT%H:%M:%S.%fZ"
-XSOAR_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
 MAX_INCIDENTS_TO_FETCH = 200
 
 # Fetch category options
@@ -36,8 +37,13 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url: str, token: str, verify: bool, proxy: bool, **kwargs):
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy, **kwargs)
-        self.headers = {"x-token": token, "accept": "application/json"}
+        super().__init__(
+            base_url=base_url,
+            verify=verify,
+            proxy=proxy,
+            headers={"x-token": token, "accept": "application/json"},
+            **kwargs,
+        )
 
     def list_assessments(
         self,
@@ -66,7 +72,6 @@ class Client(BaseClient):
         return self._http_request(
             method="GET",
             url_suffix="/v2/assessments/launched",
-            headers=self.headers,
             params=params,
         )
 
@@ -90,7 +95,6 @@ class Client(BaseClient):
         return self._http_request(
             method="GET",
             url_suffix=f"/v2/assessments/launched/{assessment_id}/findings",
-            headers=self.headers,
             params=params,
         )
 
@@ -295,7 +299,7 @@ def fetch_incidents(
                 incidents.append(
                     {
                         "name": f"Cymulate Finding - {assessment_name} - {finding_name}",
-                        "occurred": finding_date.strftime(XSOAR_DATE_FORMAT) if finding_date else end_time_str,
+                        "occurred": finding_date.strftime(DATE_FORMAT_MS) if finding_date else end_time_str,
                         "rawJSON": json.dumps(finding),
                     }
                 )
