@@ -2,7 +2,7 @@
 
 ## What does this pack do
 
-The Azure Logs pack contains data normalization rules for ingesting various Azure log types that are collected via the [Office 365](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-3.x-Documentation/Ingest-Logs-from-Microsoft-Office-365) and [Azure Event Hub](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-3.x-Documentation/Ingest-logs-from-Microsoft-Azure-Event-Hub) data sources, and modeling them to the Cortex Data Model (XDM).
+The Azure Logs pack contains data normalization rules for ingesting various Azure log types that are collected via the [Office 365](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-Logs-from-Microsoft-Office-365) and [Azure Event Hub](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-3.x-Documentation/Ingest-logs-from-Microsoft-Azure-Event-Hub) data sources, and modeling them to the Cortex Data Model (XDM).
 
 ### Supported Log Types
 
@@ -45,7 +45,7 @@ See the table below that lists these additional log types, along the relevant ma
 
 ### Azure Entra ID Logs
 
-To collect Azure Entra ID logs and ingest them into the *`msft_azure_ad_raw`* and *`msft_azure_ad_audit_raw`* datasets, you will need to configure an instance of the **Office 365** data source as described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-3.x-Documentation/Ingest-Logs-from-Microsoft-Office-365).
+To collect Azure Entra ID logs and ingest them into the *`msft_azure_ad_raw`* and *`msft_azure_ad_audit_raw`* datasets, you will need to configure an instance of the **Office 365** data source as described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-Logs-from-Microsoft-Office-365).
 
 When configuring the Office 365 data source, mark the following checkboxes under the *Microsoft Graph API* section, as demonstrated in the screenshot below:
 
