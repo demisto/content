@@ -1,0 +1,177 @@
+commonfields:
+  id: ShadowxSOCAI_Dev
+  version: -1
+name: ShadowxSOCAI_Dev
+display: ShadowX SOCAI
+category: Analytics & SIEM
+description: Analyze security logs with ShadowX SOCAI and return AI-driven guidance and scores (API Key mode only).
+fromversion: 6.10.0
+
+configuration:
+- display: Server URL (e.g., https://app.shadowx.ai)
+  name: url
+  type: 0
+  required: true
+
+- displaypassword: API Key (service token)
+  name: credentials_api
+  type: 9
+  hiddenusername: true
+  required: true
+  
+- display: Subject 
+  name: subject
+  type: 0
+  required: true
+  
+- display: AI Driver ID (GUID)
+  name: ai_driver_id
+  type: 0
+  required: false
+
+- display: Assigned User ID (GUID)
+  name: assigned_user_id
+  type: 0
+  required: false
+
+- display: Default Policy ID (GUID)
+  name: policy_id
+  type: 0
+  required: false
+
+- display: Default Task Name
+  name: task_name
+  type: 0
+  required: false
+  defaultvalue: XSOAR submit
+
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+
+
+script:
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.10.116949
+  commands:
+  - name: shadowx-submit-task
+    description: Submit a security log to ShadowX SOCAI. Optional polling via wait_seconds.
+    arguments:
+    - name: log
+      required: true
+      description: Raw log / event text.
+    - name: ip_addr
+      description: Related IP address.
+    - name: subject
+      description: Subject for the task (e.g., username, asset, etc.).
+    - name: policy_id
+      description: Overrides the instance's default policy ID for this task.
+    - name: wait_seconds
+      description: If > 0, poll until completion or timeout.
+    - name: interval_seconds
+      description: Poll interval (seconds). Default 30.
+    examples: |
+      !shadowx-submit-task log="failed login from 1.1.1.1" ip_addr="192.168.1.100" user_name="svc-admin" wait_seconds=10
+      !shadowx-submit-task log="Multiple failed login attempts detected..." ip_addr="203.0.113.45" user_name="test-user"  wait_seconds=10
+    outputs:
+    - contextPath: ShadowxSOCAI.TaskSubmit.TaskId
+      type: string
+      description: Submitted task ID.
+    - contextPath: ShadowxSOCAI.TaskSubmit.TaskURL
+      type: string
+      description: Task URL in ShadowX.
+    - contextPath: ShadowxSOCAI.TaskResult.TaskId
+      type: string
+      description: Task ID (when polled to completion).
+    - contextPath: ShadowxSOCAI.TaskResult.TaskName
+      type: string
+      description: Task name.
+    - contextPath: ShadowxSOCAI.TaskResult.AssignedUserName
+      type: string
+      description: The username assigned to the task in ShadowX.
+    - contextPath: ShadowxSOCAI.TaskResult.AIDriverName
+      type: string
+      description: The name of the AI driver used for analysis.
+    - contextPath: ShadowxSOCAI.TaskResult.PolicyName
+      type: string
+      description: Name of the policy applied.
+    - contextPath: ShadowxSOCAI.TaskResult.Subject
+      type: string
+      description: The subject of the task.
+    - contextPath: ShadowxSOCAI.TaskResult.SecurityLog
+      type: string
+      description: The original security log submitted.
+    - contextPath: ShadowxSOCAI.TaskResult.SanitizedLog
+      type: string
+      description: The log after sanitization.
+    - contextPath: ShadowxSOCAI.TaskResult.Response
+      type: string
+      description: The full AI-generated response.
+    - contextPath: ShadowxSOCAI.TaskResult.Recommendation
+      type: string
+      description: The AI-generated recommendation.
+    - contextPath: ShadowxSOCAI.TaskResult.Status
+      type: string
+      description: The final status of the task (e.g., Completed).
+    - contextPath: ShadowxSOCAI.TaskResult.RiskSeverity
+      type: string
+      description: The calculated risk severity (e.g., High).
+    - contextPath: ShadowxSOCAI.TaskResult.PredictionScore
+      type: number
+      description: The numeric prediction score.
+
+  - name: shadowx-get-task
+    description: Fetch task details by ID (API Key mode).
+    arguments:
+    - name: task_id
+      required: true
+      description: Task GUID returned by shadowx-submit-task.
+    examples: |
+      !shadowx-get-task task_id="f3f46d7e-4932-4b4a-9220-9fd9a6a4ad02"
+    outputs:
+    - contextPath: ShadowxSOCAI.TaskResult.TaskId
+      type: string
+      description: The unique ID of the task.
+    - contextPath: ShadowxSOCAI.TaskResult.TaskName
+      type: string
+      description: The name of the task.
+    - contextPath: ShadowxSOCAI.TaskResult.AssignedUserName
+      type: string
+      description: The username assigned to the task in ShadowX.
+    - contextPath: ShadowxSOCAI.TaskResult.AIDriverName
+      type: string
+      description: The name of the AI driver used for analysis.
+    - contextPath: ShadowxSOCAI.TaskResult.PolicyName
+      type: string
+      description: Name of the policy applied.
+    - contextPath: ShadowxSOCAI.TaskResult.Subject
+      type: string
+      description: The subject of the task.
+    - contextPath: ShadowxSOCAI.TaskResult.SecurityLog
+      type: string
+      description: The original security log submitted.
+    - contextPath: ShadowxSOCAI.TaskResult.SanitizedLog
+      type: string
+      description: The log after sanitization.
+    - contextPath: ShadowxSOCAI.TaskResult.Response
+      type: string
+      description: The full AI-generated response.
+    - contextPath: ShadowxSOCAI.TaskResult.Recommendation
+      type: string
+      description: The AI-generated recommendation.
+    - contextPath: ShadowxSOCAI.TaskResult.Status
+      type: string
+      description: The final status of the task (e.g., Completed).
+    - contextPath: ShadowxSOCAI.TaskResult.RiskSeverity
+      type: string
+      description: The calculated risk severity (e.g., High).
+    - contextPath: ShadowxSOCAI.TaskResult.PredictionScore
+      type: number
+      description: The numeric prediction score.
