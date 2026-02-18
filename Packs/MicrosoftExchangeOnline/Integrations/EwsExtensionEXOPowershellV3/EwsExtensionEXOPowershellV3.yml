@@ -2192,7 +2192,7 @@ script:
     - name: reason_for_export
       description: Reason for exporting the message. Using this argument requires 'compress_output' argument to be set to true.
     - name: recipient_address
-      description: Email address to send the exported message to.
+      description: Filters the results by the recipient's email address.
     outputs:
     - contextPath: EWS.ExportQuarantineMessage.BodyEncoding
       description: Encoding used for the body of the message.
@@ -2464,7 +2464,7 @@ script:
   - name: ews-release-quarantinemessage
     arguments:
     - name: user
-      description: The user associated with the quarantine message.
+      description: The email address of the user to whom you want to release the quarantined message.
     - name: identities
       description: A comma-separated list of identities of the messages to release.
       isArray: true
