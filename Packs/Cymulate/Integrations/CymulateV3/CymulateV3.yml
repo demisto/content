@@ -5,6 +5,7 @@ commonfields:
 configuration:
 - name: credentials
   displaypassword: API token
+  display: API token
   type: 9
   hiddenusername: true
   required: true
@@ -14,6 +15,16 @@ configuration:
   display: Base URL
   type: 0
   required: true
+  section: Connect
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  required: false
+  section: Connect
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  required: false
   section: Connect
 - name: isFetch
   display: Fetch incidents
@@ -43,16 +54,6 @@ configuration:
   type: 0
   required: false
   section: Collect
-- name: insecure
-  display: Trust any certificate (not secure)
-  type: 8
-  required: false
-  section: Connect
-- name: proxy
-  display: Use system proxy settings
-  type: 8
-  required: false
-  section: Connect
 - display: Incident type
   defaultvalue: Cymulate Assessment Findings
   name: incidentType

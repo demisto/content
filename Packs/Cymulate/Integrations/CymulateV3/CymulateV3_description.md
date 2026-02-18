@@ -1,17 +1,17 @@
-# Cymulate v3 Integration
+## Cymulate v3 Integration
 
 Cymulate is a Multi-Vector Cyber Attack, Breach and Attack Simulation (BAS) platform that continuously validates security posture by simulating real-world threats across multiple security controls.
 
 This integration fetches findings from completed Cymulate assessments as Cortex XSOAR incidents using the V2 Assessment API.
 
-## How It Works
+### How It Works
 
 1. The integration periodically queries the Cymulate V2 API for completed assessments.
 2. For each new assessment, it retrieves all findings.
 3. Only findings with status **"Not Prevented"** are created as XSOAR incidents.
 4. The **Fetch category** parameter allows filtering to only **Threat Feed IOC** tagged findings.
 
-## Obtaining Your API Key
+### Obtaining Your API Key
 
 To generate an API key from your Cymulate instance:
 
@@ -19,10 +19,12 @@ To generate an API key from your Cymulate instance:
 2. Go to your **profile** &gt; **Settings** &gt; **Cymulate API**.
 3. Click **Add API key** button.
 4. Give the API key a name.
-5. Enable the required API endpoints.
+5. Enable the required API endpoints:
+   - `GET /v2/assessments/launched`
+   - `GET /v2/assessments/launched/{id}/findings`
 6. Copy the generated API key.
 
-## Configuration Parameters
+### Configuration Parameters
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
