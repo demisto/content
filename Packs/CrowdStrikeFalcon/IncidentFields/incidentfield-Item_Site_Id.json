@@ -2,7 +2,7 @@
     "id": "incident_crowdstrikefalconitemsiteid",
     "version": -1,
     "modified": "2025-11-26T08:51:47.363207646Z",
-    "name": "CrowdStrike Falcon Item site Id",
+    "name": "CrowdStrike Falcon Item site ID",
     "ownerOnly": false,
     "cliName": "crowdstrikefalconitemsiteid",
     "type": "shortText",

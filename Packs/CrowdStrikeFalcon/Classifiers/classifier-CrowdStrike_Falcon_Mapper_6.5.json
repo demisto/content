@@ -1802,19 +1802,19 @@
 				"CrowdStrike Falcon Item site": {
 					"simple": "notification.item_site"
 				},
-				"CrowdStrike Falcon Item site Id": {
+				"CrowdStrike Falcon Item site ID": {
 					"simple": "notification.item_site_id"
 				},
 				"CrowdStrike Falcon Item type": {
 					"simple": "notification.item_type"
 				},
-				"CrowdStrike Falcon Role Id": {
+				"CrowdStrike Falcon Role ID": {
 					"simple": "notification.rule_id"
 				},
 				"CrowdStrike Falcon Role creator name": {
 					"simple": "notification.rule_creator_name"
 				},
-				"CrowdStrike Falcon Role creator uid": {
+				"CrowdStrike Falcon Role creator UID": {
 					"simple": "notification.rule_creator_uid"
 				},
 				"CrowdStrike Falcon Role priority": {
