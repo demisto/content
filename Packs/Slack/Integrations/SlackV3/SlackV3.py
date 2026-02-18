@@ -1948,6 +1948,7 @@ async def handle_entitlement_interactions(
     thread: Optional[str],
     message_ts: str,
     quick_check_payload: str,
+    user_profile: dict,
 ) -> bool:
     """
     Handles entitlement-related interactions (SlackAsk responses).
@@ -1982,7 +1983,8 @@ async def handle_entitlement_interactions(
                 demisto.debug("Handling a SlackBlockBuilder response.")
                 state = data.get("state", {})
                 if state:
-                    state.update({"xsoar-button-submit": "Successful"})
+                    # Add user profile information to state object
+                    state.update({"xsoar-button-submit": "Successful", "submitting_user": user_profile})
                     action_text = json.dumps(state)
             else:
                 demisto.debug("Not handling a SlackBlockBuilder response.")
@@ -2113,7 +2115,8 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         data: dict = req.payload
         event: dict = data.get("event", {})
         text = event.get("text", "")
-        user_id = data.get("user", {}).get("id", "")
+        user_profile = data.get("user", {})
+        user_id = user_profile.get("id", "")
         if not user_id:
             user_id = event.get("user", "")
         channel = event.get("channel", "")
@@ -2130,7 +2133,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
 
         # Handle entitlement interactions (SlackAsk)
         entitlement_handled = await handle_entitlement_interactions(
-            data, event, user_id, actions, channel, thread, message_ts, quick_check_payload
+            data, event, user_id, actions, channel, thread, message_ts, quick_check_payload, user_profile
         )
 
         # Handle Assistant AI interactions

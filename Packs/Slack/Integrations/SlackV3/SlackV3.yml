@@ -2,7 +2,7 @@ sectionorder:
 - Connect
 - Collect
 category: Messaging and Conferencing
-provider: Salesforce
+provider: Slack
 commonfields:
   id: SlackV3
   version: -1
@@ -566,7 +566,7 @@ script:
     name: send-agent-response
     description: Sends a response message from an agent within a specific thread in a Slack conversation.
     outputs: []
-  dockerimage: demisto/slackv3:1.0.0.5301537
+  dockerimage: demisto/slackv3:1.0.0.6976072
   longRunning: true
   runonce: false
   script: '-'
