@@ -786,7 +786,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
             try:
                 details = resp.json()
             except Exception as e:
-                demisto.info(f"[test] got {e=} with {resp=}")
+                demisto.info(f"[test] got {e=} with {resp=}, {resp.text=}, {resp.reason=}")
                 details = resp.text
             raise Exception(f"{details}")
 
