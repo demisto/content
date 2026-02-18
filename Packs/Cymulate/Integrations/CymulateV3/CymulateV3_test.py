@@ -13,21 +13,6 @@ from CymulateV3 import (
 )
 
 
-def pytest_collection_modifyitems(config, items):
-    """
-    Filter out tests that are collected from non-test files.
-    This prevents pytest from collecting test_module from CymulateV3.py.
-    """
-    filtered_items = []
-    for item in items:
-        # item.location is a tuple: (file_path, line_number, function_name)
-        file_path = item.location[0] if item.location else ""
-        # Only keep items from test files
-        if file_path.endswith("_test.py"):
-            filtered_items.append(item)
-    items[:] = filtered_items
-
-
 @pytest.fixture
 def mock_client():
     """Create a Cymulate client with base URL and dummy token."""
@@ -537,3 +522,319 @@ def test_fetch_incidents_findings_pagination(requests_mock, mock_client, mock_de
     assert len(incidents) == 2
     assert "Finding 1" in incidents[0]["name"]
     assert "Finding 2" in incidents[1]["name"]
+
+
+@freeze_time("2025-11-06T12:00:00Z")
+def test_fetch_incidents_boundary_dedup(requests_mock, mock_client, monkeypatch):
+    """Test that an assessment with createdAt exactly equal to last_assessment_date is processed.
+
+    With strict < (not <=), boundary assessments are processed rather than skipped,
+    preventing data loss when an assessment lands exactly on the watermark timestamp.
+    """
+    monkeypatch.setattr(
+        "CymulateV3.demisto.getLastRun",
+        lambda: {"last_assessment_date": "2025-11-06T10:00:00.000000Z"},
+    )
+    monkeypatch.setattr("CymulateV3.demisto.debug", lambda _: None)
+    monkeypatch.setattr("CymulateV3.demisto.error", lambda _: None)
+
+    requests_mock.get(
+        "https://api.cymulate.com/v2/assessments/launched",
+        json={
+            "data": [
+                {
+                    "id": "boundary-assessment",
+                    "name": "Boundary Assessment",
+                    "createdAt": "2025-11-06T10:00:00.000Z",  # exactly equal to last_assessment_date
+                    "status": "completed",
+                },
+            ],
+            "nextCursor": None,
+        },
+    )
+
+    requests_mock.get(
+        "https://api.cymulate.com/v2/assessments/launched/boundary-assessment/findings",
+        json={
+            "findings": [
+                {
+                    "_id": "boundary-finding",
+                    "findingName": "Boundary Finding",
+                    "status": "Not Prevented",
+                    "date": "2025-11-06T10:05:00.000Z",
+                    "tags": [],
+                },
+            ],
+            "nextCursor": None,
+        },
+    )
+
+    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=timezone.utc)
+    incidents, last_run = fetch_incidents(
+        client=mock_client,
+        first_fetch=first_fetch,
+        max_fetch=200,
+    )
+
+    # Assessment at exact boundary timestamp should be processed, not skipped
+    assert len(incidents) == 1
+    assert "Boundary Finding" in incidents[0]["name"]
+
+
+@freeze_time("2025-11-06T12:00:00Z")
+def test_fetch_incidents_lastrun_not_advanced_on_max_fetch(requests_mock, mock_client, mock_demisto):
+    """Test that last_run watermark is NOT advanced when max_fetch is hit mid-assessment.
+
+    If we stop processing due to max_fetch, the assessment was only partially ingested.
+    The watermark must stay put so the next run re-processes the same assessment and
+    picks up the remaining findings.
+    """
+    requests_mock.get(
+        "https://api.cymulate.com/v2/assessments/launched",
+        json={
+            "data": [
+                {
+                    "id": "assessment-1",
+                    "name": "Assessment 1",
+                    "createdAt": "2025-11-06T10:00:00.000Z",
+                    "status": "completed",
+                },
+            ],
+            "nextCursor": None,
+        },
+    )
+
+    findings = [
+        {
+            "_id": f"finding-{i}",
+            "findingName": f"Finding {i}",
+            "status": "Not Prevented",
+            "date": f"2025-11-06T10:{i:02d}:00.000Z",
+            "tags": [],
+        }
+        for i in range(5)
+    ]
+
+    requests_mock.get(
+        "https://api.cymulate.com/v2/assessments/launched/assessment-1/findings",
+        json={"findings": findings, "nextCursor": None},
+    )
+
+    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=timezone.utc)
+    incidents, last_run = fetch_incidents(
+        client=mock_client,
+        first_fetch=first_fetch,
+        max_fetch=2,  # hit max_fetch before finishing the assessment
+    )
+
+    assert len(incidents) == 2
+    # Watermark must NOT advance — assessment was only partially processed
+    assert last_run["last_assessment_date"] is None
+
+
+@freeze_time("2025-11-06T12:00:00Z")
+def test_list_assessments_sort_order(requests_mock, mock_client):
+    """Test that list_assessments sends sortOrder=asc so oldest-first processing prevents data loss."""
+    requests_mock.get(
+        "https://api.cymulate.com/v2/assessments/launched",
+        json={"data": [], "nextCursor": None},
+    )
+
+    mock_client.list_assessments(
+        from_date="2025-11-06T00:00:00.000Z",
+        to_date="2025-11-06T12:00:00.000Z",
+    )
+
+    qs = requests_mock.last_request.qs
+    assert qs.get("sortOrder") == ["asc"]
+
+
+@freeze_time("2025-11-06T12:00:00Z")
+def test_fetch_incidents_stores_pending_state_on_max_fetch(requests_mock, mock_client, mock_demisto):
+    """Test that pending cursor state is stored in last_run when max_fetch is hit mid-assessment.
+
+    On the first page (cursor=None), pending_page_cursor must be "" (empty string encodes
+    "first page") so that the next run can distinguish "resume from page 1" vs "no cursor".
+    pending_page_np_skip records how many NP findings from that page were already ingested.
+    """
+    requests_mock.get(
+        "https://api.cymulate.com/v2/assessments/launched",
+        json={
+            "data": [
+                {
+                    "id": "big-assessment",
+                    "name": "Big Assessment",
+                    "createdAt": "2025-11-06T10:00:00.000Z",
+                    "status": "completed",
+                },
+            ],
+            "nextCursor": None,
+        },
+    )
+
+    findings = [
+        {
+            "_id": f"finding-{i}",
+            "findingName": f"Finding {i}",
+            "status": "Not Prevented",
+            "date": f"2025-11-06T10:{i:02d}:00.000Z",
+            "tags": [],
+        }
+        for i in range(5)
+    ]
+
+    requests_mock.get(
+        "https://api.cymulate.com/v2/assessments/launched/big-assessment/findings",
+        json={"findings": findings, "nextCursor": None},
+    )
+
+    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=timezone.utc)
+    incidents, last_run = fetch_incidents(
+        client=mock_client,
+        first_fetch=first_fetch,
+        max_fetch=3,
+    )
+
+    assert len(incidents) == 3
+    # Watermark must NOT advance — assessment only partially processed
+    assert last_run["last_assessment_date"] is None
+    # Pending cursor state must be stored
+    assert last_run["pending_assessment_id"] == "big-assessment"
+    assert last_run["pending_page_cursor"] == ""  # first page encoded as empty string
+    assert last_run["pending_page_np_skip"] == 3  # 3 NP findings already ingested this page
+
+
+@freeze_time("2025-11-06T12:00:00Z")
+def test_fetch_incidents_resumes_from_pending_assessment(requests_mock, mock_client, monkeypatch):
+    """Test that fetch resumes from pending state, skipping already-ingested findings.
+
+    When lastRun contains pending_assessment_id + pending_page_cursor + pending_page_np_skip,
+    the next run must re-fetch that page and skip the NP findings that were already ingested,
+    then continue normally for the rest of the assessment.
+    """
+    # Simulate: 2 findings already ingested from the first page last run
+    monkeypatch.setattr(
+        "CymulateV3.demisto.getLastRun",
+        lambda: {
+            "last_assessment_date": None,
+            "pending_assessment_id": "big-assessment",
+            "pending_page_cursor": "",  # first page
+            "pending_page_np_skip": 2,
+        },
+    )
+    monkeypatch.setattr("CymulateV3.demisto.debug", lambda _: None)
+    monkeypatch.setattr("CymulateV3.demisto.error", lambda _: None)
+
+    requests_mock.get(
+        "https://api.cymulate.com/v2/assessments/launched",
+        json={
+            "data": [
+                {
+                    "id": "big-assessment",
+                    "name": "Big Assessment",
+                    "createdAt": "2025-11-06T10:00:00.000Z",
+                    "status": "completed",
+                },
+            ],
+            "nextCursor": None,
+        },
+    )
+
+    # Same 5-finding page as before; first 2 were already ingested last run
+    findings = [
+        {
+            "_id": f"finding-{i}",
+            "findingName": f"Finding {i}",
+            "status": "Not Prevented",
+            "date": f"2025-11-06T10:{i:02d}:00.000Z",
+            "tags": [],
+        }
+        for i in range(5)
+    ]
+
+    requests_mock.get(
+        "https://api.cymulate.com/v2/assessments/launched/big-assessment/findings",
+        json={"findings": findings, "nextCursor": None},
+    )
+
+    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=timezone.utc)
+    incidents, last_run = fetch_incidents(
+        client=mock_client,
+        first_fetch=first_fetch,
+        max_fetch=200,
+    )
+
+    # Only the 3 remaining findings (skip indices 0 and 1)
+    assert len(incidents) == 3
+    assert "Finding 2" in incidents[0]["name"]
+    assert "Finding 3" in incidents[1]["name"]
+    assert "Finding 4" in incidents[2]["name"]
+    # Assessment fully processed → watermark advances and pending state is cleared
+    assert last_run["last_assessment_date"] is not None
+    assert "pending_assessment_id" not in last_run
+
+
+@freeze_time("2025-11-06T12:00:00Z")
+def test_fetch_incidents_pending_cursor_advances_to_next_page_when_page_exhausted(requests_mock, mock_client, mock_demisto):
+    """Test the optimisation: when max_fetch is hit at the last NP finding on a page
+    that has a nextCursor, the stored pending_page_cursor points to the NEXT page
+    (skip=0) — avoiding a wasted re-fetch of the current page on resume.
+    """
+    requests_mock.get(
+        "https://api.cymulate.com/v2/assessments/launched",
+        json={
+            "data": [
+                {
+                    "id": "big-assessment",
+                    "name": "Big Assessment",
+                    "createdAt": "2025-11-06T10:00:00.000Z",
+                    "status": "completed",
+                },
+            ],
+            "nextCursor": None,
+        },
+    )
+
+    page1_findings = [
+        {
+            "_id": f"p1-finding-{i}",
+            "findingName": f"P1 Finding {i}",
+            "status": "Not Prevented",
+            "date": f"2025-11-06T10:{i:02d}:00.000Z",
+            "tags": [],
+        }
+        for i in range(3)
+    ]
+    page2_findings = [
+        {
+            "_id": f"p2-finding-{i}",
+            "findingName": f"P2 Finding {i}",
+            "status": "Not Prevented",
+            "date": f"2025-11-06T11:{i:02d}:00.000Z",
+            "tags": [],
+        }
+        for i in range(3)
+    ]
+
+    requests_mock.get(
+        "https://api.cymulate.com/v2/assessments/launched/big-assessment/findings",
+        [
+            {"json": {"findings": page1_findings, "nextCursor": "page2-cursor"}},
+            {"json": {"findings": page2_findings, "nextCursor": None}},
+        ],
+    )
+
+    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=timezone.utc)
+    incidents, last_run = fetch_incidents(
+        client=mock_client,
+        first_fetch=first_fetch,
+        max_fetch=3,  # exactly the number of NP findings on page 1
+    )
+
+    assert len(incidents) == 3
+    # Watermark must NOT advance — assessment only partially processed
+    assert last_run["last_assessment_date"] is None
+    # Optimisation: no re-fetch of page 1 — cursor jumps directly to page 2
+    assert last_run["pending_assessment_id"] == "big-assessment"
+    assert last_run["pending_page_cursor"] == "page2-cursor"
+    assert last_run["pending_page_np_skip"] == 0

@@ -44,7 +44,7 @@ class Client(BaseClient):
         from_date: str,
         to_date: str,
         status: list[str] | None = None,
-        limit: int = 25,
+        limit: int = 100,
         cursor: str | None = None,
     ) -> dict:
         """
@@ -59,7 +59,7 @@ class Client(BaseClient):
                 "limit": limit,
                 "cursor": cursor,
                 "sortBy": "created",
-                "sortOrder": "desc",
+                "sortOrder": "asc",
             }
         )
         demisto.debug(f"/v2/assessments/launched {params=}")
@@ -146,19 +146,35 @@ def fetch_incidents(
     """
     Fetch incidents using V2 assessment-based API.
 
-    Flow:
-    1. Get last_assessment_date from last run (or use first_fetch)
-    2. Fetch completed assessments from last_assessment_date to now
-    3. For each NEW assessment, fetch its findings
-    4. Filter findings by status = "Not Prevented"
-    5. Optionally filter by Threat Feed IOC tag
-    6. Save latest assessment date for next run
+    Findings are fetched page-by-page and converted to incidents as they arrive,
+    so fetching stops as soon as max_fetch is reached — no unnecessary API calls.
+
+    When max_fetch is hit mid-assessment, cursor-based state is saved in lastRun
+    so the next run resumes from exactly where it stopped, preventing both
+    duplicate incidents and infinite re-processing of large assessments.
+
+    lastRun keys
+    ------------
+    last_assessment_date  – createdAt of the last FULLY processed assessment.
+    pending_assessment_id – ID of the assessment currently being ingested (set
+                            only when stopped mid-assessment due to max_fetch).
+    pending_page_cursor   – Cursor that was passed to get_assessment_findings for
+                            the page where max_fetch was hit.  An empty string
+                            means the first page (cursor=None).
+    pending_page_np_skip  – Number of "Not Prevented" findings from that page
+                            already ingested; those are skipped on resume.
     """
     demisto.debug(f"fetch_incidents: {fetch_category=}")
     last_run_data = demisto.getLastRun()
     last_assessment_date_str = last_run_data.get("last_assessment_date")
     last_assessment_date = arg_to_datetime(last_assessment_date_str)
-    demisto.debug(f"fetch_incidents: {last_assessment_date_str=}")
+    pending_assessment_id = last_run_data.get("pending_assessment_id")
+    pending_page_cursor = last_run_data.get("pending_page_cursor")  # "" = first page
+    pending_page_np_skip: int = last_run_data.get("pending_page_np_skip") or 0
+    demisto.debug(
+        f"fetch_incidents: {last_assessment_date_str=} "
+        f"{pending_assessment_id=} {pending_page_cursor=} {pending_page_np_skip=}"
+    )
 
     # Determine time range
     start_time = last_assessment_date or first_fetch
@@ -175,11 +191,10 @@ def fetch_incidents(
                 from_date=start_time_str,
                 to_date=end_time_str,
                 status=["completed"],
-                limit=25,
+                limit=100,
                 cursor=cursor,
             )
         except Exception as e:
-            # Handle transient errors (ChunkedEncodingError, IncompleteRead, etc.)
             demisto.debug(f"fetch_incidents: error fetching assessments (treated as transient): {e}")
             if assessments:
                 demisto.error(
@@ -197,9 +212,12 @@ def fetch_incidents(
 
     demisto.debug(f"fetch_incidents: found {len(assessments)} completed assessments")
 
-    # Process assessments and collect findings
     incidents: list[dict] = []
     latest_assessment_date = last_assessment_date
+    # Pending state to persist if we pause mid-assessment this run
+    new_pending_id: str | None = None
+    new_pending_cursor: str | None = None
+    new_pending_skip: int = 0
 
     for assessment in assessments:
         assessment_id = assessment.get("id")
@@ -207,91 +225,131 @@ def fetch_incidents(
         assessment_created_str = assessment.get("createdAt")
         assessment_created = arg_to_datetime(assessment_created_str)
 
-        # Skip already processed assessments (date-based deduplication)
-        if last_assessment_date and assessment_created and assessment_created <= last_assessment_date:
+        # Skip fully-processed assessments (strict less-than avoids missing the boundary)
+        if last_assessment_date and assessment_created and assessment_created < last_assessment_date:
             demisto.debug(f"fetch_incidents: skipping old assessment {assessment_id}")
             continue
 
-        demisto.debug(f"fetch_incidents: processing {assessment_name} ({assessment_id})")
-
-        # Update latest assessment date
-        if assessment_created and (latest_assessment_date is None or assessment_created > latest_assessment_date):
-            latest_assessment_date = assessment_created
-
-        # Skip if assessment_id is missing
         if not assessment_id:
             demisto.debug(f"fetch_incidents: skipping assessment with missing ID: {assessment_name}")
             continue
 
-        # Fetch findings for this assessment with pagination
-        findings: list[dict] = []
-        findings_cursor = None
+        demisto.debug(f"fetch_incidents: processing {assessment_name} ({assessment_id})")
+
+        # When resuming a partially-ingested assessment, start from the saved page
+        # cursor. "" signals the first page (cursor=None); a non-empty string is an
+        # opaque API cursor.  np_skip tells us how many NP findings on that page to
+        # skip because they were already ingested last run.
+        is_resuming = pending_assessment_id == assessment_id
+        if is_resuming:
+            page_cursor: str | None = pending_page_cursor if pending_page_cursor else None
+            np_skip = pending_page_np_skip
+            demisto.debug(f"fetch_incidents: resuming {assessment_id} " f"from page_cursor={page_cursor!r} np_skip={np_skip}")
+        else:
+            page_cursor = None
+            np_skip = 0
+
+        # Fetch findings page-by-page and create incidents as we go
+        paused = False
         while True:
             try:
                 findings_response = client.get_assessment_findings(
                     assessment_id=assessment_id,
                     limit=100,
-                    cursor=findings_cursor,
+                    cursor=page_cursor,
                 )
             except Exception as e:
                 demisto.debug(f"fetch_incidents: error fetching findings for {assessment_id} " f"(treated as transient): {e}")
                 demisto.error(
                     f"fetch_incidents: transient error fetching findings for assessment {assessment_id}. "
-                    f"Processing {len(findings)} findings collected so far."
+                    f"Stopping findings fetch for this assessment."
                 )
                 break
 
             findings_batch = findings_response.get("findings", [])
-            findings.extend(findings_batch)
-            findings_cursor = findings_response.get("nextCursor")
-            if not findings_cursor or len(findings_batch) == 0:
-                break
+            next_cursor = findings_response.get("nextCursor")
 
-        demisto.debug(f"fetch_incidents: {assessment_name} has {len(findings)} findings")
-
-        # Create incidents from "Not Prevented" findings
-        for finding in findings:
-            if finding.get("status") != "Not Prevented":
-                continue
-
-            # Apply fetch category filter
-            if fetch_category == FETCH_CATEGORY_THREAT_FEED_IOCS:
-                tags = finding.get("tags", [])
-                if THREAT_FEED_IOC_TAG not in tags:
+            np_count_this_page = 0
+            for idx, finding in enumerate(findings_batch):
+                if finding.get("status") != "Not Prevented":
                     continue
 
-            finding_name = finding.get("findingName", "Unknown")
-            finding_date_str = finding.get("date")
-            finding_date = normalize_to_utc(arg_to_datetime(finding_date_str))
-            if finding_date is None:
-                finding_date = normalize_to_utc(assessment_created)
+                # Apply fetch category filter
+                if fetch_category == FETCH_CATEGORY_THREAT_FEED_IOCS and THREAT_FEED_IOC_TAG not in finding.get("tags", []):
+                    continue
 
-            # Add assessment info to finding
-            finding["_assessment_id"] = assessment_id
-            finding["_assessment_name"] = assessment_name
+                # On resume: skip NP findings from this page already ingested last run
+                if np_skip > 0:
+                    np_skip -= 1
+                    continue
 
-            incidents.append(
-                {
-                    "name": f"Cymulate Finding - {assessment_name} - {finding_name}",
-                    "occurred": finding_date.strftime(XSOAR_DATE_FORMAT) if finding_date else end_time_str,
-                    "rawJSON": json.dumps(finding),
-                }
-            )
+                finding_name = finding.get("findingName", "Unknown")
+                finding_date_str = finding.get("date")
+                finding_date = normalize_to_utc(arg_to_datetime(finding_date_str))
+                if finding_date is None:
+                    finding_date = normalize_to_utc(assessment_created)
 
-            if len(incidents) >= max_fetch:
+                finding["_assessment_id"] = assessment_id
+                finding["_assessment_name"] = assessment_name
+
+                incidents.append(
+                    {
+                        "name": f"Cymulate Finding - {assessment_name} - {finding_name}",
+                        "occurred": finding_date.strftime(XSOAR_DATE_FORMAT) if finding_date else end_time_str,
+                        "rawJSON": json.dumps(finding),
+                    }
+                )
+                np_count_this_page += 1
+
+                if len(incidents) >= max_fetch:
+                    paused = True
+                    new_pending_id = assessment_id
+                    # Optimisation: if no eligible NP findings remain after this one
+                    # on the current page, point directly at the next page cursor so
+                    # the resume run doesn't waste an API call re-fetching a page only
+                    # to skip every finding on it.
+                    has_more_np = any(
+                        f.get("status") == "Not Prevented"
+                        and (fetch_category != FETCH_CATEGORY_THREAT_FEED_IOCS or THREAT_FEED_IOC_TAG in f.get("tags", []))
+                        for f in findings_batch[idx + 1:]
+                    )
+                    if not has_more_np and next_cursor:
+                        new_pending_cursor = next_cursor
+                        new_pending_skip = 0
+                    else:
+                        # Empty string encodes "first page" (cursor=None)
+                        new_pending_cursor = page_cursor if page_cursor is not None else ""
+                        new_pending_skip = np_count_this_page
+                    break
+
+            if paused:
                 break
 
-        if len(incidents) >= max_fetch:
+            if not next_cursor or len(findings_batch) == 0:
+                # All pages of this assessment consumed
+                break
+            page_cursor = next_cursor
+
+        if paused:
+            # Stop processing further assessments this run
             break
 
-    # Prepare last run data
-    new_last_run = {
+        # Assessment fully processed — advance watermark and clear any pending state
+        if assessment_created and (latest_assessment_date is None or assessment_created > latest_assessment_date):
+            latest_assessment_date = assessment_created
+
+    new_last_run: dict = {
         "last_assessment_date": latest_assessment_date.strftime(DATE_FORMAT_MS) if latest_assessment_date else None,
     }
+    if new_pending_id:
+        new_last_run["pending_assessment_id"] = new_pending_id
+        new_last_run["pending_page_cursor"] = new_pending_cursor
+        new_last_run["pending_page_np_skip"] = new_pending_skip
 
     demisto.debug(
         f"fetch_incidents: returning {len(incidents)} incidents, "
-        f"new last_assessment_date={new_last_run['last_assessment_date']}"
+        f"new last_assessment_date={new_last_run['last_assessment_date']} "
+        f"pending_assessment_id={new_last_run.get('pending_assessment_id')}"
     )
     return incidents, new_last_run
 
