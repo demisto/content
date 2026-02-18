@@ -7252,29 +7252,86 @@ def test_find_largest_id_per_device(mocker):
 def test_filter_fetched_entries(mocker):
     """
     Given:
-    - list of dictionares repesenting raw entries, some contain seqno and some don't,  some contain device_name and some don't.
-    - dictionary with the largest id per device.
-    When:
-    - filter_fetched_entries is called.
-    Then:
-    - return a dictionary the entries that there id is larger then the id in the id_dict,
-        without the entries that do not have seqno.
-    """
-    from Panorama import filter_fetched_entries
+    - list of dictionaries representing raw entries with seqno, device_name, and time_generated fields
+    - dictionary with the largest id per device (id_dict)
+    - dictionary with last fetch times per log type (last_fetch_dict)
 
+    When:
+    - filter_fetched_entries is called with the new timestamp-based filtering logic
+
+    Then:
+    - return a dictionary with entries filtered based on:
+      1. Logs with time_generated > last_fetch_time are always kept (no seqno comparison)
+      2. Logs with time_generated == last_fetch_time are kept only if seqno > last_id
+      3. Logs missing required fields (seqno, device_name, time_generated) are skipped
+      4. Correlation logs are filtered by @logid instead of seqno
+    """
+    from Panorama import LastFetchTimes, LastIDs, filter_fetched_entries
+
+    # Test case 1: Regular log types with timestamp-based filtering
     raw_entries = {
         "log_type1": [
-            {"device_name": "dummy_device1"},
-            {"device_name": "dummy_device1", "seqno": "000000002"},
-            {"device_name": "dummy_device2", "seqno": "000000001"},
+            # Missing time_generated - should be skipped
+            {"device_name": "dummy_device1", "seqno": "000000001"},
+            # time_generated > last_fetch_time - should be kept regardless of seqno
+            {"device_name": "dummy_device1", "seqno": "000000002", "time_generated": "2022-01-01 14:00:00"},
+            # time_generated == last_fetch_time, seqno > last_id - should be kept
+            {"device_name": "dummy_device2", "seqno": "000000002", "time_generated": "2022-01-01 13:00:00"},
+            # time_generated == last_fetch_time, seqno <= last_id - should be filtered out
+            {"device_name": "dummy_device2", "seqno": "000000001", "time_generated": "2022-01-01 13:00:00"},
         ],
-        "log_type2": [{"device_name": "dummy_device3", "seqno": "000000004"}, {"seqno": "000000007"}],
+        "log_type2": [
+            # New log type with no previous fetch - should be kept
+            {"device_name": "dummy_device3", "seqno": "000000004", "time_generated": "2022-01-01 12:00:00"},
+            # Missing device_name - should be skipped
+            {"seqno": "000000007", "time_generated": "2022-01-01 12:00:00"},
+        ],
     }
-    id_dict = {"log_type1": {"dummy_device1": "000000003", "dummy_device2": "000000000"}}
-    res = filter_fetched_entries(raw_entries, id_dict)
+
+    id_dict = LastIDs(
+        log_type1={"dummy_device1": "000000003", "dummy_device2": "000000001"}  # type: ignore[typeddict-item]
+    )
+
+    last_fetch_dict = LastFetchTimes(
+        log_type1="2022-01-01 13:00:00"  # type: ignore[typeddict-item]
+    )
+
+    res = filter_fetched_entries(raw_entries, id_dict, last_fetch_dict)
+
+    # Expected: only entries that pass the new filtering logic
     assert res == {
-        "log_type1": [{"device_name": "dummy_device2", "seqno": "000000001"}],
-        "log_type2": [{"device_name": "dummy_device3", "seqno": "000000004"}],
+        "log_type1": [
+            # Entry with time_generated > last_fetch_time (14:00 > 13:00)
+            {"device_name": "dummy_device1", "seqno": "000000002", "time_generated": "2022-01-01 14:00:00"},
+            # Entry with time_generated == last_fetch_time and seqno (2) > last_id (1)
+            {"device_name": "dummy_device2", "seqno": "000000002", "time_generated": "2022-01-01 13:00:00"},
+        ],
+        "log_type2": [
+            # New log type - all valid entries are kept
+            {"device_name": "dummy_device3", "seqno": "000000004", "time_generated": "2022-01-01 12:00:00"}
+        ],
+    }
+
+    # Test case 2: Correlation log type (uses @logid instead of seqno)
+    corr_entries = {
+        "Correlation": [
+            {"@logid": "1", "match_time": "2022-01-01 12:00:00"},
+            {"@logid": "2", "match_time": "2022-01-01 13:00:00"},
+            {"@logid": "3", "match_time": "2022-01-01 14:00:00"},
+        ]
+    }
+
+    corr_id_dict = LastIDs(Correlation=1)  # type: ignore[typeddict-item]
+    corr_last_fetch_dict = LastFetchTimes()
+
+    corr_res = filter_fetched_entries(corr_entries, corr_id_dict, corr_last_fetch_dict)
+
+    # Expected: only entries with @logid > 1
+    assert corr_res == {
+        "Correlation": [
+            {"@logid": "2", "match_time": "2022-01-01 13:00:00"},
+            {"@logid": "3", "match_time": "2022-01-01 14:00:00"},
+        ]
     }
 
 

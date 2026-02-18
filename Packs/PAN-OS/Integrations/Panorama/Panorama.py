@@ -15870,41 +15870,103 @@ def find_largest_id_per_device(incident_entries: List[Dict[str, Any]]) -> Dict[s
     return new_largest_id
 
 
-def filter_fetched_entries(entries_dict: dict[str, list[dict[str, Any]]], id_dict: LastIDs):
+def filter_fetched_entries(entries_dict: dict[str, list[dict[str, Any]]], id_dict: LastIDs, last_fetch_dict: LastFetchTimes):
     """
-    This function removes entries that have already been fetched in the previous fetch cycle.
+    This function removes entries(logs) that have already been fetched in the previous fetch cycle.
+    The duplication logic implemented per log type - per device.
+
+    Panorama `seqno` is assumed to be monotonically increasing, where higher values indicate newer logs. (per device)
+    In rare cases, this assumption breaks due to Panorama’s internal threading and queue-based log handling.
+    The previous duplication logic compared only the `seqno` field to identify duplicates.
+    As a result, any log with a smaller `seqno` than the largest value seen in the previous fetch, was considered older,
+    treated as a duplicate, and filtered out.
+
+    Before fetching logs, the function add_time_filter_to_query_parameter builds a fetch query by adding
+    time_generated range to the user configured query: <user_query> and <time_key> geq <last_fetch_time>
+    Because geq is used, duplicate logs can be fetched only when time_generated is equal to last_fetch_time.
+
+    Therefore, the current logic:
+    - Accepts all logs with `time_generated > last_fetch_time` without `seqno` comparison.
+    - Applies `seqno` based duplication checks only to logs generated exactly at last_fetch_time
+    Priority: Timestamp is the primary filter. ID is only used for deduplication within the same second.
+    Anomaly Fix: Logs with newer timestamps are *always* accepted, regardless of their ID.
+    Trade-off: To avoid massive duplication, we must drop logs that arrive late with the *exact same timestamp* and a smaller ID. This is a rare edge case.
+
+    Previous version:
+    IF (Log_ID > largest_id):
+        -> KEEP (It's a new)
+    New version:
+    IF (Log_Time > last_time)
+        -> KEEP (It's a new log from a later time)
+    ELSE IF (Log_Time == last_time) AND (Log_ID > largest_id)
+        -> KEEP (It's a new log from the same second, but with a higher ID)
+    ELSE
+        -> DROP (because Log_ID > largest_id)
+
     Args:
         entries_dict (Dict[str, List[Dict[str,Any]]]): a dictionary of log type and its raw entries
         id_dict (LastIDs): a dictionary of devices and their largest id so far
+        last_fetch_dict (LastFetchTimes): last fetch dictionary
     Returns:
         new_entries_dict (Dict[str, List[Dict[str,Any]]]): a dictionary of log type and its raw entries without entries that have already been fetched in the previous fetch cycle
     """
+    debug_prefix = "[filter_fetched_entries] "
     new_entries_dict: dict = {}
     for log_type, logs in entries_dict.items():
-        demisto.debug(f"Filtering {log_type} type enties, recived {len(logs)} to filter.")
+        demisto.debug(f"{debug_prefix}Filtering {log_type} type entries, received {len(logs)} to filter.")
         if log_type == "Correlation":
             # use dict_safe_get because 'Correlation' can have a dict from older versions
             last_log_id = dict_safe_get(id_dict, ["Correlation"], 0, int, False)
-            demisto.debug(f"{last_log_id=}")
+            demisto.debug(f"{debug_prefix}{last_log_id=}")
             first_new_log_index = next(
                 (i for i, log in enumerate(logs) if int(log.get("@logid")) > last_log_id),  # type: ignore
                 len(logs),
             )
-            demisto.debug(f"{first_new_log_index=}")
+            demisto.debug(f"{debug_prefix}{first_new_log_index=}")
             new_entries_dict["Correlation"] = logs[first_new_log_index:]
         else:
             for log in logs:
+                seqno = arg_to_number(log.get("seqno"))
                 device_name = log.get("device_name", "")
-                current_log_id = arg_to_number(log.get("seqno"))
-                # get the latest id for that device, if that device is not in the dict, set the id to 0
-                latest_id_per_device = cast(int, dict_safe_get(id_dict, (log_type, device_name), 0))
-                demisto.debug(f"{latest_id_per_device=} for {log_type=} and {device_name=}")
-                if not current_log_id or not device_name:
-                    demisto.debug(f"Could not parse seqno or device name from log: {log}, skipping.")
+                time_generated = dateparser.parse(
+                    log.get("time_generated", ""),
+                    settings={"TIMEZONE": "UTC"},
+                )
+
+                if seqno is None or not device_name or not time_generated:
+                    demisto.debug(f"{debug_prefix}Could not parse seqno, device_name or time_generated fields.\nSkipping{log=}")
                     continue
-                if current_log_id > arg_to_number(latest_id_per_device):  # type: ignore
+
+                log_info = f"Log info: {seqno=}, {device_name=}, {str(time_generated)=}"
+
+                last_fetch_time = dateparser.parse(
+                    last_fetch_dict.get(log_type, ""),  # type: ignore
+                    settings={"TIMEZONE": "UTC"},
+                )
+
+                # Keep the log, time_generated is after last_fetch_time, no seqno comparison is required.
+                if not last_fetch_time or (time_generated > last_fetch_time):
                     new_entries_dict.setdefault(log_type, []).append(log)
-        demisto.debug(f"Filtered {log_type} type entries, left with {len(new_entries_dict.get(log_type, []))} entries.")
+
+                # time_generated == last_fetch_time, seqno comparison is required.
+                else:
+                    latest_id_per_device = cast(int, dict_safe_get(id_dict, (log_type, device_name), 0))
+
+                    if seqno > arg_to_number(latest_id_per_device):  # type: ignore
+                        demisto.debug(
+                            f"{debug_prefix}{log_info}\nKeeping log because its seqno bigger than {latest_id_per_device=}"
+                        )
+                        new_entries_dict.setdefault(log_type, []).append(log)
+
+                    # This is the only case where an anomaly could cause new logs that aren’t duplicates to be filtered out.
+                    else:
+                        demisto.debug(
+                            f"{debug_prefix}{log_info}\nDropped log because time_generated equal to {str(last_fetch_time)=} and its seqno smaller than {latest_id_per_device=}"
+                        )
+
+        demisto.debug(
+            f"{debug_prefix}Filtered {log_type} type entries, left with {len(new_entries_dict.get(log_type, []))} entries."
+        )
 
     return new_entries_dict
 
@@ -16166,7 +16228,9 @@ def fetch_incidents(
     update_offset_dict(incident_entries_dict, last_fetch_dict, offset_dict)
 
     # remove duplicated incidents from incident_entries_dict
-    unique_incident_entries_dict = filter_fetched_entries(entries_dict=incident_entries_dict, id_dict=last_id_dict)  # type: ignore[arg-type]
+    unique_incident_entries_dict = filter_fetched_entries(
+        entries_dict=incident_entries_dict, id_dict=last_id_dict, last_fetch_dict=last_fetch_dict
+    )  # type: ignore[arg-type]
 
     parsed_incident_entries_list = get_parsed_incident_entries(unique_incident_entries_dict, last_fetch_dict, last_id_dict)  # type: ignore[arg-type]
 
