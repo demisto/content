@@ -1,5 +1,5 @@
 import json
-from datetime import timedelta
+from datetime import timedelta, UTC
 
 import pytest
 from pytest_mock import MockerFixture
@@ -9585,8 +9585,8 @@ def test_get_email_campaign_consolidated_forensic_enrichment_command_with_natura
     mocker.patch.object(mock_client, "get_email_campaign_consolidated_forensic_enrichment", return_value=mock_response)
     mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Mock table")
 
-    # Mock get_days_timeframe to return 30 days directly
-    mocker.patch("CortexPlatformCore.get_days_timeframe", return_value=30)
+    # Mock timeframe_to_days to return 30 days directly
+    mocker.patch("CortexPlatformCore.timeframe_to_days", return_value=30)
 
     args = {
         "internet_message_id": "<test@example.com>",
@@ -9603,21 +9603,19 @@ def test_get_email_campaign_consolidated_forensic_enrichment_command_with_natura
 def test_get_email_campaign_consolidated_forensic_enrichment_command_invalid_days_timeframe(mocker: MockerFixture):
     """
     Given:
-        A mocked client and arguments with invalid from_time (results in negative or zero days).
+        A mocked client and arguments with invalid from_time that cannot be parsed.
     When:
         The get_email_campaign_consolidated_forensic_enrichment_command function is called.
     Then:
-        A ValueError is raised from get_days_timeframe.
+        A ValueError is raised from arg_to_datetime indicating invalid date format.
     """
     from CortexPlatformCore import get_email_campaign_consolidated_forensic_enrichment_command, Client
 
     mock_client = Client(base_url="", headers={})
 
-    # Test with invalid timeframe that can't be parsed
-    mocker.patch("CortexPlatformCore.FilterBuilder._prepare_time_range", return_value=(None, None))
-
+    # Test with invalid timeframe that can't be parsed by arg_to_datetime
     args = {"internet_message_id": "<test@example.com>", "from_time": "invalid"}
-    with pytest.raises(ValueError, match="Could not determine start time"):
+    with pytest.raises(ValueError, match=r'"invalid" is not a valid date'):
         get_email_campaign_consolidated_forensic_enrichment_command(mock_client, args)
 
 
@@ -10015,9 +10013,9 @@ def test_timeframe_to_days(mocker: MockerFixture, timeframe_input, expected_days
         The correct number of days is returned.
     """
     from CortexPlatformCore import timeframe_to_days
-    from datetime import datetime, timezone
+    from datetime import datetime
 
-    now = datetime(2026, 2, 18, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 2, 18, 12, 0, 0, tzinfo=UTC)
     parsed = now - timedelta(days=expected_days)
     mocker.patch("CortexPlatformCore.arg_to_datetime", return_value=parsed)
     mocker.patch("CortexPlatformCore.datetime")
@@ -10040,7 +10038,7 @@ def test_timeframe_to_days_invalid_input(mocker: MockerFixture):
 
     mocker.patch("CortexPlatformCore.arg_to_datetime", return_value=None)
 
-    with pytest.raises(DemistoException, match='Failed to parse timeframe'):
+    with pytest.raises(DemistoException, match="Failed to parse timeframe"):
         timeframe_to_days("invalid_timeframe")
 
 
@@ -10054,9 +10052,9 @@ def test_timeframe_to_days_minimum_one_day(mocker: MockerFixture):
         The minimum value of 1 is returned.
     """
     from CortexPlatformCore import timeframe_to_days
-    from datetime import datetime, timezone
+    from datetime import datetime
 
-    now = datetime(2026, 2, 18, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 2, 18, 12, 0, 0, tzinfo=UTC)
     parsed = now - timedelta(hours=1)
     mocker.patch("CortexPlatformCore.arg_to_datetime", return_value=parsed)
     mocker.patch("CortexPlatformCore.datetime")

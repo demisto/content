@@ -4623,23 +4623,6 @@ def get_case_resolution_statuses(client, args):
     )
 
 
-def get_days_timeframe(from_time: str) -> int:
-    SECONDS_IN_A_DAY = 86400
-    MILLISECONDS_IN_A_SECOND = 1000
-
-    start_time_ms, _ = FilterBuilder._prepare_time_range(from_time, None)
-
-    if start_time_ms is None:
-        raise ValueError("Could not determine start time")
-
-    now_ms = int(datetime.now().timestamp() * 1000)
-
-    diff_ms = now_ms - start_time_ms
-    days = diff_ms / (SECONDS_IN_A_DAY * MILLISECONDS_IN_A_SECOND)
-
-    return int(days)
-
-
 def get_email_campaign_consolidated_forensic_enrichment_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get consolidated forensic enrichment for an email campaign.
@@ -4656,7 +4639,7 @@ def get_email_campaign_consolidated_forensic_enrichment_command(client: Client, 
         CommandResults object with consolidated forensic enrichment data
     """
     internet_message_id = args.get("internet_message_id", "")
-    days_timeframe = get_days_timeframe(args.get("from_time", "last 30 days"))
+    days_timeframe = timeframe_to_days(args.get("from_time", "last 30 days"))
     demisto.debug(f"Timeframe set to {days_timeframe} days.")
     response = client.get_email_campaign_consolidated_forensic_enrichment(internet_message_id, days_timeframe)
 
