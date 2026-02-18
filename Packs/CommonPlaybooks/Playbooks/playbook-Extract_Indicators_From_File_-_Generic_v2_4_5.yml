@@ -903,6 +903,15 @@ tasks:
                 value:
                   simple: docx
               ignorecase: true
+            - operator: containsString
+              left:
+                value:
+                  simple: inputs.File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: CDFV2
+              ignorecase: true
           - - operator: isNotEqualString
               left:
                 value:
@@ -1024,6 +1033,32 @@ tasks:
               right:
                 value:
                   simple: Encrypted
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+            - operator: isNotEqualString
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: xlsb
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+            - operator: isNotEqualString
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: docm
           accessor: EntryID
           transformers:
           - operator: uniq

@@ -218,10 +218,10 @@ Regarding mirroring, if you have already imported an incident and the mirroring 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### xdr-get-incidents
+### xdr-get-incidents (Deprecated)
 
 ***
-Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
+This command is deprecated please use xdr-case-list instead. Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
 If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported.
 
 ##### Required Permissions
@@ -527,10 +527,10 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 
 >**No entries.**
 
-### xdr-update-incident
+### xdr-update-incident (Deprecated)
 
 ***
-Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
+This command is deprecated please use xdr-case-update instead. Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
 
 ##### Required Permissions
 
@@ -4122,3 +4122,404 @@ Gets a list of existing API keys.
 | PaloAltoNetworksXDR.APIKeyData.id | String | The API key ID. |
 | PaloAltoNetworksXDR.APIKeyData.roles | String | The roles associated with the API key. |
 | PaloAltoNetworksXDR.APIKeyData.expiration | Date | The expiration date of the API key. |
+
+### xdr-bioc-list
+
+***
+Returns a list of BIOCs.
+
+#### Base Command
+
+`xdr-bioc-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The BIOC name to filter by. Can filter by only one name at a time. | Optional |
+| severity | The BIOC severity to filter by. Possible values are: info, low, medium, high, critical. | Optional |
+| type | The BIOC type to filter by. Possible values are: other, persistence, evasion, tampering, file_type_obfuscation, privilege_escalation, credential_access, lateral_movement, execution, collection, exfiltration, infiltration, dropper, file_privilege_manipulation, reconnaissance, discovery. | Optional |
+| is_xql | Whether the BIOC is XQL. Possible values are: true, false. | Optional |
+| comment | The BIOC comment to filter by. | Optional |
+| status | The BIOC status to filter by. Possible values are: enabled, disabled. | Optional |
+| indicator | The BIOC indicator to filter by. | Optional |
+| mitre_technique_id_and_name | The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']. | Optional |
+| mitre_tactic_id_and_name | The MITRE tactic ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']. | Optional |
+| extra_data | Whether to return extended data. Possible values are: true, false. | Optional |
+| limit | Maximum number of results to return. | Optional |
+| page_size | Page size. | Optional |
+| page | Page number. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.BIOC.rule_id | String | BIOC rule ID. |
+| PaloAltoNetworksXDR.BIOC.name | String | BIOC name. |
+| PaloAltoNetworksXDR.BIOC.type | String | BIOC type. |
+| PaloAltoNetworksXDR.BIOC.severity | String | BIOC severity. |
+| PaloAltoNetworksXDR.BIOC.status | String | BIOC status. |
+| PaloAltoNetworksXDR.BIOC.is_xql | Boolean | Whether the BIOC is XQL. |
+| PaloAltoNetworksXDR.BIOC.comment | String | The BIOC comment. |
+| PaloAltoNetworksXDR.BIOC.indicator | String | The BIOC indicator. |
+
+### xdr-bioc-create
+
+***
+Creates a new BIOC.
+
+#### Base Command
+
+`xdr-bioc-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The BIOC name. | Required |
+| severity | The BIOC severity. Possible values are: info, low, medium, high, critical. | Required |
+| type | The BIOC type. Possible values are: other, persistence, evasion, tampering, file_type_obfuscation, privilege_escalation, credential_access, lateral_movement, execution, collection, exfiltration, infiltration, dropper, file_privilege_manipulation, reconnaissance, discovery. | Optional |
+| is_xql | Whether the new BIOC is XQL. Possible values are: true, false. | Optional |
+| comment | The BIOC comment. | Optional |
+| status | The BIOC status. Possible values are: enabled, disabled. | Optional |
+| indicator | The BIOC indicator,<br/>for example: '{\"runOnCGO\":true,\"investigationType\":\"FILE_EVENT\",\"investigation\":{\"FILE_EVENT\":{\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"action_file_name\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"testfile.exe\"}]}}}}'.<br/>For more information, refer to the documentation https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs. | Required |
+| mitre_technique_id_and_name | The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']. | Optional |
+| mitre_tactic_id_and_name | The MITRE tactic ID and name. Must be in format 'ID - Name', for example: ['TA0001 - Initial Access']. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.BIOC.rule_id | String | BIOC ID. |
+
+### xdr-bioc-update
+
+***
+Updates an existing BIOC.
+
+#### Base Command
+
+`xdr-bioc-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_id | BIOC rule ID. | Required |
+| name | BIOC name. | Required |
+| severity | BIOC severity. Possible values are: info, low, medium, high, critical. | Required |
+| type | BIOC type. Possible values are: other, persistence, evasion, tampering, file_type_obfuscation, privilege_escalation, credential_access, lateral_movement, execution, collection, exfiltration, infiltration, dropper, file_privilege_manipulation, reconnaissance, discovery. | Optional |
+| is_xql | Whether the BIOC is XQL. Possible values are: true, false. | Optional |
+| comment | BIOC comment. | Optional |
+| status | BIOC status. Possible values are: enabled, disabled. | Optional |
+| indicator | The BIOC indicator,<br/>for example: '{\"runOnCGO\":true,\"investigationType\":\"FILE_EVENT\",\"investigation\":{\"FILE_EVENT\":{\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"action_file_name\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"testfile.exe\"}]}}}}'.<br/>For more information, refer to the documentation https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs. | Required |
+| mitre_technique_id_and_name | The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']. | Optional |
+| mitre_tactic_id_and_name | The MITRE tactic ID and name. Must be in format 'ID - Name', for example: ['TA0001 - Initial Access']. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.BIOC.rule_id | String | BIOC ID. |
+
+### xdr-bioc-delete
+
+***
+Deletes a BIOC.
+
+#### Base Command
+
+`xdr-bioc-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | BIOC name. | Optional |
+| severity | BIOC severity. Possible values are: info, low, medium, high, critical. | Optional |
+| type | BIOC type. Possible values are: other, persistence, evasion, tampering, file_type_obfuscation, privilege_escalation, credential_access, lateral_movement, execution, collection, exfiltration, infiltration, dropper, file_privilege_manipulation, reconnaissance, discovery. | Optional |
+| is_xql | Whether the BIOC is XQL. Possible values are: true, false. | Optional |
+| comment | BIOC comment. | Optional |
+| indicator | BIOC indicator. | Optional |
+| mitre_technique_id_and_name | The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']. | Optional |
+| mitre_tactic_id_and_name | The MITRE tactic ID and name. Must be in format 'ID - Name', for example: ['TA0001 - Initial Access']. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### xdr-correlation-rule-list
+
+***
+Returns a list of correlation rules.
+
+#### Base Command
+
+`xdr-correlation-rule-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Correlation rule name. | Optional |
+| severity | Correlation rule severity. Possible values are: info, low, medium, high, critical. | Optional |
+| xql_query | Correlation rule XQL query. | Optional |
+| is_xql | Whether the correlation rule is XQL. Possible values are: true, false. | Optional |
+| dataset | Correlation rule dataset. | Optional |
+| alert_name | Alert name. | Optional |
+| alert_category | Alert category. | Optional |
+| alert_fields | Alert fields. Can be a string or a dictionary. | Optional |
+| alert_domain | Alert domain. | Optional |
+| filter_json | Filter JSON. | Optional |
+| extra_data | Whether to return extended view. Possible values are: true, false. | Optional |
+| limit | Maximum number of results to return. | Optional |
+| page_size | Page size. | Optional |
+| page | Page number. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.CorrelationRule.suppression_duration | String | The duration for which alerts are suppressed. |
+| PaloAltoNetworksXDR.CorrelationRule.alert_category | String | The category of the alert \(e.g., DROPPER\). |
+| PaloAltoNetworksXDR.CorrelationRule.mitre_defs | Unknown | MITRE ATT&amp;CK definitions associated with the rule. |
+| PaloAltoNetworksXDR.CorrelationRule.simple_schedule | String | The frequency at which the rule runs in a human-readable format. |
+| PaloAltoNetworksXDR.CorrelationRule.mapping_strategy | String | The strategy used for field mapping. |
+| PaloAltoNetworksXDR.CorrelationRule.suppression_fields | String | Fields used to determine alert suppression. |
+| PaloAltoNetworksXDR.CorrelationRule.alert_domain | String | The security domain the alert belongs to. |
+| PaloAltoNetworksXDR.CorrelationRule.crontab | String | The cron expression for the rule execution schedule. |
+| PaloAltoNetworksXDR.CorrelationRule.search_window | String | The time window the query searches across. |
+| PaloAltoNetworksXDR.CorrelationRule.user_defined_severity | String | Custom severity level defined by the user. |
+| PaloAltoNetworksXDR.CorrelationRule.drilldown_query_timeframe | String | The timeframe used for drilldown queries. |
+| PaloAltoNetworksXDR.CorrelationRule.user_defined_category | String | Custom category defined by the user. |
+| PaloAltoNetworksXDR.CorrelationRule.lookup_mapping | String | Mapping details for lookups. |
+| PaloAltoNetworksXDR.CorrelationRule.execution_mode | String | How the rule is executed, for example: SCHEDULED. |
+| PaloAltoNetworksXDR.CorrelationRule.name | String | The name of the correlation rule. |
+| PaloAltoNetworksXDR.CorrelationRule.is_enabled | Boolean | Whether the correlation rule is currently active. |
+| PaloAltoNetworksXDR.CorrelationRule.investigation_query_link | String | The query used for further investigation. |
+| PaloAltoNetworksXDR.CorrelationRule.alert_name | String | The specific name assigned to the generated alert. |
+| PaloAltoNetworksXDR.CorrelationRule.suppression_enabled | Boolean | Whether suppression is enabled for this rule. |
+| PaloAltoNetworksXDR.CorrelationRule.action | String | The action taken when the rule triggers, for example: ALERTS. |
+| PaloAltoNetworksXDR.CorrelationRule.dataset | String | The dataset the rule queries. |
+| PaloAltoNetworksXDR.CorrelationRule.alert_description | String | Detailed description of the generated alert. |
+| PaloAltoNetworksXDR.CorrelationRule.timezone | String | The timezone used for the rule schedule. |
+| PaloAltoNetworksXDR.CorrelationRule.xql_query | String | The XQL query string executed by the rule. |
+| PaloAltoNetworksXDR.CorrelationRule.alert_fields | Unknown | Specific fields included in the alert output. |
+| PaloAltoNetworksXDR.CorrelationRule.description | String | General description of the correlation rule. |
+| PaloAltoNetworksXDR.CorrelationRule.alert_type | String | The type of alert generated. |
+| PaloAltoNetworksXDR.CorrelationRule.severity | String | The severity level of the rule. |
+| PaloAltoNetworksXDR.CorrelationRule.rule_id | Number | The unique identifier for the correlation rule. |
+
+### xdr-correlation-rule-create
+
+***
+Creates a new correlation rule.
+
+#### Base Command
+
+`xdr-correlation-rule-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The correlation rule name. | Required |
+| severity | The correlation rule severity. Example: severity=low. Possible values are: info, low, medium, high, critical. | Required |
+| xql_query | The correlation rule XQL query. Example: xql_query="dataset = xdr_data \| limit 1". | Required |
+| is_enabled | Whether the rule is enabled. Example: is_enabled=true. Possible values are: true, false. | Required |
+| alert_category | The alert category. Example: alert_category=dropper. Possible values are: other, persistence, evasion, tampering, file_type_obfuscation, privilege_escalation, credential_access, lateral_movement, execution, collection, exfiltration, infiltration, dropper, file_privilege_manipulation, reconnaissance, discovery. | Required |
+| execution_mode | The rule execution mode. Example: execution_mode=scheduled. Possible values are: scheduled, real_time. | Required |
+| timezone | The correlation rule timezone. Example: timezone="Asia/Jerusalem". | Required |
+| mapping_strategy | The rule mapping strategy. Example: mapping_strategy=auto. Possible values are: auto, custom. | Required |
+| description | The correlation rule description. | Optional |
+| alert_name | The alert name. | Optional |
+| alert_description | The alert description. | Optional |
+| alert_fields | Alert fields (string or dictionary). | Optional |
+| search_window | The search window timeframe. Example: search_window="1 hours". | Optional |
+| schedule | The correlation rule schedule. Example: schedule="10 minutes". | Optional |
+| schedule_linux | Linux scheduling for the rule. Example: schedule_linux="*/10* ** *". | Optional |
+| suppression_enabled | Whether suppression is enabled. Possible values are: true, false. | Optional |
+| suppression_duration | Duration of correlation rule suppression. | Optional |
+| suppression_fields | Suppression fields. | Optional |
+| dataset | The correlation rule dataset. Example: dataset=alerts. | Required |
+| user_defined_severity | User-defined severity. | Optional |
+| user_defined_category | User-defined category. | Optional |
+| mitre_defs_json | MITRE definitions. For example: '{"TA0005 - Defense Evasion": ["T1014 - Rootkit"]}'. | Optional |
+| investigation_query_link | Investigation query link. | Optional |
+| drilldown_query_timeframe | The drilldown query timeframe. Example: drilldown_query_timeframe="ALERT". | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.CorrelationRule.rule_id | String | Correlation rule ID. |
+
+### xdr-correlation-rule-update
+
+***
+Updates an existing correlation rule.
+
+#### Base Command
+
+`xdr-correlation-rule-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_id | Correlation rule ID. | Required |
+| name | The correlation rule name. | Required |
+| severity | The correlation rule severity. Example: severity=low. Possible values are: info, low, medium, high, critical. | Required |
+| xql_query | The correlation rule XQL query. Example: xql_query="dataset = xdr_data \| limit 1". | Required |
+| is_enabled | Whether the rule is enabled. Example: is_enabled=true. Possible values are: true, false. | Required |
+| alert_category | The alert category. Example: alert_category=dropper. Possible values are: other, persistence, evasion, tampering, file_type_obfuscation, privilege_escalation, credential_access, lateral_movement, execution, collection, exfiltration, infiltration, dropper, file_privilege_manipulation, reconnaissance, discovery. | Required |
+| execution_mode | The rule execution mode. Example: execution_mode=scheduled. Possible values are: scheduled, real_time. | Required |
+| timezone | The correlation rule timezone. Example: timezone="Asia/Jerusalem". | Required |
+| mapping_strategy | The rule mapping strategy. Example: mapping_strategy=auto. Possible values are: auto, custom. | Required |
+| description | The correlation rule description. | Optional |
+| alert_name | The alert name. | Optional |
+| alert_description | The alert description. | Optional |
+| alert_fields | Alert fields (string or dictionary). | Optional |
+| search_window | The search window timeframe. Example: search_window="1 hours". | Optional |
+| schedule | The correlation rule schedule. Example: schedule="10 minutes". | Optional |
+| schedule_linux | Linux scheduling for the rule. Example: schedule_linux="*/10* ** *". | Optional |
+| suppression_enabled | Whether suppression is enabled. Possible values are: true, false. | Optional |
+| suppression_duration | Duration of correlation rule suppression. | Optional |
+| suppression_fields | Suppression fields. | Optional |
+| dataset | The correlation rule dataset. Example: dataset=alerts. | Required |
+| user_defined_severity | User-defined severity. | Optional |
+| user_defined_category | User-defined category. | Optional |
+| mitre_defs_json | MITRE definitions. For example: '{"TA0005 - Defense Evasion": ["T1014 - Rootkit"]}'. | Optional |
+| investigation_query_link | Investigation query link. | Optional |
+| drilldown_query_timeframe | The drilldown query timeframe. Example: drilldown_query_timeframe="ALERT". | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.CorrelationRule.rule_id | String | Correlation rule ID. |
+
+### xdr-correlation-rule-delete
+
+***
+Deletes correlation rules.
+
+#### Base Command
+
+`xdr-correlation-rule-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_id | Correlation rule ID. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### xdr-case-list
+
+***
+Returns a list of cases based on the specified filters.
+
+#### Base Command
+
+`xdr-case-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| case_id | A comma-separated list of case IDs to filter by. | Optional |
+| case_domain | A comma-separated list of case domains to filter by. | Optional |
+| severity | A comma-separated list of severities to filter by. | Optional |
+| created_before | Filters cases that were created before this date. Supports natural language expressions such as "one year". | Optional |
+| created_after | Filters cases that were created after this date. Supports natural language expressions such as "one year". | Optional |
+| status | A comma-separated list of statuses to filter by. | Optional |
+| sort_field | The field by which to sort the results. Possible values are: case_id, severity, creation_time. | Optional |
+| sort_order | The order in which to sort the results. Possible values are: asc, desc. | Optional |
+| limit | Maximum number of cases to return. | Optional |
+| page_size | Page size for pagination. | Optional |
+| page | Page number for pagination. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.Case.case_id | String | The unique identifier of the case. |
+| PaloAltoNetworksXDR.Case.case_name | String | The name of the case. |
+| PaloAltoNetworksXDR.Case.severity | String | The severity of the case. |
+| PaloAltoNetworksXDR.Case.creation_time | String | The creation time of the case. |
+| PaloAltoNetworksXDR.Case.modification_time | String | The modification time of the case. |
+| PaloAltoNetworksXDR.Case.status_progress | String | The progress status of the case \(e.g., New, Under Investigation\). |
+| PaloAltoNetworksXDR.Case.description | String | A detailed description of the case and involved entities. |
+| PaloAltoNetworksXDR.Case.low_severity_issue_count | Number | The number of low severity issues associated with the case. |
+| PaloAltoNetworksXDR.Case.med_severity_issue_count | Number | The number of medium severity issues associated with the case. |
+| PaloAltoNetworksXDR.Case.case_domain | String | The security domain of the case. |
+| PaloAltoNetworksXDR.Case.xdr_url | String | The direct URL to the incident view in the XDR console. |
+| PaloAltoNetworksXDR.Case.is_blocked | Boolean | Indicates if the threat was blocked. |
+| PaloAltoNetworksXDR.Case.aggregated_score | Number | The overall risk score calculated for the case. |
+| PaloAltoNetworksXDR.Case.host_count | Number | The number of hosts involved in the case. |
+| PaloAltoNetworksXDR.Case.user_count | Number | The number of users involved in the case. |
+| PaloAltoNetworksXDR.Case.wildfire_hits | Number | The number of WildFire malware hits associated with the case. |
+| PaloAltoNetworksXDR.Case.tags | String | A list of tags associated with the case. |
+| PaloAltoNetworksXDR.Case.starred | Boolean | Whether the case has been starred/flagged. |
+
+### xdr-case-update
+
+***
+Updates an existing case with the specified details.
+
+#### Base Command
+
+`xdr-case-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| case_id | The ID of the case to update. | Required |
+| status | The status to set for the case. if the status is updated to "resolved", resolve_reason must be provided. Possible values are: new, under_investigation, resolved. | Optional |
+| resolve_reason | The reason for resolving the case. Possible values are: resolved_known_issue, resolved_duplicate, resolved_false_positive, resolved_other. | Optional |
+| resolve_comment | A comment explaining the resolution. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### xdr-case-artifact-list
+
+***
+Retrieves a list of artifacts for a specific case.
+
+#### Base Command
+
+`xdr-case-artifact-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| case_id | The ID of the case for which to retrieve artifacts. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.CaseNetworkArtifact.case_id | String | The ID of the case associated with the network artifact. |
+| PaloAltoNetworksXDR.CaseNetworkArtifact.network_remote_ip | String | The remote IP address associated with the artifact. |
+| PaloAltoNetworksXDR.CaseNetworkArtifact.network_remote_port | Number | The remote port used in the network connection. |
+| PaloAltoNetworksXDR.CaseNetworkArtifact.alert_count | Number | Number of alerts associated with this network artifact. |
+| PaloAltoNetworksXDR.CaseNetworkArtifact.type | String | The type of network artifact \(e.g., IP\). |
+| PaloAltoNetworksXDR.CaseNetworkArtifact.is_manual | Boolean | Indicates if the artifact was added manually. |
+| PaloAltoNetworksXDR.CaseFileArtifact.case_id | String | The ID of the case associated with the file artifact. |
+| PaloAltoNetworksXDR.CaseFileArtifact.file_name | String | The name of the file. |
+| PaloAltoNetworksXDR.CaseFileArtifact.file_sha256 | String | The SHA256 hash of the file. |
+| PaloAltoNetworksXDR.CaseFileArtifact.file_wildfire_verdict | String | The verdict from WildFire \(e.g., MALWARE, BENIGN\). |
+| PaloAltoNetworksXDR.CaseFileArtifact.is_malicious | Boolean | Whether the file has been identified as malicious. |
+| PaloAltoNetworksXDR.CaseFileArtifact.is_process | Boolean | Indicates if the file was a running process. |
+| PaloAltoNetworksXDR.CaseFileArtifact.file_signature_vendor_name | String | The vendor name from the file signature. |
+| PaloAltoNetworksXDR.CaseFileArtifact.file_signature_status | String | The status of the digital signature \(e.g., SIGNATURE_SIGNED\). |
+| PaloAltoNetworksXDR.CaseFileArtifact.alert_count | Number | Number of alerts associated with this file artifact. |
+| PaloAltoNetworksXDR.CaseFileArtifact.low_confidence | Boolean | Indicates if the detection confidence is low. |

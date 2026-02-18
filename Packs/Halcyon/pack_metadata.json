@@ -1,0 +1,25 @@
+{
+    "name": "Halcyon",
+    "description": "Halcyon is a device management platform that helps organizations monitor, control, and secure their network of devices. It provides centralized tools for overseeing hardware and software inventory, deploying updates, enforcing security policies, and ensuring compliance across device environments.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2026-02-02T00:00:00Z",
+    "categories": [
+        "Endpoint"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "halcyon",
+        "device management",
+        "endpoint security"
+    ],
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "defaultDataSource": "Halcyon"
+}

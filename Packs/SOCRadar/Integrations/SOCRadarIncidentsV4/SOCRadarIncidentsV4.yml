@@ -44,7 +44,7 @@ configuration:
   additionalinfo: 'Maximum number of incidents to create per cycle. Recommended: 200 for stability. The actual number fetched depends on the time window and available alarms.'
 - display: Status Filter
   name: status
-  type: 15
+  type: 16
   required: false
   section: Collect
   options:
@@ -59,6 +59,7 @@ configuration:
   section: Collect
   options:
   - LOW
+  - INFO
   - MEDIUM
   - HIGH
   - CRITICAL
@@ -81,12 +82,24 @@ configuration:
   required: false
   section: Collect
   additionalinfo: Comma-separated list of alarm main types to filter (e.g., "Brand Protection,Attack Surface Management")
+- display: Alarm Main Types (Exclude)
+  name: excluded_alarm_main_types
+  type: 0
+  required: false
+  section: Collect
+  additionalinfo: Comma-separated list of alarm main types to exclude (e.g., "Brand Protection,Attack Surface Management")
 - display: Alarm Sub Types
   name: alarm_sub_types
   type: 0
   required: false
   section: Collect
   additionalinfo: Comma-separated list of alarm sub types to filter (e.g., "Impersonating Domain,Stolen Credential")
+- display: Alarm Sub Types (Exclude)
+  name: excluded_alarm_sub_types
+  type: 0
+  required: false
+  section: Collect
+  additionalinfo: Comma-separated list of alarm sub types to exclude (e.g., "Impersonating Domain,Stolen Credential")
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -131,6 +144,9 @@ script:
     - name: comments
       description: Optional comments explaining the status change.
       required: false
+    - name: company_id
+      description: Optional company_id to specify company.
+      required: false
     outputs:
     - contextPath: SOCRadar.Alarm.ID
       description: Alarm ID.
@@ -149,6 +165,9 @@ script:
       description: Optional comments explaining why this is a false positive.
       required: false
       defaultValue: False positive
+    - name: company_id
+      description: Optional company_id to specify company.
+      required: false
     outputs:
     - contextPath: SOCRadar.Alarm.ID
       description: Alarm ID.
@@ -167,6 +186,9 @@ script:
       description: Optional comments explaining the resolution.
       required: false
       defaultValue: Resolved
+    - name: company_id
+      description: Optional company_id to specify company.
+      required: false
     outputs:
     - contextPath: SOCRadar.Alarm.ID
       description: Alarm ID.
@@ -187,20 +209,47 @@ script:
     - name: comment
       description: Comment text to add.
       required: true
+    - name: company_id
+      description: Optional company_id to specify company.
+      required: false
     outputs:
     - contextPath: SOCRadar.Alarm.ID
       description: Alarm ID.
       type: String
 
   - name: socradar-change-assignee
-    description: Change the assignee(s) of an alarm.
+    deprecated: true
+    description: add the assignee(s) of an alarm.
     arguments:
     - name: alarm_id
-      description: Alarm ID to change assignee for.
+      description: Alarm ID to add assignee for.
       required: true
     - name: user_emails
       description: Comma-separated list of user email addresses to assign.
       required: true
+    - name: company_id
+      description: Optional company_id to specify company.
+      required: false
+    outputs:
+    - contextPath: SOCRadar.Alarm.ID
+      description: Alarm ID.
+      type: String
+    - contextPath: SOCRadar.Alarm.Assignees
+      description: New assignees.
+      type: String
+
+  - name: socradar-add-assignee
+    description: add the assignee(s) of an alarm.
+    arguments:
+    - name: alarm_id
+      description: Alarm ID to add assignee for.
+      required: true
+    - name: user_emails
+      description: Comma-separated list of user email addresses to assign.
+      required: true
+    - name: company_id
+      description: Optional company_id to specify company.
+      required: false
     outputs:
     - contextPath: SOCRadar.Alarm.ID
       description: Alarm ID.
@@ -218,6 +267,9 @@ script:
     - name: tag
       description: Tag name to add or remove.
       required: true
+    - name: company_id
+      description: Optional company_id to specify company.
+      required: false
     outputs:
     - contextPath: SOCRadar.Alarm.ID
       description: Alarm ID.
