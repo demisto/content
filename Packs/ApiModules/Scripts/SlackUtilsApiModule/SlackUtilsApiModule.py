@@ -1,6 +1,6 @@
 import re
 import json
-from typing import Tuple, List, Dict, Any
+from typing import Any
 from slack_sdk.models.blocks import (
     SectionBlock,
     ActionsBlock,
@@ -58,7 +58,7 @@ class SlackAssistantMessages(AssistantMessages):
         return message
 
 
-def parse_to_rich_text_elements(text: str) -> List[Dict]:
+def parse_to_rich_text_elements(text: str) -> list[dict]:
     """
     Parses markdown-formatted text and converts it to Slack rich_text elements.
 
@@ -284,7 +284,7 @@ def parse_md_table_to_slack_table(md_text: str) -> dict | None:
     }
 
 
-def process_text_part(text: str) -> List[Dict]:
+def process_text_part(text: str) -> list[dict]:
     """
     Processes markdown text and converts it to Slack Block Kit blocks.
 
@@ -462,7 +462,7 @@ def process_text_part(text: str) -> List[Dict]:
     return sub_blocks
 
 
-def prepare_slack_message(message: str, message_type: str) -> Tuple[List, List]:
+def prepare_slack_message(message: str, message_type: str) -> tuple[list, list]:
     """
     Converts markdown-formatted message to Slack Block Kit format.
 
@@ -607,7 +607,7 @@ def create_agent_selection_blocks(agents: list[dict]) -> list:
     ]
 
 
-def get_feedback_buttons_block(message_id: str) -> Dict:
+def get_feedback_buttons_block(message_id: str) -> dict:
     """
     Creates a feedback buttons block for AI responses.
 
@@ -639,7 +639,7 @@ def get_feedback_buttons_block(message_id: str) -> Dict:
     }
 
 
-def get_approval_buttons_block() -> List[dict]:
+def get_approval_buttons_block() -> list[dict]:
     """
     Creates approval UI blocks for sensitive actions with warning header and Proceed/Cancel buttons.
     Includes confirmation dialog for extra safety.
