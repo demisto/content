@@ -4327,6 +4327,8 @@ def main():  # pragma: no cover
     handle_proxy()
 
     try:
+        
+        
         if command == "test-module":
             results = (
                 run_health_check_for_accounts(connector_id, CloudTypes.AWS.value, health_check)
