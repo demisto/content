@@ -3,7 +3,8 @@
 filter  properties != null
 // Fields extractions
 | alter
-    Entities = json_extract_array(properties, "$.entities"),
+    Entities = json_extract_array(properties, "$.entities")
+| alter
     azureId = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.azureID")), ","),
 	commandLine = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.commandLine")), ","),
 	address = arraymap(Entities, json_extract_scalar("@element", "$.address")),
