@@ -59,6 +59,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
+  additionalinfo: The geographic location where the connectivity test should run.
 - display: First fetch timestamp (<number> <time unit>. For example, 12 hours, 7 days)
   name: first_fetch
   defaultvalue: '1 days'
