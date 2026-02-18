@@ -193,6 +193,16 @@ configuration:
   - marketplacev2
   - platform
   required: false
+- display: Enable custom XSOAR to Defender Close Reason
+  name: custom_xsoar_to_defender_close_reason
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Enable custom Defender to XSOAR Close Reason
+  name: custom_defender_to_xsoar_close_reason
+  defaultvalue: "false"
+  type: 8
+  required: false
 - additionalinfo: Outgoing Mirroring - when selected, closing the Cortex XSOAR incident is mirrored in Microsoft 365 Defender.
   defaultvalue: 'false'
   display: Close Mirrored Microsoft 365 Defender Incidents
@@ -226,6 +236,26 @@ configuration:
   - marketplacev2
   - platform
   required: false
+- additionalinfo: 'Define how to close the mirrored incidents from Cortex XSOAR into Defender with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Cortex XSOAR close reason}={Defender close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Defender. Not following this format will result in closing the incident with a default close reason. Example: "True Positive=TruePositive-Other,False Positive=FalsePositive-Other". Refer to ../README.md for possible close-reasons - `Defender Incident Mirroring`.'
+  name: custom_xsoar_to_defender_close_reason_mapping
+  type: 0
+  section: Collect
+  advanced: true
+  hidden:
+  - marketplacev2
+  - platform
+  required: false
+  display: Custom close-reason mapping (XSOAR -> Defender mirrored incident)
+- additionalinfo: 'Define how to close the mirrored incidents from Defender into Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Defender close reason}={Cortex XSOAR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Defender. Not following this format will result in closing the incident with a default close reason. Example: “Known Issue=Resolved, Duplicate Incident=Other". Refer to ../README.md for possible close-reasons - `Defender Incident Mirroring`.'
+  name: custom_defender_to_xsoar_close_reason_mapping
+  type: 0
+  section: Collect
+  advanced: true
+  hidden:
+  - marketplacev2
+  - platform
+  required: false
+  display: Custom close-reason mapping (Defender -> XSOAR mirrored incident)
 description: Microsoft 365 Defender is a unified pre- and post-breach enterprise defense suite that natively coordinates detection, prevention, investigation, and response across endpoints, identities, email, and applications to provide integrated protection against sophisticated attacks.
 display: Microsoft 365 Defender
 name: Microsoft 365 Defender
