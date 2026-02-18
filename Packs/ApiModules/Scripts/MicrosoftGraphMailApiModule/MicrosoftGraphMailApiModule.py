@@ -729,6 +729,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
                     content_id=content_id,
                 )
                 demisto.info(f"[test] in retry number {i}, got {upload_session=}")
+                demisto.info(f'[test_to_copy] {upload_session.get("uploadUrl", "")}')
                 upload_url = upload_session.get("uploadUrl", "")
                 if not upload_url:
                     raise Exception(f"Cannot get upload URL for attachment {attachment_name}")
