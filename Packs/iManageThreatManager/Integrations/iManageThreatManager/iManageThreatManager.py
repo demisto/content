@@ -527,11 +527,11 @@ def _update_next_run_state(
         )
         return latest_alert_time, combined_ids
     else:
-        # This shouldn't happen (latest < last_fetch), but keep old state
-        demisto.debug(
-            f"Unexpected: latest_alert_time {latest_alert_time} < last_fetch_time {last_fetch_time}, " f"keeping old state"
-        )
-        return last_fetch_time, last_run_ids
+        # Workaround for API bug: API returns recently-updated events even if alert_time < start_date
+        # Combine IDs to prevent re-fetching the same events
+        demisto.debug(f"alert_time {latest_alert_time} < last_fetch_time {last_fetch_time}, combining IDs")
+        combined_ids = list(set(last_run_ids + latest_time_event_ids))
+        return last_fetch_time, combined_ids
 
 
 def _fetch_events_with_pagination(
@@ -762,7 +762,7 @@ def fetch_events_command(
         tuple: (next_run dictionary for state persistence, list of deduplicated events)
 
     Note:
-        - First fetch retrieves events from last 24 hours
+        - First fetch retrieves events from last 1 hour
         - Subsequent fetches use last_fetch timestamp from last_run
         - Events are deduplicated based on IDs from previous fetch
         - Errors for individual event types don't stop fetching other types
@@ -787,9 +787,9 @@ def fetch_events_command(
         last_run_ids = last_run.get(last_ids_key, [])
 
         if not last_fetch_time:
-            # First fetch - get events from last 24 hours
-            last_fetch_time = current_time - (24 * 3600 * 1000)
-            demisto.debug(f"First fetch for {event_type}, fetching from last 24 hours")
+            # First fetch - get events from last 1 hour
+            last_fetch_time = current_time - (1 * 3600 * 1000)
+            demisto.debug(f"First fetch for {event_type}, fetching from last 1 hour")
         else:
             demisto.debug(f"Continuing fetch for {event_type} from timestamp {last_fetch_time}")
 

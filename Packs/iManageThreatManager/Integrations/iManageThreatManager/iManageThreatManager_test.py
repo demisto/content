@@ -296,15 +296,15 @@ class TestUpdateNextRunState:
         assert set(new_ids) == {"id1", "id2", "new1"}
         assert len(new_ids) == 3  # No duplicates
 
-    def test_unexpected_older_timestamp_keeps_old_state(self):
+    def test_older_timestamp_combines_ids(self):
         """
         Given:
-            - Events with timestamp older than last_fetch_time (unexpected scenario)
+            - Events with timestamp older than last_fetch_time (API doesn't filter by start_date)
             - Previous fetch time and IDs
         When:
             - Calling _update_next_run_state
         Then:
-            - Ensure old state is preserved
+            - Ensure timestamp is preserved but IDs are combined to prevent duplicate fetches
         """
         events = [
             {"id": "old1", "alert_time": 500},
@@ -315,7 +315,7 @@ class TestUpdateNextRunState:
         new_time, new_ids = _update_next_run_state(events, last_fetch_time, last_run_ids)
 
         assert new_time == 1000
-        assert new_ids == ["id1", "id2"]
+        assert set(new_ids) == {"id1", "id2", "old1"}
 
 
 class TestAddFieldsToEvents:
