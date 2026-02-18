@@ -282,8 +282,8 @@ DEFAULT_MAX_FETCH = 50
 DEFAULT_LIMIT = 50
 ALL_OPTION = "All"
 TOKEN_EXPIRE_TIME = 3600
-ACCESS_TOKEN_DEFAULT_EXPIRE_TIME_MINUTES = 60
-REFRESH_TOKEN_DEFAULT_EXPIRE_TIME_DAYS = 60
+ACCESS_TOKEN_DEFAULT_TIMEOUT_MINUTES = 60
+REFRESH_TOKEN_DEFAULT_TIMEOUT_DAYS = 60
 TICKET_PREFIX_LEN = 3
 COMMON_TICKET_CONTEXT_FIELDS = {prop_name: prop_name for prop_name in COMMON_PROPERTIES}
 ALL_TICKETS = [
@@ -351,8 +351,12 @@ class AuthClient(BaseClient):
     Responsible for obtaining and managing authentication tokens.
     Supports two authentication modes:
         1. Basic/JWT: Uses server_url, username, and password to get an AR-JWT token.
-        2. OAuth 2.0: Uses rsso_url, client_id, client_secret, redirect_uri, and auth_code
+        2. OAuth 2.0: Uses rsso_url, client_id, redirect_uri, and auth_code
            to get a Bearer token from the BMC Helix Single Sign-On (RSSO) server.
+    
+    server_url (str): The BMC Helix ITSM base URL.
+    rsso_url (str): The BMC Helix Single Sign-On server url used to authenticate users and issue OAuth 2.0 security tokens.
+
     """
 
     def __init__(
@@ -364,7 +368,6 @@ class AuthClient(BaseClient):
         username: str = None,
         password: str = None,
         client_id: str = None,
-        client_secret: str = None,
         redirect_uri: str = None,
         auth_code: str = None,
         rsso_url: str = None,
@@ -375,7 +378,6 @@ class AuthClient(BaseClient):
         self._username = username
         self._password = password
         self._client_id = client_id
-        self._client_secret = client_secret
         self._redirect_uri = redirect_uri
         self._auth_code = auth_code
         self._rsso_url = rsso_url
@@ -519,8 +521,8 @@ class AuthClient(BaseClient):
             token_data (dict): The token response from the OAuth server.
         """
         now = datetime.now(timezone.utc)
-        access_token_expiry = (now + timedelta(minutes=ACCESS_TOKEN_DEFAULT_EXPIRE_TIME_MINUTES)).strftime("%Y-%m-%dT%H:%M:%SZ")
-        refresh_token_expiry = (now + timedelta(days=REFRESH_TOKEN_DEFAULT_EXPIRE_TIME_DAYS)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        access_token_expiry = (now + timedelta(minutes=ACCESS_TOKEN_DEFAULT_TIMEOUT_MINUTES)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        refresh_token_expiry = (now + timedelta(days=REFRESH_TOKEN_DEFAULT_TIMEOUT_DAYS)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
         integration_context.update({
             "oauth_access_token": token_data.get("access_token"),
@@ -537,6 +539,7 @@ class Client(BaseClient):
 
     Handles all API requests to BMC Helix ITSM.
     Authentication is injected via the auth_header parameter.
+    The base url is <BMC_server_url>/api
     """
 
     def __init__(self, server_url: str, auth_header: dict, verify: bool = False, proxy: bool = False):
@@ -4395,11 +4398,10 @@ def main() -> None:
     # OAuth parameters
     use_oauth = params.get("use_oauth", False)
     oauth_credentials = params.get("credentials_oauth2", {})
-    client_id = oauth_credentials.get("identifier")
-    client_secret = oauth_credentials.get("password")
-    redirect_uri = params.get("redirect_uri")
-    auth_code = params.get("auth_code")
-    rsso_url = params.get("rsso_url")
+    client_id = oauth_credentials.get("identifier", "")
+    redirect_uri = params.get("redirect_uri", "")
+    auth_code = params.get("auth_code", "")
+    rsso_url = params.get("rsso_url", "")
 
     # Basic auth credentials
     credentials = params.get("credentials", {})
@@ -4427,20 +4429,20 @@ def main() -> None:
     try:
         requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]
 
-        # This command is onlt for generate auth code, there is no need to build the Clients yet.
+        # This command is only used to generate an authorization code for the client to add to the configuration.
+        # There’s no need to build the clients at this stage.
         if command == "bmc-itsm-generate-login-url":
             return_results(generate_login_url_command(rsso_url, client_id, redirect_uri))  # type: ignore[arg-type]
 
-        # Create AuthClient to handle authentication (determine the correct auth header)
-        auth_client = AuthClient(
+        # Create an AuthClient based on the configuration parameters. (Can be  Basic/JW or OAuth 2.0)
+        auth_client: AuthClient = AuthClient(
             server_url=url,
             verify=verify_certificate,
-            proxy=proxy,  # type: ignore[arg-type]
+            proxy=proxy,
             use_oauth=use_oauth,
             username=username,
             password=password,
             client_id=client_id,
-            client_secret=client_secret,
             redirect_uri=redirect_uri,
             auth_code=auth_code,
             rsso_url=rsso_url,
