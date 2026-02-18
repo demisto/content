@@ -197,11 +197,21 @@ configuration:
   name: custom_xsoar_to_defender_close_reason
   defaultvalue: "false"
   type: 8
+  section: Collect
+  advanced: true
+  hidden:
+  - marketplacev2
+  - platform
   required: false
 - display: Enable custom Defender to XSOAR Close Reason
   name: custom_defender_to_xsoar_close_reason
   defaultvalue: "false"
   type: 8
+  section: Collect
+  advanced: true
+  hidden:
+  - marketplacev2
+  - platform
   required: false
 - additionalinfo: Outgoing Mirroring - when selected, closing the Cortex XSOAR incident is mirrored in Microsoft 365 Defender.
   defaultvalue: 'false'
@@ -526,7 +536,7 @@ script:
     description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     execution: false
     name: update-remote-system
-  dockerimage: demisto/crypto:1.0.0.5490413
+  dockerimage: demisto/crypto:1.0.0.6932158
   isfetch: true
   ismappable: true
   isremotesyncin: true
