@@ -311,7 +311,7 @@ def fetch_incidents(
                     has_more_np = any(
                         f.get("status") == "Not Prevented"
                         and (fetch_category != FETCH_CATEGORY_THREAT_FEED_IOCS or THREAT_FEED_IOC_TAG in f.get("tags", []))
-                        for f in findings_batch[idx + 1:]
+                        for f in findings_batch[idx + 1 :]
                     )
                     if not has_more_np and next_cursor:
                         new_pending_cursor = next_cursor

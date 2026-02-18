@@ -646,7 +646,8 @@ def test_list_assessments_sort_order(requests_mock, mock_client):
     )
 
     qs = requests_mock.last_request.qs
-    assert qs.get("sortOrder") == ["asc"]
+    # requests_mock lowercases query string keys; the API param is sortOrder
+    assert qs.get("sortorder") == ["asc"]
 
 
 @freeze_time("2025-11-06T12:00:00Z")
