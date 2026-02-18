@@ -8,7 +8,7 @@ from CommonServerPython import *
 from CymulateV3 import (
     Client,
     fetch_incidents,
-    test_module,
+    test_module as cymulate_test_module,  # alias prevents pytest from collecting it as a test
     FETCH_CATEGORY_THREAT_FEED_IOCS,
 )
 
@@ -45,7 +45,7 @@ def test_test_module_success(requests_mock, mock_client):
         json={"data": []},
         status_code=200,
     )
-    result = test_module(mock_client)
+    result = cymulate_test_module(mock_client)
     assert result == "ok"
 
 
@@ -56,7 +56,7 @@ def test_test_module_401_error(requests_mock, mock_client):
         "https://api.cymulate.com/v2/assessments/launched",
         status_code=401,
     )
-    result = test_module(mock_client)
+    result = cymulate_test_module(mock_client)
     assert "Authorization Error" in result
 
 
