@@ -24,7 +24,9 @@ SECONDS_IN_DAY = 86400  # Number of seconds in one day
 MIN_DIFF_SECONDS = 2 * 3600  # Minimum allowed difference = 2 hours
 MAX_GET_SYSTEM_USERS_LIMIT = 50
 MAX_GET_EXCEPTION_RULES_LIMIT = 100
-
+MALWARE_TYPE = "Malware"
+EXPLOIT_TYPE = "Exploit"
+WINDOWS_PLATFORM = "Windows"
 
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
@@ -1044,7 +1046,7 @@ class Client(CoreClient):
             json_data=profile_data,
         )
 
-    def get_current_profile(self, profile_id: str) -> dict:
+    def get_profile(self, profile_id: str) -> dict:
         return self._http_request(
             method="POST",
             url_suffix="/profiles/get_profile_view_by_id",
@@ -4658,7 +4660,7 @@ def create_profile_modules_by_type(args: dict, profile_type: str):
         dict: A dictionary containing the configured modules for the profile.
     """
     profile_modules = {}
-    if profile_type == "Malware":
+    if profile_type == MALWARE_TYPE:
         # Configuration for periodic scan to be used when enabled
         scan_endpoints_periodic_config = {"type": "weekly", "days": ["sun"], "hour": "00:00", "removableMedia": "disabled"}
 
@@ -4772,7 +4774,7 @@ def create_profile_modules_by_type(args: dict, profile_type: str):
             },
         }
 
-    elif profile_type == "Exploit":
+    elif profile_type == EXPLOIT_TYPE:
         profile_modules = {
             "vulnerableApps": {"mode": args.get(Profile.FIELDS.get("vulnerableApps"), "block"), "javaProtection": "enabled"},
             "logicalExploits": {"mode": args.get(Profile.FIELDS.get("logicalExploits"), "block"), "forbidDllLoad": []},
@@ -4801,7 +4803,7 @@ def validate_profile_args(args: dict):
         raise DemistoException("\n".join(invalid_args))
 
 
-def create_profile_command(client: Client, args: dict, profile_type: str) -> CommandResults:
+def create_profile_command(client: Client, args: dict, profile_type: str, profile_platform: str = WINDOWS_PLATFORM) -> CommandResults:
     """
     Creates a new profile in the Cortex Platform.
 
@@ -4815,7 +4817,6 @@ def create_profile_command(client: Client, args: dict, profile_type: str) -> Com
     """
     validate_profile_args(args)
     profile_name = args.get("profile_name")
-    profile_platform = "Windows"
     profile_description = args.get("profile_description", "")
 
     profile_modules = create_profile_modules_by_type(args, profile_type)
@@ -4852,7 +4853,7 @@ def update_profile_command(client, args):
     validate_profile_args(args)
     profile_id = args.get("profile_id")
 
-    current_profile = client.get_current_profile(profile_id)
+    current_profile = client.get_profile(profile_id)
     if not current_profile or current_profile.get("reply") is None:
         raise DemistoException(f"Profile {profile_id} doesn't exist.")
 
@@ -5031,10 +5032,10 @@ def main():  # pragma: no cover
             return_results(xql_query_platform_command(client, args))
 
         elif command == "core-create-windows-malware-profile":
-            return_results(create_profile_command(client, args, "Malware"))
+            return_results(create_profile_command(client, args, MALWARE_TYPE, WINDOWS_PLATFORM))
 
         elif command == "core-create-windows-exploit-profile":
-            return_results(create_profile_command(client, args, "Exploit"))
+            return_results(create_profile_command(client, args, EXPLOIT_TYPE, WINDOWS_PLATFORM))
 
         elif command == "core-update-windows-malware-profile":
             return_results(update_profile_command(client, args))

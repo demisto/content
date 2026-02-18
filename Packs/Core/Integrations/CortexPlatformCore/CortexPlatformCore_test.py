@@ -9527,6 +9527,14 @@ def test_get_case_resolution_statuses_command(mocker):
 
 class TestProfileCommands:
     def test_create_profile_modules_by_type_malware_defaults(self):
+        """
+        Given:
+            No arguments provided.
+        When:
+            Calling create_profile_modules_by_type with "Malware" profile type.
+        Then:
+            Default malware profile modules are returned.
+        """
         from CortexPlatformCore import create_profile_modules_by_type
 
         args = {}
@@ -9537,6 +9545,14 @@ class TestProfileCommands:
         assert modules["ransomware"]["mode"] == "block"
 
     def test_create_profile_modules_by_type_malware_custom(self):
+        """
+        Given:
+            Custom arguments for scanEndpoints and ransomware.
+        When:
+            Calling create_profile_modules_by_type with "Malware" profile type.
+        Then:
+            Custom malware profile modules are returned reflecting the arguments.
+        """
         from CortexPlatformCore import create_profile_modules_by_type, Profile
 
         args = {Profile.FIELDS["scanEndpoints"]: "enabled", Profile.FIELDS["ransomware"]: "report"}
@@ -9546,6 +9562,14 @@ class TestProfileCommands:
         assert modules["ransomware"]["mode"] == "report"
 
     def test_create_profile_modules_by_type_exploit_defaults(self):
+        """
+        Given:
+            No arguments provided.
+        When:
+            Calling create_profile_modules_by_type with "Exploit" profile type.
+        Then:
+            Default exploit profile modules are returned.
+        """
         from CortexPlatformCore import create_profile_modules_by_type
 
         args = {}
@@ -9555,6 +9579,14 @@ class TestProfileCommands:
         assert modules["logicalExploits"]["mode"] == "block"
 
     def test_create_profile_command_success(self, mocker):
+        """
+        Given:
+            Valid arguments for creating a profile.
+        When:
+            Calling create_profile_command.
+        Then:
+            The profile is created successfully and the result contains the profile ID.
+        """
         from CortexPlatformCore import create_profile_command, Client
 
         mock_client = mocker.Mock(spec=Client)
@@ -9573,6 +9605,14 @@ class TestProfileCommands:
         assert call_args["request_data"]["profile_type"] == "Malware"
 
     def test_create_profile_command_invalid_arg(self, mocker):
+        """
+        Given:
+            Invalid argument for ransomware protection.
+        When:
+            Calling create_profile_command.
+        Then:
+            A DemistoException is raised indicating the invalid argument.
+        """
         from CortexPlatformCore import create_profile_command, Client, DemistoException
 
         mock_client = mocker.Mock(spec=Client)
@@ -9583,6 +9623,14 @@ class TestProfileCommands:
             create_profile_command(mock_client, args, "Malware")
 
     def test_update_profile_command_success(self, mocker):
+        """
+        Given:
+            Valid arguments for updating a profile.
+        When:
+            Calling update_profile_command.
+        Then:
+            The profile is updated successfully.
+        """
         from CortexPlatformCore import update_profile_command, Client, Profile
 
         mock_client = mocker.Mock(spec=Client)
@@ -9608,6 +9656,14 @@ class TestProfileCommands:
         assert call_args["update_data"]["PROFILE_MODULES"]["ransomware"]["mode"]["value"] == "report"
 
     def test_update_profile_command_invalid_arg(self, mocker):
+        """
+        Given:
+            Invalid argument for ransomware protection.
+        When:
+            Calling update_profile_command.
+        Then:
+            A DemistoException is raised indicating the invalid argument.
+        """
         from CortexPlatformCore import update_profile_command, Client, DemistoException
 
         mock_client = mocker.Mock(spec=Client)
@@ -9618,6 +9674,14 @@ class TestProfileCommands:
             update_profile_command(mock_client, args)
 
     def test_update_profile_command_multiple_invalid_args(self, mocker):
+        """
+        Given:
+            Multiple invalid arguments.
+        When:
+            Calling update_profile_command.
+        Then:
+            A DemistoException is raised listing all invalid arguments.
+        """
         from CortexPlatformCore import update_profile_command, Client, DemistoException
 
         mock_client = mocker.Mock(spec=Client)
@@ -9637,6 +9701,14 @@ class TestProfileCommands:
         assert "Allowed values are: block, disabled, report" in str(excinfo.value)
 
     def test_update_profile_command_not_found(self, mocker):
+        """
+        Given:
+            A profile ID that does not exist.
+        When:
+            Calling update_profile_command.
+        Then:
+            A DemistoException is raised indicating the profile doesn't exist.
+        """
         from CortexPlatformCore import update_profile_command, Client, DemistoException
 
         mock_client = mocker.Mock(spec=Client)
@@ -9648,6 +9720,14 @@ class TestProfileCommands:
             update_profile_command(mock_client, args)
 
     def test_delete_profile_command_success(self, mocker):
+        """
+        Given:
+            Valid profile IDs to delete.
+        When:
+            Calling delete_profile_command.
+        Then:
+            The profiles are deleted successfully.
+        """
         from CortexPlatformCore import delete_profile_command, Client
 
         mock_client = mocker.Mock(spec=Client)
