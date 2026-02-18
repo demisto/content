@@ -15,14 +15,14 @@ jobs:
         with:
           fetch-depth: 100 # to speed up. changed-files will fetch more if necessary
 
-      - name: Get changed protected files
+      - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@v46.0.1 # disable-secrets-detection
         with:
           files: |
             .gitlab/ci/.gitlab-ci.yml
 
-      - name: Get changed external-only protected files
+      - name: Get changed files
         if: github.event.pull_request.head.repo.full_name != github.repository
         id: changed-external-files
         uses: tj-actions/changed-files@v46.0.1 # disable-secrets-detection
