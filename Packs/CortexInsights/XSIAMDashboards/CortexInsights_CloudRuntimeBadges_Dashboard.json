@@ -1,0 +1,708 @@
+{
+    "dashboards_data": [
+        {
+            "name": "Cortex Cloud Runtime Badges",
+            "description": "Cortex Cloud Runtime Badges",
+            "status": "ENABLED",
+            "layout": [
+                {
+                    "id": "row-4017",
+                    "data": [
+                        {
+                            "key": "xql_1766432608053",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 488.5,
+                                "phrase": "dataset = cloud_health_auditing | filter (capability contains \"\"\"Registry\"\"\") | dedup account | comp count_distinct(account ) as accounts_with_registry_scanning_enabled   | alter status = if(accounts_with_registry_scanning_enabled  \u003e 1, \"Achieved\", \"Not Currently Passing\")\n\n\n\n| view graph type = wordcloud header = \"Registry Scanned\" xaxis = status yaxis = accounts_with_registry_scanning_enabled word_color = \"#ea7207\" multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "wordcloud",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Registry Scanned\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "status"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "accounts_with_registry_scanning_enabled"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "word_color",
+                                                "value": "\"#ea7207\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "multi_color",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1764777033854",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 488.5,
+                                "phrase": "config timeframe = 30d | dataset = uvm_findings | bin first_observed  span = 15d |  alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", first_observed   ) | filter asset_type contains \"registry\" | comp count(vulnerability_id ) as current_vulns by date | sort desc date | windowcomp lag(current_vulns ) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(current_vulns, previous_issues  ), previous_issues),100)) | alter issues_resolved = subtract( current_vulns , previous_issues ) | alter status = if(percent_burndown  \u003c0 and percent_burndown  \u003c -20, \"Achieved\", \"Not Currently Passing\")  |  filter previous_issues != null\n\n| view graph type = wordcloud header = \"20% percent reduction in vulnerabilities in registries\" xaxis = status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "wordcloud",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"20% percent reduction in vulnerabilities in registries\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "status"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "percent_burndown"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "multi_color",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1770740829621",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 488.5,
+                                "phrase": "config timeframe = 30d | dataset = issues | bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.severity in(ENUM.CRITICAL , ENUM.HIGH ) and xdm.issue.detection.method = \"CLOUD_NETWORK_ANALYZER\" and xdm.issue.status.progress = ENUM.NEW | comp count(xdm.issue.id) as num_of_issues by date | sort desc date | windowcomp lag(num_of_issues) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(num_of_issues , previous_issues), previous_issues),100)) | alter issues_resolved = subtract(num_of_issues , previous_issues) | alter status = if(previous_issues = null , \"not enough data\", if (percent_burndown \u003c0 and percent_burndown \u003c -50, \"Achieved\", \"Not Currently Passing\") )\n\n\n\n\n| view graph type = wordcloud header = \"50% Reduction of Total Amount of Issues with High Severity Reachable from the Internet\" xaxis = status yaxis = num_of_issues multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "wordcloud",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"50% Reduction of Total Amount of Issues with High Severity Reachable from the Internet\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "status"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "num_of_issues"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "multi_color",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-1082",
+                    "data": [
+                        {
+                            "key": "xql_1766435172803",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 488.5,
+                                "phrase": "config timeframe = 30d |dataset = issues  | filter xdm.issue.detection.method in(\"COMPUTE_POLICY\",\"VULNERABILITY_POLICY\") | filter xdm.issue.status.progress = ENUM.RESOLVED | top xdm.issue.auto_resolve_findings | filter xdm.issue.auto_resolve_findings | alter number_of_auto_resolved_compute_issues = top_count , percentage_of_auto_resolved_compute_issues = round(top_percent) | alter status = if (percentage_of_auto_resolved_compute_issues \u003e50, \"Achieved\", \"Not Currently Passing\")\n\n\n\n\n| view graph type = wordcloud header = \"50 percent of alerts remediated automatically\" xaxis = status yaxis = percentage_of_auto_resolved_compute_issues multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "wordcloud",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"50 percent of alerts remediated automatically\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "status"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "percentage_of_auto_resolved_compute_issues"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "multi_color",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1764835522275",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 488.5,
+                                "phrase": "config timeframe = 30d | dataset = uvm_findings | bin first_observed span = 16d |  alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", first_observed  ) | filter asset_type_class = \"External Surface\" and exploitable  and cvss_severity = \"Critical\" and vendor_package_details != null | comp count(vulnerability_id ) as vuln_count by date | sort desc date | windowcomp lag(vuln_count ) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(vuln_count,previous_issues  ), previous_issues),100)) | alter issues_resolved = subtract(vuln_count, previous_issues  ) | alter status = if(percent_burndown \u003c0 and percent_burndown \u003c-10, \"Achieved\", \"Not Curently Passing\")  | filter previous_issues != null\n\n\n\n\n\n\n| view graph type = wordcloud header = \"10% of reduction of critical, exploitable, external-facing, with fixes CVE Vulnerabilities\" xaxis = status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "wordcloud",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"10% of reduction of critical, exploitable, external-facing, with fixes CVE Vulnerabilities\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "status"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "percent_burndown"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "multi_color",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_dashboard_id": 1,
+            "global_id": "6a177ace9acc414a906f35eef201a2db",
+            "metadata": {
+                "params": []
+            }
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1770740829621",
+            "title": "API Security - Gold",
+            "creation_time": 1770740829621,
+            "description": "Point in time",
+            "data": {
+                "phrase": "config timeframe = 30d | dataset = issues | bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.severity in(ENUM.CRITICAL , ENUM.HIGH ) and xdm.issue.detection.method = \"CLOUD_NETWORK_ANALYZER\" and xdm.issue.status.progress = ENUM.NEW | comp count(xdm.issue.id) as num_of_issues by date | sort desc date | windowcomp lag(num_of_issues) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(num_of_issues , previous_issues), previous_issues),100)) | alter issues_resolved = subtract(num_of_issues , previous_issues) | alter status = if(previous_issues = null , \"not enough data\", if (percent_burndown \u003c0 and percent_burndown \u003c -50, \"Achieved\", \"Not Currently Passing\") )\n\n\n\n\n| view graph type = wordcloud header = \"50% Reduction of Total Amount of Issues with High Severity Reachable from the Internet\" xaxis = status yaxis = num_of_issues multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "wordcloud",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"50% Reduction of Total Amount of Issues with High Severity Reachable from the Internet\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "num_of_issues"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "multi_color",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "issues"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1766432608053",
+            "title": "Protect Managed Images - Bronze",
+            "creation_time": 1770680955929,
+            "description": "Point in time",
+            "data": {
+                "phrase": "dataset = cloud_health_auditing | filter (capability contains \"\"\"Registry\"\"\") | dedup account | comp count_distinct(account ) as accounts_with_registry_scanning_enabled   | alter status = if(accounts_with_registry_scanning_enabled  \u003e 1, \"Achieved\", \"Not Currently Passing\")\n\n\n\n| view graph type = wordcloud header = \"Registry Scanned\" xaxis = status yaxis = accounts_with_registry_scanning_enabled word_color = \"#ea7207\" multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "wordcloud",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Registry Scanned\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "accounts_with_registry_scanning_enabled"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "word_color",
+                                "value": "\"#ea7207\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "multi_color",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "cloud_health_auditing"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1764777033854",
+            "title": "Protect Managed Images - Gold",
+            "creation_time": 1770680955473,
+            "description": "Point in time",
+            "data": {
+                "phrase": "config timeframe = 30d | dataset = uvm_findings | bin first_observed  span = 15d |  alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", first_observed   ) | filter asset_type contains \"registry\" | comp count(vulnerability_id ) as current_vulns by date | sort desc date | windowcomp lag(current_vulns ) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(current_vulns, previous_issues  ), previous_issues),100)) | alter issues_resolved = subtract( current_vulns , previous_issues ) | alter status = if(percent_burndown  \u003c0 and percent_burndown  \u003c -20, \"Achieved\", \"Not Currently Passing\")  |  filter previous_issues != null\n\n| view graph type = wordcloud header = \"20% percent reduction in vulnerabilities in registries\" xaxis = status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "wordcloud",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"20% percent reduction in vulnerabilities in registries\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "percent_burndown"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "multi_color",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "uvm_findings"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1766435172803",
+            "title": "Protect Workloads in Runtime XSIAM - Gold",
+            "creation_time": 1770680956183,
+            "description": "Point in time",
+            "data": {
+                "phrase": "config timeframe = 30d |dataset = issues  | filter xdm.issue.detection.method in(\"COMPUTE_POLICY\",\"VULNERABILITY_POLICY\") | filter xdm.issue.status.progress = ENUM.RESOLVED | top xdm.issue.auto_resolve_findings | filter xdm.issue.auto_resolve_findings | alter number_of_auto_resolved_compute_issues = top_count , percentage_of_auto_resolved_compute_issues = round(top_percent) | alter status = if (percentage_of_auto_resolved_compute_issues \u003e50, \"Achieved\", \"Not Currently Passing\")\n\n\n\n\n| view graph type = wordcloud header = \"50 percent of alerts remediated automatically\" xaxis = status yaxis = percentage_of_auto_resolved_compute_issues multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "wordcloud",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"50 percent of alerts remediated automatically\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "percentage_of_auto_resolved_compute_issues"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "multi_color",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "issues"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1764835522275",
+            "title": "Protect Workloads in Runtime XDR - Gold",
+            "creation_time": 1770680955832,
+            "description": "Point in time",
+            "data": {
+                "phrase": "config timeframe = 30d | dataset = uvm_findings | bin first_observed span = 16d |  alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", first_observed  ) | filter asset_type_class = \"External Surface\" and exploitable  and cvss_severity = \"Critical\" and vendor_package_details != null | comp count(vulnerability_id ) as vuln_count by date | sort desc date | windowcomp lag(vuln_count ) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(vuln_count,previous_issues  ), previous_issues),100)) | alter issues_resolved = subtract(vuln_count, previous_issues  ) | alter status = if(percent_burndown \u003c0 and percent_burndown \u003c-10, \"Achieved\", \"Not Curently Passing\")  | filter previous_issues != null\n\n\n\n\n\n\n| view graph type = wordcloud header = \"10% of reduction of critical, exploitable, external-facing, with fixes CVE Vulnerabilities\" xaxis = status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "wordcloud",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"10% of reduction of critical, exploitable, external-facing, with fixes CVE Vulnerabilities\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "percent_burndown"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "multi_color",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "uvm_findings"
+                ],
+                "query_uses_library": false
+            }
+        }
+    ],
+    "fromVersion": "6.10.0"
+}
