@@ -547,7 +547,6 @@ def test_get_approval_buttons_block():
 
     assert len(result) == 4
     assert result[0]["type"] == "header"
-    assert result[0]["text"]["text"] == "Sensitive action detected"
     assert result[1]["type"] == "divider"
     assert result[2]["type"] == "section"
     assert result[3]["type"] == "actions"

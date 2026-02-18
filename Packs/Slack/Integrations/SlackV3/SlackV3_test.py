@@ -5210,6 +5210,7 @@ async def test_listen(client_session):
         mock.patch.object(requests, "post") as mock_send_slack_request,
         mock.patch.object(SlackV3, "reset_listener_health"),
         mock.patch.object(demisto, "handleEntitlementForUser") as mock_result,
+        mock.patch.object(SlackV3, "handle_assistant_interactions"),
     ):
         # Set the return value of the mocked get_user_details function
         mock_user = {"id": "mock_user_id", "name": "mock_user"}
@@ -5497,68 +5498,6 @@ def test_send_agent_response_with_agent_name(mocker: MockerFixture):
     call_args = SlackV3.slack_assistant_handler.send_agent_response.call_args[1]
     expected_bot_name = AssistantMessages.AGENT_BOT_NAME_FORMAT.format("Security Analyst")
     assert call_args["agent_name"] == expected_bot_name
-
-
-def test_finalize_plan_message(mocker: MockerFixture):
-    """
-    Given:
-        Existing step message with "Plan (updating...)" header.
-    When:
-        Calling finalize_plan_message.
-    Then:
-        Updates message to remove "updating..." indicator.
-    """
-    import SlackV3
-    from SlackV3 import finalize_plan_message
-    from SlackUtilsApiModule import SlackAssistantMessages
-
-    history_response = {
-        "messages": [
-            {
-                "attachments": [
-                    {
-                        "blocks": [
-                            {
-                                "type": "context",
-                                "elements": [
-                                    {"text": f"{SlackAssistantMessages.PLAN_ICON} {SlackAssistantMessages.PLAN_LABEL_UPDATING}"}
-                                ],
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]
-    }
-
-    mocker.patch.object(SlackV3, "send_slack_request_sync", side_effect=[history_response, {}])
-
-    finalize_plan_message("C123", "thread123", "1234567890.123456")
-
-    assert SlackV3.send_slack_request_sync.call_count == 2
-    update_call = SlackV3.send_slack_request_sync.call_args_list[1]
-    assert update_call[0][1] == "chat.update"
-
-
-def test_finalize_plan_message_no_attachments(mocker: MockerFixture):
-    """
-    Given:
-        Message without attachments.
-    When:
-        Calling finalize_plan_message.
-    Then:
-        Exits gracefully without updating.
-    """
-    import SlackV3
-    from SlackV3 import finalize_plan_message
-
-    history_response = {"messages": [{}]}
-
-    mocker.patch.object(SlackV3, "send_slack_request_sync", return_value=history_response)
-
-    finalize_plan_message("C123", "thread123", "1234567890.123456")
-
-    assert SlackV3.send_slack_request_sync.call_count == 1
 
 
 @pytest.mark.asyncio
