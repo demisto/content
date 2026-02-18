@@ -1,6 +1,6 @@
 [MODEL: dataset = microsoft_defender_for_cloud_raw]
 // XDM mapping based on the alerts API schema (https://learn.microsoft.com/en-us/rest/api/defenderforcloud-composite/alerts?view=rest-defenderforcloud-composite-latest&preserve-view=true).
-filter  properties != null
+filter properties != null
 // Fields extractions
 | alter
     Entities = json_extract_array(properties, "$.entities")
@@ -49,7 +49,7 @@ filter  properties != null
 	xdm.target.host.hostname = coalesce(json_extract_scalar(properties, "$.compromisedEntity"), hostname);
 
 // XDM mapping based on the SecurityAlert schema (https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/SecurityAlert).
-filter  ExtendedProperties != null
+filter ExtendedProperties != null
 | alter
         Entities = Entities ->[],
         ResourceIdentifiers = ResourceIdentifiers -> []
