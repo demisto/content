@@ -9,21 +9,21 @@ commonfields:
 configuration:
   - display: Server URL
     name: url
-    additionalinfo: Should be in format https://<your-instance>.tm-cloudimanage.com
+    additionalinfo: Should be in the format https://<your-instance>.tm-cloudimanage.com.
     required: true
     type: 0
     section: Connect
   - display: User Name
     name: credentials_user
     displaypassword: Password
-    additionalinfo: Required for Get Addressable Alerts and Get Detect And Protect Alerts
+    additionalinfo: Required for Get Addressable Alerts and Get Detect And Protect Alerts event types.
     required: false
     type: 9
     section: Connect
   - display: Token
     name: credentials_token
     displaypassword: Secret
-    additionalinfo: Required for Behavior Analytics alerts
+    additionalinfo: Required for Behavior Analytics alerts.
     required: false
     type: 9
     section: Connect
@@ -46,7 +46,7 @@ configuration:
   - display: Events types to fetch
     name: event_types
     defaultvalue: Behavior Analytics alerts
-    additionalinfo: Select which event types to fetch
+    additionalinfo: Select which event types to fetch.
     required: false
     type: 16
     section: Collect
@@ -60,7 +60,7 @@ configuration:
     additionalinfo: Default and maximum is 900 events to fetch for each type.
     type: 0
     section: Collect
-description: iManage Threat Manager uses modern techniques including machine learning and user Behavior Analytics to protect privileged information against internal and external threat actors.
+description: iManage Threat Manager protects privileged information against internal and external threat actors using machine learning and user behavior analytics.
 display: iManage Threat Manager
 name: iManageThreatManager
 script:
@@ -69,7 +69,7 @@ script:
         - name: should_push_events
           auto: PREDEFINED
           defaultValue: "false"
-          description: If true, the command will create events, otherwise it will only display them.
+          description: If true, the command creates events, otherwise it only displays them.
           predefined:
             - "true"
             - "false"
@@ -93,7 +93,7 @@ script:
         - name: to_date
           description: End date until which to get events. Supports ISO format or natural language (e.g., "now", "30 minutes ago"). Default is now.
           required: false
-      description: Gets events from iManage Threat Manager.
+      description: Fetches events from iManage Threat Manager.
       name: imanage-threat-manager-get-events
   dockerimage: demisto/python3:3.12.8.3296088
   isfetchevents: true

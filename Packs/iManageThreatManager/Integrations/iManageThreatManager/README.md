@@ -50,7 +50,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### imanage-threat-manager-get-events
 
 ***
-Gets events from iManage Threat Manager. Manual command to fetch and display events. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and exceeding the API request limitation.
+Fetches events from iManage Threat Manager. This manual command is used for developing or debugging and should be used with caution, as it can create events, leading to event duplication and exceeding API request limits.
 
 #### Base Command
 
