@@ -1,0 +1,26 @@
+args:
+- name: TaskName
+  required: true
+comment: This automation returns dictionary list objects with Incident ID and the corresponding failed Task ID by name.
+commonfields:
+  id: Gaiatop_GetFailedTaskIDByName
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.12.12.6922358
+enabled: true
+engineinfo: {}
+name: Gaiatop_GetFailedTaskIDByName
+outputs:
+- contextPath: TasksDetails
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
