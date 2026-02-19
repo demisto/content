@@ -4414,7 +4414,6 @@ def get_cloud_accounts_log_sending_status(client: Client) -> tuple[int, int, lis
     accounts_not_sending_logs = []
     next_token = ""
 
-    # Paginate through all accounts
     while True:
         params = {}
         if next_token:
@@ -4426,7 +4425,6 @@ def get_cloud_accounts_log_sending_status(client: Client) -> tuple[int, int, lis
 
         accounts = response.get("values", [])
 
-        # Process accounts on the fly without storing all in memory
         for account in accounts:
             total_accounts += 1
             additional_capabilities = account.get("additional_capabilities", {}) or {}
@@ -4446,7 +4444,6 @@ def get_cloud_accounts_log_sending_status(client: Client) -> tuple[int, int, lis
         if not next_token:
             break
 
-    # Calculate statistics
     accounts_not_sending_logs_count = len(accounts_not_sending_logs)
 
     return total_accounts, accounts_not_sending_logs_count, accounts_not_sending_logs
@@ -4462,11 +4459,9 @@ def get_cdr_protection_status_command(client: Client) -> CommandResults:
     Returns:
         List of CommandResults objects with CDR protection coverage percentages
     """
-    # Get cloud accounts log sending status
     total_accounts, accounts_not_sending_logs_count, accounts_not_sending_logs = get_cloud_accounts_log_sending_status(client)
     accounts_sending_logs = total_accounts - accounts_not_sending_logs_count
 
-    # Handle case when no cloud accounts exist
     if total_accounts == 0:
         return CommandResults(
             readable_output="No Cloud Accounts found.",
