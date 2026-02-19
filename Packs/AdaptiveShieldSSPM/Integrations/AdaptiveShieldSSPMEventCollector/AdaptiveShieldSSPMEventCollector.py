@@ -1,7 +1,7 @@
 import demistomock as demisto
 import traceback
 import urllib3
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 from urllib.parse import urlparse, parse_qs
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from ContentClientApiModule import *  # noqa # pylint: disable=unused-wildcard-import
@@ -18,7 +18,7 @@ DEFAULT_MAX_FETCH = 1000
 API_PAGE_LIMIT = 500
 TIME_FIELD = "creation_date"
 
-#TODO: remove
+# TODO: remove
 # dummy_res = {
 #     "data": [
 #         {
@@ -76,8 +76,6 @@ TIME_FIELD = "creation_date"
 #     "total_size": 252,
 #     # "next_page_uri": "https://api.adaptive-shield.com/api/v1/accounts/{{accountId}}/security_checks?offset=100&limit=100",
 # }
-
-
 
 
 """ BASE CLASSES """
@@ -195,7 +193,7 @@ class Client(ContentClient):
 
         demisto.debug(f"Fetching security checks with {params=}")
 
-        #TODO: remove
+        # TODO: remove
         # if offset:
         #     return dummy_res2
         # return dummy_res
@@ -279,7 +277,7 @@ class Client(ContentClient):
             query_params = parse_qs(parsed.query)
 
             # Only advance the offset if the last item from the response was actually collected
-            if all_events and items[-1].get('id') == all_events[-1].get('id'):
+            if all_events and items[-1].get("id") == all_events[-1].get("id"):
                 offset = int(query_params.get("offset", [offset + len(items)])[0])
             else:
                 demisto.debug("Last response item not in collected events, keeping current offset")
@@ -348,7 +346,7 @@ def fetch_events_command(client: Client, max_fetch: int, last_run: dict) -> tupl
     last_run_date = last_run.get("last_run_date")
     last_fetched_ids = last_run.get("last_fetched_ids", [])
     last_offset = last_run.get("offset", 0)
-    start_date = (datetime.now(tz=timezone.utc) - timedelta(minutes=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    start_date = (datetime.now(tz=UTC) - timedelta(minutes=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     demisto.debug(
         f"Fetching events with {last_run_date=}, last_fetched_ids count={len(last_fetched_ids)}, "
@@ -369,9 +367,7 @@ def fetch_events_command(client: Client, max_fetch: int, last_run: dict) -> tupl
 
         # Collect all IDs at the latest timestamp for deduplication
         ids_at_last_timestamp = [
-            event.get("id")
-            for event in events
-            if event.get(TIME_FIELD) == new_last_run_date and event.get("id")
+            event.get("id") for event in events if event.get(TIME_FIELD) == new_last_run_date and event.get("id")
         ]
 
         last_run = {
@@ -388,7 +384,7 @@ def fetch_events_command(client: Client, max_fetch: int, last_run: dict) -> tupl
     return events, last_run
 
 
-def test_module_command(client: Client) -> str:
+def module_test_command(client: Client) -> str:
     """Test the connection to the Adaptive Shield API.
 
     Args:
@@ -436,7 +432,7 @@ def main():
 
         match execution.command:
             case "test-module":
-                result = test_module_command(client)
+                result = module_test_command(client)
                 return_results(result)
 
             case "adaptive-shield-sspm-get-events":

@@ -1,11 +1,9 @@
-import pytest
-import demistomock as demisto
 from AdaptiveShieldSSPMEventCollector import (
     Client,
     AdaptiveShieldSSPMParams,
     fetch_events_command,
     get_events_command,
-    test_module_command,
+    module_test_command,
 )
 import AdaptiveShieldSSPMEventCollector
 
@@ -385,9 +383,7 @@ class TestFetchEventsCommand:
             {"id": "1", "creation_date": "2026-01-01T00:00:00Z", "_time": "2026-01-01T00:00:00Z"},
             {"id": "2", "creation_date": "2026-01-02T00:00:00Z", "_time": "2026-01-02T00:00:00Z"},
         ]
-        mocker.patch.object(
-            client, "get_security_checks_with_pagination", return_value=(mock_events, 0)
-        )
+        mocker.patch.object(client, "get_security_checks_with_pagination", return_value=(mock_events, 0))
 
         events, last_run = fetch_events_command(client, max_fetch=10, last_run={})
 
@@ -409,9 +405,7 @@ class TestFetchEventsCommand:
         mock_events = [
             {"id": "3", "creation_date": "2026-01-03T00:00:00Z", "_time": "2026-01-03T00:00:00Z"},
         ]
-        mock_pagination = mocker.patch.object(
-            client, "get_security_checks_with_pagination", return_value=(mock_events, 5)
-        )
+        mock_pagination = mocker.patch.object(client, "get_security_checks_with_pagination", return_value=(mock_events, 5))
 
         last_run = {
             "last_run_date": "2026-01-02T00:00:00Z",
@@ -439,9 +433,7 @@ class TestFetchEventsCommand:
             - The original last_run is preserved.
         """
         client = mock_client(mocker)
-        mocker.patch.object(
-            client, "get_security_checks_with_pagination", return_value=([], 0)
-        )
+        mocker.patch.object(client, "get_security_checks_with_pagination", return_value=([], 0))
 
         original_last_run = {
             "last_run_date": "2026-01-01T00:00:00Z",
@@ -468,9 +460,7 @@ class TestFetchEventsCommand:
             {"id": "2", "creation_date": "2026-01-02T00:00:00Z", "_time": "2026-01-02T00:00:00Z"},
             {"id": "3", "creation_date": "2026-01-02T00:00:00Z", "_time": "2026-01-02T00:00:00Z"},
         ]
-        mocker.patch.object(
-            client, "get_security_checks_with_pagination", return_value=(mock_events, 0)
-        )
+        mocker.patch.object(client, "get_security_checks_with_pagination", return_value=(mock_events, 0))
 
         events, last_run = fetch_events_command(client, max_fetch=10, last_run={})
 
@@ -495,9 +485,7 @@ class TestGetEventsCommand:
             {"id": "1", "creation_date": "2026-01-01T00:00:00Z", "_time": "2026-01-01T00:00:00Z"},
             {"id": "2", "creation_date": "2026-01-02T00:00:00Z", "_time": "2026-01-02T00:00:00Z"},
         ]
-        mocker.patch.object(
-            client, "get_security_checks_with_pagination", return_value=(mock_events, 0)
-        )
+        mocker.patch.object(client, "get_security_checks_with_pagination", return_value=(mock_events, 0))
 
         result = get_events_command(client, args={"limit": "2", "should_push_events": "false"})
 
@@ -517,9 +505,7 @@ class TestGetEventsCommand:
         mock_events = [
             {"id": "1", "creation_date": "2026-01-01T00:00:00Z", "_time": "2026-01-01T00:00:00Z"},
         ]
-        mocker.patch.object(
-            client, "get_security_checks_with_pagination", return_value=(mock_events, 0)
-        )
+        mocker.patch.object(client, "get_security_checks_with_pagination", return_value=(mock_events, 0))
         mock_send = mocker.patch.object(AdaptiveShieldSSPMEventCollector, "send_events_to_xsiam")
 
         get_events_command(client, args={"limit": "1", "should_push_events": "true"})
@@ -536,9 +522,7 @@ class TestGetEventsCommand:
             - Default limit of 10 is used.
         """
         client = mock_client(mocker)
-        mock_pagination = mocker.patch.object(
-            client, "get_security_checks_with_pagination", return_value=([], 0)
-        )
+        mock_pagination = mocker.patch.object(client, "get_security_checks_with_pagination", return_value=([], 0))
 
         get_events_command(client, args={})
 
@@ -546,20 +530,20 @@ class TestGetEventsCommand:
 
 
 class TestTestModuleCommand:
-    """Tests for test_module_command."""
+    """Tests for module_test_command."""
 
-    def test_test_module_success(self, mocker):
+    def test_module_test_success(self, mocker):
         """
         Given:
             - A successful API call.
         When:
-            - Running test_module_command.
+            - Running module_test_command.
         Then:
             - 'ok' is returned.
         """
         client = mock_client(mocker)
         mocker.patch.object(client, "get_security_checks", return_value={"data": []})
 
-        result = test_module_command(client)
+        result = module_test_command(client)
 
         assert result == "ok"
