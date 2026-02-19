@@ -930,6 +930,7 @@ script:
       defaultValue: '30'
     - auto: PREDEFINED
       description: Sorts the endpoints by the selected field.
+      defaultValue: first_seen
       name: sort_by
       predefined:
       - first_seen

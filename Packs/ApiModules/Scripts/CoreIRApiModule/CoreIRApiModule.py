@@ -507,8 +507,8 @@ class CoreClient(BaseClient):
         if search_to:
             request_data["search_to"] = search_to
 
-        if sort_by and sort_order:
-            request_data["sort"] = {"field": sort_by, "keyword": sort_order.upper()}
+        
+        request_data["sort"] = {"field": sort_by, "keyword": sort_order.upper()}
 
         request_data["filters"] = filters
 
@@ -2373,14 +2373,6 @@ def get_endpoints_command(client, args):
 
     sort_by = args.get("sort_by")
     sort_order = args.get("sort_order")
-
-    # When fetching all results without explicit sort, use sort_by first_seen to ensure stable pagination
-    if all_results and not sort_by and not sort_order:
-        sort_by = "first_seen"
-        sort_order = "asc"
-        demisto.debug(
-            "get_endpoints_command: all_results=true without explicit sort, defaulting to sort_by=first_seen, sort_order=asc"
-        )
 
     username = argToList(args.get("username"))
 
