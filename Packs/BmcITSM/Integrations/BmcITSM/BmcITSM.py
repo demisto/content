@@ -4364,7 +4364,9 @@ def is_token_expired(expires_in: str) -> bool:
 def check_auth_params(auth_client: AuthClient):
     if auth_client._use_oauth:
         if not auth_client._rsso_url or not auth_client._client_id or not auth_client._redirect_uri or not auth_client._auth_code:
-            return_error("Please provide Client ID, OpenID Issuer URL, Redirect URI and Authorization code.")
+            return_error("Please provide Client ID, OpenID Issuer URL, Redirect URI and Authorization code."
+                         "Retrieve Authorization code by running bmc-itsm-generate-login-url"
+                         )
     else:
         if not auth_client._server_url or not auth_client._username or not auth_client._password:
             return_error("Please provide Server URL, User Name, and Password.")
@@ -4428,9 +4430,10 @@ def main() -> None:
         requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]
 
         # This command is only used to generate an authorization code for the client to add to the configuration.
-        # There’s no need to build the clients at this stage.
+        # There's no need to build the clients at this stage.
         if command == "bmc-itsm-generate-login-url":
             return_results(generate_login_url_command(rsso_url, client_id, redirect_uri))  # type: ignore[arg-type]
+            return
 
         # Create an AuthClient based on the configuration parameters. (Can be  Basic/JW or OAuth 2.0)
         auth_client: AuthClient = AuthClient(
@@ -4486,7 +4489,7 @@ def main() -> None:
         }
 
         if command == "test-module":
-            test_module(client)
+            test_module(client, auth_client)
         elif command == "fetch-incidents":
             incidents, last_run = fetch_incidents(
                 client,

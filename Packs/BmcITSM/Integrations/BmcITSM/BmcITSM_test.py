@@ -1813,21 +1813,19 @@ class TestGetOAuthToken:
             "oauth_refresh_token_expires_in": future_time,
         }
 
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {
+        token_response = {
             "access_token": "new-access-token",
             "refresh_token": "new-refresh-token",
             "expires_in": 3600,
         }
 
         auth_client = self._create_oauth_auth_client_instance()
-        auth_client._auth_code = None
+        auth_client._auth_code = ""
 
         mock_set_ctx = MagicMock()
         with patch("BmcITSM.get_integration_context", return_value=mock_context), \
              patch("BmcITSM.set_integration_context", mock_set_ctx), \
-             patch("BmcITSM.requests.post", return_value=mock_response):
+             patch.object(auth_client, "_http_request", return_value=token_response):
             token = auth_client.get_oauth_token()
 
         assert token == "new-access-token"
@@ -1845,9 +1843,7 @@ class TestGetOAuthToken:
         Then:
             - Exchanges the authorization code for tokens.
         """
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {
+        token_response = {
             "access_token": "new-access-token",
             "refresh_token": "new-refresh-token",
             "expires_in": 3600,
@@ -1855,17 +1851,17 @@ class TestGetOAuthToken:
 
         auth_client = self._create_oauth_auth_client_instance()
 
-        mock_post = MagicMock(return_value=mock_response)
+        mock_http = MagicMock(return_value=token_response)
         with patch("BmcITSM.get_integration_context", return_value={}), \
              patch("BmcITSM.set_integration_context"), \
-             patch("BmcITSM.requests.post", mock_post):
+             patch.object(auth_client, "_http_request", mock_http):
             token = auth_client.get_oauth_token()
 
         assert token == "new-access-token"
 
-        # Verify the POST request was made with correct data
-        call_kwargs = mock_post.call_args
-        post_data = call_kwargs[1].get("data") or call_kwargs[0][1] if len(call_kwargs[0]) > 1 else call_kwargs[1]["data"]
+        # Verify the _http_request was called with correct data
+        call_kwargs = mock_http.call_args
+        post_data = call_kwargs[1].get("data")
         assert post_data["grant_type"] == "authorization_code"
         assert post_data["code"] == "test-auth-code"
         assert post_data["client_id"] == "test-client-id"
@@ -1880,7 +1876,7 @@ class TestGetOAuthToken:
             - Raises DemistoException with instructions to run generate-login-url.
         """
         auth_client = self._create_oauth_auth_client_instance()
-        auth_client._auth_code = None
+        auth_client._auth_code = ""
 
         with patch("BmcITSM.get_integration_context", return_value={}), \
              patch("BmcITSM.set_integration_context"):
@@ -1896,16 +1892,12 @@ class TestGetOAuthToken:
         Then:
             - Raises DemistoException with the error details.
         """
-        mock_response = MagicMock()
-        mock_response.status_code = 400
-        mock_response.text = '{"error": "invalid_grant", "error_description": "Authorization code expired"}'
-
         auth_client = self._create_oauth_auth_client_instance()
         auth_client._auth_code = "expired-auth-code"
 
         with patch("BmcITSM.get_integration_context", return_value={}), \
              patch("BmcITSM.set_integration_context"), \
-             patch("BmcITSM.requests.post", return_value=mock_response):
+             patch.object(auth_client, "_http_request", side_effect=DemistoException("invalid_grant")):
             with pytest.raises(DemistoException, match="Failed to exchange authorization code"):
                 auth_client.get_oauth_token()
 
@@ -1940,7 +1932,6 @@ class TestClientOAuthInit:
                 proxy=False,
                 use_oauth=True,
                 client_id="test-client-id",
-                client_secret="test-client-secret",
                 redirect_uri="https://oauth.pstmn.io/v1/callback",
                 auth_code="test-auth-code",
                 rsso_url=RSSO_URL,
