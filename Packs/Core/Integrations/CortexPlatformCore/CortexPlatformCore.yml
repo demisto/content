@@ -3359,6 +3359,125 @@ script:
         - contextPath: Core.CaseResolutionStatus.userInput
           description: User input parameters (for pending playbookTask items).
           type: Unknown
+    - name: core-create-endpoint-policy
+      description: Creates a new endpoint policy and applies it to specified endpoints. Automatically handles priority conflicts by shifting existing policies when needed.
+      hidden: false
+      arguments:
+        - name: policy_name
+          description: The name for the new endpoint policy.
+          required: true
+          type: String
+        - name: target_endpoint_names
+          description: A comma-separated list of endpoint names to apply the policy to.
+          isArray: true
+          type: String
+        - name: target_endpoint_ids
+          description: A comma-separated list of endpoint ids to apply the policy to. The policy will target these specific endpoints.
+          isArray: true
+          type: String
+        - name: platform
+          description: The platform type for the policy. Determines which operating system the policy applies to.
+          required: true
+          auto: PREDEFINED
+          predefined:
+            - windows
+            - mac
+            - linux
+            - android
+            - ios
+            - serverless
+          type: String
+        - name: description
+          description: Description of the policy's purpose and scope.
+          type: String
+        - name: priority
+          description: The priority level for the policy (higher numbers indicate higher priority). If not specified, the system automatically assigns the highest priority available for the platform. If the specified priority already exists, existing policies will be shifted down automatically.
+          type: Number
+        - name: exploit_profile
+          description: The name of the exploit protection profile to use. Default is "Default".
+          defaultValue: "Default"
+          type: String
+        - name: malware_profile
+          description: The name of the malware protection profile to use. Default is "Default".
+          defaultValue: "Default"
+          type: String
+        - name: agent_settings_profile
+          description: The name of the agent settings profile to use. Default is "Default".
+          defaultValue: "Default"
+          type: String
+        - name: restrictions_profile
+          description: The name of the restrictions profile to use. Default is "Default".
+          defaultValue: "Default"
+          type: String
+        - name: exceptions_profile
+          description: The name of the exceptions profile to use. Default is "Default (No Exceptions)".
+          defaultValue: "Default (No Exceptions)"
+          type: String
+      outputs:
+        - contextPath: Core.EndpointPolicy.PolicyName
+          description: The name of the created policy.
+          type: String
+        - contextPath: Core.EndpointPolicy.Platform
+          description: The platform type of the policy.
+          type: String
+        - contextPath: Core.EndpointPolicy.Priority
+          description: The priority level assigned to the policy.
+          type: Number
+        - contextPath: Core.EndpointPolicy.TargetEndpoints
+          description: The list of endpoint names targeted by the policy.
+          type: Array
+        - contextPath: Core.EndpointPolicy.ExploitProfile
+          description: The exploit protection profile name.
+          type: String
+        - contextPath: Core.EndpointPolicy.MalwareProfile
+          description: The malware protection profile name.
+          type: String
+        - contextPath: Core.EndpointPolicy.AgentSettingsProfile
+          description: The agent settings profile name.
+          type: String
+        - contextPath: Core.EndpointPolicy.Description
+          description: The policy description.
+          type: String
+    - name: core-delete-endpoint-policy
+      description: Deletes one or more existing endpoint policies from the policy table.
+      hidden: false
+      arguments:
+        - name: policy_name
+          description: A comma-separated list of the policy names to delete. Either this or policy_id must be provided.
+          type: String
+          isArray: true
+        - name: policy_id
+          description: A comma-separated list of the policy IDs to delete. Either this or policy_name must be provided.
+          type: String
+          isArray: true
+        - name: platform
+          description: The platform type to narrow down the policy search. Required to identify the correct policy.
+          required: true
+          auto: PREDEFINED
+          predefined:
+            - windows
+            - mac
+            - linux
+            - android
+            - ios
+            - serverless
+          type: String
+      outputs:
+        - contextPath: Core.DeletedEndpointPolicy.PolicyName
+          description: The name of the deleted policy.
+          type: String
+        - contextPath: Core.DeletedEndpointPolicy.PolicyID
+          description: The ID of the deleted policy.
+          type: String
+        - contextPath: Core.DeletedEndpointPolicy.Platform
+          description: The platform type of the deleted policy.
+          type: String
+        - contextPath: Core.DeletedEndpointPolicy.Priority
+          description: The priority level of the deleted policy.
+          type: Number
+        - contextPath: Core.DeletedEndpointPolicy.Deleted
+          description: Confirmation flag that the policy was deleted (always true).
+          type: Boolean
   runonce: false
   script: "-"
   subtype: python3
