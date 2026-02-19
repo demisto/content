@@ -1,6 +1,6 @@
 {
     "name": "Adaptive Shield SSPM",
-    "description": "Adaptive Shield is a SaaS Security Posture Management (SSPM) platform designed to provide continuous monitoring and security for an organization's SaaS applications. It offers comprehensive visibility into configurations, user permissions, and integrations across numerous critical SaaS platforms, including Microsoft 365, Salesforce, Google Workspace, and Slack. The platform automates the detection of misconfigurations, compliance gaps, and risky user behaviors, and provides guided remediation steps to minimize exposure.",
+    "description": "Adaptive Shield SSPM Event Collector fetches security check events from Adaptive Shield and sends them to Cortex XSIAM.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
