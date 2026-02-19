@@ -2429,18 +2429,16 @@ def get_ai_model_activity_command(client: Client, args: dict) -> CommandResults:
     asset_ids = argToList(args.get("asset_id"))
     demisto.debug(f"Parsed asset_ids: {asset_ids}")
 
-    # Build filter for asset_id
     filter_builder = FilterBuilder()
     filter_builder.add_field("asset_id", FilterType.EQ, asset_ids)
     filter_dict = filter_builder.to_dict()
     demisto.debug(f"Built filter_dict: {filter_dict}")
 
-    # Build request data using the standard webapp pattern
     request_data = build_webapp_request_data(
         table_name=AI_MODEL_ACTIVITY_TABLE,
         filter_dict=filter_dict,
-        limit=len(asset_ids),  # Limit to the number of asset IDs requested
-        sort_field=None,  # No sorting specified in ticket
+        limit=len(asset_ids),
+        sort_field=None,
     )
     demisto.debug(f"Built request_data: {request_data}")
 
