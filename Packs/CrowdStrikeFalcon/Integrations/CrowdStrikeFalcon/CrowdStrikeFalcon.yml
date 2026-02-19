@@ -5371,6 +5371,92 @@ script:
     - contextPath: CrowdStrike.CnappAlert.severity
       description: The severity of the alert.
       type: String
+  - arguments:
+    - name: repository
+      description: |
+        The repository to run the query against.
+      auto: PREDEFINED
+      predefined:
+      - search-all
+      - third-party
+      - falcon_for_it_view
+      - forensics_view
+      - investigate_view
+      defaultValue: search-all
+    - name: query
+      description: 'The CQL query to use for the search. Note: Double quotes (“) and backslashes (\) in the queryString must be escaped with a backslash to ensure they are properly interpreted. Example: query="#event_simpleName = \"Event_name\""", For more details see: https://library.humio.com/data-analysis/syntax.html.'
+      required: true
+    - name: start
+      description: |
+        The start of the search window, based on the event timestamp.
+        Note: 'end' must be later than 'start'.
+        If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).
+        Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000).
+    - name: end
+      description: |
+        The end of the search window, based on the event timestamp.
+        Note: 'end' must be later than 'start'.
+        If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).
+        Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000).
+    - name: around_event_id
+      description: The ID of the event to search around. Must be provided together with around_timestamp.
+    - name: around_number_events_before
+      description: Number of events to return before the target event. Requires around_event_id and around_timestamp.
+    - name: around_number_events_after
+      description: Number of events to return after the target event. Requires around_event_id and around_timestamp.
+    - name: around_timestamp
+      description: Timestamp for around search. Must be provided together with around_event_id.
+    - name: ingest_start
+      description: |
+        The start of the search window, based on the event ingesttimestamp.
+        Note: 'ingest_end' must be later than 'ingest_start'.
+        If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).
+        Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000).
+    - name: ingest_end
+      description: |
+        The end of the search window, based on the event ingesttimestamp.
+        Note: 'ingest_end' must be later than 'ingest_start'.
+        If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).
+        Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000).
+    - name: use_ingest_time
+      description: When true, the server uses ingest_start/ingest_end as the query window. when false (or not set), it uses start/end. If both windows are provided, results are constrained by BOTH (AND).
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: limit
+      description: Maximum number of events to return. Ignored when around_number_events_before or around_number_events_after parameters are specified.
+      defaultValue: '50'
+    - name: interval_in_seconds
+      description: Interval between polling attempts in seconds. To prevent search timeouts, set this value within the 60–90 second range.
+      defaultValue: '60'
+    - name: timeout_in_seconds
+      description: Timeout for polling in seconds.
+      defaultValue: '600'
+    - name: job_id
+      description: Internal argument for polling - job ID from previous run.
+      hidden: true
+    - name: wait_for_result
+      hidden: true
+      description: Whether to poll for results.
+      auto: PREDEFINED
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
+    description: 'Search NGSIEM historical events. Requires NGSIEM scope with read and write permissions.'
+    name: cs-falcon-search-ngsiem-events
+    polling: true
+    outputs:
+    - contextPath: CrowdStrike.NGSiemEvent
+      description: The list of all events returned from the search.
+      type: Array
+    - contextPath: CrowdStrike.NGSiemEvent.id
+      description: The event ID.
+      type: String
+    - contextPath: CrowdStrike.NGSiemEvent.timestamp
+      description: Event timestamp.
+      type: String
   dockerimage: demisto/py3-tools:1.0.0.6308650
   isfetch: true
   isfetch:marketplacev2: false

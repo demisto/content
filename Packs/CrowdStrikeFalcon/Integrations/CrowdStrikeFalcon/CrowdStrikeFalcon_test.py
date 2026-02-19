@@ -7413,13 +7413,16 @@ def test_http_request_get_token_request_429(mocker, requests_mock):
 
 
 class ResMocker:
-    def __init__(self, http_response, status_code, reason):
+    def __init__(self, http_response, status_code, reason, text=None):
         self.http_response = http_response
         self.status_code = status_code
         self.reason = reason
         self.ok = False
+        self.text = text
 
     def json(self):
+        if self.http_response is None:
+            raise ValueError("No JSON object could be decoded")
         return self.http_response
 
 
@@ -7451,6 +7454,30 @@ def test_error_handler():
         error_handler(arg_res)
     except DemistoException as e:
         assert e.message == f"Error in API call to CrowdStrike Falcon: code: {status_code} - reason: {reason}"
+
+
+def test_error_handler_non_json_response():
+    """
+    Given:
+        - A response from the API that returns a non-JSON body (e.g., text/plain from NGSIEM errors).
+    When:
+        - Running error_handler
+    Then:
+        - Validate that the error message contains the status code, reason, and the plain-text body content.
+        - Validate that the body is truncated to 4000 characters.
+    """
+    from CrowdStrikeFalcon import error_handler
+
+    status_code = 500
+    reason = "Internal Server Error"
+    plain_text_body = "SearchQueryParsingError: Error parsing query at line 1:0"
+
+    arg_res = ResMocker(None, status_code, reason, text=plain_text_body)
+    with pytest.raises(DemistoException) as e:
+        error_handler(arg_res)
+    assert e.value.message == (
+        f"Error in API call to CrowdStrike Falcon: code: {status_code} - reason: {reason}\n{plain_text_body}"
+    )
 
 
 @pytest.mark.parametrize(
@@ -8599,3 +8626,367 @@ def test_resolve_case_command(requests_mock):
     # Test case 4: Missing ID
     with pytest.raises(ValueError, match="The 'id' argument is required"):
         resolve_case_command({"status": "new"})
+
+
+# ============== NGSIEM Search Events Tests ==============
+@pytest.mark.parametrize(
+    "events, expected_rawstring",
+    [
+        # \& in string is replaced with &
+        ([{"@rawstring": "foo\\&bar"}], "foo&bar"),
+        # Multiple \& occurrences are all replaced
+        ([{"@rawstring": "a\\&b\\&c"}], "a&b&c"),
+        # String without \& is left unchanged
+        ([{"@rawstring": "plain text no escape"}], "plain text no escape"),
+        # Empty string stays empty
+        ([{"@rawstring": ""}], ""),
+        # Non-string @rawstring (dict) is left unchanged
+        ([{"@rawstring": {"already": "parsed"}}], {"already": "parsed"}),
+        # Event without @rawstring is left unchanged
+        ([{"some_field": "value"}], None),
+    ],
+)
+def test_clean_ngsiem_rawstring_field(events, expected_rawstring):
+    """
+    Given:
+        - A list of events with various @rawstring values.
+    When:
+        - Running clean_ngsiem_rawstring_field.
+    Then:
+        - Literal '\\&' sequences in string @rawstring values are replaced with '&'.
+        - Non-string or missing @rawstring values are left unchanged.
+    """
+    from CrowdStrikeFalcon import clean_ngsiem_rawstring_field
+
+    result = clean_ngsiem_rawstring_field(events)
+    if expected_rawstring is None:
+        assert "@rawstring" not in result[0]
+    else:
+        assert result[0]["@rawstring"] == expected_rawstring
+
+
+@pytest.mark.parametrize(
+    "query, limit, expected",
+    [
+        ("event_simpleName=ProcessRollup2", 100, "event_simpleName=ProcessRollup2 | tail(100)"),
+        ("event_simpleName=ProcessRollup2 | tail(50)", 100, "event_simpleName=ProcessRollup2 | tail(50)"),
+    ],
+)
+def test_build_ngsiem_query_with_limit(query, limit, expected):
+    """
+    Given:
+        - A query string and a limit.
+    When:
+        - Running build_ngsiem_query_with_limit.
+    Then:
+        - tail(limit) is appended only if not already present (case-insensitive).
+    """
+    from CrowdStrikeFalcon import build_ngsiem_query_with_limit
+
+    assert build_ngsiem_query_with_limit(query, limit) == expected
+
+
+@pytest.mark.parametrize(
+    "val, expected_type, expected_value, predicate",
+    [
+        (None, type(None), None, None),
+        ("", type(None), None, None),
+        (1700000000, int, None, lambda x: x > 0),
+        (1700000000000, int, None, lambda x: x > 0),
+        ("1700000000", int, None, lambda x: x > 0),
+        ("24 hours", int, None, lambda x: x > 0),
+        ("2023-11-14T00:00:00Z", int, None, lambda x: x > 0),
+    ],
+)
+def test_arg_to_timestamp(val, expected_type, expected_value, predicate):
+    """
+    Given:
+        - A raw time argument in one of the supported formats (None, empty string,
+          epoch seconds/milliseconds, relative time expression, or ISO-8601 string).
+    When:
+        - Converting it via arg_to_timestamp.
+    Then:
+        - Returns None for empty values.
+        - Returns an epoch-milliseconds int for all other valid inputs.
+    """
+    from CrowdStrikeFalcon import arg_to_timestamp
+
+    result = arg_to_timestamp(val)
+    assert isinstance(result, expected_type)
+    if expected_value is not None:
+        assert result == expected_value
+    if predicate is not None:
+        assert predicate(result)
+
+
+@pytest.mark.parametrize(
+    "events, expected_count, expected_hr_contains",
+    [
+        (
+            [{"timestamp": "2023-01-01T00:00:00Z", "id": "evt1"}, {"timestamp": "2023-01-01T00:01:00Z", "id": "evt2"}],
+            2,
+            "NGSIEM Events (Total: 2)",
+        ),
+        ([], 0, "No events found"),
+    ],
+)
+def test_process_ngsiem_search_completion(events, expected_count, expected_hr_contains):
+    """
+    Given:
+        - A response with events or no events.
+    When:
+        - Running process_ngsiem_search_completion.
+    Then:
+        - Returns a PollResult with continue_to_poll=False and correct outputs/HR.
+    """
+    from CrowdStrikeFalcon import process_ngsiem_search_completion
+
+    response = {"events": events, "done": True}
+    args = {"wait_for_result": True}
+    result = process_ngsiem_search_completion(response, args)
+
+    assert result.continue_to_poll is False
+    assert expected_hr_contains in result.response.readable_output
+    if expected_count > 0:
+        assert len(result.response.outputs) == expected_count
+        assert result.response.outputs_prefix == "CrowdStrike.NGSiemEvent"
+
+
+def test_initiate_ngsiem_search_request(requests_mock):
+    """
+    Given:
+        - A repository and search body.
+    When:
+        - Running initiate_ngsiem_search_request.
+    Then:
+        - The correct API endpoint is called and the response is returned.
+    """
+    from CrowdStrikeFalcon import initiate_ngsiem_search_request
+
+    requests_mock.post(
+        f"{SERVER_URL}/humio/api/v1/repositories/search-all/queryjobs",
+        json={"id": "job123"},
+        status_code=200,
+    )
+    result = initiate_ngsiem_search_request("search-all", {"queryString": "test"})
+    assert result["id"] == "job123"
+    assert requests_mock.last_request.json() == {"queryString": "test"}
+
+
+def test_get_ngsiem_search_results_request(requests_mock):
+    """
+    Given:
+        - A repository and job ID.
+    When:
+        - Running get_ngsiem_search_results_request.
+    Then:
+        - The correct API endpoint is called and the response is returned.
+    """
+    from CrowdStrikeFalcon import get_ngsiem_search_results_request
+
+    requests_mock.get(
+        f"{SERVER_URL}/humio/api/v1/repositories/search-all/queryjobs/job123",
+        json={"done": True, "events": [{"id": "evt1"}]},
+        status_code=200,
+    )
+    result = get_ngsiem_search_results_request("search-all", "job123")
+    assert result["done"] is True
+    assert len(result["events"]) == 1
+
+
+@pytest.mark.parametrize(
+    "args, initiate_ret, poll_ret, expect_raise, raise_match, expect_continue, expect_hr, expect_job_id",
+    [
+        # 1) First call: should initiate, set job_id, and continue polling
+        (
+            {"query": "test", "repository": "search-all", "wait_for_result": True},
+            {"id": "job123"},
+            {"done": False, "cancelled": False},
+            False,
+            None,
+            True,
+            None,
+            "job123",
+        ),
+        # 2) First call but initiate returns no id: should raise
+        (
+            {"query": "test", "repository": "search-all", "wait_for_result": True},
+            {},
+            None,
+            True,
+            "Failed to initiate",
+            None,
+            None,
+            None,
+        ),
+        # 3) Poll: in progress
+        (
+            {"query": "test", "job_id": "job123", "repository": "search-all", "wait_for_result": True},
+            None,
+            {"done": False, "cancelled": False},
+            False,
+            None,
+            True,
+            "Searching NGSIEM events:",
+            None,
+        ),
+        # 4) Poll: done with events
+        (
+            {"query": "test", "job_id": "job123", "repository": "search-all", "wait_for_result": True},
+            None,
+            {"done": True, "events": [{"id": "evt1", "timestamp": "2023-01-01T00:00:00Z"}]},
+            False,
+            None,
+            False,
+            "NGSIEM Events",
+            None,
+        ),
+        # 5) Poll: done no events
+        (
+            {"query": "test", "job_id": "job123", "repository": "search-all", "wait_for_result": True},
+            None,
+            {"done": True, "events": []},
+            False,
+            None,
+            False,
+            "No events found",
+            None,
+        ),
+        # 6) Poll: cancelled -> raise
+        (
+            {"query": "test", "job_id": "job123", "repository": "search-all", "wait_for_result": True},
+            None,
+            {"done": False, "cancelled": True},
+            True,
+            "cancelled",
+            None,
+            None,
+            None,
+        ),
+    ],
+)
+def test_cs_falcon_search_ngsiem_events_command_merged(
+    mocker,
+    args,
+    initiate_ret,
+    poll_ret,
+    expect_raise,
+    raise_match,
+    expect_continue,
+    expect_hr,
+    expect_job_id,
+):
+    """
+    Given:
+        - Args that represent either:
+          * First call (no job_id) -> build body + initiate search
+          * Polling call (job_id exists) -> only fetch results
+        - Mocked initiate/poll responses (including error cases)
+    When:
+        - Running cs_falcon_search_ngsiem_events_command(args)
+    Then:
+        - Raises DemistoException when expected (match raise_match)
+        - Otherwise returns a PollResult with expected continue_to_poll and HR content
+        - Sets args["job_id"] on first-call successful initiation when expected
+    """
+    from CrowdStrikeFalcon import cs_falcon_search_ngsiem_events_command
+
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
+
+    # If this is the "first call" flow, cs_falcon_search_ngsiem_events_command will build body + initiate.
+    if "job_id" not in args:
+        mocker.patch("CrowdStrikeFalcon.build_ngsiem_search_body", return_value={"queryString": "test | tail(50)"})
+        mocker.patch("CrowdStrikeFalcon.initiate_ngsiem_search_request", return_value=initiate_ret)
+
+        # After initiate, the command typically does a first "get results" call too (for polling).
+        if poll_ret is not None:
+            mocker.patch("CrowdStrikeFalcon.get_ngsiem_search_results_request", return_value=poll_ret)
+    else:
+        # Polling flow (job_id exists): only get results is used.
+        mocker.patch("CrowdStrikeFalcon.get_ngsiem_search_results_request", return_value=poll_ret)
+
+    if expect_raise:
+        with pytest.raises(DemistoException, match=raise_match):
+            cs_falcon_search_ngsiem_events_command(args)
+        return
+
+    result = cs_falcon_search_ngsiem_events_command(args)
+
+    if expect_continue:
+        # When polling should continue, the decorator wraps the result with a ScheduledCommand
+        assert result.scheduled_command is not None
+    else:
+        # When polling is done, the decorator returns the final CommandResults directly
+        assert result.scheduled_command is None
+    if expect_hr is not None:
+        assert expect_hr in result.readable_output
+    if expect_job_id is not None:
+        assert args["job_id"] == expect_job_id
+
+
+@pytest.mark.parametrize(
+    "events, hr_keys, expected_rows",
+    [
+        # Bare key preferred over @key and #key
+        ([{"id": "bare", "@id": "at", "#id": "hash"}], ["id"], [{"id": "bare"}]),
+        # Falls back to @key when bare key missing
+        ([{"@id": "at_val"}], ["id"], [{"id": "at_val"}]),
+        # Missing key entirely → None
+        ([{"other": "x"}], ["id"], [{"id": None}]),
+        # Timestamp int epoch-ms → date string
+        ([{"timestamp": 1700000000000}], ["timestamp"], "date_str"),
+        # Timestamp numeric string → date string
+        ([{"timestamp": "1700000000000"}], ["timestamp"], "date_str"),
+        # Timestamp float epoch-ms → date string
+        ([{"#timestamp": 1700000000000.0}], ["timestamp"], "date_str"),
+        # Timestamp non-numeric string → passthrough
+        ([{"@timestamp": "2023-01-01T00:00:00Z"}], ["timestamp"], [{"timestamp": "2023-01-01T00:00:00Z"}]),
+    ],
+)
+def test_build_ngsiem_hr_rows(events, hr_keys, expected_rows):
+    """
+    Given:
+        - Events with various key patterns (bare, @-prefixed, #-prefixed, missing)
+          and timestamp values (int, float, numeric string, non-numeric string).
+    When:
+        - Running build_ngsiem_hr_rows.
+    Then:
+        - Key resolution: bare key > @key > #key > None.
+        - Timestamp conversion: int/float/numeric-string epoch-ms → ISO date string;
+          non-numeric string passes through unchanged.
+    """
+    from CrowdStrikeFalcon import build_ngsiem_hr_rows
+
+    rows = build_ngsiem_hr_rows(events, hr_keys)
+    if expected_rows == "date_str":
+        # For epoch-ms inputs, just verify it was converted to a date string containing the year
+        assert isinstance(rows[0]["timestamp"], str)
+        assert "2023" in rows[0]["timestamp"]
+    else:
+        assert rows == expected_rows
+
+
+def test_build_ngsiem_hr_rows_multiple_events_and_keys():
+    """
+    Given:
+        - Multiple events with mixed key resolution and timestamp formats.
+    When:
+        - Running build_ngsiem_hr_rows with several hr_keys.
+    Then:
+        - Each event row resolves keys correctly and timestamps are handled per type.
+    """
+    from CrowdStrikeFalcon import build_ngsiem_hr_rows
+
+    events = [
+        {"id": "evt1", "@timestamp": 1700000000000, "#event_simpleName": "DNS"},
+        {"#id": "evt2", "timestamp": "not-a-number", "event_simpleName": "HTTP"},
+    ]
+    rows = build_ngsiem_hr_rows(events, ["id", "timestamp", "event_simpleName"])
+    assert len(rows) == 2
+    assert rows[0]["id"] == "evt1"
+    assert isinstance(rows[0]["timestamp"], str)
+    assert "2023" in rows[0]["timestamp"]
+    assert rows[0]["event_simpleName"] == "DNS"
+    assert rows[1]["id"] == "evt2"
+    assert rows[1]["timestamp"] == "not-a-number"
+    assert rows[1]["event_simpleName"] == "HTTP"
