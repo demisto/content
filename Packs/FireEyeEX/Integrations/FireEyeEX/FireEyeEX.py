@@ -499,23 +499,36 @@ def fetch_incidents(
         demisto.info(f"{INTEGRATION_NAME} setting next run to: {next_run!s}")
         return next_run, []
 
+    # Sort alerts by occurred time
+    all_alerts.sort(key=lambda x: dateparser.parse(x.get("occurred")))
     alerts = all_alerts[:max_fetch]
+
     last_alert_ids = last_run.get("last_alert_ids", [])
+    current_last_run_time = dateparser.parse(next_run.get("time"))
     incidents = []
 
     for alert in alerts:
+        alert_time = dateparser.parse(alert.get("occurred"),settings={"TO_TIMEZONE": "UTC"})
         alert_id = str(alert.get("id"))
-        if alert_id not in last_alert_ids:  # check that event was not fetched in the last fetch
-            incident = {
-                "name": f"{INTEGRATION_NAME} Alert: {alert_id}",
-                "occurred": dateparser.parse(
-                    alert.get("occurred"),  # type: ignore[union-attr]
-                    settings={"TO_TIMEZONE": "UTC"},
-                ).strftime(DATE_FORMAT),  # type: ignore
-                "severity": alert_severity_to_dbot_score(alert.get("severity")),
-                "rawJSON": json.dumps(alert),
-            }
-            incidents.append(incident)
+
+        if alert_time < current_last_run_time:
+            continue
+
+        if alert_time == current_last_run_time and alert_id in last_alert_ids:
+            continue
+
+        incident = {
+            "name": f"{INTEGRATION_NAME} Alert: {alert_id}",
+            "occurred": alert_time.strftime(DATE_FORMAT),
+            "severity": alert_severity_to_dbot_score(alert.get("severity")),
+            "rawJSON": json.dumps(alert),
+        }
+        incidents.append(incident)
+
+        if alert_time > current_last_run_time:
+            current_last_run_time = alert_time
+            last_alert_ids = [alert_id]
+        else:
             last_alert_ids.append(alert_id)
 
     if not incidents:
