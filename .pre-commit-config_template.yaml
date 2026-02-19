@@ -72,6 +72,12 @@ repos:
 
 - repo: local
   hooks:
+  - id: check-invisible-chars
+    name: Check AGENTS.md for invisible characters
+    entry: python3 .github/scripts/check_invisible_chars.py
+    language: system
+    files: "(^|/)AGENTS\\.md$"
+
   - id: mdx-validation
     name: Validate README.md files with MDX
     entry: node .hooks/validate-mdx.js
