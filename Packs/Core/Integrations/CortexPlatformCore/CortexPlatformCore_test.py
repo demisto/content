@@ -10122,6 +10122,8 @@ class TestCreateEndpointPolicyCommand:
         # Verify platform-specific defaults were applied
         for profile_type, expected_value in expected_profiles.items():
             assert captured_profile_args.get(profile_type) == expected_value
+        
+        assert result.outputs["PolicyName"] == "Test Policy"
 
     def test_create_endpoint_policy_command_custom_profiles_override_defaults(self, mocker):
         """

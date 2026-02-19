@@ -3413,14 +3413,6 @@ script:
           description: The name of the exceptions profile to use. Default is "Default (No Exceptions)".
           defaultValue: "Default (No Exceptions)"
           type: String
-        - name: web_and_api_profile
-          description: The name of the web and API protection profile to use. Default is "Default". Only applicable for Linux and CaaS Linux platforms.
-          defaultValue: "Default"
-          type: String
-        - name: identity_profile
-          description: The name of the identity protection profile to use. Default is "Default". Only applicable for Windows platform.
-          defaultValue: "Default"
-          type: String
       outputs:
         - contextPath: Core.EndpointPolicy.PolicyName
           description: The name of the created policy.
