@@ -60,6 +60,10 @@ ignore=GR103
 [file:Packs/CortexResponseAndRemediation/Playbooks/silent-playbook-Rare_remote_service_change_or_creation_via_Remote_Service_SVCCTL_RPC_interface.yml]
 ignore=GR109
 
+#GR109 fails on various items used by the playbook, but the playbook handles those dependencies
+[file:silent-playbook-User_attempted_to_connect_from_a_suspicious_country.yml]
+ignore=GR109
+
 #GR109 fails on playbooks with different supported moduels than the pack
 [file:Packs/CortexResponseAndRemediation/Triggers/silent-Trigger_-_Rare_remote_service_change_or_creation_via_Remote_Service_SVCCTL_RPC_interface.json]
 ignore=GR109
