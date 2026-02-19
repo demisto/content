@@ -57,11 +57,11 @@ ignore=GR103
 ignore=GR103
 
 
-#GR109 fails on playbooks with different supported moduels than the pack
+#GR109 fails on playbooks with different supported modules than the pack
 [file:silent-playbook-Regsvr32_may_have_run_code_from_an_untrusted_source.yml]
 ignore=GR109
 
-#GR109 fails on playbooks with different supported moduels than the pack
+#GR109 fails on playbooks with different supported modules than the pack
 [file:silent-Trigger_-_Regsvr32_may_have_run_code_from_an_untrusted_source.json]
 ignore=GR109
 
