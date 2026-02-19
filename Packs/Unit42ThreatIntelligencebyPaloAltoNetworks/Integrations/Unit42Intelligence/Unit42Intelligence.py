@@ -136,7 +136,7 @@ def unit42_error_handler(res: requests.Response):
 
 def encode_url_indicator(indicator_value: str) -> str:
     """
-    Double-encode URLs to handle special characters like < and >
+    Double-encode URLs to handle special characters like < and > and URLs without schemes
 
     Args:
         indicator_value: The URL to encode
@@ -144,20 +144,37 @@ def encode_url_indicator(indicator_value: str) -> str:
     Returns:
         Encoded URL string
     """
-    # Step 1: Parse the URL to separate components
-    parsed = urllib.parse.urlparse(indicator_value)
+    # Step 1: Ensure URL has a scheme for proper parsing
+    # If no scheme is present, urlparse treats the entire URL as a path
+    # which causes incorrect encoding (e.g., domain slashes get encoded)
+    url_to_parse = indicator_value
+    had_scheme = indicator_value.startswith(('http://', 'https://', 'ftp://'))
+    if not had_scheme:
+        url_to_parse = 'http://' + indicator_value
 
-    # Step 2: Encode special characters in the query string (keeping '=' safe)
+    # Step 2: Parse the URL to separate components
+    parsed = urllib.parse.urlparse(url_to_parse)
+
+    # Step 3: Encode special characters in the path (keeping '/' safe)
+    # This handles characters like ^, |, <, > in the path
+    encoded_path = urllib.parse.quote(parsed.path, safe="/") if parsed.path else ""
+
+    # Step 4: Encode special characters in the query string (keeping '=' and '&' safe)
     # This converts query=<test> to query=%3Ctest%3E
-    encoded_query = urllib.parse.quote(parsed.query, safe="=") if parsed.query else ""
+    encoded_query = urllib.parse.quote(parsed.query, safe="=&") if parsed.query else ""
 
-    # Step 3: Reconstruct the URL with the encoded query
-    temp_url = urllib.parse.urlunparse(parsed._replace(query=encoded_query))
+    # Step 5: Reconstruct the URL with the encoded path and query
+    temp_url = urllib.parse.urlunparse(parsed._replace(path=encoded_path, query=encoded_query))
 
-    # Step 4: Final full URL encoding for the API request
-    # This converts the entire URL including the already-encoded query
-    # Example: https://example.com/search?query=%3Ctest%3E becomes
-    # https%3A%2F%2Fexample.com%2Fsearch%3Fquery%3D%253Ctest%253E
+    # Step 6: Remove the scheme if it was added for parsing
+    # The API expects URLs without the scheme prefix
+    if not had_scheme:
+        temp_url = temp_url.replace('http://', '', 1)
+
+    # Step 7: Final full URL encoding for the API request
+    # This converts the entire URL including the already-encoded path and query
+    # Example: example.com/search?query=%3Ctest%3E becomes
+    # example.com%2Fsearch%3Fquery%3D%253Ctest%253E
     return urllib.parse.quote(temp_url, safe="")
 
 

@@ -27,6 +27,7 @@ from Unit42Intelligence import (
     get_threat_object_score,
     unit42_error_handler,
     parse_url_list,
+    encode_url_indicator,
     INTEGRATION_NAME,
 )
 from CommonServerPython import *
@@ -1950,3 +1951,50 @@ def test_parse_url_list_custom_scheme():
     assert result[0] == "custom://example.com"
     assert result[1] == "myscheme://test.com"
     assert result[2] == "http://normal.com"
+
+
+def test_encode_url_indicator_with_special_characters():
+    """
+    Given:
+        - URLs with special characters (^, |, <, >) in the path
+        - URLs with and without schemes
+    When:
+        - encode_url_indicator is called
+    Then:
+        - Returns properly encoded URLs
+        - Special characters in path are double-encoded
+        - URLs without schemes have the scheme removed after encoding
+        - URLs with schemes keep the scheme and it gets encoded
+    """
+    # Test URL without scheme and with special characters (^ and |) - from XSUP-63627
+    url_without_scheme = "qtx.omeclk.com/portal/wts/ue^cmq6kojqbc-7barvjmlsterf-|g7eot3847nnpd"
+    result = encode_url_indicator(url_without_scheme)
+    # Should NOT include http:// in the final result (scheme is removed)
+    # Special characters should be double-encoded: ^ -> %5E -> %255E, | -> %7C -> %257C
+    assert result == "qtx.omeclk.com%2Fportal%2Fwts%2Fue%255Ecmq6kojqbc-7barvjmlsterf-%257Cg7eot3847nnpd"
+    assert "%255E" in result  # ^ encoded twice
+    assert "%257C" in result  # | encoded twice
+    assert "http" not in result  # Scheme should be removed
+
+    # Test URL with scheme and special characters
+    url_with_scheme = "http://qtx.omeclk.com/portal/wts/ue^cmq6kojqbc-7barvjmlsterf-|g7eot3847nnpd"
+    result_with_scheme = encode_url_indicator(url_with_scheme)
+    # Should preserve and encode http://
+    assert "http%3A%2F%2Fqtx.omeclk.com%2Fportal%2Fwts%2Fue%255E" in result_with_scheme
+    assert "%255E" in result_with_scheme  # ^ encoded twice
+    assert "%257C" in result_with_scheme  # | encoded twice
+
+    # Test URL with < and > characters
+    url_with_brackets = "https://example.com/search?query=<test>"
+    result_brackets = encode_url_indicator(url_with_brackets)
+    assert "https%3A%2F%2Fexample.com%2Fsearch%3Fquery%3D%253Ctest%253E" == result_brackets
+
+    # Test normal URL without special characters
+    normal_url = "https://example.com/path?param=value"
+    result_normal = encode_url_indicator(normal_url)
+    assert "https%3A%2F%2Fexample.com%2Fpath%3Fparam%3Dvalue" == result_normal
+
+    # Test URL with commas in query parameters
+    url_with_commas = "https://fonts.googleapis.com/css?family=Roboto:100,100italic,200"
+    result_commas = encode_url_indicator(url_with_commas)
+    assert "https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%253A100%252C100italic%252C200" == result_commas
