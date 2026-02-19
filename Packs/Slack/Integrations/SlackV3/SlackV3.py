@@ -5,7 +5,7 @@ import ssl
 import threading
 from typing import Literal, TypedDict, get_args
 from urllib.parse import urlparse
-from datetime import UTC
+from datetime import UTC, datetime
 import dateparser
 import aiohttp
 import demistomock as demisto  # noqa: F401
@@ -18,6 +18,11 @@ from slack_sdk.socket_mode.response import SocketModeResponse
 from slack_sdk.web.async_client import AsyncWebClient
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
+
+import json
+import re
+
+from SlackUtilsApiModule import *
 
 """ CONSTANTS """
 ALLOWED_HTTP_VERBS = Literal["POST", "GET"]
@@ -89,8 +94,391 @@ DEMISTO_API_KEY: str
 DEMISTO_URL: str
 IGNORE_RETRIES: bool
 EXTENSIVE_LOGGING: bool
+ENABLED_AI_ASSISTANT: bool
+
 
 """ HELPER FUNCTIONS """
+
+# ============================================================================
+# Slack Assistant Handler - Implementation of AssistantMessagingHandler for Slack
+# ============================================================================
+
+
+class SlackAssistantHandler(AssistantMessagingHandler):
+    """
+    Slack implementation of AssistantMessagingHandler.
+    Handles all Assistant interactions specific to Slack platform.
+    """
+
+    def __init__(self):
+        """Initialize the Slack Assistant handler"""
+        super().__init__()
+
+    # ============================================================================
+    # Implementation of abstract methods from AssistantMessagingHandler
+    # ============================================================================
+
+    async def send_message_async(
+        self,
+        channel_id: str,
+        message: str,
+        thread_id: str = "",
+        blocks: list | None = None,
+        attachments: list | None = None,
+        ephemeral: bool = False,
+        user_id: str = "",
+    ):
+        """
+        Send a message to Slack.
+
+        Args:
+            channel_id: The Slack channel ID
+            message: The message text
+            thread_id: Optional thread timestamp
+            blocks: Optional Slack blocks
+            attachments: Optional attachments
+            ephemeral: Whether message should be ephemeral
+            user_id: User ID for ephemeral messages
+        """
+        return send_message_to_destinations(
+            [channel_id],
+            message,
+            thread_id,
+            blocks=blocks or [],
+            attachments=attachments,
+            ephemeral_message=ephemeral,
+            user_id=user_id,
+        )
+
+    async def update_message(
+        self,
+        channel_id: str,
+        message_ts: str,
+        text: str = "",
+        blocks: list | None = None,
+    ):
+        """
+        Update an existing Slack message.
+
+        Args:
+            channel_id: The Slack channel ID
+            message_ts: The message timestamp
+            text: Optional new text
+            blocks: Optional new blocks
+        """
+        body: Dict = {"channel": channel_id, "ts": message_ts}
+        if text:
+            body["text"] = text
+        if blocks:
+            body["blocks"] = blocks
+
+        return await send_slack_request_async(client=ASYNC_CLIENT, method="chat.update", body=body)
+
+    def delete_message_sync(
+        self,
+        channel_id: str,
+        message_ts: str,
+    ):
+        """
+        Delete an existing Slack message.
+        Implements the abstract method from AssistantMessagingHandler.
+
+        Args:
+            channel_id: The Slack channel ID
+            message_ts: The message timestamp
+        """
+        body: Dict = {"channel": channel_id, "ts": message_ts}
+        return send_slack_request_sync(CLIENT, "chat.delete", body=body)
+
+    async def get_user_info(self, user_id: str) -> dict:
+        """
+        Get Slack user information.
+
+        Args:
+            user_id: The Slack user ID
+
+        Returns:
+            User information dictionary
+        """
+        return await get_user_details(user_id)  # type: ignore[return-value]
+
+    async def get_thread_history(self, channel_id: str, thread_ts: str, limit: int = 20) -> list:
+        """
+        Get Slack conversation history.
+
+        Args:
+            channel_id: The channel ID
+            thread_ts: The thread timestamp
+            limit: Maximum number of messages
+
+        Returns:
+            List of messages
+        """
+        response = await send_slack_request_async(
+            ASYNC_CLIENT, "conversations.replies", http_verb="GET", body={"channel": channel_id, "ts": thread_ts, "limit": limit}
+        )
+
+        return response.get("messages", [])
+
+    def format_user_mention(self, user_id: str) -> str:
+        """
+        Format a Slack user mention.
+
+        Args:
+            user_id: The Slack user ID
+
+        Returns:
+            Formatted user mention string (e.g., "<@U12345>")
+        """
+        return f"<@{user_id}>"
+
+    def normalize_message_from_user(self, text: str) -> str:
+        """
+        Normalize Slack message for backend by removing markdown formatting.
+        Implements the abstract method from AssistantMessagingHandler.
+
+        Args:
+            text: The Slack message text with markdown formatting
+
+        Returns:
+            Normalized text suitable for backend
+        """
+        return normalize_slack_message_from_user(text)
+
+    def prepare_message_blocks(self, message: str, message_type: str) -> tuple:
+        """
+        Prepare Slack-specific message blocks.
+
+        Args:
+            message: The message text
+            message_type: The message type
+
+        Returns:
+            Tuple of (blocks, attachments)
+        """
+        return prepare_slack_message(message, message_type)
+
+    def create_agent_selection_ui(self, agents: list) -> list:
+        """
+        Create Slack agent selection UI.
+
+        Args:
+            agents: List of available agents
+
+        Returns:
+            Slack blocks for agent selection
+        """
+        return create_agent_selection_blocks(agents)
+
+    def create_approval_ui(self) -> list:
+        """
+        Create Slack approval UI for sensitive actions.
+
+        Returns:
+            Slack blocks for approval
+        """
+        return get_approval_buttons_block()
+
+    def create_feedback_ui(self, message_id: str) -> dict:
+        """
+        Create Slack feedback UI.
+
+        Args:
+            message_id: The message ID for tracking
+
+        Returns:
+            Slack feedback buttons block
+        """
+        return get_feedback_buttons_block(message_id)
+
+    def post_agent_response_sync(
+        self, channel_id: str, thread_id: str, blocks: list, attachments: list, agent_name: str = "", fallback_text: str = ""
+    ) -> dict:
+        """
+        Send a new message to Slack.
+        Implements the abstract method from AssistantMessagingHandler.
+
+        Args:
+            channel_id: The channel ID
+            thread_id: The thread ID
+            blocks: Message blocks
+            attachments: Message attachments
+            agent_name: Optional agent name for bot display
+            fallback_text: Plain text to use if blocks/attachments fail
+
+        Returns:
+            Response dict with 'ts' if successful
+        """
+        try:
+            response = send_message_to_destinations([channel_id], "", thread_id, blocks, attachments, bot_name=agent_name)
+            if response:
+                return {"ts": response.get("ts")}
+            return {}
+        except SlackApiError as e:
+            # If blocks/attachments are invalid, send as plain text
+            if "invalid_blocks" in str(e):
+                demisto.error(f"Invalid blocks format, sending as plain text: {e}")
+                if fallback_text:
+                    response = send_message_to_destinations([channel_id], fallback_text, thread_id, bot_name=agent_name)
+                    if response:
+                        return {"ts": response.get("ts")}
+            raise
+
+    def update_context(self, context_updates: dict):
+        """
+        Update the integration context.
+        Implements the abstract method from AssistantMessagingHandler.
+
+        Args:
+            context_updates: Dictionary of updates to apply
+        """
+        set_to_integration_context_with_retries(context_updates, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+
+    async def open_feedback_modal(
+        self,
+        trigger_id: str,
+        message_id: str,
+        channel_id: str,
+        thread_ts: str,
+    ):
+        """
+        Open a feedback modal for negative feedback collection.
+        Implements the abstract method from AssistantMessagingHandler.
+        Delegates to get_feedback_modal() for modal construction.
+
+        Args:
+            trigger_id: The trigger ID for opening the modal
+            message_id: The message ID for tracking
+            channel_id: The channel ID
+            thread_ts: The thread timestamp
+        """
+        # Get modal view from SlackUtilsApiModule (uses SDK classes)
+        modal_view = get_feedback_modal(message_id, channel_id, thread_ts)
+
+        # Use send_slack_request_async for retry logic
+        await send_slack_request_async(
+            client=ASYNC_CLIENT, method="views.open", body={"trigger_id": trigger_id, "view": modal_view.to_dict()}
+        )
+
+    async def get_conversation_context_formatted(
+        self, channel_id: str, thread_ts: str, bot_id: str, current_message_ts: str
+    ) -> str:
+        """
+        Retrieves and formats Slack conversation context.
+        Slack-specific implementation.
+
+        Args:
+            channel_id: The Slack channel ID
+            thread_ts: The thread timestamp
+            bot_id: The bot user ID
+            current_message_ts: The current message timestamp
+
+        Returns:
+            Formatted context string
+        """
+        try:
+            # Get conversation history
+            response = await send_slack_request_async(
+                ASYNC_CLIENT, "conversations.replies", http_verb="GET", body={"channel": channel_id, "ts": thread_ts, "limit": 20}
+            )
+            messages: list[dict] = response.get("messages", [])
+
+            if not messages:
+                demisto.debug(f"No conversation history found for thread {thread_ts}")
+                return ""
+
+            # Filter and collect context messages
+            context_messages = []
+            bot_mention = f"<@{bot_id}>"
+
+            for msg in reversed(messages):  # Process from oldest to newest
+                msg_ts = msg.get("ts", "")
+                msg_text = msg.get("text", "")
+                msg_user = msg.get("user", "")
+                msg_bot_id = msg.get("bot_id", "")
+
+                # Skip current message
+                if msg_ts == current_message_ts:
+                    continue
+
+                # Skip bot messages
+                if msg_bot_id or msg_user == bot_id:
+                    continue
+
+                # Stop if we hit a previous bot mention
+                if bot_mention in msg_text and msg_ts != current_message_ts:
+                    break
+
+                # Add to context
+                if msg_text and msg_user:
+                    # Get user name
+                    try:
+                        user_response = await send_slack_request_async(
+                            ASYNC_CLIENT, "users.info", http_verb="GET", body={"user": msg_user}
+                        )
+                        user_info: dict[str, Any] = user_response.get("user", {})
+                        user_name = user_info.get("real_name", user_info.get("name", msg_user))
+                    except Exception:
+                        user_name = msg_user
+
+                    context_messages.append({"user": user_name, "text": msg_text, "ts": msg_ts})
+
+                # Limit to 5 messages
+                if len(context_messages) >= 5:
+                    break
+
+            # Use base class formatting
+            context_str = self.format_context_messages(context_messages)
+            if context_str:
+                demisto.debug(f"Retrieved {len(context_messages)} context messages for thread {thread_ts}")
+            return context_str
+
+        except Exception as e:
+            demisto.error(f"Failed to get Slack conversation context: {e}")
+            return ""
+
+
+# Create a global instance of the handler
+slack_assistant_handler = SlackAssistantHandler()
+
+
+def send_agent_response():
+    """
+    Wrapper function for the send-agent-response command.
+    Delegates to SlackAssistantHandler.send_agent_response()
+    """
+    args = demisto.args()
+
+    # Format agent name if provided
+    agent_name = args.get("agent_name", "")
+    bot_name = AssistantMessages.AGENT_BOT_NAME_FORMAT.format(agent_name) if agent_name else ""
+
+    # Get current integration context
+    integration_context = get_integration_context(SYNC_CONTEXT)
+    assistant_context = integration_context.get(slack_assistant_handler.CONTEXT_KEY, {})
+    if isinstance(assistant_context, str):
+        assistant_context = json.loads(assistant_context)
+
+    channel_id = args["channel_id"]
+    thread_id = str(args["thread_id"])
+    assistant_id_key = f"{channel_id}_{thread_id}"
+
+    # Get user_id from assistant context if available
+    user_id = assistant_context.get(assistant_id_key, {}).get("user", "")
+
+    # Call the handler's send_agent_response method
+    slack_assistant_handler.send_agent_response(
+        channel_id=channel_id,
+        thread_id=thread_id,
+        message=args["message"],
+        message_type=args["message_type"],
+        message_id=args.get("message_id", ""),
+        completed=argToBoolean(args.get("completed", False)),
+        assistant_context=assistant_context,
+        assistant_id_key=assistant_id_key,
+        agent_name=bot_name,
+        user_id=user_id,
+    )
 
 
 def get_war_room_url(url: str) -> str:
@@ -234,6 +622,7 @@ def return_user_filter(user_to_search: str, users_list):
     users_filter = list(
         filter(
             lambda u: u.get("name", "").lower() == user_to_search
+            or u.get("id", "").lower() == user_to_search
             or u.get("profile", {}).get("display_name", "").lower() == user_to_search
             or u.get("profile", {}).get("email", "").lower() == user_to_search
             or u.get("profile", {}).get("real_name", "").lower() == user_to_search,
@@ -481,16 +870,17 @@ def find_mirror_by_investigation() -> dict:
     return mirror
 
 
-def set_name_and_icon(body: dict, method: str):
+def set_name_and_icon(body: dict, method: str, bot_name: str = ""):
     """
     If provided, sets a name and an icon for the bot if a message is sent.
     Args:
         body: The message body.
         method: The current API method.
+        bot_name: Optional name for the bot.
     """
-    if method == "chat.postMessage":
-        if BOT_NAME:
-            body["username"] = BOT_NAME
+    if method in ["chat.postMessage", "chat.postEphemeral"]:
+        if bot_name or BOT_NAME:
+            body["username"] = bot_name or BOT_NAME
         if BOT_ICON_URL:
             body["icon_url"] = BOT_ICON_URL
 
@@ -526,6 +916,7 @@ def send_slack_request_sync(
     http_verb: ALLOWED_HTTP_VERBS = "POST",
     body: Optional[dict] = None,
     file_upload_params: Optional[FileUploadParams] = None,
+    bot_name: str = "",
 ) -> SlackResponse:
     """
     Sends a request to slack API while handling rate limit errors.
@@ -536,6 +927,7 @@ def send_slack_request_sync(
         http_verb: The HTTP method to use.
         body: The request body.
         file_upload_params: An instance of FileUploadParams (for uploading using the file-upload APIs).
+        bot_name: Optional name for the bot.
 
     Returns:
         The Slack API response.
@@ -545,7 +937,7 @@ def send_slack_request_sync(
     if body is None:
         body = {}
 
-    set_name_and_icon(body, method)
+    set_name_and_icon(body, method, bot_name)
     total_try_time = 0
     while True:
         try:
@@ -909,6 +1301,11 @@ def long_running_loop():
             if MIRRORING_ENABLED:
                 check_for_mirrors()
             check_for_unanswered_questions()
+
+            # Cleanup expired Assistant conversations
+            if ENABLED_AI_ASSISTANT:
+                slack_assistant_handler.check_and_cleanup_assistant_conversations()
+
             if EXTENSIVE_LOGGING:
                 demisto.debug(f"Number of threads currently - {threading.active_count()}")
                 stats, _ = slack_get_integration_context_statistics()
@@ -1542,6 +1939,147 @@ def reset_listener_health():
     demisto.info("SlackV3 - Event handled successfully.")
 
 
+async def handle_entitlement_interactions(
+    data: dict,
+    event: dict,
+    user_id: str,
+    actions: list,
+    channel: str,
+    thread: Optional[str],
+    message_ts: str,
+    quick_check_payload: str,
+    user_profile: dict,
+) -> bool:
+    """
+    Handles entitlement-related interactions (SlackAsk responses).
+
+    Args:
+        data: The payload data
+        event: The event data
+        user_id: The user ID
+        actions: List of actions
+        channel: The channel ID
+        thread: The thread timestamp
+        message_ts: The message timestamp
+        quick_check_payload: JSON string of the payload
+
+    Returns:
+        True if entitlement was handled, False otherwise
+    """
+    action_text = ""
+
+    # Quick check for entitlement
+    if re.search(ENTITLEMENT_REGEX, quick_check_payload):
+        # At this point, we know there is an entitlement in the payload.
+        # This is a check to determine if the event contains actions which are sent as part of a SlackAsk response.
+        entitlement_reply = None
+        user = await get_user_details(user_id=user_id)
+        if len(actions) > 0:
+            entitlement_json = actions[0].get("value")
+            if entitlement_json is None:
+                return True
+            entitlement_string = json.loads(entitlement_json)
+            if actions[0].get("action_id") == "xsoar-button-submit":
+                demisto.debug("Handling a SlackBlockBuilder response.")
+                state = data.get("state", {})
+                if state:
+                    # Add user profile information to state object
+                    state.update({"xsoar-button-submit": "Successful", "submitting_user": user_profile})
+                    action_text = json.dumps(state)
+            else:
+                demisto.debug("Not handling a SlackBlockBuilder response.")
+                action_text = actions[0].get("text").get("text")
+            _ = answer_question(action_text, entitlement_string, user.get("profile", {}).get("email"))  # type: ignore
+            entitlement_reply = entitlement_string.get("reply", "Thank you for your reply.")
+        if entitlement_reply:
+            response_url = data.get("response_url", "")
+            await process_entitlement_reply(entitlement_reply, user_id, action_text, response_url=response_url)
+            reset_listener_health()
+            return True
+
+    return False
+
+
+async def handle_assistant_interactions(
+    data: dict,
+    event: dict,
+    user_id: str,
+    actions: list,
+    data_type: str,
+):
+    """
+    Handles Assistant AI interactions.
+
+    Args:
+        data: The payload data
+        event: The event data
+        user_id: The user ID
+        actions: List of actions
+        data_type: The type of data
+    """
+    if not ENABLED_AI_ASSISTANT:
+        return
+
+    # Check if this is a modal submission (e.g., feedback modal)
+    view = data.get("view", {})
+    is_modal_submission = is_assistant_modal_submission(data_type, view)
+
+    integration_context = get_integration_context(SYNC_CONTEXT)
+    bot_id = json.loads(integration_context.get("bot_id", '""'))
+    if not bot_id:
+        bot_id = get_bot_id()
+
+    is_assistant_action = is_assistant_interactive_response(actions)
+    text = event.get("text", "")
+    is_bot_mentioned = is_bot_mention(text, bot_id, event)
+
+    # Only proceed if bot was mentioned or it's an assistant action
+    if is_bot_mentioned or is_assistant_action or is_modal_submission:
+        # Get user details and prepare data
+        user = await get_user_details(user_id=user_id)
+        user_email = user.get("profile", {}).get("email", "")  # type: ignore[call-overload]
+        container = data.get("container", {})
+        channel_id = event.get("channel", "") or container.get("channel_id", "")
+        thread_ts = event.get("thread_ts", "") or event.get("ts", "") or container.get("thread_ts", "")
+
+        assistant_context = json.loads(integration_context.get(slack_assistant_handler.CONTEXT_KEY, "{}"))
+        assistant_id_key = f"{channel_id}_{thread_ts}"
+
+        demisto.debug(
+            f"Assistant interaction: user={user_email}, channel={channel_id}, thread={thread_ts}, "
+            f"bot_mentioned={is_bot_mentioned}, action={is_assistant_action}, modal={is_modal_submission}"
+        )
+
+        # Track original assistant to detect changes
+        original_assistant = json.dumps(assistant_context, sort_keys=True)
+
+        # Handle bot mention using the handler
+        if is_bot_mentioned:
+            message_ts = event.get("ts", "")
+            assistant_context = await slack_assistant_handler.handle_bot_mention(
+                text, user_id, user_email, channel_id, thread_ts, assistant_context, assistant_id_key, bot_id, message_ts
+            )
+
+        # Handle interactive actions (agent selection or approval)
+        elif is_assistant_action:
+            trigger_id = data.get("trigger_id", "")
+            message = data.get("message", {})
+            assistant_context = await slack_assistant_handler.handle_action(
+                actions, user_id, user_email, channel_id, thread_ts, message, assistant_context, assistant_id_key, trigger_id
+            )
+
+        elif is_modal_submission:
+            await handle_assistant_modal_submission(view, user_id, user_email, slack_assistant_handler)
+
+        # Save updated assistant context only if it was actually modified
+        updated_assistant = json.dumps(assistant_context, sort_keys=True)
+        if updated_assistant != original_assistant:
+            demisto.debug("Assistant context modified, saving to integration context")
+            set_to_integration_context_with_retries(
+                {slack_assistant_handler.CONTEXT_KEY: assistant_context, "bot_id": bot_id}, OBJECTS_TO_KEYS, SYNC_CONTEXT
+            )
+
+
 async def listen(client: SocketModeClient, req: SocketModeRequest):
     """
     This is the main listener which is attached to the open socket connection. When a SocketModeRequest has been received
@@ -1587,43 +2125,23 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         action_text = ""
         message_ts = message.get("ts", "")
         actions = data.get("actions", [])
-        state = data.get("state", {})
-        response_url = data.get("response_url", "")
         quick_check_payload = json.dumps(data)
 
         # Check if the message is from a bot so we can quit processing ASAP
         if is_bot_message(data):
             return
 
-        # Quick check for entitlement
-        if re.search(ENTITLEMENT_REGEX, quick_check_payload):
-            # At this point, we know there is an entitlement in the payload.
-            # This is a check to determine if the event contains actions which are sent as part of a SlackAsk response.
-            entitlement_reply = None
-            user = await get_user_details(user_id=user_id)
-            if len(actions) > 0:
-                channel = data.get("channel", {}).get("id", "")
-                entitlement_json = actions[0].get("value")
-                if entitlement_json is None:
-                    return
-                entitlement_string = json.loads(entitlement_json)
-                if actions[0].get("action_id") == "xsoar-button-submit":
-                    demisto.debug("Handling a SlackBlockBuilder response.")
-                    if state:
-                        # Add user profile information to state object
-                        state.update(
-                            remove_empty_elements({"xsoar-button-submit": "Successful", "submitting_user": user_profile})
-                        )
-                        action_text = json.dumps(state)
-                else:
-                    demisto.debug("Not handling a SlackBlockBuilder response.")
-                    action_text = actions[0].get("text").get("text")
-                _ = answer_question(action_text, entitlement_string, user.get("profile", {}).get("email"))  # type: ignore
-                entitlement_reply = entitlement_string.get("reply", "Thank you for your reply.")
-            if entitlement_reply:
-                await process_entitlement_reply(entitlement_reply, user_id, action_text, response_url=response_url)
-                reset_listener_health()
-                return
+        # Handle entitlement interactions (SlackAsk)
+        entitlement_handled = await handle_entitlement_interactions(
+            data, event, user_id, actions, channel, thread, message_ts, quick_check_payload, user_profile
+        )
+
+        # Handle Assistant AI interactions
+        await handle_assistant_interactions(data, event, user_id, actions, data_type)
+
+        if entitlement_handled:
+            # Entitlement was handled, stop processing
+            return
 
         # Check if slash command received. If so, ignore for now.
         if data.get("command", None):
@@ -2184,7 +2702,16 @@ def send_message(
     return response
 
 
-def send_message_to_destinations(destinations: list, message: str, thread_id: str, blocks: str = "") -> Optional[SlackResponse]:
+def send_message_to_destinations(
+    destinations: list,
+    message: str,
+    thread_id: str,
+    blocks: str | list = "",
+    attachments: list | None = None,
+    ephemeral_message: bool = False,
+    user_id: str = "",
+    bot_name: str = "",
+) -> Optional[SlackResponse]:
     """
     Sends a message to provided destinations Slack.
 
@@ -2193,6 +2720,10 @@ def send_message_to_destinations(destinations: list, message: str, thread_id: st
         message: The message to send.
         thread_id: Slack thread ID to send to.
         blocks: Message blocks to send
+        attachments: Optional attachments to include
+        ephemeral_message: Whether to send as ephemeral (only visible to specific user)
+        user_id: User ID for ephemeral messages (required if ephemeral_message=True)
+        bot_name: Optional name for the bot.
 
     Returns:
         The Slack send response.
@@ -2203,15 +2734,26 @@ def send_message_to_destinations(destinations: list, message: str, thread_id: st
     if message:
         clean_message = handle_tags_in_message_sync(message)
         body["text"] = clean_message
+
     if blocks:
-        block_list = json.loads(blocks, strict=False)
-        body["blocks"] = block_list
+        if isinstance(blocks, str):
+            body["blocks"] = json.loads(blocks, strict=False)
+        else:
+            body["blocks"] = blocks
+
+    if attachments:
+        body["attachments"] = attachments
+
     if thread_id:
         body["thread_ts"] = thread_id
 
+    post_method = "chat.postEphemeral" if ephemeral_message else "chat.postMessage"
+
     for destination in destinations:
         body["channel"] = destination
-        response = send_slack_request_sync(CLIENT, "chat.postMessage", body=body)
+        if ephemeral_message and user_id:
+            body["user"] = user_id
+        response = send_slack_request_sync(CLIENT, post_method, body=body, bot_name=bot_name)
 
     return response
 
@@ -2639,9 +3181,12 @@ def slack_edit_message():
     if message:
         clean_message = handle_tags_in_message_sync(message)
         body["text"] = clean_message
+
     if blocks:
-        block_list = json.loads(blocks, strict=False)
-        body["blocks"] = block_list
+        if isinstance(blocks, str):
+            body["blocks"] = json.loads(blocks, strict=False)
+        else:
+            body["blocks"] = blocks
     try:
         response = send_slack_request_sync(CLIENT, "chat.update", body=body)
 
@@ -2999,9 +3544,10 @@ def init_globals(command_name: str = ""):
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
     global DEFAULT_PERMITTED_NOTIFICATION_TYPES, CUSTOM_PERMITTED_NOTIFICATION_TYPES, PERMITTED_NOTIFICATION_TYPES
     global COMMON_CHANNELS, DISABLE_CACHING, CHANNEL_NOT_FOUND_ERROR_MSG, LONG_RUNNING_ENABLED, DEMISTO_API_KEY, DEMISTO_URL
-    global IGNORE_RETRIES, EXTENSIVE_LOGGING
+    global IGNORE_RETRIES, EXTENSIVE_LOGGING, ENABLED_AI_ASSISTANT
 
-    VERIFY_CERT = not demisto.params().get("unsecure", False)
+    params: dict[str, Any] = demisto.params()
+    VERIFY_CERT = not params.get("unsecure", False)
     if not VERIFY_CERT:
         SSL_CONTEXT = ssl.create_default_context()
         SSL_CONTEXT.check_hostname = False
@@ -3010,37 +3556,38 @@ def init_globals(command_name: str = ""):
         # Use default SSL context
         SSL_CONTEXT = None
 
-    BOT_TOKEN = demisto.params().get("bot_token", {}).get("password", "")
-    APP_TOKEN = demisto.params().get("app_token", {}).get("password", "")
-    USER_TOKEN = demisto.params().get("user_token", {}).get("password", "")
+    BOT_TOKEN = params.get("bot_token", {}).get("password", "")
+    APP_TOKEN = params.get("app_token", {}).get("password", "")
+    USER_TOKEN = params.get("user_token", {}).get("password", "")
     PROXIES = handle_proxy()
     PROXY_URL = PROXIES.get("http")  # aiohttp only supports http proxy
-    DEDICATED_CHANNEL = demisto.params().get("incidentNotificationChannel", None)
+    DEDICATED_CHANNEL = params.get("incidentNotificationChannel") or ""
     ASYNC_CLIENT = AsyncWebClient(token=BOT_TOKEN, ssl=SSL_CONTEXT, proxy=PROXY_URL)
     CLIENT = slack_sdk.WebClient(token=BOT_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT)
     USER_CLIENT = slack_sdk.WebClient(token=USER_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT)
-    SEVERITY_THRESHOLD = SEVERITY_DICT.get(demisto.params().get("min_severity", "Low"), 1)
-    ALLOW_INCIDENTS = demisto.params().get("allow_incidents", False)
-    INCIDENT_TYPE = demisto.params().get("incidentType")
-    BOT_NAME = demisto.params().get("bot_name")  # Bot default name defined by the slack plugin (3-rd party)
-    BOT_ICON_URL = demisto.params().get("bot_icon")  # Bot default icon url defined by the slack plugin (3-rd party)
-    MAX_LIMIT_TIME = int(demisto.params().get("max_limit_time", "60"))
-    PAGINATED_COUNT = int(demisto.params().get("paginated_count", "200"))
-    ENABLE_DM = demisto.params().get("enable_dm", True)
+    SEVERITY_THRESHOLD = SEVERITY_DICT.get(params.get("min_severity", "Low"), 1)
+    ALLOW_INCIDENTS = params.get("allow_incidents", False)
+    INCIDENT_TYPE = params.get("incidentType") or ""
+    BOT_NAME = params.get("bot_name") or ""  # Bot default name defined by the slack plugin (3-rd party)
+    BOT_ICON_URL = params.get("bot_icon") or ""  # Bot default icon url defined by the slack plugin (3-rd party)
+    MAX_LIMIT_TIME = int(params.get("max_limit_time", "60"))
+    PAGINATED_COUNT = int(params.get("paginated_count", "200"))
+    ENABLE_DM = params.get("enable_dm", True)
     DEFAULT_PERMITTED_NOTIFICATION_TYPES = ["externalAskSubmit", "externalFormSubmit"]
-    CUSTOM_PERMITTED_NOTIFICATION_TYPES = demisto.params().get("permitted_notifications", [])
+    CUSTOM_PERMITTED_NOTIFICATION_TYPES = params.get("permitted_notifications", [])
     PERMITTED_NOTIFICATION_TYPES = DEFAULT_PERMITTED_NOTIFICATION_TYPES + CUSTOM_PERMITTED_NOTIFICATION_TYPES
-    MIRRORING_ENABLED = demisto.params().get("mirroring", True)
-    FILE_MIRRORING_ENABLED = demisto.params().get("enable_outbound_file_mirroring", False)
-    LONG_RUNNING_ENABLED = demisto.params().get("longRunning", True)
-    DEMISTO_API_KEY = demisto.params().get("demisto_api_key", {}).get("password", "")
+    MIRRORING_ENABLED = params.get("mirroring", True)
+    FILE_MIRRORING_ENABLED = params.get("enable_outbound_file_mirroring", False)
+    LONG_RUNNING_ENABLED = params.get("longRunning", True)
+    DEMISTO_API_KEY = params.get("demisto_api_key", {}).get("password", "")
     demisto_urls = demisto.demistoUrls()
-    DEMISTO_URL = demisto_urls.get("server")
-    IGNORE_RETRIES = demisto.params().get("ignore_event_retries", True)
-    EXTENSIVE_LOGGING = demisto.params().get("extensive_logging", False)
-    common_channels = demisto.params().get("common_channels", None)
+    DEMISTO_URL = demisto_urls.get("server", "")
+    IGNORE_RETRIES = params.get("ignore_event_retries", True)
+    EXTENSIVE_LOGGING = params.get("extensive_logging", False)
+    common_channels = params.get("common_channels", "")
     COMMON_CHANNELS = parse_common_channels(common_channels)
-    DISABLE_CACHING = demisto.params().get("disable_caching", False)
+    DISABLE_CACHING = params.get("disable_caching", False)
+    ENABLED_AI_ASSISTANT = params.get("enabled_ai_assistant", True)
 
     # Formats the error message for the 'Channel Not Found' errors
     error_str = "The channel was not found"
@@ -3212,6 +3759,7 @@ def main() -> None:
         "slack-get-conversation-history": conversation_history,
         "slack-list-channels": list_channels,
         "slack-get-conversation-replies": conversation_replies,
+        "send-agent-response": send_agent_response,
     }
 
     command_name: str = demisto.command()
