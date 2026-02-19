@@ -1998,3 +1998,35 @@ def test_encode_url_indicator_with_special_characters():
     url_with_commas = "https://fonts.googleapis.com/css?family=Roboto:100,100italic,200"
     result_commas = encode_url_indicator(url_with_commas)
     assert result_commas == "https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%253A100%252C100italic%252C200"
+
+
+def test_encode_url_indicator_custom_schemes():
+    """
+    Given:
+        - URLs with custom or unlisted schemes (sftp://, ldap://, etc.)
+    When:
+        - encode_url_indicator is called
+    Then:
+        - Custom schemes are preserved and properly encoded
+        - The scheme is not treated as the host
+        - The colon is not lost during reconstruction
+    """
+    # Test SFTP scheme - should preserve sftp:// and not treat it as schemeless
+    sftp_url = "sftp://example.com/path/file.txt"
+    result_sftp = encode_url_indicator(sftp_url)
+    # Should preserve and encode sftp://
+    assert result_sftp == "sftp%3A%2F%2Fexample.com%2Fpath%2Ffile.txt"
+    assert "sftp%3A%2F%2F" in result_sftp  # sftp:// should be encoded
+    assert result_sftp != "sftp%2F%2Fexample.com%2Fpath%2Ffile.txt"  # Should NOT lose the colon
+
+    # Test LDAP scheme
+    ldap_url = "ldap://ldap.example.com:389/dc=example,dc=com"
+    result_ldap = encode_url_indicator(ldap_url)
+    assert "ldap%3A%2F%2F" in result_ldap  # ldap:// should be encoded
+    assert "ldap.example.com" in result_ldap  # Host should be preserved
+
+    # Test custom scheme with path and query
+    custom_url = "custom://server.com/resource?param=value"
+    result_custom = encode_url_indicator(custom_url)
+    assert "custom%3A%2F%2F" in result_custom  # custom:// should be encoded
+    assert "server.com" in result_custom  # Host should be preserved

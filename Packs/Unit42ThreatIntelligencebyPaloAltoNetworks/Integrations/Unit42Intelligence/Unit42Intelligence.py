@@ -147,10 +147,12 @@ def encode_url_indicator(indicator_value: str) -> str:
     # Step 1: Ensure URL has a scheme for proper parsing
     # If no scheme is present, urlparse treats the entire URL as a path
     # which causes incorrect encoding (e.g., domain slashes get encoded)
+    parsed_check = urllib.parse.urlparse(indicator_value)
+    had_scheme = bool(parsed_check.scheme)
+
     url_to_parse = indicator_value
-    had_scheme = indicator_value.startswith(('http://', 'https://', 'ftp://'))
     if not had_scheme:
-        url_to_parse = 'http://' + indicator_value
+        url_to_parse = "http://" + indicator_value
 
     # Step 2: Parse the URL to separate components
     parsed = urllib.parse.urlparse(url_to_parse)
@@ -169,7 +171,7 @@ def encode_url_indicator(indicator_value: str) -> str:
     # Step 6: Remove the scheme if it was added for parsing
     # The API expects URLs without the scheme prefix
     if not had_scheme:
-        temp_url = temp_url.replace('http://', '', 1)
+        temp_url = temp_url.replace("http://", "", 1)
 
     # Step 7: Final full URL encoding for the API request
     # This converts the entire URL including the already-encoded path and query
