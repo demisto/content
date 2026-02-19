@@ -1,0 +1,11 @@
+[file:README.md]
+ignore=RM106
+
+[file:AWSSNSSMSCommunication.yml]
+ignore=IN126
+
+[known_words]
+sns
+sqs
+sms
+entitlement
