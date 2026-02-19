@@ -1967,20 +1967,20 @@ def test_encode_url_indicator_with_special_characters():
         - URLs with schemes keep the scheme and it gets encoded
     """
     # Test URL without scheme and with special characters (^ and |) - from XSUP-63627
-    url_without_scheme = "qtx.omeclk.com/portal/wts/ue^cmq6kojqbc-7barvjmlsterf-|g7eot3847nnpd"
+    url_without_scheme = "example.com/path/ab^cd|ef"
     result = encode_url_indicator(url_without_scheme)
     # Should NOT include http:// in the final result (scheme is removed)
     # Special characters should be double-encoded: ^ -> %5E -> %255E, | -> %7C -> %257C
-    assert result == "qtx.omeclk.com%2Fportal%2Fwts%2Fue%255Ecmq6kojqbc-7barvjmlsterf-%257Cg7eot3847nnpd"
+    assert result == "example.com%2Fpath%2Fab%255Ecd%257Cef"
     assert "%255E" in result  # ^ encoded twice
     assert "%257C" in result  # | encoded twice
     assert "http" not in result  # Scheme should be removed
 
     # Test URL with scheme and special characters
-    url_with_scheme = "http://qtx.omeclk.com/portal/wts/ue^cmq6kojqbc-7barvjmlsterf-|g7eot3847nnpd"
+    url_with_scheme = "http://example.com/path/ab^cd|ef"
     result_with_scheme = encode_url_indicator(url_with_scheme)
     # Should preserve and encode http://
-    assert "http%3A%2F%2Fqtx.omeclk.com%2Fportal%2Fwts%2Fue%255E" in result_with_scheme
+    assert "http%3A%2F%2Fexample.com%2Fpath%2Fab%255Ecd%257Cef" in result_with_scheme
     assert "%255E" in result_with_scheme  # ^ encoded twice
     assert "%257C" in result_with_scheme  # | encoded twice
 
