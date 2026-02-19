@@ -58,7 +58,7 @@ ignore=GR103
 
 
 #GR109 fails on playbooks with different supported moduels than the pack
-[file:Packs/CortexResponseAndRemediation/Playbooks/silent-playbook-Regsvr32_may_have_run_code_from_an_untrusted_source.yml]
+[file:silent-playbook-Regsvr32_may_have_run_code_from_an_untrusted_source.yml]
 ignore=GR109
 
 #GR109 fails on playbooks with different supported moduels than the pack
