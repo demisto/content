@@ -6545,7 +6545,6 @@ def process_ngsiem_search_completion(response: dict, args: dict) -> PollResult:
         raw_response=response,
     )
     return PollResult(response=command_results, continue_to_poll=False)
-DEFAULT_TIMEOUT
 
 @polling_function(
     "cs-falcon-search-ngsiem-events",
