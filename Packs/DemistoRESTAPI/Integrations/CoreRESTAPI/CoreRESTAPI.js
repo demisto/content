@@ -74,10 +74,13 @@ getRequestURL = function (uri) {
     var requestUrl = serverURL;
 
     // only when using XSIAM or XSOAR >= 8.0 we will add the /xsoar suffix
-    // and only when it is not a /public_api endpoint.
+    // and only when it is not a /public_api or /platform endpoint.
     if (isHosted()) {
-        if ((!serverURL.endsWith('/xsoar')) && (!uri.startsWith('/public_api'))) {
-            requestUrl += '/xsoar'
+        var isPublicApi = uri.startsWith('/public_api');
+        var isPlatformApi = uri.startsWith('/platform');
+
+        if (!serverURL.endsWith('/xsoar') && !isPublicApi && !isPlatformApi) {
+            requestUrl += '/xsoar';
         }
     }
     if (params.use_tenant){
@@ -87,7 +90,7 @@ getRequestURL = function (uri) {
         requestUrl += '/';
     }
     requestUrl += uri;
-    return requestUrl
+    return requestUrl;
 }
 
 sendMultipart = function (uri, entryID, body) {
