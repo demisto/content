@@ -1,4 +1,7 @@
 category: Deception & Breach Simulation
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: cymulate_v3
   version: -1
@@ -72,5 +75,5 @@ script:
   subtype: python3
   type: python
 tests:
-- Cymulate v3 - Full Flow
+- No test
 fromversion: 6.10.0

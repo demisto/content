@@ -60,6 +60,19 @@ def test_test_module_401_error(requests_mock, mock_client):
     assert "Authorization Error" in result
 
 
+def test_test_module_auth_error(mock_client, monkeypatch):
+    """Test test_module returns the exact auth error string when credentials are wrong (401)."""
+    mock_response = MagicMock()
+    mock_response.status_code = 401
+    monkeypatch.setattr(
+        mock_client,
+        "list_assessments",
+        MagicMock(side_effect=DemistoException("Unauthorized", res=mock_response)),
+    )
+    result = cymulate_test_module(mock_client)
+    assert result == "Authorization Error: make sure API Key is correctly set."
+
+
 # ========================================================================
 # fetch_incidents tests
 # ========================================================================
