@@ -1,91 +1,152 @@
 {
-    "code": 200,
-    "status": "OK",
     "result": {
-      "query": "8.8.4.4",
-      "total": 3139,
-      "duration": 361,
-      "hits": [
-        {
-          "services": [
+        "hits": [
             {
-              "service_name": "DCERPC",
-              "extended_service_name": "DCERPC",
-              "transport_protocol": "TCP",
-              "port": 135
-            },
-            {
-              "port": 139,
-              "extended_service_name": "NETBIOS",
-              "service_name": "NETBIOS",
-              "transport_protocol": "TCP"
-            },
-            {
-              "service_name": "SMB",
-              "port": 445,
-              "extended_service_name": "SMB",
-              "transport_protocol": "TCP"
-            },
-            {
-              "certificate": "XXXXXX",
-              "extended_service_name": "RDP",
-              "port": 3389,
-              "transport_protocol": "TCP",
-              "service_name": "RDP"
-            },
-            {
-              "service_name": "HTTP",
-              "port": 5985,
-              "transport_protocol": "TCP",
-              "extended_service_name": "HTTP"
-            },
-            {
-              "service_name": "HTTP",
-              "port": 47001,
-              "extended_service_name": "HTTP",
-              "transport_protocol": "TCP"
+                "host_v1": {
+                    "resource": {
+                        "ip": "127.0.0.1",
+                        "location": {
+                            "continent": "Asia",
+                            "country": "Turkey",
+                            "country_code": "TR",
+                            "city": "Erzurum",
+                            "postal_code": "25010",
+                            "timezone": "Europe/Istanbul",
+                            "province": "Erzurum",
+                            "coordinates": {
+                                "latitude": 39.90861,
+                                "longitude": 41.27694
+                            }
+                        },
+                        "autonomous_system": {
+                            "asn": 9121,
+                            "description": "Company Inc",
+                            "bgp_prefix": "127.0.0.1/17",
+                            "name": "Company Inc",
+                            "country_code": "TR"
+                        },
+                        "whois": {
+                            "network": {
+                                "handle": "COMPANY-HANDLE",
+                                "name": "Company Inc",
+                                "cidrs": [
+                                    "127.0.0.1/17"
+                                ],
+                                "created": "2005-10-03T00:00:00Z",
+                                "updated": "2010-07-27T00:00:00Z"
+                            },
+                            "organization": {
+                                "handle": "ORG-HANDLE",
+                                "name": "Company Inc",
+                                "address": "Company Address\nCity\nCountry",
+                                "abuse_contacts": [
+                                    {
+                                        "handle": "ABUSE-HANDLE",
+                                        "name": "Abuse Role",
+                                        "email": "admin@example.com"
+                                    }
+                                ],
+                                "admin_contacts": [
+                                    {
+                                        "handle": "ADMIN-HANDLE-1",
+                                        "name": "John Doe"
+                                    },
+                                    {
+                                        "handle": "ADMIN-HANDLE-2",
+                                        "name": "Jane Doe"
+                                    },
+                                    {
+                                        "handle": "ADMIN-HANDLE-3",
+                                        "name": "John Smith",
+                                        "email": "admin@example.com"
+                                    },
+                                    {
+                                        "handle": "ADMIN-HANDLE-4",
+                                        "name": "Jane Smith",
+                                        "email": "admin@example.com"
+                                    }
+                                ]
+                            }
+                        },
+                        "services": [
+                            {
+                                "port": 1024,
+                                "protocol": "HTTP",
+                                "transport_protocol": "tcp",
+                                "ip": "127.0.0.1",
+                                "scan_time": "2026-01-14T11:11:15Z",
+                                "banner": "admin@example.com",
+                                "banner_hash_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                "ja4tscan": {
+                                    "scan_time": "2026-01-11T19:18:06Z",
+                                    "fingerprint": "65535_2-4-8-1-3_1452_6_1-2-4-8-16"
+                                },
+                                "endpoints": [
+                                    {
+                                        "hostname": "127.0.0.1",
+                                        "port": 1024,
+                                        "path": "/",
+                                        "endpoint_type": "HTTP",
+                                        "transport_protocol": "tcp",
+                                        "scan_time": "2026-01-14T11:11:15Z",
+                                        "banner": "admin@example.com",
+                                        "banner_hash_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                        "http": {
+                                            "uri": "https://example.com",
+                                            "protocol": "HTTP/1.0",
+                                            "status_code": 401,
+                                            "status_reason": "Unauthorized",
+                                            "headers": {
+                                                "Connection": {
+                                                    "headers": [
+                                                        "close"
+                                                    ]
+                                                },
+                                                "Content-Length": {
+                                                    "headers": [
+                                                        "0"
+                                                    ]
+                                                },
+                                                "Content-Type": {
+                                                    "headers": [
+                                                        "text/xml; charset=\"utf-8\""
+                                                    ]
+                                                },
+                                                "WWW-Authenticate": {
+                                                    "headers": [
+                                                        "admin@example.com"
+                                                    ]
+                                                }
+                                            },
+                                            "supported_versions": [
+                                                "HTTP/1.0"
+                                            ]
+                                        },
+                                        "ip": "127.0.0.1"
+                                    }
+                                ]
+                            }
+                        ],
+                        "service_count": 1,
+                        "dns": {
+                            "reverse_dns": {
+                                "resolve_time": "2026-01-12T23:38:51Z",
+                                "names": [
+                                    "127.0.0.1.dynamic.example.com"
+                                ]
+                            }
+                        }
+                    },
+                    "extensions": {},
+                    "matched_services": [
+                        {
+                            "protocol": "HTTP",
+                            "port": 1024,
+                            "transport_protocol": "tcp"
+                        }
+                    ]
+                }
             }
-          ],
-          "autonomous_system": {
-            "name": "ROSTELECOM-AS",
-            "bgp_prefix": "1.1.1.1",
-            "country_code": "RU",
-            "asn": 12389,
-            "description": "ROSTELECOM-AS"
-          },
-          "ip": "1.1.1.1",
-          "location": {
-            "country": "Russia",
-            "province": "Moscow Oblast",
-            "country_code": "RU",
-            "timezone": "Europe/Moscow",
-            "coordinates": {
-              "longitude": 37.42848,
-              "latitude": 55.9001
-            },
-            "city": "Khimki",
-            "continent": "Europe",
-            "postal_code": "141400"
-          },
-          "operating_system": {
-            "other": [
-              
-            ],
-            "component_uniform_resource_identifiers": [
-              
-            ],
-            "cpe": "cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*",
-            "vendor": "microsoft",
-            "part": "o",
-            "product": "windows",
-            "source": "OSI_TRANSPORT_LAYER"
-          },
-          "last_updated_at": "2024-04-04T07:46:53.795Z"
-        }
-      ],
-      "links": {
-        "next": "eyJhbGciOiJFZERTQSJ9.eyJub25jZSI6IlpzTFJrR3hsYm1GTjF2VS9LNHFUUHNTMDNNK3A0TUR4NmVrZjZQaWpiU3MiLCJwYWdlIjoyLCJyZXZlcnNlZCI6ZmFsc2UsInNlYXJjaF9hZnRlciI6WzUyLjY2ODQsMTcxMjIxNjgxMzc5NSwiMTg4LjI1NC4wLjkiLG51bGxdLCJzb3J0IjpbeyJfc2NvcmUiOnsib3JkZXIiOiJkZXNjIn19LHsibGFzdF91cGRhdGVkX2F0Ijp7Im1pc3NpbmciOiJfbGFzdCIsIm1vZGUiOiJtaW4iLCJvcmRlciI6ImRlc2MifX0seyJpcCI6eyJtaXNzaW5nIjoiX2xhc3QiLCJtb2RlIjoibWluIiwib3JkZXIiOiJhc2MifX0seyJuYW1lLl9fcmF3Ijp7Im1pc3NpbmciOiJfbGFzdCIsIm1vZGUiOiJtaW4iLCJvcmRlciI6ImFzYyJ9fV0sInZlcnNpb24iOjF9.73VnbstzQPRlyCF2NXFno_YZiHBDuMDshc8Yq7PNSw6Ozuaz596TDSyzBd6hUt4v3chM_97zNmf3x0ey_A5IDQ",
-        "prev": ""
-      }
+        ]
     }
-  }
+}
