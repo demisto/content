@@ -1,0 +1,49 @@
+args:
+- auto: PREDEFINED
+  description: Select customer to identify EDL to be modified.
+  name: customer
+  predefined:
+  - Redeban
+  - Brinks
+  - RUNT
+  - Unisabana
+  - Netdata
+  - Colbun
+  - PCO
+  - Compensar
+  - Promigas
+  required: true
+- auto: PREDEFINED
+  description: ' The indicator type of the indicators.'
+  name: indicator_type
+  predefined:
+  - Domain
+  - URL
+  - IP
+  - File
+  required: true
+- description: A comma-separated list of indicators values. For example, for IP indicators, "1.1.1.1,2.2.2.2".
+  name: indicator_value
+  required: true
+comment: "Add indicators to one of the three configured EDLs (Domain, IP, File and URL) based on the indicator type.\n\nIf the indicator does not exist, it creates it in the Threat Intel database only if they are not registered. When using the script with many indicators, or when the Threat Intel Management database is highly populated, this script may have low performance issue."
+commonfields:
+  id: AddIndicatorToEDL_Sentria
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.12.12.7090913
+enabled: true
+engineinfo: {}
+name: AddIndicatorToEDL_Sentria
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- SENTRIA
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

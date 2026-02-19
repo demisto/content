@@ -1,0 +1,89 @@
+category: Utilities
+commonfields:
+  id: App Sentria
+  version: -1
+configuration:
+- defaultvalue: https://api.xsoar-example.com
+  display: Server URL (e.g., https://api.xsoar-example.com)
+  name: url
+  required: true
+  section: Connect
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  section: Collect
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  section: Connect
+  type: 13
+- display: ''
+  displaypassword: API Key
+  hiddenusername: true
+  name: credentials
+  required: true
+  section: Connect
+  type: 9
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+description: This is the Hello World integration for getting started.
+display: App Sentria
+name: App Sentria
+script:
+  commands:
+  - arguments:
+    - name: Prioridad
+    - name: freshdeskticketstatus
+    - name: freshdeskticketagente
+    - name: freshdeskticketsubcategria
+    - name: freshdeskticketsoluciondelcaso
+    - name: id
+    - name: freshdeskticketusuarios
+    - name: freshdeskticketsistemas
+    - name: freshdeskticketpersistencia
+    - name: freshdeskticketobjetivos
+    - name: freshdeskticketttps
+    - name: freshdeskticketqueestamoshaciendo
+    - name: freshdeskticketquenecesitamoshacer
+    - name: freshdeskticketestadocierre
+    - name: freshdesktickettags
+    - name: Created
+    - name: analystassignmentsla1_totalDuration
+    - name: level2escalationsla2_totalDuration
+    - name: customerescalationsla3_totalDuration
+    - name: closingsla4_totalDuration
+    - name: name
+    - name: Product
+    - name: client
+    - name: case_url
+    name: app-sentria-send-info
+  - arguments:
+    - name: sentriaappactionclient
+    - name: sentriaappactionmsg
+    - name: sentriaappincidentid
+    name: app-sentria-send-message
+  - arguments:
+    - name: sentriaappclient
+    - name: sentriaappmsg
+    - name: sentriaappincidentid
+    name: app-sentria-send-msg-to-chat
+  - arguments:
+    - name: status
+    - name: sentriaappinternalcaseid
+    - defaultValue: '{}'
+      name: data
+    name: app-sentria-send-request-status
+  dockerimage: demisto/python3:3.12.12.7090913
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
