@@ -3159,7 +3159,7 @@ script:
         name: private_dns_hostname_type_on_launch
 
   - arguments:
-    - description: One or more filters Separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details & filter options.
+    - description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
       name: filters
     - description: A comma-separated list of VPC IDs.
       name: vpc_ids
@@ -3261,7 +3261,7 @@ script:
       type: string
 
   - arguments:
-    - description: One or more filters Separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details & filter options.
+    - description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
       name: filters
     - description: A comma-separated list of subnet IDs.
       name: subnet_ids
@@ -3362,7 +3362,7 @@ script:
   - arguments:
     - description: A comma-separated list of the IPAM resource discovery IDs.
       name: ipam_resource_discovery_ids
-    - description: One or more filters separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
+    - description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
       name: filters
     - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000. Default value is 50.
       name: limit
@@ -3432,7 +3432,7 @@ script:
   - arguments:
     - description: A comma-separated list of the resource discovery association IDs.
       name: ipam_resource_discovery_association_ids
-    - description: One or more filters separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
+    - description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
       name: filters
     - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000. Default value is 50.
       name: limit
@@ -7039,6 +7039,701 @@ script:
       - ENABLED
       - DISABLED
     outputs: []
+  - name: aws-ec2-network-interface-attribute-modify
+    description: Modifies the specified network interface attribute. You can specify only one attribute at a time. You can use this action to attach and detach security groups from an existing EC2 instance.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: network_interface_id
+        description: The ID of the network interface.
+        required: true
+      - name: ena_srd_enabled
+        description: Indicates whether ENA Express is enabled for the network interface.
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: ena_srd_udp_enabled
+        description: Indicates whether UDP traffic to and from the instance uses ENA Express. To specify this setting, you must first enable ENA Express.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: enable_primary_ipv6
+        description: If you're modifying a network interface in a dual-stack or IPv6-only subnet, you have the option to assign a primary IPv6 IP address.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: tcp_established_timeout
+        description: Timeout (in seconds) for idle TCP connections in an established state. Min is 60 seconds. Max is 432000 seconds.
+        required: false
+      - name: udp_stream_timeout
+        description: Timeout (in seconds) for idle UDP flows classified as streams which have seen more than one request-response transaction. Min is 60 seconds. Max is 180 seconds.
+        required: false
+      - name: udp_timeout
+        description: Timeout (in seconds) for idle UDP flows that have seen traffic only in a single direction or a single request-response transaction. Min is 30 seconds. Max is 60 seconds.
+        required: false
+      - name: associate_public_ip_address
+        description: Indicates whether to assign a public IPv4 address to a network interface. This option can be enabled for any network interface but will only apply to the primary network interface (eth0).
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: associated_subnet_ids
+        description: A list of comma-separated subnet IDs to associate with the network interface.
+        required: false
+      - name: description
+        description: A description for the network interface.
+        required: false
+      - name: source_dest_check
+        description: Enable or disable source/destination checks, which ensure that the instance is either the source or the destination of any traffic that it receives. If the value is true, source/destination checks are enabled; otherwise, they are disabled. The default value is true. You must disable source/destination checks if the instance runs services such as network address translation, routing, or firewalls.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: groups
+        description: A comma-separated list of security groups IDs. Changes the security groups for the network interface. The new set of groups you specify replaces the current set.
+        required: false
+      - name: default_ena_queue_count
+        description: Whether to use the default number of the ENA queues.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: ena_queue_count
+        description: The number of ENA queues to be created with the instance.
+        required: false
+      - name: attachment_id
+        description: The ID of the network interface attachment. If modifying the delete on termination attribute, you must specify the ID of the interface attachment.
+        required: false
+      - name: delete_on_termination
+        description: Indicates whether the network interface is deleted when the instance is terminated. If modified, you must specify the ID of the interface attachment.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+    outputs:
+      - contextPath: AWS.EC2.NetworkInterfaces.Attribute.ModifyResponseMetadata
+        description: The response metadata.
+        type: Object
+      - contextPath: AWS.EC2.NetworkInterfaces.NetworkInterfaceId
+        description: The ID of the network interface.
+        type: String
+  - name: aws-ec2-regions-describe
+    description: Describes the Regions that are enabled for your account, or all Regions.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: region_names
+        description: The names of the Regions. You can specify any Regions, whether they are enabled and disabled for your account.
+        required: false
+      - name: all_regions
+        description: Indicates whether to display all Regions, including Regions that are disabled for your account.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). A filter name and value pair that is used to return a more specific list of results from a describe operation. Filters can be used to match a set of resources by specific criteria, such as tags, attributes, or IDs. Possible filters are endpoint, opt-in-status, region-name.
+        name: filters
+    outputs:
+      - contextPath: AWS.EC2.Regions.Endpoint
+        description: The region service endpoint.
+        type: string
+      - contextPath: AWS.EC2.Regions.RegionName
+        description: The name of the region.
+        type: string
+      - contextPath: AWS.EC2.Regions.OptInStatus
+        description: The Region opt-in status. The possible values are opt-in-not-required, opted-in, and not-opted-in.
+        type: string
+  - name: aws-s3-bucket-create
+    description: Creates a new S3 bucket.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: bucket_name
+        description: The name of the bucket to create. For more information about bucket naming rules see https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html.
+        required: true
+      - name: acl
+        description: The canned ACL to apply to the bucket.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - private
+          - public-read
+          - public-read-write
+          - authenticated-read
+      - name: location_constraint
+        description: Specifies the Region where the bucket will be created. You might choose a Region to optimize latency, minimize costs, or address regulatory requirements. The default is the account region.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: grant_full_control
+        description: Allows grantee the read, write, read ACP, and write ACP permissions on the bucket.
+        required: false
+      - name: grant_read
+        description: Allows grantee to list the objects in the bucket.
+        required: false
+      - name: grant_read_acp
+        description: Allows grantee to read the bucket ACL.
+        required: false
+      - name: grant_write
+        description: Allows grantee to create new objects in the bucket.
+        required: false
+      - name: grant_write_acp
+        description: Allows grantee to write the ACL for the applicable bucket.
+        required: false
+    outputs:
+      - contextPath: AWS.S3.Buckets.BucketName
+        description: The name of the bucket that was created.
+        type: string
+      - contextPath: AWS.S3.Buckets.Location
+        description: The AWS Region the bucket was created.
+        type: string
+      - contextPath: AWS.S3.Buckets.BucketArn
+        description: The Amazon Resource Name (ARN) of the S3 bucket.
+        type: string
+  - name: aws-s3-buckets-list
+    description: Returns a list of all buckets owned by the authenticated sender of the request.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: limit
+        description: Maximum number of buckets to be returned in response. The maximum value is 10000.
+        defaultValue: 50
+        required: false
+      - name: next_token
+        description: The token for the next set of items to return. Use value from AWS.S3.BucketsNextPageToken.
+        required: false
+      - name: prefix
+        description: Limits the response to bucket names that begin with the specified bucket name prefix.
+        required: false
+      - name: filter_by_region
+        description: A comma-separated list of regions that limits the response to buckets that are located in the specified Amazon Web Services Region.
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+    outputs:
+      - contextPath: AWS.S3.Buckets.BucketName
+        description: The name of the bucket.
+        type: string
+      - contextPath: AWS.S3.Buckets.CreationDate
+        description: Date the bucket was created. This date can change when making changes to your bucket, such as editing its bucket policy.
+        type: string
+      - contextPath: AWS.S3.Buckets.BucketRegion
+        description: BucketRegion indicates the Amazon Web Services region where the bucket is located.
+        type: string
+      - contextPath: AWS.S3.Buckets.BucketArn
+        description: The Amazon Resource Name (ARN) of the S3 bucket.
+        type: string
+      - contextPath: AWS.S3.BucketsOwner.DisplayName
+        description: Container for the display name of the owner.
+        type: string
+      - contextPath: AWS.S3.BucketsOwner.ID
+        description: Container for the ID of the owner.
+        type: string
+      - contextPath: AWS.S3.BucketsNextPageToken
+        description: BucketsNextPageToken is included in the response when there are more buckets that can be listed with pagination. The next ListBuckets request to Amazon S3 can be continued with this BucketsNextPageToken.
+        type: string
+      - contextPath: AWS.S3.BucketsPrefix
+        description: If Prefix was sent with the request, it is included in the response.
+        type: string
+  - name: aws-ssm-inventory-entries-list
+    description: Returns a list of inventory items.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: instance_id
+        description: The managed node ID for which you want inventory information.
+        required: true
+      - name: type_name
+        description: The type of inventory item for which you want information.
+        required: true
+      - name: limit
+        description: The maximum number of items to return for this call. The maximum value is 50.
+        defaultValue: 50
+        required: false
+      - description: "One or more filters separated by ';' (for example, key=<key>,values=<values>,type=<type>;key=<key>,values=<values>,type=<type>). Use a filter to return a more specific list of results. The value of type can be from the following closed list: Equal, NotEqual, BeginWith, LessThan, GreaterThan, Exists."
+        name: filters
+        required: false
+      - name: next_token
+        description: The token for the next set of items to return. Use AWS.SSM.Inventory.EntriesNextPageToken.
+        required: false
+    outputs:
+      - contextPath: AWS.SSM.Inventory.TypeName
+        description: The type of inventory item returned by the request.
+        type: string
+      - contextPath: AWS.SSM.Inventory.InstanceId
+        description: The managed node ID targeted by the request to query inventory information.
+        type: string
+      - contextPath: AWS.SSM.Inventory.SchemaVersion
+        description: The inventory schema version used by the managed nodes.
+        type: string
+      - contextPath: AWS.SSM.Inventory.CaptureTime
+        description: The time that inventory information was collected for the managed nodes.
+        type: string
+      - contextPath: AWS.SSM.Inventory.Entries
+        description: A list of inventory items on the managed nodes.
+        type: object
+      - contextPath: AWS.SSM.Inventory.EntriesNextPageToken
+        description: The token to use when requesting the next set of items.
+        type: object
+  - name: aws-ssm-command-run
+    description: Runs commands on one or more managed nodes.
+    polling: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: instance_ids
+        description: A comma-separated list of IDs of the managed nodes where the command should run. Maximum of 50 IDs.
+      - name: targets
+        description: "One or more targets separated by ';' (for example, key=<key1>,values=<value1>,<value2>;key=<key2>,values=<value3>,<value4>). An array of search criteria used to target managed nodes, where each criterion consists of a Key and a Value that you specify."
+      - name: document_name
+        description: The name of the Amazon Web Services Systems Manager document (SSM document) to run. This can be a public document or a custom document. To run a shared document belonging to another account, specify the document Amazon Resource Name (ARN).
+        required: true
+      - name: document_version
+        description: The SSM document version to use in the request. You can specify $DEFAULT, $LATEST, or a specific version number.
+        required: false
+      - name: document_hash
+        description: The Sha256 hash created by the system when the document was created.
+        required: false
+      - name: command_timeout
+        description: If this time (in seconds) is reached and the command hasn’t already started running, it won’t run. Minimum value of 30. Maximum value of 2592000.
+        required: false
+      - name: comment
+        description: User-specified information about the command, such as a brief description of what the command should do.
+        required: false
+      - name: parameters
+        description: "The required and optional parameters specified in the document being run. The template is 'key=<key1>,values=<value>,<value>;key=<key2>,values=<value>,<value>'."
+        required: false
+      - name: output_s3_bucket_name
+        description: The name of the S3 bucket where command execution responses should be stored.
+        required: false
+      - name: output_s3_key_prefix
+        description: The directory structure within the S3 bucket where the responses should be stored.
+        required: false
+      - name: max_concurrency
+        description: The maximum number of managed nodes that are allowed to run the command at the same time. You can specify a number such as 10 or a percentage such as 10%.
+        required: false
+        defaultValue: "50"
+      - name: max_errors
+        description: The maximum number of errors allowed without the command failing. When the command fails one more time beyond the value of MaxErrors, the systems stops sending the command to additional targets. You can specify a number like 10 or a percentage like 10%.
+        defaultValue: "0"
+        required: false
+      - description: A unique identifier for this command. This is for the polling to work, not for the user.
+        name: command_id
+        hidden: true
+      - description: The timeout in seconds until polling ends.
+        name: polling_timeout
+        defaultValue: '600'
+      - description: Hide the polling message and only print the final status at the end. This argument is for the dev, not for the user.
+        name: hide_polling_output
+        hidden: true
+    outputs:
+      - contextPath: AWS.SSM.Command.CommandId
+        description: A unique identifier for this command.
+        type: String
+      - contextPath: AWS.SSM.Command.DocumentName
+        description: The name of the document requested for execution.
+        type: String
+      - contextPath: AWS.SSM.Command.DocumentVersion
+        description: The Systems Manager document (SSM document) version.
+        type: String
+      - contextPath: AWS.SSM.Command.Comment
+        description: User-specified information about the command, such as a brief description of what the command should do.
+        type: String
+      - contextPath: AWS.SSM.Command.ExpiresAfter
+        description: If a command expires, it changes status to DeliveryTimedOut for all invocations that have the status InProgress, Pending, or Delayed. ExpiresAfter is calculated based on the total timeout for the overall command.
+        type: String
+      - contextPath: AWS.SSM.Command.Parameters
+        description: The parameter values to be inserted in the document when running the command.
+        type: Object
+      - contextPath: AWS.SSM.Command.InstanceIds
+        description: The managed node IDs against which this command was requested.
+        type: Object
+      - contextPath: AWS.SSM.Command.Targets
+        description: An array of search criteria used to target managed nodes, where each criterion consists of a Key and a Value that you specify.
+        type: Object
+      - contextPath: AWS.SSM.Command.RequestedDateTime
+        description: The date and time the command was requested.
+        type: String
+      - contextPath: AWS.SSM.Command.Status
+        description: The status of the command.
+        type: String
+      - contextPath: AWS.SSM.Command.StatusDetails
+        description: A detailed status of the command execution. StatusDetails includes more information than Status because it includes states resulting from error and concurrency control parameters.
+        type: String
+      - contextPath: AWS.SSM.Command.OutputS3BucketName
+        description: The name of the S3 bucket where command execution responses should be stored.
+        type: String
+      - contextPath: AWS.SSM.Command.OutputS3KeyPrefix
+        description: The directory structure within the S3 bucket where the responses should be stored.
+        type: String
+      - contextPath: AWS.SSM.Command.MaxConcurrency
+        description: The maximum number of managed nodes that are allowed to run the command at the same time.
+        type: String
+      - contextPath: AWS.SSM.Command.MaxErrors
+        description: The maximum number of errors allowed before the system stops sending the command to additional targets.
+        type: String
+      - contextPath: AWS.SSM.Command.TargetCount
+        description: The number of targets for the command.
+        type: Number
+      - contextPath: AWS.SSM.Command.CompletedCount
+        description: 'The number of targets for which the command invocation reached a terminal state. Terminal states include the following: Success, Failed, Execution Timed Out, Delivery Timed Out, Cancelled, Terminated, or Undeliverable.'
+        type: Number
+      - contextPath: AWS.SSM.Command.ErrorCount
+        description: The number of targets for which the status is Failed or Execution Timed Out.
+        type: Number
+      - contextPath: AWS.SSM.Command.DeliveryTimedOutCount
+        description: The number of targets for which the status is Delivery Timed Out.
+        type: Number
+      - contextPath: AWS.SSM.Command.ServiceRole
+        description: The Identity and Access Management (IAM) service role that Run Command, a tool in Amazon Web Services Systems Manager, uses to act on your behalf when sending notifications about command status changes.
+        type: String
+      - contextPath: AWS.SSM.Command.NotificationConfig.NotificationArn
+        description: An Amazon Resource Name (ARN) for an Amazon Simple Notification Service (Amazon SNS) topic. Run Command pushes notifications about command status changes to this topic.
+        type: String
+      - contextPath: AWS.SSM.Command.NotificationConfig.NotificationEvents
+        description: The different events for which you can receive notifications.
+        type: Object
+      - contextPath: AWS.SSM.Command.NotificationConfig.NotificationType
+        description: The type of notification.
+        type: String
+      - contextPath: AWS.SSM.Command.CloudWatchOutputConfig.CloudWatchLogGroupName
+        description: The name of the CloudWatch Logs log group where you want to send command output.
+        type: String
+      - contextPath: AWS.SSM.Command.CloudWatchOutputConfig.CloudWatchOutputEnabled
+        description: Enables Systems Manager to send command output to CloudWatch Logs.
+        type: Boolean
+      - contextPath: AWS.SSM.Command.TimeoutSeconds
+        description: The TimeoutSeconds value specified for a command.
+        type: Number
+      - contextPath: AWS.SSM.Command.AlarmConfiguration.IgnorePollAlarmFailure
+        description: When this value is true, your automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value.
+        type: String
+      - contextPath: AWS.SSM.Command.AlarmConfiguration.Alarms.Name
+        description: The name of your CloudWatch alarm.
+        type: String
+      - contextPath: AWS.SSM.Command.TriggeredAlarms.Name
+        description: The name of your CloudWatch alarm.
+        type: String
+      - contextPath: AWS.SSM.Command.TriggeredAlarms.State
+        description: The state of your CloudWatch alarm.
+        type: String
 
   - name: aws-ec2-security-group-create
     execution: true
