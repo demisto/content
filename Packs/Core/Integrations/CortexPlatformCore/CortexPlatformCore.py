@@ -4655,7 +4655,7 @@ def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandR
 
     command_results.append(
         CommandResults(
-            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.FindingsMetadata",
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.FindingMetadata",
             outputs=metadata,
         )
     )
