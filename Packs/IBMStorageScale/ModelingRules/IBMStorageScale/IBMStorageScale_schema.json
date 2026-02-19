@@ -1,0 +1,32 @@
+{
+  "storage_scale_raw": {
+    "command": {
+      "type": "string",
+      "is_array": false
+    },
+    "arguments": {
+      "type": "string",
+      "is_array": false
+    },
+    "node": {
+      "type": "string",
+      "is_array": false
+    },
+    "originator": {
+      "type": "string",
+      "is_array": false
+    },
+    "pid": {
+      "type": "int",
+      "is_array": false
+    },
+    "user": {
+      "type": "string",
+      "is_array": false
+    },
+    "returnCode": {
+      "type": "int",
+      "is_array": false
+    }
+  }
+}
