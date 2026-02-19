@@ -24,9 +24,15 @@ configuration:
   type: 8
   required: false
   section: Connect
-- display: Username/Client ID/JWT Audience (aud)
-  displaypassword: Password/Client Secret
+- display: Client ID/JWT Audience (aud)
+  displaypassword: Client Secret
   name: credentials
+  type: 9
+  required: false
+  section: Connect
+- display: Username
+  displaypassword: Password
+  name: basic_credentials
   type: 9
   required: false
   section: Connect
@@ -1959,7 +1965,7 @@ script:
       description: Ticket close code.
       type: string
 
-  dockerimage: demisto/auth-utils:1.0.0.5427065
+  dockerimage: demisto/auth-utils:1.0.0.6111183
   isfetch: true
   ismappable: true
   isremotesyncin: true
