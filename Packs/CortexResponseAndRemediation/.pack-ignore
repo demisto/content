@@ -56,13 +56,19 @@ ignore=GR103
 [file:silent-playbook-Suspicious_user_access_to_multiple_resources_via_SSO.yml]
 ignore=GR103
 
-
 #GR109 fails on playbooks with different supported modules than the pack
 [file:silent-playbook-Regsvr32_may_have_run_code_from_an_untrusted_source.yml]
 ignore=GR109
 
 #GR109 fails on playbooks with different supported modules than the pack
 [file:silent-Trigger_-_Regsvr32_may_have_run_code_from_an_untrusted_source.json]
+
+#GR109 fails on playbooks with different supported moduels than the pack
+[file:Packs/CortexResponseAndRemediation/Playbooks/silent-playbook-Rare_remote_service_change_or_creation_via_Remote_Service_SVCCTL_RPC_interface.yml]
+ignore=GR109
+
+#GR109 fails on playbooks with different supported moduels than the pack
+[file:Packs/CortexResponseAndRemediation/Triggers/silent-Trigger_-_Rare_remote_service_change_or_creation_via_Remote_Service_SVCCTL_RPC_interface.json]
 ignore=GR109
 
 [known_words]
