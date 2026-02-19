@@ -1,0 +1,434 @@
+category: Utilities
+provider: Open Source
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: HelloWorldV2
+  version: -1
+configuration:
+- name: url
+  display: Server URL (e.g., https://api.dummy-example.com)
+  defaultvalue: https://api.dummy-example.com
+  type: 0
+  required: true
+  section: Connect
+- name: credentials
+  displaypassword: API Key
+  type: 9
+  required: true
+  hiddenusername: true
+  section: Connect
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+- name: threshold_ip
+  display: Score threshold for IP reputation command
+  defaultvalue: '65'
+  additionalinfo: The minimum HelloWorld score required to mark an IP as malicious (0-100).
+  type: 0
+  required: false
+  section: Collect
+  advanced: true
+- name: integrationReliability
+  display: Source Reliability
+  defaultvalue: C - Fairly reliable
+  additionalinfo: Reliability of the source providing the intelligence data.
+  type: 15
+  required: false
+  section: Collect
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  advanced: true
+- name: first_fetch
+  display: First fetch time
+  defaultvalue: "3 days"
+  additionalinfo: The time from which to start fetching alerts. Supports relative time (e.g., "3 hours ago") or ISO 8601 format (e.g., "2025-12-01T00:00:00Z").
+  type: 0
+  required: false
+  section: Collect
+  hidden:  # Set internally to "1 minute" on Cortex XSIAM (legacy and platform)
+    - marketplacev2
+    - platform
+- name: severity
+  display: Severity of alerts to fetch
+  defaultvalue: "high"
+  type: 15
+  required: false
+  section: Collect
+  options:
+  - low
+  - medium
+  - high
+  - critical
+  # Fetch incidents
+  # Depending on the integration, you may optionally disable "fetch-incidents" on Cortex XSIAM (legacy and platform)
+- name: isFetch
+  display: Fetch incidents
+  additionalinfo: Fetch HelloWorld alerts as incidents in Cortex XSOAR.
+  type: 8
+  required: false
+  section: Collect
+  hidden:
+    - marketplacev2
+    - platform
+- display: Incident type
+  name: incidentType
+  type: 13
+  section: Connect
+  required: false
+  hidden:
+    - marketplacev2
+    - platform
+- name: max_incidents_fetch
+  display: Maximum number of incidents per fetch
+  defaultvalue: '10'
+  type: 0
+  required: false
+  section: Collect
+  hidden:
+    - marketplacev2
+    - platform
+  # Fetch Events
+  # Not supported in Cortex XSOAR
+- name: isFetchEvents
+  display: Fetch events
+  type: 8
+  required: false
+  section: Collect
+  hidden:
+    - xsoar
+- name: max_events_fetch
+  display: Maximum number of events per fetch
+  defaultvalue: '1000'
+  type: 0
+  required: false
+  section: Collect
+  hidden:
+    - xsoar
+  # Fetch Assets (and Vulnerabilities)
+  # Not supported in Cortex XSOAR
+- display: Fetch assets and vulnerabilities
+  name: isFetchAssets
+  type: 8
+  required: false
+  section: Collect
+  hidden:
+    - xsoar
+description: Use the Hello World v2 integration to learn how to build and configure Cortex integrations.
+display: Hello World v2
+name: HelloWorldV2
+script:
+  commands:
+  - name: helloworld-say-hello
+    description: Prints hello to a specified name.
+    arguments:
+    - description: The name of the person you want to say hello to.
+      name: name
+    outputs:
+    - contextPath: HelloWorld.Hello.name
+      description: The greeting message returned by the command.
+      type: String
+  - name: helloworld-alert-list
+    description: Lists example alerts as they would appear in a fetch operation.
+    arguments:
+    - description: Filter the fetch by alert ID. If not specified, all alert IDs will be retrieved.
+      name: alert_id
+    - description: How many alerts to fetch. Default is 10.
+      name: limit
+    - description: The severity by which to filter the alerts.
+      name: severity
+      auto: PREDEFINED
+      predefined:
+      - low
+      - medium
+      - high
+      - critical
+    outputs:
+    - contextPath: HelloWorld.alert.id
+      description: The ID of the alert.
+      type: Number
+    - contextPath: HelloWorld.alert.name
+      description: The name of the alert.
+      type: String
+    - contextPath: HelloWorld.alert.severity
+      description: The severity of the alert.
+      type: String
+    - contextPath: HelloWorld.alert.date
+      description: The date of the alert occurrence.
+      type: Date
+    - contextPath: HelloWorld.alert.status
+      description: The status of the alert.
+      type: String
+  - name: helloworld-alert-note-create
+    description: Create a note in the API.
+    arguments:
+    - description: The alert ID to add the note to.
+      name: alert_id
+      required: true
+    - description: The text to add to the note.
+      name: note_text
+      required: true
+    outputs:
+    - contextPath: HelloWorld.Note.status
+      description: The note creation status.
+      type: String
+    - contextPath: HelloWorld.Note.msg
+      description: The message from the note creation response.
+      type: String
+  - name: ip
+    description: The returned IP information and reputation.
+    arguments:
+    - description: A comma-separated list of IPs.
+      name: ip
+      default: true
+      isArray: true
+      required: true
+    - description: The score threshold used to determine if an IP is malicious. If not provided, the default threshold from the instance configuration is used.
+      name: threshold
+      defaultValue: 65
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: HelloWorld.IP.asn
+      description: The autonomous system name (ASN) for the IP address.
+      type: String
+    - contextPath: HelloWorld.IP.asn_cidr
+      description: The network routing prefix in CIDR notation associated with the ASN.
+      type: String
+    - contextPath: HelloWorld.IP.asn_country_code
+      description: The two letter ISO country code associated with the ASN.
+      type: String
+    - contextPath: HelloWorld.IP.asn_date
+      description: The date the ASN was assigned.
+      type: Date
+    - contextPath: HelloWorld.IP.asn_description
+      description: The ASN description.
+      type: String
+    - contextPath: HelloWorld.IP.asn_registry
+      description: The registry the ASN belongs to.
+      type: String
+    - contextPath: HelloWorld.IP.entities
+      description: Entities associated to the IP.
+      type: String
+    - contextPath: HelloWorld.IP.ip
+      description: The actual IP address.
+      type: String
+    - contextPath: HelloWorld.IP.network.cidr
+      description: The network CIDR for the IP address.
+      type: String
+    - contextPath: HelloWorld.IP.network.country
+      description: The country of the IP address.
+      type: String
+    - contextPath: HelloWorld.IP.network.end_address
+      description: The last IP address of the CIDR.
+      type: String
+    - contextPath: HelloWorld.IP.network.events.action
+      description: The specific action recorded for the network (for example, registration or modification).
+      type: String
+    - contextPath: HelloWorld.IP.network.events.actor
+      description: The actor (identifier or entity name) that performed the recorded action on the network.
+      type: Unknown
+    - contextPath: HelloWorld.IP.network.events.timestamp
+      description: The date and time the event occurred.
+      type: String
+    - contextPath: HelloWorld.IP.network.handle
+      description: The unique registry identifier assigned to the network block.
+      type: String
+    - contextPath: HelloWorld.IP.network.ip_version
+      description: The IP address version.
+      type: String
+    - contextPath: HelloWorld.IP.network.links
+      description: Links associated to the IP address.
+      type: String
+    - contextPath: HelloWorld.IP.network.name
+      description: The name of the network.
+      type: String
+    - contextPath: HelloWorld.IP.network.notices.description
+      description: The description of the notice.
+      type: String
+    - contextPath: HelloWorld.IP.network.notices.links
+      description: A list of URLs providing additional information or documentation related to the network notice.
+      type: Unknown
+    - contextPath: HelloWorld.IP.network.notices.title
+      description: The title of a specific notice related to the network.
+      type: String
+    - contextPath: HelloWorld.IP.network.parent_handle
+      description: The unique registry identifier of the parent network from which this block was allocated.
+      type: String
+    - contextPath: HelloWorld.IP.network.raw
+      description: Additional raw data for the network.
+      type: Unknown
+    - contextPath: HelloWorld.IP.network.remarks
+      description: Additional remarks for the network.
+      type: Unknown
+    - contextPath: HelloWorld.IP.network.start_address
+      description: The first IP address of the CIDR.
+      type: String
+    - contextPath: HelloWorld.IP.network.status
+      description: The network status.
+      type: String
+    - contextPath: HelloWorld.IP.network.type
+      description: The type of the network.
+      type: String
+    - contextPath: HelloWorld.IP.query
+      description: The IP address that was queried.
+      type: String
+    - contextPath: HelloWorld.IP.raw
+      description: Additional raw data for the IP address.
+      type: Unknown
+    - contextPath: HelloWorld.IP.score
+      description: The reputation score from HelloWorld for this IP (0 to 100, where higher is worse).
+      type: Number
+    - contextPath: IP.Address
+      description: The IP address.
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor reporting the IP address as malicious.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: String
+    - contextPath: IP.ASN
+      description: The autonomous system name for the IP address.
+      type: String
+    - contextPath: IP.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: IP.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityAType
+      description: The relationship source type.
+      type: string
+    - contextPath: IP.Relationships.EntityBType
+      description: The relationship destination type.
+      type: string
+  - name: helloworld-get-events
+    description: Retrieves alerts from the HelloWorld API. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
+    arguments:
+    - description: The severity by which to filter the alerts.
+      name: severity
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - low
+      - medium
+      - high
+      - critical
+    - description: The time from which to start fetching alerts. Supports relative time (e.g., "3 hours ago") or ISO 8601 format (e.g., "2025-12-01T00:00:00Z").
+      name: start_time
+    - description: Maximum number of alerts to retrieve.
+      name: limit
+      defaultValue: "10"
+    - description: Whether to push events to Cortex XSIAM (for Cortex XSIAM tenants only).
+      name: should_push_events
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
+  - name: helloworld-job-submit
+    description: Submits a job to the HelloWorld API and polls for completion. Used for asynchronous APIs and long-running operations.
+    polling: true
+    arguments:
+    - description: Interval in seconds between each poll.
+      name: interval_in_seconds
+      defaultValue: "30"
+    - description: Timeout in seconds until polling stops.
+      name: timeout_in_seconds
+      defaultValue: "600"
+    outputs:
+    - contextPath: HelloWorld.Job.id
+      description: The ID of the submitted job.
+      type: String
+    - contextPath: HelloWorld.Job.status
+      description: The current status of the job.
+      type: String
+    - contextPath: HelloWorld.Job.type
+      description: The type of job submitted.
+      type: String
+    - contextPath: HelloWorld.Job.msg
+      description: Message from the completed job.
+      type: String
+  - name: helloworld-job-poll
+    description: Polls a submitted job for completion status. This is called automatically by helloworld-job-submit.
+    polling: true
+    hidden: true  # Does not appear in README
+    arguments:
+    - description: The job ID to poll for completion.
+      name: job_id
+      required: true
+    - description: Interval in seconds between each poll (default is 30 seconds).
+      name: interval_in_seconds
+    - description: Timeout in seconds until polling stops (default is 600 seconds).
+      name: timeout_in_seconds
+    outputs:
+    - contextPath: HelloWorld.Job.id
+      description: The ID of the job.
+      type: String
+    - contextPath: HelloWorld.Job.status
+      description: The current status of the job.
+      type: String
+    - contextPath: HelloWorld.Job.msg
+      description: Message from the completed job.
+      type: String
+  - name: helloworld-get-assets
+    description: Retrieves resources and assets in the HelloWorld environment.
+    arguments:
+    - description: Maximum number of assets to retrieve.
+      name: limit
+      defaultValue: "10"
+  - name: helloworld-get-vulnerabilities
+    description: Retrieves vulnerabilities found in the HelloWorld environment.
+    arguments:
+    - description: Maximum number of vulnerabilities to retrieve.
+      name: limit
+      defaultValue: "10"
+  dockerimage: demisto/fastapi:0.123.5.6111791
+  # Fetch Incidents
+  isfetch: true
+  isfetch:marketplacev2: false  # Depending on the integration, you may optionally disable "fetch-incidents" on Cortex XSIAM (legacy and platform)
+  isfetch:platform: false
+  # Fetch Events
+  isfetchevents: true
+  isfetchevents:xsoar: false  # "fetch-events" is not supported on Cortex XSOAR. This is automatically disabled during the XSOAR Marketplace upload process. This line was added to be clearer and more explicit.
+  # Fetch Assets
+  isfetchassets: true  # "fetch-assets" is not supported on Cortex XSOAR. This is automatically disabled during the XSOAR Marketplace upload process. This line was added to be clearer and more explicit.
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+defaultclassifier: HelloWorld   # Incident classifier (if "fetch-incidents" is enabled)
+defaultmapperin: HelloWorld-mapper  # Incident field mapper (if "fetch-incidents" is enabled)
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)
