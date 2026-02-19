@@ -1,4 +1,5 @@
 import json
+from datetime import timedelta, UTC
 
 import pytest
 from pytest_mock import MockerFixture
@@ -9523,3 +9524,346 @@ def test_get_case_resolution_statuses_command(mocker):
     assert len(result.outputs) == 2
     assert len(result.raw_response) == 2
     assert mock_client.get_case_resolution_statuses.call_count == 2
+
+
+def test_get_email_campaign_consolidated_forensic_enrichment_command_with_natural_language(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client and arguments with natural language from_time.
+    When:
+        The get_email_campaign_consolidated_forensic_enrichment_command function is called.
+    Then:
+        The natural language is parsed to days and the command executes successfully.
+    """
+    from CortexPlatformCore import get_email_campaign_consolidated_forensic_enrichment_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {"reply": {"identification": {"internet_message_id": "<test@example.com>"}}}
+    mocker.patch.object(mock_client, "get_email_campaign_consolidated_forensic_enrichment", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Mock table")
+
+    # Mock timeframe_to_days to return 30 days directly
+    mocker.patch("CortexPlatformCore.timeframe_to_days", return_value=30)
+
+    args = {
+        "internet_message_id": "<test@example.com>",
+        "from_time": "last month",
+    }
+
+    result = get_email_campaign_consolidated_forensic_enrichment_command(mock_client, args)
+
+    # Verify the client was called with parsed days (30)
+    mock_client.get_email_campaign_consolidated_forensic_enrichment.assert_called_once_with("<test@example.com>", 30)
+    assert result.outputs_prefix == "Core.EmailCampaignForensics"
+
+
+def test_get_email_campaign_consolidated_forensic_enrichment_command_invalid_days_timeframe(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client and arguments with invalid from_time that cannot be parsed.
+    When:
+        The get_email_campaign_consolidated_forensic_enrichment_command function is called.
+    Then:
+        A ValueError is raised from arg_to_datetime indicating invalid date format.
+    """
+    from CortexPlatformCore import get_email_campaign_consolidated_forensic_enrichment_command, Client
+
+    mock_client = Client(base_url="", headers={})
+
+    # Test with invalid timeframe that can't be parsed by arg_to_datetime
+    args = {"internet_message_id": "<test@example.com>", "from_time": "invalid"}
+    with pytest.raises(ValueError, match=r'"invalid" is not a valid date'):
+        get_email_campaign_consolidated_forensic_enrichment_command(mock_client, args)
+
+
+def test_get_email_campaign_consolidated_forensic_enrichment_command_empty_response(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client that returns an empty response.
+    When:
+        The get_email_campaign_consolidated_forensic_enrichment_command function is called.
+    Then:
+        The function handles empty response gracefully and returns appropriate message.
+    """
+    from CortexPlatformCore import get_email_campaign_consolidated_forensic_enrichment_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {"reply": {}}
+    mocker.patch.object(mock_client, "get_email_campaign_consolidated_forensic_enrichment", return_value=mock_response)
+
+    args = {"internet_message_id": "<test@example.com>", "from_time": "7 days"}
+
+    result = get_email_campaign_consolidated_forensic_enrichment_command(mock_client, args)
+
+    assert result.outputs == {}
+    assert result.readable_output == "No Forensic data found."
+
+
+def test_get_email_campaign_consolidated_forensic_enrichment_command_all_categories(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client that returns complete forensic data with all categories.
+    When:
+        The get_email_campaign_consolidated_forensic_enrichment_command function is called.
+    Then:
+        All categories are properly mapped and included in the output.
+    """
+    from CortexPlatformCore import get_email_campaign_consolidated_forensic_enrichment_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {
+        "reply": {
+            "identification": {"internet_message_id": "<test@example.com>"},
+            "detection_context": {"alert_name": ["Test Alert"]},
+            "sender_forensics": {"from_json": {"address": "sender@example.com"}},
+            "targeting_scope": {"mailbox_owner": ["recipient@example.com"]},
+            "infrastructure": {"connecting_ip_address": "1.2.3.4"},
+            "artifacts": {"attachments": []},
+            "authentication": {"last_authentication_results_json": {"dkim": "pass"}},
+            "mail_context": {"folder": "Inbox"},
+            "directionality": {"message_directionality": "internal"},
+        }
+    }
+    mocker.patch.object(mock_client, "get_email_campaign_consolidated_forensic_enrichment", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Mock table")
+
+    args = {"internet_message_id": "<test@example.com>", "from_time": "7 days"}
+
+    result = get_email_campaign_consolidated_forensic_enrichment_command(mock_client, args)
+
+    # Verify all categories are present
+    assert "identification" in result.outputs
+    assert "detection_context" in result.outputs
+    assert "sender_forensics" in result.outputs
+    assert "targeting_scope" in result.outputs
+    assert "infrastructure" in result.outputs
+    assert "artifacts" in result.outputs
+    assert "authentication" in result.outputs
+    assert "mail_context" in result.outputs
+    assert "directionality" in result.outputs
+
+
+def test_execute_email_security_remediation_command_invalid_action(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client and arguments with invalid action value.
+    When:
+        The execute_email_security_remediation_command function is called.
+    Then:
+        A DemistoException is raised indicating invalid action.
+    """
+    from CortexPlatformCore import execute_email_security_remediation_command, Client, DemistoException
+
+    mock_client = Client(base_url="", headers={})
+
+    args = {
+        "action": "InvalidAction",
+        "internet_message_id": "<test@example.com>",
+        "issue_id": "issue-123",
+    }
+
+    with pytest.raises(DemistoException, match='Invalid action "InvalidAction"'):
+        execute_email_security_remediation_command(mock_client, args)
+
+
+def test_get_email_investigation_summary_command_success(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client and valid arguments for email investigation summary.
+    When:
+        The get_email_investigation_summary_command function is called.
+    Then:
+        The response is parsed correctly and returns proper CommandResults.
+    """
+    from CortexPlatformCore import get_email_investigation_summary_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {
+        "reply": {
+            "data": [
+                {
+                    "internet_message_id": "<test1@example.com>",
+                    "campaign_size": 5,
+                    "severity": "high",
+                    "detection_method": "ANALYTICS_BIOC",
+                },
+                {
+                    "internet_message_id": "<test2@example.com>",
+                    "campaign_size": 3,
+                    "severity": "medium",
+                    "detection_method": "USER_REPORTED",
+                },
+            ]
+        }
+    }
+    mocker.patch.object(mock_client, "get_email_investigation_summary", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Mock table")
+    mocker.patch("CortexPlatformCore.timeframe_to_days", return_value=7)
+
+    args = {
+        "timeframe": "7 days",
+        "detection_method": "ANALYTICS_BIOC",
+        "min_severity": "medium",
+        "page_size": "50",
+        "page_number": "0",
+    }
+
+    result = get_email_investigation_summary_command(mock_client, args)
+
+    assert result.outputs_prefix == "Core.EmailInvestigationSummary"
+    assert result.outputs_key_field == "internet_message_id"
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["internet_message_id"] == "<test1@example.com>"
+    assert result.outputs[1]["campaign_size"] == 3
+
+
+@pytest.mark.parametrize(
+    "timeframe_input, expected_days",
+    [
+        ("30 days", 30),
+        ("1 day", 1),
+        ("2 weeks", 14),
+        ("3 weeks ago", 21),
+    ],
+)
+def test_timeframe_to_days(mocker: MockerFixture, timeframe_input, expected_days):
+    """
+    Given:
+        A relative timeframe string.
+    When:
+        The timeframe_to_days function is called.
+    Then:
+        The correct number of days is returned.
+    """
+    from CortexPlatformCore import timeframe_to_days
+    from datetime import datetime
+
+    now = datetime(2026, 2, 18, 12, 0, 0, tzinfo=UTC)
+    parsed = now - timedelta(days=expected_days)
+    mocker.patch("CortexPlatformCore.arg_to_datetime", return_value=parsed)
+    mocker.patch("CortexPlatformCore.datetime")
+    mocker.patch("CortexPlatformCore.datetime.now", return_value=now)
+
+    result = timeframe_to_days(timeframe_input)
+    assert result == expected_days
+
+
+def test_timeframe_to_days_invalid_input(mocker: MockerFixture):
+    """
+    Given:
+        An invalid timeframe string that cannot be parsed.
+    When:
+        The timeframe_to_days function is called.
+    Then:
+        A DemistoException is raised.
+    """
+    from CortexPlatformCore import timeframe_to_days, DemistoException
+
+    mocker.patch("CortexPlatformCore.arg_to_datetime", return_value=None)
+
+    with pytest.raises(DemistoException, match="Failed to parse timeframe"):
+        timeframe_to_days("invalid_timeframe")
+
+
+def test_timeframe_to_days_minimum_one_day(mocker: MockerFixture):
+    """
+    Given:
+        A very short timeframe (e.g. "1 hour") that results in less than 1 day.
+    When:
+        The timeframe_to_days function is called.
+    Then:
+        The minimum value of 1 is returned.
+    """
+    from CortexPlatformCore import timeframe_to_days
+    from datetime import datetime
+
+    now = datetime(2026, 2, 18, 12, 0, 0, tzinfo=UTC)
+    parsed = now - timedelta(hours=1)
+    mocker.patch("CortexPlatformCore.arg_to_datetime", return_value=parsed)
+    mocker.patch("CortexPlatformCore.datetime")
+    mocker.patch("CortexPlatformCore.datetime.now", return_value=now)
+
+    result = timeframe_to_days("1 hour")
+    assert result == 1
+
+
+def test_decrypt_email_content_command_success(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client and valid internet_message_id.
+    When:
+        The decrypt_email_content_command function is called.
+    Then:
+        The email content is decrypted and returns proper CommandResults.
+    """
+    from CortexPlatformCore import decrypt_email_content_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {
+        "reply": {
+            "decrypted_subject": "Test Subject",
+            "decrypted_body": "Test email body content",
+        }
+    }
+    mocker.patch.object(mock_client, "decrypt_email_content", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Mock table")
+
+    args = {"internet_message_id": "<test@example.com>"}
+
+    result = decrypt_email_content_command(mock_client, args)
+
+    assert result.outputs_prefix == "Core.DecryptedEmail"
+    assert result.outputs_key_field == "internet_message_id"
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["decrypted_subject"] == "Test Subject"
+    assert result.outputs[0]["decrypted_body"] == "Test email body content"
+    assert result.outputs[0]["internet_message_id"] == "<test@example.com>"
+
+
+def test_decrypt_email_content_command_multiple_messages(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client and multiple internet_message_ids.
+    When:
+        The decrypt_email_content_command function is called.
+    Then:
+        All messages are decrypted and returned in outputs.
+    """
+    from CortexPlatformCore import decrypt_email_content_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    mock_responses = [
+        {"reply": {"decrypted_subject": "Subject 1", "decrypted_body": "Body 1"}},
+        {"reply": {"decrypted_subject": "Subject 2", "decrypted_body": "Body 2"}},
+    ]
+    mocker.patch.object(mock_client, "decrypt_email_content", side_effect=mock_responses)
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Mock table")
+
+    args = {"internet_message_id": "<test1@example.com>,<test2@example.com>"}
+
+    result = decrypt_email_content_command(mock_client, args)
+
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["internet_message_id"] == "<test1@example.com>"
+    assert result.outputs[1]["internet_message_id"] == "<test2@example.com>"
+    assert result.outputs[0]["decrypted_subject"] == "Subject 1"
+    assert result.outputs[1]["decrypted_subject"] == "Subject 2"
+
+
+def test_decrypt_email_content_command_missing_message_id(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client and arguments without internet_message_id.
+    When:
+        The decrypt_email_content_command function is called.
+    Then:
+        A DemistoException is raised indicating internet_message_id is required.
+    """
+    from CortexPlatformCore import decrypt_email_content_command, Client, DemistoException
+
+    mock_client = Client(base_url="", headers={})
+
+    args = {}
+
+    with pytest.raises(DemistoException, match="internet_message_id is required"):
+        decrypt_email_content_command(mock_client, args)

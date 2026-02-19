@@ -1,0 +1,4 @@
+{
+  "success": false,
+  "error": "Failed to delete email: Email not found"
+}
