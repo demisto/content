@@ -2174,6 +2174,12 @@ script:
       - 'true'
       description: Specify whether the output should be compressed.
     - name: entity_type
+      auto: PREDEFINED
+      predefined:
+        - Email
+        - SharePointOnline
+        - Teams
+        - DataLossPrevention
       description: The type of entity being exported.
     - name: force_conversion_to_mime
       auto: PREDEFINED
@@ -2186,7 +2192,7 @@ script:
     - name: reason_for_export
       description: Reason for exporting the message. Using this argument requires 'compress_output' argument to be set to true.
     - name: recipient_address
-      description: Email address to send the exported message to.
+      description: Filters the results by the recipient's email address.
     outputs:
     - contextPath: EWS.ExportQuarantineMessage.BodyEncoding
       description: Encoding used for the body of the message.
@@ -2207,29 +2213,48 @@ script:
     - name: identity
       description: The identity of a single message to retrieve.
     - name: entity_type
-      description: The type of entity being retrieved.
+      auto: PREDEFINED
+      predefined:
+      - Email
+      - SharePointOnline
+      - Teams
+      - DataLossPrevention
+      description: The workload type of the entity to retrieve.
     - name: recipient_address
-      description: Email address of the recipient.
+      description: Email address of the recipient to filter by.
     - name: sender_address
-      description: Email address of the sender.
+      description: Email address of the sender to filter by.
     - name: teams_conversation_types
-      description: Types of Teams conversations to retrieve.
+      auto: PREDEFINED
+      predefined:
+      - ResultNotFound
+      - OneOnOne
+      - GroupChat
+      - TeamChat
+      - MeetingChat
+      - Sms
+      description: Filter by Teams conversation types.
+      isArray: true
     - name: direction
-      description: Direction of the message (Inbound/Outbound).
+      auto: PREDEFINED
+      predefined:
+      - Inbound
+      - Outbound
+      description: Direction of the message.
     - name: domain
       description: Domain associated with the message.
     - name: end_expires_date
       description: End date for the message expiration.
     - name: end_received_date
-      description: End date for when the message was received.
+      description: End of the received date range. Supported format - 'MM/dd/yyyy HH:mm:ss'.
     - name: include_messages_from_blocked_sender_address
       auto: PREDEFINED
       predefined:
       - 'false'
       - 'true'
-      description: Include messages from blocked sender addresses.
+      description: Whether to include messages from blocked sender addresses.
     - name: message_id
-      description: ID of the message.
+      description: The Internet Message ID (Client ID) found in the email headers.
     - name: my_items
       auto: PREDEFINED
       predefined:
@@ -2239,27 +2264,64 @@ script:
     - name: page
       description: Page number for pagination.
     - name: page_size
-      description: Number of items per page.
+      description: Number of items per page. Maximum is 1000.
+      defaultValue: '50'
     - name: policy_name
       description: Name of the policy associated with the message.
     - name: policy_types
-      description: Types of policies associated with the message.
+      auto: PREDEFINED
+      predefined:
+      - HostedContentFilterPolicy
+      - MalwareFilterPolicy
+      - SafeAttachmentPolicy
+      - SafeLinksPolicy
+      - AntiPhishPolicy
+      description: Filter by types of policies.
+      isArray: true
     - name: quarantine_types
-      description: Types of quarantine associated with the message.
+      auto: PREDEFINED
+      predefined:
+      - Spam
+      - TransportRule
+      - Malware
+      - Phish
+      - HighConfPhish
+      - Bulk
+      - SPO
+      - Teams
+      - CustomerBlockList
+      - MalwareFilterPolicy
+      - SafeAttachmentPolicy
+      - SenderAuthFailure
+      - ZeroHourAutoPurge
+      description: Filter by specific quarantine types.
+      isArray: true
     - name: recipient_tag
-      description: Tag associated with the recipient.
+      auto: PREDEFINED
+      predefined:
+      - Priority
+      - NonPriority
+      description: Filter by priority tag associated with the recipient.
     - name: release_status
-      description: Release status of the message.
+      auto: PREDEFINED
+      predefined:
+      - All
+      - Needed
+      - Released
+      - Requested
+      - Ignored
+      - FalsePositive
+      description: Filter by the release status of the message.
     - name: reported
       auto: PREDEFINED
       predefined:
       - 'false'
       - 'true'
-      description: Include only reported messages.
+      description: Whether to include only reported messages.
     - name: start_expires_date
       description: Start date for the message expiration.
     - name: start_received_date
-      description: Start date for when the message was received.
+      description: Start of the received date range. Supported format  'MM/dd/yyyy HH:mm:ss'.
     - name: subject
       description: Subject of the message.
     - name: type
@@ -2402,7 +2464,7 @@ script:
   - name: ews-release-quarantinemessage
     arguments:
     - name: user
-      description: The user associated with the quarantine message.
+      description: The email address of the user to whom you want to release the quarantined message.
     - name: identities
       description: A comma-separated list of identities of the messages to release.
       isArray: true
@@ -2421,7 +2483,13 @@ script:
       - 'true'
       description: Specify whether to allow the sender.
     - name: entity_type
-      description: The type of entity being released.
+      auto: PREDEFINED
+      predefined:
+      - Email
+      - SharePointOnline
+      - Teams
+      - DataLossPrevention
+      description: The workload type of the entity being released.
     - name: force
       auto: PREDEFINED
       predefined:
@@ -2435,8 +2503,14 @@ script:
       - 'true'
       description: Specify whether to report the message as a false positive.
     - name: action_type
-      description: The type of action to take when releasing the message.
-    description: Release quarantine messages. Uses PowerShell Release-QuarantineMessage cmdlet.
+      auto: PREDEFINED
+      predefined:
+      - Release
+      - Deny
+      - Request
+      description: The action to perform on the quarantine message. Default is 'Release'.
+      defaultValue: 'Release'
+    description: Releases quarantine messages. Uses PowerShell Release-QuarantineMessage cmdlet.
     execution: true
   - name: ews-remove-tenant-allow-block-list-items
     arguments:
@@ -2823,7 +2897,7 @@ script:
     description: Disable mail forwarding for a given user.
   script: ''
   type: powershell
-  dockerimage: demisto/pwsh-exchangev3:1.0.0.4904712
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.6863931
 fromversion: 5.5.0
 supportsquickactions: true
 tests:
