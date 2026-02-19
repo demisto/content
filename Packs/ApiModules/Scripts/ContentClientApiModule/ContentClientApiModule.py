@@ -26,6 +26,7 @@ ParamsType = dict[str, Any]
 JsonType = dict[str, Any]
 StatusCodesType = tuple[int, ...]
 
+
 # Constants
 DEFAULT_USER_AGENT: Final[str] = "ContentClient/1.0"
 
