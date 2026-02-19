@@ -64,12 +64,8 @@ ignore=GR109
 [file:Packs/CortexResponseAndRemediation/Triggers/silent-Trigger_-_Rare_remote_service_change_or_creation_via_Remote_Service_SVCCTL_RPC_interface.json]
 ignore=GR109
 
-#GR109 fails on playbooks with different supported modules than the pack
-[file:Packs/CortexResponseAndRemediation/Playbooks/silent-playbook-Privileged_certificate_request_via_certificate_template.yml]
-ignore=GR109
-
-#GR109 fails on playbooks with different supported modules than the pack
-[file:Packs/CortexResponseAndRemediation/Triggers/silent-Trigger-_-Privileged_certificate_request_via_certificate_template.json]
+#GR109 fails on various items used by the playbook, but the playbook handles those dependencies
+[file:silent-playbook-Privileged_certificate_request_via_certificate_template.yml]
 ignore=GR109
 
 [known_words]
