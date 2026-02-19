@@ -2227,12 +2227,12 @@ script:
     - name: teams_conversation_types
       auto: PREDEFINED
       predefined:
-        - ResultNotFound
-        - OneOnOne
-        - GroupChat
-        - TeamChat
-        - MeetingChat
-        - Sms
+      - ResultNotFound
+      - OneOnOne
+      - GroupChat
+      - TeamChat
+      - MeetingChat
+      - Sms
       description: Filter by Teams conversation types.
       isArray: true
     - name: direction
@@ -2271,11 +2271,11 @@ script:
     - name: policy_types
       auto: PREDEFINED
       predefined:
-        - HostedContentFilterPolicy
-        - MalwareFilterPolicy
-        - SafeAttachmentPolicy
-        - SafeLinksPolicy
-        - AntiPhishPolicy
+      - HostedContentFilterPolicy
+      - MalwareFilterPolicy
+      - SafeAttachmentPolicy
+      - SafeLinksPolicy
+      - AntiPhishPolicy
       description: Filter by types of policies.
       isArray: true
     - name: quarantine_types
@@ -2485,10 +2485,10 @@ script:
     - name: entity_type
       auto: PREDEFINED
       predefined:
-        - Email
-        - SharePointOnline
-        - Teams
-        - DataLossPrevention
+      - Email
+      - SharePointOnline
+      - Teams
+      - DataLossPrevention
       description: The workload type of the entity being released.
     - name: force
       auto: PREDEFINED
@@ -2505,9 +2505,9 @@ script:
     - name: action_type
       auto: PREDEFINED
       predefined:
-        - Release
-        - Deny
-        - Request
+      - Release
+      - Deny
+      - Request
       description: The action to perform on the quarantine message. Default is 'Release'.
       defaultValue: 'Release'
     description: Releases quarantine messages. Uses PowerShell Release-QuarantineMessage cmdlet.
@@ -2897,7 +2897,7 @@ script:
     description: Disable mail forwarding for a given user.
   script: ''
   type: powershell
-  dockerimage: demisto/pwsh-exchangev3:1.0.0.4904712
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.6863931
 fromversion: 5.5.0
 supportsquickactions: true
 tests:
