@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
+from ContentClientApiModule import *
 
 """ IMPORTS """
 import base64
@@ -12,6 +13,9 @@ from threading import Timer
 from typing import Any
 
 import requests
+import asyncio
+import aiohttp
+import gzip
 
 # Disable insecure warnings
 import urllib3
@@ -23,6 +27,8 @@ urllib3.disable_warnings()
 VENDOR = "CrowdStrike"
 PRODUCT = "Falcon_Event"
 CNAPP_PRODUCT = "Falcon_CNAPP"
+SPOTLIGHT_VULN_PRODUCT = "Falcon_Spotlight_Vulnerabilities"
+SPOTLIGHT_ASSETS_PRODUCT = "Falcon_Spotlight_Assets"
 INTEGRATION_NAME = "CrowdStrike Falcon"
 
 # Incidents Type names - use for debugging and context save.
@@ -81,6 +87,7 @@ MAX_FETCH_SIZE = 10000
 MAX_FETCH_DETECTION_PER_API_CALL = 10000  # fetch limit for get ids call - detections
 MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000  # fetch limit for get entities call - detections
 MAX_FETCH_INCIDENT_PER_API_CALL = 500  # fetch limit for get ids call - incidents
+MAX_FETCH_SPOTLIGHT_ASSETS = 5000
 
 BYTE_CREDS = f"{CLIENT_ID}:{SECRET}".encode()
 
@@ -800,6 +807,17 @@ def modify_detection_summaries_outputs(detection: dict):
     detection["detection_id"] = detection.pop("composite_id", None)
 
     return detection
+
+
+def log_falcon_assets(log_line: str, log_type="debug"):
+    """Wrapper for log line for spotlight asset collector"""
+    full_log_line = f"[Falcon Asset Collector] {log_line}"
+    if log_type == "debug":
+        demisto.debug(full_log_line)
+    elif log_type == "info":
+        demisto.info(full_log_line)
+    else:
+        demisto.error(full_log_line)
 
 
 """ API FUNCTIONS """
@@ -3854,8 +3872,886 @@ def get_cnapp_assets():
     return new_last_run, cnapp_alerts, items_count, snapshot_id
 
 
-def fetch_assets_command():
-    demisto.info("Strating fetch assets exeuction.")
+def create_spotlight_client(context_store: ContentClientContextStore) -> ContentClient:
+    """
+    Create and configure ContentClient for Spotlight API with OAuth2 authentication.
+
+    Args:
+        context_store: Context store for token and state persistence
+
+    Returns:
+        Configured ContentClient instance
+    """
+    return ContentClient(
+        base_url=SERVER,
+        verify=USE_SSL,
+        proxy=PROXY,
+        # OAuth2 authentication with token persistence
+        auth_handler=OAuth2ClientCredentialsHandler(
+            token_url=f"{SERVER}/oauth2/token", client_id=CLIENT_ID, client_secret=SECRET, context_store=context_store
+        ),
+        # Enable diagnostics
+        diagnostic_mode=True,
+        client_name="FalconSpotlightAssetCollector",
+    )
+
+
+def load_spotlight_state(context_store: ContentClientContextStore) -> tuple[ContentClientState, str, int, set, set]:
+    """
+    Load Spotlight state from integration context.
+
+    Args:
+        context_store: Context store for reading integration context
+
+    Returns:
+        Tuple of (state_object, integration_context, snapshot_id, total_fetched, unique_aids, processed_aids)
+    """
+    # Read entire integration context (preserves all existing keys)
+    integration_context = context_store.read()
+    log_falcon_assets(f"Loaded integration context with keys: {list(integration_context.keys())}")
+
+    # Get Spotlight-specific state
+    spotlight_state_dict = integration_context.get("spotlight_assets", {})
+    spotlight_state = ContentClientState.from_dict(spotlight_state_dict)
+
+    # Extract state variables
+    snapshot_id = spotlight_state.metadata.get("snapshot_id") or str(round(time.time() * 1000))
+    total_fetched = spotlight_state.metadata.get("total_fetched_until_now", 0)
+    unique_aids = set(spotlight_state.metadata.get("unique_aids", []))
+    processed_aids = set(spotlight_state.metadata.get("processed_aids", []))
+
+    log_falcon_assets(
+        f"Loaded Spotlight state: {snapshot_id=}, {total_fetched=}, "
+        f"unique_aids_count={len(unique_aids)}, processed_aids_count={len(processed_aids)}, "
+        f"after_token={spotlight_state.cursor}"
+    )
+
+    return spotlight_state, snapshot_id, total_fetched, unique_aids, processed_aids
+
+
+def save_spotlight_state(
+    context_store: ContentClientContextStore, spotlight_state: ContentClientState
+) -> None:
+    """
+    Save Spotlight state to integration context without breaking other keys.
+
+    Args:
+        context_store: Context store for writing integration context
+        spotlight_state: Spotlight state object to save
+    """
+    # Update only the spotlight_assets key, preserving all other context
+    integration_context = context_store.read()
+    integration_context["spotlight_assets"] = spotlight_state.to_dict()
+    context_store.write(integration_context)
+    log_falcon_assets(f"Saved Spotlight state to integration context {integration_context=}")
+
+
+async def fetch_spotlight_vulnerabilities_batch(client: ContentClient, after_token: str | None) -> tuple[list, dict]:
+    """
+    Fetch a single batch of Spotlight vulnerabilities.
+
+    Args:
+        client: ContentClient instance
+        after_token: Pagination token (None for first request)
+
+    Returns:
+        Tuple of (vulnerabilities_list, response_data)
+    """
+    # Build request parameters
+    params = {"limit": MAX_FETCH_SPOTLIGHT_ASSETS, "filter": "status:['open','reopen']", "facet": ["host_info", "cve"]}
+
+    # Add pagination token if provided
+    if after_token:
+        params["after"] = after_token
+
+    log_falcon_assets(
+        f"Fetching Spotlight batch with limit={MAX_FETCH_SPOTLIGHT_ASSETS}, after_token={'present' if after_token else 'none'}"
+    )
+
+    # Make ASYNC API request
+    response = await client._request(method="GET", url_suffix="/spotlight/combined/vulnerabilities/v1", params=params)
+
+    # Parse JSON response
+    response_data = response.json()
+    vulnerabilities = response_data.get("resources", [])
+
+    log_falcon_assets(f"Fetched {len(vulnerabilities)} vulnerabilities in this batch")
+
+    return vulnerabilities, response_data
+
+
+def extract_unique_aids(vulnerabilities: list, existing_aids: set) -> set:
+    """
+    Extract unique AIDs (Host IDs) from vulnerabilities and merge with existing set.
+    Equivalent to JavaScript: const u_aid = [...new Set(aids)]
+
+    Args:
+        vulnerabilities: List of vulnerability objects
+        existing_aids: Existing set of unique AIDs
+
+    Returns:
+        Updated set of unique AIDs
+    """
+    # Extract AIDs from this batch
+    batch_aids = {vuln.get("aid") for vuln in vulnerabilities if vuln.get("aid")}
+
+    # Merge with existing
+    existing_aids.update(batch_aids)
+
+    log_falcon_assets(f"Batch AIDs: {len(batch_aids)}, Total unique AIDs: {len(existing_aids)}")
+
+    return existing_aids
+
+
+class AssetsDeviceHandler:
+    """
+    Handler for enriching and ingesting device assets asynchronously.
+
+    Buffers unique AIDs from vulnerability batches, enriches them via the Devices API,
+    and sends enriched data to XSIAM using the async fire-and-forget pattern.
+
+    Maintains separate batch tracking from vulnerability chain to prevent out-of-order context saves.
+    """
+
+    def __init__(
+        self,
+        client: ContentClient,
+        context_store: ContentClientContextStore,
+        spotlight_state: ContentClientState,
+        snapshot_id: str,
+        processed_aids: set,
+        batch_limit: int = MAX_FETCH_SPOTLIGHT_ASSETS,
+    ):
+        """
+        Initialize the AssetsDeviceHandler.
+
+        Args:
+            client: ContentClient instance for API calls
+            context_store: Context store for thread-safe state persistence
+            spotlight_state: Spotlight state object for metadata updates
+            snapshot_id: Snapshot ID for asset collection tracking
+            processed_aids: Set of already processed AIDs (for deduplication)
+            batch_limit: Number of AIDs to accumulate before triggering enrichment
+        """
+        self.client = client
+        self.context_store = context_store
+        self.spotlight_state = spotlight_state
+        self.snapshot_id = snapshot_id
+        self.processed_aids = processed_aids
+        self.pending_buffer: set[str] = set()
+        self.batch_limit = batch_limit
+
+        # SEPARATE batch tracking for assets chain (independent from vulnerability chain)
+        self.asset_batch_counter = 0
+        self.asset_last_saved_batch_number = 0
+
+        self.running_tasks: set[asyncio.Task] = set()
+
+    async def receive_aids(self, new_aids: set[str]) -> None:
+        """
+        Receive new AIDs and trigger enrichment when buffer reaches batch_limit.
+        Keeps at least 1 item in the buffer to ensure we can send the final count with the last batch.
+
+        Args:
+            new_aids: Set of AIDs extracted from vulnerability batch
+        """
+        # Deduplicate against already processed AIDs
+        unique_new = new_aids - self.processed_aids
+        self.pending_buffer.update(unique_new)
+
+        log_falcon_assets(f"AssetsDeviceHandler: Received {len(unique_new)} new AIDs, buffer size: {len(self.pending_buffer)}")
+
+        # Trigger enrichment for full batches, but keep at least 1 item for the final flush
+        # Threshold is batch_limit + 1 to ensure we always have leftovers for flush_remaining
+        threshold = self.batch_limit + 1
+
+        while len(self.pending_buffer) >= threshold:
+            full_list = list(self.pending_buffer)
+            batch = full_list[: self.batch_limit]
+            self.pending_buffer = set(full_list[self.batch_limit :])
+
+            log_falcon_assets(f"AssetsDeviceHandler: Buffer full, triggering enrichment for {len(batch)} AIDs")
+
+            # Create async enrichment task
+            task = asyncio.create_task(self.enrich_and_ingest_batch(batch))
+            self.running_tasks.add(task)
+            task.add_done_callback(self.running_tasks.discard)
+
+    async def enrich_and_ingest_batch(self, aid_batch: list[str], final_items_count: int = 1) -> None:
+        """
+        Enrich a batch of AIDs via Devices API and send to XSIAM.
+
+        Args:
+            aid_batch: List of AIDs to enrich
+            final_items_count: Total items count to send to XSIAM (1 for intermediate batches, actual total for final batch)
+        """
+        # Increment ASSET batch counter (separate from vulnerability chain)
+        self.asset_batch_counter += 1
+        current_batch_number = self.asset_batch_counter
+
+        log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] Enriching {len(aid_batch)} AIDs")
+
+        try:
+            # 1. Enrich via ContentClient (uses OAuth2, retry, rate limiting)
+            response = await self.client._request(
+                method="POST", url_suffix="/devices/entities/devices/v2", json_data={"ids": aid_batch}
+            )
+
+            # Parse response
+            response_data = response.json()
+            devices = response_data.get("resources", [])
+
+            if not devices:
+                log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] No devices returned from API")
+                return
+
+            log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] Enriched {len(devices)} devices")
+
+            devices = self._filter_asset_fields(devices)
+
+            # 2. Update state and send it to XSIAM after finish
+            self.processed_aids.update(aid_batch)
+            self.spotlight_state.metadata["processed_aids"] = list(self.processed_aids)
+
+            # 3. Send to XSIAM using existing generic function (fire-and-forget)
+            send_task = create_task_send_batch_to_xsiam_and_save_context(
+                data=devices,
+                product=SPOTLIGHT_ASSETS_PRODUCT,
+                snapshot_id=self.snapshot_id,
+                items_count=final_items_count,
+                batch_number=current_batch_number,
+                last_saved_batch_number=self.asset_last_saved_batch_number,
+                context_store=self.context_store,
+                state=self.spotlight_state,
+                save_state_callback=save_spotlight_state,
+                data_type="assets",
+            )
+
+            # Track task with callback to update last_saved_batch_number
+            def update_last_saved(future):
+                # 'self' is accessible from enclosing method scope - no nonlocal needed
+                try:
+                    saved_batch_num = future.result()
+                    if saved_batch_num > self.asset_last_saved_batch_number:
+                        self.asset_last_saved_batch_number = saved_batch_num
+                        log_falcon_assets(f"AssetsDeviceHandler: Updated asset_last_saved_batch_number to {saved_batch_num}")
+                except asyncio.CancelledError:
+                    log_falcon_assets(
+                        f"AssetsDeviceHandler: [Batch {current_batch_number}] Send task was cancelled (script exiting).", "debug"
+                    )
+                except Exception as e:
+                    log_falcon_assets(f"AssetsDeviceHandler: Enrichment task failed: {e}", "error")
+                finally:
+                    self.running_tasks.discard(future)
+
+            # Track the send task
+            self.running_tasks.add(send_task)
+            send_task.add_done_callback(update_last_saved)
+            log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] Created send task")
+
+        except Exception as e:
+            log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] Error enriching assets: {e}", "error")
+            raise
+
+    async def flush_remaining(self, total_items_count: int) -> None:
+        """
+        Flush remaining AIDs in buffer and wait for all enrichment tasks.
+        This is the FINAL batch, so we send the actual total_items_count.
+
+        Args:
+            total_items_count: The final count of unique assets to report to XSIAM.
+        """
+        # Handle leftover AIDs that didn't reach batch_limit
+        if self.pending_buffer:
+            log_falcon_assets(
+                f"AssetsDeviceHandler: Flushing {len(self.pending_buffer)} remaining AIDs with final count {total_items_count}",
+                "info",
+            )
+            # Create task for remaining batch (fire-and-forget)
+            task = asyncio.create_task(
+                self.enrich_and_ingest_batch(list(self.pending_buffer), final_items_count=total_items_count)
+            )
+            self.running_tasks.add(task)
+            task.add_done_callback(self.running_tasks.discard)
+            self.pending_buffer.clear()
+
+        # Wait for all enrichment and send tasks to complete
+        while self.running_tasks:
+            log_falcon_assets("AssetsDeviceHandler: Starting flush of remaining assets.", "info")
+            # Create a snapshot of the current tasks
+            current_batch = list(self.running_tasks)
+            if not current_batch:
+                break
+            count = len(current_batch)
+            log_falcon_assets(f"AssetsDeviceHandler: Waiting for {count} background tasks to complete...", "info")
+            # Wait for this specific batch.
+            await asyncio.gather(*current_batch, return_exceptions=True)
+            self.running_tasks.difference_update(current_batch)
+        log_falcon_assets("AssetsDeviceHandler: All enrichment/send tasks completed successfully", "info")
+
+    @staticmethod
+    def _filter_asset_fields(assets: list[Dict]) -> list[Dict]:
+        """
+        Filters a list of asset dictionaries to retain only specific keys.
+        """
+        # Filtering assets key according to UVEM request
+        allowed_keys = {
+            "device_id",
+            "cid",
+            "external_ip",
+            "mac_address",
+            "hostname",
+            "first_seen",
+            "last_login_timestamp",
+            "last_seen",
+            "local_ip",
+            "machine_domain",
+            "os_version",
+            "os_build",
+            "serial_number",
+            "status",
+            "os_product_name",
+            "connection_mac_address",
+            "tags",
+        }
+
+        return [{k: asset.get(k, [] if k == "tags" else "") for k in allowed_keys} for asset in assets]
+
+
+async def xsiam_api_call_async(
+    xsiam_url: str, zipped_data: bytes, headers: dict, num_of_attempts: int, data_type: str = "assets"
+) -> aiohttp.ClientResponse | None:
+    """
+    Send data to XSIAM asynchronously with retry logic.
+    Generic function for sending any type of data to XSIAM.
+
+    Args:
+        xsiam_url: XSIAM API endpoint URL (e.g., "https://api-{domain}")
+        zipped_data: Gzip-compressed data bytes to send
+        headers: HTTP headers including authorization token, format, vendor, product, etc.
+        num_of_attempts: Maximum number of retry attempts for failed requests
+        data_type: Type of data being sent (e.g., "assets", "events"). Used for logging. Defaults to "assets"
+
+    Returns:
+        aiohttp.ClientResponse: The HTTP response object from the XSIAM API
+
+    Raises:
+        DemistoException: If all retry attempts fail or non-retryable error occurs
+    """
+    status_code = None
+    attempt_num = 1
+    response = None
+
+    while status_code != 200 and attempt_num < num_of_attempts + 1:
+        log_falcon_assets(f"Sending {data_type} to XSIAM, attempt {attempt_num}/{num_of_attempts}")
+        ok_codes = (200, 429) if attempt_num < num_of_attempts else None
+
+        async with aiohttp.ClientSession() as session:  # noqa: SIM117
+            async with session.post(urljoin(xsiam_url, "/logs/v1/xsiam"), data=zipped_data, headers=headers) as response:
+                try:
+                    response.raise_for_status()
+                    status_code = response.status
+
+                except aiohttp.ClientResponseError as e:
+                    if ok_codes and e.status in ok_codes:
+                        status_code = e.status
+                        if e.status == 429:
+                            await asyncio.sleep(1)
+                            attempt_num += 1
+                        continue
+                    else:
+                        header_msg = f"Error sending {data_type} to XSIAM: {e.message}"
+                        log_falcon_assets(header_msg, "error")
+                        demisto.updateModuleHealth(header_msg + e.message, is_error=True)
+
+        log_falcon_assets(f"received status code: {status_code}")
+        if status_code == 429:
+            await asyncio.sleep(1)
+        attempt_num += 1
+    return response
+
+
+def send_data_to_xsiam_async(
+    data: Union[str, list],
+    vendor: str,
+    product: str,
+    data_format: str = "json",
+    url_key: str = "url",
+    num_of_attempts: int = 3,
+    chunk_size: int = XSIAM_EVENT_CHUNK_SIZE,
+    data_type: str = "assets",
+    snapshot_id: str = "",
+    items_count: int = 1,
+) -> list:
+    """
+    Send data to XSIAM asynchronously by creating async tasks for each data chunk.
+    Generic function for sending any type of data (assets, events, etc.) to XSIAM.
+    Adapted from Rapid7_Nexpose.py lines 7631-7672.
+
+    Args:
+        data: List of data objects to send (e.g., vulnerabilities, alerts, events)
+        vendor: Vendor name for XSIAM headers (e.g., "CrowdStrike")
+        product: Product name for XSIAM headers
+        data_format: Format of the data being sent. Defaults to "json"
+        url_key: Parameter key to retrieve the final reporting device URL from params. Defaults to "url"
+        num_of_attempts: Maximum retry attempts for failed requests. Defaults to 3
+        chunk_size: Maximum size in bytes for each data chunk. Defaults to 1 MiB (2**20)
+        data_type: Type of data being sent for XSIAM collector-type header. Defaults to "assets"
+        snapshot_id: Snapshot ID for asset collection tracking. Required for assets, empty for events
+        items_count: Total items count - final count when complete, 1 when in-progress. Defaults to 1
+
+    Returns:
+        list: List of asyncio.Task objects for each data chunk being sent
+
+    Note:
+        - Data is automatically converted to newline-separated JSON strings
+        - Data is compressed with gzip before sending
+        - Data is split into chunks based on chunk_size parameter
+        - Each chunk is sent as a separate async task
+    """
+    params = demisto.params()
+    calling_context = demisto.callingContext.get("context", {})
+    instance_name = calling_context.get("IntegrationInstance", "")
+    collector_name = calling_context.get("IntegrationBrand", "")
+
+    # We only return early if data is empty AND it's NOT an asset snapshot update.
+    # If it is assets, we might be sending the "Final Seal" (empty data + count header).
+    if not data and data_type != "assets":
+        log_falcon_assets(f"No {data_type} to send to XSIAM")
+        return []
+
+    # Convert list to newline-separated JSON strings
+    if isinstance(data, list):
+        log_falcon_assets(f"Sending {len(data)} {data_type} (data type) to XSIAM")
+        if data and isinstance(data[0], dict):
+            data = [json.dumps(item) for item in data]
+        data_str = "\n".join(data)
+    elif isinstance(data, str):
+        data_str = data
+    elif not data and data_type == "assets":
+        # Handle explicit None for assets seal
+        data_str = ""
+    else:
+        # Unknown type or empty data for non-assets
+        return []
+
+    # Get XSIAM credentials
+    xsiam_api_token = demisto.getLicenseCustomField("Http_Connector.token")
+    xsiam_domain = demisto.getLicenseCustomField("Http_Connector.url")
+    xsiam_url = f"https://api-{xsiam_domain}"
+
+    # Build headers
+    headers = remove_empty_elements(
+        {
+            "authorization": xsiam_api_token,
+            "format": data_format,
+            "product": product,
+            "vendor": vendor,
+            "content-encoding": "gzip",
+            "collector-name": collector_name,
+            "instance-name": instance_name,
+            "final-reporting-device": params.get(url_key, ""),
+            "collector-type": "assets" if data_type == "assets" else "events",
+        }
+    )
+
+    # Adapt headers to asset data
+    if data_type == "assets":
+        if not snapshot_id:
+            snapshot_id = str(round(time.time() * 1000))
+        headers["snapshot-id"] = snapshot_id + instance_name + product
+        headers["total-items-count"] = str(items_count)
+
+    # If data_str is empty (the seal), we force a list with one empty string [""] to ensure the task is created
+    if not data_str and data_type == "assets":
+        data_chunks = [""]
+        log_falcon_assets("Preparing empty 'Seal' batch to close snapshot.")
+    else:
+        data_chunks = list(split_data_to_chunks(data_str, chunk_size))
+
+    async def send_events_async(data_chunk) -> int:
+        chunk_size_val = len(data_chunk)
+        data_chunk = "\n".join(data_chunk)
+        zipped_data = gzip.compress(data_chunk.encode("utf-8"))
+        await xsiam_api_call_async(
+            xsiam_url=xsiam_url, zipped_data=zipped_data, headers=headers, num_of_attempts=num_of_attempts, data_type=data_type
+        )
+        return chunk_size_val
+
+    tasks = [asyncio.create_task(send_events_async(chunk)) for chunk in data_chunks]
+    return tasks
+
+
+async def send_batch_to_xsiam_and_save_context(
+    data: list,
+    vendor: str,
+    product: str,
+    snapshot_id: str,
+    items_count: int,
+    batch_number: int,
+    last_saved_batch_number: int,
+    context_store: ContentClientContextStore,
+    state: ContentClientState,
+    save_state_callback: Callable[[ContentClientContextStore, dict, ContentClientState], None],
+    data_type: str = "assets",
+) -> int:
+    """
+    Send batch to XSIAM asynchronously, then save context ONLY if send succeeds AND this is the latest batch.
+
+    Generic function implementing the async fire-and-forget pattern for sending any type of data
+    to XSIAM while managing state persistence. Prevents out-of-order context saves by only saving
+    when batch_number > last_saved_batch_number.
+
+    Args:
+        data: List of data objects to send (e.g., vulnerabilities, alerts, events)
+        vendor: Vendor name for XSIAM headers (e.g., "CrowdStrike")
+        product: Product name for XSIAM headers (e.g., "Falcon_Spotlight", "Falcon_CNAPP")
+        snapshot_id: Snapshot ID for asset collection tracking
+        items_count: Total items count - use final count when complete, 1 when in-progress
+        batch_number: Current batch number being processed
+        last_saved_batch_number: Highest batch number that has successfully saved context
+        context_store: ContentClientContextStore instance for thread-safe context operations
+        state: ContentClientState object containing cursor and metadata
+        save_state_callback: Callback function to save state with signature:
+                            (ContentClientContextStore, dict, ContentClientState) -> None
+                            Example: save_spotlight_state, save_cnapp_state, etc.
+        data_type: Type of data being sent for XSIAM collector-type header. Defaults to "assets"
+
+    Returns:
+        int: batch_number if context was saved, else last_saved_batch_number
+    """
+    log_falcon_assets(f"[Batch {batch_number}] Sending {len(data)} {data_type} to XSIAM")
+
+    try:
+        # 1. Send to XSIAM (returns list of async tasks)
+        tasks = send_data_to_xsiam_async(
+            data=data,
+            vendor=vendor,
+            product=product,
+            data_format="json",
+            url_key="url",
+            num_of_attempts=3,
+            chunk_size=XSIAM_EVENT_CHUNK_SIZE,
+            data_type=data_type,
+            snapshot_id=snapshot_id,
+            items_count=items_count,
+        )
+
+        # 2. Wait for all chunks to complete
+        await asyncio.gather(*tasks)
+        log_falcon_assets(f"[Batch {batch_number}] for {product=} Successfully sent to XSIAM")
+
+        # 3. Save context ONLY if this is the latest batch using the provided callback
+        if batch_number > last_saved_batch_number:
+            save_state_callback(context_store, state)
+            log_falcon_assets(f"[Batch {batch_number}] Context saved")
+            return batch_number
+        else:
+            log_falcon_assets(
+                f"[Batch {batch_number}] for {product=} Skipped save (batch {last_saved_batch_number} already saved)"
+            )
+            return last_saved_batch_number
+
+    except Exception as e:
+        log_falcon_assets(f"[Batch {batch_number}] Failed: {str(e)}", "error")
+        raise
+
+
+def update_spotlight_state_and_metadata(
+    spotlight_state: ContentClientState,
+    cursor: str | None,
+    snapshot_id: str,
+    total_fetched: int,
+    unique_aids: set,
+    processed_aids: set,
+) -> None:
+    """
+    Update Spotlight state with cursor and metadata.
+    Centralizes the repetitive state update logic.
+
+    Args:
+        spotlight_state: State object to update
+        cursor: Pagination cursor/token
+        snapshot_id: Snapshot ID for tracking
+        total_fetched: Total vulnerabilities fetched
+        unique_aids: Set of unique AIDs
+        processed_aids: Set of processed AIDs
+    """
+    spotlight_state.cursor = cursor
+    spotlight_state.metadata = {
+        "snapshot_id": snapshot_id,
+        "total_fetched_until_now": total_fetched,
+        "unique_aids": list(unique_aids),
+        "processed_aids": list(processed_aids),
+    }
+
+
+def handle_spotlight_fetch_error(
+    error: Exception,
+    client: ContentClient,
+    spotlight_state: ContentClientState,
+    context_store: ContentClientContextStore,
+    after_token: str | None,
+    snapshot_id: str,
+    total_fetched: int,
+    unique_aids: set,
+    processed_aids: set,
+) -> None:
+    """
+    Handle errors during Spotlight fetch by logging, saving state, and re-raising.
+    Consolidates error handling logic for both ContentClientError and general exceptions.
+
+    Args:
+        error: The exception that occurred
+        client: ContentClient instance for diagnostics
+        spotlight_state: State object to update
+        context_store: Context store for saving state
+        after_token: Current pagination token
+        snapshot_id: Snapshot ID for tracking
+        total_fetched: Total vulnerabilities fetched so far
+        unique_aids: Set of unique AIDs
+        processed_aids: Set of processed AIDs
+    """
+    # Log error with diagnostics if ContentClientError
+    if isinstance(error, ContentClientError):
+        log_falcon_assets(f"ContentClient error during Spotlight fetch: {str(error)}", "error")
+        diagnosis = client.diagnose_error(error)
+        log_falcon_assets(f"Issue: {diagnosis['issue']}, Solution: {diagnosis['solution']}", "error")
+    else:
+        log_falcon_assets(f"Unexpected error during Spotlight fetch: {str(error)}", "error")
+
+    # Save current state for retry (including processed_aids from handler)
+    update_spotlight_state_and_metadata(
+        spotlight_state=spotlight_state,
+        cursor=after_token,
+        snapshot_id=snapshot_id,
+        total_fetched=total_fetched,
+        unique_aids=unique_aids,
+        processed_aids=processed_aids,
+    )
+    save_spotlight_state(context_store, spotlight_state)
+
+    # Re-raise the exception
+    raise error
+
+
+def create_task_send_batch_to_xsiam_and_save_context(
+    data,
+    product,
+    snapshot_id,
+    items_count,
+    batch_number,
+    last_saved_batch_number,
+    context_store,
+    state,
+    save_state_callback,
+    data_type,
+):
+    """
+    Create an async task to send vulnerability batch to XSIAM and save context.
+    Parameters now match the order and names of the internal async function.
+
+    Args:
+        data: List of data items to send
+        product: The product name
+        snapshot_id: Snapshot ID for tracking
+        items_count: Total items count - use final count when complete, 1 when in-progress
+        batch_number: Current batch number being processed
+        last_saved_batch_number: Highest batch number that has successfully saved context
+        context_store: ContentClientContextStore instance for thread-safe context operations
+        state: ContentClientState object containing cursor and metadata
+        save_state_callback: Callback function to save state with signature:
+                            (ContentClientContextStore, dict, ContentClientState) -> None
+                            Example: save_spotlight_state, save_cnapp_state, etc.
+        data_type: Type of data being sent for XSIAM collector-type header. Defaults to "assets"
+    Returns:
+        asyncio.Task: The created async task
+    """
+    # items_count = items_count if batch
+    task = asyncio.create_task(
+        send_batch_to_xsiam_and_save_context(
+            data=data,
+            vendor=VENDOR,
+            product=product,
+            snapshot_id=snapshot_id,
+            items_count=items_count,
+            batch_number=batch_number,
+            last_saved_batch_number=last_saved_batch_number,
+            context_store=context_store,
+            state=state,
+            save_state_callback=save_state_callback,
+            data_type=data_type,
+        )
+    )
+    return task
+
+
+async def fetch_spotlight_assets():
+    """
+    Fetch Spotlight vulnerabilities using ContentClient with async capabilities.
+    Uses integration context for state persistence.
+    Implements async fire-and-forget pattern for sending data to XSIAM.
+    Enriches unique AIDs via AssetsDeviceHandler for parallel asset ingestion.
+    """
+    log_falcon_assets("Starting Spotlight assets fetch execution.", "info")
+
+    # Create context store
+    context_store = ContentClientContextStore(namespace="SpotlightAssets")
+
+    # Load state from integration context (now includes processed_aids)
+    spotlight_state, snapshot_id, total_fetched, unique_aids, processed_aids = load_spotlight_state(
+        context_store
+    )
+    # The "next page" token - In Falcon API called "after"
+    after_token = spotlight_state.cursor
+
+    # Create client
+    client = create_spotlight_client(context_store)
+
+    # Track async send tasks and batch numbers for VULNERABILITY chain
+    pending_tasks: set[asyncio.Task] = set()
+    batch_counter = 0
+    last_saved_batch_number = 0
+
+    # Initialize AssetsDeviceHandler for ASSET enrichment chain (separate batch tracking)
+    asset_handler = AssetsDeviceHandler(
+        client=client,
+        context_store=context_store,
+        spotlight_state=spotlight_state,
+        snapshot_id=snapshot_id,
+        processed_aids=processed_aids,
+        batch_limit=MAX_FETCH_SPOTLIGHT_ASSETS,
+    )
+
+    try:
+        # Fetch ALL vulnerability pages in a loop until no more data
+        while True:
+            # Fetch one batch (SEQUENTIAL - must wait for pagination token)
+            vulnerabilities, response_data = await fetch_spotlight_vulnerabilities_batch(client, after_token)
+
+            # Extract unique AIDs from this batch
+            unique_aids = extract_unique_aids(vulnerabilities, unique_aids)
+
+            # Send AIDs to asset handler for enrichment (async fire-and-forget)
+            batch_aids = {vuln.get("aid") for vuln in vulnerabilities if vuln.get("aid")}
+            await asset_handler.receive_aids(batch_aids)
+
+            # Update counters
+            total_fetched += len(vulnerabilities)
+
+            # Get next pagination token
+            new_after_token = response_data.get("meta", {}).get("pagination", {}).get("after")
+
+            # Update state
+            batch_counter += 1
+            update_spotlight_state_and_metadata(
+                spotlight_state=spotlight_state,
+                cursor=new_after_token,
+                snapshot_id=snapshot_id,
+                total_fetched=total_fetched,
+                unique_aids=unique_aids,
+                processed_aids=asset_handler.processed_aids,
+            )
+
+            # Determine if this is the last batch
+            is_last_batch = not new_after_token
+            items_count = total_fetched if is_last_batch else 1
+
+            task = create_task_send_batch_to_xsiam_and_save_context(
+                data=vulnerabilities,
+                product=SPOTLIGHT_VULN_PRODUCT,
+                snapshot_id=snapshot_id,
+                items_count=items_count,
+                batch_number=batch_counter,
+                last_saved_batch_number=last_saved_batch_number,
+                context_store=context_store,
+                state=spotlight_state,
+                save_state_callback=save_spotlight_state,
+                data_type="assets",
+            )
+
+            # Track task and update last_saved_batch_number when task completes
+            def update_last_saved(future):
+                nonlocal last_saved_batch_number
+                try:
+                    last_saved_batch_number = future.result()
+                except Exception as e:
+                    log_falcon_assets(f"Background vulnerability task failed: {e}", "error")
+                finally:
+                    pending_tasks.discard(future)
+
+            pending_tasks.add(task)
+            task.add_done_callback(update_last_saved)
+            log_falcon_assets(f"Created background task for vulnerability batch {batch_counter}")
+
+            # Check if more pages exist
+            if is_last_batch:
+                # No more pages - we're done fetching vulnerabilities!
+                log_falcon_assets(
+                    f"Completed fetching vulnerabilities. Total: {total_fetched}, Unique hosts: {len(unique_aids)}", "info"
+                )
+                break
+
+            # More pages exist - continue to next batch
+            log_falcon_assets(f"More pages available. Fetched so far: {total_fetched}")
+            after_token = new_after_token
+
+        # Wait for all pending vulnerability send tasks to complete
+        if pending_tasks:
+            log_falcon_assets(f"Waiting for {len(pending_tasks)} background vulnerability send tasks to complete", "info")
+            results = await asyncio.gather(*pending_tasks, return_exceptions=True)
+
+            # Check for errors
+            for res in results:
+                if isinstance(res, Exception):
+                    log_falcon_assets(f"Background vulnerability send task failed: {res}", "error")
+                    raise res
+
+            log_falcon_assets("All background vulnerability send tasks completed successfully", "info")
+
+        # Flush remaining AIDs and wait for all asset enrichment tasks
+        # We pass the total count of unique AIDs we found during this execution
+        total_assets_count = len(unique_aids)
+        log_falcon_assets(
+            f"Flushing remaining AIDs and waiting for asset enrichment tasks. Total assets: {total_assets_count}", "info"
+        )
+        await asset_handler.flush_remaining(total_items_count=total_assets_count)
+
+        # Fetch completed successfully - reset state for next run
+        log_falcon_assets("Resetting Spotlight state after successful complete fetch")
+        update_spotlight_state_and_metadata(
+            spotlight_state=spotlight_state, cursor=None, snapshot_id="", total_fetched=0, unique_aids=set(), processed_aids=set()
+        )
+
+        # Save reset state to integration context
+        save_spotlight_state(context_store, spotlight_state)
+
+        log_falcon_assets(
+            f"Finished Spotlight assets fetch. Total vulnerabilities: {total_fetched}, "
+            f"Unique hosts: {len(unique_aids)}, Enriched assets: {len(asset_handler.processed_aids)}",
+            "info",
+        )
+
+    except (ContentClientError, Exception) as e:
+        handle_spotlight_fetch_error(
+            error=e,
+            client=client,
+            spotlight_state=spotlight_state,
+            context_store=context_store,
+            after_token=after_token,
+            snapshot_id=snapshot_id,
+            total_fetched=total_fetched,
+            unique_aids=unique_aids,
+            processed_aids=asset_handler.processed_aids,
+        )
+
+    finally:
+        # Clean up client resources
+        await client.aclose()
+
+
+def fetch_cnapp_assets():
+    demisto.info("Strating fetch assets 'CNAPP Alerts' exeuction.")
     new_last_run, detections, items_count, snapshot_id = get_cnapp_assets()
 
     demisto.debug(f"Sending a batch of {len(detections)} assets to xsiam with {snapshot_id=}")
@@ -3877,6 +4773,18 @@ def fetch_assets_command():
     demisto.updateModuleHealth({"assetsPulled": len(detections)})
 
     demisto.info("Finished fetch assets exeuction.")
+
+
+def fetch_assets_command():
+    demisto.debug("Strating fetch assets exeuction.")
+    params = demisto.params()
+    fetch_assets_types = params.get("fetch_assets_type", "")
+
+    if "CNAPP Alerts" in fetch_assets_types:
+        fetch_cnapp_assets()
+
+    if "Spotlight" in fetch_assets_types:
+        asyncio.run(fetch_spotlight_assets())
 
 
 def fetch_detections_by_product_type(

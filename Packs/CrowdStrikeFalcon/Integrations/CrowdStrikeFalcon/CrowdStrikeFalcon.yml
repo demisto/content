@@ -292,6 +292,20 @@ configuration:
   hidden:
   - xsoar
   - xpanse
+- display: 'Fetch Asset types'
+  name: fetch_assets_type
+  defaultvalue: 'Spotlight,CNAPP Alerts'
+  type: 16
+  section: Collect
+  advanced: false
+  required: false
+  additionalinfo: |-
+    Choose which asset sources to ingest into the XSIAM Unified Asset Inventory -  You can choose any combination.
+  options:
+  - Spotlight
+  - CNAPP Alerts
+  hidden:
+  - xsoar
 - display: 'Reopen Statuses'
   additionalinfo: CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination.
   defaultvalue: 'New,In progress,True positive,False positive,Reopened,Ignored'
@@ -5371,7 +5385,7 @@ script:
     - contextPath: CrowdStrike.CnappAlert.severity
       description: The severity of the alert.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.6308650
+  dockerimage: devdemisto/py3-tools:1.0.0.6961536
   isfetch: true
   isfetch:marketplacev2: false
   isfetch:platform: false
