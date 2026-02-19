@@ -145,12 +145,12 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isEmpty
           left:
             value:
               simple: IPinfo.IP.Address
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isEmpty
           left:
             value:
               simple: IPinfo.IP.Hostname
