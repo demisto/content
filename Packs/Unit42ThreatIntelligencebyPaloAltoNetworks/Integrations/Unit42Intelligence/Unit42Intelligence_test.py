@@ -1987,14 +1987,14 @@ def test_encode_url_indicator_with_special_characters():
     # Test URL with < and > characters
     url_with_brackets = "https://example.com/search?query=<test>"
     result_brackets = encode_url_indicator(url_with_brackets)
-    assert "https%3A%2F%2Fexample.com%2Fsearch%3Fquery%3D%253Ctest%253E" == result_brackets
+    assert result_brackets == "https%3A%2F%2Fexample.com%2Fsearch%3Fquery%3D%253Ctest%253E"
 
     # Test normal URL without special characters
     normal_url = "https://example.com/path?param=value"
     result_normal = encode_url_indicator(normal_url)
-    assert "https%3A%2F%2Fexample.com%2Fpath%3Fparam%3Dvalue" == result_normal
+    assert result_normal == "https%3A%2F%2Fexample.com%2Fpath%3Fparam%3Dvalue"
 
     # Test URL with commas in query parameters
     url_with_commas = "https://fonts.googleapis.com/css?family=Roboto:100,100italic,200"
     result_commas = encode_url_indicator(url_with_commas)
-    assert "https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%253A100%252C100italic%252C200" == result_commas
+    assert result_commas == "https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%253A100%252C100italic%252C200"
