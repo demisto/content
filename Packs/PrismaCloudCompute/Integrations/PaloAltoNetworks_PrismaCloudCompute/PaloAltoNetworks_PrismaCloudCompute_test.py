@@ -3,9 +3,12 @@ from collections import OrderedDict
 
 import pytest
 from CommonServerPython import *
+from unittest.mock import MagicMock, AsyncMock
+import asyncio
 from PaloAltoNetworks_PrismaCloudCompute import (
     HEADERS_BY_NAME,
     PrismaCloudComputeClient,
+    PrismaCloudComputeAsyncClient,
     add_custom_ip_feeds,
     add_custom_malware_feeds,
     camel_case_transformer,
@@ -28,6 +31,14 @@ from PaloAltoNetworks_PrismaCloudCompute import (
     get_profile_host_forensic_list,
     get_profile_host_list,
     parse_date_string_format,
+    fetch_assets_long_running_command,
+    init_asset_type_related_data,
+    AssetType,
+    preform_fetch_assets_main_loop_logic,
+    collect_assets_and_send_to_xsiam,
+    AssetTypeRelatedData,
+    process_results,
+    process_all_findings,
 )
 
 BASE_URL = "https://test.com"
@@ -1738,3 +1749,343 @@ def test_remove_custom_ip_feeds(client, requests_mock, initial_ips, ips_arg, exp
         assert custom_ip_put_mock.called is False
     else:
         assert set(custom_ip_put_mock.last_request.json()["feed"]) == set(expected)
+
+
+class MockAsyncClient(PrismaCloudComputeAsyncClient):
+    """Mock PrismaCloudComputeAsyncClient for testing with predefined credentials and URL."""
+
+    def __init__(self):
+        base_url = "https://8.8.8.8:8080"
+        username = "a"
+        password = "a"
+        project = ""
+
+        super().__init__(
+            base_url=base_url,
+            verify=False,
+            project=project,
+            proxy=False,
+            username=username,
+            password=password,
+        )
+
+
+@pytest.mark.asyncio
+async def test_fetch_assets_long_running_command_initial_run(mocker):
+    """
+    Given: An initial run of the fetch assets command.
+    When: fetch_assets_long_running_command is called.
+    Then: It should initialize the long running command and return a status.
+    """
+    mock_client = MockAsyncClient()
+    mock_main_loop = mocker.patch(
+        "PaloAltoNetworks_PrismaCloudCompute.preform_fetch_assets_main_loop_logic", side_effect=[None, BaseException("Stop loop")]
+    )
+    mock_sleep = mocker.patch(
+        "PaloAltoNetworks_PrismaCloudCompute.asyncio.sleep", side_effect=[None, BaseException("Stop sleep")]
+    )
+    mock_info = mocker.patch.object(demisto, "info")
+    mock_debug = mocker.patch.object(demisto, "debug")
+
+    try:
+        await fetch_assets_long_running_command(mock_client)
+    except BaseException as e:
+        assert str(e) == "Stop loop"  # Expecting the sleep to stop the loop
+
+    assert mock_main_loop.call_count == 2
+    mock_sleep.assert_called_once()
+    assert mock_info.called
+    assert mock_debug.called
+
+
+@pytest.mark.asyncio
+async def test_fetch_assets_long_running_command_error_handling(mocker):
+    """
+    Given: An error occurs during the execution of preform_fetch_assets_main_loop_logic.
+    When: fetch_assets_long_running_command is called.
+    Then: It should catch the exception, log it, and continue to sleep.
+    """
+    mock_client = MockAsyncClient()
+    mock_main_loop = mocker.patch(
+        "PaloAltoNetworks_PrismaCloudCompute.preform_fetch_assets_main_loop_logic", new_callable=MagicMock
+    )
+    mock_sleep = mocker.patch("PaloAltoNetworks_PrismaCloudCompute.asyncio.sleep", new_callable=MagicMock)
+    mock_debug = mocker.patch.object(demisto, "debug")
+
+    mock_main_loop.side_effect = [Exception("Simulated error"), BaseException("Stop loop")]
+    mock_sleep.side_effect = [None, BaseException("Stop sleep")]
+    try:
+        await fetch_assets_long_running_command(mock_client)
+    except BaseException as e:
+        assert str(e) == "Stop loop"
+
+    mock_main_loop.assert_called_with(mock_client)
+    assert mock_debug.mock_calls[1][1][0] == "Got the following error while trying to stream events: Simulated error"
+
+
+def test_init_asset_type_related_data_from_context(mocker):
+    """
+    Given: Existing asset type data in integration context.
+    When: init_asset_type_related_data is called.
+    Then: It should initialize AssetTypeRelatedData with values from the context.
+    """
+    ctx_lock = asyncio.Lock()
+    ctx = {
+        "Host": {"offset": 50, "assets_total_count": 100, "vulnerabilities_total_count": 200},
+        "assets_snapshot_id": "assets_snapshot",
+        "vulnerabilities_snapshot_id": "vulnerabilities_snapshot",
+    }
+    asset_type_data = init_asset_type_related_data(
+        endpoint="/hosts",
+        asset_type=AssetType.HOST,
+        ctx_lock=ctx_lock,
+        ctx=ctx,
+        assets_snapshot_id="assets_snapshot",
+        vulnerabilities_snapshot_id="vulnerabilities_snapshot",
+    )
+    assert asset_type_data.offset == 50
+    assert asset_type_data.assets_total_count == 100
+    assert asset_type_data.vulnerabilities_total_count == 200
+    assert asset_type_data.assets_snapshot_id == "assets_snapshot"
+    assert asset_type_data.vulnerabilities_snapshot_id == "vulnerabilities_snapshot"
+    assert asset_type_data.asset_type == AssetType.HOST
+
+
+def test_init_asset_type_related_data_new_data(mocker):
+    """
+    Given: No existing asset type data in integration context.
+    When: init_asset_type_related_data is called.
+    Then: It should initialize AssetTypeRelatedData with default values.
+    """
+    ctx_lock = asyncio.Lock()
+    ctx = {}
+    asset_type_data = init_asset_type_related_data(
+        endpoint="/images",
+        asset_type=AssetType.RUNTIME_IMAGE,
+        ctx_lock=ctx_lock,
+        ctx=ctx,
+        assets_snapshot_id="new_assets_snapshot",
+        vulnerabilities_snapshot_id="new_vulnerabilities_snapshot",
+    )
+    assert asset_type_data.offset == 0
+    assert asset_type_data.assets_total_count == 0
+    assert asset_type_data.vulnerabilities_total_count == 0
+    assert asset_type_data.asset_type == AssetType.RUNTIME_IMAGE
+    assert asset_type_data.assets_snapshot_id == "new_assets_snapshot"
+
+
+@pytest.mark.asyncio
+async def test_preform_fetch_assets_main_loop_logic_success(mocker):
+    """
+    Given: Client and asset type related data.
+    When: preform_fetch_assets_main_loop_logic is called.
+    Then: It should call collect_assets_and_send_to_xsiam for each asset type and update module health.
+    """
+    mock_client = MockAsyncClient()
+    mock_collect_assets = mocker.patch(
+        "PaloAltoNetworks_PrismaCloudCompute.collect_assets_and_send_to_xsiam", new_callable=MagicMock
+    )
+    mock_update_health = mocker.patch.object(demisto, "updateModuleHealth")
+
+    mock_collect_assets.return_value = asyncio.Future()
+    mock_collect_assets.return_value.set_result(None)  # Mock the async call to return immediately
+
+    await preform_fetch_assets_main_loop_logic(mock_client)
+
+    assert mock_collect_assets.call_count == 3  # Called for Tas Droplet, Host, and Runtime Image
+    assert mock_update_health.called
+
+
+# Test cases for collect_assets_and_send_to_xsiam
+@pytest.mark.asyncio
+async def test_collect_assets_and_send_to_xsiam_no_data(mocker):
+    """
+    Given: No data returned from the API.
+    When: collect_assets_and_send_to_xsiam is called.
+    Then: It should break the loop and remove related data from context.
+    """
+    ctx_lock = asyncio.Lock()
+    mock_client = MockAsyncClient()
+    mock_response = AsyncMock()
+    mock_response.headers = {"Total-Count": "0"}
+    mock_response.json = AsyncMock(return_value=[])
+    mock_response.release = AsyncMock(return_value=None)
+    mock_client._http_request = AsyncMock(return_value=mock_response)
+
+    asset_type_related_data = AssetTypeRelatedData(
+        endpoint="/hosts",
+        asset_type=AssetType.HOST,
+        ctx_lock=ctx_lock,
+        assets_snapshot_id="1",
+        vulnerabilities_snapshot_id="1",
+    )
+
+    mock_send_data = mocker.patch("PaloAltoNetworks_PrismaCloudCompute.async_send_data_to_xsiam")
+    mock_remove_data = mocker.patch("PaloAltoNetworks_PrismaCloudCompute.remove_related_data_from_ctx", new_callable=AsyncMock)
+    await collect_assets_and_send_to_xsiam(mock_client, asset_type_related_data)
+    mock_send_data.assert_not_called()
+    assert mock_remove_data.called
+
+
+@pytest.mark.asyncio
+async def test_collect_assets_and_send_to_xsiam_with_data(mocker):
+    """
+    Given: Data returned from the API where the first time return 1 entry and the second time return no entries.
+    When: collect_assets_and_send_to_xsiam is called.
+    Then: It should process and send data to XSIAM, update context, and increment offset.
+    """
+    ctx_lock = asyncio.Lock()
+    mock_client = MockAsyncClient()
+    first_mock_response = AsyncMock()
+    first_mock_response.headers = {"Total-Count": "1"}
+    first_mock_response.json = AsyncMock(return_value=[{"id": "123", "hostname": "test-host"}])
+    first_mock_response.release = AsyncMock(return_value=None)
+    second_response_mock = AsyncMock()
+    second_response_mock.headers = {"Total-Count": "1"}
+    second_response_mock.json = AsyncMock(return_value=[])
+    second_response_mock.release = AsyncMock(return_value=None)
+    mock_client._http_request = AsyncMock(side_effect=[first_mock_response, second_response_mock])
+
+    asset_type_related_data = AssetTypeRelatedData(
+        endpoint="/hosts",
+        asset_type=AssetType.HOST,
+        limit=1,
+        ctx_lock=ctx_lock,
+        assets_snapshot_id="1",
+        vulnerabilities_snapshot_id="1",
+    )
+
+    mock_send_data = mocker.patch(
+        "PaloAltoNetworks_PrismaCloudCompute.process_asset_data_and_send_to_xsiam", new_callable=MagicMock
+    )
+    mock_update_context = mocker.patch.object(asset_type_related_data, "safe_update_integration_context", new_callable=AsyncMock)
+    mock_clear_context = mocker.patch("PaloAltoNetworks_PrismaCloudCompute.remove_related_data_from_ctx", new_callable=AsyncMock)
+
+    mock_send_data.return_value = asyncio.Future()
+    mock_send_data.return_value.set_result(None)
+
+    await collect_assets_and_send_to_xsiam(mock_client, asset_type_related_data)
+
+    assert mock_client._http_request.call_count == 2
+    mock_send_data.assert_called_once()
+    assert mock_update_context.called
+    assert mock_clear_context.called
+    assert asset_type_related_data.offset == 1  # Should have incremented once
+
+
+def test_process_all_findings_standalone():
+    """
+    Tests process_all_findings as a standalone function.
+    Covers:
+    - Asset with vulnerabilities.
+    - Asset with empty vulnerabilities list.
+    - Vulnerability with missing fields (using .get() defaults).
+    """
+    related_asset = {
+        "_id": "asset_123",
+        "scanTime": "2024-01-01T00:00:00Z",
+        "scanID": "scan_999",
+        "scanVersion": "1.0",
+        "cloudMetadata": {"region": "us-east-1"},
+    }
+
+    vulnerabilities = [
+        {
+            "cve": "CVE-2023-1234",
+            "severity": "high",
+            "packageName": "openssl",
+            "cvss": 8.1,
+            "riskFactors": {"Attack complexity: low": "true"},
+        },
+        {
+            "cve": "CVE-2023-5678"
+            # Missing many fields to test defaults
+        },
+    ]
+
+    # Case 1: Asset with vulnerabilities
+    results = process_all_findings(vulnerabilities, related_asset)
+    assert len(results) == 2
+    assert results[0]["asset__id"] == "asset_123"
+    assert results[0]["cve"] == "CVE-2023-1234"
+    assert results[0]["cvss"] == 8.1
+    assert results[0]["riskFactors"] == {"Attack complexity: low": "true"}
+    assert results[0]["scanTime"] == "2024-01-01T00:00:00Z"
+
+    assert results[1]["cve"] == "CVE-2023-5678"
+    assert results[1]["cvss"] == 0  # Default value
+    assert results[1]["packageName"] == ""  # Default value
+
+    # Case 2: Empty vulnerabilities
+    results_empty = process_all_findings([], related_asset)
+    assert results_empty == []
+
+
+def test_process_results_all_cases():
+    """
+    Tests process_results which calls process_all_findings.
+    Covers:
+    - Empty results list.
+    - Assets with some empty fields.
+    - Assets with vulnerabilities (Findings).
+    - Assets without findings.
+    - TAS Droplet, Runtime Image, and Host structures (simulated via data_list).
+    """
+
+    # Mock data representing different asset types based on documentation
+    data_list = [
+        # Case: Runtime Image with vulnerabilities
+        {
+            "_id": "sha256:image123",
+            "type": "image",
+            "hostname": "host-1",
+            "scanTime": "2024-01-01T10:00:00Z",
+            "distro": "Alpine",
+            "vulnerabilities": [{"cve": "CVE-IMAGE-1", "severity": "critical"}],
+            "vulnerabilitiesCount": 1,
+        },
+        # Case: Host without findings and some empty fields
+        {
+            "_id": "host-456",
+            "hostname": "prod-host",
+            "type": "host",
+            "vulnerabilities": None,  # Test None handling
+            "vulnerabilitiesCount": 0,
+            "osDistro": "",  # Empty field
+        },
+        # Case: TAS Droplet (simulated)
+        {
+            "id": "droplet-789",  # TAS often uses 'id' instead of '_id' in some docs
+            "type": "tas",
+            "hostname": "tas-app-1",
+            "vulnerabilities": [],
+            "vulnerabilitiesCount": 0,
+        },
+    ]
+
+    # Case 1: Process full list
+    processed_assets, processed_vulns = process_results(data_list)
+
+    assert len(processed_assets) == 3
+    assert len(processed_vulns) == 1
+
+    # Verify first asset (Image)
+    assert processed_assets[0]["asset__id"] == "sha256:image123"
+    assert processed_assets[0]["vulnerabilitiesCount"] == 1
+    assert processed_vulns[0]["asset__id"] == "sha256:image123"
+    assert processed_vulns[0]["cve"] == "CVE-IMAGE-1"
+
+    # Verify second asset (Host)
+    assert processed_assets[1]["asset__id"] == "host-456"
+    assert processed_assets[1]["osDistro"] == ""
+    assert processed_assets[1]["vulnerabilitiesCount"] == 0
+
+    # Verify third asset (TAS) - testing 'id' fallback in process_all_findings
+    # Note: process_results uses data.get("id", "") for the asset list,
+    # and process_all_findings uses related_asset.get("_id", "") or related_asset.get("id", "")
+    assert processed_assets[2]["id"] == "droplet-789"
+
+    # Case 2: Empty results
+    empty_assets, empty_vulns = process_results([])
+    assert empty_assets == []
+    assert empty_vulns == []
