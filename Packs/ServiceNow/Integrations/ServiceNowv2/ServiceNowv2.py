@@ -5,7 +5,7 @@ from urllib.parse import quote
 
 import demistomock as demisto  # noqa: F401
 
-# disable insecure warnings
+# disable insecure  warnings
 import urllib3
 from CommonServerPython import *  # noqa: F401
 
