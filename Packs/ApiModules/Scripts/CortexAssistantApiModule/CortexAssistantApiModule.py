@@ -1069,6 +1069,8 @@ class AssistantMessagingHandler:
                     else:
                         # Generic error
                         error_msg = AssistantMessages.AGENT_SELECTION_FAILED
+                        if backend_response.error_code:
+                            error_msg = f"{error_msg} (Error code: {backend_response.error_code})"
                     
                     await self.send_message_async(
                         channel_id, error_msg, thread_id=thread_id, ephemeral=True, user_id=user_id
@@ -1128,6 +1130,8 @@ class AssistantMessagingHandler:
                         error_msg = AssistantMessages.THREAD_LOCKED_TO_ANOTHER_USER.format(bot_tag="the assistant")
                     else:
                         error_msg = "Failed to process your response. Please try again."
+                        if backend_response.error_code:
+                            error_msg = f"{error_msg} (Error code: {backend_response.error_code})"
                     await self.send_message_async(channel_id, error_msg, thread_id=thread_id, ephemeral=True, user_id=user_id)
             else:
                 # Wrong user trying to respond
