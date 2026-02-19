@@ -6698,7 +6698,7 @@ Search NGSIEM historical events. Requires NGSIEM scope with read and write permi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| repository | The repository to run the query against.<br/>Available repository values:<br/>- All: search-all<br/>- Falcon: investigate_view<br/>- Third party: third-party<br/>- IT Automation: falcon_for_it_view<br/>- Forensics: forensics_view<br/> Default is search-all. | Optional |
+| repository | The repository to run the query against. Possible values are: search-all, third-party, falcon_for_it_view, forensics_view, investigate_view. Default is search-all. | Optional |
 | query | The CQL query to use for the search. Note: Double quotes and backslashes in the queryString must be escaped with a backslash to ensure they are properly interpreted. Example: query="#event_simpleName = \"Event_name\"", For more details see: https://library.humio.com/data-analysis/syntax.html. | Required |
 | start | The start of the search window, based on the event timestamp.<br/>Note: 'end' must be laetr than 'start'.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000). | Optional |
 | end | The end of the search window, based on the event timestamp.<br/>Note: 'end' must be laetr than 'start'.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000). | Optional |
@@ -6710,8 +6710,8 @@ Search NGSIEM historical events. Requires NGSIEM scope with read and write permi
 | ingest_end | The end of the search window, based on the event ingesttimestamp.<br/>Note: 'ingest_end' must be laetr than 'ingest_start'.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000). | Optional |
 | use_ingest_time | When true, the server uses ingest_start/ingest_end as the query window. When false (or not set), it uses start/end. If both windows are provided, results are constrained by BOTH (AND). Possible values are: true, false. | Optional |
 | limit | Maximum number of events to return. Ignored when around_number_events_before or around_number_events_after parameters are specified. Default is 50. | Optional |
-| interval | Interval between polling attempts in seconds. To prevent search timeouts, set this value within the 60–90 second range. Default is 60. | Optional |
-| timeout | Timeout for polling in seconds. Default is 600. | Optional |
+| interval_in_seconds | Interval between polling attempts in seconds. To prevent search timeouts, set this value within the 60–90 second range. Default is 60. | Optional |
+| timeout_in_seconds | Timeout for polling in seconds. Default is 600. | Optional |
 
 #### Context Output
 

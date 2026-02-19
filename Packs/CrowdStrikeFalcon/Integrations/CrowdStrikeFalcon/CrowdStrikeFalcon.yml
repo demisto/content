@@ -5375,13 +5375,6 @@ script:
     - name: repository
       description: |
         The repository to run the query against.
-        Available repository values:
-        - All: search-all
-        - Falcon: investigate_view
-        - Third party: third-party
-        - IT Automation: falcon_for_it_view
-        - Forensics: forensics_view
-        Default is search-all.
       auto: PREDEFINED
       predefined:
       - search-all
@@ -5434,10 +5427,10 @@ script:
     - name: limit
       description: Maximum number of events to return. Ignored when around_number_events_before or around_number_events_after parameters are specified.
       defaultValue: '50'
-    - name: interval
+    - name: interval_in_seconds
       description: Interval between polling attempts in seconds. To prevent search timeouts, set this value within the 60–90 second range.
       defaultValue: '60'
-    - name: timeout
+    - name: timeout_in_seconds
       description: Timeout for polling in seconds.
       defaultValue: '600'
     - name: job_id

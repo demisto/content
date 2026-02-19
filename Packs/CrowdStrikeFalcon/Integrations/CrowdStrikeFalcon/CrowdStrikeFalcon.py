@@ -6548,8 +6548,8 @@ def process_ngsiem_search_completion(response: dict, args: dict) -> PollResult:
     "cs-falcon-search-ngsiem-events",
     poll_message="Searching NGSIEM events:",
     polling_arg_name="wait_for_result",
-    interval=arg_to_number(dict_safe_get(demisto.args(), ["interval"], 0, (int, str))),
-    timeout=arg_to_number(dict_safe_get(demisto.args(), ["timeout"], 0, (int, str))),
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", 60)),
+    timeout=arg_to_number(demisto.args().get("timeout_in_seconds", 600)),
 )
 def cs_falcon_search_ngsiem_events_command(args: dict) -> PollResult:
     """
@@ -6565,8 +6565,6 @@ def cs_falcon_search_ngsiem_events_command(args: dict) -> PollResult:
     Returns:
         PollResult: Contains the search results or indicates to continue polling.
     """
-    args["interval"] = arg_to_number(args.get("interval")) or 60
-    args["timeout"] = arg_to_number(args.get("timeout")) or 600
     job_id = args.get("job_id")
     repository = args.get("repository", "search-all")
 
