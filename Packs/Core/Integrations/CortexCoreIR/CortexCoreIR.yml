@@ -70,7 +70,7 @@ script:
       description: Page number (for pagination). The default is 0 (the first page).
       name: page
     - defaultValue: '100'
-      description: Maximum number of incidents to return per page. The default and maximum is 100.
+      description: Maximum number of incidents to return per page. The default is 100 and the maximum is 1000.
       name: limit
     - description: 'Filters only incidents in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto.'
       name: status
@@ -85,7 +85,7 @@ script:
       name: starred_incidents_fetch_window
       deprecated: true
     description: |-
-      Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
+      Returns a list of incidents, which you can filter by a list of incident IDs (max. 1000), the time the incident was last modified, and the time the incident was created.
       If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported.
     name: core-get-incidents
     outputs:
