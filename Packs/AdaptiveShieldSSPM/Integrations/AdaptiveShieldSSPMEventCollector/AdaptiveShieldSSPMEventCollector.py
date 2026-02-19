@@ -18,65 +18,6 @@ DEFAULT_MAX_FETCH = 1000
 API_PAGE_LIMIT = 500
 TIME_FIELD = "creation_date"
 
-# TODO: remove
-dummy_res = {
-    "data": [
-        {
-            "id": "00001",
-            "creation_date": "2026-11-22T05:52:34Z",
-        },
-        {
-            "id": "111",
-            "creation_date": "2026-11-23T05:52:34Z",
-        },
-        {
-            "id": "222",
-            "creation_date": "2026-12-01T05:52:34Z",
-        },
-        {
-            "id": "333",
-            "creation_date": "2026-12-02T05:52:34Z",
-        },
-        {
-            "id": "444",
-            "creation_date": "2026-12-02T05:52:34Z",
-        },
-        {
-            "id": "555",
-            "creation_date": "2026-12-02T05:52:34Z",
-        },
-    ],
-    "total_size": 252,
-    "next_page_uri": "https://api.adaptive-shield.com/api/v1/accounts/ACCOUNT_ID/security_checks?offset=100&limit=100",
-}
-
-dummy_res2 = {
-    "data": [
-        {
-            "id": "666",
-            "creation_date": "2026-12-04T05:52:34Z",
-        },
-        {
-            "id": "777",
-            "creation_date": "2026-12-05T05:52:34Z",
-        },
-        {
-            "id": "888",
-            "creation_date": "2026-12-06T05:52:34Z",
-        },
-        {
-            "id": "999",
-            "creation_date": "2026-12-07T05:52:34Z",
-        },
-        {
-            "id": "1010",
-            "creation_date": "2026-12-08T05:52:34Z",
-        },
-    ],
-    "total_size": 252,
-    # "next_page_uri": "https://api.adaptive-shield.com/api/v1/accounts/{{accountId}}/security_checks?offset=100&limit=100",
-}
-
 
 """ BASE CLASSES """
 
@@ -193,18 +134,13 @@ class Client(ContentClient):
 
         demisto.debug(f"Fetching security checks with {params=}")
 
-        # TODO: remove
-        if offset == 100:
-            return dummy_res2
-        return dummy_res
+        response = self._http_request(
+            method="GET",
+            url_suffix=f"/api/v1/accounts/{self.account_id}/security_checks",
+            params=params,
+        )
 
-        # response = self._http_request(
-        #     method="GET",
-        #     url_suffix=f"/api/v1/accounts/{self.account_id}/security_checks",
-        #     params=params,
-        # )
-
-        # return response
+        return response
 
     def get_security_checks_with_pagination(
         self,
