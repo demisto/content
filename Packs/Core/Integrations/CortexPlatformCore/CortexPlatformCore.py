@@ -4660,13 +4660,11 @@ def get_profile_ids(client: Client, platform: str, profile_args: dict[str, str |
         DemistoException: If multiple profiles with the same name exist for a profile type,
                          or if a requested profile doesn't exist.
     """
-    # Build OR filters for all profiles
     or_filters = []
     for profile_type_lower, profile_name_or_id in profile_args.items():
         if not profile_name_or_id:  # Skip profiles without values
             continue
 
-        # Convert profile type to uppercase for PROFILE_TYPE field
         profile_type = profile_type_lower.upper()
 
         # Create AND condition for each profile (name OR id + type)
@@ -4774,9 +4772,9 @@ def fetch_policy_table(client: Client) -> tuple[list[dict], str]:
     return current_policies, policy_hash
 
 
-def validate_platform(platform: str) -> str:
+def resolve_platform_name(platform: str) -> str:
     """
-    Validate platform and return the platform value.
+    Resolve platform name.
 
     Args:
         platform: Platform name (e.g., 'windows', 'linux')
@@ -4793,6 +4791,57 @@ def validate_platform(platform: str) -> str:
             f"Invalid platform '{platform}'. Valid platforms are: {', '.join(Endpoints.ENDPOINT_PLATFORM.keys())}"
         )
     return platform_value
+
+
+def resolve_endpoint_names_to_ids(client: Client, endpoint_names: list[str]) -> list[str]:
+    """Resolve endpoint names to IDs and validate no duplicates exist."""
+    demisto.debug(f"Resolving endpoint names to IDs: {endpoint_names}")
+
+    filter_builder = FilterBuilder()
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["endpoint_name"], FilterType.EQ, endpoint_names)
+
+    request_data = build_webapp_request_data(
+        table_name=AGENTS_TABLE,
+        filter_dict=filter_builder.to_dict(),
+        limit=MAX_GET_ENDPOINTS_LIMIT,
+        sort_field="AGENT_NAME",
+        sort_order="ASC",
+    )
+
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    raw_endpoints = reply.get("DATA", [])
+
+    if not raw_endpoints:
+        raise DemistoException(f'No endpoints found with the specified names: {", ".join(endpoint_names)}')
+
+    endpoints = map_endpoint_format(raw_endpoints)
+
+    # Check for duplicate endpoint names
+    endpoint_name_to_ids: dict[str, list[str]] = {}
+    for endpoint in endpoints:
+        endpoint_name = endpoint.get("endpoint_name")
+        endpoint_id = endpoint.get("endpoint_id")
+
+        if endpoint_name and endpoint_id:
+            if endpoint_name not in endpoint_name_to_ids:
+                endpoint_name_to_ids[endpoint_name] = []
+            endpoint_name_to_ids[endpoint_name].append(endpoint_id)
+
+    duplicates = {name: ids for name, ids in endpoint_name_to_ids.items() if len(ids) > 1}
+
+    if duplicates:
+        error_message = "Multiple endpoints found with the same name. Please use target_endpoint_ids instead:\n\n"
+        for endpoint_name, endpoint_ids in duplicates.items():
+            error_message += f'Endpoint Name: "{endpoint_name}"\n'
+            for endpoint_id in endpoint_ids:
+                error_message += f"  - ID: {endpoint_id}\n"
+            error_message += "\n"
+        raise DemistoException(error_message.strip())
+
+    endpoint_ids = [endpoint["endpoint_id"] for endpoint in endpoints if endpoint.get("endpoint_id")]
+    demisto.debug(f"Resolved endpoint IDs: {endpoint_ids}")
+    return endpoint_ids
 
 
 def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults:
@@ -4832,63 +4881,13 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
         DemistoException: If required parameters are missing or policy creation fails.
     """
 
-    def resolve_endpoint_names_to_ids(endpoint_names: list[str]) -> list[str]:
-        """Resolve endpoint names to IDs and validate no duplicates exist."""
-        demisto.debug(f"Resolving endpoint names to IDs: {endpoint_names}")
-
-        filter_builder = FilterBuilder()
-        filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["endpoint_name"], FilterType.EQ, endpoint_names)
-
-        request_data = build_webapp_request_data(
-            table_name=AGENTS_TABLE,
-            filter_dict=filter_builder.to_dict(),
-            limit=MAX_GET_ENDPOINTS_LIMIT,
-            sort_field="AGENT_NAME",
-            sort_order="ASC",
-        )
-
-        response = client.get_webapp_data(request_data)
-        reply = response.get("reply", {})
-        raw_endpoints = reply.get("DATA", [])
-
-        if not raw_endpoints:
-            raise DemistoException(f'No endpoints found with the specified names: {", ".join(endpoint_names)}')
-
-        endpoints = map_endpoint_format(raw_endpoints)
-
-        # Check for duplicate endpoint names
-        endpoint_name_to_ids: dict[str, list[str]] = {}
-        for endpoint in endpoints:
-            endpoint_name = endpoint.get("endpoint_name")
-            endpoint_id = endpoint.get("endpoint_id")
-
-            if endpoint_name and endpoint_id:
-                if endpoint_name not in endpoint_name_to_ids:
-                    endpoint_name_to_ids[endpoint_name] = []
-                endpoint_name_to_ids[endpoint_name].append(endpoint_id)
-
-        duplicates = {name: ids for name, ids in endpoint_name_to_ids.items() if len(ids) > 1}
-
-        if duplicates:
-            error_message = "Multiple endpoints found with the same name. Please use target_endpoint_ids instead:\n\n"
-            for endpoint_name, endpoint_ids in duplicates.items():
-                error_message += f'Endpoint Name: "{endpoint_name}"\n'
-                for endpoint_id in endpoint_ids:
-                    error_message += f"  - ID: {endpoint_id}\n"
-                error_message += "\n"
-            raise DemistoException(error_message.strip())
-
-        endpoint_ids = [endpoint["endpoint_id"] for endpoint in endpoints if endpoint.get("endpoint_id")]
-        demisto.debug(f"Resolved endpoint IDs: {endpoint_ids}")
-        return endpoint_ids
-
     def calculate_policy_priority(current_policies: list[dict], platform_value: str, requested_priority: int | None) -> int:
         """Calculate and validate policy priority, handling auto-assignment."""
         MIN_USER_POLICY_PRIORITY = 1
         platform_policies = [p for p in current_policies if p.get("PLATFORM") == platform_value]
 
         if not platform_policies:
-            priority = requested_priority or MIN_USER_POLICY_PRIORITY
+            priority = MIN_USER_POLICY_PRIORITY
         else:
             max_existing_priority = max(p.get("PRIORITY", 0) for p in platform_policies)
 
@@ -4931,8 +4930,11 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
             policy["PRIORITY"] = new_priority_value
             demisto.debug(f"Shifted '{policy.get('NAME')}' from {current_priority} to {new_priority_value}")
 
-    def get_platform_specific_profiles(platform_value: str) -> dict[str, Any]:
-        """Get platform-specific default profile IDs for identity and web_and_api."""
+    def get_identity_and_web_api_profile_defaults(platform_value: str) -> dict[str, Any]:
+        """
+        Get platform-specific default profile IDs for identity and web_and_api.
+        Note: identity and web_and_api are currently not supported, but the api expect to get them in the request.
+        """
         WINDOWS_IDENTITY_PROFILE_ID = 17
         LINUX_WEB_AND_API_PROFILE_ID = 12
         if platform_value == "AGENT_OS_WINDOWS":
@@ -4957,78 +4959,6 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
                 "web_and_api_id": None,
             }
 
-    def build_policy_object(
-        policy_name: str,
-        platform_value: str,
-        priority: int,
-        target_endpoint_ids: list[str],
-        profile_map: dict[str, dict[str, Any]],
-        description: str,
-    ) -> dict[str, Any]:
-        """Build the complete policy object with all required fields."""
-        platform_profiles = get_platform_specific_profiles(platform_value)
-        target_filter = build_target_filter_from_endpoint_ids(target_endpoint_ids)
-
-        # Extract profile data
-        policy = {
-            "IS_ANY": False,
-            "PLATFORM": platform_value,
-            "NAME": policy_name,
-            "IS_ENABLED": True,
-            "TARGET_FILTER": target_filter,
-            "TARGET_GROUP_TYPE": "STATIC",
-            "EXPLOIT": profile_map.get("EXPLOIT", {}).get("name"),
-            "EXPLOIT_ID": profile_map.get("EXPLOIT", {}).get("id"),
-            "MALWARE": profile_map.get("MALWARE", {}).get("name"),
-            "MALWARE_ID": profile_map.get("MALWARE", {}).get("id"),
-            "AGENT_SETTINGS": profile_map.get("AGENT_SETTINGS", {}).get("name"),
-            "AGENT_SETTINGS_ID": profile_map.get("AGENT_SETTINGS", {}).get("id"),
-            "RESTRICTIONS": profile_map.get("RESTRICTIONS", {}).get("name"),
-            "RESTRICTIONS_ID": profile_map.get("RESTRICTIONS", {}).get("id"),
-            "EXCEPTIONS": profile_map.get("EXCEPTIONS", {}).get("name"),
-            "EXCEPTIONS_ID": profile_map.get("EXCEPTIONS", {}).get("id"),
-            "IDENTITY_ID": platform_profiles["identity_id"],
-            "IDENTITY": platform_profiles["identity"],
-            "WEB_AND_API_ID": platform_profiles["web_and_api_id"],
-            "WEB_AND_API": platform_profiles["web_and_api"],
-            "TARGET": [],
-            "PRIORITY": priority,
-            "DESCRIPTION": description,
-        }
-
-        return policy
-
-    # 1. Parse and validate arguments
-    policy_name = args.get("policy_name", "")
-    target_endpoint_names = argToList(args.get("target_endpoint_names", ""))
-    target_endpoint_ids = argToList(args.get("target_endpoint_ids", ""))
-    platform = args.get("platform", "")
-    description = args.get("description", "")
-    requested_priority = arg_to_number(args.get("priority"))
-
-    if target_endpoint_names and target_endpoint_ids:
-        raise DemistoException(
-            "Cannot provide both target_endpoint_names and target_endpoint_ids. " "Please use one or the other."
-        )
-
-    if not target_endpoint_names and not target_endpoint_ids:
-        raise DemistoException("Either target_endpoint_names or target_endpoint_ids must be provided.")
-
-    # 2. Validate platform
-    platform_value = validate_platform(platform)
-
-    # 3. Resolve endpoint names to IDs if needed
-    if target_endpoint_names:
-        target_endpoint_ids = resolve_endpoint_names_to_ids(target_endpoint_names)
-
-    # 4. Fetch current policy table
-    current_policies, policy_hash = fetch_policy_table(client)
-
-    # 5. Calculate priority and handle conflicts
-    priority = calculate_policy_priority(current_policies, platform_value, requested_priority)
-    shift_policy_priorities(current_policies, platform_value, priority)
-
-    # 6. Parse and validate profiles
     def get_platform_specific_profile_defaults(platform: str, args: dict) -> dict[str, str | None]:
         """
         Get platform-specific default profile values.
@@ -5078,13 +5008,80 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
                 "exceptions": user_exceptions or "Default (No Exceptions)",
             }
 
+    def build_policy_object(
+        policy_name: str,
+        platform_value: str,
+        priority: int,
+        target_endpoint_ids: list[str],
+        profile_map: dict[str, dict[str, Any]],
+        description: str,
+    ) -> dict[str, Any]:
+        """Build the complete policy object with all required fields."""
+        identity_and_web_api_profiles = get_identity_and_web_api_profile_defaults(platform_value)
+        target_filter = build_target_filter_from_endpoint_ids(target_endpoint_ids)
+
+        # Extract profile data
+        policy = {
+            "IS_ANY": False,
+            "PLATFORM": platform_value,
+            "NAME": policy_name,
+            "IS_ENABLED": True,
+            "TARGET_FILTER": target_filter,
+            "TARGET_GROUP_TYPE": "STATIC",
+            "EXPLOIT": profile_map.get("EXPLOIT", {}).get("name"),
+            "EXPLOIT_ID": profile_map.get("EXPLOIT", {}).get("id"),
+            "MALWARE": profile_map.get("MALWARE", {}).get("name"),
+            "MALWARE_ID": profile_map.get("MALWARE", {}).get("id"),
+            "AGENT_SETTINGS": profile_map.get("AGENT_SETTINGS", {}).get("name"),
+            "AGENT_SETTINGS_ID": profile_map.get("AGENT_SETTINGS", {}).get("id"),
+            "RESTRICTIONS": profile_map.get("RESTRICTIONS", {}).get("name"),
+            "RESTRICTIONS_ID": profile_map.get("RESTRICTIONS", {}).get("id"),
+            "EXCEPTIONS": profile_map.get("EXCEPTIONS", {}).get("name"),
+            "EXCEPTIONS_ID": profile_map.get("EXCEPTIONS", {}).get("id"),
+            "IDENTITY_ID": identity_and_web_api_profiles["identity_id"],
+            "IDENTITY": identity_and_web_api_profiles["identity"],
+            "WEB_AND_API_ID": identity_and_web_api_profiles["web_and_api_id"],
+            "WEB_AND_API": identity_and_web_api_profiles["web_and_api"],
+            "TARGET": [],
+            "PRIORITY": priority,
+            "DESCRIPTION": description,
+        }
+
+        return policy
+
+    # 1. Parse and validate arguments
+    policy_name = args.get("policy_name", "")
+    target_endpoint_names = argToList(args.get("target_endpoint_names", ""))
+    target_endpoint_ids = argToList(args.get("target_endpoint_ids", ""))
+    platform = args.get("platform", "")
+    description = args.get("description", "")
+    requested_priority = arg_to_number(args.get("priority"))
+
+    if target_endpoint_names and target_endpoint_ids:
+        raise DemistoException(
+            "Cannot provide both target_endpoint_names and target_endpoint_ids. " "Please use one or the other."
+        )
+
+    if not target_endpoint_names and not target_endpoint_ids:
+        raise DemistoException("Either target_endpoint_names or target_endpoint_ids must be provided.")
+
+    platform_value = resolve_platform_name(platform)
+
+    if target_endpoint_names:
+        target_endpoint_ids = resolve_endpoint_names_to_ids(client, target_endpoint_names)
+
+    current_policies, policy_hash = fetch_policy_table(client)
+
+    priority = calculate_policy_priority(current_policies, platform_value, requested_priority)
+    shift_policy_priorities(current_policies, platform_value, priority)
+
     profile_args = get_platform_specific_profile_defaults(platform, args)
+
     # Validate that user isn't trying to set profiles not allowed for the platform
     # This will raise an error if incompatible profiles are provided
     validate_profile_platform_compatibility(platform, profile_args)
     profile_map = get_profile_ids(client, platform, profile_args)
 
-    # 7. Build new policy object
     new_policy = build_policy_object(
         policy_name=policy_name,
         platform_value=platform_value,
@@ -5096,7 +5093,6 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
 
     demisto.debug(f"New policy to be created: {new_policy}")
 
-    # 8. Update policy table
     updated_policies = current_policies + [new_policy]
     update_payload = {
         "DATA": updated_policies,
@@ -5106,7 +5102,6 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
     demisto.debug("Updating agent policy table")
     response = client.update_agent_policy(update_payload)
 
-    # 9. Build outputs
     readable_output = (
         f"Successfully created endpoint policy '{policy_name}' with priority {priority} "
         f"for platform {platform}.\n"
@@ -5136,6 +5131,60 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
     )
 
 
+def find_policies_to_delete(
+    platform_policies: list[dict],
+    policy_names: list[str],
+    policy_ids: list[str],
+    platform: str,
+) -> list[dict]:
+    """Find the policies to delete based on names or IDs."""
+    policies_to_delete = []
+
+    if policy_ids:
+        # Delete by IDs
+        for policy_id in policy_ids:
+            matching_policies = [p for p in platform_policies if str(p.get("ID")) == str(policy_id)]
+
+            if not matching_policies:
+                raise DemistoException(f"No policy found with ID '{policy_id}' for platform '{platform}'.")
+
+            policies_to_delete.append(matching_policies[0])
+    else:
+        # Delete by names
+        for policy_name in policy_names:
+            matching_policies = [p for p in platform_policies if p.get("NAME") == policy_name]
+
+            if not matching_policies:
+                raise DemistoException(f"No policy found with name '{policy_name}' for platform '{platform}'.")
+
+            if len(matching_policies) > 1:
+                policy_details = "\n".join(
+                    [f"  - Name: {p.get('NAME')}, ID: {p.get('ID')}, Priority: {p.get('PRIORITY')}" for p in matching_policies]
+                )
+                raise DemistoException(
+                    f"Multiple policies found with name '{policy_name}' for platform '{platform}':\n{policy_details}\n"
+                    f"Please use policy_id to specify which one to delete."
+                )
+
+            policies_to_delete.append(matching_policies[0])
+
+    return policies_to_delete
+
+
+def validate_policy_deletable(policy: dict, platform: str) -> None:
+    """Validate that a policy can be deleted."""
+    DEFAULT_POLICY_PRIORITY = 0  # System default, cannot be deleted
+    priority = policy.get("PRIORITY")
+
+    if priority == DEFAULT_POLICY_PRIORITY:
+        policy_name = policy.get("NAME")
+        raise DemistoException(
+            f"Cannot delete the default policy '{policy_name}' "
+            f"(priority {DEFAULT_POLICY_PRIORITY}) for platform '{platform}'. "
+            f"Default policies are system-level and cannot be removed."
+        )
+
+
 def delete_endpoint_policy_command(client: Client, args: dict) -> CommandResults:
     """
     Deletes one or more existing endpoint policies from the policy table.
@@ -5157,63 +5206,6 @@ def delete_endpoint_policy_command(client: Client, args: dict) -> CommandResults
         DemistoException: If required parameters are missing, policies not found,
                          or multiple policies match the criteria.
     """
-
-    def find_policies_to_delete(
-        platform_policies: list[dict],
-        policy_names: list[str],
-        policy_ids: list[str],
-        platform: str,
-    ) -> list[dict]:
-        """Find the policies to delete based on names or IDs."""
-        policies_to_delete = []
-
-        if policy_ids:
-            # Delete by IDs
-            for policy_id in policy_ids:
-                matching_policies = [p for p in platform_policies if str(p.get("ID")) == str(policy_id)]
-
-                if not matching_policies:
-                    raise DemistoException(f"No policy found with ID '{policy_id}' for platform '{platform}'.")
-
-                policies_to_delete.append(matching_policies[0])
-        else:
-            # Delete by names
-            for policy_name in policy_names:
-                matching_policies = [p for p in platform_policies if p.get("NAME") == policy_name]
-
-                if not matching_policies:
-                    raise DemistoException(f"No policy found with name '{policy_name}' for platform '{platform}'.")
-
-                if len(matching_policies) > 1:
-                    policy_details = "\n".join(
-                        [
-                            f"  - Name: {p.get('NAME')}, ID: {p.get('ID')}, Priority: {p.get('PRIORITY')}"
-                            for p in matching_policies
-                        ]
-                    )
-                    raise DemistoException(
-                        f"Multiple policies found with name '{policy_name}' for platform '{platform}':\n{policy_details}\n"
-                        f"Please use policy_id to specify which one to delete."
-                    )
-
-                policies_to_delete.append(matching_policies[0])
-
-        return policies_to_delete
-
-    def validate_policy_deletable(policy: dict, platform: str) -> None:
-        """Validate that a policy can be deleted."""
-        DEFAULT_POLICY_PRIORITY = 0  # System default, cannot be deleted
-        priority = policy.get("PRIORITY")
-
-        if priority == DEFAULT_POLICY_PRIORITY:
-            policy_name = policy.get("NAME")
-            raise DemistoException(
-                f"Cannot delete the default policy '{policy_name}' "
-                f"(priority {DEFAULT_POLICY_PRIORITY}) for platform '{platform}'. "
-                f"Default policies are system-level and cannot be removed."
-            )
-
-    # 1. Parse and validate arguments
     policy_names = argToList(args.get("policy_name"))
     policy_ids = argToList(args.get("policy_id"))
     platform = args.get("platform", "")
@@ -5224,27 +5216,21 @@ def delete_endpoint_policy_command(client: Client, args: dict) -> CommandResults
     if policy_names and policy_ids:
         raise DemistoException("Cannot provide both policy_name and policy_id. Please use one or the other.")
 
-    # 2. Validate platform
-    platform_value = validate_platform(platform)
+    platform_value = resolve_platform_name(platform)
 
-    # 3. Fetch current policy table
     current_policies, policy_hash = fetch_policy_table(client)
 
-    # 4. Filter to platform-specific policies
     platform_policies = [p for p in current_policies if p.get("PLATFORM") == platform_value]
     demisto.debug(f"Found {len(platform_policies)} policies for platform '{platform}'")
 
     if not platform_policies:
         raise DemistoException(f"No policies found for platform '{platform}'.")
 
-    # 5. Find the policies to delete
     policies_to_delete = find_policies_to_delete(platform_policies, policy_names, policy_ids, platform)
 
-    # 6. Validate all policies can be deleted
     for policy in policies_to_delete:
         validate_policy_deletable(policy, platform)
 
-    # 7. Extract policy details for output
     deleted_policies_info = []
     for policy in policies_to_delete:
         policy_info = {
@@ -5260,12 +5246,10 @@ def delete_endpoint_policy_command(client: Client, args: dict) -> CommandResults
             f"ID={policy_info['PolicyID']}, Priority={policy_info['Priority']}"
         )
 
-    # 8. Remove policies from list
-    policies_to_delete_set = {id(p) for p in policies_to_delete}
-    updated_policies = [p for p in current_policies if id(p) not in policies_to_delete_set]
+    policies_to_delete_set = {p.get("ID") for p in policies_to_delete}
+    updated_policies = [p for p in current_policies if p.get("ID") not in policies_to_delete_set]
     demisto.debug(f"Policies count after deletion: {len(updated_policies)} (removed {len(policies_to_delete)})")
 
-    # 9. Update policy table
     update_payload = {
         "DATA": updated_policies,
         "POLICY_HASH": policy_hash,
@@ -5277,7 +5261,7 @@ def delete_endpoint_policy_command(client: Client, args: dict) -> CommandResults
     readable_output = "Successfully deleted the following endpoint policies:\n\n"
     for policy_info in deleted_policies_info:
         readable_output += (
-            f"- Name: {policy_info['PolicyName']}, " f"ID: {policy_info['PolicyID']}, " f"Priority: {policy_info['Priority']}\n"
+            f"- Name: {policy_info['PolicyName']}, ID: {policy_info['PolicyID']}, Priority: {policy_info['Priority']}\n"
         )
     return CommandResults(
         readable_output=readable_output,
