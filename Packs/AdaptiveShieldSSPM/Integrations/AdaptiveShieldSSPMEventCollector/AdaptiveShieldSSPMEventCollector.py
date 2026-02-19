@@ -15,68 +15,67 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 VENDOR = "AdaptiveShield"
 PRODUCT = "SSPM"
 DEFAULT_MAX_FETCH = 1000
-API_PAGE_LIMIT = 100
+API_PAGE_LIMIT = 500
 TIME_FIELD = "creation_date"
 
+#TODO: remove
+# dummy_res = {
+#     "data": [
+#         {
+#             "id": "00001",
+#             "creation_date":"2026-11-22T05:52:34Z",
+#         },
+#         {
+#             "id": "111",
+#             "creation_date":"2026-11-23T05:52:34Z",
+#         },
+#         {
+#             "id": "222",
+#             "creation_date":"2026-12-01T05:52:34Z",
+#         },
+#         {
+#             "id": "333",
+#             "creation_date":"2026-12-02T05:52:34Z",
+#         },
+#         {
+#             "id": "444",
+#             "creation_date":"2026-12-02T05:52:34Z",
+#         },
+#         {
+#             "id": "555",
+#             "creation_date":"2026-12-02T05:52:34Z",
+#         }
+#     ],
+#     "total_size": 252,
+#     "next_page_uri": "https://api.adaptive-shield.com/api/v1/accounts/ACCOUNT_ID/security_checks?offset=100&limit=100",
+# }
 
-
-dummy_res = {
-    "data": [
-        {
-            "id": "00001",
-            "creation_date":"2026-11-22T05:52:34Z",
-        },
-        {
-            "id": "111",
-            "creation_date":"2026-11-23T05:52:34Z",
-        },
-        {
-            "id": "222",
-            "creation_date":"2026-12-01T05:52:34Z",
-        },
-        {
-            "id": "333",
-            "creation_date":"2026-12-01T05:52:34Z",
-        },
-        {
-            "id": "444",
-            "creation_date":"2026-12-02T05:52:34Z",
-        },
-        {
-            "id": "555",
-            "creation_date":"2026-12-03T05:52:34Z",
-        }
-    ],
-    "total_size": 252,
-    "next_page_uri": "https://api.adaptive-shield.com/api/v1/accounts/{{accountId}}/security_checks?offset=100&limit=100",
-}
-
-dummy_res2 = {
-    "data": [
-        {
-            "id": "666",
-            "creation_date":"2026-12-04T05:52:34Z",
-        },
-        {
-            "id": "777",
-            "creation_date":"2026-12-05T05:52:34Z",
-        },
-        {
-            "id": "888",
-            "creation_date":"2026-12-06T05:52:34Z",
-        },
-        {
-            "id": "999",
-            "creation_date":"2026-12-07T05:52:34Z",
-        },
-        {
-            "id": "1010",
-            "creation_date":"2026-12-08T05:52:34Z",
-        }
-    ],
-    "total_size": 252,
-    # "next_page_uri": "https://api.adaptive-shield.com/api/v1/accounts/{{accountId}}/security_checks?offset=100&limit=100",
-}
+# dummy_res2 = {
+#     "data": [
+#         {
+#             "id": "666",
+#             "creation_date":"2026-12-04T05:52:34Z",
+#         },
+#         {
+#             "id": "777",
+#             "creation_date":"2026-12-05T05:52:34Z",
+#         },
+#         {
+#             "id": "888",
+#             "creation_date":"2026-12-06T05:52:34Z",
+#         },
+#         {
+#             "id": "999",
+#             "creation_date":"2026-12-07T05:52:34Z",
+#         },
+#         {
+#             "id": "1010",
+#             "creation_date":"2026-12-08T05:52:34Z",
+#         }
+#     ],
+#     "total_size": 252,
+#     # "next_page_uri": "https://api.adaptive-shield.com/api/v1/accounts/{{accountId}}/security_checks?offset=100&limit=100",
+# }
 
 
 
@@ -197,17 +196,17 @@ class Client(ContentClient):
         demisto.debug(f"Fetching security checks with {params=}")
 
         #TODO: remove
-        if offset:
-            return dummy_res2
-        return dummy_res
+        # if offset:
+        #     return dummy_res2
+        # return dummy_res
 
-        # response = self._http_request(
-        #     method="GET",
-        #     url_suffix=f"/api/v1/accounts/{self.account_id}/security_checks",
-        #     params=params,
-        # )
+        response = self._http_request(
+            method="GET",
+            url_suffix=f"/api/v1/accounts/{self.account_id}/security_checks",
+            params=params,
+        )
 
-        # return response
+        return response
 
     def get_security_checks_with_pagination(
         self,
@@ -215,7 +214,8 @@ class Client(ContentClient):
         last_run_date: str | None = None,
         last_fetched_ids: list[str] | None = None,
         start_date: str | None = None,
-    ) -> list[dict]:
+        initial_offset: int = 0,
+    ) -> tuple[list[dict], int]:
         """Fetch security checks with pagination support.
 
         Iterates through pages until max_fetch is reached or no more pages exist.
@@ -226,12 +226,13 @@ class Client(ContentClient):
             last_run_date: ISO 8601 timestamp of the last fetched event's creation_date.
             last_fetched_ids: List of event IDs fetched at the last_run_date timestamp.
             start_date: ISO 8601 timestamp. Events before this date are skipped.
+            initial_offset: Starting offset for pagination (from previous last_run).
 
         Returns:
-            List of security check event dicts with '_time' field set.
+            Tuple of (list of security check event dicts with '_time' field set, final offset).
         """
         all_events: list[dict] = []
-        offset = 0
+        offset = initial_offset
         last_fetched_ids_set = set(last_fetched_ids or [])
 
         while len(all_events) < max_fetch:
@@ -276,15 +277,21 @@ class Client(ContentClient):
 
             parsed = urlparse(next_page_uri)
             query_params = parse_qs(parsed.query)
-            offset = int(query_params.get("offset", [offset + len(items)])[0])
+
+            # Only advance the offset if the last item from the response was actually collected
+            if all_events and items[-1].get('id') == all_events[-1].get('id'):
+                offset = int(query_params.get("offset", [offset + len(items)])[0])
+            else:
+                demisto.debug("Last response item not in collected events, keeping current offset")
+
             page_limit = int(query_params.get("limit", [page_limit])[0])
             demisto.debug(f"Fetched {len(all_events)} events so far, next page: offset={offset}, limit={page_limit}")
 
         # Sort by creation_date ascending for consistent ordering
         all_events.sort(key=lambda e: e.get(TIME_FIELD, ""))
 
-        demisto.debug(f"Total events collected: {len(all_events)}")
-        return all_events
+        demisto.debug(f"Total events collected: {len(all_events)}, final offset: {offset}")
+        return all_events, offset
 
 
 """ COMMAND FUNCTIONS """
@@ -305,7 +312,7 @@ def get_events_command(client: Client, args: dict) -> CommandResults:
 
     demisto.debug(f"Running adaptive-shield-sspm-get-events with {should_push_events=}, {limit=}")
 
-    events = client.get_security_checks_with_pagination(max_fetch=limit)
+    events, _ = client.get_security_checks_with_pagination(max_fetch=limit)
 
     results = CommandResults(
         outputs_prefix="AdaptiveShieldSSPM.SecurityCheck",
@@ -340,15 +347,20 @@ def fetch_events_command(client: Client, max_fetch: int, last_run: dict) -> tupl
     """
     last_run_date = last_run.get("last_run_date")
     last_fetched_ids = last_run.get("last_fetched_ids", [])
+    last_offset = last_run.get("offset", 0)
     start_date = (datetime.now(tz=timezone.utc) - timedelta(minutes=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    demisto.debug(f"Fetching events with {last_run_date=}, last_fetched_ids count={len(last_fetched_ids)}, {start_date=}")
+    demisto.debug(
+        f"Fetching events with {last_run_date=}, last_fetched_ids count={len(last_fetched_ids)}, "
+        f"{start_date=}, {last_offset=}"
+    )
 
-    events = client.get_security_checks_with_pagination(
+    events, final_offset = client.get_security_checks_with_pagination(
         max_fetch=max_fetch,
         last_run_date=last_run_date,
         last_fetched_ids=last_fetched_ids,
         start_date=start_date,
+        initial_offset=last_offset,
     )
 
     if events:
@@ -365,8 +377,11 @@ def fetch_events_command(client: Client, max_fetch: int, last_run: dict) -> tupl
         last_run = {
             "last_run_date": new_last_run_date,
             "last_fetched_ids": ids_at_last_timestamp,
+            "offset": final_offset,
         }
-        demisto.debug(f"Updated last_run: date={new_last_run_date}, ids_count={len(ids_at_last_timestamp)}")
+        demisto.debug(
+            f"Updated last_run: date={new_last_run_date}, ids_count={len(ids_at_last_timestamp)}, offset={final_offset}"
+        )
     else:
         demisto.debug("No new events found, keeping existing last_run")
 
