@@ -1,6 +1,6 @@
-Adaptive Shield SSPM Event Collector fetches security check events from Adaptive Shield and sends them to Cortex XSIAM.
+Adaptive Shield SSPM fetches security check events from Adaptive Shield and sends them to Cortex XSIAM.
 
-## Configure Adaptive Shield SSPM Event Collector in Cortex
+## Configure Adaptive Shield SSPM in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
