@@ -98,6 +98,9 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 DETECTION_DATE_FORMAT = IOM_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEFAULT_TIMEOUT = 30
 
+DEFAULT_INTERVAL = 60
+DEFAULT_TIMEOUT_NGSIEM_SEARCH = 600
+
 DEFAULT_TIMEOUT_ON_GENERIC_HTTP_REQUEST = 60
 TOTAL_RETRIES_ON_ENRICHMENT = 0
 TIMEOUT_ON_ENRICHMENT = 15
@@ -6542,14 +6545,14 @@ def process_ngsiem_search_completion(response: dict, args: dict) -> PollResult:
         raw_response=response,
     )
     return PollResult(response=command_results, continue_to_poll=False)
-
+DEFAULT_TIMEOUT
 
 @polling_function(
     "cs-falcon-search-ngsiem-events",
     poll_message="Searching NGSIEM events:",
     polling_arg_name="wait_for_result",
-    interval=arg_to_number(demisto.args().get("interval_in_seconds", 60)),
-    timeout=arg_to_number(demisto.args().get("timeout_in_seconds", 600)),
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", DEFAULT_INTERVAL)),
+    timeout=arg_to_number(demisto.args().get("timeout_in_seconds", DEFAULT_TIMEOUT_NGSIEM_SEARCH)),
 )
 def cs_falcon_search_ngsiem_events_command(args: dict) -> PollResult:
     """
