@@ -1,0 +1,81 @@
+category: Analytics & SIEM
+provider: Adaptive Shield
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: AdaptiveShieldSSPM
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+  defaultvalue: 'https://api.adaptive-shield.com'
+  section: Connect
+- display: Account ID
+  name: account_id
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: The Adaptive Shield account ID. Can be retrieved from the List Accounts endpoint or from your user settings in the Adaptive Shield dashboard (API tab).
+- displaypassword: API Key
+  hiddenusername: true
+  name: credentials
+  required: true
+  type: 9
+  section: Connect
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+- display: The maximum number of Security Checks per fetch
+  additionalinfo: 'The maximum number of Security Checks per fetch. The default is 5000.'
+  defaultvalue: '5000'
+  name: max_fetch
+  section: Collect
+  type: 0
+  required: false
+- display: Trust any certificate (not secure)
+  section: Connect
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  section: Connect
+  name: proxy
+  type: 8
+  required: false
+description: Adaptive Shield SSPM Event Collector fetches security check events from Adaptive Shield and sends them to Cortex XSIAM.
+display: Adaptive Shield SSPM
+name: AdaptiveShieldSSPM
+script:
+  commands:
+  - name: adaptive-shield-sspm-get-events
+    description: |-
+      Fetches security check events from Adaptive Shield. Use with caution during development or debugging; this command may trigger event duplication or exceed API request limits.
+    arguments:
+    - name: should_push_events
+      auto: PREDEFINED
+      defaultValue: 'false'
+      description: Set to True to create events; otherwise, the command only displays the events.
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - name: limit
+      description: The maximum number of security checks to return.
+      defaultValue: 10
+  dockerimage: demisto/fastapi:0.123.5.6111791
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+  isfetchevents: true
+tests:
+- No tests (auto formatted)
+marketplaces:
+- marketplacev2
+- platform
+fromversion: 6.8.0
