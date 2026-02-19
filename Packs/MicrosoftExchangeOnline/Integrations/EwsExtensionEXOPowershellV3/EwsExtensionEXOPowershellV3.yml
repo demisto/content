@@ -2246,7 +2246,7 @@ script:
     - name: end_expires_date
       description: End date for the message expiration.
     - name: end_received_date
-      description: End of the received date range. Format typically 'MM/dd/yyyy HH:mm:ss'.
+      description: End of the received date range. Supported format - 'MM/dd/yyyy HH:mm:ss'.
     - name: include_messages_from_blocked_sender_address
       auto: PREDEFINED
       predefined:
@@ -2321,7 +2321,7 @@ script:
     - name: start_expires_date
       description: Start date for the message expiration.
     - name: start_received_date
-      description: Start of the received date range. Format typically 'MM/dd/yyyy HH:mm:ss'.
+      description: Start of the received date range. Supported format  'MM/dd/yyyy HH:mm:ss'.
     - name: subject
       description: Subject of the message.
     - name: type

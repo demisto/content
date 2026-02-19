@@ -832,32 +832,32 @@ Retrieve quarantine messages.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| identity | The identity of a single message to retrieve. | Optional |
-| entity_type | The workload type of the entity to retrieve. | Optional |
-| recipient_address | Email address of the recipient to filter by. | Optional |
-| sender_address | Email address of the sender to filter by. | Optional |
-| teams_conversation_types | Filter by Teams conversation types. | Optional |
-| direction | Direction of the message. | Optional |
-| domain | Domain associated with the message. | Optional |
-| end_expires_date | End date for the message expiration. | Optional |
-| end_received_date | End of the received date range. Format typically 'MM/dd/yyyy HH:mm:ss'. | Optional |
-| include_messages_from_blocked_sender_address | Whether to include messages from blocked sender addresses. | Optional |
-| message_id | The Internet Message ID (Client ID) found in the email headers. | Optional |
-| my_items | Include only items belonging to the user. | Optional |
-| page | Page number for pagination. | Optional |
-| page_size | Number of items per page. Maximum is 1000. | Optional |
-| policy_name | Name of the policy associated with the message. | Optional |
-| policy_types | Filter by types of policies. | Optional |
-| quarantine_types | Filter by specific quarantine types. | Optional |
-| recipient_tag | Filter by priority tag associated with the recipient. | Optional |
-| release_status | Filter by the release status of the message. | Optional |
-| reported | Whether to include only reported messages. | Optional |
-| start_expires_date | Start date for the message expiration. | Optional |
-| start_received_date | Start of the received date range. Format typically 'MM/dd/yyyy HH:mm:ss'. | Optional |
-| subject | Subject of the message. | Optional |
-| type | Type of the message. | Optional |
+| **Argument Name** | **Description**                                                           | **Required** |
+| --- |---------------------------------------------------------------------------| --- |
+| identity | The identity of a single message to retrieve.                             | Optional |
+| entity_type | The workload type of the entity to retrieve.                              | Optional |
+| recipient_address | Email address of the recipient to filter by.                              | Optional |
+| sender_address | Email address of the sender to filter by.                                 | Optional |
+| teams_conversation_types | Filter by Teams conversation types.                                       | Optional |
+| direction | Direction of the message.                                                 | Optional |
+| domain | Domain associated with the message.                                       | Optional |
+| end_expires_date | End date for the message expiration.                                      | Optional |
+| end_received_date | End of the received date range. Supported format 'MM/dd/yyyy HH:mm:ss'.   | Optional |
+| include_messages_from_blocked_sender_address | Whether to include messages from blocked sender addresses.                | Optional |
+| message_id | The Internet Message ID (Client ID) found in the email headers.           | Optional |
+| my_items | Include only items belonging to the user.                                 | Optional |
+| page | Page number for pagination.                                               | Optional |
+| page_size | Number of items per page. Maximum is 1000. Default is 50.                               | Optional |
+| policy_name | Name of the policy associated with the message.                           | Optional |
+| policy_types | Filter by types of policies.                                              | Optional |
+| quarantine_types | Filter by specific quarantine types.                                      | Optional |
+| recipient_tag | Filter by priority tag associated with the recipient.                     | Optional |
+| release_status | Filter by the release status of the message.                              | Optional |
+| reported | Whether to include only reported messages.                                | Optional |
+| start_expires_date | Start date for the message expiration.                                    | Optional |
+| start_received_date | Start of the received date range. Supported format 'MM/dd/yyyy HH:mm:ss'. | Optional |
+| subject | Subject of the message.                                                   | Optional |
+| type | Type of the message.                                                      | Optional |
 
 #### Context Output
 
