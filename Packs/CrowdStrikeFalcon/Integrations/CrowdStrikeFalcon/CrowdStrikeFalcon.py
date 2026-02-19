@@ -6546,6 +6546,7 @@ def process_ngsiem_search_completion(response: dict, args: dict) -> PollResult:
     )
     return PollResult(response=command_results, continue_to_poll=False)
 
+
 @polling_function(
     "cs-falcon-search-ngsiem-events",
     poll_message="Searching NGSIEM events:",
