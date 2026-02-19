@@ -787,7 +787,7 @@ Export quarantine messages.
 | force_conversion_to_mime | Specify whether to force conversion to MIME format.             | Optional |
 | password | Password to encrypt the exported file. Using this argument requires 'compress_output' argument to be set to true.                         | Optional |
 | reason_for_export | Reason for exporting the message. Using this argument requires 'compress_output' argument to be set to true.                              | Optional |
-| recipient_address | Email address to send the exported message to.                  | Optional |
+| recipient_address | Filters the results by the recipient's email address.                  | Optional |
 
 #### Context Output
 
@@ -835,27 +835,27 @@ Retrieve quarantine messages.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | identity | The identity of a single message to retrieve. | Optional |
-| entity_type | The type of entity being retrieved. | Optional |
-| recipient_address | Email address of the recipient. | Optional |
-| sender_address | Email address of the sender. | Optional |
-| teams_conversation_types | Types of Teams conversations to retrieve. | Optional |
-| direction | Direction of the message (Inbound/Outbound). | Optional |
+| entity_type | The workload type of the entity to retrieve. | Optional |
+| recipient_address | Email address of the recipient to filter by. | Optional |
+| sender_address | Email address of the sender to filter by. | Optional |
+| teams_conversation_types | Filter by Teams conversation types. | Optional |
+| direction | Direction of the message. | Optional |
 | domain | Domain associated with the message. | Optional |
 | end_expires_date | End date for the message expiration. | Optional |
-| end_received_date | End date for when the message was received. | Optional |
-| include_messages_from_blocked_sender_address | Include messages from blocked sender addresses. | Optional |
-| message_id | ID of the message. | Optional |
+| end_received_date | End of the received date range. Format typically 'MM/dd/yyyy HH:mm:ss'. | Optional |
+| include_messages_from_blocked_sender_address | Whether to include messages from blocked sender addresses. | Optional |
+| message_id | The Internet Message ID (Client ID) found in the email headers. | Optional |
 | my_items | Include only items belonging to the user. | Optional |
 | page | Page number for pagination. | Optional |
-| page_size | Number of items per page. | Optional |
+| page_size | Number of items per page. Maximum is 1000. | Optional |
 | policy_name | Name of the policy associated with the message. | Optional |
-| policy_types | Types of policies associated with the message. | Optional |
-| quarantine_types | Types of quarantine associated with the message. | Optional |
-| recipient_tag | Tag associated with the recipient. | Optional |
-| release_status | Release status of the message. | Optional |
-| reported | Include only reported messages. | Optional |
+| policy_types | Filter by types of policies. | Optional |
+| quarantine_types | Filter by specific quarantine types. | Optional |
+| recipient_tag | Filter by priority tag associated with the recipient. | Optional |
+| release_status | Filter by the release status of the message. | Optional |
+| reported | Whether to include only reported messages. | Optional |
 | start_expires_date | Start date for the message expiration. | Optional |
-| start_received_date | Start date for when the message was received. | Optional |
+| start_received_date | Start of the received date range. Format typically 'MM/dd/yyyy HH:mm:ss'. | Optional |
 | subject | Subject of the message. | Optional |
 | type | Type of the message. | Optional |
 
@@ -1045,15 +1045,15 @@ Release quarantine messages.
 
 | **Argument Name**      | **Description**                                            | **Required** |
 |------------------------|------------------------------------------------------------|--------------|
-| user                   | The user associated with the quarantine message.           | Optional |
+| user                   | The email address of the user to whom you want to release the quarantined message.           | Optional |
 | identities             | A comma-separated list of identities of the messages to release. | Optional |
 | identity               | The identity of a single message to release.               | Optional |
 | release_to_all         | Specify whether to release the message to all recipients.  | Optional |
 | allow_sender           | Specify whether to allow the sender.                       | Optional |
-| entity_type            | The type of entity being released.                         | Optional |
+| entity_type            | The workload type of the entity being released.                         | Optional |
 | force                  | Specify whether to force the release.                      | Optional |
 | report_false_positive  | Specify whether to report the message as a false positive. | Optional |
-| action_type            | The type of action to take when releasing the message.     | Optional |
+| action_type            | The action to perform on the quarantine message. Default is 'Release'.     | Optional |
 
 #### Context Output
 
