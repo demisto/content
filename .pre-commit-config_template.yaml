@@ -125,7 +125,7 @@ repos:
   - id: mypy-in-docker
     name: mypy-in-docker
     copy_files:
-    - Packs/Base/Scripts/CommonServerPython/CommonServerPython.py 
+    - Packs/Base/Scripts/CommonServerPython/CommonServerPython.py
     - Tests/demistomock/demistomock.py
     description: Run mypy on the code in content packs
     docker_image:nightly: from-yml
@@ -235,7 +235,7 @@ repos:
     require_serial: true
     args:
     -  validate
-    
+
   - id: validate-conf-json
     name: validate-conf-json
     description: validate conf.json
@@ -327,15 +327,15 @@ repos:
     require_serial: true
     skip:docker_autoupdate: true
 
-  # - id: validate-validation-config-file
-  #   name: Validation for validate_config file
-  #   description: Validate the validation config file
-  #   entry: validate-validation-config-file
-  #   language: python
-  #   pass_filenames: false
-  #   skip:nightly: true
-  #   args:
-  #   - --config-path=validation_config.toml
+  - id: validate-validation-config-file
+    name: Validation for validate_config file
+    description: Validate the validation config file
+    entry: validate-validation-config-file
+    language: python
+    pass_filenames: false
+    skip:nightly: true
+    args:
+    - --config-path=validation_config.toml
 
   - id: secrets
     name: secrets
