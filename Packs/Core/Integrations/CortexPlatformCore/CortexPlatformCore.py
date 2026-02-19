@@ -24,7 +24,9 @@ SECONDS_IN_DAY = 86400  # Number of seconds in one day
 MIN_DIFF_SECONDS = 2 * 3600  # Minimum allowed difference = 2 hours
 MAX_GET_SYSTEM_USERS_LIMIT = 50
 MAX_GET_EXCEPTION_RULES_LIMIT = 100
-
+MALWARE_TYPE = "Malware"
+EXPLOIT_TYPE = "Exploit"
+WINDOWS_PLATFORM = "Windows"
 
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
@@ -68,6 +70,9 @@ WEBAPP_COMMANDS = [
     "core-list-exception-rules",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
+    "core-update-windows-malware-profile",
+    "core-update-windows-exploit-profile",
+    "core-delete-profile",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -80,6 +85,81 @@ ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
 CASES_TABLE = "CASE_MANAGER_TABLE"
 SCRIPTS_TABLE = "SCRIPTS_TABLE"
+
+
+class Profile:
+    FIELDS = {
+        "examinePortableExecutables": "portable_executables_and_dll_examination",
+        "examineOfficeFiles": "office_files_with_macros_examination",
+        "examineJScriptFiles": "jscript_file_examination",
+        "aspFiles": "asp_aspx_files",
+        "powerShellScriptFiles": "powershell_script_files",
+        "scanEndpoints": "on_demand_file_examination",
+        "endUserInitiatedLocalScan": "end_user_initiated_local_scan",
+        "examineVBScriptFiles": "vb_scripts_examination",
+        "dynamicSecurityEngine": "global_behavioral_threat_protection_rules",
+        "passwordStealing": "credential_gathering_protection",
+        "webshellDroppers": "anti_webshell_protection",
+        "financialMalwareThreat": "financial_malware_threat_protection",
+        "cryptominers": "cryptominers_protection",
+        "inProcessShellcode": "in_process_shellcode_protection",
+        "maliciousDevice": "malicious_device_prevention",
+        "uacBypass": "uac_bypass_prevention",
+        "antiTampering": "anti_tampering_protection",
+        "iisProtection": "iis_protection",
+        "uefiProtection": "uefi_protection",
+        "ransomware": "ransomware_protection",
+        "legitimateProcesses": "malicious_child_process_protection",
+        "passwordTheftProtection": "password_theft_protection",
+        "maliciousCausalityChainsResponse": "respond_to_malicious_causality_chains",
+        "networkSignature": "network_packet_inspection_engine",
+        "dynamicKernelProtection": "dynamic_kernel_protection",
+        "dynamicDriverProtection": "dynamic_driver_protection",
+        "securityMeasuresBypass": "security_measures_bypass",
+        "basTools": "breach_attack_simulation_tools_settings",
+        "browserExploitKits": "browser_exploits_protection",
+        "logicalExploits": "logical_exploits_protection",
+        "vulnerableApps": "known_vulnerable_processes_protection",
+        "osKernelExploits": "operating_system_exploit_protection",
+        "additionalProcesses": "exploit_protection_for_additional_processes",
+        "manualScan": "end_user_initiated_local_scan",  # for update command
+    }
+
+    VALIDATION = {
+        "asp_aspx_files": ["block", "disabled", "report"],
+        "breach_attack_simulation_tools_settings": ["enabled", "disabled"],
+        "uac_bypass_prevention": ["block", "disabled", "report"],
+        "on_demand_file_examination": ["disabled", "enabled"],
+        "end_user_initiated_local_scan": ["disabled", "enabled"],
+        "ransomware_protection": ["block", "disabled", "report"],
+        "cryptominers_protection": ["block", "disabled", "report"],
+        "anti_tampering_protection": ["block", "disabled", "report"],
+        "iis_protection": ["block", "disabled", "report"],
+        "uefi_protection": ["block", "disabled", "report"],
+        "malicious_device_prevention": ["block", "disabled", "report"],
+        "network_packet_inspection_engine": ["terminateSession", "disabled", "report"],
+        "credential_gathering_protection": ["block", "disabled", "report"],
+        "anti_webshell_protection": ["block", "disabled", "report"],
+        "office_files_with_macros_examination": ["block", "disabled", "report"],
+        "in_process_shellcode_protection": ["block", "disabled", "report"],
+        "jscript_file_examination": ["block", "disabled", "report"],
+        "malicious_child_process_protection": ["block", "disabled", "report"],
+        "vb_scripts_examination": ["block", "disabled", "report"],
+        "global_behavioral_threat_protection_rules": ["block", "disabled", "report"],
+        "powershell_script_files": ["block", "disabled", "report"],
+        "financial_malware_threat_protection": ["block", "disabled", "report"],
+        "security_measures_bypass": ["block", "disabled", "report"],
+        "dynamic_driver_protection": ["block", "disabled", "report"],
+        "dynamic_kernel_protection": ["block", "disabled", "report"],
+        "password_theft_protection": ["disabled", "enabled"],
+        "portable_executables_and_dll_examination": ["block", "disabled", "report"],
+        "respond_to_malicious_causality_chains": ["disabled", "enabled"],
+        "browser_exploits_protection": ["block", "disabled", "report"],
+        "logical_exploits_protection": ["block", "disabled", "report"],
+        "known_vulnerable_processes_protection": ["block", "disabled", "report"],
+        "operating_system_exploit_protection": ["block", "disabled", "report"],
+        "exploit_protection_for_additional_processes": ["block", "disabled", "report"],
+    }
 
 
 class ScriptManagement:
@@ -957,6 +1037,34 @@ class Client(CoreClient):
             method="POST",
             url_suffix="/cases/get_ai_case_details",
             json_data={"case_id": case_id},
+        )
+
+    def create_profile(self, profile_data: dict) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/profiles/prevention/add",
+            json_data=profile_data,
+        )
+
+    def get_profile(self, profile_id: str) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/profiles/get_profile_view_by_id",
+            json_data={"profile_id": profile_id},
+        )
+
+    def update_profile(self, update_data: dict) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/profiles/edit_profile",
+            json_data=update_data,
+        )
+
+    def delete_profile(self, profile_ids: list) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/profiles/delete_profiles",
+            json_data={"profile_ids": profile_ids},
         )
 
 
@@ -4540,6 +4648,257 @@ def verify_platform_version(version: str = "8.13.0"):
         raise DemistoException("This command is not available for this platform version")
 
 
+def create_profile_modules_by_type(args: dict, profile_type: str):
+    """
+    Creates the modules configuration for a profile based on the profile type.
+
+    Args:
+        args (dict): The arguments containing the configuration for the profile modules.
+        profile_type (str): The type of the profile ("Malware" or "Exploit").
+
+    Returns:
+        dict: A dictionary containing the configured modules for the profile.
+    """
+    profile_modules = {}
+    if profile_type == MALWARE_TYPE:
+        # Configuration for periodic scan to be used when enabled
+        scan_endpoints_periodic_config = {"type": "weekly", "days": ["sun"], "hour": "00:00", "removableMedia": "disabled"}
+
+        scan_endpoints_arg = args.get(Profile.FIELDS.get("scanEndpoints"), "disabled")
+        if scan_endpoints_arg == "enabled":
+            periodic_scan_config = {"mode": "enabled", **scan_endpoints_periodic_config}
+        else:
+            periodic_scan_config = {"mode": "disabled"}
+
+        profile_modules = {
+            "aspFiles": {
+                "mode": args.get(Profile.FIELDS.get("aspFiles"), "disabled"),
+                "upload": "enabled",
+                "actionOnUnknown": "runLocalAnalysis",
+            },
+            "basTools": {"mode": args.get(Profile.FIELDS.get("basTools"), "disabled")},
+            "uacBypass": {"mode": args.get(Profile.FIELDS.get("uacBypass"), "block"), "quarantine": "enabled"},
+            "ransomware": {
+                "mode": args.get(Profile.FIELDS.get("ransomware"), "block"),
+                "quarantine": "disabled",
+                "smbEncryption": "enabled",
+                "protectionMode": "normal",
+            },
+            "cryptominers": {"mode": args.get(Profile.FIELDS.get("cryptominers"), "block"), "quarantine": "enabled"},
+            "antiTampering": {
+                "mode": args.get(Profile.FIELDS.get("antiTampering"), "block"),
+                "safeMode": args.get(Profile.FIELDS.get("antiTampering"), "block"),
+                "quarantine": "enabled",
+            },
+            "iisProtection": {"mode": args.get(Profile.FIELDS.get("iisProtection"), "block"), "quarantine": "enabled"},
+            "scanEndpoints": {
+                "periodicScan": periodic_scan_config,
+                "endUserInitiatedLocalScan": args.get(Profile.FIELDS.get("endUserInitiatedLocalScan"), "enabled"),
+            },
+            "uefiProtection": {"mode": args.get(Profile.FIELDS.get("uefiProtection"), "block"), "quarantine": "enabled"},
+            "maliciousDevice": {"mode": args.get(Profile.FIELDS.get("maliciousDevice"), "block"), "quarantine": "disabled"},
+            "networkSignature": {"mode": args.get(Profile.FIELDS.get("networkSignature"), "terminateSession")},
+            "passwordStealing": {"mode": args.get(Profile.FIELDS.get("passwordStealing"), "block"), "quarantine": "enabled"},
+            "webshellDroppers": {"mode": args.get(Profile.FIELDS.get("webshellDroppers"), "block"), "quarantine": "enabled"},
+            "onWriteProtection": {
+                "examinePortableExecutables": "disabled",
+                "examineOfficeFiles": "disabled",
+                "powerShellScriptFiles": "disabled",
+                "aspFiles": "disabled",
+                "examineVBScriptFiles": "disabled",
+                "examineJScriptFiles": "disabled",
+            },
+            "examineOfficeFiles": {
+                "mode": args.get(Profile.FIELDS.get("examineOfficeFiles"), "block"),
+                "upload": "enabled",
+                "networkDrives": "enabled",
+                "actionOnUnknown": "runLocalAnalysis",
+                "actionOnLowConfidence": "runLocalAnalysis",
+            },
+            "inProcessShellcode": {
+                "mode": args.get(Profile.FIELDS.get("inProcessShellcode"), "block"),
+                "quarantine": "enabled",
+                "processInjection32Bit": "enabled",
+                "aiPoweredShellcodeProtection": "enabled",
+            },
+            "examineJScriptFiles": {
+                "mode": args.get(Profile.FIELDS.get("examineJScriptFiles"), "block"),
+                "upload": "enabled",
+                "quarantine": "disabled",
+                "actionOnUnknown": "runLocalAnalysis",
+            },
+            "legitimateProcesses": {"mode": args.get(Profile.FIELDS.get("legitimateProcesses"), "block")},
+            "examineVBScriptFiles": {
+                "mode": args.get(Profile.FIELDS.get("examineVBScriptFiles"), "block"),
+                "upload": "enabled",
+                "quarantine": "disabled",
+                "actionOnUnknown": "runLocalAnalysis",
+            },
+            "dynamicSecurityEngine": {
+                "mode": args.get(Profile.FIELDS.get("dynamicSecurityEngine"), "block"),
+                "quarantine": "enabled",
+                "advancedApiMonitoring": "enabled",
+                "driversProtectionMode": "block",
+            },
+            "powerShellScriptFiles": {
+                "mode": args.get(Profile.FIELDS.get("powerShellScriptFiles"), "block"),
+                "upload": "enabled",
+                "quarantine": "disabled",
+                "actionOnUnknown": "runLocalAnalysis",
+            },
+            "financialMalwareThreat": {
+                "mode": args.get(Profile.FIELDS.get("financialMalwareThreat"), "block"),
+                "quarantine": "enabled",
+                "cryptoWalletProtection": "enabled",
+            },
+            "securityMeasuresBypass": {
+                "mode": args.get(Profile.FIELDS.get("securityMeasuresBypass"), "block"),
+                "quarantine": "enabled",
+            },
+            "dynamicDriverProtection": {
+                "mode": args.get(Profile.FIELDS.get("dynamicDriverProtection"), "block"),
+                "quarantine": "disabled",
+            },
+            "dynamicKernelProtection": {"mode": args.get(Profile.FIELDS.get("dynamicKernelProtection"), "block")},
+            "passwordTheftProtection": {"mode": args.get(Profile.FIELDS.get("passwordTheftProtection"), "enabled")},
+            "examinePortableExecutables": {
+                "mode": args.get(Profile.FIELDS.get("examinePortableExecutables"), "block"),
+                "upload": "enabled",
+                "grayware": "disabled",
+                "quarantine": "disabled",
+                "actionOnUnknown": "runLocalAnalysis",
+                "actionOnLowConfidence": "runLocalAnalysis",
+            },
+            "maliciousCausalityChainsResponse": {
+                "mode": args.get(Profile.FIELDS.get("maliciousCausalityChainsResponse"), "enabled")
+            },
+        }
+
+    elif profile_type == EXPLOIT_TYPE:
+        profile_modules = {
+            "vulnerableApps": {"mode": args.get(Profile.FIELDS.get("vulnerableApps"), "block"), "javaProtection": "enabled"},
+            "logicalExploits": {"mode": args.get(Profile.FIELDS.get("logicalExploits"), "block"), "forbidDllLoad": []},
+            "osKernelExploits": {"mode": args.get(Profile.FIELDS.get("osKernelExploits"), "block")},
+            "browserExploitKits": {"mode": args.get(Profile.FIELDS.get("browserExploitKits"), "block")},
+            "additionalProcesses": {"mode": args.get(Profile.FIELDS.get("additionalProcesses"), "disabled"), "processes": []},
+        }
+
+    return profile_modules
+
+
+def validate_profile_args(args: dict):
+    """
+    Validates that the arguments provided in args match the predefined values in Profile.VALIDATION.
+    """
+    invalid_args = []
+    for arg, value in args.items():
+        if arg in Profile.VALIDATION:
+            allowed_values = Profile.VALIDATION[arg]
+            if value not in allowed_values:
+                invalid_args.append(
+                    f"Invalid value '{value}' for argument '{arg}'. Allowed values are: {', '.join(allowed_values)}."
+                )
+
+    if invalid_args:
+        raise DemistoException("\n".join(invalid_args))
+
+
+def create_profile_command(
+    client: Client, args: dict, profile_type: str, profile_platform: str = WINDOWS_PLATFORM
+) -> CommandResults:
+    """
+    Creates a new profile in the Cortex Platform.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): The arguments containing the profile details.
+        profile_type (str): The type of the profile ("Malware" or "Exploit").
+
+    Returns:
+        CommandResults: The command results containing the ID of the created profile.
+    """
+    validate_profile_args(args)
+    profile_name = args.get("profile_name")
+    profile_description = args.get("profile_description", "")
+
+    profile_modules = create_profile_modules_by_type(args, profile_type)
+    payload = {
+        "request_data": {
+            "name": profile_name,
+            "profile_type": profile_type,
+            "platform": profile_platform,
+            "description": profile_description,
+            "modules": profile_modules,
+        }
+    }
+    response = client.create_profile(payload).get("reply", "")
+
+    return CommandResults(
+        readable_output=f"Profile {response} created successfully.",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Profile",
+        outputs={"profile_id": response},
+        raw_response={"profile_id": response},
+    )
+
+
+def update_profile_command(client, args):
+    """
+    Updates an existing profile in the Cortex Platform.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): The arguments containing the profile ID and fields to update.
+
+    Returns:
+        CommandResults: The command results indicating the success of the update.
+    """
+    validate_profile_args(args)
+    profile_id = args.get("profile_id")
+
+    current_profile = client.get_profile(profile_id)
+    if not current_profile or current_profile.get("reply") is None:
+        raise DemistoException(f"Profile {profile_id} doesn't exist.")
+
+    update_data = current_profile.get("reply", {})
+    current_profile_modules = update_data.get("PROFILE_MODULES", {})
+
+    for module_name, module_data in current_profile_modules.items():
+        arg_value = args.get(Profile.FIELDS.get(module_name))
+        if arg_value and "mode" in module_data:
+            module_data["mode"]["value"] = arg_value
+            if "safeMode" in module_data:
+                module_data["safeMode"]["value"] = arg_value
+
+    if profile_name := args.get("profile_name"):
+        update_data["PROFILE_NAME"] = profile_name
+
+    if profile_description := args.get("profile_description"):
+        update_data["PROFILE_DESCRIPTION"] = profile_description
+
+    update_data["PROFILE_MODULES"] = current_profile_modules
+    update_profile = {"profile_id": profile_id, "update_data": update_data}
+
+    client.update_profile(update_profile)
+
+    return CommandResults(readable_output=f"Profile {profile_id} updated successfully.")
+
+
+def delete_profile_command(client, args):
+    """
+    Deletes one or more profiles from the Cortex Platform.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): The arguments containing the profile IDs to delete.
+
+    Returns:
+        CommandResults: The command results indicating the success of the deletion.
+    """
+    profile_ids = argToList(args.get("profile_ids"))
+    client.delete_profile(profile_ids)
+    return CommandResults(readable_output="Your request was sent successfully.")
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -4673,6 +5032,21 @@ def main():  # pragma: no cover
         elif command == "core-xql-generic-query-platform":
             verify_platform_version()
             return_results(xql_query_platform_command(client, args))
+
+        elif command == "core-create-windows-malware-profile":
+            return_results(create_profile_command(client, args, MALWARE_TYPE, WINDOWS_PLATFORM))
+
+        elif command == "core-create-windows-exploit-profile":
+            return_results(create_profile_command(client, args, EXPLOIT_TYPE, WINDOWS_PLATFORM))
+
+        elif command == "core-update-windows-malware-profile":
+            return_results(update_profile_command(client, args))
+
+        elif command == "core-update-windows-exploit-profile":
+            return_results(update_profile_command(client, args))
+
+        elif command == "core-delete-profile":
+            return_results(delete_profile_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
