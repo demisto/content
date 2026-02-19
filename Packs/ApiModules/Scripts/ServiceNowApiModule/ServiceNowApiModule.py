@@ -37,6 +37,7 @@ class ServiceNowClient(BaseClient):
             - use_oauth: a flag indicating whether the user wants to use OAuth 2.0 or basic authorization.
             - jwt_params: a dict containing the JWT parameters
         """
+        demisto.debug(f"test")
         self.auth = None
         self.use_oauth = use_oauth
         self.username = credentials.get("identifier")

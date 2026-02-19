@@ -543,6 +543,8 @@ def login_command(client: Client, args: dict[str, Any]) -> tuple[str, dict[Any, 
 
 def main() -> None:
     """main function, parses params and runs command functions"""
+    demisto.debug(f"test")
+
     params = demisto.params()
 
     url = params.get("url", "")

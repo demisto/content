@@ -3761,6 +3761,7 @@ def main():
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
 
+    demisto.debug(f"test")
     command = demisto.command()
     demisto.debug(f"Executing command {command}")
 
