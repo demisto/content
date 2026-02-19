@@ -4397,7 +4397,7 @@ def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str
     return str(res)
 
 
-def get_cloud_accounts_log_sending_status(client: Client) -> tuple[int, int, list[dict]]:
+def get_cloud_accounts_log_sending_status(client: Client) -> tuple[int, list[dict]]:
     """
     Retrieves all cloud accounts and calculates log sending statistics.
 
@@ -4407,15 +4407,15 @@ def get_cloud_accounts_log_sending_status(client: Client) -> tuple[int, int, lis
     Returns:
         Tuple containing:
             - total_accounts: Total number of cloud accounts
-            - accounts_not_sending_logs_count: Number of accounts not sending logs
             - accounts_not_sending_logs: List of account details not sending logs
     """
     total_accounts = 0
     accounts_not_sending_logs = []
     next_token = ""
-
+    iteration = 0
+    
     while True:
-        params = {}
+        params = {"limit": "1"}
         if next_token:
             params["next_token"] = next_token
 
@@ -4424,7 +4424,8 @@ def get_cloud_accounts_log_sending_status(client: Client) -> tuple[int, int, lis
         )
 
         accounts = response.get("values", [])
-
+        demisto.info(f"{iteration=}, Received accounts: {accounts}")
+        iteration += 1
         for account in accounts:
             total_accounts += 1
             additional_capabilities = account.get("additional_capabilities", {}) or {}
@@ -4444,9 +4445,7 @@ def get_cloud_accounts_log_sending_status(client: Client) -> tuple[int, int, lis
         if not next_token:
             break
 
-    accounts_not_sending_logs_count = len(accounts_not_sending_logs)
-
-    return total_accounts, accounts_not_sending_logs_count, accounts_not_sending_logs
+    return total_accounts, accounts_not_sending_logs
 
 
 def get_cdr_protection_status_command(client: Client) -> CommandResults:
@@ -4459,13 +4458,14 @@ def get_cdr_protection_status_command(client: Client) -> CommandResults:
     Returns:
         List of CommandResults objects with CDR protection coverage percentages
     """
-    total_accounts, accounts_not_sending_logs_count, accounts_not_sending_logs = get_cloud_accounts_log_sending_status(client)
+    total_accounts, accounts_not_sending_logs = get_cloud_accounts_log_sending_status(client)
+    accounts_not_sending_logs_count = len(accounts_not_sending_logs)
     accounts_sending_logs = total_accounts - accounts_not_sending_logs_count
 
     if total_accounts == 0:
         return CommandResults(
             readable_output="No Cloud Accounts found.",
-            entry_type=4,
+            entry_type=EntryType.NOTE,
         )
 
     # Build outputs with cloud account statistics
