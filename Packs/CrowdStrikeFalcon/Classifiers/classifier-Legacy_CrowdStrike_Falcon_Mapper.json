@@ -371,7 +371,19 @@
                 "name": {
                     "complex": {
                         "accessor": "display_name",
-                        "filters": [],
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "behaviors.[0].display_name"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ]
+                        ],
                         "root": "behaviors.[0]",
                         "transformers": [
                             {
