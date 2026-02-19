@@ -68,6 +68,9 @@ WEBAPP_COMMANDS = [
     "core-list-exception-rules",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
+    "core-get-sme-areas-and-sub-groups",
+    "core-get-questionnaire-by-sme",
+    "core-get-support-ticket-taxonomy",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -913,6 +916,36 @@ class Client(CoreClient):
             url_suffix=f"case/{case_id}/resolution-plan/tasks",
         )
         return reply
+
+    def get_sme_areas_and_sub_groups(self) -> dict:
+        """
+        Retrieve SME areas and sub-groups for the tenant's product type.
+
+        Returns:
+            dict: The response containing SME areas and their associated sub-groups.
+        """
+        return self._http_request(
+            method="GET",
+            url_suffix="/sfdc_support/get_sme_areas_and_sub_groups",
+        )
+
+    def get_questionnaire_by_sme(self, sme_area: str, sub_group: str) -> dict:
+        """
+        Retrieve questionnaire mappings by SME area and sub-group for the tenant's product type.
+
+        Args:
+            sme_area (str): The SME area (issue category) to fetch questions for.
+            sub_group (str): The sub-group (problem concentration) within the SME area.
+
+        Returns:
+            dict: The response containing questionnaire items (questions and log upload fields).
+        """
+        return self._http_request(
+            method="POST",
+            headers=self._headers,
+            url_suffix="/sfdc_support/get_questions_by_sme_area_and_sub_group/",
+            json_data={"request_data":{"sme_area": sme_area, "sub_group": sub_group}}
+        )
 
     def get_custom_fields_metadata(self) -> dict[str, Any]:
         """
@@ -4439,6 +4472,358 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+from typing import Dict, Any, Set, List
+
+
+def core_fill_support_ticket_command(client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Validates arguments and maps them to the support ticket context.
+    Includes dependent validation for problem_concentration based on the issue_category.
+    """
+    product_type = args.get('product_type')
+    description = args.get('description', '')
+    contact_number = args.get('contact_number')
+    issue_impact = args.get('issue_impact')
+    issue_category = args.get('issue_category')
+    problem_concentration = args.get('problem_concentration')
+    issue_frequency = args.get('issue_frequency')
+    start_time = args.get('most_recent_issue_start_time')
+
+    # 2. Validation Data Structures
+    PRODUCT_TYPES = {"Cortex XSIAM", "Cortex Cloud", "Cortex XDR"}
+    IMPACTS = {"P4", "P3", "P2", "P1", "P0"}
+
+    # Mapping of Product Type to allowed Categories
+    PRODUCT_CATEGORY_MAPPING: Dict[str, Set[str]] = {
+        "Cortex XSIAM": {
+            "Agent", "Cases and Issues", "Cloud Onboarding", "Data Collection, Integrations, and Marketplace",
+            "Detection, Investigation and Inventory", "Modules", "Posture Management", "Security Incidents",
+            "Server", "Tenant Administration and Access Control", "Vulnerability and Compliance Management",
+            "Web Application and API Security", "XDR Agent"
+        },
+        "Cortex Cloud": {
+            "AI Security (AISPM)", "API Security (WAAS)", "Access Management, Integrations and Authentication",
+            "Application Security", "CI/CD Prevention", "Cases and Issues", "Cloud Agent", "Cloud Alerts and Events",
+            "Cloud Assets and Reports", "Cloud Onboarding", "Cloud Scan and Agentless",
+            "Cloud Workload and Posture Security Settings", "Compliance Management", "Compute Workload Inventory",
+            "Data Collection, Integrations, and Marketplace", "Data Security (DSPM)",
+            "Detection, Investigation and Inventory", "Modules", "Posture Management",
+            "Tenant Administration and Access Control", "Vulnerability Management",
+            "Vulnerability and Compliance Management", "Web Application and API Security", "XDR Agent"
+        },
+        "Cortex XDR": {
+            "Agent", "Cases and Issues", "Cloud Onboarding", "Data Collection, Integrations, and Marketplace",
+            "Detection, Investigation and Inventory", "Modules", "Posture Management", "Security Incidents",
+            "Server", "Tenant Administration and Access Control", "Vulnerability and Compliance Management",
+            "Web Application and API Security", "XDR Agent"
+        }
+    }
+
+    # Mapping of Category (smeArea) to allowed Concentrations (subGroupName)
+    CATEGORY_MAPPING: Dict[str, Set[str]] = {
+        "Agent": {"Communication", "Device Control", "Install/Upgrade/Uninstall", "Performance", "non-persistent VDI"},
+        "Cases and Issues": {"Breach Assessment", "Custom Domain", "Health Domain", "Hunting Domain", "IT Domain",
+                             "Posture Domain", "Security Domain", "Threat Coverage Analysis"},
+        "Cloud Onboarding": {"CI/CD Security", "Cloud Scan", "Kubernetes Connectors", "Option not available",
+                             "Registry Configuration", "Scan with Outpost"},
+        "Data Collection, Integrations, and Marketplace": {"Broker VM", "Cloud Identitiy Engine", "Data Collection Configuration",
+                                                           "Data Management", "Engines", "Integrations Configuration",
+                                                           "Marketplace", "Public API"},
+        "Detection, Investigation and Inventory": {"Cases and Issues Configuration", "Dashboard and Reports",
+                                                   "Host Insights / Host Inventory", "Inventory - Assets",
+                                                   "Inventory - Endpoints", "Investigation and Response", "Threat Management"},
+        "Modules": {"AI Security", "Application Security", "Attack Surface Management", "Data Security", "Identity Security"},
+        "Posture Management": {"Management", "Policies", "Rules"},
+        "Security Incidents": {"Breach Assessment", "Coverage Assessment", "Other Alert Source", "Security Incidents"},
+        "Server": {"Automation", "Broker VM", "Dashboard and Reports", "Data Ingestion", "Endpoint Management", "Marketplace",
+                   "Others", "TIM (Threat Intelligence Management)", "Tenant Performance", "License/Provisioning",
+                   "User and Roles Management"},
+        "Tenant Administration and Access Control": {"Access Management", "Add-ons", "Audit Logs and Health Issues", "Copilot",
+                                                     "Cortex Gateway", "Licensing", "Onboarding and Access",
+                                                     "Support Case Creation", "Tenant Availability", "Tenant Configuration",
+                                                     "Tenant Migration"},
+        "Vulnerability and Compliance Management": {"Compliance Management", "Option not available", "Vulnerability Management"},
+        "Web Application and API Security": {"API Discovery", "API Gateway Configuration", "API Specifications",
+                                             "In-Line Security"},
+        "XDR Agent": {"XDR Agent for Cloud - App-embedded", "XDR Agent for Cloud - Container", "XDR Agent for Cloud - Host",
+                      "XDR Agent for Cloud - Kubernetes", "XDR Agent for Cloud - Serverless",
+                      "XDR Agent for Enterprise - Android", "XDR Agent for Enterprise - Linux",
+                      "XDR Agent for Enterprise - Windows", "XDR Agent for Enterprise - iOS", "XDR Agent for Enterprise - macOS"},
+        "AI Security (AISPM)": {"Dashboard and Reporting", "Onboarding"},
+        "API Security (WAAS)": {"API Discovery", "API Gateway Configuration", "API Protection", "In-Line Security"},
+        "Access Management, Integrations and Authentication": {"API", "API Keys", "Integrations", "PAN CSP", "PAN HUB", "Roles",
+                                                               "Single Sign-on", "User Groups", "Users"},
+        "Application Security": {"Assets - IaC Resources", "Assets - Repositories", "Assets - Software Pacakges", "CI/CD Runs",
+                                 "CI/CD Systems", "IDEs", "Issues - CVE", "Issues - IaC Misconfigurations",
+                                 "Issues - Package Integrity", "Issues - Secrets", "Package Registries",
+                                 "Scans - Branch Periodic Scan", "Scans - PR Scans"},
+        "CI/CD Prevention": {"Cortex CLI", "Jenkins"},
+        "Cloud Agent": {"App-Embedded", "Container", "Host", "Kubernetes", "Serverless", "Tanzu"},
+        "Cloud Alerts and Events": {"Cloud Alerts", "Cloud Events"},
+        "Cloud Assets and Reports": {"API", "API Keys", "Asset Groups", "Assets", "Dashboard & Reports", "Integrations",
+                                     "Network Configuration", "PAN CSP", "PAN HUB", "Roles", "Single Sign-on", "User Groups",
+                                     "Users"},
+        "Cloud Scan and Agentless": {"Cloud Scan", "Scan with Outpost"},
+        "Cloud Workload and Posture Security Settings": {"Admission Controls", "Alert Exclusions", "Compliance Policy",
+                                                         "Health Alerts", "Kubernetes Connectors", "Licensing", "Malware Policy",
+                                                         "Management Audit Logs", "Notifications", "Registry Settings",
+                                                         "Secrets Policy", "Settings", "Vulnerability Policy"},
+        "Compliance Management": {"Cloud Compliance", "Hosts", "Images and Containers", "Kubernetes"},
+        "Compute Workload Inventory": {"Container Images", "Image Registry", "Kubernetes Inventory", "Serverless Functions",
+                                       "VM Instance"},
+        "Data Security (DSPM)": {"API", "Asset - Data", "Classification", "Connectivity/Role Permissions",
+                                 "Dashboard and Reporting", "Data Detection and Response (DDR)", "Integrations", "Risks",
+                                 "Scanning"},
+        "Vulnerability Management": {"Configuration", "False Negative", "False Positive", "Reports"}
+    }
+
+    # 3. Validation Logic
+    # 3a. Check Product Type
+    if product_type and product_type not in PRODUCT_TYPES:
+        raise ValueError(f"Invalid product type: '{product_type}'. Options are: {', '.join(sorted(PRODUCT_TYPES))}")
+
+    # 3b. Check Frequency
+    FREQUENCIES = {"Yes - Consistent", "Yes - Intermittent", "Not Applicable"}
+    if issue_frequency and issue_frequency not in FREQUENCIES:
+        raise ValueError(f"Invalid issue frequency: '{issue_frequency}'. Options are: {', '.join(sorted(FREQUENCIES))}")
+
+    # 3c. Check Description Length
+    if not (25 <= len(description) <= 32000):
+        raise ValueError(f"Description length {len(description)} is invalid. Must be 25-32,000 chars.")
+
+    # 3b. Check Impact
+    if issue_impact not in IMPACTS:
+        raise ValueError(f"Invalid impact: '{issue_impact}'. Options are: {', '.join(IMPACTS)}")
+
+    # 3c. Check Category per Product Type
+    if product_type:
+        allowed_categories = PRODUCT_CATEGORY_MAPPING.get(product_type, set())
+        if issue_category not in allowed_categories:
+            raise ValueError(
+                f"Invalid issue category '{issue_category}' for product type '{product_type}'. "
+                f"Expected one of: {', '.join(sorted(allowed_categories))}"
+            )
+
+    # 3d. Check Category and dependent Problem Concentration
+    if issue_category not in CATEGORY_MAPPING:
+        raise ValueError(f"'{issue_category}' is not a valid issue category.")
+
+    allowed_concentrations = CATEGORY_MAPPING[issue_category]
+    if problem_concentration not in allowed_concentrations:
+        raise ValueError(
+            f"Invalid problem concentration '{problem_concentration}' for category '{issue_category}'. "
+            f"Expected one of: {', '.join(allowed_concentrations)}"
+        )
+
+    # 4. Construct Output
+    data = {
+        "description": description,
+        "contactNumber": contact_number,
+        "OngoingIssue": issue_frequency,
+        "DateTimeOfIssue": arg_to_datetime(start_time).timestamp(),
+        "IssueImpact": issue_impact,
+        "smeArea": issue_category,
+        "subGroupName": problem_concentration
+    }
+
+    return CommandResults(
+        readable_output=tableToMarkdown("Validated Support Ticket Fields", data),
+        outputs_prefix="Core.SupportTicket",
+        outputs=data,
+        raw_response=data
+    )
+
+
+def get_sme_areas_and_sub_groups_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the available SME areas (issue categories) and their sub-groups (problem concentrations)
+    for the tenant's product type by calling the /sfdc_support/get_sme_areas_and_sub_groups/ endpoint.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Command arguments (currently unused, no arguments required).
+
+    Returns:
+        CommandResults: Object containing the SME areas and sub-groups data.
+    """
+    response = client.get_sme_areas_and_sub_groups()
+    reply = response.get("reply", response)
+
+    # Flatten the data for readable output
+    readable_data = []
+    if isinstance(reply, list):
+        for area in reply:
+            area_name = area.get("value", "")
+            sub_groups = [sg.get("value", "") for sg in area.get("suggestedValues", [])]
+            readable_data.append({
+                "sme_area": area_name,
+                "sub_groups": ", ".join(sub_groups),
+            })
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "SME Areas and Sub-Groups",
+            readable_data,
+            headerTransform=string_to_table_header,
+        ),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.SmeAreasAndSubGroups",
+        outputs_key_field="value",
+        outputs=reply,
+        raw_response=response,
+    )
+
+
+def get_questionnaire_by_sme_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieves questionnaire mappings (questions and log upload fields) for all SME area / sub-group
+    combinations by first calling get_sme_areas_and_sub_groups, then iterating over every
+    (issue_category, problem_concentration) pair to fetch the corresponding questionnaire.
+
+    Optionally, if issue_category and problem_concentration are provided, fetches only that specific combination.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Command arguments. Optional:
+            - issue_category (str): A specific issue category (SME area) to fetch questions for.
+            - problem_concentration (str): A specific problem concentration (sub-group).
+
+    Returns:
+        CommandResults: Object containing the aggregated questionnaire data for all combinations.
+    """
+    issue_category = args.get("issue_category", "")
+    problem_concentration = args.get("problem_concentration", "")
+
+    all_results: list[dict] = []
+
+    if issue_category and problem_concentration:
+        # Fetch for a single specific combination
+        response = client.get_questionnaire_by_sme(issue_category, problem_concentration)
+        reply = response.get("reply", response)
+        questions = reply if isinstance(reply, list) else []
+        for q in questions:
+            q["issue_category"] = issue_category
+            q["problem_concentration"] = problem_concentration
+        all_results.extend(questions)
+    else:
+        # Fetch all combinations: first get all SME areas and sub-groups
+        areas_response = client.get_sme_areas_and_sub_groups()
+        areas_reply = areas_response.get("reply", areas_response)
+        areas = areas_reply if isinstance(areas_reply, list) else []
+
+        for area in areas:
+            area_value = area.get("value", "")
+            suggested_values = area.get("suggestedValues", [])
+            if not suggested_values:
+                continue
+            for sg in suggested_values:
+                sg_value = sg.get("value", "")
+                if not sg_value:
+                    continue
+                try:
+                    response = client.get_questionnaire_by_sme(area_value, sg_value)
+                    reply = response.get("reply", response)
+                    questions = reply if isinstance(reply, list) else []
+                    for q in questions:
+                        q["issue_category"] = area_value
+                        q["problem_concentration"] = sg_value
+                    all_results.extend(questions)
+                except Exception as e:
+                    demisto.debug(f"Failed to fetch questionnaire for {area_value}/{sg_value}: {e}")
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Questionnaire Mappings",
+            all_results,
+            headerTransform=string_to_table_header,
+            headers=["issue_category", "problem_concentration", "key", "label", "required", "type", "questionType"],
+        ),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Questionnaire",
+        outputs_key_field=["issue_category", "problem_concentration", "key"],
+        outputs=all_results,
+        raw_response=all_results,
+    )
+
+
+def get_support_ticket_taxonomy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the complete support ticket taxonomy: all issue categories, their problem concentrations,
+    and the questionnaire items for every combination.
+
+    This is a single command that aggregates data from:
+      1. /sfdc_support/get_sme_areas_and_sub_groups/
+      2. /sfdc_support/get_questions_by_sme_area_and_sub_group/ (for each combination)
+
+    Returns a nested structure grouped by issue_category → problem_concentration → questions.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Command arguments (none required).
+
+    Returns:
+        CommandResults: Object containing the full nested taxonomy data.
+    """
+    areas_response = client.get_sme_areas_and_sub_groups()
+    areas_reply = areas_response.get("reply", areas_response)
+    areas = areas_reply if isinstance(areas_reply, list) else []
+
+    taxonomy: list[dict] = []
+
+    for area in areas:
+        area_value = area.get("value", "")
+        suggested_values = area.get("suggestedValues", [])
+
+        category_entry: dict[str, Any] = {
+            "issue_category": area_value,
+            "problem_concentrations": [],
+        }
+
+        for sg in suggested_values:
+            sg_value = sg.get("value", "")
+            if not sg_value:
+                continue
+
+            concentration_entry: dict[str, Any] = {
+                "problem_concentration": sg_value,
+                "questions": [],
+            }
+
+            try:
+                response = client.get_questionnaire_by_sme(area_value, sg_value)
+                reply = response.get("reply", response)
+                questions = reply if isinstance(reply, list) else []
+                concentration_entry["questions"] = questions
+            except Exception as e:
+                demisto.debug(f"Failed to fetch questionnaire for {area_value}/{sg_value}: {e}")
+
+            category_entry["problem_concentrations"].append(concentration_entry)
+
+        taxonomy.append(category_entry)
+
+    # Build a flat readable table for human-readable output
+    flat_rows = []
+    for cat in taxonomy:
+        for conc in cat.get("problem_concentrations", []):
+            for q in conc.get("questions", []):
+                flat_rows.append({
+                    "issue_category": cat["issue_category"],
+                    "problem_concentration": conc["problem_concentration"],
+                    **q,
+                })
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Support Ticket Taxonomy",
+            flat_rows,
+            headerTransform=string_to_table_header,
+            headers=["issue_category", "problem_concentration", "key", "label", "required", "type", "questionType"],
+        ),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.SupportTicketTaxonomy",
+        outputs_key_field="issue_category",
+        outputs=taxonomy,
+        raw_response=taxonomy,
+    )
+
+
 def init_client(api_type: str) -> Client:
     """
     Initializes the Client for a specific API type.
@@ -4673,6 +5058,18 @@ def main():  # pragma: no cover
         elif command == "core-xql-generic-query-platform":
             verify_platform_version()
             return_results(xql_query_platform_command(client, args))
+
+        elif command == "core-fill-support-ticket":
+            return_results(core_fill_support_ticket_command(client, args))
+
+        elif command == "core-get-sme-areas-and-sub-groups":
+            return_results(get_sme_areas_and_sub_groups_command(client, args))
+
+        elif command == "core-get-questionnaire-by-sme":
+            return_results(get_questionnaire_by_sme_command(client, args))
+
+        elif command == "core-get-support-ticket-taxonomy":
+            return_results(get_support_ticket_taxonomy_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
