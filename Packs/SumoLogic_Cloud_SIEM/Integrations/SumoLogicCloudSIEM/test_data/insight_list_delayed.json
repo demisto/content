@@ -1,0 +1,42 @@
+{
+  "data": {
+    "hasNextPage": false,
+    "objects": [
+      {
+        "artifacts": [],
+        "assignedTo": null,
+        "assignee": null,
+        "closed": null,
+        "closedBy": null,
+        "created": "2021-05-18T14:47:00.000000",
+        "description": "Delayed insight that should be captured by lookback",
+        "entity": {
+          "id": "_ip-192.168.1.5",
+          "ip": {"address": "192.168.1.5"},
+          "ipHostname": null,
+          "name": "192.168.1.5"
+        },
+        "id": "delayed-insight-id",
+        "lastUpdated": "2021-05-18T14:50:30.000000",
+        "lastUpdatedBy": null,
+        "name": "Delayed Insight",
+        "readableId": "INSIGHT-401",
+        "recordSummaryFields": [],
+        "relatedEntities": [],
+        "resolution": null,
+        "severity": "HIGH",
+        "signals": [],
+        "source": "ALGORITHM",
+        "status": {"displayName": "New", "name": "new"},
+        "tags": [],
+        "teamAssignedTo": null,
+        "timeToDetection": 80600.000000,
+        "timeToRemediation": null,
+        "timeToResponse": null,
+        "timestamp": "2021-05-18T14:47:00"
+      }
+    ],
+    "total": 1
+  },
+  "errors": []
+}
