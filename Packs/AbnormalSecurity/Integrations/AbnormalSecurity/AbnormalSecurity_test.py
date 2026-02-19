@@ -1495,3 +1495,145 @@ def test_download_message_eml_command_with_quarantine(mocker):
     # Verify the file result
     assert results["File"] == "abx_CloudMessage_12345_67890.eml"
     assert results["FileID"] is not None
+
+
+def test_generate_threat_incidents_handles_404_error(mocker):
+    """
+    Test that 404 errors for one threat don't abort processing of other threats.
+
+    When:
+        - Fetching threat details for multiple threats
+        - One threat returns a 404 error (deleted/archived)
+    Then:
+        - The 404 threat should be skipped
+        - Other threats should still be processed
+        - No exception should be raised
+    """
+    # Create mock responses - first threat returns 404, second threat returns valid data
+    valid_threat_response = {
+        "threatId": "valid-threat-id",
+        "messages": [
+            {
+                "threatId": "valid-threat-id",
+                "receivedTime": "2023-09-17T15:00:00Z",
+                "remediationTimestamp": "2023-09-17T15:30:00Z",
+            }
+        ],
+    }
+
+    # Create a side effect that raises 404 for first threat, returns data for second
+    def mock_get_details(threat_id, **kwargs):
+        if threat_id == "deleted-threat-id":
+            raise DemistoException("Error in API call [404] - Not Found")
+        return valid_threat_response
+
+    client = mock_client(mocker, response=None)
+    mocker.patch.object(client, "get_details_of_a_threat_request", side_effect=mock_get_details)
+
+    # Define time window
+    start_datetime = datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC)
+    end_datetime = datetime(2023, 9, 17, 17, 0, 0, tzinfo=UTC)
+
+    # Process two threats - first one will 404, second one should succeed
+    threats = [
+        {"threatId": "deleted-threat-id"},
+        {"threatId": "valid-threat-id"},
+    ]
+
+    incidents = generate_threat_incidents(client, threats, 1, start_datetime, end_datetime)
+
+    # Verify only one incident was created (the valid threat)
+    assert len(incidents) == 1
+    assert incidents[0]["dbotMirrorId"] == "valid-threat-id"
+
+
+def test_generate_threat_incidents_reraises_non_404_errors(mocker):
+    """
+    Test that non-404 errors are still raised (not silently swallowed).
+
+    When:
+        - Fetching threat details
+        - A non-404 error occurs (e.g., 500 Internal Server Error)
+    Then:
+        - The exception should be re-raised
+    """
+
+    def mock_get_details(threat_id, **kwargs):
+        raise DemistoException("Error in API call [500] - Internal Server Error")
+
+    client = mock_client(mocker, response=None)
+    mocker.patch.object(client, "get_details_of_a_threat_request", side_effect=mock_get_details)
+
+    # Define time window
+    start_datetime = datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC)
+    end_datetime = datetime(2023, 9, 17, 17, 0, 0, tzinfo=UTC)
+
+    threats = [{"threatId": "some-threat-id"}]
+
+    # Should raise the exception since it's not a 404
+    with pytest.raises(DemistoException) as exc_info:
+        generate_threat_incidents(client, threats, 1, start_datetime, end_datetime)
+
+    assert "500" in str(exc_info.value)
+
+
+def test_generate_threat_incidents_handles_404_mid_pagination(mocker):
+    """
+    Test that 404 errors during pagination are handled gracefully.
+
+    When:
+        - Fetching threat details with pagination
+        - A 404 error occurs on the second page
+    Then:
+        - The threat should be skipped
+        - Processing should continue with other threats
+    """
+    call_count = [0]
+
+    def mock_get_details(threat_id, **kwargs):
+        call_count[0] += 1
+        if threat_id == "paginating-threat-id":
+            if kwargs.get("page_number", 1) == 1:
+                # First page succeeds
+                return {
+                    "threatId": "paginating-threat-id",
+                    "messages": [
+                        {
+                            "threatId": "paginating-threat-id",
+                            "receivedTime": "2023-09-17T15:00:00Z",
+                            "remediationTimestamp": "2023-09-17T15:30:00Z",
+                        }
+                    ],
+                    "nextPageNumber": 2,
+                }
+            else:
+                # Second page returns 404
+                raise DemistoException("Error in API call [404] - Not Found")
+        return {
+            "threatId": "valid-threat-id",
+            "messages": [
+                {
+                    "threatId": "valid-threat-id",
+                    "receivedTime": "2023-09-17T16:00:00Z",
+                    "remediationTimestamp": "2023-09-17T16:30:00Z",
+                }
+            ],
+        }
+
+    client = mock_client(mocker, response=None)
+    mocker.patch.object(client, "get_details_of_a_threat_request", side_effect=mock_get_details)
+
+    # Define time window
+    start_datetime = datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC)
+    end_datetime = datetime(2023, 9, 17, 17, 0, 0, tzinfo=UTC)
+
+    threats = [
+        {"threatId": "paginating-threat-id"},
+        {"threatId": "valid-threat-id"},
+    ]
+
+    incidents = generate_threat_incidents(client, threats, 5, start_datetime, end_datetime)
+
+    # Only the valid threat should produce an incident (paginating-threat-id 404'd mid-pagination)
+    assert len(incidents) == 1
+    assert incidents[0]["dbotMirrorId"] == "valid-threat-id"

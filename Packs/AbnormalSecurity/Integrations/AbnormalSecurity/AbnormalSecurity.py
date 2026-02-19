@@ -1287,18 +1287,31 @@ def generate_threat_incidents(client, threats, max_page_number, start_datetime, 
     for threat in threats:
         page_number = 1
         all_messages, all_filtered_messages = [], []
-        while page_number is not None:
-            threat_details = client.get_details_of_a_threat_request(threat["threatId"], page_number=page_number)
-            for message in threat_details["messages"]:
-                all_messages.append(message)
-                remediation_datetime = try_str_to_datetime(message.get("remediationTimestamp"))
-                if remediation_datetime and start_datetime <= remediation_datetime <= end_datetime:
-                    all_filtered_messages.append(message)
-                if remediation_datetime and remediation_datetime < start_datetime:
+        threat_details = None
+        try:
+            while page_number is not None:
+                threat_details = client.get_details_of_a_threat_request(threat["threatId"], page_number=page_number)
+                for message in threat_details["messages"]:
+                    all_messages.append(message)
+                    remediation_datetime = try_str_to_datetime(message.get("remediationTimestamp"))
+                    if remediation_datetime and start_datetime <= remediation_datetime <= end_datetime:
+                        all_filtered_messages.append(message)
+                    if remediation_datetime and remediation_datetime < start_datetime:
+                        break
+                page_number = threat_details.get("nextPageNumber", None)
+                if page_number is not None and page_number > max_page_number:
                     break
-            page_number = threat_details.get("nextPageNumber", None)
-            if page_number is not None and page_number > max_page_number:
-                break
+        except DemistoException as e:
+            # Handle 404 errors gracefully - threat may have been deleted/archived
+            error_str = str(e)
+            if "404" in error_str or "Not Found" in error_str:
+                demisto.debug(f"Threat {threat['threatId']} returned 404, skipping: {e}")
+                continue  # Skip to next threat
+            raise  # Re-raise other errors
+
+        # Skip if we didn't get any threat details (shouldn't happen but defensive)
+        if threat_details is None:
+            continue
 
         received_time = ""
         threat_details["messages"] = all_filtered_messages or all_messages
