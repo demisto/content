@@ -28,7 +28,7 @@ jobs:
           echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
       - name: Get changed files
         id: changed-files
-        uses: tj-actions/changed-files@v46.0.1 # disable-secrets-detection
+        uses: tj-actions/changed-files@v47.0.1 # disable-secrets-detection
         with:
           files: |
             Packs/**/ModelingRules/**
