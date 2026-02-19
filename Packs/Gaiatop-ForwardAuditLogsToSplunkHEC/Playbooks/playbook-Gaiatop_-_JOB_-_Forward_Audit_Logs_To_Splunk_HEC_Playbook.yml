@@ -1,0 +1,154 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: This playbook it to run as a job to forward audit logs to Splunk HEC.
+id: Gaiatop - JOB - Forward Audit Logs To Splunk HEC Playbook
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - AuditLogCountList
+  - CoreRestInstanceName
+  - SplunkInstanceName
+  name: General (Inputs group)
+inputs:
+- description: ""
+  key: AuditLogCountList
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: ""
+  key: CoreRestInstanceName
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: ""
+  key: SplunkInstanceName
+  playbookInputQuery:
+  required: false
+  value: {}
+name: Gaiatop - JOB - Forward Audit Logs To Splunk HEC Playbook
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs: []
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 897bac1f-7fa1-4357-820b-80f4acbd95fe
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 897bac1f-7fa1-4357-820b-80f4acbd95fe
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AuditLogCountList:
+        simple: ${inputs.AuditLogCountList}
+      CoreRestInstanceName:
+        simple: ${inputs.CoreRestInstanceName}
+      SplunkInstanceName:
+        simple: ${inputs.SplunkInstanceName}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This automation fetches the Management Audit Logs and forwards it to be Splunk HEC.
+      id: 2dbdf8fb-4ad2-4281-8085-c679387c8452
+      iscommand: false
+      name: Forward Audit Logs To Splunk HEC
+      scriptName: Gaiatop_ForwardAuditLogsToSplunkHEC
+      type: regular
+      version: -1
+    taskid: 2dbdf8fb-4ad2-4281-8085-c679387c8452
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: Gaiatop - JOB - Forward Audit Logs To Splunk HEC
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: a926218b-4eb5-4b8b-ab7e-37638435cc94
+      iscommand: true
+      name: Close Incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: a926218b-4eb5-4b8b-ab7e-37638435cc94
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 405,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

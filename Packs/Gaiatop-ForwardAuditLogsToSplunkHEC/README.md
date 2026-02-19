@@ -1,0 +1,1 @@
+The pack provides a playbook that should be set up as a recurring job. Ensure that the inputs for the playbooks are provided correctly according to your deployment.
