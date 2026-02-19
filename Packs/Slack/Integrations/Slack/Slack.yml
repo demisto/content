@@ -1,5 +1,5 @@
 category: Messaging and Conferencing
-provider: Salesforce
+provider: Slack
 deprecated: true
 sectionorder:
 - Connect

@@ -1,9 +1,6 @@
-try:
-    import demistomock as demisto
-    from CommonServerPython import *
-    from CommonServerUserPython import *
-except Exception:
-    pass
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 import urllib3
 import traceback
