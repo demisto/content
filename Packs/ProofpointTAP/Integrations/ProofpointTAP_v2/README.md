@@ -1404,3 +1404,58 @@ Decodes URLs that have been rewritten by TAP to their original, target URL.
 >|Encoded Url|Decoded Url|
 >|---|---|
 >| https://urldefense.proofpoint.com/v2/url?u=http-3A__links.mkt3337.com_ctt-3Fkn-3D3-26ms-3DMzQ3OTg3MDQS1-26r-3DMzkxNzk3NDkwMDA0S0-26b-3D0-26j-3DMTMwMjA1ODYzNQS2-26mt-3D1-26rt-3D0&d=DwMFaQ&c=Vxt5e0Osvvt2gflwSlsJ5DmPGcPvTRKLJyp031rXjhg&r=MujLDFBJstxoxZI_GKbsW7wxGM7nnIK__qZvVy6j9Wc&m=QJGhloAyfD0UZ6n8r6y9dF-khNKqvRAIWDRU_K65xPI&s=ew-rOtBFjiX1Hgv71XQJ5BEgl9TPaoWRm_Xp9Nuo8bk&e= | http://links.mkt3337.com/ctt?kn=3&ms=MzQ3OTg3MDQS1&r=MzkxNzk3NDkwMDA0S0&b=0&j=MTMwMjA1ODYzNQS2&mt=1&rt=0 |
+
+### proofpoint-list-compromised-accounts
+
+***
+Get compromised accounts.
+
+## Prerequisites for using proofpoint-list-compromised-accounts command
+
+1. Licensing Requirement
+Active License: Your organization must have an active license for the Supplier Threat Protection add-on.
+Note: This is a separate subscription from the standard Targeted Attack Protection (TAP) or Email Fraud Defense (EFD) products.
+2. Service Principal (API Account) Configuration
+You cannot use a standard "SIEM" or "Threat Response" API key. You must ensure your Service Principal has the specific entitlement for Supplier data.
+Access the Admin Console: Log in to the Proofpoint Admin Console.
+Locate/Create Account: Navigate to Settings > Connected Applications (or Service Credentials).
+Required Role: Ensure the Service Principal is assigned the Supplier Threat Protection role/scope.
+Verify: If you are editing an existing key, look for a checkbox or permission set labeled "Supplier Threat Protection" or "Supplier Risk" and ensure it is enabled.
+3. Network Access (Allowlisting)
+Proofpoint APIs are protected by an IP allowlist.
+Identify Source IP: Determine the public IP address of the server or application that will be making the API requests.
+Update Allowlist: In the Proofpoint Admin Console (under the Service Principal settings), add this IP address to the Allowed Source IPs list.
+Critical: Requests from non-allowlisted IPs will result in a 403 Forbidden error, even with valid credentials.
+
+#### Base Command
+
+`proofpoint-list-compromised-accounts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| start | when to start searching for compromised accounts. | Optional |
+| end | when to stop searching for compromised accounts. | Optional |
+| high_risk | If True, only return results for senders that represent a high risk to the organization default:false. | Optional |
+| page | Which page of results to return. | Optional |
+| limit | The maximum number of results to return default: 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Proofpoint.CompromisedAccount.address | String | Email address of the compromised account. |
+| Proofpoint.CompromisedAccount.observations | array | Observations which led Proofpoint to determine this account was compromised. |
+| Proofpoint.CompromisedAccount.identity | String | Relationship between my organization and the sender. |
+| Proofpoint.CompromisedAccount.timeRanges | array | Provides the time ranges during which a account was compromised. |
+| Proofpoint.CompromisedAccount.threatCategories | array | Unique set of threat categories observed by this sender. |
+| Proofpoint.CompromisedAccount.trafficType | String | Supplier Threat Protection leverages message activity. |
+| Proofpoint.CompromisedAccount.maliciousMessages | Number | Count of malicious messages sent from this sender. |
+| Proofpoint.CompromisedAccount.deliveredMessages | Number | Count of malicious messages sent from this sender that were delivered. |
+| Proofpoint.CompromisedAccount.context | array | Context into why Proofpoint has highlighted this compromised account. |
+| Proofpoint.CompromisedAccount.titles | array | Business titles of the intended recipients for messages from this sender. |
+| Proofpoint.CompromisedAccount.departments | array | Department names of the intended recipients for messages from this sender. |
+| Proofpoint.CompromisedAccount.lastMaliciousMessage | String | datetime of last malicious message sent from this sender. |
+| Proofpoint.CompromisedAccount.dashboardLink | String | URL to Proofpoint TAP Dashboard specific for this sender. |
+| Proofpoint.CompromisedAccount.highRisk | Boolean | Indicates whether this compromised sender represents a high risk to your organization. |
