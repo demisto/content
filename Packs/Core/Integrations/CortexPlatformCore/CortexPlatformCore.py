@@ -4647,10 +4647,8 @@ def get_email_campaign_consolidated_forensic_enrichment_command(client: Client, 
 
     outputs = response.get("reply", {})
 
-    # Create readable output with key forensic categories
     readable_sections = []
 
-    # 1. Identification
     identification_data = outputs.get("identification", {})
     if identification_data:
         identification = {
@@ -4662,7 +4660,6 @@ def get_email_campaign_consolidated_forensic_enrichment_command(client: Client, 
         }
         readable_sections.append(tableToMarkdown("Identification", identification, headerTransform=string_to_table_header))
 
-    # 2. Detection Context
     detection_context_data = outputs.get("detection_context", {})
     if detection_context_data:
         detection = {
@@ -4675,7 +4672,6 @@ def get_email_campaign_consolidated_forensic_enrichment_command(client: Client, 
         }
         readable_sections.append(tableToMarkdown("Detection Context", detection, headerTransform=string_to_table_header))
 
-    # 3. Sender Forensics
     sender_forensics_data = outputs.get("sender_forensics", {})
     if sender_forensics_data:
         sender = {
@@ -4687,7 +4683,6 @@ def get_email_campaign_consolidated_forensic_enrichment_command(client: Client, 
         }
         readable_sections.append(tableToMarkdown("Sender Forensics", sender, headerTransform=string_to_table_header))
 
-    # 4. Targeting Scope
     targeting_scope_data = outputs.get("targeting_scope", {})
     if targeting_scope_data:
         targeting = {
@@ -4702,7 +4697,6 @@ def get_email_campaign_consolidated_forensic_enrichment_command(client: Client, 
         }
         readable_sections.append(tableToMarkdown("Targeting Scope", targeting, headerTransform=string_to_table_header))
 
-    # 5. Infrastructure
     infrastructure_data = outputs.get("infrastructure", {})
     if infrastructure_data:
         infrastructure = {
@@ -4716,7 +4710,6 @@ def get_email_campaign_consolidated_forensic_enrichment_command(client: Client, 
         }
         readable_sections.append(tableToMarkdown("Infrastructure", infrastructure, headerTransform=string_to_table_header))
 
-    # 6. Artifacts
     artifacts_data = outputs.get("artifacts", {})
     if artifacts_data:
         artifacts = {
@@ -4727,7 +4720,6 @@ def get_email_campaign_consolidated_forensic_enrichment_command(client: Client, 
         }
         readable_sections.append(tableToMarkdown("Artifacts", artifacts, headerTransform=string_to_table_header))
 
-    # 7. Authentication
     authentication_data = outputs.get("authentication", {})
     if authentication_data:
         authentication = {
@@ -4737,7 +4729,6 @@ def get_email_campaign_consolidated_forensic_enrichment_command(client: Client, 
         }
         readable_sections.append(tableToMarkdown("Authentication", authentication, headerTransform=string_to_table_header))
 
-    # 8. Mail Context
     mail_context_data = outputs.get("mail_context", {})
     if mail_context_data:
         mail_context = {
@@ -4747,7 +4738,6 @@ def get_email_campaign_consolidated_forensic_enrichment_command(client: Client, 
         }
         readable_sections.append(tableToMarkdown("Mail Context", mail_context, headerTransform=string_to_table_header))
 
-    # 9. Directionality
     directionality_data = outputs.get("directionality", {})
     if directionality_data:
         directionality = {
@@ -4791,7 +4781,6 @@ def execute_email_security_remediation_command(client: Client, args: dict[str, A
     internet_message_id = argToList(args.get("internet_message_id", ""))
     issue_id = args.get("issue_id", "")
 
-    # Validate action is one of the allowed values
     valid_actions = [
         "DeleteEmail",
         "UndeleteEmail",

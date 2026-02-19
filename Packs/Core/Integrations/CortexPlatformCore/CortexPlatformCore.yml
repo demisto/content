@@ -3309,7 +3309,7 @@ script:
           type: String
       name: core-get-email-campaign-consolidated-forensic-enrichment
       description: Aggregates, deduplicates, and presents a unified forensic view of an entire email campaign by merging telemetry from all associated issues sharing the same internet_message_id.
-      hidden: false
+      hidden: true
       outputs:
         - contextPath: Core.EmailCampaignForensics.internet_message_id
           description: The Internet Message ID that serves as the primary identifier for the email campaign.
@@ -3355,22 +3355,22 @@ script:
           type: Boolean
         - contextPath: Core.EmailCampaignForensics.o365_data_json
           description: Complete Office 365 metadata for the email in JSON format.
-          type: Unknown
+          type: JSON
         - contextPath: Core.EmailCampaignForensics.from_json
           description: Parsed 'From' header information in JSON format.
-          type: Unknown
+          type: JSON
         - contextPath: Core.EmailCampaignForensics.sender_json
           description: Parsed sender information in JSON format.
-          type: Unknown
+          type: JSON
         - contextPath: Core.EmailCampaignForensics.return_path_data_json
           description: Return-Path header data in JSON format.
-          type: Unknown
+          type: JSON
         - contextPath: Core.EmailCampaignForensics.reply_to_json
           description: Reply-To header information in JSON format.
-          type: Unknown
+          type: JSON
         - contextPath: Core.EmailCampaignForensics.internet_message_id_data_json
           description: Complete Internet Message ID header data in JSON format.
-          type: Unknown
+          type: JSON
         - contextPath: Core.EmailCampaignForensics.mailbox_owner
           description: List of mailbox owners who received this email.
           type: Array
@@ -3397,31 +3397,31 @@ script:
           type: String
         - contextPath: Core.EmailCampaignForensics.sender_ip_as_data_json
           description: Autonomous System (AS) data for the sender IP in JSON format.
-          type: Unknown
+          type: JSON
         - contextPath: Core.EmailCampaignForensics.sender_ip_location_json
           description: Geographic location data for the sender IP in JSON format.
-          type: Unknown
+          type: JSON
         - contextPath: Core.EmailCampaignForensics.msft_country
           description: Country information from Microsoft telemetry.
           type: String
         - contextPath: Core.EmailCampaignForensics.sender_ip_enrichment_json
           description: Complete sender IP enrichment data in JSON format.
-          type: Unknown
+          type: JSON
         - contextPath: Core.EmailCampaignForensics.attachments
           description: Unique list of email attachments deduplicated by file hash.
           type: Array
         - contextPath: Core.EmailCampaignForensics.url_verdicts_json
           description: Unique list of URLs with their verdicts, deduplicated by URL string.
-          type: Unknown
+          type: JSON
         - contextPath: Core.EmailCampaignForensics.arc_headers_data_json
           description: ARC (Authenticated Received Chain) headers data in JSON format.
-          type: Unknown
+          type: JSON
         - contextPath: Core.EmailCampaignForensics.first_authentication_results_json
           description: First authentication results (SPF/DKIM/DMARC) in JSON format.
-          type: Unknown
+          type: JSON
         - contextPath: Core.EmailCampaignForensics.last_authentication_results_json
           description: Last authentication results (SPF/DKIM/DMARC) in JSON format.
-          type: Unknown
+          type: JSON
         - contextPath: Core.EmailCampaignForensics.microsoft_threat_category
           description: Microsoft's threat categorization for the email.
           type: String
@@ -3448,13 +3448,13 @@ script:
           type: String
         - contextPath: Core.EmailCampaignForensics.internet_message_headers_normalized_json
           description: Normalized email headers in JSON format for analysis.
-          type: Unknown
+          type: JSON
     - arguments:
         - description: The Internet Message ID of the email campaign to remediate.
           name: internet_message_id
           required: true
           type: String
-        - description: The unique identifier for the alert across all email security module services.
+        - description: The unique identifier for the issue.
           name: issue_id
           required: true
           type: String
@@ -3471,13 +3471,13 @@ script:
             - TagEmailAsPhishing
       name: core-execute-email-security-remediation
       description: Triggers automated email security remediation, including actions to delete, undelete, move, or tag messages as phishing.
-      hidden: false
+      hidden: true
       outputs:
         - contextPath: Core.EmailSecurityRemediation.internet_message_id
           description: The Internet Message ID of the email that was remediated.
           type: String
         - contextPath: Core.EmailSecurityRemediation.issue_id
-          description: The unique identifier for the alert across all email security services.
+          description: The unique identifier for the issue.
           type: String
         - contextPath: Core.EmailSecurityRemediation.action
           description: The remediation action that was executed.
@@ -3583,7 +3583,7 @@ script:
           defaultValue: "1"
       name: core-get-email-investigation-summary
       description: Retrieves a summary of phishing email investigation campaigns from Cortex, grouping individual alerts by email message ID to help prioritize investigations based on impact and scale.
-      hidden: false
+      hidden: true
       outputs:
         - contextPath: Core.EmailInvestigationSummary.internet_message_id
           description: The unique identifier of the email message.
