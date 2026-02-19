@@ -488,26 +488,38 @@
                     "simple": "status"
                 },
                 "name": {
-					"complex": {
-						"filters": [],
-						"root": "display_name",
-						"transformers": [
-							{
-								"args": {
-									"prefix": {
-										"isContext": false,
-										"value": {
-											"simple": "Falcon Detection - "
-										}
-									},
-									"suffix": {
-										"isContext": false,
-										"value": {
-											"simple": " - Detection ID: "
-										}
-									}
-								},
-								"operator": "concat"
+     "complex": {
+      "filters": [
+       [
+        {
+         "left": {
+          "isContext": true,
+          "value": {
+           "simple": "display_name"
+          }
+         },
+         "operator": "isNotEmpty"
+        }
+       ]
+      ],
+      "root": "display_name",
+      "transformers": [
+       {
+        "args": {
+         "prefix": {
+          "isContext": false,
+          "value": {
+           "simple": "Falcon Detection - "
+          }
+         },
+         "suffix": {
+          "isContext": false,
+          "value": {
+           "simple": " - Detection ID: "
+          }
+         }
+        },
+        "operator": "concat"
                             },
                             {
                                 "args": {

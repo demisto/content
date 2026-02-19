@@ -8599,3 +8599,33 @@ def test_resolve_case_command(requests_mock):
     # Test case 4: Missing ID
     with pytest.raises(ValueError, match="The 'id' argument is required"):
         resolve_case_command({"status": "new"})
+
+
+def test_detection_mapper_name_filter_structure():
+    """
+    Given: The CrowdStrike Falcon Detection incoming mapper (v6.5+)
+    When: Checking the 'name' field mapping for the Detection type
+    Then: Verify it has an isNotEmpty filter on display_name to prevent overwriting with empty values
+    """
+    import json
+    import os
+    
+    mapper_path = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+        "Classifiers",
+        "classifier-CrowdStrike_Falcon_Mapper_6.5.json"
+    )
+    with open(mapper_path) as f:
+        mapper = json.load(f)
+    
+    detection_mapping = mapper["mapping"]["CrowdStrike Falcon Detection"]["internalMapping"]
+    name_complex = detection_mapping["name"]["complex"]
+    
+    # Verify the filter exists and checks display_name is not empty
+    assert name_complex["filters"], "name mapping should have a non-empty filter"
+    assert len(name_complex["filters"]) == 1, "Should have exactly one filter group"
+    assert len(name_complex["filters"][0]) == 1, "Filter group should have one condition"
+    
+    filter_condition = name_complex["filters"][0][0]
+    assert filter_condition["operator"] == "isNotEmpty"
+    assert filter_condition["left"]["value"]["simple"] == "display_name"
