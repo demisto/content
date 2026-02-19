@@ -5396,13 +5396,13 @@ script:
     - name: start
       description: |
         The start of the search window, based on the event timestamp.
-        Note: end must be strictly greater than start.
+        Note: 'end' must be later than 'start'.
         If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).
         Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000).
     - name: end
       description: |
         The end of the search window, based on the event timestamp.
-        Note: end must be strictly greater than start.
+        Note: 'end' must be later than 'start'.
         If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).
         Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000).
     - name: around_event_id
@@ -5416,13 +5416,13 @@ script:
     - name: ingest_start
       description: |
         The start of the search window, based on the event ingesttimestamp.
-        Note: ingest_end must be strictly greater than ingest_start.
+        Note: 'ingest_end' must be later than 'ingest_start'.
         If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).
         Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000).
     - name: ingest_end
       description: |
         The end of the search window, based on the event ingesttimestamp.
-        Note: ingest_end must be strictly greater than ingest_start.
+        Note: 'ingest_end' must be later than 'ingest_start'.
         If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).
         Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000).
     - name: use_ingest_time
