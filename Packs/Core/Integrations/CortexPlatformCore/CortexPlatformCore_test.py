@@ -9634,7 +9634,7 @@ class TestProfileCommands:
         from CortexPlatformCore import update_profile_command, Client, Profile
 
         mock_client = mocker.Mock(spec=Client)
-        mock_client.get_current_profile.return_value = {
+        mock_client.get_profile.return_value = {
             "reply": {
                 "PROFILE_NAME": "Old Name",
                 "PROFILE_DESCRIPTION": "Old Desc",
@@ -9712,7 +9712,7 @@ class TestProfileCommands:
         from CortexPlatformCore import update_profile_command, Client, DemistoException
 
         mock_client = mocker.Mock(spec=Client)
-        mock_client.get_current_profile.return_value = {"reply": None}
+        mock_client.get_profile.return_value = {"reply": None}
 
         args = {"profile_id": "12345"}
 

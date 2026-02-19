@@ -4803,7 +4803,9 @@ def validate_profile_args(args: dict):
         raise DemistoException("\n".join(invalid_args))
 
 
-def create_profile_command(client: Client, args: dict, profile_type: str, profile_platform: str = WINDOWS_PLATFORM) -> CommandResults:
+def create_profile_command(
+    client: Client, args: dict, profile_type: str, profile_platform: str = WINDOWS_PLATFORM
+) -> CommandResults:
     """
     Creates a new profile in the Cortex Platform.
 
