@@ -665,6 +665,244 @@
 					}
 				],
 				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "fowockkpjg",
+				"name": "IOC Types",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "caseinfoid-6f7c8340-d501-11f0-a13f-c5061461ca1a",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "crowdstrikefalconioctypes",
+								"height": 22,
+								"id": "79f924e0-d501-11f0-a13f-c5061461ca1a",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "IOC Types",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "orqwsxvqqc",
+				"name": "At Accounts",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "caseinfoid-95e546c0-d501-11f0-a13f-c5061461ca1a",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "crowdstrikefalconataccounts",
+								"height": 22,
+								"id": "98f34a10-d501-11f0-a13f-c5061461ca1a",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "At Accounts",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "unfumjehxd",
+				"name": "IOC CVES",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "caseinfoid-a79e2c10-d501-11f0-a13f-c5061461ca1a",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "crowdstrikefalconioccves",
+								"height": 22,
+								"id": "aa4be6f0-d501-11f0-a13f-c5061461ca1a",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "IOC CVES",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "hlvrnlwelu",
+				"name": "IOC Domains",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "caseinfoid-ba8d2060-d501-11f0-a13f-c5061461ca1a",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "crowdstrikefalconiocdomains",
+								"height": 22,
+								"id": "bcc695a0-d501-11f0-a13f-c5061461ca1a",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "IOC Domains",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "vuoztcpmyl",
+				"name": "IOC Emails",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "caseinfoid-f953aee0-d501-11f0-a13f-c5061461ca1a",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "crowdstrikefalconiocemails",
+								"height": 22,
+								"id": "fc689000-d501-11f0-a13f-c5061461ca1a",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "IOC Emails",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "oxml9yu6jl",
+				"name": "IOC Hashtags",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "caseinfoid-32684330-d502-11f0-a13f-c5061461ca1a",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "crowdstrikefalconiochashtags",
+								"height": 22,
+								"id": "330dd200-d502-11f0-a13f-c5061461ca1a",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "IOC Hashtags",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "l7vhlhxzov",
+				"name": "IOC Urls",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "caseinfoid-4959fb10-d502-11f0-a13f-c5061461ca1a",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "crowdstrikefalconiocurls",
+								"height": 22,
+								"id": "4d5d5ae0-d502-11f0-a13f-c5061461ca1a",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "IOC Urls",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					}
+				],
+				"type": "custom"
 			}
 		]
 	},

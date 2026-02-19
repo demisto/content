@@ -25,6 +25,7 @@ In order to use the CrowdStrike Falcon integration, the API client and secret mu
 - Identity Protection Timeline - Read
 - Identity Protection Assessment - Read
 - Cases - Read and Write
+- Recon - Read and Write
 
 ### Troubleshooting
 
@@ -46,5 +47,6 @@ Optional types are:
   - OFP Detection
   - NGSIEM Detection
   - Third Party Detection
+  - Recon notifications
   Records from the detection endpoint of the *CrowdStrike Falcon* UI could be of types: Endpoint Detection and OFP Detection.
 </~XSOAR>

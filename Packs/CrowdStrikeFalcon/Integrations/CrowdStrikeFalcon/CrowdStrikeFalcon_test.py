@@ -8287,6 +8287,229 @@ def test_fetch_detections_by_product_type_builds_grouped_filter(
     assert get_detections_ids_mocker.call_args[1]["filter_arg"] == expected_filter
 
 
+def test_fetch_items_includes_recon_notifications(mocker):
+    """
+    Given:
+        - fetch_incidents_or_detections includes "Recon notifications"
+    When:
+        - fetch_items is called
+    Then:
+        - Ensure recon notifications returned by fetch_recon_incidents are included in the result items
+    """
+    from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR
+
+    # Mock params
+    mocker.patch.object(
+        demisto, "params", return_value={"fetch_incidents_or_detections": ["Recon notifications"], "look_back": 3}
+    )
+
+    # Mock getLastRun
+    mocker.patch.object(demisto, "getLastRun", return_value=[{} for _ in range(TOTAL_FETCH_TYPE_XSOAR)])
+
+    # Mock fetch_recon_incidents
+    mock_recon_incidents = [{"name": "Recon Incident 1"}]
+    mocker.patch("CrowdStrikeFalcon.fetch_recon_incidents", return_value=(mock_recon_incidents, {}))
+
+    # Mock other fetch functions to return empty lists to isolate recon
+    mocker.patch("CrowdStrikeFalcon.fetch_endpoint_detections", return_value=([], {}))
+    mocker.patch("CrowdStrikeFalcon.fetch_endpoint_incidents", return_value=([], {}))
+    mocker.patch("CrowdStrikeFalcon.fetch_detections_by_product_type", return_value=([], {}))
+    mocker.patch("CrowdStrikeFalcon.fetch_iom_incidents", return_value=([], {}))
+    mocker.patch("CrowdStrikeFalcon.fetch_ioa_incidents", return_value=([], {}))
+
+    # Mock setLastRun
+    mocker.patch.object(demisto, "setLastRun")
+
+    _, items = fetch_items(command="fetch-incidents")
+
+    assert items == mock_recon_incidents
+
+
+def test_get_current_fetch_data_default_time(mocker):
+    """
+    Given:
+        - next_token_key is NOT "recon_offset" (e.g. "offset")
+    When:
+        - get_current_fetch_data is called
+    Then:
+        - Ensure reformat_timestamp is called with FETCH_TIME (mocked)
+    """
+    from CrowdStrikeFalcon import get_current_fetch_data
+
+    mock_reformat = mocker.patch("CrowdStrikeFalcon.reformat_timestamp", return_value="2023-01-01T00:00:00Z")
+    mocker.patch("CrowdStrikeFalcon.FETCH_TIME", "3 days")
+
+    last_run = {}
+    get_current_fetch_data(
+        last_run_object=last_run,
+        date_format="%Y-%m-%dT%H:%M:%SZ",
+        last_date_key="last_created_date",
+        next_token_key="offset",
+        last_fetched_ids_key="last_resource_ids",
+    )
+
+    assert mock_reformat.call_args.kwargs["time"] == "3 days"
+
+
+def test_get_remote_recon_data_success(mocker):
+    """
+    Given:
+        - A remote incident ID for a Recon notification.
+    When:
+        - Calling get_remote_recon_data.
+    Then:
+        - Ensure get_recon_notifications_detailed is called with the correct ID.
+        - Ensure the returned data matches the expected structure.
+    """
+    from CrowdStrikeFalcon import get_remote_recon_data, IncidentType, RECON_NOTIFICATION
+
+    remote_id = "12345"
+    remote_incident_id = f"{IncidentType.RECON.value}{remote_id}"
+    mock_notification = {"id": remote_id, "notification": {"status": "new"}}
+
+    mocker.patch("CrowdStrikeFalcon.get_recon_notifications_detailed", return_value=[mock_notification])
+
+    mirrored_data, updated_object, incident_type = get_remote_recon_data(remote_incident_id)
+
+    assert mirrored_data == mock_notification
+    assert updated_object == {"incident_type": RECON_NOTIFICATION, "notification.status": "new"}
+    assert incident_type == RECON_NOTIFICATION
+
+
+def test_get_remote_recon_data_not_found(mocker):
+    """
+    Given:
+        - A remote incident ID for a Recon notification that does not exist.
+    When:
+        - Calling get_remote_recon_data.
+    Then:
+        - Ensure a DemistoException is raised.
+    """
+    from CrowdStrikeFalcon import get_remote_recon_data, IncidentType, DemistoException
+
+    remote_id = "12345"
+    remote_incident_id = f"{IncidentType.RECON.value}{remote_id}"
+
+    mocker.patch("CrowdStrikeFalcon.get_recon_notifications_detailed", return_value=[])
+
+    with pytest.raises(DemistoException) as e:
+        get_remote_recon_data(remote_incident_id)
+    assert f"No Recon notification found for ID: {remote_incident_id}" in str(e.value)
+
+
+@pytest.mark.parametrize(
+    "delta, inc_status, close_in_cs, expected_status, expected_call",
+    [
+        ({"status": 2}, IncidentStatus.DONE, True, "closed-true-positive", True),
+        ({"status": 1}, IncidentStatus.ACTIVE, False, "in-progress", True),
+        ({"status": 1}, IncidentStatus.DONE, False, None, False),
+    ],
+)
+def test_update_remote_recon_notification(mocker, delta, inc_status, close_in_cs, expected_status, expected_call):
+    """
+    Given:
+        - Delta, incident status, and close_in_cs_falcon setting.
+    When:
+        - Calling update_remote_recon_notification.
+    Then:
+        - Ensure http_request is called with the correct parameters if an update is expected.
+    """
+    from CrowdStrikeFalcon import update_remote_recon_notification, IncidentType
+
+    remote_id = "12345"
+    remote_incident_id = f"{IncidentType.RECON.value}{remote_id}"
+
+    mocker.patch("CrowdStrikeFalcon.close_in_cs_falcon", return_value=close_in_cs)
+    mock_http_request = mocker.patch("CrowdStrikeFalcon.http_request")
+
+    update_remote_recon_notification(delta, inc_status, remote_incident_id)
+
+    if expected_call:
+        mock_http_request.assert_called_once_with(
+            method="PATCH", url_suffix="/recon/entities/notifications/v1", data={"id": remote_id, "status": expected_status}
+        )
+    else:
+        mock_http_request.assert_not_called()
+
+
+def test_get_recon_notification_ids_for_fetch(mocker):
+    """
+    Given:
+        - Filter, offset, and limit.
+    When:
+        - Calling get_recon_notification_ids_for_fetch.
+    Then:
+        - Ensure http_request is called with correct params.
+        - Ensure return values match response.
+    """
+    from CrowdStrikeFalcon import get_recon_notification_ids_for_fetch
+
+    mock_response = {"resources": ["id1", "id2"], "meta": {"pagination": {"total": 10, "offset": 0}}}
+    mock_http_request = mocker.patch("CrowdStrikeFalcon.http_request", return_value=mock_response)
+
+    ids, offset, total = get_recon_notification_ids_for_fetch(filter="filter", recon_offset=0, limit=2)
+
+    mock_http_request.assert_called_once()
+    assert ids == ["id1", "id2"]
+    assert offset == 0
+    assert total == 10
+
+
+def test_recon_notifications_pagination(mocker):
+    """
+    Given:
+        - Filter, offset, limits.
+    When:
+        - Calling recon_notifications_pagination.
+    Then:
+        - Ensure get_recon_notification_ids_for_fetch is called.
+        - Ensure get_recon_notifications_detailed is called (since is_fetch=True).
+        - Ensure next_offset is calculated correctly.
+    """
+    from CrowdStrikeFalcon import recon_notifications_pagination
+
+    mocker.patch("CrowdStrikeFalcon.get_recon_notification_ids_for_fetch", return_value=(["id1"], 0, 10))
+    mocker.patch("CrowdStrikeFalcon.get_recon_notifications_detailed", return_value=[{"id": "id1"}])
+
+    ids, details, next_offset = recon_notifications_pagination(filter="filter", recon_offset=0, fetch_limit=5)
+
+    assert ids == ["id1"]
+    assert details == [{"id": "id1"}]
+    assert next_offset == 1  # 0 + 1 &lt; 10
+
+
+def test_recon_notification_to_incident(mocker):
+    """
+    Given:
+        - A Recon notification dictionary.
+    When:
+        - Calling recon_notification_to_incident.
+    Then:
+        - Ensure the returned incident dictionary is structured correctly.
+    """
+    from CrowdStrikeFalcon import recon_notification_to_incident, IncidentSeverity
+    import json
+
+    notification = {"id": "12345", "notification": {"created_date": "2023-01-01T00:00:00Z", "rule_priority": "high"}}
+    incident_type = "Recon Notification"
+
+    # Mock globals used in function
+    mocker.patch("CrowdStrikeFalcon.MIRROR_DIRECTION", "Both")
+    mocker.patch("CrowdStrikeFalcon.INTEGRATION_INSTANCE", "instance")
+
+    incident = recon_notification_to_incident(notification, incident_type)
+
+    assert incident["name"] == "12345"
+    assert incident["occurred"] == "2023-01-01T00:00:00Z"
+    assert incident["severity"] == IncidentSeverity.HIGH
+
+    raw_json = json.loads(incident["rawJSON"])
+    assert raw_json["id"] == "12345"
+    assert raw_json["mirror_direction"] == "Both"
+    assert raw_json["mirror_instance"] == "instance"
+    assert raw_json["incident_type"] == incident_type
+
+
 def test_get_cases_data(mocker):
     """
     Given:
