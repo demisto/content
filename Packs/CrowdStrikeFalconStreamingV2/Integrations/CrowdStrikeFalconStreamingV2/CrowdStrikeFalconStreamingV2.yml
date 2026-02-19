@@ -31,7 +31,7 @@ configuration:
   displaypassword: Client Secret
   section: Connect
   required: false
-- additionalinfo: Allows running multiple clients (stream consumers) simultaneously, as each integration instance needs a unique application ID. Must be a max. of 32 alphanumeric characters (a-z, A-Z, 0-9).
+- additionalinfo: Allows  test changes running multiple clients (stream consumers) simultaneously, as each integration instance needs a unique application ID. Must be a max. of 32 alphanumeric characters (a-z, A-Z, 0-9).
   defaultvalue: Demisto
   display: Application ID
   name: app_id
