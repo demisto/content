@@ -327,6 +327,52 @@ def email_ec(item):
     }
 
 
+def is_item_duplicate(item, exclude_ids, incident_filter):
+    """
+    Checks if an item is a duplicate based on ID and Timestamp.
+
+    Note:
+    According to RFC 5322, Message-IDs should be enclosed in angle brackets (e.g., <id@domain>).
+    However, EWS search might return id@domain first, while subsequent fetches might add them.
+    This function normalizes both forms to prevent duplication caused by this inconsistency.
+
+    Features:
+    1. Smart ID Lookup: Checks both Clean ID (abc) and Bracketed ID (<abc>).
+    2. Legacy Handling: Handles cases where stored value is "" (if last run is list not dict).
+    3. Timestamp Logic: Compares stored time vs item time.
+
+    Returns:
+        tuple[bool, str | None]: A tuple containing:
+            - is_duplicate (bool): True if item is a duplicate (skip it), False if it should be processed.
+            - stored_time (str | None): The stored fetch time for the item, or None if not found/not a duplicate.
+    """
+    if not item.message_id or not exclude_ids:
+        return False, None
+
+    clean_id = item.message_id.strip().strip("<>")
+
+    found_key = None
+    if clean_id in exclude_ids:
+        found_key = clean_id
+    elif f"<{clean_id}>" in exclude_ids:
+        found_key = f"<{clean_id}>"
+
+    if found_key is None:
+        return False, None
+
+    stored_time = exclude_ids[found_key]
+
+    # If stored_time is "" or None, it means it was from an old fetch (List format).
+    # We treat it as an existing duplicate and SKIP it.
+    if not stored_time:
+        return True, stored_time
+
+    current_item_time = (
+        item.datetime_created.ewsformat() if incident_filter == RECEIVED_FILTER else item.last_modified_time.ewsformat()
+    )
+    return stored_time >= current_item_time, stored_time
+
+
 def parse_item_as_dict(item, email_address=None, camel_case=False, compact_fields=False):  # pragma: no cover
     """
     Parses an exchangelib item as a dict
@@ -1760,21 +1806,16 @@ def fetch_last_emails(
     for item in qs:
         demisto.debug("next iteration of the queryset in fetch-incidents")
         if isinstance(item, Message):
-            if item.message_id in exclude_ids:
+            is_duplicate, previous_fetch_time = is_item_duplicate(item, exclude_ids, incident_filter)
+            if is_duplicate:
                 received_time = item.datetime_created.ewsformat()
                 modified_time = item.last_modified_time.ewsformat()
-                if not exclude_ids.get(item.message_id) or exclude_ids.get(item.message_id) >= (
-                    received_time if incident_filter == RECEIVED_FILTER else modified_time
-                ):
-                    # If it's the first fetch using a dictionary instead of a list, it implies the IDs have no associated time.
-                    # Alternatively, an item is excluded if it was previously fetched and its received/modification
-                    # time has not changed since then.
-                    demisto.debug(
-                        f"{item.subject=} with {item.message_id=} was excluded. previous fetch time: "
-                        f"{exclude_ids.get(item.message_id)}, (if no time - because of the transition from list to dict). "
-                        f"current fetch time: {received_time if incident_filter == RECEIVED_FILTER else modified_time}"
-                    )
-                    continue
+                demisto.debug(
+                    f"{item.subject=} with {item.message_id=} was excluded. previous fetch time: "
+                    f"{previous_fetch_time}, (if no time - because of the transition from list to dict). "
+                    f"current fetch time: {received_time if incident_filter == RECEIVED_FILTER else modified_time}"
+                )
+                continue
             demisto.debug(f"Appending {item.subject=}")
             result.append(item)
             if len(result) >= client.max_fetch:

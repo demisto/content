@@ -609,7 +609,8 @@ def fetch_incidents(client: Client, params: dict):
     max_fetch: int = arg_to_number(params.get("max_fetch")) or MAX_FETCH_DEFAULT
     fetch_interval: int = arg_to_number(params.get("incidentFetchInterval")) or FETCH_INTERVAL_DEFAULT
 
-    now = datetime.now(timezone.utc).replace(tzinfo=None)  # We get current time before processing
+    now_15 = datetime.now(timezone.utc) - timedelta(minutes=15)
+    now_15 = now_15.replace(tzinfo=None)  # We get current time minus 15 minutes before processing
     last_run = demisto.getLastRun()
     if not (last_fetch := last_run.get("last_fetch")):
         if last_fetch := dateparser.parse(first_fetch, date_formats=[DATE_FORMAT]):
@@ -621,7 +622,12 @@ def fetch_incidents(client: Client, params: dict):
     incidents: List[dict[str, Any]] = []
 
     result = client.query_events(
-        start_date=last_fetch, states=states, saas_apps=saas_apps, severities=severities, threat_types=threat_types
+        start_date=last_fetch,
+        end_date=now_15.isoformat(),
+        states=states,
+        saas_apps=saas_apps,
+        severities=severities,
+        threat_types=threat_types,
     )
     events = result["responseData"]
 
@@ -651,7 +657,7 @@ def fetch_incidents(client: Client, params: dict):
     if incidents:
         last_run["last_fetch"] = incidents[-1]["occurred"]
     else:
-        last_run["last_fetch"] = (now - timedelta(minutes=fetch_interval)).isoformat()
+        last_run["last_fetch"] = (now_15 - timedelta(minutes=fetch_interval)).isoformat()
 
     demisto.setLastRun(last_run)
     demisto.incidents(incidents)
@@ -739,7 +745,7 @@ def checkpointhec_get_events(client: Client, args: dict) -> CommandResults:
     saas_apps: Optional[List[str]] = [SAAS_APPS_TO_SAAS_NAMES[x] for x in argToList(args.get("saas_apps"))]
     states: Optional[List[str]] = [x.lower() for x in argToList(args.get("states"))]
     severities: Optional[List[int]] = [SEVERITY_VALUES[x.lower()] for x in argToList(args.get("severities"))]
-    threat_types: Optional[List[str]] = [x.lower().replace(" ", "_") for x in argToList(args.get("threat_type"))]
+    threat_types: Optional[List[str]] = [x.lower().replace(" ", "_") for x in argToList(args.get("threat_types"))]
     limit: int = arg_to_number(args.get("limit")) or 1000
 
     result = client.query_events(

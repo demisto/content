@@ -10516,7 +10516,9 @@ def get_integration_context(sync=True, with_version=False):
         if with_version:
             return integration_context
         else:
-            return integration_context.get('context', {})
+            if isinstance(integration_context, list):
+                demisto.error("The integration context is a list with {} items".format(len(integration_context)))
+            return integration_context.get("context", {})
     else:
         return demisto.getIntegrationContext()
 
