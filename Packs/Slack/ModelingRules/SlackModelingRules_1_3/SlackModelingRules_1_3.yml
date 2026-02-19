@@ -1,6 +1,6 @@
-fromversion: 6.10.0
-id: slack_modeling_rule
-name: Slack Modeling Rule
+fromversion: 8.13.0
+id: Slack_Slack_ModelingRule
+name: Slack Slack Modeling Rule
 rules: ''
 schema: ''
 supportedModules:
@@ -10,4 +10,4 @@ supportedModules:
 - ENT_PLUS
 - agentix
 - xsiam
-tags: slack
+tags: 'slack'
