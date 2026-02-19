@@ -4,8 +4,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
 import dateparser
+from enum import Enum
 import copy
-
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -72,7 +72,7 @@ WEBAPP_COMMANDS = [
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
 ENDPOINT_COMMANDS = ["core-get-endpoint-support-file"]
-XSOAR_COMMANDS = ["core-run-playbook", "core-get-case-resolution-statuses"]
+XSOAR_COMMANDS = ["core-run-playbook"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
@@ -332,6 +332,11 @@ ALLOWED_SCANNERS = [
     "SECRETS",
 ]
 
+COVERAGE_API_FIELDS_MAPPING = {
+    "vendor_name": "asset_provider",
+    "asset_provider": "unified_provider",
+}
+
 EXCEPTION_RULES_TYPE_TO_TABLE_MAPPING = {
     "legacy_agent_exceptions": LEGACY_AGENT_EXCEPTIONS_TABLE,
     "disable_prevention_rules": DISABLE_PREVENTION_RULES_TABLE,
@@ -370,6 +375,191 @@ DAYS_MAPPING = {
     "friday": 6,
     "saturday": 7,
 }
+
+
+class FilterBuilder:
+    """
+    Filter class for creating filter dictionary objects.
+    """
+
+    class FilterType(str, Enum):
+        operator: str
+
+        """
+        Available type options for filter filtering.
+        Each member holds its string value and its logical operator for multi-value scenarios.
+        """
+
+        def __new__(cls, value, operator):
+            obj = str.__new__(cls, value)
+            obj._value_ = value
+            obj.operator = operator
+            return obj
+
+        EQ = ("EQ", "OR")
+        RANGE = ("RANGE", "OR")
+        CONTAINS = ("CONTAINS", "OR")
+        CASE_HOST_EQ = ("CASE_HOSTS_EQ", "OR")
+        CONTAINS_IN_LIST = ("CONTAINS_IN_LIST", "OR")
+        GTE = ("GTE", "OR")
+        ARRAY_CONTAINS = ("ARRAY_CONTAINS", "OR")
+        JSON_WILDCARD = ("JSON_WILDCARD", "OR")
+        IS_EMPTY = ("IS_EMPTY", "OR")
+        NIS_EMPTY = ("NIS_EMPTY", "AND")
+        ADVANCED_IP_MATCH_EXACT = ("ADVANCED_IP_MATCH_EXACT", "OR")
+        RELATIVE_TIMESTAMP = ("RELATIVE_TIMESTAMP", "OR")
+
+    AND = "AND"
+    OR = "OR"
+    FIELD = "SEARCH_FIELD"
+    TYPE = "SEARCH_TYPE"
+    VALUE = "SEARCH_VALUE"
+
+    class Field:
+        def __init__(self, field_name: str, filter_type: "FilterType", values: Any):
+            self.field_name = field_name
+            self.filter_type = filter_type
+            self.values = values
+
+    class MappedValuesField(Field):
+        def __init__(
+            self,
+            field_name: str,
+            filter_type: "FilterType",
+            values: Any,
+            mappings: dict[str, "FilterType"],
+        ):
+            super().__init__(field_name, filter_type, values)
+            self.mappings = mappings
+
+    def __init__(self, filter_fields: list[Field] | None = None):
+        self.filter_fields = filter_fields or []
+
+    def add_field(self, name: str, type: "FilterType", values: Any, mapper: dict | None = None):
+        """
+        Adds a new field to the filter.
+        Args:
+            name (str): The name of the field.
+            type (FilterType): The type to use for the field.
+            values (Any): The values to filter for.
+            mapper (dict | None): An optional dictionary to map values before filtering.
+        """
+        processed_values = values
+        if mapper:
+            if not isinstance(values, list):
+                values = [values]
+            processed_values = [mapper[v] for v in values if v in mapper]
+
+        self.filter_fields.append(FilterBuilder.Field(name, type, processed_values))
+
+    def add_field_with_mappings(
+        self,
+        name: str,
+        type: "FilterType",
+        values: Any,
+        mappings: dict[str, "FilterType"],
+    ):
+        """
+        Adds a new field to the filter with special value mappings.
+        Args:
+            name (str): The name of the field.
+            type (FilterType): The default filter type for non-mapped values.
+            values (Any): The values to filter for.
+            mappings (dict[str, FilterType]): A dictionary mapping special values to specific filter types.
+                Example:
+                    mappings = {
+                        "unassigned": FilterType.IS_EMPTY,
+                        "assigned": FilterType.NIS_EMPTY,
+                    }
+        """
+        self.filter_fields.append(FilterBuilder.MappedValuesField(name, type, values, mappings))
+
+    def add_time_range_field(self, name: str, start_time: str | None, end_time: str | None):
+        """
+        Adds a time range field to the filter.
+        Args:
+            name (str): The name of the field.
+            start_time (str | None): The start time of the range.
+            end_time (str | None): The end time of the range.
+        """
+        start, end = self._prepare_time_range(start_time, end_time)
+        if start is not None and end is not None:
+            self.add_field(name, FilterType.RANGE, {"from": start, "to": end})
+
+    def to_dict(self) -> dict[str, list]:
+        """
+        Creates a filter dict from a list of Field objects.
+        The filter will require each field to be one of the values provided.
+        Returns:
+            dict[str, list]: Filter object.
+        """
+        filter_structure: dict[str, list] = {FilterBuilder.AND: []}
+
+        for field in self.filter_fields:
+            if not isinstance(field.values, list):
+                field.values = [field.values]
+
+            search_values = []
+            for value in field.values:
+                if value is None:
+                    continue
+
+                current_filter_type = field.filter_type
+                current_value = value
+
+                if isinstance(field, FilterBuilder.MappedValuesField) and value in field.mappings:
+                    current_filter_type = field.mappings[value]
+                    if current_filter_type in [
+                        FilterType.IS_EMPTY,
+                        FilterType.NIS_EMPTY,
+                    ]:
+                        current_value = "<No Value>"
+
+                search_values.append(
+                    {
+                        FilterBuilder.FIELD: field.field_name,
+                        FilterBuilder.TYPE: current_filter_type.value,
+                        FilterBuilder.VALUE: current_value,
+                    }
+                )
+
+            if search_values:
+                search_obj = {field.filter_type.operator: search_values} if len(search_values) > 1 else search_values[0]
+                filter_structure[FilterBuilder.AND].append(search_obj)
+
+        if not filter_structure[FilterBuilder.AND]:
+            filter_structure = {}
+
+        return filter_structure
+
+    @staticmethod
+    def _prepare_time_range(start_time_str: str | None, end_time_str: str | None) -> tuple[int | None, int | None]:
+        """Prepare start and end time from args, parsing relative time strings."""
+        if end_time_str and not start_time_str:
+            raise DemistoException("When 'end_time' is provided, 'start_time' must be provided as well.")
+
+        start_time, end_time = None, None
+
+        if start_time_str:
+            if start_dt := dateparser.parse(str(start_time_str)):
+                start_time = int(start_dt.timestamp() * 1000)
+            else:
+                raise ValueError(f"Could not parse start_time: {start_time_str}")
+
+        if end_time_str:
+            if end_dt := dateparser.parse(str(end_time_str)):
+                end_time = int(end_dt.timestamp() * 1000)
+            else:
+                raise ValueError(f"Could not parse end_time: {end_time_str}")
+
+        if start_time and not end_time:
+            # Set end_time to the current time if only start_time is provided
+            end_time = int(datetime.now().timestamp() * 1000)
+
+        return start_time, end_time
+
+
+FilterType = FilterBuilder.FilterType
 
 
 def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
@@ -902,18 +1092,6 @@ class Client(CoreClient):
 
         return reply
 
-    def get_case_resolution_statuses(self, case_id: str) -> dict:
-        reply = self._http_request(
-            method="GET",
-            json_data={},
-            headers={
-                **self._headers,
-                "Content-Type": "application/json",
-            },
-            url_suffix=f"case/{case_id}/resolution-plan/tasks",
-        )
-        return reply
-
     def get_custom_fields_metadata(self) -> dict[str, Any]:
         """
         Retrieve custom fields metadata from the CUSTOM_FIELDS_CASE_TABLE.
@@ -1340,6 +1518,47 @@ def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
         outputs=data,
         raw_response=response,
     )
+
+
+def build_webapp_request_data(
+    table_name: str,
+    filter_dict: dict,
+    limit: int,
+    sort_field: str | None,
+    on_demand_fields: list | None = None,
+    sort_order: str | None = "DESC",
+    start_page: int = 0,
+) -> dict:
+    """
+    Builds the request data for the generic /api/webapp/get_data endpoint.
+    """
+    sort = (
+        [
+            {
+                "FIELD": COVERAGE_API_FIELDS_MAPPING.get(sort_field, sort_field),
+                "ORDER": sort_order,
+            }
+        ]
+        if sort_field
+        else []
+    )
+    filter_data = {
+        "sort": sort,
+        "paging": {"from": start_page, "to": limit},
+        "filter": filter_dict,
+    }
+    demisto.debug(f"{filter_data=}")
+
+    if on_demand_fields is None:
+        on_demand_fields = []
+
+    return {
+        "type": "grid",
+        "table_name": table_name,
+        "filter_data": filter_data,
+        "jsons": [],
+        "onDemandFields": on_demand_fields,
+    }
 
 
 def build_histogram_request_data(table_name: str, filter_dict: dict, max_values_per_column: int, columns: list) -> dict:
@@ -4320,61 +4539,6 @@ def get_xql_query_results_platform_polling(client: Client, execution_id: str, ti
     return outputs
 
 
-def handle_xql_limit(query: str, max_limit: int) -> str:
-    """Ensure the given query does not exceed the max limit.
-    Overrides the limit if it exceeds the maximum or if a limit clause isn't present.
-
-    Args:
-        query (str): The XQL query string to process.
-        max_limit (int): The max limit value.
-
-    Returns:
-        str: The original query if it already contains a valid limit clause, or the query
-            with a max limit clause appended or the limit value replaced if it exceeds max_limit.
-    """
-    if not query or not query.strip():
-        return query
-
-    # Pattern to match limit keyword with number, skipping over comments and quotes
-    # The pattern uses alternation: first try to match things to skip (comments/quotes),
-    # then try to match the actual limit clause. This ensures we don't match "limit"
-    # inside comments or quoted strings.
-    limit_pattern = re.compile(
-        r"""
-        (?P<skip>                           # Group for things to skip (not replace)
-            /\*.*?\*/                       # Block comments
-            |//[^\n]*                       # Line comments
-            |"(?:[^"\\]|\\.)*"              # Double-quoted strings
-            |'(?:[^'\\]|\\.)*'              # Single-quoted strings
-        )
-        |(?P<limit>limit\s+)(?P<num>\d+)    # Or match limit keyword with number
-        """,
-        re.IGNORECASE | re.DOTALL | re.VERBOSE,
-    )
-
-    limit_found = False
-
-    def replace_limit(match):
-        """Replace limit value if it exceeds max_limit, skip comments/quotes."""
-        nonlocal limit_found
-        # We matched a limit clause
-        if match.group("limit"):
-            limit_found = True
-            current_limit = int(match.group("num"))
-            if current_limit > max_limit:
-                return f"{match.group('limit')}{max_limit}"
-
-        return match.group(0)
-
-    result = limit_pattern.sub(replace_limit, query)
-
-    # Add a max limit clause if no limit was found anywhere in the query
-    if not limit_found:
-        result = f"{result}\n| limit {max_limit}"
-
-    return result
-
-
 def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str:
     """Execute an XQL query using Platform API.
 
@@ -4386,6 +4550,10 @@ def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str
     Returns:
         str: The query execution ID.
     """
+    DEFAULT_LIMIT = 1000
+    if "limit" not in query:  # Add default limit if no limit was provided
+        query = f"{query} | limit {DEFAULT_LIMIT!s}"
+
     data: Dict[str, Any] = {
         "query": query,
         "timeframe": timeframe,
@@ -4410,11 +4578,9 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
     if not query:
         raise ValueError("query is not specified")
 
-    MAX_QUERY_LIMIT = 1000
-    query_with_limit = handle_xql_limit(query, MAX_QUERY_LIMIT)
     timeframe = convert_timeframe_string_to_json(args.get("timeframe", "24 hours") or "24 hours")
 
-    execution_id = start_xql_query_platform(client, query_with_limit, timeframe)
+    execution_id = start_xql_query_platform(client, query, timeframe)
 
     if not execution_id:
         raise DemistoException("Failed to start query\n")
@@ -4424,10 +4590,6 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
         "execution_id": execution_id,
         "query_url": query_url,
     }
-    if query != query_with_limit:
-        outputs["query_limit_modified"] = (
-            f"Limit clauses larger than {MAX_QUERY_LIMIT} are currently not supported and have been reduced to {MAX_QUERY_LIMIT}"
-        )
 
     if argToBoolean(args.get("wait_for_results", True)):
         demisto.debug(f"Polling query execution with {execution_id=}")
@@ -4508,36 +4670,51 @@ def postprocess_case_resolution_statuses(client, response: dict):
             else:
                 task["itemType"] = "playbookTask"
 
-            if category in ["done", "inProgress"]:
-                enhance_with_pb_details(pb_id_to_data, task)
-            elif category == "pending":
-                enhance_with_pb_details(pb_id_to_data, task.get("parentdetails"))
-                task["parentPlaybook"] = task.pop("parentdetails")
+    This command provides direct access to the demisto._apiCall function,
+    allowing users to make custom API calls with all available parameters.
 
-            all_items.append(task)
+    Args:
+        args (dict): Command arguments including:
+            - name: Name of the API
+            - params: URL query arguments as JSON string
+            - data: POST data as string
+            - headers: Headers as JSON string
+            - method: HTTP method to use
+            - path: Path to append to base URL
+            - timeout: Request timeout in seconds
+            - response_data_type: Response type ('bin' for binary, None otherwise)
 
-    return all_items
+    Returns:
+        CommandResults: The response from the API call wrapped in CommandResults
+    """
+    # Extract arguments
+    name = args.get("name")
+    params = safe_load_json(args.get("params")) if args.get("params") else None
+    data = args.get("data")
+    headers = safe_load_json(args.get("headers")) if args.get("headers") else None
+    method = args.get("method")
+    path = args.get("path")
+    timeout = arg_to_number(args.get("timeout"))
+    response_data_type = args.get("response_data_type")
 
-
-def get_case_resolution_statuses(client, args):
-    case_ids = argToList(args.get("case_id"))
-    raw_responses = []
-    outputs = []
-    for case_id in case_ids:
-        response = client.get_case_resolution_statuses(case_id)
-        raw_responses.append(response)
-        outputs.append(postprocess_case_resolution_statuses(client, response))
-    return CommandResults(
-        readable_output=tableToMarkdown("Case Resolution Statuses", outputs, headerTransform=string_to_table_header),
-        outputs_prefix="Core.CaseResolutionStatus",
-        outputs=outputs,
-        raw_response=raw_responses,
+    # Call demisto._apiCall with all parameters
+    response = demisto._apiCall(
+        name=name,
+        params=params,
+        data=data,
+        headers=headers,
+        method=method,
+        path=path,
+        timeout=timeout,
+        response_data_type=response_data_type,
     )
 
-
-def verify_platform_version(version: str = "8.13.0"):
-    if not is_demisto_version_ge(version):
-        raise DemistoException("This command is not available for this platform version")
+    # Return the response
+    return CommandResults(
+        readable_output=tableToMarkdown("Generic API Call Response", response),
+        outputs=response,
+        raw_response=response,
+    )
 
 
 def main():  # pragma: no cover
@@ -4666,13 +4843,14 @@ def main():  # pragma: no cover
         elif command == "core-update-endpoint-version":
             return_results(update_endpoint_version_command(client, args))
 
-        elif command == "core-get-case-resolution-statuses":
-            verify_platform_version()
-            return_results(get_case_resolution_statuses(client, args))
-
         elif command == "core-xql-generic-query-platform":
-            verify_platform_version()
+            if not is_demisto_version_ge("8.13.0"):
+                raise DemistoException("This command is not available for this platform version")
+
             return_results(xql_query_platform_command(client, args))
+
+        elif command == "core-generic-api-call":
+            return_results(generic_api_call_command(args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
