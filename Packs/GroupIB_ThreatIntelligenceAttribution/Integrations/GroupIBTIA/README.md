@@ -66,6 +66,7 @@ Once the configuration is complete, the following collections become available i
 | `compromised/account_group` | The collection contains credentials collected from various phishing resources, botnets, C&C servers, Darkweb, etc., used by hackers. All indicated sources are unique and private. It also includes combolist and corporate accounts. For Public Breaches - please refer to compromised/breached. | 2-4 years |
 | `compromised/bank_card_group` | Information about compromised bank cards, sourced from card shops, forums, and public leaks. | 2 years |
 | `compromised/mule` | Information on compromised accounts used by threat actors for money laundering and fund transfers. | 90 days |
+| `compromised/spd` | Suspicious payment details (e.g. cryptocurrency wallets, payment data) linked to threat actors and leaks. Each item has type (from API) and value (value.value) for full context. | 90 days |
 | `compromised/breached` | Information about publicly leaked databases containing credentials and personal data. **Note:** Hunting rules are on by default here. | 90 days |
 | `attacks/ddos` | Data on Distributed Denial of Service (DDoS) attacks, including targeted resources and attack durations. | 5-10 days |
 | `attacks/deface` | Records of defacement attacks, highlighting compromised websites and related actors. | 5-10 days |
@@ -227,6 +228,7 @@ The following commands are available in this integration:
 - `gibti-get-osi-vulnerability-info` - Performs Group-IB event lookup in osi/vulnerability collection
 - `gibti-get-malware-malware-info` - Performs Group-IB event lookup in malware/malware collection
 - `gibti-get-compromised-mule-info` - Performs Group-IB event lookup in compromised/mule collection
+- `gibti-get-compromised-spd-info` - Performs Group-IB event lookup in compromised/spd (suspicious payment details) collection
 - `gibti-get-attacks-ddos-info` - Performs Group-IB event lookup in attacks/ddos collection
 - `gibti-get-attacks-deface-info` - Performs Group-IB event lookup in attacks/deface collection
 - `gibti-get-threat-info` - Performs Group-IB event lookup in hi/threat or apt/threat collection

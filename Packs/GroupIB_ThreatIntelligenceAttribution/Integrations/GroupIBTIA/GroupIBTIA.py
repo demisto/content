@@ -93,6 +93,16 @@ INDICATORS_TYPES = {
             },
         },
     },
+    "compromised/spd": {
+        "types": {
+            "value_value": "Cryptocurrency Wallet",  # value.value as observable; type in API may vary
+        },
+        "add_fields_types": {
+            "value_value": {
+                "type": "description",  # store API type (e.g. Cryptocurrency Wallet) for context
+            },
+        },
+    },
     "osi/vulnerability": {
         "types": {
             "id": "CVE",
@@ -280,6 +290,7 @@ PREFIXES = {
     "compromised/bank_card_group": "Compromised Card Group",
     "compromised/breached": "Data Breach",
     "compromised/mule": "Compromised Mule",
+    "compromised/spd": "Compromised SPD",
     "osi/git_repository": "Git Leak",
     "osi/public_leak": "Public Leak",
     "osi/vulnerability": "OSI Vulnerability",
@@ -305,6 +316,7 @@ INCIDENT_CREATED_DATES_MAPPING = {
     "compromised/breached": "uploadTime",
     "compromised/mule": ["dateAdd", "dateIncident"],
     "compromised/bank_card_group": ["dateFirstCompromised", "dateFirstSeen"],
+    "compromised/spd": ["firstSeenAt", "lastSeenAt", "createdAt"],
     "osi/git_repository": "dateDetected",
     "osi/public_leak": "created",
     "osi/vulnerability": "datePublished",
@@ -363,6 +375,7 @@ SET_WITH_ALL_DATE_FIELDS = {
 TABLES_MAPPING = {
     "compromised/account_group": ["events_table"],
     "compromised/bank_card_group": ["threatActor", "compromised_events", "malware"],
+    "compromised/spd": ["events", "sources", "malware", "threatActor"],
     "osi/git_repository": ["files"],
     "osi/public_leak": ["linkList", "matches"],
     "osi/vulnerability": ["cpeTable", "affectedSoftware"],
@@ -389,6 +402,7 @@ PORTAL_LINKS = {
     "compromised/breached": "https://tap.group-ib.com/cd/breached?id=",
     "compromised/bank_card_group": "https://tap.group-ib.com/cd/cards?id=",
     "compromised/mule": "https://tap.group-ib.com/cd/mules?id=",
+    "compromised/spd": "https://tap.group-ib.com/cd/suspicious-payment-details?id=",
     "hi/threat": "https://tap.group-ib.com/ta/last-threats?threat=",
     "hi/threat_actor": "https://tap.group-ib.com/ta/actors?ta=",
     "apt/threat": "https://tap.group-ib.com/ta/last-threats?threat=",
@@ -648,6 +662,59 @@ MAPPING = {
             "cnc_ipv4_country_name": "cnc.ipv4.countryName",
             "cnc_ipv4_region": "cnc.ipv4.region",
         },
+    },
+    "compromised/spd": {  # GIB Source:sourceType, severity:systemSeverity
+        "name": "type",
+        # Information from Group-IB
+        "id": "id",  # GIB ID
+        "type": "type",  # GIB SPD Type
+        "serviceType": "serviceType",  # GIB SPD Service Type
+        "ownerName": "ownerName",  # GIB SPD Owner Name
+        "illegalScore": "illegalScore",  # GIB SPD Illegal Score
+        "value": "value.value",  # GIB SPD Value object (value.value is the main observable value)
+        "createdAt": "createdAt",  # GIB Date Created At (gibdatecreatedat)
+        "firstSeenAt": "firstSeenAt",  # GIB Date First Seen (gibdatefirstseen)
+        "lastSeenAt": "lastSeenAt",  # GIB Date Last Seen (gibdatelastseen)
+        "portalLink": {  # GIB Portal Link
+            "__concatenate": {
+                "static": PORTAL_LINKS.get("compromised/spd"),
+                "dynamic": "id",
+            }
+        },
+        "events": {  # GIB SPD Events Table
+            "compromisedAt": "events.compromisedAt",
+            "detectedAt": "events.detectedAt",
+            "sourceName": "events.source.name",
+            "sourceType": "events.source.type",
+            "illegalScore": "events.illegalScore",
+            "malwareId": "events.malware.id",
+            "malwareName": "events.malware.name",
+            "threatActorId": "events.threatActor.id",
+            "threatActorName": "events.threatActor.name",
+        },
+        "sources": {  # GIB SPD Sources Table
+            "name": "sources.name",
+            "type": "sources.type",
+        },
+        "malware": {  # GIB SPD Malware Table
+            "id": "malware.id",
+            "name": "malware.name",
+        },
+        "threatActor": {  # GIB SPD Threat Actor Table
+            "id": "threatActor.id",
+            "name": "threatActor.name",
+        },
+        # END Information from Group-IB
+        # Group-IB Evaluation
+        "evaluation": {
+            "admiraltyCode": "evaluation.admiraltyCode",
+            "credibility": "evaluation.credibility",
+            "reliability": "evaluation.reliability",
+            "severity": "evaluation.severity",
+            "tlp": "evaluation.tlp",
+            "ttl": "evaluation.ttl",
+        },
+        # END Group-IB Evaluation
     },
     "osi/git_repository": {  # GIB Source:sourceType, severity:systemSeverity
         # Information from Group-IB
@@ -1990,6 +2057,15 @@ class IncidentBuilder:
             if not isinstance(names, list):
                 names = [names]
             name = f"{prefix}: " + ", ".join(names)
+        elif self.collection_name == "compromised/spd":
+            # name = type + value
+            ptype = self.incident.get("type") or "Payment data"
+            value_raw = self.incident.get("value")
+            if isinstance(value_raw, dict):
+                value_str = value_raw.get("value") or self.incident.get("id") or "—"
+            else:
+                value_str = self.incident.get("id") or "—"
+            name = f"{prefix}: {ptype} {value_str}"
         else:
             name = f"{prefix}: {self.incident['name']}"
 
@@ -3082,6 +3158,7 @@ def main():
             "gibtia-get-compromised-account-info": "gibti-get-compromised-account-info",
             "gibtia-get-compromised-card-group-info": "gibti-get-compromised-card-group-info",
             "gibtia-get-compromised-mule-info": "gibti-get-compromised-mule-info",
+            "gibtia-get-compromised-spd-info": "gibti-get-compromised-spd-info",
             "gibtia-get-compromised-breached-info": "gibti-get-compromised-breached-info",
             "gibtia-get-phishing-kit-info": "gibti-get-phishing-kit-info",
             "gibtia-get-phishing-group-info": "gibti-get-phishing-group-info",
@@ -3145,6 +3222,7 @@ def main():
             "gibti-get-compromised-account-info": "compromised/account_group",
             "gibti-get-compromised-card-group-info": "compromised/bank_card_group",
             "gibti-get-compromised-mule-info": "compromised/mule",
+            "gibti-get-compromised-spd-info": "compromised/spd",
             "gibti-get-compromised-breached-info": "compromised/breached",
             "gibti-get-phishing-kit-info": "attacks/phishing_kit",
             "gibti-get-phishing-group-info": "attacks/phishing_group",

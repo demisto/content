@@ -1,0 +1,184 @@
+{
+    "description": "Layout for GIB SPD (Suspicious Payment Details) - full tables for events, sources, malware, threat actors",
+    "group": "incident",
+    "id": "GIB SPD Layout",
+    "name": "GIB SPD Layout",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "spd-case-details",
+                        "isVisible": true,
+                        "items": [
+                            {"fieldId": "type", "sectionItemType": "field", "startCol": 0, "endCol": 2},
+                            {"fieldId": "severity", "sectionItemType": "field", "startCol": 0, "endCol": 2},
+                            {"fieldId": "owner", "sectionItemType": "field", "startCol": 0, "endCol": 2}
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "spd-notes",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Notes",
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "spd-info-gib",
+                        "isVisible": true,
+                        "items": [
+                            {"fieldId": "gibid", "sectionItemType": "field", "startCol": 0, "endCol": 2},
+                            {"fieldId": "gibspdtype", "sectionItemType": "field", "startCol": 0, "endCol": 2},
+                            {"fieldId": "gibspdvalue", "sectionItemType": "field", "startCol": 0, "endCol": 2},
+                            {"fieldId": "gibspdservicetype", "sectionItemType": "field", "startCol": 0, "endCol": 2},
+                            {"fieldId": "gibspdownername", "sectionItemType": "field", "startCol": 0, "endCol": 2},
+                            {"fieldId": "gibspdillegalscore", "sectionItemType": "field", "startCol": 0, "endCol": 2},
+                            {"fieldId": "gibdatecreatedat", "sectionItemType": "field", "startCol": 0, "endCol": 2},
+                            {"fieldId": "gibdatefirstseen", "sectionItemType": "field", "startCol": 0, "endCol": 2},
+                            {"fieldId": "gibdatelastseen", "sectionItemType": "field", "startCol": 0, "endCol": 2},
+                            {"fieldId": "gibportallink", "sectionItemType": "field", "startCol": 0, "endCol": 2}
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Information from Group-IB (SPD)",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "spd-evaluation",
+                        "isVisible": true,
+                        "items": [
+                            {"fieldId": "gibadmiraltycode", "sectionItemType": "field", "startCol": 0, "endCol": 2},
+                            {"fieldId": "gibcredibility", "sectionItemType": "field", "startCol": 0, "endCol": 2},
+                            {"fieldId": "gibreliability", "sectionItemType": "field", "startCol": 0, "endCol": 2},
+                            {"fieldId": "gibseverity", "sectionItemType": "field", "startCol": 0, "endCol": 2},
+                            {"fieldId": "gibtlp", "sectionItemType": "field", "startCol": 0, "endCol": 2}
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Group-IB Evaluation",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "spd-events-table",
+                        "isVisible": true,
+                        "items": [
+                            {"fieldId": "gibspdeventstable", "sectionItemType": "field", "startCol": 0, "endCol": 4}
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "GIB SPD Events Table",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "spd-sources-table",
+                        "isVisible": true,
+                        "items": [
+                            {"fieldId": "gibspdsourcestable", "sectionItemType": "field", "startCol": 0, "endCol": 4}
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "GIB SPD Sources Table",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 8
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "spd-malware-table",
+                        "isVisible": true,
+                        "items": [
+                            {"fieldId": "gibspdmalwaretable", "sectionItemType": "field", "startCol": 0, "endCol": 4}
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "GIB SPD Malware Table",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 10
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "spd-threat-actor-table",
+                        "isVisible": true,
+                        "items": [
+                            {"fieldId": "gibspdthreatactortable", "sectionItemType": "field", "startCol": 0, "endCol": 4}
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "GIB SPD Threat Actor Table",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 12
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "spd-indicators",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Indicators",
+                        "query": "",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 2,
+                        "x": 0,
+                        "y": 14
+                    }
+                ],
+                "type": "custom"
+            },
+            {"id": "warRoom", "name": "War Room", "type": "warRoom"},
+            {"id": "workPlan", "name": "Work Plan", "type": "workPlan"},
+            {"id": "evidenceBoard", "name": "Evidence Board", "type": "evidenceBoard"},
+            {"id": "relatedIncidents", "name": "Related Incidents", "type": "relatedIncidents"},
+            {"id": "canvas", "name": "Canvas", "type": "canvas"}
+        ]
+    }
+}

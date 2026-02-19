@@ -79,6 +79,7 @@ configuration:
   - compromised/bank_card_group
   - compromised/breached
   - compromised/mule
+  - compromised/spd
   - osi/git_repository
   - osi/public_leak
   - osi/vulnerability
@@ -248,6 +249,33 @@ script:
       description: Group IB incident ID.
       type: String
     - contextPath: GIBTIA.CompromisedAccount.evaluation.severity
+      description: Event severity.
+      type: String
+  - arguments:
+    - description: |-
+        GIB event id.
+        e.g.: 50a3b4abbfca5dcbec9c8b3a110598f61ba93r33.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in compromised/spd (suspicious payment details) collection with provided ID.
+    name: gibtia-get-compromised-spd-info
+    outputs:
+    - contextPath: GIBTIA.CompromisedSPD.id
+      description: Group IB SPD incident ID.
+      type: String
+    - contextPath: GIBTIA.CompromisedSPD.type
+      description: Observable type (e.g. Cryptocurrency Wallet).
+      type: String
+    - contextPath: GIBTIA.CompromisedSPD.value.value
+      description: Main observable value (wallet address, etc.).
+      type: String
+    - contextPath: GIBTIA.CompromisedSPD.serviceType
+      description: Service type (e.g. BTCLike, XMRLike).
+      type: String
+    - contextPath: GIBTIA.CompromisedSPD.portalLink
+      description: Link to GIB incident.
+      type: String
+    - contextPath: GIBTIA.CompromisedSPD.evaluation.severity
       description: Event severity.
       type: String
   - arguments:
@@ -937,6 +965,7 @@ script:
       - compromised/bank_card_group
       - compromised/breached
       - compromised/mule
+      - compromised/spd
       - osi/git_repository
       - osi/public_leak
       - osi/vulnerability
@@ -1206,6 +1235,33 @@ script:
       description: Group IB incident ID.
       type: String
     - contextPath: GIBTIA.CompromisedAccount.evaluation.severity
+      description: Event severity.
+      type: String
+  - arguments:
+    - description: |-
+        GIB event id.
+        e.g.: 50a3b4abbfca5dcbec9c8b3a110598f61ba93r33.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in compromised/spd (suspicious payment details) collection with provided ID.
+    name: gibti-get-compromised-spd-info
+    outputs:
+    - contextPath: GIBTIA.CompromisedSPD.id
+      description: Group IB SPD incident ID.
+      type: String
+    - contextPath: GIBTIA.CompromisedSPD.type
+      description: Observable type (e.g. Cryptocurrency Wallet).
+      type: String
+    - contextPath: GIBTIA.CompromisedSPD.value.value
+      description: Main observable value (wallet address, etc.).
+      type: String
+    - contextPath: GIBTIA.CompromisedSPD.serviceType
+      description: Service type (e.g. BTCLike, XMRLike).
+      type: String
+    - contextPath: GIBTIA.CompromisedSPD.portalLink
+      description: Link to GIB incident.
+      type: String
+    - contextPath: GIBTIA.CompromisedSPD.evaluation.severity
       description: Event severity.
       type: String
   - arguments:
@@ -1895,6 +1951,7 @@ script:
       - compromised/bank_card_group
       - compromised/breached
       - compromised/mule
+      - compromised/spd
       - osi/git_repository
       - osi/public_leak
       - osi/vulnerability

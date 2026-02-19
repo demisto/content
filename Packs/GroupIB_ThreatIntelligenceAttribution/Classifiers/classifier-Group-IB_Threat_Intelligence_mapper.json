@@ -1338,6 +1338,81 @@
                 }
             }
         },
+        "GIB SPD": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "GIB Admiralty Code": {
+                    "simple": "evaluation.admiraltyCode"
+                },
+                "GIB Credibility": {
+                    "simple": "evaluation.credibility"
+                },
+                "GIB Date Created At": {
+                    "simple": "createdAt"
+                },
+                "GIB Date First Seen": {
+                    "simple": "firstSeenAt"
+                },
+                "GIB Date Last Seen": {
+                    "simple": "lastSeenAt"
+                },
+                "GIB ID": {
+                    "simple": "id"
+                },
+                "GIB SPD Events Table": {
+                    "simple": "events"
+                },
+                "GIB SPD Illegal Score": {
+                    "simple": "illegalScore"
+                },
+                "GIB SPD Malware Table": {
+                    "simple": "malware"
+                },
+                "GIB SPD Owner Name": {
+                    "simple": "ownerName"
+                },
+                "GIB Portal Link": {
+                    "simple": "portalLink"
+                },
+                "GIB Reliability": {
+                    "simple": "evaluation.reliability"
+                },
+                "GIB SPD Service Type": {
+                    "simple": "serviceType"
+                },
+                "GIB Severity": {
+                    "simple": "evaluation.severity"
+                },
+                "GIB SPD Sources Table": {
+                    "simple": "sources"
+                },
+                "GIB SPD Threat Actor Table": {
+                    "simple": "threatActor"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
+                },
+                "GIB SPD Type": {
+                    "simple": "type"
+                },
+                "GIB SPD Value": {
+                    "complex": {
+                        "accessor": "value",
+                        "filters": [],
+                        "root": "value",
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "simple": "systemSeverity"
+                }
+            }
+        },
         "GIB Cybercriminal Threat": {
             "dontMapEventToLabels": false,
             "internalMapping": {
