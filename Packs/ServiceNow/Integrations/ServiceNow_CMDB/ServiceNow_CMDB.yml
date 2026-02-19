@@ -1,6 +1,6 @@
 category: IT Services
 provider: ServiceNow
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -299,7 +299,7 @@ script:
     name: servicenow-cmdb-oauth-login
   - description: Test the instance configuration when using OAuth authorization.
     name: servicenow-cmdb-oauth-test
-  dockerimage: demisto/auth-utils:1.0.0.5427065
+  dockerimage: demisto/auth-utils:1.0.0.6111183
   runonce: false
   script: '-'
   subtype: python3
