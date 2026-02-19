@@ -3361,10 +3361,10 @@ script:
           type: Unknown
     - name: core-get-ai-model-activity
       description: Retrieves AI model activity information including usage statistics and inactive status.
-      hidden: false
+      hidden: true
       arguments:
         - name: asset_id
-          description: The unique ID of the AI model asset. Accepts a comma-separated list.
+          description: A comma-separated list of AI model asset IDs.
           required: true
           isArray: true
       outputs:

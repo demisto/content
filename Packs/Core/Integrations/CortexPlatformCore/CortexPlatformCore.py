@@ -2429,8 +2429,6 @@ def get_ai_model_activity_command(client: Client, args: dict) -> CommandResults:
     """
     demisto.debug(f"get_ai_model_activity_command called with args: {args}")
     asset_ids = argToList(args.get("asset_id"))
-    demisto.debug(f"Parsed asset_ids: {asset_ids}")
-
     filter_builder = FilterBuilder()
     filter_builder.add_field("asset_id", FilterType.EQ, asset_ids)
     filter_dict = filter_builder.to_dict()
@@ -2447,8 +2445,6 @@ def get_ai_model_activity_command(client: Client, args: dict) -> CommandResults:
     response = client.get_webapp_data(request_data)
     reply = response.get("reply", {})
     data = reply.get("DATA", [])
-    demisto.debug(f"Extracted data from reply: {data}")
-    demisto.debug(f"Number of records returned: {len(data)}")
 
     readable_output = tableToMarkdown(
         "AI Model Activity",
