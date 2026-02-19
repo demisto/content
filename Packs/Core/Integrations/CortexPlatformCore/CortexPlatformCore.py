@@ -4415,7 +4415,7 @@ def get_cloud_accounts_log_sending_status(client: Client) -> tuple[int, list[dic
     iteration = 0
     
     while True:
-        params = {"limit": "1"}
+        params = {"limit": "1000"}
         if next_token:
             params["next_token"] = next_token
 
@@ -4465,7 +4465,7 @@ def get_cdr_protection_status_command(client: Client) -> CommandResults:
     if total_accounts == 0:
         return CommandResults(
             readable_output="No Cloud Accounts found.",
-            entry_type=EntryType.NOTE,
+            entry_type=4,
         )
 
     # Build outputs with cloud account statistics
