@@ -4562,7 +4562,6 @@ def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandR
             - CommandResults with findings data
             - CommandResults with metadata (filtered_count, returned_count)
     """
-    # Parse arguments
     asset_ids = argToList(args.get("asset_id"))
     asset_names = argToList(args.get("asset_name"))
     asset_category = argToList(args.get("asset_category"))
@@ -4572,7 +4571,6 @@ def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandR
     page = arg_to_number(args.get("page")) or 0
     page_size = arg_to_number(args.get("page_size")) or 100
 
-    # Build filter
     filter_builder = FilterBuilder()
     filter_builder.add_field("XDM_FINDING_ASSET_ID", FilterType.WILDCARD, asset_ids)
     filter_builder.add_field("XDM_FINDING_ASSET_NAME", FilterType.CONTAINS, asset_names)
@@ -4581,11 +4579,9 @@ def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandR
     filter_builder.add_field("XDM_FINDING_CATEGORY", FilterType.EQ, category)
     filter_builder.add_field("xdm.finding_sources", FilterType.ARRAY_CONTAINS, finding_source)
 
-    # Calculate pagination
     start_index = page * page_size
     end_index = start_index + page_size
 
-    # Build request data for get_data
     request_data = build_webapp_request_data(
         table_name=FINDINGS_TABLE,
         filter_dict=filter_builder.to_dict(),
@@ -4595,12 +4591,10 @@ def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandR
         start_page=start_index,
     )
 
-    # Get findings data
     response = client.get_webapp_data(request_data)
     reply = response.get("reply", {})
     data = reply.get("DATA", [])
 
-    # Build request data for get_counts
     counts_request_data: dict = {
         "type": "grid",
         "table_name": FINDINGS_TABLE,
@@ -4616,7 +4610,6 @@ def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandR
         "jsons": [],
     }
 
-    # Get counts
     counts_response = client.get_webapp_counts(counts_request_data)
     counts_reply = counts_response.get("reply", {})
     filtered_count = counts_reply.get("FILTER_COUNT", 0)
@@ -4624,10 +4617,8 @@ def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandR
     def map_findings(findings):
         return [{k.replace("XDM_FINDING_", "").lower(): v for k, v in finding.items()} for finding in findings]
 
-    # Process findings - extract ALL upper hierarchy fields
     findings = map_findings(data)
 
-    # Create metadata
     metadata = {
         "filtered_count": filtered_count,
         "returned_count": len(findings),
