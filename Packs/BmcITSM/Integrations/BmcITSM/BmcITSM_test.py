@@ -1638,7 +1638,7 @@ class TestGenerateLoginUrlCommand:
         with pytest.raises(DemistoException, match="Client ID"):
             generate_login_url_command(
                 rsso_url="https://rsso-server.example.com:8443/rsso",
-                client_id=None,
+                client_id="",
                 redirect_uri="https://oauth.pstmn.io/v1/callback",
             )
 
@@ -1657,7 +1657,7 @@ class TestGenerateLoginUrlCommand:
             generate_login_url_command(
                 rsso_url="https://rsso-server.example.com:8443/rsso",
                 client_id="my-client-id",
-                redirect_uri=None,
+                redirect_uri="",
             )
 
     def test_generate_login_url_command_invalid_rsso_url(self):
@@ -1751,7 +1751,7 @@ class TestIsTokenExpired:
         assert is_token_expired("not-a-date") is True
 
 
-class TestGetOAuthToken:
+class test_getOAuthToken:
     """Tests for the Client.get_oauth_token method."""
 
     @staticmethod
@@ -1766,10 +1766,9 @@ class TestGetOAuthToken:
         auth_client._redirect_uri = "https://oauth.pstmn.io/v1/callback"
         auth_client._auth_code = "test-auth-code"
         auth_client._verify = False
-        auth_client._proxies = {}
         return auth_client
 
-    def testget_oauth_token_uses_cached_token(self):
+    def test_get_oauth_token_uses_cached_token(self):
         """
         Given:
             - A valid, non-expired access token in integration context.
@@ -1788,13 +1787,12 @@ class TestGetOAuthToken:
 
         auth_client = self._create_oauth_auth_client_instance()
 
-        with patch("BmcITSM.get_integration_context", return_value=mock_context), \
-             patch("BmcITSM.set_integration_context"):
+        with patch("BmcITSM.get_integration_context", return_value=mock_context), patch("BmcITSM.set_integration_context"):
             token = auth_client.get_oauth_token()
 
         assert token == "cached-access-token"
 
-    def testget_oauth_token_refresh_flow(self):
+    def test_get_oauth_token_refresh_flow(self):
         """
         Given:
             - An expired access token but a valid refresh token in integration context.
@@ -1823,9 +1821,11 @@ class TestGetOAuthToken:
         auth_client._auth_code = ""
 
         mock_set_ctx = MagicMock()
-        with patch("BmcITSM.get_integration_context", return_value=mock_context), \
-             patch("BmcITSM.set_integration_context", mock_set_ctx), \
-             patch.object(auth_client, "_http_request", return_value=token_response):
+        with (
+            patch("BmcITSM.get_integration_context", return_value=mock_context),
+            patch("BmcITSM.set_integration_context", mock_set_ctx),
+            patch.object(auth_client, "_http_request", return_value=token_response),
+        ):
             token = auth_client.get_oauth_token()
 
         assert token == "new-access-token"
@@ -1834,7 +1834,7 @@ class TestGetOAuthToken:
         assert stored_ctx["oauth_access_token"] == "new-access-token"
         assert stored_ctx["oauth_refresh_token"] == "new-refresh-token"
 
-    def testget_oauth_token_auth_code_exchange(self):
+    def test_get_oauth_token_auth_code_exchange(self):
         """
         Given:
             - No valid tokens in integration context, but an authorization code is provided.
@@ -1852,9 +1852,11 @@ class TestGetOAuthToken:
         auth_client = self._create_oauth_auth_client_instance()
 
         mock_http = MagicMock(return_value=token_response)
-        with patch("BmcITSM.get_integration_context", return_value={}), \
-             patch("BmcITSM.set_integration_context"), \
-             patch.object(auth_client, "_http_request", mock_http):
+        with (
+            patch("BmcITSM.get_integration_context", return_value={}),
+            patch("BmcITSM.set_integration_context"),
+            patch.object(auth_client, "_http_request", mock_http),
+        ):
             token = auth_client.get_oauth_token()
 
         assert token == "new-access-token"
@@ -1866,7 +1868,7 @@ class TestGetOAuthToken:
         assert post_data["code"] == "test-auth-code"
         assert post_data["client_id"] == "test-client-id"
 
-    def testget_oauth_token_no_tokens_no_code(self):
+    def test_get_oauth_token_no_tokens_no_code(self):
         """
         Given:
             - No valid tokens in integration context and no authorization code.
@@ -1878,12 +1880,14 @@ class TestGetOAuthToken:
         auth_client = self._create_oauth_auth_client_instance()
         auth_client._auth_code = ""
 
-        with patch("BmcITSM.get_integration_context", return_value={}), \
-             patch("BmcITSM.set_integration_context"):
-            with pytest.raises(DemistoException, match="bmc-itsm-generate-login-url"):
-                auth_client.get_oauth_token()
+        with (
+            patch("BmcITSM.get_integration_context", return_value={}),
+            patch("BmcITSM.set_integration_context"),
+            pytest.raises(DemistoException, match="bmc-itsm-generate-login-url"),
+        ):
+            auth_client.get_oauth_token()
 
-    def testget_oauth_token_auth_code_exchange_failure(self):
+    def test_get_oauth_token_auth_code_exchange_failure(self):
         """
         Given:
             - No valid tokens and an authorization code that fails to exchange.
@@ -1895,11 +1899,13 @@ class TestGetOAuthToken:
         auth_client = self._create_oauth_auth_client_instance()
         auth_client._auth_code = "expired-auth-code"
 
-        with patch("BmcITSM.get_integration_context", return_value={}), \
-             patch("BmcITSM.set_integration_context"), \
-             patch.object(auth_client, "_http_request", side_effect=DemistoException("invalid_grant")):
-            with pytest.raises(DemistoException, match="Failed to exchange authorization code"):
-                auth_client.get_oauth_token()
+        with (
+            patch("BmcITSM.get_integration_context", return_value={}),
+            patch("BmcITSM.set_integration_context"),
+            patch.object(auth_client, "_http_request", side_effect=DemistoException("invalid_grant")),
+            pytest.raises(DemistoException, match="Failed to exchange authorization code"),
+        ):
+            auth_client.get_oauth_token()
 
 
 class TestClientOAuthInit:
@@ -1924,8 +1930,7 @@ class TestClientOAuthInit:
             "oauth_refresh_token_expires_in": future_time,
         }
 
-        with patch("BmcITSM.get_integration_context", return_value=mock_context), \
-             patch("BmcITSM.set_integration_context"):
+        with patch("BmcITSM.get_integration_context", return_value=mock_context), patch("BmcITSM.set_integration_context"):
             auth_client = AuthClient(
                 server_url=BASE_URL,
                 verify=False,
