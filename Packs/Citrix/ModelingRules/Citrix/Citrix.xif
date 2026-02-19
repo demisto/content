@@ -19,3 +19,23 @@ alter
     xdm.observer.unique_identifier = customerId,
     xdm.auth.privilege_level = if(actorType = "administrator", XDM_CONST.PRIVILEGE_LEVEL_ADMIN, actorType = "system", XDM_CONST.PRIVILEGE_LEVEL_SYSTEM, actorType),
     xdm.event.operation = if(extract_event_operation = "create", XDM_CONST.OPERATION_TYPE_CREATE, extract_event_operation = "delete", XDM_CONST.OPERATION_TYPE_DELETE, extract_event_operation = "update", XDM_CONST.OPERATION_TYPE_UPDATE, extract_event_operation);
+
+[MODEL: dataset="citrix_daas_raw"]
+alter
+    // Extract username and email from User field format: "Display Name (email@domain.com)"
+    tmp_user_display_name = arrayindex(regextract(User, "^([^(]+)"), 0),
+    tmp_user_email = arrayindex(regextract(User, "\(([^)]+)\)"), 0)
+| alter
+    tmp_user_display_name_trimmed = rtrim(tmp_user_display_name, " ")
+| alter
+    xdm.event.id = Id,
+    xdm.event.operation = Text,
+    xdm.event.operation_sub_type = OperationType,
+    xdm.event.original_event_type = OperationType,
+    xdm.event.outcome = if(IsSuccessful = "true", XDM_CONST.OUTCOME_SUCCESS, IsSuccessful = "false", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_UNKNOWN),
+    xdm.source.ipv4 = AdminMachineIP,
+    xdm.source.application.name = Source,
+    xdm.source.user.username = tmp_user_display_name_trimmed,
+    xdm.source.user.upn = tmp_user_email,
+    xdm.source.user.identifier = UserIdentity,
+    xdm.target.resource.type = TargetTypes;
