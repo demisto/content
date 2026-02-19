@@ -1,4 +1,6 @@
 {
+  "id": "db2b912b8286de56121200b97129c49f",
+  "name": "Trigger - Azure Public Access Misconfiguration",
   "trigger_id": "db2b912b8286de56121200b97129c49f",
   "trigger_name": "Trigger - Azure Public Access Misconfiguration",
   "playbook_id": "Azure Public Access Misconfiguration - Auto-remediate",

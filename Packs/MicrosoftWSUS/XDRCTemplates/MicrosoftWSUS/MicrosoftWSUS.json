@@ -3,6 +3,7 @@
     "profile_type": "STANDARD",
     "name": "MicrosoftWSUS",
     "content_global_id": "MicrosoftWSUS",
+    "id": "MicrosoftWSUS",
     "from_xdr_version": "3.5.0",
     "yaml_template": ""
 }
