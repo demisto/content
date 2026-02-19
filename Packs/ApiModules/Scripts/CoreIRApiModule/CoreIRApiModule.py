@@ -507,7 +507,6 @@ class CoreClient(BaseClient):
         if search_to:
             request_data["search_to"] = search_to
 
-        
         request_data["sort"] = {"field": sort_by, "keyword": sort_order}
 
         request_data["filters"] = filters
