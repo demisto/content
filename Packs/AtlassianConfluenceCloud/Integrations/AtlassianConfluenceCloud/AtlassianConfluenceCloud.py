@@ -10,6 +10,9 @@ from CommonServerPython import *  # noqa: F401
 
 from CommonServerUserPython import *  # noqa
 
+# Import AtlassianApiModule for OAuth support
+from AtlassianApiModule import *  # type: ignore[import] # noqa: F401
+
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 
@@ -1400,6 +1403,141 @@ def confluence_cloud_content_get_command(client: Client, args: dict[str, str]) -
     )
 
 
+def oauth_start_command(oauth_client) -> CommandResults:
+    """Start OAuth authentication flow."""
+    url = oauth_client.oauth_start()
+    return CommandResults(
+        readable_output=(
+            f"### Authorization Instructions\n"
+            f"1. Click on the following link to authorize:\n{url}\n\n"
+            f"2. After authorizing, you will be redirected to the callback URL\n"
+            f"3. Copy the authorization code from the 'code' parameter in the URL\n"
+            f"4. Run the command: `!confluence-cloud-oauth-complete code=<your_code>`"
+        )
+    )
+
+
+def oauth_complete_command(oauth_client, code: str) -> CommandResults:
+    """Complete OAuth authentication flow."""
+    oauth_client.oauth_complete(code=code)
+    return CommandResults(
+        readable_output=(
+            "### Successfully authenticated!\n"
+            "The access token and refresh token have been saved.\n"
+            "You can now use the integration to fetch events."
+        )
+    )
+
+
+def oauth_test_command(oauth_client) -> CommandResults:
+    """Test OAuth authentication."""
+    try:
+        oauth_client.test_connection()
+        return CommandResults(readable_output="✓ Authentication successful")
+    except Exception as e:
+        raise DemistoException(f"Authentication failed: {str(e)}")
+
+
+def create_oauth_client(params: dict):
+    """
+    Create an OAuth client for Confluence Cloud.
+
+    :type params: ``dict``
+    :param params: The integration parameters.
+
+    :return: OAuth client instance or None if not using OAuth.
+    """
+    auth_type = params.get("auth_type", "basic")
+    
+    if auth_type != "oauth":
+        return None
+    
+    client_creds = params.get("client_credentials", {})
+    client_id = client_creds.get("identifier", "")
+    client_secret = client_creds.get("password", "")
+    cloud_id = params.get("cloud_id", "")
+    callback_url = params.get("callback_url", "")
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
+    
+    if not client_id or not client_secret:
+        raise DemistoException(
+            "Client ID and Client Secret are required for OAuth 2.0 authentication"
+        )
+    if not callback_url:
+        raise DemistoException("Callback URL is required for OAuth 2.0 authentication")
+    
+    # Create OAuth client using AtlassianApiModule
+    return create_atlassian_oauth_client(
+        client_id=client_id,
+        client_secret=client_secret,
+        callback_url=callback_url,
+        cloud_id=cloud_id,
+        verify=verify_certificate,
+        proxy=proxy,
+        product="confluence",
+    )
+
+
+def create_client(params: dict, oauth_client=None) -> Client:
+    """
+    Create a Client instance based on the authentication method configured.
+
+    :type params: ``dict``
+    :param params: The integration parameters.
+
+    :type oauth_client: ``Optional``
+    :param oauth_client: OAuth client instance for OAuth authentication.
+
+    :return: Client instance configured with the appropriate authentication.
+    :rtype: ``Client``
+    """
+    # get the service API url
+    url = params["url"].strip()
+    base_url = f"https://{url}.atlassian.net"
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
+
+    validate_url(url)
+    headers: dict = {"Accept": "application/json"}
+
+    # Check if OAuth authentication is configured
+    auth_type = params.get("auth_type", "basic")
+
+    if auth_type == "oauth" and oauth_client is not None:
+        # OAuth 2.0 authentication
+        demisto.debug(f"{LOGGING_INTEGRATION_NAME} Using OAuth 2.0 authentication")
+
+        # Get the access token
+        access_token = oauth_client.get_access_token()
+        headers["Authorization"] = f"Bearer {access_token}"
+
+        return Client(
+            base_url=base_url,
+            verify=verify_certificate,
+            proxy=proxy,
+            headers=headers,
+        )
+    else:
+        # Basic authentication (email + API token)
+        credentials = params.get("username", {})
+        username = credentials.get("identifier", "").strip() if credentials.get("identifier") else ""
+        password = credentials.get("password", "")
+
+        if not username or not password:
+            raise ValueError("Basic authentication requires Email and API Token.")
+
+        demisto.debug(f"{LOGGING_INTEGRATION_NAME} Using Basic authentication")
+
+        return Client(
+            base_url=base_url,
+            verify=verify_certificate,
+            proxy=proxy,
+            headers=headers,
+            auth=(username, password),
+        )
+
+
 """ MAIN FUNCTION """
 
 
@@ -1408,24 +1546,20 @@ def main() -> None:  # pragma: no cover
     main function, parses params and runs command functions
     """
     params = demisto.params()
+    command = demisto.command()
+    args = demisto.args()
 
-    # get the service API url
-    url = params["url"].strip()
-    base_url = f"https://{url}.atlassian.net"
-    verify_certificate = not params.get("insecure", False)
-    proxy = params.get("proxy", False)
-
-    credentials = params.get("username", {})
-    username = credentials.get("identifier").strip()
-    password = credentials.get("password")
-
-    demisto.debug(f"{LOGGING_INTEGRATION_NAME} Command being called is {demisto.command()}")
+    demisto.debug(f"{LOGGING_INTEGRATION_NAME} Command being called is {command}")
     try:
-        validate_url(url)
-        headers: dict = {"Accept": "application/json"}
-
-        client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy, headers=headers, auth=(username, password))
-
+        # Get authentication parameters
+        auth_type = params.get("auth_type", "basic")
+        is_oauth = auth_type == "oauth"
+        
+        # OAuth client initialization
+        oauth_client = None
+        if is_oauth:
+            oauth_client = create_oauth_client(params)
+        
         # Commands dictionary
         commands: dict[str, Callable] = {
             "confluence-cloud-group-list": confluence_cloud_group_list_command,
@@ -1440,27 +1574,60 @@ def main() -> None:  # pragma: no cover
             "confluence-cloud-space-create": confluence_cloud_space_create_command,
             "confluence-cloud-content-get": confluence_cloud_content_get_command,
         }
-        command = demisto.command()
-        args = demisto.args()
+        
         strip_args(args)
         remove_nulls_from_dictionary(args)
         limit = int(arg_to_number(params.get("max_events_per_fetch", 10000)))  # type:ignore
 
-        if command == "test-module":
-            # This is the call made when pressing the integration Test button.
-            return_results(test_module(client))
+        # Handle OAuth commands first (they don't need a client)
+        if command == "confluence-cloud-oauth-start":
+            if not oauth_client:
+                raise DemistoException(
+                    "OAuth commands are only available when using OAuth 2.0 authentication"
+                )
+            return_results(oauth_start_command(oauth_client))
+
+        elif command == "confluence-cloud-oauth-complete":
+            if not oauth_client:
+                raise DemistoException(
+                    "OAuth commands are only available when using OAuth 2.0 authentication"
+                )
+            code = args.get("code", "")
+            if not code:
+                raise DemistoException("Authorization code is required")
+            return_results(oauth_complete_command(oauth_client, code))
+
+        elif command == "confluence-cloud-oauth-test":
+            if not oauth_client:
+                raise DemistoException(
+                    "OAuth commands are only available when using OAuth 2.0 authentication"
+                )
+            return_results(oauth_test_command(oauth_client))
+
+        elif command == "test-module":
+            if oauth_client:
+                # For OAuth, test the authentication
+                oauth_client.test_connection()
+                demisto.results("ok")
+            else:
+                # For basic auth, create client and test
+                client = create_client(params, oauth_client)
+                return_results(test_module(client))
+
         elif command in commands:
+            client = create_client(params, oauth_client)
             return_results(commands[command](client, args))
 
         elif command == "fetch-events":
+            client = create_client(params, oauth_client)
             events, last_run_object = fetch_events(client, limit, demisto.getLastRun())
             if events:
                 add_time_to_events(events)
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
                 demisto.setLastRun(last_run_object)
 
-            # demisto.updateModuleHealth({'eventsPulled': len(events)})
         elif command == "confluence-cloud-get-events":
+            client = create_client(params, oauth_client)
             demisto.debug(f"Fetching Confluence Cloud events with the following parameters: {args}")
             should_push_events = argToBoolean(args.get("should_push_events", False))
             events, command_results = get_events(client, args)

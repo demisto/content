@@ -13,12 +13,40 @@ configuration:
   required: true
   type: 0
   section: Connect
-- additionalinfo: The Atlassian account email.
+- additionalinfo: Select the authentication method to use.
+  display: Authentication Type
+  name: auth_type
+  required: true
+  type: 15
+  defaultvalue: basic
+  options:
+  - basic
+  - oauth
+  section: Connect
+- additionalinfo: The Atlassian account email. Required for Basic authentication.
   display: Email
   displaypassword: API Token
   name: username
-  required: true
+  required: false
   type: 9
+  section: Connect
+- additionalinfo: The OAuth 2.0 Client ID. Required for OAuth authentication. Obtain from Atlassian Developer Console.
+  display: Client ID (OAuth)
+  name: client_id
+  required: false
+  type: 0
+  section: Connect
+- additionalinfo: The OAuth 2.0 Client Secret. Required for OAuth authentication. Obtain from Atlassian Developer Console.
+  display: Client Secret (OAuth)
+  name: client_secret
+  required: false
+  type: 9
+  section: Connect
+- additionalinfo: The Atlassian Cloud ID. Required for OAuth authentication. Can be found in the URL when accessing your Confluence instance.
+  display: Cloud ID (OAuth)
+  name: cloud_id
+  required: false
+  type: 0
   section: Connect
 - display: Use system proxy settings
   name: proxy
@@ -2108,6 +2136,18 @@ script:
     - contextPath: ConfluenceCloud.Content._links.base
       description: Base URL of the Confluence site.
       type: String
+  - arguments: []
+    name: confluence-cloud-oauth-start
+    description: Starts the OAuth 2.0 authentication flow. Returns an authorization URL that the user must visit to authorize the integration.
+  - arguments:
+    - description: The authorization code received from the OAuth callback URL after user authorization.
+      name: code
+      required: true
+    name: confluence-cloud-oauth-complete
+    description: Completes the OAuth 2.0 authentication flow by exchanging the authorization code for access and refresh tokens.
+  - arguments: []
+    name: confluence-cloud-oauth-test
+    description: Tests the OAuth 2.0 authentication by verifying the current access token is valid.
   dockerimage: demisto/python3:3.12.11.4508456
   isfetchevents: true
   isfetchevents:xsoar: false
