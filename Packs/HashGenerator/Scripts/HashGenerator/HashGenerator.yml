@@ -1,0 +1,47 @@
+args:
+- name: text
+  required: true
+  description: The text or string to generate hash(es) for.
+- auto: PREDEFINED
+  defaultValue: all
+  name: type
+  predefined:
+  - all
+  - md5
+  - sha1
+  - sha256
+  required: false
+  description: Hash algorithm to use. Use 'all' to generate MD5, SHA1, and SHA256 hashes.
+comment: |
+  Generates MD5, SHA1, and SHA256 hashes from input text. Can generate a single hash type or all three at once.
+commonfields:
+  id: HashGenerator
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.12.12.5490952
+enabled: true
+name: HashGenerator
+outputs:
+- contextPath: HashGenerator.MD5
+  type: string
+  description: The MD5 hash of the input text.
+- contextPath: HashGenerator.SHA1
+  type: string
+  description: The SHA1 hash of the input text.
+- contextPath: HashGenerator.SHA256
+  type: string
+  description: The SHA256 hash of the input text.
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- Utilities
+- hash
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
