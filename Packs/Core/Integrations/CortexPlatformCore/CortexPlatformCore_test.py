@@ -22,6 +22,7 @@ from CortexPlatformCore import (
     transform_distributions,
     get_endpoint_update_version_command,
     update_endpoint_version_command,
+    get_cloud_accounts_log_sending_status,
     FilterType,
 )
 
@@ -9333,6 +9334,233 @@ def test_get_xql_query_results_platform_polling_timeout(mocker):
 
     assert response["status"] == "PENDING"
     assert response["execution_id"] == execution_id
+
+
+class TestGetCDRProtectionStatusCommand:
+    """Test cases for get_cdr_protection_status_command function."""
+
+    def test_get_cdr_protection_status_command_success(self, mocker):
+        """
+        Given:
+            - API returns cloud accounts with some sending logs.
+        When:
+            - Calling get_cdr_protection_status_command.
+        Then:
+            - Returns correct log sending statistics and list of accounts not sending logs.
+        """
+        from CortexPlatformCore import get_cdr_protection_status_command, Client
+
+        mock_client = Client(base_url="", headers={})
+
+        # Mock cloud accounts response with pagination
+        accounts_page1 = {
+            "next_token": "token123",
+            "values": [
+                {
+                    "account_id": "111111111111",
+                    "account_name": "Account 1",
+                    "cloud_type": "AWS",
+                    "status": "ENABLED",
+                    "additional_capabilities": {"automation_log_level": "INFO"},
+                },
+                {
+                    "account_id": "222222222222",
+                    "account_name": "Account 2",
+                    "cloud_type": "AWS",
+                    "status": "ENABLED",
+                    "additional_capabilities": {"automation_log_level": "OFF"},
+                },
+                {
+                    "account_id": "333333333333",
+                    "account_name": "",
+                    "cloud_type": "GCP",
+                    "status": "ENABLED",
+                    "additional_capabilities": {"automation_log_level": "OFF"},
+                },
+            ],
+        }
+
+        accounts_page2 = {
+            "next_token": "",
+            "values": [
+                {
+                    "account_id": "444444444444",
+                    "account_name": "Account 4",
+                    "cloud_type": "AZURE",
+                    "status": "ENABLED",
+                    "additional_capabilities": {"automation_log_level": "DEBUG"},
+                },
+                {
+                    "account_id": "555555555555",
+                    "account_name": "Account 5",
+                    "cloud_type": "AWS",
+                    "status": "ENABLED",
+                    "additional_capabilities": {"automation_log_level": "OFF"},
+                },
+            ],
+        }
+
+        mocker.patch.object(mock_client, "platform_http_request", side_effect=[accounts_page1, accounts_page2])
+
+        result = get_cdr_protection_status_command(mock_client)
+        # Verify cloud accounts statistics
+        assert result.outputs["CloudAccounts"]["Total"] == 5
+        assert result.outputs["CloudAccounts"]["NotSendingLogs"] == 3
+
+        # Verify accounts not sending logs list
+        accounts_not_sending = result.outputs["CloudAccounts"]["AccountsNotSendingLogsList"]
+        assert len(accounts_not_sending) == 3
+        assert accounts_not_sending[0]["account_id"] == "222222222222"
+        assert accounts_not_sending[1]["account_id"] == "333333333333"
+        assert accounts_not_sending[1]["account_name"] == "N/A"  # Empty name should be N/A
+        assert accounts_not_sending[2]["account_id"] == "555555555555"
+
+        # Verify readable output includes cloud accounts section
+        assert "are not sending logs" in result.readable_output
+
+    def test_get_cdr_protection_status_command_no_cloud_accounts(self, mocker):
+        """
+        Given:
+            - API returns no cloud accounts.
+        When:
+            - Calling get_cdr_protection_status_command.
+        Then:
+            - Returns a note indicating no cloud accounts found.
+        """
+        from CortexPlatformCore import get_cdr_protection_status_command, Client
+
+        mock_client = Client(base_url="", headers={})
+
+        # No accounts
+        accounts_response = {"next_token": "", "values": []}
+
+        mocker.patch.object(mock_client, "platform_http_request", return_value=accounts_response)
+
+        result = get_cdr_protection_status_command(mock_client)
+        assert "No Cloud Accounts found" in result.readable_output
+
+    def test_get_cdr_protection_status_command_pagination_multiple_pages(self, mocker):
+        """
+        Given:
+            - Cloud accounts API returns multiple pages of data.
+        When:
+            - Calling get_cdr_protection_status_command.
+        Then:
+            - All pages are retrieved and statistics are calculated correctly.
+        """
+        from CortexPlatformCore import get_cdr_protection_status_command, Client
+
+        mock_client = Client(base_url="", headers={})
+
+        # Three pages of accounts
+        page1 = {
+            "next_token": "token1",
+            "values": [
+                {
+                    "account_id": f"{i}",
+                    "account_name": f"Account {i}",
+                    "cloud_type": "AWS",
+                    "status": "ENABLED",
+                    "additional_capabilities": {"automation_log_level": "OFF" if i % 2 == 0 else "INFO"},
+                }
+                for i in range(100)
+            ],
+        }
+
+        page2 = {
+            "next_token": "token2",
+            "values": [
+                {
+                    "account_id": f"{i}",
+                    "account_name": f"Account {i}",
+                    "cloud_type": "AWS",
+                    "status": "ENABLED",
+                    "additional_capabilities": {"automation_log_level": "OFF" if i % 2 == 0 else "INFO"},
+                }
+                for i in range(100, 200)
+            ],
+        }
+
+        page3 = {
+            "next_token": "",
+            "values": [
+                {
+                    "account_id": f"{i}",
+                    "account_name": f"Account {i}",
+                    "cloud_type": "AWS",
+                    "status": "ENABLED",
+                    "additional_capabilities": {"automation_log_level": "OFF" if i % 2 == 0 else "INFO"},
+                }
+                for i in range(200, 250)
+            ],
+        }
+
+        mocker.patch.object(mock_client, "platform_http_request", side_effect=[page1, page2, page3])
+
+        result = get_cdr_protection_status_command(mock_client)
+
+        assert result.outputs["CloudAccounts"]["Total"] == 250
+        # 125 accounts have even IDs (OFF), 125 have odd IDs (INFO)
+        assert result.outputs["CloudAccounts"]["NotSendingLogs"] == 125
+        assert "50.0%" in result.readable_output  # 125/250 = 50% sending
+
+
+class TestGetCloudAccountsLogSendingStatus:
+    """Test cases for get_cloud_accounts_log_sending_status helper function."""
+
+    def test_get_cloud_accounts_log_sending_status_pagination(self, mocker):
+        """
+        Given:
+            - API returns multiple pages of cloud accounts.
+        When:
+            - Calling get_cloud_accounts_log_sending_status.
+        Then:
+            - All pages are retrieved and combined correctly.
+        """
+        from CortexPlatformCore import Client
+
+        mock_client = Client(base_url="", headers={})
+
+        page1 = {
+            "next_token": "token1",
+            "values": [
+                {
+                    "account_id": "111",
+                    "account_name": "A1",
+                    "cloud_type": "AWS",
+                    "status": "ENABLED",
+                    "additional_capabilities": {"automation_log_level": "OFF"},
+                },
+                {
+                    "account_id": "222",
+                    "account_name": "A2",
+                    "cloud_type": "AWS",
+                    "status": "ENABLED",
+                    "additional_capabilities": {"automation_log_level": "INFO"},
+                },
+            ],
+        }
+
+        page2 = {
+            "next_token": "",
+            "values": [
+                {
+                    "account_id": "333",
+                    "account_name": "A3",
+                    "cloud_type": "GCP",
+                    "status": "ENABLED",
+                    "additional_capabilities": {"automation_log_level": "OFF"},
+                }
+            ],
+        }
+
+        mocker.patch.object(mock_client, "platform_http_request", side_effect=[page1, page2])
+
+        total, not_sending_count, accounts_list = get_cloud_accounts_log_sending_status(mock_client)
+
+        assert total == 3
+        assert not_sending_count == 2
+        assert len(accounts_list) == 2
 
 
 def test_get_cases_command_with_ai_summary(mocker: MockerFixture):

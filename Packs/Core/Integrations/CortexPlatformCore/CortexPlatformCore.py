@@ -68,6 +68,7 @@ WEBAPP_COMMANDS = [
     "core-list-exception-rules",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
+    "core-get-cdr-protection-status",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -4396,6 +4397,98 @@ def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str
     return str(res)
 
 
+def get_cloud_accounts_log_sending_status(client: Client) -> tuple[int, list[dict]]:
+    """
+    Retrieves all cloud accounts and calculates log sending statistics.
+
+    Args:
+        client: The API client instance
+
+    Returns:
+        Tuple containing:
+            - total_accounts: Total number of cloud accounts
+            - accounts_not_sending_logs: List of account details not sending logs
+    """
+    total_accounts = 0
+    accounts_not_sending_logs = []
+    next_token = ""
+    iteration = 0
+    
+    while True:
+        params = {"limit": "1000"}
+        if next_token:
+            params["next_token"] = next_token
+
+        response = client.platform_http_request(
+            method="GET", json_data={}, url_suffix="/api/v0/onboarding/accounts/", params=params, ok_codes=[200]
+        )
+
+        accounts = response.get("values", [])
+        demisto.info(f"{iteration=}, Received accounts: {accounts}")
+        iteration += 1
+        for account in accounts:
+            total_accounts += 1
+            additional_capabilities = account.get("additional_capabilities", {}) or {}
+            automation_log_level = additional_capabilities.get("automation_log_level", "")
+
+            if automation_log_level == "OFF":
+                accounts_not_sending_logs.append(
+                    {
+                        "account_id": account.get("account_id"),
+                        "account_name": account.get("account_name") or "N/A",
+                        "cloud_type": account.get("cloud_type"),
+                        "status": account.get("status"),
+                    }
+                )
+
+        next_token = response.get("next_token", "")
+        if not next_token:
+            break
+
+    return total_accounts, accounts_not_sending_logs
+
+
+def get_cdr_protection_status_command(client: Client) -> CommandResults:
+    """
+    Calculates the CDR (Cloud Detection and Response) protection coverage percentages.
+
+    This command queries the Unified Asset Management API to calculate protection coverage for
+    Cloud Accounts: Accounts sending logs / Total accounts
+
+    Returns:
+        List of CommandResults objects with CDR protection coverage percentages
+    """
+    total_accounts, accounts_not_sending_logs = get_cloud_accounts_log_sending_status(client)
+    accounts_not_sending_logs_count = len(accounts_not_sending_logs)
+    accounts_sending_logs = total_accounts - accounts_not_sending_logs_count
+
+    if total_accounts == 0:
+        return CommandResults(
+            readable_output="No Cloud Accounts found.",
+            entry_type=4,
+        )
+
+    # Build outputs with cloud account statistics
+    log_sending_percentage = round((accounts_sending_logs / total_accounts) * 100, 2)
+
+    outputs = {
+        "CloudAccounts": {
+            "Total": total_accounts,
+            "NotSendingLogs": accounts_not_sending_logs_count,
+            "AccountsNotSendingLogsList": accounts_not_sending_logs,
+        }
+    }
+
+    return CommandResults(
+        readable_output=f"{log_sending_percentage}% of onboarded accounts are not sending logs.",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CDRProtectionStatus",
+        outputs=outputs,
+        raw_response={
+            "cloud_accounts_not_sending_logs": accounts_not_sending_logs,
+        },
+    )
+
+
 def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
     """Execute an XQL query using Platform API and poll for results.
 
@@ -4659,17 +4752,15 @@ def main():  # pragma: no cover
             return_results(core_add_assessment_profile_command(client, args))
         elif command == "core-list-compliance-standards":
             return_results(core_list_compliance_standards_command(client, args))
-
         elif command == "core-get-endpoint-update-version":
             return_results(get_endpoint_update_version_command(client, args))
-
         elif command == "core-update-endpoint-version":
             return_results(update_endpoint_version_command(client, args))
-
+        elif command == "core-get-cdr-protection-status":
+            return_results(get_cdr_protection_status_command(client))
         elif command == "core-get-case-resolution-statuses":
             verify_platform_version()
             return_results(get_case_resolution_statuses(client, args))
-
         elif command == "core-xql-generic-query-platform":
             verify_platform_version()
             return_results(xql_query_platform_command(client, args))
