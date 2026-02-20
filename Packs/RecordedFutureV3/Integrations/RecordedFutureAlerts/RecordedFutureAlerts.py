@@ -301,9 +301,18 @@ class Actions:
 
     def get_alert_images_command(self) -> list[CommandResults]:
         incident = demisto.incident()
-        alert_id = incident.get("CustomFields", {}).get("alertid")
+        if not isinstance(incident, dict) or incident.get("isPlayground") is True:
+            return_error("This command can only run from an incident War Room context.")
+            return []  # return_error will exit(0), but to make linter happy.
+
+        custom_fields = incident.get("CustomFields")
+        if not isinstance(custom_fields, dict):
+            custom_fields = {}
+
+        alert_id = custom_fields.get("alertid")
         if not alert_id:
-            return_error("Failed to get alert id from incident.")
+            return_error("Failed to get alert id from the incident.")
+            return []  # return_error will exit(0), but to make linter happy.
 
         lookup_result = self.client.alert_lookup(alert_id)
 
@@ -321,7 +330,7 @@ class Actions:
         if not image_ids:
             return [CommandResults(readable_output="No screenshots found in alert details.")]
 
-        context = demisto.context()
+        context = demisto.context() or {}
 
         files = demisto.get(context, "File")
         if not files:
@@ -329,7 +338,9 @@ class Actions:
         if not isinstance(files, list):
             files = [files]
 
-        existing_file_names = {f.get("Name") for f in files}
+        existing_file_names = {
+            f.get("Name") for f in files if isinstance(f, dict)
+        }
 
         # Determine missing image IDs.
         missing_image_ids: set = set()

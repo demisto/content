@@ -257,6 +257,50 @@ def test_actions_get_alert_images_no_images(monkeypatch: pytest.MonkeyPatch):
     assert res[0].readable_output.startswith("No screenshots found in alert details.")
 
 
+@pytest.mark.parametrize(
+    "incident, expected_error",
+    [
+        (
+            None,
+            "This command can only run from an incident War Room context.",
+        ),
+        (
+            {"id": "425492fc-bd3a-4322-8908-4729c099d982", "isPlayground": True, "CustomFields": None},
+            "This command can only run from an incident War Room context.",
+        ),
+        (
+            {"id": "123", "CustomFields": None},
+            "Failed to get alert id from the incident.",
+        ),
+    ],
+)
+def test_actions_get_alert_images_precondition_errors(
+    monkeypatch: pytest.MonkeyPatch,
+    incident: Any,
+    expected_error: str,
+):
+    monkeypatch.setattr(demisto, "incident", lambda: incident, raising=True)
+
+    called = {"lookup": False, "error": ""}
+
+    def _fake_alert_lookup(*_, **__):
+        called["lookup"] = True
+        return []
+
+    def _fake_return_error(msg: str, *_, **__):
+        called["error"] = msg
+        raise RuntimeError("return_error_called")
+
+    monkeypatch.setattr(Client, "alert_lookup", _fake_alert_lookup, raising=True)
+    monkeypatch.setattr(RecordedFutureAlerts, "return_error", _fake_return_error, raising=True)
+
+    with pytest.raises(RuntimeError, match="return_error_called"):
+        Actions(Client(base_url="x", verify=False, headers={})).get_alert_images_command()
+
+    assert called["error"] == expected_error
+    assert called["lookup"] is False
+
+
 def test_actions_get_alert_images_fetches_missing(
     monkeypatch: pytest.MonkeyPatch,
 ):
