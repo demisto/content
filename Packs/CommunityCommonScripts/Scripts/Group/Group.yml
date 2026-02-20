@@ -1,0 +1,42 @@
+commonfields:
+  id: Group
+  version: -1
+name: Group
+script: ''
+type: python
+tags:
+- Utilities
+comment: |-
+  Splits a list into group.
+
+  e.g. [1,2,3,4] -> ["1,2", "3,4"].
+enabled: true
+args:
+- name: input
+  required: true
+  description: An input list.
+  isArray: true
+- name: chunk
+  required: true
+  description: Size of each group.
+- name: type
+  auto: PREDEFINED
+  predefined:
+  - List
+  - String
+  description: Group as list or string.
+  defaultValue: String
+- name: delimiter
+  description: Separate elements using delimiter (If type is String).
+  defaultValue: ','
+outputs:
+- contextPath: Group
+  description: The list after grouping.
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.12.12.7090913
+runas: DBotWeakRole
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
