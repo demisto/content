@@ -1,0 +1,892 @@
+category: Endpoint
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: GravityZone
+  version: -1
+configuration:
+
+- name: url
+  display: Server URL
+  type: 0
+  required: true
+  section: Connect
+  options:
+  - https://cloud.gravityzone.bitdefender.com/
+  - https://cloudgz.gravityzone.bitdefender.com/
+  - https://cloudap.gravityzone.bitdefender.com/
+  additionalinfo: The URL of your GravityZone Cloud instance.
+
+- name: credentials
+  type: 9
+  required: true
+  displaypassword: Api key
+  hiddenusername: true
+  section: Connect
+  additionalinfo: API key to access the service REST API.
+
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  advanced: true
+  type: 8
+  section: Connect
+
+- name: proxy
+  display: Use system proxy settings
+  required: false
+  advanced: true
+  type: 8
+  section: Connect
+
+- name: isFetch
+  display: Fetch incidents
+  type: 8
+  required: false
+  section: Collect
+
+- additionalinfo: Maximum number of incidents per fetch. The default value is 50.
+  defaultvalue: '50'
+  display: Maximum incidents to fetch.
+  name: max_fetch
+  section: Collect
+  type: 0
+  required: false
+
+- name: first_fetch
+  display: First fetch time
+  type: 0
+  required: false
+  defaultvalue: 3 days
+  section: Collect
+  additionalinfo: The time period from which the first fetch will start.
+
+- name: mirror_direction
+  display: Mirroring Direction
+  type: 15
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Both
+  section: Collect
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+defaultmapperin: GravityZone - Incoming Mapper
+defaultclassifier: GravityZone - Classifier
+description: GravityZone provides secure access to incident and endpoint data and enables remediation actions through its APIs.
+display: GravityZone
+name: GravityZone
+script:
+  commands:
+
+  - name: fetch-incidents
+    description: Retrieves incidents from GravityZone Cloud.
+    arguments: []
+
+  - name: gz-list-endpoints
+    description: Retrieves the list of managed endpoints.
+    arguments: []
+
+  - name: endpoint
+    description: Retrieves details about an endpoint.
+    arguments:
+    - name: id
+      isArray: false
+      description: The ID of the endpoint to retrieve.
+      required: true
+      secret: false
+      default: false
+    outputs:
+    - contextPath: Endpoint.ID
+      description: The endpoint ID.
+      type: String
+    - contextPath: Endpoint.Hostname
+      description: The endpoint hostname.
+      type: String
+    - contextPath: Endpoint.IPAddress
+      description: The endpoint IP address.
+      type: String
+    - contextPath: Endpoint.OS
+      description: The endpoint operating system version.
+      type: String
+    - contextPath: Endpoint.Status
+      description: The endpoint status.
+      type: String
+    - contextPath: Endpoint.Vendor
+      description: The endpoint vendor.
+      type: String
+
+  - name: gz-get-endpoint-by-id
+    description: Retrieves endpoint details by endpoint ID.
+    arguments:
+    - name: id
+      isArray: false
+      description: The ID of the endpoint to retrieve.
+      required: true
+      secret: false
+      default: false
+    outputs:
+    - contextPath: GravityZone.Endpoint.ID
+      description: The endpoint ID.
+      type: String
+    - contextPath: GravityZone.Endpoint.Hostname
+      description: The endpoint hostname.
+      type: String
+    - contextPath: GravityZone.Endpoint.IP
+      description: The endpoint IP address.
+      type: String
+    - contextPath: GravityZone.Endpoint.OS
+      description: The endpoint operating system version.
+      type: String
+    - contextPath: GravityZone.Endpoint.Status
+      description: The endpoint status.
+      type: String
+    - contextPath: GravityZone.Endpoint.Vendor
+      description: The endpoint vendor.
+      type: String
+    - contextPath: GravityZone.Endpoint.LastLoggedUsers
+      description: The last users who logged on the endpoint.
+      type: String
+
+  - name: gz-download-investigation-package-from-endpoint
+    description: Collects and downloads an investigation package from an endpoint.
+    polling: true
+    arguments:
+    - name: id
+      isArray: false
+      description: The ID of the endpoint from which to collect the investigation package.
+      required: true
+      secret: false
+      default: false
+    - name: output_file
+      isArray: false
+      description: The output file name in Cortex XSOAR to save the collected package. For Windows and macOS use .zip, for Linux use .tgz.
+      required: true
+      secret: false
+      default: false
+    outputs:
+    - contextPath: GravityZone.Command.DownloadFile.EndpointID
+      description: The endpoint ID.
+      type: String
+    - contextPath: GravityZone.Command.DownloadFile.Status
+      description: The command status.
+      type: String
+    - contextPath: GravityZone.Command.DownloadFile.ErrorCode
+      description: The command error code.
+      type: String
+    - contextPath: GravityZone.Command.DownloadFile.OutputFile
+      description: The output file name.
+      type: String
+    - contextPath: GravityZone.Command.DownloadFile.RemoteFile
+      description: The remote file path.
+      type: String
+    - contextPath: GravityZone.Command.DownloadFile.FileID
+      description: The file ID.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the downloaded file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the downloaded file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the downloaded file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the downloaded file.
+      type: String
+    - contextPath: File.EntryID
+      description: The EntryID hash of the downloaded file.
+      type: String
+    - contextPath: File.Info
+      description: Information about the downloaded file.
+      type: String
+    - contextPath: File.Type
+      description: The downloaded file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the downloaded file.
+      type: String
+    - contextPath: File.Extension
+      description: The downloaded file extension.
+      type: String
+    - contextPath: File.Size
+      description: The downloaded file size.
+      type: Number
+    - contextPath: File.Name
+      description: The downloaded file name.
+      type: String
+
+  - name: gz-download-file-from-endpoint
+    description: Downloads a file from an endpoint.
+    polling: true
+    arguments:
+    - name: id
+      isArray: false
+      description: The ID of the endpoint to download the file from.
+      required: true
+      secret: false
+      default: false
+    - name: remote_file
+      isArray: false
+      description: The full path of the remote file on the endpoint to download.
+      required: true
+      secret: false
+      default: false
+    - name: output_file
+      isArray: false
+      description: The output file name in Cortex XSOAR to save the downloaded file to.
+      required: true
+      secret: false
+      default: false
+    outputs:
+    - contextPath: GravityZone.Command.DownloadFile.EndpointID
+      description: The endpoint ID.
+      type: String
+    - contextPath: GravityZone.Command.DownloadFile.Status
+      description: The command status.
+      type: String
+    - contextPath: GravityZone.Command.DownloadFile.ErrorCode
+      description: The command error code.
+      type: String
+    - contextPath: GravityZone.Command.DownloadFile.OutputFile
+      description: The output file name.
+      type: String
+    - contextPath: GravityZone.Command.DownloadFile.RemoteFile
+      description: The remote file path.
+      type: String
+    - contextPath: GravityZone.Command.DownloadFile.FileID
+      description: The file ID.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the downloaded file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the downloaded file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the downloaded file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the downloaded file.
+      type: String
+    - contextPath: File.EntryID
+      description: The EntryID hash of the downloaded file.
+      type: String
+    - contextPath: File.Info
+      description: Information about the downloaded file.
+      type: String
+    - contextPath: File.Type
+      description: The downloaded file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the downloaded file.
+      type: String
+    - contextPath: File.Extension
+      description: The downloaded file extension.
+      type: String
+    - contextPath: File.Size
+      description: The downloaded file size.
+      type: Number
+    - contextPath: File.Name
+      description: The downloaded file name.
+      type: String
+
+  - name: gz-isolate-endpoint
+    description: Isolates an endpoint from the network.
+    polling: true
+    arguments:
+    - name: id
+      isArray: false
+      description: The ID of the endpoint to isolate.
+      required: true
+      secret: false
+      default: false
+    outputs:
+    - contextPath: GravityZone.Command.Isolate.TaskID
+      description: The task ID.
+      type: String
+    - contextPath: GravityZone.Command.Isolate.TaskType
+      description: The task type.
+      type: String
+    - contextPath: GravityZone.Command.Isolate.EndpointID
+      description: The endpoint ID.
+      type: String
+    - contextPath: GravityZone.Command.Isolate.Hostname
+      description: The endpoint name.
+      type: String
+    - contextPath: GravityZone.Command.Isolate.Status
+      description: The command status.
+      type: String
+    - contextPath: GravityZone.Command.Isolate.ErrorCode
+      description: The command error code, or "Success".
+      type: String
+    - contextPath: GravityZone.Command.Isolate.Error
+      description: The command error message, or "Success".
+      type: String
+    - contextPath: GravityZone.Command.Isolate.StartDate
+      description: The start date of the command execution.
+      type: Date
+    - contextPath: GravityZone.Command.Isolate.EndDate
+      description: The end date of the command execution.
+      type: Date
+
+  - name: gz-deisolate-endpoint
+    description: Restores an isolated endpoint to the network.
+    polling: true
+    arguments:
+    - name: id
+      isArray: false
+      description: The ID of the endpoint to restore from isolation.
+      required: true
+      secret: false
+      default: false
+    outputs:
+    - contextPath: GravityZone.Command.Deisolate.TaskID
+      description: The task ID.
+      type: String
+    - contextPath: GravityZone.Command.Deisolate.TaskType
+      description: The task type.
+      type: String
+    - contextPath: GravityZone.Command.Deisolate.EndpointID
+      description: The endpoint ID.
+      type: String
+    - contextPath: GravityZone.Command.Deisolate.Hostname
+      description: The endpoint name.
+      type: String
+    - contextPath: GravityZone.Command.Deisolate.Status
+      description: The command status.
+      type: String
+    - contextPath: GravityZone.Command.Deisolate.ErrorCode
+      description: The command error code, or "Success".
+      type: String
+    - contextPath: GravityZone.Command.Deisolate.Error
+      description: The command error message, or "Success".
+      type: String
+    - contextPath: GravityZone.Command.Deisolate.StartDate
+      description: The start date of the command execution.
+      type: Date
+    - contextPath: GravityZone.Command.Deisolate.EndDate
+      description: The end date of the command execution.
+      type: Date
+
+  - name: gz-kill-process-on-endpoint
+    description: Terminates a process on an endpoint by process ID.
+    polling: true
+    arguments:
+    - name: id
+      isArray: false
+      description: The endpoint ID.
+      required: true
+      secret: false
+      default: false
+    - name: pid
+      isArray: false
+      description: The ID of the processs to kill.
+      required: true
+      secret: false
+      default: false
+    outputs:
+    - contextPath: GravityZone.Command.KillProcess.TaskID
+      description: The task ID.
+      type: String
+    - contextPath: GravityZone.Command.KillProcess.TaskType
+      description: The task type.
+      type: String
+    - contextPath: GravityZone.Command.KillProcess.EndpointID
+      description: The endpoint ID.
+      type: String
+    - contextPath: GravityZone.Command.KillProcess.Hostname
+      description: The endpoint name.
+      type: String
+    - contextPath: GravityZone.Command.KillProcess.Status
+      description: The command status.
+      type: String
+    - contextPath: GravityZone.Command.KillProcess.ErrorCode
+      description: The command error code, or "Success".
+      type: String
+    - contextPath: GravityZone.Command.KillProcess.Error
+      description: The command error message, or "Success".
+      type: String
+    - contextPath: GravityZone.Command.KillProcess.StartDate
+      description: The start date of the command execution.
+      type: Date
+    - contextPath: GravityZone.Command.KillProcess.EndDate
+      description: The end date of the command execution.
+      type: Date
+    - contextPath: GravityZone.Command.KillProcess.ProcessID
+      description: The process ID.
+      type: Number
+    - contextPath: GravityZone.Command.KillProcess.ProcessPath
+      description: The process path.
+      type: String
+
+  - name: gz-run-command-on-endpoint
+    description: Runs a command on the endpoint. The applied policy must have Remote Shell enabled for this action to work.
+    execution: true
+    polling: true
+    arguments:
+    - name: id
+      isArray: false
+      description: The ID of the endpoint on which to run the command.
+      required: true
+      secret: false
+      default: false
+    - name: command
+      isArray: false
+      description: The command to run on the endpoint.
+      required: true
+      secret: false
+      default: false
+    outputs:
+    - contextPath: GravityZone.Command.RunCommand.ActivityID
+      description: The activity ID.
+      type: String
+    - contextPath: GravityZone.Command.RunCommand.ActivityType
+      description: The activity type.
+      type: String
+    - contextPath: GravityZone.Command.RunCommand.Status
+      description: The command status.
+      type: String
+    - contextPath: GravityZone.Command.RunCommand.EndpointID
+      description: The endpoint ID.
+      type: String
+    - contextPath: GravityZone.Command.RunCommand.ErrorCode
+      description: The command error code, or "Success".
+      type: String
+    - contextPath: GravityZone.Command.RunCommand.Output
+      description: The command output.
+      type: String
+    - contextPath: GravityZone.Command.RunCommand.FileID
+      description: The stored file ID, when the command output cannot be extracted as an archive.
+      type: String
+    - contextPath: GravityZone.Command.RunCommand.FileName
+      description: The stored file name, when the command output cannot be extracted as an archive.
+      type: String
+
+  - name: gz-upload-file-to-endpoint
+    description: Uploads a file to an endpoint.
+    polling: true
+    arguments:
+    - name: id
+      isArray: false
+      description: The ID of the target endpoint for the file upload.
+      required: true
+      secret: false
+      default: false
+    - name: entry_id
+      isArray: false
+      description: The entry ID of the file to upload. This file needs to exist in Cortex XSOAR.
+      required: true
+      secret: false
+      default: false
+    - name: remote_location
+      isArray: false
+      description: The full folder path on the endpoint where the file will be uploaded.
+      required: true
+      secret: false
+      default: false
+    outputs:
+    - contextPath: GravityZone.Command.UploadFile.TaskID
+      description: The task ID.
+      type: String
+    - contextPath: GravityZone.Command.UploadFile.TaskType
+      description: The task type.
+      type: String
+    - contextPath: GravityZone.Command.UploadFile.EndpointID
+      description: The endpoint ID.
+      type: String
+    - contextPath: GravityZone.Command.UploadFile.Hostname
+      description: The endpoint name.
+      type: String
+    - contextPath: GravityZone.Command.UploadFile.Status
+      description: The command status.
+      type: String
+    - contextPath: GravityZone.Command.UploadFile.ErrorCode
+      description: The command error code, or "Success".
+      type: String
+    - contextPath: GravityZone.Command.UploadFile.Error
+      description: The command error message, or "Success".
+      type: String
+    - contextPath: GravityZone.Command.UploadFile.StartDate
+      description: The start date of the command execution.
+      type: Date
+    - contextPath: GravityZone.Command.UploadFile.EndDate
+      description: The end date of the command execution.
+      type: Date
+    - contextPath: GravityZone.Command.UploadFile.EntryID
+      description: The entry ID of the uploaded file.
+      type: String
+    - contextPath: GravityZone.Command.UploadFile.DestinationPath
+      description: The destination path of the uploaded file.
+      type: String
+
+  - name: gz-get-endpoints-running-process-hash
+    description: Retrieves endpoints that are running processes with a specified hash. The API key and the applied policy must allow Live Search. Endpoints must be online. The command waits up to five minutes for responses before timing out.
+    polling: true
+    arguments:
+    - name: process_hash
+      isArray: false
+      description: Hash of the process.
+      required: true
+      secret: false
+      default: false
+    outputs:
+    - contextPath: GravityZone.Command.EndpointsRunningProcessHash.EndpointID
+      description: The endpoint ID.
+      type: String
+    - contextPath: GravityZone.Command.EndpointsRunningProcessHash.Path
+      description: The Live Search results.
+      type: String
+    - contextPath: GravityZone.Command.EndpointsRunningProcessHash.ProcessHash
+      description: The process hash.
+      type: String
+
+  - name: gz-get-process-tree-for-hash-on-endpoint
+    description: Retrieves the process tree on an endpoint for a specified process hash. The applied policy must allow Live Search, and the endpoint must be online.
+    polling: true
+    arguments:
+    - name: id
+      isArray: false
+      description: The ID of the targeted endpoint.
+      required: true
+      secret: false
+      default: false
+    - name: process_hash
+      isArray: false
+      description: The hash of the process to search for.
+      required: true
+      secret: false
+      default: false
+    outputs:
+    - contextPath: GravityZone.Command.ProcessTreeForHash.EndpointID
+      description: The endpoint ID.
+      type: String
+    - contextPath: GravityZone.Command.ProcessTreeForHash.PID
+      description: The process ID.
+      type: Number
+    - contextPath: GravityZone.Command.ProcessTreeForHash.Path
+      description: The process path.
+      type: String
+    - contextPath: GravityZone.Command.ProcessTreeForHash.Cmdline
+      description: The command line used to start the process.
+      type: String
+    - contextPath: GravityZone.Command.ProcessTreeForHash.ParentPID
+      description: The parent process ID.
+      type: Number
+
+  - name: gz-get-incident-by-id
+    description: Retrieves incident details by ID.
+    arguments:
+    - name: id
+      isArray: false
+      description: The ID of the incident to fetch.
+      required: true
+      secret: false
+      default: false
+    outputs:
+    - contextPath: GravityZone.Incident.ID
+      description: The incident ID.
+      type: String
+    - contextPath: GravityZone.Incident.Type
+      description: The incident type ('incident' / 'extendedIncident').
+      type: String
+    - contextPath: GravityZone.Incident.Company.Name
+      description: The GravityZone company name where the incident is located.
+      type: String
+    - contextPath: GravityZone.Incident.Company.ID
+      description: The GravityZone company ID where the incident is located.
+      type: String
+    - contextPath: GravityZone.Incident.Number
+      description: The incident number (specific to the company).
+      type: Number
+    - contextPath: GravityZone.Incident.Severity.Score
+      description: The incident severity score (0 - 100).
+      type: Number
+    - contextPath: GravityZone.Incident.Status
+      description: The incident status.
+      type: Number
+    - contextPath: GravityZone.Incident.ActionTaken
+      description: The action taken by the detecting technology ('reported' / 'blocked' / 'partially_blocked').
+      type: String
+    - contextPath: GravityZone.Incident.Created
+      description: The date when the incident was detected on the endpoint / sensor.
+      type: Date
+    - contextPath: GravityZone.Incident.LastUpdated
+      description: The date when the incident was last updated in GravityZone or by the endpoint / sensor.
+      type: Date
+    - contextPath: GravityZone.Incident.LastProcessed
+      description: The date when the incident was last processed by GravityZone services.
+      type: Date
+    - contextPath: GravityZone.Incident.Permalink
+      description: The incident URL in the GravityZone Console.
+      type: String
+    - contextPath: GravityZone.Incident.AssignedPriority
+      description: The priority assigned to the incident ('unknown' / 'low' / 'medium' / 'high' / 'critical').
+      type: String
+    - contextPath: GravityZone.Incident.Notes.Text
+      description: The note contents.
+      type: String
+    - contextPath: GravityZone.Incident.Notes.User
+      description: The username (email) of the user who wrote the note.
+      type: String
+    - contextPath: GravityZone.Incident.Notes.Date
+      description: The note creation date.
+      type: Date
+    - contextPath: GravityZone.Incident.Alerts.Name
+      description: The alert name.
+      type: String
+    - contextPath: GravityZone.Incident.Alerts.Date
+      description: The date of when the alert was generated.
+      type: Date
+    - contextPath: GravityZone.Incident.Alerts.Sensors
+      description: The list of sensors that generated the alert. Available only for 'extendedIncident'-type incidents.
+      type: String
+    - contextPath: GravityZone.Incident.Alerts.Tactic
+      description: The list of sensors that generated the alert. Available only for 'extendedIncident'-type incidents.
+      type: String
+    - contextPath: GravityZone.Incident.Alerts.Resources
+      description: The list of resources involved in the 'incident'-type incidents.
+      type: Unknown
+    - contextPath: GravityZone.Incident.RawJSON
+      description: The raw JSON response from the GravityZone API.
+      type: Unknown
+
+  - name: gz-list-incidents
+    description: Retrieves incidents within the last three days from all endpoints or a specific endpoint.
+    arguments:
+    - name: endpoint_id
+      isArray: false
+      description: The ID of the endpoint to list incidents for.
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: GravityZone.SummarizedIncidents.ID
+      description: The incident ID.
+      type: String
+    - contextPath: GravityZone.SummarizedIncidents.Type
+      description: The incident type ('incident' / 'extendedIncident').
+      type: String
+    - contextPath: GravityZone.SummarizedIncidents.CompanyName
+      description: The GravityZone company name where the incident is located.
+      type: String
+    - contextPath: GravityZone.SummarizedIncidents.Number
+      description: The incident number (specific to the company).
+      type: Number
+    - contextPath: GravityZone.SummarizedIncidents.SeverityScore
+      description: The incident severity score (0 - 100).
+      type: Number
+    - contextPath: GravityZone.SummarizedIncidents.Status
+      description: The incident status.
+      type: Number
+    - contextPath: GravityZone.SummarizedIncidents.ActionTaken
+      description: The action taken by the detecting technology ('reported' / 'blocked' / 'partially_blocked').
+      type: String
+    - contextPath: GravityZone.SummarizedIncidents.Created
+      description: The date when the incident was detected on the endpoint / sensor.
+      type: Date
+    - contextPath: GravityZone.SummarizedIncidents.LastUpdated
+      description: The date when the incident was last updated in GravityZone or by the endpoint / sensor.
+      type: Date
+    - contextPath: GravityZone.SummarizedIncidents.LastProcessed
+      description: The incident last processed date by GravityZone services.
+      type: Date
+    - contextPath: GravityZone.SummarizedIncidents.Permalink
+      description: The incident URL in the GravityZone Console.
+      type: String
+    - contextPath: GravityZone.SummarizedIncidents.AssignedPriority
+      description: The priority assigned to the incident ('unknown' / 'low' / 'medium' / 'high' / 'critical').
+      type: String
+    - contextPath: GravityZone.SummarizedIncidents.AssignedUserId
+      description: The ID of the user assigned to the incident.
+      type: String
+    - contextPath: GravityZone.SummarizedIncidents.RawJSON
+      description: The raw JSON response from the GravityZone API.
+      type: Unknown
+
+  - name: gz-add-incident-note
+    description: Adds a note to one or more incidents.
+    arguments:
+    - name: id
+      isArray: true
+      description: The IDs of the incidents to add a note to. Supports comma separated values.
+      required: true
+      secret: false
+      default: false
+    - name: note
+      isArray: false
+      description: The note to add to the incidents.
+      required: true
+      secret: false
+      default: false
+    outputs:
+    - contextPath: GravityZone.Command.AddIncidentNote.IncidentID
+      description: The incident ID.
+      type: String
+    - contextPath: GravityZone.Command.AddIncidentNote.Note
+      description: The requested note.
+      type: String
+    - contextPath: GravityZone.Command.AddIncidentNote.CommandStatus
+      description: The command status.
+      type: String
+
+  - name: gz-change-incident-status
+    description: Changes the status of one or more incidents.
+    arguments:
+    - name: id
+      isArray: true
+      description: The IDs of the incidents to update. Supports comma separated values.
+      required: true
+      secret: false
+      default: false
+    - name: status
+      isArray: false
+      description: The new status of the incidents.
+      required: true
+      secret: false
+      default: false
+      predefined:
+      - PENDING
+      - ACTIVE
+      - DONE
+      - ARCHIVE
+      auto: PREDEFINED
+    outputs:
+    - contextPath: GravityZone.Command.ChangeIncidentStatus.IncidentID
+      description: The incident ID.
+      type: Unknown
+    - contextPath: GravityZone.Command.ChangeIncidentStatus.IncidentStatus
+      description: The requested status of the incident.
+      type: String
+    - contextPath: GravityZone.Command.ChangeIncidentStatus.CommandStatus
+      description: The command status.
+      type: String
+
+  - name: gz-poll-investigation-activity-status
+    description: Checks the status of an investigation activity. This command is not intended for direct use.
+    polling: true
+    arguments:
+    - name: target_id
+      isArray: false
+      description: The endpoint ID.
+      required: true
+      secret: false
+      default: false
+    - name: activity_id
+      isArray: false
+      description: The activity ID.
+      required: true
+      secret: false
+      default: false
+    - name: output_file
+      isArray: false
+      description: The path of the output file.
+      required: false
+      secret: false
+      default: false
+    - name: metadata
+      isArray: false
+      description: The metadata to pass to the task.
+      required: false
+      secret: false
+      default: false
+    outputs: []
+
+  - name: gz-poll-live-search-status
+    description: Checks the status of a Live Search query. This command is not intended for direct use.
+    polling: true
+    arguments:
+    - name: task_id
+      isArray: false
+      description: The task ID.
+      required: true
+      secret: false
+      default: false
+    - name: search_type
+      isArray: false
+      description: The Live Search query type.
+      required: false
+      secret: false
+      default: false
+    - name: metadata
+      isArray: false
+      description: The metadata to pass to the task.
+      required: false
+      secret: false
+      default: false
+    outputs: []
+  - name: gz-poll-task-status
+    description: Checks the status of a task. This command is not intended for direct use.
+    polling: true
+    arguments:
+    - name: task_id
+      isArray: false
+      description: The task ID.
+      required: true
+      secret: false
+      default: false
+    - name: metadata
+      isArray: false
+      description: The metadata to pass to the task.
+      required: false
+      secret: false
+      default: false
+    outputs: []
+  - name: get-modified-remote-data
+    description: Retrieves incidents that were modified since the last data sync. This command is intended for debugging purposes.
+    arguments:
+    - name: lastUpdate
+      isArray: false
+      description: The time when the incident was last updated.
+      required: true
+      secret: false
+      default: false
+    outputs: []
+
+  - name: get-remote-data
+    description: Retrieves data from a remote incident without updating the current incident. This command is intended for debugging purposes.
+    arguments:
+    - name: id
+      isArray: false
+      description: The ID of the incident to fetch.
+      required: true
+      secret: false
+      default: false
+    - name: lastUpdate
+      isArray: false
+      description: The time when the incident was last updated.
+      required: true
+      secret: false
+      default: false
+    outputs: []
+
+  - name: update-remote-system
+    description: Updates the remote incident with local incident changes without updating the current incident. This command is intended for debugging purposes.
+
+  - name: get-mapping-fields
+    description: Returns the list of fields available for outgoing mirroring. This command is intended for debugging purposes only.
+    arguments: []
+    outputs: []
+
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.7.117934
+  feed: false
+  isfetch: true
+  runonce: false
+  longRunning: false
+  longRunningPort: false
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
+fromversion: 6.10.0
+marketplaces:
+- xsoar
+tests:
+- No tests (auto formatted)

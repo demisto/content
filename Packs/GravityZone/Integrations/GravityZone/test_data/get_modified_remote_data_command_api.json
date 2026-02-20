@@ -1,0 +1,143 @@
+[
+  {
+    "request": {
+      "url": "/api/v1.2/jsonrpc/incidents",
+      "method": "getIncidentsList",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getIncidentsList",
+        "params": {
+          "filters": {
+            "startDate": "2025-12-13T13:00:00+0000",
+            "endDate": "2025-12-16T13:00:00+0000"
+          },
+          "options": {
+            "includeChildCompanies": true
+          },
+          "page": 1,
+          "perPage": 1000
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "total": 6,
+        "page": 1,
+        "perPage": 1000,
+        "pagesCount": 1,
+        "items": [
+          {
+            "incidentId": "6940ee975f5c8b75247c3f38",
+            "incidentNumber": 471,
+            "status": "in_progress",
+            "mainAction": "blocked",
+            "created": "2025-12-16T07:30:29+02:00",
+            "lastUpdated": "2025-12-16T07:34:27+02:00",
+            "lastProcessed": "2025-12-16T07:35:02+02:00",
+            "severityScore": 52,
+            "incidentLink": "https://localhost/#!/incidents/view/6940ee975f5c8b75247c3f38",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [
+              "Other"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "incident",
+            "details": {
+              "detectionName": "Cloud Virus",
+              "counters": {
+                "endpoints": 1,
+                "files": 0,
+                "processes": 10,
+                "domains": 15,
+                "registries": 1,
+                "events": 36,
+                "storages": 0
+              },
+              "computerId": "67c87017f3e11f09dc9143e8",
+              "computerName": "HOST_NAME",
+              "computerFqdn": "HOST_NAME",
+              "computerIp": "IP_158",
+              "computerMacAddresses": [
+                "005056b1ef97"
+              ],
+              "partOf": [
+                {
+                  "incidentId": "6940eeadaa87b3d57af088aa",
+                  "incidentLink": "https://localhost/#!/incidents/view/6940eeadaa87b3d57af088aa"
+                }
+              ]
+            }
+          },
+          {
+            "incidentId": "6940eeadaa87b3d57af088aa",
+            "incidentNumber": 472,
+            "status": "open",
+            "mainAction": "blocked",
+            "created": "2025-12-16T07:30:17+02:00",
+            "lastUpdated": "2025-12-16T07:30:17+02:00",
+            "lastProcessed": "2025-12-16T07:35:02+02:00",
+            "severityScore": 51,
+            "incidentLink": "https://localhost/#!/incidents/view/6940eeadaa87b3d57af088aa",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "extendedIncident",
+            "details": {
+              "counters": {
+                "endpoints": 1,
+                "servers": 0,
+                "mobileDevices": 0,
+                "printers": 0,
+                "routers": 0,
+                "IoTs": 0,
+                "identities": 0,
+                "emails": 0,
+                "IPs": 0,
+                "domains": 1,
+                "DNSs": 0,
+                "DGAs": 0,
+                "cloudStorages": 0,
+                "torNodes": 0,
+                "externalDrives": 0,
+                "externalSources": 1,
+                "exfiltratedFiles": 0,
+                "internalIPs": 0,
+                "internalEmails": 0,
+                "users": 0,
+                "virtualDesktops": 0,
+                "containers": 0,
+                "databases": 0,
+                "storages": 0,
+                "office365Instances": 0,
+                "ADInstances": 0,
+                "azureADInstances": 0,
+                "AWSInstances": 0,
+                "GCPInstances": 0,
+                "googleWorkspaceInstances": 0,
+                "atlassianInstances": 0,
+                "atlassianBitbucketProducts": 0,
+                "atlassianJiraProducts": 0,
+                "atlassianConfluenceProducts": 0,
+                "bitbucketProjects": 0,
+                "confluenceSpaces": 0
+              },
+              "contains": [],
+              "partOf": []
+            }
+          }
+        ]
+      }
+    }
+  }
+]

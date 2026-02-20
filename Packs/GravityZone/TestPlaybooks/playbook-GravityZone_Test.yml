@@ -1,0 +1,1820 @@
+id: GravityZone
+version: -1
+name: GravityZone
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8e7c91f3-b29f-41af-8e06-1607fd38f59e
+    type: start
+    task:
+      id: 8e7c91f3-b29f-41af-8e06-1607fd38f59e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 9f7cbb93-2961-4fa3-820a-2ec475ddba15
+    type: regular
+    task:
+      id: 9f7cbb93-2961-4fa3-820a-2ec475ddba15
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: fe4eb3f5-e38d-4d43-8433-1d9cf5ea3553
+    type: regular
+    task:
+      id: fe4eb3f5-e38d-4d43-8433-1d9cf5ea3553
+      version: -1
+      name: gz-list-endpoints
+      script: GravityZone|||gz-list-endpoints
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -940,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 0595afb1-5b06-4acd-8df3-04fd09b34429
+    type: regular
+    task:
+      id: 0595afb1-5b06-4acd-8df3-04fd09b34429
+      version: -1
+      name: endpoint
+      script: GravityZone|||endpoint
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      id:
+        simple: 6942a43afe8d4e463ca5c197
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 5b27ebd9-0e01-425b-8f05-85cb8745ea9d
+    type: condition
+    task:
+      id: 5b27ebd9-0e01-425b-8f05-85cb8745ea9d
+      version: -1
+      name: Verify Outputs
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endpoint.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endpoint.Hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endpoint.IPAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endpoint.OS
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endpoint.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endpoint.Vendor
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: dad1db7b-7066-4686-841b-70721872bade
+    type: regular
+    task:
+      id: dad1db7b-7066-4686-841b-70721872bade
+      version: -1
+      name: gz-get-endpoint-by-id
+      script: GravityZone|||gz-get-endpoint-by-id
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      id:
+        simple: 6942a43afe8d4e463ca5c197
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 0ce303c2-ea60-47d0-88ef-ee167b6d344a
+    type: condition
+    task:
+      id: 0ce303c2-ea60-47d0-88ef-ee167b6d344a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Endpoint.ID
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Endpoint.Hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Endpoint.IP
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Endpoint.OS
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Endpoint.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Endpoint.Vendor
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: GravityZone.Endpoint.LastLoggedUsers
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 3e5d1dae-14b1-482b-82d2-6931f6f9c237
+    type: regular
+    task:
+      id: 3e5d1dae-14b1-482b-82d2-6931f6f9c237
+      version: -1
+      name: gz-download-investigation-package-from-endpoint
+      script: GravityZone|||gz-download-investigation-package-from-endpoint
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      id:
+        simple: 6942a43afe8d4e463ca5c197
+      output_file:
+        simple: investigation_package.zip
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 4bd0cf6e-fc52-4696-8087-d5e79d063640
+    type: condition
+    task:
+      id: 4bd0cf6e-fc52-4696-8087-d5e79d063640
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.DownloadFile.EndpointID
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.DownloadFile.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.DownloadFile.OutputFile
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.DownloadFile.FileID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA512
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SSDeep
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.EntryID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Info
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: bbba8842-0db4-4276-8e69-3cd9bc4f1e27
+    type: regular
+    task:
+      id: bbba8842-0db4-4276-8e69-3cd9bc4f1e27
+      version: -1
+      name: gz-download-file-from-endpoint
+      script: GravityZone|||gz-download-file-from-endpoint
+      type: regular
+      iscommand: true
+      brand: GravityZone
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      id:
+        simple: 6942a43afe8d4e463ca5c197
+      output_file:
+        simple: downloaded_file.gzip
+      remote_file:
+        simple: /root/test/test.txt
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: fb1bf42c-0373-4c40-8ca4-51b05ef25216
+    type: condition
+    task:
+      id: fb1bf42c-0373-4c40-8ca4-51b05ef25216
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.DownloadFile.EndpointID
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.DownloadFile.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.DownloadFile.OutputFile
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.DownloadFile.FileID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA512
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SSDeep
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.EntryID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Info
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 1cf27364-1c9e-403a-8284-ef93990acccd
+    type: regular
+    task:
+      id: 1cf27364-1c9e-403a-8284-ef93990acccd
+      version: -1
+      name: gz-isolate-endpoint
+      script: GravityZone|||gz-isolate-endpoint
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      id:
+        simple: 6942a43afe8d4e463ca5c197
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 8417f92e-89fe-4ffa-81f2-bf331c398691
+    type: condition
+    task:
+      id: 8417f92e-89fe-4ffa-81f2-bf331c398691
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.Isolate.TaskID
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.Isolate.TaskType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.Isolate.EndpointID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.Isolate.Hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.Isolate.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.Isolate.ErrorCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.Isolate.Error
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.Isolate.StartDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.Isolate.EndDate
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 52af4b37-2e2c-4cf1-8e66-642193009660
+    type: regular
+    task:
+      id: 52af4b37-2e2c-4cf1-8e66-642193009660
+      version: -1
+      name: gz-deisolate-endpoint
+      script: GravityZone|||gz-deisolate-endpoint
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      id:
+        simple: 6942a43afe8d4e463ca5c197
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: fc9dbcb3-86b2-4a10-87c3-16c893b29b15
+    type: condition
+    task:
+      id: fc9dbcb3-86b2-4a10-87c3-16c893b29b15
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.Deisolate.TaskID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.Deisolate.TaskType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.Deisolate.EndpointID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.Deisolate.Hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.Deisolate.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.Deisolate.ErrorCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.Deisolate.Error
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.Deisolate.StartDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.Deisolate.EndDate
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 0cf940fd-6601-4a25-89b5-1bec28ffbd98
+    type: regular
+    task:
+      id: 0cf940fd-6601-4a25-89b5-1bec28ffbd98
+      version: -1
+      name: gz-kill-process-on-endpoint
+      script: GravityZone|||gz-kill-process-on-endpoint
+      type: regular
+      iscommand: true
+      brand: GravityZone
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      id:
+        simple: 6942a43afe8d4e463ca5c197
+      pid:
+        simple: "235795"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 8617fe52-fc52-4e05-8349-21eb3006a283
+    type: condition
+    task:
+      id: 8617fe52-fc52-4e05-8349-21eb3006a283
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.KillProcess.TaskID
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.KillProcess.TaskType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.KillProcess.EndpointID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.KillProcess.Hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.KillProcess.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.KillProcess.ErrorCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.KillProcess.Error
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.KillProcess.StartDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.KillProcess.EndDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.KillProcess.ProcessID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: GravityZone.Command.KillProcess.ProcessPath
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 4bb49da0-c4a5-4ac3-8fc4-3a0dac95fde7
+    type: regular
+    task:
+      id: 4bb49da0-c4a5-4ac3-8fc4-3a0dac95fde7
+      version: -1
+      name: gz-upload-file-to-endpoint
+      script: GravityZone|||gz-upload-file-to-endpoint
+      type: regular
+      iscommand: true
+      brand: GravityZone
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      entry_id:
+        simple: ${File.EntryID}
+      id:
+        simple: 6942a43afe8d4e463ca5c197
+      remote_location:
+        simple: /root/test/
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 55fb2f40-1f49-4a01-8856-a03431a5abec
+    type: condition
+    task:
+      id: 55fb2f40-1f49-4a01-8856-a03431a5abec
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.UploadFile.TaskID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.UploadFile.TaskType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.UploadFile.EndpointID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.UploadFile.Hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.UploadFile.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.UploadFile.ErrorCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.UploadFile.Error
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.UploadFile.StartDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.UploadFile.EndDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.UploadFile.EntryID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.UploadFile.DestinationPath
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 1365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 39845517-3284-49d3-8f8b-b04b13dfca09
+    type: regular
+    task:
+      id: 39845517-3284-49d3-8f8b-b04b13dfca09
+      version: -1
+      name: gz-get-endpoints-running-process-hash
+      script: GravityZone|||gz-get-endpoints-running-process-hash
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      process_hash:
+        simple: b8412bcc6f47b2a11e4c39bc1bc9fab74969ff0648ba22db4c5254a0457af0c7
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: ca71f89e-39ea-4ef8-8db4-57b7e9af9554
+    type: condition
+    task:
+      id: ca71f89e-39ea-4ef8-8db4-57b7e9af9554
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.EndpointsRunningProcessHash.EndpointID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.EndpointsRunningProcessHash.Path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.EndpointsRunningProcessHash.ProcessHash
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: d2e2ce49-edd5-4b6b-8311-de8a4264ac06
+    type: regular
+    task:
+      id: d2e2ce49-edd5-4b6b-8311-de8a4264ac06
+      version: -1
+      name: gz-get-process-tree-for-hash-on-endpoint
+      script: GravityZone|||gz-get-process-tree-for-hash-on-endpoint
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      id:
+        simple: 6942a43afe8d4e463ca5c197
+      process_hash:
+        simple: b8412bcc6f47b2a11e4c39bc1bc9fab74969ff0648ba22db4c5254a0457af0c7
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: d534c159-a3bf-491c-8945-632f9279848d
+    type: condition
+    task:
+      id: d534c159-a3bf-491c-8945-632f9279848d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.ProcessTreeForHash.EndpointID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.ProcessTreeForHash.PID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.ProcessTreeForHash.Path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.ProcessTreeForHash.Cmdline
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.ProcessTreeForHash.ParentPID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: a19bb687-7205-4299-8877-e013b713adcb
+    type: regular
+    task:
+      id: a19bb687-7205-4299-8877-e013b713adcb
+      version: -1
+      name: gz-get-incident-by-id
+      script: GravityZone|||gz-get-incident-by-id
+      type: regular
+      iscommand: true
+      brand: GravityZone
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      id:
+        simple: 694255755f5c8b75247c7ce2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 927c57cf-256b-476f-8df3-a52e31c3ec6c
+    type: condition
+    task:
+      id: 927c57cf-256b-476f-8df3-a52e31c3ec6c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Incident.ID
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Incident.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Incident.Company.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Incident.Company.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Incident.Number
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Incident.Severity.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Incident.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Incident.ActionTaken
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Incident.Created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Incident.LastUpdated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Incident.LastProcessed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Incident.Permalink
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Incident.RawJSON
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 9749dcc3-148d-4e88-8552-9b1d0a09d3a0
+    type: regular
+    task:
+      id: 9749dcc3-148d-4e88-8552-9b1d0a09d3a0
+      version: -1
+      name: gz-list-incidents
+      script: GravityZone|||gz-list-incidents
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      endpoint_id:
+        simple: 694148bffe8d4e463ca5bd1e
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 1750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 0ec456f4-f061-47df-865d-3133214f197d
+    type: condition
+    task:
+      id: 0ec456f4-f061-47df-865d-3133214f197d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.SummarizedIncidents.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.SummarizedIncidents.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.SummarizedIncidents.CompanyName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.SummarizedIncidents.Number
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.SummarizedIncidents.SeverityScore
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.SummarizedIncidents.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.SummarizedIncidents.Created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.SummarizedIncidents.LastUpdated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.SummarizedIncidents.LastProcessed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.SummarizedIncidents.Permalink
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.SummarizedIncidents.AssignedPriority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.SummarizedIncidents.RawJSON
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 1940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: f4c1aa68-a8ab-4ede-81c5-bebc919797bb
+    type: regular
+    task:
+      id: f4c1aa68-a8ab-4ede-81c5-bebc919797bb
+      version: -1
+      name: gz-add-incident-note
+      script: GravityZone|||gz-add-incident-note
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      id:
+        simple: 694255755f5c8b75247c7ce2
+      note:
+        simple: InvestigationInProgress
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 44e0e2b6-ef32-4ba1-8b18-6988583de26f
+    type: condition
+    task:
+      id: 44e0e2b6-ef32-4ba1-8b18-6988583de26f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.AddIncidentNote.IncidentID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.AddIncidentNote.Note
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.AddIncidentNote.CommandStatus
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 1940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: b86579a6-ac64-43a1-89c7-4446f5425e3a
+    type: regular
+    task:
+      id: b86579a6-ac64-43a1-89c7-4446f5425e3a
+      version: -1
+      name: gz-change-incident-status
+      script: GravityZone|||gz-change-incident-status
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      id:
+        simple: 694255755f5c8b75247c7ce2
+      status:
+        simple: ACTIVE
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1310,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 03847190-793d-4485-8388-04b91d4f527c
+    type: condition
+    task:
+      id: 03847190-793d-4485-8388-04b91d4f527c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.ChangeIncidentStatus.IncidentID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.ChangeIncidentStatus.IncidentStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.ChangeIncidentStatus.CommandStatus
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1310,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 6fda4448-8bef-41b2-8700-7c7226305834
+    type: title
+    task:
+      id: 6fda4448-8bef-41b2-8700-7c7226305834
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 2230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 558f73d8-e6eb-4abc-8a39-8301217a9c58
+    type: regular
+    task:
+      id: 558f73d8-e6eb-4abc-8a39-8301217a9c58
+      version: -1
+      name: gz-run-command-on-endpoint
+      description: Runs a command on the endpoint. The applied policy must have Remote Shell enabled for this action to work.
+      script: '|||gz-run-command-on-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      command:
+        simple: ls -lha /root/test;
+      id:
+        simple: 6942a43afe8d4e463ca5c197
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -670,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: ee65177f-c706-4d8f-8615-c1085e3efd26
+    type: condition
+    task:
+      id: ee65177f-c706-4d8f-8615-c1085e3efd26
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.RunCommand.EndpointID
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.RunCommand.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.RunCommand.Command
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Command.RunCommand.Output
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -670,
+          "y": 705
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_11_yes": 0.9,
+      "4_5_yes": 0.48,
+      "6_7_yes": 0.48,
+      "8_9_yes": 0.87
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2245,
+        "width": 2630,
+        "x": -940,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.10.0
+description: Test playbook for GravityZone integration.

@@ -1,0 +1,29 @@
+{
+    "name": "GravityZone",
+    "description": "Retrieve security events and threats from GravityZone and manage the incident response",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Bitdefender",
+    "url": "https://www.bitdefender.com/en-us/business/gravityzone-platform/",
+    "email": "",
+    "categories": [
+        "Endpoint"
+    ],
+    "tags": [
+        "Alerts",
+        "Incident Response"
+    ],
+    "useCases": [
+        "Malware",
+        "Incident Response"
+    ],
+    "keywords": [
+        "GravityZone",
+        "Bitdefender",
+        "EDR"
+    ],
+    "marketplaces": [
+        "xsoar"
+    ],
+    "githubUser": []
+}

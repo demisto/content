@@ -1,0 +1,89 @@
+[
+  {
+    "request": {
+      "url": "/api/v1.0/jsonrpc/internal",
+      "method": "runPredefinedLiveSearchQuery",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "runPredefinedLiveSearchQuery",
+        "params": {
+          "endpoints": [
+            "ENDPOINT_ID"
+          ],
+          "queryType": "QUERY_PROCESS_PER_HASH",
+          "querySpecifics": {
+            "hash": "PROCESS_HASH"
+          }
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": "694268c5e6849749f7093318"
+    }
+  },
+  {
+    "request": {
+      "url": "/api/v1.0/jsonrpc/internal",
+      "method": "getLiveSearchQueryTaskResult",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getLiveSearchQueryTaskResult",
+        "params": {
+          "taskId": "694268c5e6849749f7093318",
+          "page": 1,
+          "perPage": 5000
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "error": {
+        "code": -32602,
+        "message": "Invalid params",
+        "data": {
+          "details": "No results found for the selected filters."
+        }
+      }
+    }
+  },
+  {
+    "request": {
+      "url": "/api/v1.0/jsonrpc/internal",
+      "method": "getLiveSearchQueryTaskResult",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getLiveSearchQueryTaskResult",
+        "params": {
+          "taskId": "694268c5e6849749f7093318",
+          "page": 1,
+          "perPage": 5000
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "total": 1,
+        "page": 1,
+        "perPage": 5000,
+        "pagesCount": 1,
+        "items": [
+          {
+            "_id": "694268cae91975226b9f9945",
+            "protectedEntityId": "ENDPOINT_ID",
+            "companyId": "COMPANY_ID",
+            "taskId": "694268c5e6849749f7093318",
+            "results": "{\"cmdline\":\"C:\\\\WINDOWS\\\\Explorer.EXE\",\"parent\":\"5180\",\"path\":\"C:\\\\Windows\\\\explorer.exe\",\"pid\":\"5212\"}"
+          }
+        ]
+      }
+    }
+  }
+]

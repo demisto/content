@@ -1,0 +1,1496 @@
+[
+  {
+    "request": {
+      "url": "/api/v1.2/jsonrpc/incidents",
+      "method": "getIncident",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getIncident",
+        "params": {
+          "id": "6940ee975f5c8b75247c3f38"
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "incidentId": "6940ee975f5c8b75247c3f38",
+        "incidentNumber": 471,
+        "status": "in_progress",
+        "mainAction": "blocked",
+        "created": "2025-12-16T07:30:29+02:00",
+        "lastUpdated": "2025-12-16T07:34:27+02:00",
+        "lastProcessed": "2025-12-16T07:35:02+02:00",
+        "severityScore": 52,
+        "incidentLink": "https://localhost/#!/incidents/view/6940ee975f5c8b75247c3f38",
+        "assignee": null,
+        "priority": "high",
+        "attackTypes": [
+          "Other"
+        ],
+        "company": {
+          "id": "COMPANY_ID",
+          "name": "COMPANY_NAME"
+        },
+        "incidentType": "incident",
+        "details": {
+          "detectionName": "Cloud Virus",
+          "counters": {
+            "endpoints": 1,
+            "files": 0,
+            "processes": 10,
+            "domains": 15,
+            "registries": 1,
+            "events": 36,
+            "storages": 0
+          },
+          "computerId": "67c87017f3e11f09dc9143e8",
+          "computerName": "HOST_NAME",
+          "computerFqdn": "HOST_NAME",
+          "computerIp": "IP_158",
+          "computerMacAddresses": [
+            "005056b1ef97"
+          ],
+          "partOf": [
+            {
+              "incidentId": "6940eeadaa87b3d57af088aa",
+              "incidentLink": "https://localhost/#!/incidents/view/6940eeadaa87b3d57af088aa"
+            }
+          ],
+          "alerts": [
+            {
+              "id": "6940eede5f5c8b75247c3f62",
+              "name": "ServicesKeyAccessed",
+              "date": "2025-12-16T07:30:28+02:00",
+              "detectedBy": {
+                "name": "ServicesKeyAccessed",
+                "class": "EDR Detection"
+              },
+              "resources": [
+                {
+                  "type": "process",
+                  "details": {
+                    "pid": 10216,
+                    "processPath": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                    "processPathSize": null,
+                    "commandLine": "\"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe\" http://localhost/malware",
+                    "parentPid": 4440,
+                    "parentProcessPath": "c:\\windows\\system32\\cmd.exe",
+                    "parentProcessCmdline": "\"C:\\Windows\\System32\\cmd.exe\" /c start chrome http://localhost/malware",
+                    "parentProcessUser": "USER_NAME",
+                    "user": "USER_NAME",
+                    "loadedModule": null,
+                    "loadedModulePid": null,
+                    "processInjectionWriter": null,
+                    "processInjectionWriterPid": null,
+                    "processInjectionTarget": null,
+                    "processInjectionTargetPid": null,
+                    "processInjectionSizeofWrite": null,
+                    "processAccessPrivileges": "restricted",
+                    "parentProcessAccessPrivileges": "restricted",
+                    "processIntegrityLevel": "medium",
+                    "parentProcessIntegrityLevel": "medium",
+                    "processPackerName": null
+                  }
+                },
+                {
+                  "type": "registry",
+                  "details": {
+                    "registryKey": "HKLM\\SYSTEM\\ControlSet001\\Services\\bam\\State\\UserSettings\\S-1-5-21-2770980983-2613485856-420902219-1001",
+                    "registryValue": "\\Device\\HarddiskVolume2\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+                    "registryData": null,
+                    "registryType": "REG_BINARY",
+                    "registryAccessType": "WRITE"
+                  }
+                }
+              ],
+              "extra": [
+                {
+                  "key": "extraInfo1",
+                  "value": "Operation Channel: normal\nProcess PE VersionInfo and Certification Information: \n\nOriginal File Name: chrome.exe\nInternal Name: chrome_exe\nFile Description: Google Chrome\nCompany Name: Google LLC\nFile Version: 143.0.7499.109\nProduct Name: Google Chrome\nProduct Version: 143.0.7499.109\nLegal Copyright: Copyright 2025 Google LLC. All rights reserved.\nCertificate Serial: 0b50cf246b263efd85a729315158f3ff\nCertificate Signer: Google LLC\nCertificate Issuer: DigiCert, Inc.\n\nWorking Directory: c:\\windows\\system32\\"
+                }
+              ]
+            },
+            {
+              "id": "6940eede5f5c8b75247c3f67",
+              "name": "WMIListProcessor",
+              "date": "2025-12-16T07:30:29+02:00",
+              "detectedBy": {
+                "name": "WMIListProcessor",
+                "class": "EDR Detection"
+              },
+              "resources": [
+                {
+                  "type": "process",
+                  "details": {
+                    "pid": 11096,
+                    "processPath": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                    "processPathSize": null,
+                    "commandLine": "\"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe\" --type=utility --utility-sub-type=chrome.mojom.ProcessorMetrics --lang=en-US --service-sandbox-type=none --no-pre-read-main-dll  --field-trial-handle=2044,i,17229225074585599307,5132828454613024871,262144 --variations-seed-version --trace-process-track-uuid=3190708992871164437  /prefetch:8",
+                    "parentPid": 10216,
+                    "parentProcessPath": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                    "parentProcessCmdline": "\"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe\" http://localhost/malware",
+                    "parentProcessUser": "USER_NAME",
+                    "user": "USER_NAME",
+                    "loadedModule": null,
+                    "loadedModulePid": null,
+                    "processInjectionWriter": null,
+                    "processInjectionWriterPid": null,
+                    "processInjectionTarget": null,
+                    "processInjectionTargetPid": null,
+                    "processInjectionSizeofWrite": null,
+                    "processAccessPrivileges": "restricted",
+                    "parentProcessAccessPrivileges": "restricted",
+                    "processIntegrityLevel": "medium",
+                    "parentProcessIntegrityLevel": "medium",
+                    "processPackerName": null
+                  }
+                }
+              ],
+              "extra": [
+                {
+                  "key": "wmiNewActivity",
+                  "value": "Exec Query"
+                },
+                {
+                  "key": "wmiNewActivityOperation",
+                  "value": "Start IWbemServices::ExecQuery - ROOT\\CIMV2 : SELECT Family,VirtualizationFirmwareEnabled FROM Win32_Processor"
+                },
+                {
+                  "key": "extraInfo1",
+                  "value": "\nProcess PE VersionInfo and Certification Information: \nOriginal File Name: chrome.exe\nInternal Name: chrome_exe\nFile Description: Google Chrome\nCompany Name: Google LLC\nFile Version: 143.0.7499.109\nProduct Name: Google Chrome\nProduct Version: 143.0.7499.109\nLegal Copyright: Copyright 2025 Google LLC. All rights reserved.\nCertificate Serial: 0b50cf246b263efd85a729315158f3ff\nCertificate Signer: Google LLC\nCertificate Issuer: DigiCert, Inc.\n\nWorking Directory: c:\\program files\\google\\chrome\\application\\143.0.7499.109\\"
+                }
+              ]
+            },
+            {
+              "id": "6940eede5f5c8b75247c3f68",
+              "name": "WMISystemDiscovery",
+              "date": "2025-12-16T07:30:29+02:00",
+              "detectedBy": {
+                "name": "WMISystemDiscovery",
+                "class": "EDR Detection"
+              },
+              "resources": [
+                {
+                  "type": "process",
+                  "details": {
+                    "pid": 11096,
+                    "processPath": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                    "processPathSize": null,
+                    "commandLine": "\"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe\" --type=utility --utility-sub-type=chrome.mojom.ProcessorMetrics --lang=en-US --service-sandbox-type=none --no-pre-read-main-dll  --field-trial-handle=2044,i,17229225074585599307,5132828454613024871,262144 --variations-seed-version --trace-process-track-uuid=3190708992871164437  /prefetch:8",
+                    "parentPid": 10216,
+                    "parentProcessPath": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                    "parentProcessCmdline": "\"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe\" http://localhost/malware",
+                    "parentProcessUser": "USER_NAME",
+                    "user": "USER_NAME",
+                    "loadedModule": null,
+                    "loadedModulePid": null,
+                    "processInjectionWriter": null,
+                    "processInjectionWriterPid": null,
+                    "processInjectionTarget": null,
+                    "processInjectionTargetPid": null,
+                    "processInjectionSizeofWrite": null,
+                    "processAccessPrivileges": "restricted",
+                    "parentProcessAccessPrivileges": "restricted",
+                    "processIntegrityLevel": "medium",
+                    "parentProcessIntegrityLevel": "medium",
+                    "processPackerName": null
+                  }
+                }
+              ],
+              "extra": [
+                {
+                  "key": "wmiNewActivity",
+                  "value": "Exec Query"
+                },
+                {
+                  "key": "wmiNewActivityOperation",
+                  "value": "Start IWbemServices::ExecQuery - ROOT\\CIMV2 : SELECT HypervisorPresent FROM Win32_ComputerSystem"
+                },
+                {
+                  "key": "extraInfo1",
+                  "value": "\nProcess PE VersionInfo and Certification Information: \nOriginal File Name: chrome.exe\nInternal Name: chrome_exe\nFile Description: Google Chrome\nCompany Name: Google LLC\nFile Version: 143.0.7499.109\nProduct Name: Google Chrome\nProduct Version: 143.0.7499.109\nLegal Copyright: Copyright 2025 Google LLC. All rights reserved.\nCertificate Serial: 0b50cf246b263efd85a729315158f3ff\nCertificate Signer: Google LLC\nCertificate Issuer: DigiCert, Inc.\n\nWorking Directory: c:\\program files\\google\\chrome\\application\\143.0.7499.109\\"
+                }
+              ]
+            },
+            {
+              "id": "6940ee975f5c8b75247c3f3b",
+              "name": "Cloud Virus",
+              "date": "2025-12-16T07:30:17+02:00",
+              "detectedBy": {
+                "name": "Cloud Virus",
+                "class": "Web Protection"
+              },
+              "resources": [
+                {
+                  "type": "process",
+                  "details": {
+                    "pid": 6868,
+                    "processPath": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                    "processPathSize": null,
+                    "commandLine": "\"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe\" --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-type=none --no-pre-read-main-dll  --field-trial-handle=2044,i,17229225074585599307,5132828454613024871,262144 --variations-seed-version --trace-process-track-uuid=3190708989122997041  /prefetch:3",
+                    "parentPid": 10216,
+                    "parentProcessPath": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                    "parentProcessCmdline": "\"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe\" http://localhost/malware",
+                    "parentProcessUser": "USER_NAME",
+                    "user": "USER_NAME",
+                    "loadedModule": null,
+                    "loadedModulePid": null,
+                    "processInjectionWriter": null,
+                    "processInjectionWriterPid": null,
+                    "processInjectionTarget": null,
+                    "processInjectionTargetPid": null,
+                    "processInjectionSizeofWrite": null,
+                    "processAccessPrivileges": "restricted",
+                    "parentProcessAccessPrivileges": "restricted",
+                    "processIntegrityLevel": "medium",
+                    "parentProcessIntegrityLevel": "medium",
+                    "processPackerName": null
+                  }
+                },
+                {
+                  "type": "network",
+                  "details": {
+                    "uri": "localhost/malware",
+                    "protocol": null,
+                    "port": null,
+                    "streamType": null,
+                    "statusCode": null,
+                    "requestMethod": null,
+                    "requesterMac": null,
+                    "requesterIp": null,
+                    "requesterSystemName": null,
+                    "rawConnectionDestIp": "DEST_IP",
+                    "rawConnectionSourceIp": "IP_158",
+                    "rawConnectionDestPort": 80,
+                    "rawConnectionSourcePort": 57266,
+                    "rawConnectionTransferedIn": null,
+                    "rawConnectionTransferedOut": null,
+                    "rawConnectionDirection": "outbound",
+                    "rawConnectionReferrer": null,
+                    "rawConnectionFailStatus": null,
+                    "rawConnectionGuestStatus": null,
+                    "rawConnectionUser": null,
+                    "rawConnectionLoginStatus": null,
+                    "rawConnectionFilePath": null,
+                    "domain": null,
+                    "smbFileName": null,
+                    "smbTreeName": null,
+                    "interface": null,
+                    "expectedProtocol": null,
+                    "rawConnectionProtocol": null,
+                    "rawConnectionTransferredFile": null,
+                    "rawConnectionTransferredFileType": null,
+                    "rawConnectionTransferredFileSize": null,
+                    "rawConnectionExpectedProtocol": null,
+                    "rawConnectionAccessType": null,
+                    "rawConnectionEncryptionType": null,
+                    "rawConnectionInterface": null,
+                    "rawConnectionServiceName": null,
+                    "rawConnectionServicePath": null,
+                    "httpConnectionMethod": null,
+                    "httpConnectionHost": null,
+                    "httpConnectionUri": "localhost/malware",
+                    "httpConnectionResponseCode": null,
+                    "httpConnectionReferrer": null,
+                    "winrmConnectionUserAgent": null,
+                    "winrmConnectionAuthorization": null,
+                    "smbUser": null,
+                    "smbHostName": null,
+                    "smbDomainName": null,
+                    "smbAccessType": null,
+                    "smbAuthMethod": null,
+                    "ldapDistinguishedName": null,
+                    "ldapGroupDistinguishedName": null,
+                    "local": null,
+                    "mailAttachments": null
+                  }
+                }
+              ],
+              "extra": [
+                {
+                  "key": "extraInfo1",
+                  "value": "Source Mac: 00:50:56:b1:ef:97\nDestination Mac: 00:00:00:00:00:00\nGateway Macs: 00:50:56:95:06:e0\nProcess PE VersionInfo and Certification Information: \n\nOriginal File Name: chrome.exe\nInternal Name: chrome_exe\nFile Description: Google Chrome\nCompany Name: Google LLC\nFile Version: 143.0.7499.109\nProduct Name: Google Chrome\nProduct Version: 143.0.7499.109\nLegal Copyright: Copyright 2025 Google LLC. All rights reserved.\nCertificate Serial: 0b50cf246b263efd85a729315158f3ff\nCertificate Signer: Google LLC\nCertificate Issuer: DigiCert, Inc.\n\nWorking Directory: c:\\program files\\google\\chrome\\application\\143.0.7499.109\\"
+                }
+              ]
+            },
+            {
+              "id": "6940ee975f5c8b75247c3f43",
+              "name": "Cloud Virus",
+              "date": "2025-12-16T07:30:17+02:00",
+              "detectedBy": {
+                "name": "Cloud Virus",
+                "class": "Web Protection"
+              },
+              "resources": [
+                {
+                  "type": "process",
+                  "details": {
+                    "pid": 6868,
+                    "processPath": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                    "processPathSize": null,
+                    "commandLine": "\"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe\" --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-type=none --no-pre-read-main-dll  --field-trial-handle=2044,i,17229225074585599307,5132828454613024871,262144 --variations-seed-version --trace-process-track-uuid=3190708989122997041  /prefetch:3",
+                    "parentPid": 10216,
+                    "parentProcessPath": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                    "parentProcessCmdline": "\"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe\" http://localhost/malware",
+                    "parentProcessUser": "USER_NAME",
+                    "user": "USER_NAME",
+                    "loadedModule": null,
+                    "loadedModulePid": null,
+                    "processInjectionWriter": null,
+                    "processInjectionWriterPid": null,
+                    "processInjectionTarget": null,
+                    "processInjectionTargetPid": null,
+                    "processInjectionSizeofWrite": null,
+                    "processAccessPrivileges": "restricted",
+                    "parentProcessAccessPrivileges": "restricted",
+                    "processIntegrityLevel": "medium",
+                    "parentProcessIntegrityLevel": "medium",
+                    "processPackerName": null
+                  }
+                },
+                {
+                  "type": "network",
+                  "details": {
+                    "uri": "localhost/malware",
+                    "protocol": null,
+                    "port": null,
+                    "streamType": null,
+                    "statusCode": null,
+                    "requestMethod": null,
+                    "requesterMac": null,
+                    "requesterIp": null,
+                    "requesterSystemName": null,
+                    "rawConnectionDestIp": "DEST_IP",
+                    "rawConnectionSourceIp": "IP_158",
+                    "rawConnectionDestPort": 80,
+                    "rawConnectionSourcePort": 57266,
+                    "rawConnectionTransferedIn": null,
+                    "rawConnectionTransferedOut": null,
+                    "rawConnectionDirection": "outbound",
+                    "rawConnectionReferrer": null,
+                    "rawConnectionFailStatus": null,
+                    "rawConnectionGuestStatus": null,
+                    "rawConnectionUser": null,
+                    "rawConnectionLoginStatus": null,
+                    "rawConnectionFilePath": null,
+                    "domain": null,
+                    "smbFileName": null,
+                    "smbTreeName": null,
+                    "interface": null,
+                    "expectedProtocol": null,
+                    "rawConnectionProtocol": null,
+                    "rawConnectionTransferredFile": null,
+                    "rawConnectionTransferredFileType": null,
+                    "rawConnectionTransferredFileSize": null,
+                    "rawConnectionExpectedProtocol": null,
+                    "rawConnectionAccessType": null,
+                    "rawConnectionEncryptionType": null,
+                    "rawConnectionInterface": null,
+                    "rawConnectionServiceName": null,
+                    "rawConnectionServicePath": null,
+                    "httpConnectionMethod": null,
+                    "httpConnectionHost": null,
+                    "httpConnectionUri": "localhost/malware",
+                    "httpConnectionResponseCode": null,
+                    "httpConnectionReferrer": null,
+                    "winrmConnectionUserAgent": null,
+                    "winrmConnectionAuthorization": null,
+                    "smbUser": null,
+                    "smbHostName": null,
+                    "smbDomainName": null,
+                    "smbAccessType": null,
+                    "smbAuthMethod": null,
+                    "ldapDistinguishedName": null,
+                    "ldapGroupDistinguishedName": null,
+                    "local": null,
+                    "mailAttachments": null
+                  }
+                }
+              ],
+              "extra": [
+                {
+                  "key": "extraInfo1",
+                  "value": "Source Mac: 00:50:56:b1:ef:97\nDestination Mac: 00:00:00:00:00:00\nGateway Macs: 00:50:56:95:06:e0\nProcess PE VersionInfo and Certification Information: \n\nOriginal File Name: chrome.exe\nInternal Name: chrome_exe\nFile Description: Google Chrome\nCompany Name: Google LLC\nFile Version: 143.0.7499.109\nProduct Name: Google Chrome\nProduct Version: 143.0.7499.109\nLegal Copyright: Copyright 2025 Google LLC. All rights reserved.\nCertificate Serial: 0b50cf246b263efd85a729315158f3ff\nCertificate Signer: Google LLC\nCertificate Issuer: DigiCert, Inc.\n\nWorking Directory: c:\\program files\\google\\chrome\\application\\143.0.7499.109\\"
+                }
+              ]
+            },
+            {
+              "id": "6940ee975f5c8b75247c3f3f",
+              "name": "ComObjectHijack",
+              "date": "2025-12-16T06:52:21+02:00",
+              "detectedBy": {
+                "name": "ComObjectHijack",
+                "class": "EDR Detection"
+              },
+              "resources": [
+                {
+                  "type": "process",
+                  "details": {
+                    "pid": 5168,
+                    "processPath": "c:\\windows\\explorer.exe",
+                    "processPathSize": null,
+                    "commandLine": "",
+                    "parentPid": 2848,
+                    "parentProcessPath": "c:\\windows\\system32\\userinit.exe",
+                    "parentProcessCmdline": "<did_not_receive>",
+                    "parentProcessUser": "USER_NAME",
+                    "user": "USER_NAME",
+                    "loadedModule": null,
+                    "loadedModulePid": null,
+                    "processInjectionWriter": null,
+                    "processInjectionWriterPid": null,
+                    "processInjectionTarget": null,
+                    "processInjectionTargetPid": null,
+                    "processInjectionSizeofWrite": null,
+                    "processAccessPrivileges": "restricted",
+                    "parentProcessAccessPrivileges": "restricted",
+                    "processIntegrityLevel": "medium",
+                    "parentProcessIntegrityLevel": "medium",
+                    "processPackerName": null
+                  }
+                }
+              ],
+              "extra": [
+                {
+                  "key": "extraInfo1",
+                  "value": "\nProcess PE VersionInfo and Certification Information: \nOriginal File Name: EXPLORER.EXE\nInternal Name: explorer\nFile Description: Windows Explorer\nCompany Name: Microsoft Corporation\nFile Version: 10.0.19041.6456 (WinBuild.160101.0800)\nProduct Name: MicrosoftR WindowsR Operating System\nProduct Version: 10.0.19041.6456\nLegal Copyright: C Microsoft Corporation. All rights reserved.\nCertificate Serial: 3300000519daddaa8bdc44b292000000000519\nCertificate Signer: Microsoft Corporation\nCertificate Issuer: Microsoft Corporation\n"
+                }
+              ]
+            }
+          ],
+          "nodes": [
+            {
+              "id": "6940ee975f5c8b75247c3f4e",
+              "name": "chrome.exe",
+              "type": "process_execution",
+              "details": {
+                "file": {
+                  "name": "chrome.exe",
+                  "path": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                  "md5": "e3b7ea27240d65b692598eb1e7b596c1",
+                  "sha256": "5783e7401b98057baa533f8fe359bd019ed2c263eff30f6f26d0998f0fa7d54d",
+                  "size": 3308696,
+                  "isExecutable": true
+                },
+                "process": {
+                  "pid": 10216,
+                  "parent": {
+                    "pid": 4440,
+                    "name": "cmd.exe",
+                    "path": null
+                  },
+                  "commandLine": "\"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe\" http://localhost/malware",
+                  "userId": null,
+                  "userName": "USER_NAME",
+                  "date": "2025-12-16T07:30:12+02:00",
+                  "name": "chrome.exe"
+                },
+                "sandbox": null,
+                "quarantine": null,
+                "killProcess": {
+                  "status": "success",
+                  "errorCode": 0
+                }
+              },
+              "alertIds": []
+            },
+            {
+              "id": "6940ee975f5c8b75247c3f4f",
+              "name": "chrome.exe",
+              "type": "process_execution",
+              "details": {
+                "file": {
+                  "name": "chrome.exe",
+                  "path": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                  "md5": "e3b7ea27240d65b692598eb1e7b596c1",
+                  "sha256": "5783e7401b98057baa533f8fe359bd019ed2c263eff30f6f26d0998f0fa7d54d",
+                  "size": 3308696,
+                  "isExecutable": true
+                },
+                "process": {
+                  "pid": 6868,
+                  "parent": {
+                    "pid": 10216,
+                    "name": "chrome.exe",
+                    "path": null
+                  },
+                  "commandLine": "\"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe\" --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-type=none --no-pre-read-main-dll  --field-trial-handle=2044,i,17229225074585599307,5132828454613024871,262144 --variations-seed-version --trace-process-track-uuid=3190708989122997041  /prefetch:3",
+                  "userId": null,
+                  "userName": "USER_NAME",
+                  "date": "2025-12-16T07:30:15+02:00",
+                  "name": "chrome.exe"
+                },
+                "sandbox": null,
+                "quarantine": null,
+                "killProcess": null
+              },
+              "alertIds": [
+                "6940ee975f5c8b75247c3f3b"
+              ]
+            },
+            {
+              "id": "6940ee975f5c8b75247c3f50",
+              "name": "cmd.exe",
+              "type": "process_execution",
+              "details": {
+                "file": {
+                  "name": "cmd.exe",
+                  "path": "c:\\windows\\system32\\cmd.exe",
+                  "md5": "2b40c98ed0f7a1d3b091a3e8353132dc",
+                  "sha256": "badf4752413cb0cbdc03fb95820ca167f0cdc63b597ccdb5ef43111180e088b0",
+                  "size": 289792,
+                  "isExecutable": true
+                },
+                "process": {
+                  "pid": 4440,
+                  "parent": {
+                    "pid": 10752,
+                    "name": "vmtoolsd.exe",
+                    "path": null
+                  },
+                  "commandLine": "\"C:\\Windows\\System32\\cmd.exe\" /c start chrome http://localhost/malware",
+                  "userId": null,
+                  "userName": "USER_NAME",
+                  "date": "2025-12-16T07:30:12+02:00",
+                  "name": "cmd.exe"
+                },
+                "sandbox": null,
+                "quarantine": null,
+                "killProcess": null
+              },
+              "alertIds": []
+            },
+            {
+              "id": "6940ee975f5c8b75247c3f51",
+              "name": "vmtoolsd.exe",
+              "type": "process_execution",
+              "details": {
+                "file": {
+                  "name": "vmtoolsd.exe",
+                  "path": "c:\\program files\\vmware\\vmware tools\\vmtoolsd.exe",
+                  "md5": "8dc5ad50587b936f7f616738112bfd2a",
+                  "sha256": "sha",
+                  "size": 83896,
+                  "isExecutable": true
+                },
+                "process": {
+                  "pid": 10752,
+                  "parent": {
+                    "pid": 5168,
+                    "name": "explorer.exe",
+                    "path": null
+                  },
+                  "commandLine": "-n vmusr",
+                  "userId": null,
+                  "userName": "USER_NAME",
+                  "date": "2025-11-25T14:54:01+02:00",
+                  "name": "vmtoolsd.exe"
+                },
+                "sandbox": null,
+                "quarantine": null,
+                "killProcess": null
+              },
+              "alertIds": []
+            },
+            {
+              "id": "6940ee975f5c8b75247c3f52",
+              "name": "explorer.exe",
+              "type": "process_execution",
+              "details": {
+                "file": {
+                  "name": "explorer.exe",
+                  "path": "c:\\windows\\explorer.exe",
+                  "md5": "md5",
+                  "sha256": "988a56d897915315eef9ca679b3bc8adfcecf5e227aea99aaa1817620520e97e",
+                  "size": 6089584,
+                  "isExecutable": true
+                },
+                "process": {
+                  "pid": 5168,
+                  "parent": {
+                    "pid": 2848,
+                    "name": "userinit.exe",
+                    "path": null
+                  },
+                  "commandLine": "",
+                  "userId": null,
+                  "userName": "USER_NAME",
+                  "date": "2025-11-25T14:53:30+02:00",
+                  "name": "explorer.exe"
+                },
+                "sandbox": null,
+                "quarantine": null,
+                "killProcess": null
+              },
+              "alertIds": [
+                "6940ee975f5c8b75247c3f3f"
+              ]
+            },
+            {
+              "id": "6940ee975f5c8b75247c3f53",
+              "name": "userinit.exe",
+              "type": "process_execution",
+              "details": {
+                "file": {
+                  "name": "userinit.exe",
+                  "path": "c:\\windows\\system32\\userinit.exe",
+                  "md5": "5cdc907c7818fbaa658fc9f2abb238f1",
+                  "sha256": "0043369966e39c40b96c941ebe06ba53139dc314785f0d2d5d490def51dfb86c",
+                  "size": 54272,
+                  "isExecutable": true
+                },
+                "process": {
+                  "pid": 2848,
+                  "parent": {
+                    "pid": 0,
+                    "name": "<system>",
+                    "path": null
+                  },
+                  "commandLine": "<did_not_receive>",
+                  "userId": null,
+                  "userName": "USER_NAME",
+                  "date": "2025-12-15T16:57:40+02:00",
+                  "name": "userinit.exe"
+                },
+                "sandbox": null,
+                "quarantine": null,
+                "killProcess": null
+              },
+              "alertIds": []
+            },
+            {
+              "id": "6940ee975f5c8b75247c3f54",
+              "name": "DEST_IP",
+              "type": "domain",
+              "details": {
+                "domain": {
+                  "requestedURL": "localhost/malware",
+                  "remotePort": 80,
+                  "requestMethod": null,
+                  "streamType": null,
+                  "extractedFilename": null,
+                  "sourceApplication": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                  "protocol": null
+                },
+                "process": {
+                  "pid": 6868,
+                  "name": "chrome.exe",
+                  "path": "c:\\program files\\google\\chrome\\application\\chrome.exe"
+                },
+                "file": null
+              },
+              "alertIds": [
+                "6940ee975f5c8b75247c3f43"
+              ]
+            },
+            {
+              "id": "6940ee975f5c8b75247c3f55",
+              "name": "IP",
+              "type": "domain",
+              "details": {
+                "domain": {
+                  "requestedURL": "IP",
+                  "remotePort": 443,
+                  "requestMethod": null,
+                  "streamType": null,
+                  "extractedFilename": null,
+                  "sourceApplication": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                  "protocol": "ssl"
+                },
+                "process": {
+                  "pid": 6868,
+                  "name": "chrome.exe",
+                  "path": "c:\\program files\\google\\chrome\\application\\chrome.exe"
+                },
+                "file": null
+              },
+              "alertIds": []
+            },
+            {
+              "id": "6940ee975f5c8b75247c3f56",
+              "name": "IP",
+              "type": "domain",
+              "details": {
+                "domain": {
+                  "requestedURL": "IP",
+                  "remotePort": 443,
+                  "requestMethod": null,
+                  "streamType": null,
+                  "extractedFilename": null,
+                  "sourceApplication": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                  "protocol": "ssl"
+                },
+                "process": {
+                  "pid": 6868,
+                  "name": "chrome.exe",
+                  "path": "c:\\program files\\google\\chrome\\application\\chrome.exe"
+                },
+                "file": null
+              },
+              "alertIds": []
+            },
+            {
+              "id": "6940ee975f5c8b75247c3f57",
+              "name": "IP",
+              "type": "domain",
+              "details": {
+                "domain": {
+                  "requestedURL": "IP",
+                  "remotePort": 443,
+                  "requestMethod": null,
+                  "streamType": null,
+                  "extractedFilename": null,
+                  "sourceApplication": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                  "protocol": "ssl"
+                },
+                "process": {
+                  "pid": 6868,
+                  "name": "chrome.exe",
+                  "path": "c:\\program files\\google\\chrome\\application\\chrome.exe"
+                },
+                "file": null
+              },
+              "alertIds": []
+            },
+            {
+              "id": "6940ee975f5c8b75247c3f58",
+              "name": "IP",
+              "type": "domain",
+              "details": {
+                "domain": {
+                  "requestedURL": "IP",
+                  "remotePort": 443,
+                  "requestMethod": null,
+                  "streamType": null,
+                  "extractedFilename": null,
+                  "sourceApplication": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                  "protocol": "ssl"
+                },
+                "process": {
+                  "pid": 6868,
+                  "name": "chrome.exe",
+                  "path": "c:\\program files\\google\\chrome\\application\\chrome.exe"
+                },
+                "file": null
+              },
+              "alertIds": []
+            },
+            {
+              "id": "6940ee975f5c8b75247c3f59",
+              "name": "IP",
+              "type": "domain",
+              "details": {
+                "domain": {
+                  "requestedURL": "IP",
+                  "remotePort": 443,
+                  "requestMethod": null,
+                  "streamType": null,
+                  "extractedFilename": null,
+                  "sourceApplication": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                  "protocol": "ssl"
+                },
+                "process": {
+                  "pid": 6868,
+                  "name": "chrome.exe",
+                  "path": "c:\\program files\\google\\chrome\\application\\chrome.exe"
+                },
+                "file": null
+              },
+              "alertIds": []
+            },
+            {
+              "id": "6940ee975f5c8b75247c3f5a",
+              "name": "IP",
+              "type": "domain",
+              "details": {
+                "domain": {
+                  "requestedURL": "IP",
+                  "remotePort": 443,
+                  "requestMethod": null,
+                  "streamType": null,
+                  "extractedFilename": null,
+                  "sourceApplication": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                  "protocol": "ssl"
+                },
+                "process": {
+                  "pid": 6868,
+                  "name": "chrome.exe",
+                  "path": "c:\\program files\\google\\chrome\\application\\chrome.exe"
+                },
+                "file": null
+              },
+              "alertIds": []
+            },
+            {
+              "id": "6940ee975f5c8b75247c3f5b",
+              "name": "IP",
+              "type": "domain",
+              "details": {
+                "domain": {
+                  "requestedURL": "IP",
+                  "remotePort": 443,
+                  "requestMethod": null,
+                  "streamType": null,
+                  "extractedFilename": null,
+                  "sourceApplication": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                  "protocol": "ssl"
+                },
+                "process": {
+                  "pid": 6868,
+                  "name": "chrome.exe",
+                  "path": "c:\\program files\\google\\chrome\\application\\chrome.exe"
+                },
+                "file": null
+              },
+              "alertIds": []
+            },
+            {
+              "id": "6940ee975f5c8b75247c3f5c",
+              "name": "www.localhost",
+              "type": "domain",
+              "details": {
+                "domain": {
+                  "requestedURL": "www.localhost/async/folae?async=_fmt:pb",
+                  "remotePort": 443,
+                  "requestMethod": null,
+                  "streamType": "application/x-protobuffer",
+                  "extractedFilename": "f.txt",
+                  "sourceApplication": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                  "protocol": "http"
+                },
+                "process": {
+                  "pid": 6868,
+                  "name": "chrome.exe",
+                  "path": "c:\\program files\\google\\chrome\\application\\chrome.exe"
+                },
+                "file": null
+              },
+              "alertIds": []
+            },
+            {
+              "id": "6940ee975f5c8b75247c3f5d",
+              "name": "localhost",
+              "type": "domain",
+              "details": {
+                "domain": {
+                  "requestedURL": "localhost/c2dm/register3",
+                  "remotePort": 443,
+                  "requestMethod": null,
+                  "streamType": "application/x-www-form-urlencoded",
+                  "extractedFilename": null,
+                  "sourceApplication": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                  "protocol": "http"
+                },
+                "process": {
+                  "pid": 6868,
+                  "name": "chrome.exe",
+                  "path": "c:\\program files\\google\\chrome\\application\\chrome.exe"
+                },
+                "file": null
+              },
+              "alertIds": []
+            },
+            {
+              "id": "6940ee975f5c8b75247c3f5e",
+              "name": "localhost",
+              "type": "domain",
+              "details": {
+                "domain": {
+                  "requestedURL": "localhost/malware",
+                  "remotePort": 80,
+                  "requestMethod": null,
+                  "streamType": "text/html",
+                  "extractedFilename": null,
+                  "sourceApplication": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                  "protocol": "http"
+                },
+                "process": {
+                  "pid": 6868,
+                  "name": "chrome.exe",
+                  "path": "c:\\program files\\google\\chrome\\application\\chrome.exe"
+                },
+                "file": null
+              },
+              "alertIds": []
+            },
+            {
+              "id": "6940ee975f5c8b75247c3f5f",
+              "name": "HOST_NAME",
+              "type": "endpoint",
+              "details": {
+                "id": "67c87017f3e11f09dc9143e8",
+                "name": "HOST_NAME",
+                "hardwareId": "c68a3142-6a22-742e-e470-e056e3a12ebc-005056b1ef97",
+                "ip": "IP_158",
+                "isContainer": false,
+                "isContainerHost": false
+              },
+              "alertIds": []
+            },
+            {
+              "id": "6940eede5f5c8b75247c3f6e",
+              "name": "HKLM\\SYSTEM\\ControlSet001\\Services\\bam\\State\\UserSettings\\S-1-5-21-2770980983-2613485856-420902219-1001",
+              "type": "registry",
+              "details": {
+                "registry": {
+                  "key": "HKLM\\SYSTEM\\ControlSet001\\Services\\bam\\State\\UserSettings\\S-1-5-21-2770980983-2613485856-420902219-1001",
+                  "value": "\\Device\\HarddiskVolume2\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+                  "data": null
+                },
+                "process": {
+                  "pid": 10216,
+                  "name": "chrome.exe",
+                  "path": "c:\\program files\\google\\chrome\\application\\chrome.exe"
+                }
+              },
+              "alertIds": [
+                "6940eede5f5c8b75247c3f62"
+              ]
+            },
+            {
+              "id": "6940eede5f5c8b75247c3f6f",
+              "name": "updater.exe",
+              "type": "process_execution",
+              "details": {
+                "file": {
+                  "name": "updater.exe",
+                  "path": "c:\\program files (x86)\\google\\googleupdater\\144.0.7547.0\\updater.exe",
+                  "md5": "7c142184b057b515d8b4920e54b74c60",
+                  "sha256": "320f6790e928200c76f9b0208485a86fc08fdb0c51f57a93b2903212353ecd2e",
+                  "size": 7056536,
+                  "isExecutable": true
+                },
+                "process": {
+                  "pid": 1268,
+                  "parent": {
+                    "pid": 10216,
+                    "name": "chrome.exe",
+                    "path": null
+                  },
+                  "commandLine": "\"C:\\Program Files (x86)\\Google\\GoogleUpdater\\144.0.7547.0\\updater.exe\" --wake-all --system",
+                  "userId": null,
+                  "userName": "USER_NAME",
+                  "date": "2025-12-16T07:30:34+02:00",
+                  "name": "updater.exe"
+                },
+                "sandbox": null,
+                "quarantine": null,
+                "killProcess": null
+              },
+              "alertIds": []
+            },
+            {
+              "id": "6940eede5f5c8b75247c3f70",
+              "name": "updater.exe",
+              "type": "process_execution",
+              "details": {
+                "file": {
+                  "name": "updater.exe",
+                  "path": "c:\\program files (x86)\\google\\googleupdater\\144.0.7547.0\\updater.exe",
+                  "md5": "7c142184b057b515d8b4920e54b74c60",
+                  "sha256": "320f6790e928200c76f9b0208485a86fc08fdb0c51f57a93b2903212353ecd2e",
+                  "size": 7056536,
+                  "isExecutable": true
+                },
+                "process": {
+                  "pid": 5624,
+                  "parent": {
+                    "pid": 1268,
+                    "name": "updater.exe",
+                    "path": null
+                  },
+                  "commandLine": "\"C:\\Program Files (x86)\\Google\\GoogleUpdater\\144.0.7547.0\\updater.exe\" --wake --system",
+                  "userId": null,
+                  "userName": "USER_NAME",
+                  "date": "2025-12-16T07:30:35+02:00",
+                  "name": "updater.exe"
+                },
+                "sandbox": null,
+                "quarantine": null,
+                "killProcess": null
+              },
+              "alertIds": []
+            },
+            {
+              "id": "6940eede5f5c8b75247c3f71",
+              "name": "updater.exe",
+              "type": "process_execution",
+              "details": {
+                "file": {
+                  "name": "updater.exe",
+                  "path": "c:\\program files (x86)\\google\\googleupdater\\144.0.7547.0\\updater.exe",
+                  "md5": "7c142184b057b515d8b4920e54b74c60",
+                  "sha256": "320f6790e928200c76f9b0208485a86fc08fdb0c51f57a93b2903212353ecd2e",
+                  "size": 7056536,
+                  "isExecutable": true
+                },
+                "process": {
+                  "pid": 2912,
+                  "parent": {
+                    "pid": 1268,
+                    "name": "updater.exe",
+                    "path": null
+                  },
+                  "commandLine": "\"C:\\Program Files (x86)\\Google\\GoogleUpdater\\144.0.7547.0\\updater.exe\" --crash-handler --system \"--database=C:\\Program Files (x86)\\Google\\GoogleUpdater\\144.0.7547.0\\Crashpad\" --url=https://clients2.localhost/cr/report --annotation=prod=Update4 --annotation=ver=144.0.7547.0 \"--attachment=C:\\Program Files (x86)\\Google\\GoogleUpdater\\updater.log\" --initial-client-data=0x278,0x27c,0x280,0x274,0x284,0x7ff6fe90e0b4,0x7ff6fe90e0c0,0x7ff6fe90e0d0",
+                  "userId": null,
+                  "userName": "USER_NAME",
+                  "date": "2025-12-16T07:30:35+02:00",
+                  "name": "updater.exe"
+                },
+                "sandbox": null,
+                "quarantine": null,
+                "killProcess": null
+              },
+              "alertIds": []
+            },
+            {
+              "id": "6940eede5f5c8b75247c3f72",
+              "name": "chrome.exe",
+              "type": "process_execution",
+              "details": {
+                "file": {
+                  "name": "chrome.exe",
+                  "path": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                  "md5": "e3b7ea27240d65b692598eb1e7b596c1",
+                  "sha256": "5783e7401b98057baa533f8fe359bd019ed2c263eff30f6f26d0998f0fa7d54d",
+                  "size": 3308696,
+                  "isExecutable": true
+                },
+                "process": {
+                  "pid": 11096,
+                  "parent": {
+                    "pid": 10216,
+                    "name": "chrome.exe",
+                    "path": null
+                  },
+                  "commandLine": "\"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe\" --type=utility --utility-sub-type=chrome.mojom.ProcessorMetrics --lang=en-US --service-sandbox-type=none --no-pre-read-main-dll  --field-trial-handle=2044,i,17229225074585599307,5132828454613024871,262144 --variations-seed-version --trace-process-track-uuid=3190708992871164437  /prefetch:8",
+                  "userId": null,
+                  "userName": "USER_NAME",
+                  "date": "2025-12-16T07:30:23+02:00",
+                  "name": "chrome.exe"
+                },
+                "sandbox": null,
+                "quarantine": null,
+                "killProcess": null
+              },
+              "alertIds": [
+                "6940eede5f5c8b75247c3f67",
+                "6940eede5f5c8b75247c3f68"
+              ]
+            },
+            {
+              "id": "6940eede5f5c8b75247c3f73",
+              "name": "IP",
+              "type": "domain",
+              "details": {
+                "domain": {
+                  "requestedURL": "IP",
+                  "remotePort": 443,
+                  "requestMethod": null,
+                  "streamType": null,
+                  "extractedFilename": null,
+                  "sourceApplication": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                  "protocol": "ssl"
+                },
+                "process": {
+                  "pid": 6868,
+                  "name": "chrome.exe",
+                  "path": "c:\\program files\\google\\chrome\\application\\chrome.exe"
+                },
+                "file": null
+              },
+              "alertIds": []
+            },
+            {
+              "id": "6940eede5f5c8b75247c3f74",
+              "name": "IP",
+              "type": "domain",
+              "details": {
+                "domain": {
+                  "requestedURL": "IP",
+                  "remotePort": 443,
+                  "requestMethod": null,
+                  "streamType": null,
+                  "extractedFilename": null,
+                  "sourceApplication": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                  "protocol": "ssl"
+                },
+                "process": {
+                  "pid": 6868,
+                  "name": "chrome.exe",
+                  "path": "c:\\program files\\google\\chrome\\application\\chrome.exe"
+                },
+                "file": null
+              },
+              "alertIds": []
+            },
+            {
+              "id": "6940ef26997e9c48ed12a456",
+              "name": "IP",
+              "type": "domain",
+              "details": {
+                "domain": {
+                  "requestedURL": "IP",
+                  "remotePort": 443,
+                  "requestMethod": null,
+                  "streamType": null,
+                  "extractedFilename": null,
+                  "sourceApplication": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                  "protocol": "ssl"
+                },
+                "process": {
+                  "pid": 6868,
+                  "name": "chrome.exe",
+                  "path": "c:\\program files\\google\\chrome\\application\\chrome.exe"
+                },
+                "file": null
+              },
+              "alertIds": []
+            },
+            {
+              "id": "6940ef8601dd1213c088b9a9",
+              "name": "IP",
+              "type": "domain",
+              "details": {
+                "domain": {
+                  "requestedURL": "IP",
+                  "remotePort": 443,
+                  "requestMethod": null,
+                  "streamType": null,
+                  "extractedFilename": null,
+                  "sourceApplication": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                  "protocol": "ssl"
+                },
+                "process": {
+                  "pid": 6868,
+                  "name": "chrome.exe",
+                  "path": "c:\\program files\\google\\chrome\\application\\chrome.exe"
+                },
+                "file": null
+              },
+              "alertIds": []
+            }
+          ],
+          "triggerNodeId": "6940ee975f5c8b75247c3f54",
+          "transitions": [
+            {
+              "from": "6940ee975f5c8b75247c3f4e",
+              "to": "6940eede5f5c8b75247c3f6e",
+              "date": "2025-12-16T07:30:12+02:00"
+            },
+            {
+              "from": "6940ee975f5c8b75247c3f4e",
+              "to": "6940ee975f5c8b75247c3f4f",
+              "date": "2025-12-16T07:30:12+02:00"
+            },
+            {
+              "from": "6940ee975f5c8b75247c3f4e",
+              "to": "6940eede5f5c8b75247c3f72",
+              "date": "2025-12-16T07:30:12+02:00"
+            },
+            {
+              "from": "6940ee975f5c8b75247c3f4e",
+              "to": "6940eede5f5c8b75247c3f6f",
+              "date": "2025-12-16T07:30:12+02:00"
+            },
+            {
+              "from": "6940ee975f5c8b75247c3f4f",
+              "to": "6940ee975f5c8b75247c3f5b",
+              "date": "2025-12-16T07:30:15+02:00"
+            },
+            {
+              "from": "6940ee975f5c8b75247c3f4f",
+              "to": "6940ee975f5c8b75247c3f5a",
+              "date": "2025-12-16T07:30:15+02:00"
+            },
+            {
+              "from": "6940ee975f5c8b75247c3f4f",
+              "to": "6940ee975f5c8b75247c3f5e",
+              "date": "2025-12-16T07:30:15+02:00"
+            },
+            {
+              "from": "6940ee975f5c8b75247c3f4f",
+              "to": "6940ee975f5c8b75247c3f58",
+              "date": "2025-12-16T07:30:15+02:00"
+            },
+            {
+              "from": "6940ee975f5c8b75247c3f4f",
+              "to": "6940ee975f5c8b75247c3f56",
+              "date": "2025-12-16T07:30:15+02:00"
+            },
+            {
+              "from": "6940ee975f5c8b75247c3f4f",
+              "to": "6940ee975f5c8b75247c3f54",
+              "date": "2025-12-16T07:30:15+02:00"
+            },
+            {
+              "from": "6940ee975f5c8b75247c3f4f",
+              "to": "6940ee975f5c8b75247c3f5c",
+              "date": "2025-12-16T07:30:15+02:00"
+            },
+            {
+              "from": "6940ee975f5c8b75247c3f4f",
+              "to": "6940ee975f5c8b75247c3f59",
+              "date": "2025-12-16T07:30:15+02:00"
+            },
+            {
+              "from": "6940ee975f5c8b75247c3f4f",
+              "to": "6940ee975f5c8b75247c3f55",
+              "date": "2025-12-16T07:30:15+02:00"
+            },
+            {
+              "from": "6940ee975f5c8b75247c3f4f",
+              "to": "6940ee975f5c8b75247c3f5d",
+              "date": "2025-12-16T07:30:15+02:00"
+            },
+            {
+              "from": "6940ee975f5c8b75247c3f4f",
+              "to": "6940ee975f5c8b75247c3f57",
+              "date": "2025-12-16T07:30:15+02:00"
+            },
+            {
+              "from": "6940ee975f5c8b75247c3f4f",
+              "to": "6940eede5f5c8b75247c3f73",
+              "date": "2025-12-16T07:30:15+02:00"
+            },
+            {
+              "from": "6940ee975f5c8b75247c3f4f",
+              "to": "6940ef8601dd1213c088b9a9",
+              "date": "2025-12-16T07:30:15+02:00"
+            },
+            {
+              "from": "6940ee975f5c8b75247c3f4f",
+              "to": "6940eede5f5c8b75247c3f74",
+              "date": "2025-12-16T07:30:15+02:00"
+            },
+            {
+              "from": "6940ee975f5c8b75247c3f4f",
+              "to": "6940ef26997e9c48ed12a456",
+              "date": "2025-12-16T07:30:15+02:00"
+            },
+            {
+              "from": "6940ee975f5c8b75247c3f50",
+              "to": "6940ee975f5c8b75247c3f4e",
+              "date": "2025-12-16T07:30:12+02:00"
+            },
+            {
+              "from": "6940ee975f5c8b75247c3f51",
+              "to": "6940ee975f5c8b75247c3f50",
+              "date": "2025-11-25T14:54:01+02:00"
+            },
+            {
+              "from": "6940ee975f5c8b75247c3f52",
+              "to": "6940ee975f5c8b75247c3f51",
+              "date": "2025-11-25T14:53:30+02:00"
+            },
+            {
+              "from": "6940ee975f5c8b75247c3f53",
+              "to": "6940ee975f5c8b75247c3f52",
+              "date": "2025-12-15T16:57:40+02:00"
+            },
+            {
+              "from": "6940ee975f5c8b75247c3f5f",
+              "to": "6940ee975f5c8b75247c3f53",
+              "date": "2025-12-16T07:35:02+02:00"
+            },
+            {
+              "from": "6940eede5f5c8b75247c3f6f",
+              "to": "6940eede5f5c8b75247c3f71",
+              "date": "2025-12-16T07:30:34+02:00"
+            },
+            {
+              "from": "6940eede5f5c8b75247c3f6f",
+              "to": "6940eede5f5c8b75247c3f70",
+              "date": "2025-12-16T07:30:34+02:00"
+            }
+          ],
+          "mitreTags": [
+            {
+              "category": "Execution",
+              "techniques": [
+                {
+                  "name": "Command and Scripting Interpreter",
+                  "id": "T1059",
+                  "subtechniques": []
+                },
+                {
+                  "name": "Exploitation for Client Execution",
+                  "id": "T1203",
+                  "subtechniques": []
+                },
+                {
+                  "name": "User Execution",
+                  "id": "T1204",
+                  "subtechniques": [
+                    {
+                      "name": "Malicious Link",
+                      "id": "T1204.001"
+                    }
+                  ]
+                },
+                {
+                  "name": "Windows Management Instrumentation",
+                  "id": "T1047",
+                  "subtechniques": []
+                }
+              ]
+            },
+            {
+              "category": "Initial Access",
+              "techniques": [
+                {
+                  "name": "Phishing",
+                  "id": "T1566",
+                  "subtechniques": [
+                    {
+                      "name": "Spearphishing Link",
+                      "id": "T1566.002"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "category": "Privilege Escalation",
+              "techniques": [
+                {
+                  "name": "Event Triggered Execution",
+                  "id": "T1546",
+                  "subtechniques": [
+                    {
+                      "name": "Component Object Model Hijacking",
+                      "id": "T1546.015"
+                    }
+                  ]
+                },
+                {
+                  "name": "Hijack Execution Flow",
+                  "id": "T1574",
+                  "subtechniques": [
+                    {
+                      "name": "Services Registry Permissions Weakness",
+                      "id": "T1574.011"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "category": "Persistence",
+              "techniques": [
+                {
+                  "name": "Event Triggered Execution",
+                  "id": "T1546",
+                  "subtechniques": [
+                    {
+                      "name": "Component Object Model Hijacking",
+                      "id": "T1546.015"
+                    }
+                  ]
+                },
+                {
+                  "name": "Hijack Execution Flow",
+                  "id": "T1574",
+                  "subtechniques": [
+                    {
+                      "name": "Services Registry Permissions Weakness",
+                      "id": "T1574.011"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "category": "Defense Evasion",
+              "techniques": [
+                {
+                  "name": "Modify Registry",
+                  "id": "T1112",
+                  "subtechniques": []
+                },
+                {
+                  "name": "Hijack Execution Flow",
+                  "id": "T1574",
+                  "subtechniques": [
+                    {
+                      "name": "Services Registry Permissions Weakness",
+                      "id": "T1574.011"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "category": "Discovery",
+              "techniques": [
+                {
+                  "name": "System Information Discovery",
+                  "id": "T1082",
+                  "subtechniques": []
+                }
+              ]
+            },
+            {
+              "category": "Command and Control",
+              "techniques": [
+                {
+                  "name": "Application Layer Protocol",
+                  "id": "T1071",
+                  "subtechniques": [
+                    {
+                      "name": "Web Protocols",
+                      "id": "T1071.001"
+                    },
+                    {
+                      "name": "File Transfer Protocols",
+                      "id": "T1071.002"
+                    }
+                  ]
+                },
+                {
+                  "name": "Non-Application Layer Protocol",
+                  "id": "T1095",
+                  "subtechniques": []
+                },
+                {
+                  "name": "Non-Standard Port",
+                  "id": "T1571",
+                  "subtechniques": []
+                },
+                {
+                  "name": "Encrypted Channel",
+                  "id": "T1573",
+                  "subtechniques": [
+                    {
+                      "name": "Asymmetric Cryptography",
+                      "id": "T1573.002"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "notes": [
+          {
+            "id": "6940f43316e204f07f05e8d1",
+            "userId": "67bd91935c3fc939320cdae3",
+            "userName": "USER_NAME",
+            "text": "started investigation on incident on date #471. RandomNotes2dc.",
+            "created": "2025-12-16T07:54:59+02:00"
+          },
+          {
+            "id": "6940f453d0572045ad01442e",
+            "userId": "67bd91935c3fc939320cdae3",
+            "userName": "USER_NAME",
+            "text": "changed the priority to high for testing purpose",
+            "created": "2025-12-16T07:55:31+02:00"
+          }
+        ]
+      }
+    }
+  }
+]

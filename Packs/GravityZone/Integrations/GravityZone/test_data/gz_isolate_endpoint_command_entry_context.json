@@ -1,0 +1,15 @@
+{
+    "GravityZone.Command.Isolate(val.TaskID && val.TaskID == obj.TaskID)": [
+        {
+            "TaskID": "6941bbc98ba450a5c10e5a16",
+            "TaskType": "Isolate",
+            "Status": "Processed",
+            "EndDate": "2025-12-16T22:06:33",
+            "EndpointID": "ENDPOINT_ID",
+            "Hostname": "ENDPOINT_NAME",
+            "ErrorCode": "Success",
+            "Error": "Success",
+            "StartDate": "2025-12-16T22:06:33"
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "Endpoint(val.ID && val.ID == obj.ID && val.Vendor == obj.Vendor)": [
+        {
+            "ID": "ENDPOINT_ID",
+            "Hostname": "ENDPOINT_NAME",
+            "IPAddress": "ENDPOINT_IP",
+            "OS": "Windows 10 Pro",
+            "Vendor": "GravityZone",
+            "Status": "Online"
+        }
+    ],
+    "GravityZone.Endpoint(val.ID && val.ID == obj.ID)": {
+        "ID": "ENDPOINT_ID",
+        "Hostname": "ENDPOINT_NAME",
+        "IP": "ENDPOINT_IP",
+        "OS": "Windows 10 Pro",
+        "Status": "Online",
+        "Vendor": "GravityZone",
+        "LastLoggedUsers": ""
+    }
+}

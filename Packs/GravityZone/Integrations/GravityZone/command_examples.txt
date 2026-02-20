@@ -1,0 +1,18 @@
+!endpoint id=6942a43afe8d4e463ca5c197
+!gz-list-endpoints
+!gz-get-endpoint-by-id id=6942a43afe8d4e463ca5c197
+!gz-isolate-endpoint id=6942a43afe8d4e463ca5c197
+!gz-deisolate-endpoint id=6942a43afe8d4e463ca5c197
+!gz-kill-process-on-endpoint id=6942a43afe8d4e463ca5c197 pid=5204
+!gz-run-command-on-endpoint id=6942a43afe8d4e463ca5c197 command=whoami
+!gz-download-investigation-package-from-endpoint id=6942a43afe8d4e463ca5c197 output_file=investigation_package.zip
+!gz-get-endpoints-running-process-hash process_hash=b8412bcc6f47b2a11e4c39bc1bc9fab74969ff0648ba22db4c5254a0457af0c7
+!gz-get-process-tree-for-hash-on-endpoint id=6942a43afe8d4e463ca5c197 process_hash=b8412bcc6f47b2a11e4c39bc1bc9fab74969ff0648ba22db4c5254a0457af0c7
+!gz-download-file-from-endpoint id=6942a43afe8d4e463ca5c197 remote_file=/root/test/test.txt output_file=downloaded_file.gzip
+!gz-upload-file-to-endpoint id=6942a43afe8d4e463ca5c197 entry_id=${File.EntryID} remote_location=/root/test/
+!gz-download-investigation-package-from-endpoint id=6942a43afe8d4e463ca5c197 output_file=investigation_package.zip
+!gz-list-incidents
+!gz-list-incidents endpoint_id=694148bffe8d4e463ca5bd1e
+!gz-get-incident-by-id id=694255755f5c8b75247c7ce2
+!gz-add-incident-note id=694255755f5c8b75247c7ce2 note=InvestigationInProgress
+!gz-change-incident-status id=694255755f5c8b75247c7ce2 status=ACTIVE

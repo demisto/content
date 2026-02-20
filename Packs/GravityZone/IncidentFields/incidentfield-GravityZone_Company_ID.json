@@ -1,0 +1,34 @@
+{
+    "id": "incident_gravityzone_company_id",
+    "version": -1,
+    "name": "GravityZone Company ID",
+    "ownerOnly": false,
+    "description": "Identifies the company associated with the incident.",
+    "cliName": "gravityzonecompanyid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "GravityZone EDR",
+        "GravityZone XDR"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0",
+    "marketplaces": [
+        "xsoar"
+    ]
+}
