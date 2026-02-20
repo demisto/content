@@ -6,8 +6,8 @@ This integration was integrated and tested with version 12.0 of Cisco Security M
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | Base URL, e.g., https://XXX.eu.iphmx.com | True |
-| Username |  | True |
-| Password |  | True |
+| Username | Username for authentication | True |
+| Password | Password for authentication | True |
 | Maximum incidents per fetch | Default is 50. Maximum is 100. | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). | Timestamp in ISO format or &amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;,<br/>e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | False |
 | Filter by | Message field by which to filter the results. | False |
@@ -25,6 +25,37 @@ This integration was integrated and tested with version 12.0 of Cisco Security M
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### cisco-sma-spam-quarantine-message-send-copy
+Sends a copy of a quarantined spam message to specified recipients.
+
+#### Base Command
+`cisco-sma-spam-quarantine-message-send-copy`
+
+#### Input
+| **Argument Name** | **Description** | **Required** |
+|-------------------|-----------------|--------------|
+| message_id | The ID of the quarantined message. | Required |
+| quarantine_name | The quarantine name. | Required |
+| recipients | List of recipient email addresses. | Required |
+
+#### Output
+Returns a confirmation of the send copy action.
+
+### cisco-sma-spam-quarantine-attachment-download
+Downloads an attachment from a spam quarantine message.
+
+#### Base Command
+`cisco-sma-spam-quarantine-attachment-download`
+
+#### Input
+| **Argument Name** | **Description** | **Required** |
+|-------------------|-----------------|--------------|
+| message_id | The ID of the quarantined message. | Required |
+| attachment_id | The ID of the attachment to download. | Required |
+
+#### Output
+Returns the downloaded attachment file.
 
 ### cisco-sma-spam-quarantine-message-search
 
@@ -51,6 +82,14 @@ Search messages in the spam quarantine.
 | page | Page number of paginated results.<br/>Minimum value is 1. | Optional |
 | page_size | Number of results per page. Maximum value is 100. | Optional |
 | limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| quarantine_type | Quarantine type to search in. Possible values are: spam, pvo. | Optional |
+| quarantines | Comma-separated list of quarantine names to search (only for quarantine_type=pvo). | Optional |
+
+**Note:**
+- When `quarantine_type=spam`, use: `filter_by`, `filter_operator`, `filter_value`, and optional recipient filters.
+- When `quarantine_type=pvo`, use: `quarantines` and the `envelope_*` / `subject_*` filters.
+- Related filter arguments must be provided together; invalid combinations will result in an error.
+
 
 #### Context Output
 
@@ -63,6 +102,10 @@ Search messages in the spam quarantine.
 | CiscoSMA.SpamQuarantineMessage.fromAddress | String | Message sender. |
 | CiscoSMA.SpamQuarantineMessage.size | String | Message size. |
 | CiscoSMA.SpamQuarantineMessage.mid | Number | Message ID. |
+
+**Note:**  
+All filter parameters must be provided together according to their dependency rules. Invalid filter combinations will result in an error.
+
 
 #### Command example
 
@@ -124,7 +167,7 @@ Search messages in the spam quarantine.
 ### cisco-sma-spam-quarantine-message-get
 
 ***
-Get spam quarantine message.
+Retrieves details of a spam quarantine message.
 
 #### Base Command
 
@@ -135,6 +178,10 @@ Get spam quarantine message.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | message_id | Message ID. | Required |
+| quarantine_type | The quarantine type. | Required |
+
+**Note:**
+This command supports retrieving messages by quarantine type only. PVO quarantines that require a quarantine name are not supported by this command.
 
 #### Context Output
 
@@ -201,6 +248,13 @@ Release spam quarantined message.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | message_ids | Comma-separated list of message IDs. | Required |
+| quarantine_name | Name of the quarantine (required for PVO quarantine release). | Optional |
+
+**Note:** 
+If `quarantine_name` is provided, the command releases messages from a PVO quarantine. If not provided, the command releases messages from the default spam quarantine. 
+
+#### Output
+Returns a confirmation of the release action.
 
 #### Context Output
 
@@ -228,6 +282,12 @@ Delete spam quarantined message.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | message_ids | Comma-separated list of message IDs. | Required |
+| quarantine_name | Name of the quarantine (required for PVO quarantine delete). | Optional |
+
+**Note:**  
+If `quarantine_name` is provided, the command deletes messages from a PVO quarantine.  
+If not provided, the command deletes messages from the default spam quarantine.
+
 
 #### Context Output
 
