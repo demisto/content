@@ -147,8 +147,8 @@ def test_retrieve_all_endpoints(mocker):
         first_seen_lte=None,
         last_seen_gte=None,
         last_seen_lte=None,
-        sort_by_first_seen=None,
-        sort_by_last_seen=None,
+        sort_by=None,
+        sort_order=None,
         status=None,
         username=None,
     )

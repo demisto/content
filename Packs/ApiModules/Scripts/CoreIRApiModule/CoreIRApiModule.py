@@ -470,8 +470,8 @@ class CoreClient(BaseClient):
         first_seen_lte=None,
         last_seen_gte=None,
         last_seen_lte=None,
-        sort_by_first_seen=None,
-        sort_by_last_seen=None,
+        sort_by=None,
+        sort_order=None,
         status=None,
         username=None,
     ):
@@ -507,10 +507,7 @@ class CoreClient(BaseClient):
         if search_to:
             request_data["search_to"] = search_to
 
-        if sort_by_first_seen:
-            request_data["sort"] = {"field": "first_seen", "keyword": sort_by_first_seen}
-        elif sort_by_last_seen:
-            request_data["sort"] = {"field": "last_seen", "keyword": sort_by_last_seen}
+        request_data["sort"] = {"field": sort_by, "keyword": sort_order}
 
         request_data["filters"] = filters
 
@@ -2287,8 +2284,8 @@ def retrieve_all_endpoints(
     first_seen_lte,
     last_seen_gte,
     last_seen_lte,
-    sort_by_first_seen,
-    sort_by_last_seen,
+    sort_by,
+    sort_order,
     status,
     username,
 ):
@@ -2313,8 +2310,8 @@ def retrieve_all_endpoints(
             first_seen_lte=first_seen_lte,
             last_seen_gte=last_seen_gte,
             last_seen_lte=last_seen_lte,
-            sort_by_first_seen=sort_by_first_seen,
-            sort_by_last_seen=sort_by_last_seen,
+            sort_by=sort_by,
+            sort_order=sort_order,
             status=status,
             username=username,
         )
@@ -2373,13 +2370,8 @@ def get_endpoints_command(client, args):
 
     last_seen_lte = arg_to_timestamp(arg=args.get("last_seen_lte"), arg_name="last_seen_lte")
 
-    sort_by_first_seen = args.get("sort_by_first_seen")
-    sort_by_last_seen = args.get("sort_by_last_seen")
-
-    # When fetching all results without explicit sort, use sort_by_first_seen to ensure stable pagination
-    if all_results and not sort_by_first_seen and not sort_by_last_seen:
-        sort_by_first_seen = "asc"
-        demisto.debug("get_endpoints_command: all_results=true without explicit sort, defaulting to sort_by_first_seen=asc")
+    sort_by = args.get("sort_by")
+    sort_order = args.get("sort_order", "asc").upper()
 
     username = argToList(args.get("username"))
 
@@ -2399,8 +2391,8 @@ def get_endpoints_command(client, args):
         first_seen_lte=first_seen_lte,
         last_seen_gte=last_seen_gte,
         last_seen_lte=last_seen_lte,
-        sort_by_first_seen=sort_by_first_seen,
-        sort_by_last_seen=sort_by_last_seen,
+        sort_by=sort_by,
+        sort_order=sort_order,
         status=status,
         username=username,
     )
@@ -2424,8 +2416,8 @@ def get_endpoints_command(client, args):
             first_seen_lte,
             last_seen_gte,
             last_seen_lte,
-            sort_by_first_seen,
-            sort_by_last_seen,
+            sort_by,
+            sort_order,
             status,
             username,
         )
