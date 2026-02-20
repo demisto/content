@@ -114,6 +114,9 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - description: The sender address to use for the email. If provided, it overrides the default sender address configured in the integration instance.
+      name: sender
+      required: false
     description: Send an email.
     name: send-mail
   runonce: false
