@@ -1,0 +1,56 @@
+{
+    "autorun": false,
+    "color": "#EEC1C1",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {
+            "md5": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "File"
+                ]
+            },
+            "sha1": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "File"
+                ]
+            },
+            "sha256": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "File"
+                ]
+            },
+            "urls": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "urlRep"
+                ]
+            }
+        }
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Cymulate Assessment Findings",
+    "layout": "Cymulate Assessment Findings Layout",
+    "locked": false,
+    "name": "Cymulate Assessment Findings",
+    "onChangeRepAlg": 0,
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.10.0"
+}

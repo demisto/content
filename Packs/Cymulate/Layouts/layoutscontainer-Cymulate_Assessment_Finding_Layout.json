@@ -1,0 +1,768 @@
+{
+	"cacheVersn": 0,
+	"close": null,
+	"definitionId": "",
+	"description": "Layout for Cymulate Assessment Findings incidents. Provides a structured view with all relevant fields organized for easy review and analysis of security findings from Cymulate's breach and attack simulation platform.",
+	"detached": false,
+	"details": null,
+	"detailsV2": {
+		"TypeName": "",
+		"tabs": [
+			{
+				"id": "summary",
+				"name": "Legacy Summary",
+				"type": "summary"
+			},
+			{
+				"id": "caseinfoid",
+				"name": "Incident Info",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "type",
+								"height": 22,
+								"id": "incident-type-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "severity",
+								"height": 22,
+								"id": "incident-severity-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "owner",
+								"height": 22,
+								"id": "incident-owner-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourcebrand",
+								"height": 22,
+								"id": "incident-sourceBrand-field",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourceinstance",
+								"height": 22,
+								"id": "incident-sourceInstance-field",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "playbookid",
+								"height": 22,
+								"id": "incident-playbookId-field",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"name": "Case Details",
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 2,
+						"i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxW": 3,
+						"minH": 1,
+						"name": "Notes",
+						"type": "notes",
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxW": 3,
+						"minH": 1,
+						"name": "Work Plan",
+						"type": "workplan",
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"maxW": 3,
+						"minH": 1,
+						"name": "Linked Incidents",
+						"type": "linkedIncidents",
+						"w": 1,
+						"x": 1,
+						"y": 6
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxW": 3,
+						"minH": 1,
+						"name": "Child Incidents",
+						"type": "childInv",
+						"w": 1,
+						"x": 2,
+						"y": 4
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+						"maxW": 3,
+						"minH": 1,
+						"name": "Evidence",
+						"type": "evidence",
+						"w": 1,
+						"x": 2,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+						"maxW": 3,
+						"minH": 1,
+						"name": "Team Members",
+						"type": "team",
+						"w": 1,
+						"x": 2,
+						"y": 6
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+						"maxW": 3,
+						"minH": 1,
+						"name": "Indicators",
+						"query": "",
+						"queryType": "input",
+						"type": "indicators",
+						"w": 2,
+						"x": 0,
+						"y": 4
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+						"items": [
+							{
+								"endCol": 1,
+								"fieldId": "occurred",
+								"height": 22,
+								"id": "incident-occurred-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 1,
+								"fieldId": "dbotmodified",
+								"height": 22,
+								"id": "incident-modified-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotduedate",
+								"height": 22,
+								"id": "incident-dueDate-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotcreated",
+								"height": 22,
+								"id": "incident-created-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 1
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 22,
+								"id": "incident-closed-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"name": "Timeline Information",
+						"w": 1,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 22,
+								"id": "incident-dbotClosed-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closereason",
+								"height": 22,
+								"id": "incident-closeReason-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closenotes",
+								"height": 22,
+								"id": "incident-closeNotes-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"name": "Closing Information",
+						"w": 1,
+						"x": 0,
+						"y": 6
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "details",
+								"height": 22,
+								"id": "incident-details-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"name": "Investigation Data",
+						"w": 1,
+						"x": 1,
+						"y": 2
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "pjgikygdyz",
+				"name": "Cymulate Findings",
+				"sections": [
+					{
+						"displayType": "CARD",
+						"h": 5,
+						"hideName": false,
+						"i": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-4eac02c0-8665-11f0-b686-b13ef3e1a186",
+						"items": [
+							{
+								"endCol": 1,
+								"fieldId": "eventid",
+								"height": 53,
+								"id": "af97deb0-8665-11f0-b686-b13ef3e1a186",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 1,
+								"fieldId": "cymulatestatus",
+								"height": 53,
+								"id": "80cfb440-8665-11f0-b686-b13ef3e1a186",
+								"index": 1,
+								"listId": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-4eac02c0-8665-11f0-b686-b13ef3e1a186",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cymulatefindingname",
+								"height": 53,
+								"id": "d2d10f50-0cbb-11f1-9015-2d50d30ae55b",
+								"index": 2,
+								"listId": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-4eac02c0-8665-11f0-b686-b13ef3e1a186",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 1,
+								"fieldId": "cymulatemodule",
+								"height": 53,
+								"id": "70fd4230-8665-11f0-b686-b13ef3e1a186",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cymulatetestcase",
+								"height": 53,
+								"id": "1a5c7920-867c-11f0-9f84-378864c285d8",
+								"index": 4,
+								"listId": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-4eac02c0-8665-11f0-b686-b13ef3e1a186",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 1,
+								"fieldId": "cymulateattacktype",
+								"height": 53,
+								"id": "91967160-8665-11f0-b686-b13ef3e1a186",
+								"index": 5,
+								"listId": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-4eac02c0-8665-11f0-b686-b13ef3e1a186",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 1,
+								"fieldId": "mitretacticid",
+								"height": 53,
+								"id": "c653b780-867b-11f0-9f84-378864c285d8",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 1,
+								"fieldId": "mitretechniqueid",
+								"height": 53,
+								"id": "d35cf770-867b-11f0-9f84-378864c285d8",
+								"index": 7,
+								"listId": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-4eac02c0-8665-11f0-b686-b13ef3e1a186",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 1,
+								"fieldId": "cymulateassessmentid",
+								"height": 53,
+								"id": "cec23dd0-0cbb-11f1-9015-2d50d30ae55b",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "occurred",
+								"height": 53,
+								"id": "75d222d0-8665-11f0-b686-b13ef3e1a186",
+								"index": 0,
+								"listId": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-4eac02c0-8665-11f0-b686-b13ef3e1a186",
+								"sectionItemType": "field",
+								"startCol": 1
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "riskname",
+								"height": 53,
+								"id": "7af1a100-8665-11f0-b686-b13ef3e1a186",
+								"index": 1,
+								"listId": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-4eac02c0-8665-11f0-b686-b13ef3e1a186",
+								"sectionItemType": "field",
+								"startCol": 1
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cymulatefindingtype",
+								"height": 53,
+								"id": "a11433c0-8665-11f0-b686-b13ef3e1a186",
+								"index": 3,
+								"listId": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-4eac02c0-8665-11f0-b686-b13ef3e1a186",
+								"sectionItemType": "field",
+								"startCol": 1
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cymulateaffectedassets",
+								"height": 53,
+								"id": "a9d89e10-8665-11f0-b686-b13ef3e1a186",
+								"index": 5,
+								"listId": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-4eac02c0-8665-11f0-b686-b13ef3e1a186",
+								"sectionItemType": "field",
+								"startCol": 1
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "mitretacticname",
+								"height": 53,
+								"id": "c7c1ed80-867b-11f0-9f84-378864c285d8",
+								"index": 6,
+								"listId": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-4eac02c0-8665-11f0-b686-b13ef3e1a186",
+								"sectionItemType": "field",
+								"startCol": 1
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "mitretechniquename",
+								"height": 53,
+								"id": "d65a0ad0-867b-11f0-9f84-378864c285d8",
+								"index": 7,
+								"listId": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-4eac02c0-8665-11f0-b686-b13ef3e1a186",
+								"sectionItemType": "field",
+								"startCol": 1
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cymulateassessmentname",
+								"height": 53,
+								"id": "d1523780-0cbb-11f1-9015-2d50d30ae55b",
+								"index": 8,
+								"listId": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-4eac02c0-8665-11f0-b686-b13ef3e1a186",
+								"sectionItemType": "field",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Finding Overview",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-5c162760-8665-11f0-b686-b13ef3e1a186",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cymulateenvironment",
+								"height": 53,
+								"id": "982fc3b0-8678-11f0-9f84-378864c285d8",
+								"index": 0,
+								"listId": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-5c162760-8665-11f0-b686-b13ef3e1a186",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "assetname",
+								"height": 53,
+								"id": "9de71510-8678-11f0-9f84-378864c285d8",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "resourcename",
+								"height": 53,
+								"id": "a5946a10-8678-11f0-9f84-378864c285d8",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "scenario",
+								"height": 53,
+								"id": "3925ca50-867c-11f0-9f84-378864c285d8",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "tags",
+								"height": 53,
+								"id": "53c78750-867b-11f0-9f84-378864c285d8",
+								"index": 0,
+								"listId": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-5c162760-8665-11f0-b686-b13ef3e1a186",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "cymulatedefensebypassed",
+								"height": 53,
+								"id": "040ca690-867c-11f0-9f84-378864c285d8",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "cymulatetemplatename",
+								"height": 53,
+								"id": "163a6dc0-867c-11f0-9f84-378864c285d8",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 3,
+								"fieldId": "os",
+								"height": 53,
+								"id": "8b854030-8665-11f0-b686-b13ef3e1a186",
+								"index": 3,
+								"listId": "caseinfoid-pjgikygdyz-field-changed-pjgikygdyz-caseinfoid-5c162760-8665-11f0-b686-b13ef3e1a186",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "cymulatemitigationtype",
+								"height": 53,
+								"id": "8a47eab0-8714-11f0-83ae-118800413d6c",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 2
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Additional Information",
+						"static": false,
+						"w": 2,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "caseinfoid-cf14ff70-8679-11f0-b281-bbc850e31c0b",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "cymulatesoftwares",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cymulatesoftwares"
+												}
+											},
+											"operator": "isExists",
+											"right": null,
+											"type": "markdown"
+										}
+									]
+								],
+								"height": 106,
+								"id": "d2529e40-8679-11f0-b281-bbc850e31c0b",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Softwares",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 3
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideItemTitleOnlyOne": false,
+						"hideName": false,
+						"i": "caseinfoid-eb595371-8679-11f0-b281-bbc850e31c0b",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cymulatenistcompliancesupport",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cymulatenistcompliancesupport"
+												}
+											},
+											"operator": "isExists",
+											"right": null,
+											"type": "markdown"
+										}
+									]
+								],
+								"height": 106,
+								"id": "0898f760-867a-11f0-b281-bbc850e31c0b",
+								"index": 1,
+								"listId": "caseinfoid-eb595371-8679-11f0-b281-bbc850e31c0b",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "cymulateciscompliancesupport",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cymulateciscompliancesupport"
+												}
+											},
+											"operator": "isExists",
+											"right": null,
+											"type": "markdown"
+										}
+									]
+								],
+								"height": 106,
+								"id": "0d51c480-867a-11f0-b281-bbc850e31c0b",
+								"index": 0,
+								"listId": "caseinfoid-eb595371-8679-11f0-b281-bbc850e31c0b",
+								"sectionItemType": "field",
+								"startCol": 2
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Compliance Support",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 5
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-e4502650-867c-11f0-9f84-378864c285d8",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Actions",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 3
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"id": "evidenceBoard",
+				"name": "Evidence Board",
+				"type": "evidenceBoard"
+			},
+			{
+				"id": "relatedIncidents",
+				"name": "Related Incidents",
+				"type": "relatedIncidents"
+			},
+			{
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			}
+		]
+	},
+	"edit": null,
+	"fromServerVersion": "",
+	"fromVersion": "6.10.0",
+	"group": "incident",
+	"id": "Cymulate Assessment Findings Layout",
+	"indicatorsDetails": null,
+	"indicatorsQuickView": null,
+	"itemVersion": "",
+	"locked": false,
+	"mobile": null,
+	"name": "Cymulate Assessment Findings Layout",
+	"packID": "",
+	"packName": "",
+	"quickView": null,
+	"quickViewV2": null,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1
+}
