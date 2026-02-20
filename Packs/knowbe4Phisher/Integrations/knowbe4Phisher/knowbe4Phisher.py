@@ -221,7 +221,7 @@ NUMBER_OF_MESSAGES = """query {{
 """
 
 FETCH_WITHOUT_EVENTS = """query {{
-  phisherMessages(all: false, page: 1, per: {}, query: {}) {{
+  phisherMessages(all: false, page: 1, per: {}, query: {}, sortField: REPORTED_AT, sortDirection: ASCENDING) {{
     nodes {{
       actionStatus
       attachments(status: UNKNOWN) {{
@@ -667,12 +667,13 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_f
     messages = items.get("data", {}).get("phisherMessages", {}).get("nodes", [])
     # check if they need to be fetched
     message_index = 0
-    for message in reversed(messages):
+    for message in messages:
         events = message.get("events", {})
         creation_time = get_created_time(events)
         message["created at"] = arg_to_datetime(creation_time).isoformat()  # type: ignore
         message.pop("events")
-        incident = {"name": message.get("subject"), "occurred": message.get("created at"), "rawJSON": json.dumps(message)}
+        incident = {"dbotMirrorId": message.get("id"), "name": message.get(
+            "subject"), "occurred": message.get("created at"), "rawJSON": json.dumps(message)}
 
         # Update last run and add incident if the incident is newer than last fetch
         last_time = message["created at"]
