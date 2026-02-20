@@ -671,7 +671,7 @@ MAPPING = {
         "serviceType": "serviceType",  # GIB SPD Service Type
         "ownerName": "ownerName",  # GIB SPD Owner Name
         "illegalScore": "illegalScore",  # GIB SPD Illegal Score
-        "value": "value.value",  # GIB SPD Value object (value.value is the main observable value)
+        "value": "value.value",  # GIB SPD Value
         "createdAt": "createdAt",  # GIB Date Created At (gibdatecreatedat)
         "firstSeenAt": "firstSeenAt",  # GIB Date First Seen (gibdatefirstseen)
         "lastSeenAt": "lastSeenAt",  # GIB Date Last Seen (gibdatelastseen)
@@ -707,12 +707,12 @@ MAPPING = {
         # END Information from Group-IB
         # Group-IB Evaluation
         "evaluation": {
-            "admiraltyCode": "evaluation.admiraltyCode",
-            "credibility": "evaluation.credibility",
-            "reliability": "evaluation.reliability",
-            "severity": "evaluation.severity",
-            "tlp": "evaluation.tlp",
-            "ttl": "evaluation.ttl",
+            "admiraltyCode": "evaluation.admiraltyCode", # GIB Admiralty Code
+            "credibility": "evaluation.credibility", # GIB Credibility
+            "reliability": "evaluation.reliability", # GIB Reliability
+            "severity": "evaluation.severity", # GIB Severity
+            "tlp": "evaluation.tlp", # GIB TLP
+            "ttl": "evaluation.ttl",  # GIB TTL
         },
         # END Group-IB Evaluation
     },

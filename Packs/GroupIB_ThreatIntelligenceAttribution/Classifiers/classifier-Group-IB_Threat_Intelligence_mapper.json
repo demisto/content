@@ -1397,6 +1397,9 @@
                         "transformers": []
                     }
                 },
+                "GIB TTL": {
+                    "simple": "evaluation.ttl"
+                },
                 "GIB SPD Type": {
                     "simple": "type"
                 },

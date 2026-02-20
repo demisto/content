@@ -1,0 +1,35 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB SPD"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibttl",
+    "closeForm": false,
+    "content": true,
+    "description": "",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibttl",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB TTL",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "number",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "itemVersion": "1.4.2",
+    "openEnded": false,
+    "systemAssociatedTypes": [
+        "GIB SPD"
+    ]
+}
