@@ -1,0 +1,86 @@
+args:
+- description: The AWS Account ID.
+  name: account_id
+  required: true
+- description: EC2 Instance ID.
+  name: instance_id
+  required: true
+- description: Public IP address whose network interface to identify.
+  name: public_ip
+  required: true
+- description: Region where EC2 instance resides.
+  name: region
+  auto: PREDEFINED
+  required: true
+  predefined:
+  - us-east-1
+  - us-east-2
+  - us-west-1
+  - us-west-2
+  - af-south-1
+  - ap-east-1
+  - ap-south-2
+  - ap-southeast-3
+  - ap-southeast-5
+  - ap-southeast-4
+  - ap-south-1
+  - ap-northeast-3
+  - ap-northeast-2
+  - ap-southeast-1
+  - ap-southeast-2
+  - ap-southeast-7
+  - ap-northeast-1
+  - ca-central-1
+  - ca-west-1
+  - eu-central-1
+  - eu-west-1
+  - eu-west-2
+  - eu-south-1
+  - eu-west-3
+  - eu-south-2
+  - eu-north-1
+  - eu-central-2
+  - il-central-1
+  - mx-central-1
+  - me-south-1
+  - me-central-1
+  - sa-east-1
+- description: The AWS Integration Instance to use.
+  name: integration_instance
+comment: Automation to determine which interface on an EC2 instance has a given public IP and identify associated security groups.
+commonfields:
+  id: AWSIdentifySGPublicExposure
+  version: -1
+dependson:
+  must:
+  - AWS|||aws-ec2-instances-describe
+dockerimage: demisto/python3:3.12.12.6391686
+enabled: true
+name: AWSIdentifySGPublicExposure
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
+engineinfo: {}
+runonce: false
+outputs:
+- contextPath: AWSPublicExposure.SGAssociations.EC2InstanceID
+  description: ID of the EC2 instance with public exposure.
+  type: string
+- contextPath: AWSPublicExposure.SGAssociations.NetworkInterfaceID
+  description: ID of the Elastic Network Interface with public exposure.
+  type: string
+- contextPath: AWSPublicExposure.SGAssociations.SecurityGroups
+  description: Security Group IDs associated with this interface.
+  type: Unknown
+- contextPath: AWSPublicExposure.SGAssociations.PublicIP
+  description: Public IP address exposed.
+  type: string
+- contextPath: AWSPublicExposure.SGAssociations.IntegrationInstance
+  description: The AWS Integration Instance used for identification.
+  type: string
