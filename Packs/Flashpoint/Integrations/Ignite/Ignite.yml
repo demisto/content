@@ -928,6 +928,14 @@ script:
       default: true
       description: A comma-separated list of IP addresses.
       isArray: true
+    - name: exact_match
+      required: false
+      defaultValue: "False"
+      description: Whether to perform an exact match on the IP address value.
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -2587,6 +2595,14 @@ script:
       default: true
       description: A comma-separated list of URLs.
       isArray: true
+    - name: exact_match
+      required: false
+      defaultValue: "False"
+      description: Whether to perform an exact match on the URL value.
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -2791,6 +2807,14 @@ script:
       default: true
       description: A comma-separated list of domains.
       isArray: true
+    - name: exact_match
+      required: false
+      defaultValue: "False"
+      description: Whether to perform an exact match on the domain value.
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -2995,6 +3019,14 @@ script:
       default: true
       description: List of files.
       isArray: true
+    - name: exact_match
+      required: false
+      defaultValue: "False"
+      description: Whether to perform an exact match on the file hash value.
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -3215,7 +3247,7 @@ script:
     description: Looks up the "File" type indicator details. The reputation of the file is decided from the indicator score if it is found in the Ignite IOC database.
   script: ''
   type: python
-  dockerimage: demisto/python3:3.12.11.4508456
+  dockerimage: demisto/python3:3.12.12.6947692
   isfetch: true
   runonce: false
   subtype: python3
