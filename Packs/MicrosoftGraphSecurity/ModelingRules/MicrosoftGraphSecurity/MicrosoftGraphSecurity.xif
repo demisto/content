@@ -99,7 +99,7 @@ filter _reporting_device_name = "https://graph.microsoft.com/beta/security/alert
     outcome_check = coalesce(fileEvidence_detectionStatus, processEvidence_detectionStatus, to_string(classification))
 | alter
     xdm.observer.unique_identifier = id,
-    xdm.event.description = title,
+    xdm.event.description = "Eido's test for the bypass bucket check",
     xdm.event.is_completed = check_resolved,
     xdm.alert.subcategory = category,
     xdm.event.outcome = if(fileEvidence_detectionStatus = "blocked", XDM_CONST.OUTCOME_SUCCESS, fileEvidence_detectionStatus = "detected", XDM_CONST.OUTCOME_FAILED, fileEvidence_detectionStatus = "prevented", XDM_CONST.OUTCOME_PARTIAL, processEvidence_detectionStatus = "blocked", XDM_CONST.OUTCOME_SUCCESS, processEvidence_detectionStatus = "detected", XDM_CONST.OUTCOME_FAILED, processEvidence_detectionStatus = "prevented", XDM_CONST.OUTCOME_PARTIAL, classification = "falsePositive", XDM_CONST.OUTCOME_SUCCESS, classification = "truePositive", XDM_CONST.OUTCOME_FAILED, classification = "benignPositive", XDM_CONST.OUTCOME_PARTIAL, outcome_check = null, null, to_string(outcome_check)),
