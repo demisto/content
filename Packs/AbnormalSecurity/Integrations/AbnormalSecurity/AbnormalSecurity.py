@@ -1,4 +1,5 @@
 import logging
+import re
 from datetime import datetime, timedelta
 from typing import Any
 
@@ -24,6 +25,31 @@ XSOAR_SEVERITY_BY_AMP_SEVERITY = {
 
 ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 TIME_FORMAT_WITHMS = "%Y-%m-%dT%H:%M:%S.%fZ"
+
+# 4xx status codes that indicate systemic issues and should NOT be skipped
+NON_SKIPPABLE_STATUS_CODES = {401, 403, 429}
+
+
+def _is_skippable_error(e: DemistoException) -> bool:
+    """Check if a DemistoException from an API call is a 4xx error that can be safely skipped.
+
+    Skippable errors are client errors (4xx) that are specific to a single entity
+    (e.g., 404 Not Found, 410 Gone). Non-skippable errors indicate systemic issues
+    (401 Unauthorized, 403 Forbidden, 429 Rate Limit) and should be raised.
+
+    Args:
+        e: The DemistoException raised by _http_request.
+
+    Returns:
+        True if the error can be safely skipped, False otherwise.
+    """
+    error_str = str(e)
+    # Extract status code from "Error in API call [<code>] - <reason>" format
+    match = re.search(r"\[(\d{3})\]", error_str)
+    if not match:
+        return False
+    status_code = int(match.group(1))
+    return 400 <= status_code < 500 and status_code not in NON_SKIPPABLE_STATUS_CODES
 
 
 def try_str_to_datetime(time: str) -> datetime:
@@ -1302,12 +1328,10 @@ def generate_threat_incidents(client, threats, max_page_number, start_datetime, 
                 if page_number is not None and page_number > max_page_number:
                     break
         except DemistoException as e:
-            # Handle 404 errors gracefully - threat may have been deleted/archived
-            error_str = str(e)
-            if "404" in error_str or "Not Found" in error_str:
-                demisto.debug(f"Threat {threat['threatId']} returned 404, skipping: {e}")
-                continue  # Skip to next threat
-            raise  # Re-raise other errors
+            if _is_skippable_error(e):
+                demisto.debug(f"Threat {threat['threatId']} returned a skippable error, skipping: {e}")
+                continue
+            raise
 
         # Skip if we didn't get any threat details (shouldn't happen but defensive)
         if threat_details is None:
@@ -1332,7 +1356,13 @@ def generate_threat_incidents(client, threats, max_page_number, start_datetime, 
 def generate_abuse_campaign_incidents(client, campaigns):
     incidents = []
     for campaign in campaigns:
-        campaign_details = client.get_details_of_an_abuse_mailbox_campaign_request(campaign["campaignId"])
+        try:
+            campaign_details = client.get_details_of_an_abuse_mailbox_campaign_request(campaign["campaignId"])
+        except DemistoException as e:
+            if _is_skippable_error(e):
+                demisto.debug(f"Campaign {campaign['campaignId']} returned a skippable error, skipping: {e}")
+                continue
+            raise
         first_reported = campaign_details.get("firstReported", "")
         incident = {
             "dbotMirrorId": str(campaign.get("campaignId", "")),
@@ -1348,7 +1378,13 @@ def generate_abuse_campaign_incidents(client, campaigns):
 def generate_account_takeover_cases_incidents(client, cases):
     incidents = []
     for case in cases:
-        case_details = client.get_details_of_an_abnormal_case_request(case["caseId"])
+        try:
+            case_details = client.get_details_of_an_abnormal_case_request(case["caseId"])
+        except DemistoException as e:
+            if _is_skippable_error(e):
+                demisto.debug(f"Case {case['caseId']} returned a skippable error, skipping: {e}")
+                continue
+            raise
         incident = {
             "dbotMirrorId": str(case["caseId"]),
             "name": "Account Takeover Case",

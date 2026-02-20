@@ -29,6 +29,9 @@ from AbnormalSecurity import (
     get_employee_login_information_for_last_30_days_in_csv_format_command,
     download_data_from_threat_log_in_csv_format_command,
     generate_threat_incidents,
+    generate_abuse_campaign_incidents,
+    generate_account_takeover_cases_incidents,
+    _is_skippable_error,
     get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command,
     fetch_incidents,
     ISO_8601_FORMAT,
@@ -1497,19 +1500,47 @@ def test_download_message_eml_command_with_quarantine(mocker):
     assert results["FileID"] is not None
 
 
-def test_generate_threat_incidents_handles_404_error(mocker):
+"""
+    _is_skippable_error Unit Tests
+"""
+
+
+@pytest.mark.parametrize(
+    "error_msg, expected",
+    [
+        ("Error in API call [404] - Not Found", True),
+        ("Error in API call [400] - Bad Request", True),
+        ("Error in API call [410] - Gone", True),
+        ("Error in API call [405] - Method Not Allowed", True),
+        ("Error in API call [401] - Unauthorized", False),
+        ("Error in API call [403] - Forbidden", False),
+        ("Error in API call [429] - Too Many Requests", False),
+        ("Error in API call [500] - Internal Server Error", False),
+        ("Error in API call [502] - Bad Gateway", False),
+        ("Some unexpected error with no status code", False),
+    ],
+)
+def test_is_skippable_error(error_msg, expected):
+    """Test that _is_skippable_error correctly categorizes errors."""
+    assert _is_skippable_error(DemistoException(error_msg)) == expected
+
+
+"""
+    generate_threat_incidents Error Handling Tests
+"""
+
+
+def test_generate_threat_incidents_skips_4xx_error(mocker):
     """
-    Test that 404 errors for one threat don't abort processing of other threats.
+    Test that skippable 4xx errors for one threat don't abort processing of other threats.
 
     When:
         - Fetching threat details for multiple threats
         - One threat returns a 404 error (deleted/archived)
     Then:
-        - The 404 threat should be skipped
+        - The errored threat should be skipped
         - Other threats should still be processed
-        - No exception should be raised
     """
-    # Create mock responses - first threat returns 404, second threat returns valid data
     valid_threat_response = {
         "threatId": "valid-threat-id",
         "messages": [
@@ -1521,7 +1552,6 @@ def test_generate_threat_incidents_handles_404_error(mocker):
         ],
     }
 
-    # Create a side effect that raises 404 for first threat, returns data for second
     def mock_get_details(threat_id, **kwargs):
         if threat_id == "deleted-threat-id":
             raise DemistoException("Error in API call [404] - Not Found")
@@ -1530,11 +1560,9 @@ def test_generate_threat_incidents_handles_404_error(mocker):
     client = mock_client(mocker, response=None)
     mocker.patch.object(client, "get_details_of_a_threat_request", side_effect=mock_get_details)
 
-    # Define time window
     start_datetime = datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC)
     end_datetime = datetime(2023, 9, 17, 17, 0, 0, tzinfo=UTC)
 
-    # Process two threats - first one will 404, second one should succeed
     threats = [
         {"threatId": "deleted-threat-id"},
         {"threatId": "valid-threat-id"},
@@ -1542,21 +1570,35 @@ def test_generate_threat_incidents_handles_404_error(mocker):
 
     incidents = generate_threat_incidents(client, threats, 1, start_datetime, end_datetime)
 
-    # Verify only one incident was created (the valid threat)
     assert len(incidents) == 1
     assert incidents[0]["dbotMirrorId"] == "valid-threat-id"
 
 
-def test_generate_threat_incidents_reraises_non_404_errors(mocker):
+@pytest.mark.parametrize("status_code,reason", [("401", "Unauthorized"), ("403", "Forbidden"), ("429", "Too Many Requests")])
+def test_generate_threat_incidents_raises_non_skippable_errors(mocker, status_code, reason):
     """
-    Test that non-404 errors are still raised (not silently swallowed).
+    Test that non-skippable errors (401, 403, 429) and 5xx errors are re-raised.
+    """
 
-    When:
-        - Fetching threat details
-        - A non-404 error occurs (e.g., 500 Internal Server Error)
-    Then:
-        - The exception should be re-raised
-    """
+    def mock_get_details(threat_id, **kwargs):
+        raise DemistoException(f"Error in API call [{status_code}] - {reason}")
+
+    client = mock_client(mocker, response=None)
+    mocker.patch.object(client, "get_details_of_a_threat_request", side_effect=mock_get_details)
+
+    start_datetime = datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC)
+    end_datetime = datetime(2023, 9, 17, 17, 0, 0, tzinfo=UTC)
+
+    threats = [{"threatId": "some-threat-id"}]
+
+    with pytest.raises(DemistoException) as exc_info:
+        generate_threat_incidents(client, threats, 1, start_datetime, end_datetime)
+
+    assert status_code in str(exc_info.value)
+
+
+def test_generate_threat_incidents_raises_5xx_errors(mocker):
+    """Test that 5xx errors are re-raised."""
 
     def mock_get_details(threat_id, **kwargs):
         raise DemistoException("Error in API call [500] - Internal Server Error")
@@ -1564,37 +1606,23 @@ def test_generate_threat_incidents_reraises_non_404_errors(mocker):
     client = mock_client(mocker, response=None)
     mocker.patch.object(client, "get_details_of_a_threat_request", side_effect=mock_get_details)
 
-    # Define time window
     start_datetime = datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC)
     end_datetime = datetime(2023, 9, 17, 17, 0, 0, tzinfo=UTC)
 
-    threats = [{"threatId": "some-threat-id"}]
-
-    # Should raise the exception since it's not a 404
     with pytest.raises(DemistoException) as exc_info:
-        generate_threat_incidents(client, threats, 1, start_datetime, end_datetime)
+        generate_threat_incidents(client, [{"threatId": "id"}], 1, start_datetime, end_datetime)
 
     assert "500" in str(exc_info.value)
 
 
-def test_generate_threat_incidents_handles_404_mid_pagination(mocker):
+def test_generate_threat_incidents_handles_4xx_mid_pagination(mocker):
     """
-    Test that 404 errors during pagination are handled gracefully.
-
-    When:
-        - Fetching threat details with pagination
-        - A 404 error occurs on the second page
-    Then:
-        - The threat should be skipped
-        - Processing should continue with other threats
+    Test that skippable 4xx errors during pagination are handled gracefully.
     """
-    call_count = [0]
 
     def mock_get_details(threat_id, **kwargs):
-        call_count[0] += 1
         if threat_id == "paginating-threat-id":
             if kwargs.get("page_number", 1) == 1:
-                # First page succeeds
                 return {
                     "threatId": "paginating-threat-id",
                     "messages": [
@@ -1607,7 +1635,6 @@ def test_generate_threat_incidents_handles_404_mid_pagination(mocker):
                     "nextPageNumber": 2,
                 }
             else:
-                # Second page returns 404
                 raise DemistoException("Error in API call [404] - Not Found")
         return {
             "threatId": "valid-threat-id",
@@ -1623,7 +1650,6 @@ def test_generate_threat_incidents_handles_404_mid_pagination(mocker):
     client = mock_client(mocker, response=None)
     mocker.patch.object(client, "get_details_of_a_threat_request", side_effect=mock_get_details)
 
-    # Define time window
     start_datetime = datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC)
     end_datetime = datetime(2023, 9, 17, 17, 0, 0, tzinfo=UTC)
 
@@ -1634,6 +1660,98 @@ def test_generate_threat_incidents_handles_404_mid_pagination(mocker):
 
     incidents = generate_threat_incidents(client, threats, 5, start_datetime, end_datetime)
 
-    # Only the valid threat should produce an incident (paginating-threat-id 404'd mid-pagination)
     assert len(incidents) == 1
     assert incidents[0]["dbotMirrorId"] == "valid-threat-id"
+
+
+"""
+    generate_abuse_campaign_incidents Error Handling Tests
+"""
+
+
+def test_generate_abuse_campaign_incidents_skips_4xx_error(mocker):
+    """Test that skippable 4xx errors skip the campaign and continue."""
+    valid_campaign_response = {
+        "campaignId": "valid-campaign-id",
+        "firstReported": "2023-09-17T15:00:00Z",
+    }
+
+    def mock_get_campaign(campaign_id, **kwargs):
+        if campaign_id == "deleted-campaign-id":
+            raise DemistoException("Error in API call [404] - Not Found")
+        return valid_campaign_response
+
+    client = mock_client(mocker, response=None)
+    mocker.patch.object(client, "get_details_of_an_abuse_mailbox_campaign_request", side_effect=mock_get_campaign)
+
+    campaigns = [
+        {"campaignId": "deleted-campaign-id"},
+        {"campaignId": "valid-campaign-id"},
+    ]
+
+    incidents = generate_abuse_campaign_incidents(client, campaigns)
+
+    assert len(incidents) == 1
+    assert incidents[0]["dbotMirrorId"] == "valid-campaign-id"
+
+
+def test_generate_abuse_campaign_incidents_raises_non_skippable_errors(mocker):
+    """Test that non-skippable errors (401) are re-raised."""
+
+    def mock_get_campaign(campaign_id, **kwargs):
+        raise DemistoException("Error in API call [401] - Unauthorized")
+
+    client = mock_client(mocker, response=None)
+    mocker.patch.object(client, "get_details_of_an_abuse_mailbox_campaign_request", side_effect=mock_get_campaign)
+
+    with pytest.raises(DemistoException) as exc_info:
+        generate_abuse_campaign_incidents(client, [{"campaignId": "id"}])
+
+    assert "401" in str(exc_info.value)
+
+
+"""
+    generate_account_takeover_cases_incidents Error Handling Tests
+"""
+
+
+def test_generate_account_takeover_cases_incidents_skips_4xx_error(mocker):
+    """Test that skippable 4xx errors skip the case and continue."""
+    valid_case_response = {
+        "caseId": "valid-case-id",
+        "firstObserved": "2023-09-17T15:00:00Z",
+        "genai_summary": "Test summary",
+    }
+
+    def mock_get_case(case_id, **kwargs):
+        if case_id == "deleted-case-id":
+            raise DemistoException("Error in API call [410] - Gone")
+        return valid_case_response
+
+    client = mock_client(mocker, response=None)
+    mocker.patch.object(client, "get_details_of_an_abnormal_case_request", side_effect=mock_get_case)
+
+    cases = [
+        {"caseId": "deleted-case-id", "description": "Deleted case"},
+        {"caseId": "valid-case-id", "description": "Valid case"},
+    ]
+
+    incidents = generate_account_takeover_cases_incidents(client, cases)
+
+    assert len(incidents) == 1
+    assert incidents[0]["dbotMirrorId"] == "valid-case-id"
+
+
+def test_generate_account_takeover_cases_incidents_raises_non_skippable_errors(mocker):
+    """Test that non-skippable errors (429) are re-raised."""
+
+    def mock_get_case(case_id, **kwargs):
+        raise DemistoException("Error in API call [429] - Too Many Requests")
+
+    client = mock_client(mocker, response=None)
+    mocker.patch.object(client, "get_details_of_an_abnormal_case_request", side_effect=mock_get_case)
+
+    with pytest.raises(DemistoException) as exc_info:
+        generate_account_takeover_cases_incidents(client, [{"caseId": "id", "description": "test"}])
+
+    assert "429" in str(exc_info.value)
