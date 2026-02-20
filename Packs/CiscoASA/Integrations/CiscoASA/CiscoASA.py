@@ -12,7 +12,7 @@ from requests import Response
 
 from CommonServerUserPython import *
 
-# Disable insecure warnings
+# Disable insecur    warnings
 urllib3.disable_warnings()
 
 """ GLOBAL VARIABLES"""
