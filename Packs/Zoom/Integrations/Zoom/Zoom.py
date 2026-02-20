@@ -30,7 +30,7 @@ OBJECTS_TO_KEYS = {
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 PLAYGROUND_INVESTIGATION_TYPE = 9
 
-# Note#1: type "Pro" is the old version, and "Licensed" is the new one, and i want to support both.
+# Note#1:   type "Pro" is the old version, and "Licensed" is the new one, and i want to support both.
 # Note#2: type "Corporate" is officially not supported any more, but i did not remove it just in case it still works.
 USER_TYPE_MAPPING = {"Basic": 1, "Pro": 2, "Licensed": 2, "Corporate": 3}
 MONTHLY_RECURRING_TYPE_MAPPING = {"Daily": 1, "Weekly": 2, "Monthly": 3}
