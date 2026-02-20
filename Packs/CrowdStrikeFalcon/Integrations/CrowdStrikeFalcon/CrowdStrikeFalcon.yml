@@ -5371,7 +5371,7 @@ script:
     - contextPath: CrowdStrike.CnappAlert.severity
       description: The severity of the alert.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.6308650
+  dockerimage: demisto/graphql:1.0.0.6911241
   isfetch: true
   isfetch:marketplacev2: false
   isfetch:platform: false
