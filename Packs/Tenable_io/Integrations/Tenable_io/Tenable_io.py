@@ -2111,25 +2111,27 @@ def main():  # pragma: no cover   # pylint: disable=W9018
             demisto.debug(f"new lastrun assets: {assets_last_run}")
             demisto.setAssetsLastRun(assets_last_run)
 
-            # Get snapshot_id and determine if we're still fetching assets
-            # Note: items_count is for the assets snapshot only, not vulnerabilities
+            # Get snapshot_id for this fetch cycle
             # Fallback to generate_snapshot_id() if not in last_run - this handles edge cases
             # where the fetch cycle starts without a stored snapshot_id (e.g., first run or reset)
             snapshot_id = assets_last_run.get("snapshot_id", generate_snapshot_id())
-            total_assets = assets_last_run.get("total_assets", len(assets))
 
             # Check if assets fetch is still in progress (has more asset chunks or asset export job pending)
             # Vulnerabilities are separate and don't affect the assets snapshot completion
             assets_fetch_in_progress = is_assets_fetch_in_progress(assets_last_run)
 
-            # items_count: Set to 1 if assets fetch is still in progress to signal snapshot is incomplete
-            # Set to actual count when assets are done to signal snapshot is complete
-            items_count = 1 if assets_fetch_in_progress else total_assets
-
             if assets:
+                # Calculate cumulative total BEFORE sending to XSIAM
+                # Per the Fetch Assets Development Flow doc (Case 2 - Continuation Iteration):
+                #   items_count = 1 if not finished pulling all results,
+                #   otherwise items_count = last_run["total_assets"] + len(assets)
+                cumulative_total = assets_last_run.get("total_assets", 0) + len(assets)
+                items_count = 1 if assets_fetch_in_progress else cumulative_total
+
                 demisto.debug(
                     f"sending {len(assets)} assets to XSIAM with snapshot_id={snapshot_id}, "
-                    f"items_count={items_count}, total_assets={total_assets}"
+                    f"items_count={items_count}, cumulative_total={cumulative_total}, "
+                    f"assets_fetch_in_progress={assets_fetch_in_progress}"
                 )
                 send_data_to_xsiam(
                     data=assets,
@@ -2145,17 +2147,18 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                 )
                 # Update cumulative asset count AFTER successful send_data_to_xsiam()
                 # This ensures the counter only reflects assets that were actually sent to XSIAM
-                total_assets = assets_last_run.get("total_assets", 0) + len(assets)
-                assets_last_run["total_assets"] = total_assets
+                assets_last_run["total_assets"] = cumulative_total
                 demisto.setAssetsLastRun(assets_last_run)
+
             if vulnerabilities:
                 vulnerabilities = parse_vulnerabilities(vulnerabilities)
                 demisto.debug(f"sending {len(vulnerabilities)} vulnerabilities to XSIAM.")
                 send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product=f"{PRODUCT}_vulnerabilities")
 
             # Update module health separately to show the number of assets pulled
+            cumulative_total = assets_last_run.get("total_assets", 0)
             if assets or not assets_fetch_in_progress:
-                demisto.updateModuleHealth({"assetsPulled": total_assets})
+                demisto.updateModuleHealth({"assetsPulled": cumulative_total})
 
             demisto.info("Done Sending data to XSIAM.")
 
