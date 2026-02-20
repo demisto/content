@@ -83,24 +83,6 @@
                 "GravityZone Incident Link": {
                     "simple": "incidentLink"
                 },
-                "GravityZone Incident Attack Types": {
-                    "complex": {
-                        "root": "attackTypes",
-                        "filters": [],
-                        "transformers": [
-                            {
-                                "operator": "join",
-                                "args": {
-                                    "separator": {
-                                        "value": {
-                                            "simple": ","
-                                        }
-                                    }
-                                }
-                            }
-                        ]
-                    }
-                },
                 "GravityZone Computer ID": {
                     "simple": "details.computerId"
                 },
@@ -112,9 +94,6 @@
                 },
                 "GravityZone Computer IP": {
                     "simple": "details.computerIp"
-                },
-                "GravityZone Incident Status": {
-                    "simple": "status"
                 },
                 "Incident Link": {
                     "simple": "incidentLink"
@@ -202,27 +181,6 @@
                 },
                 "GravityZone Incident Link": {
                     "simple": "incidentLink"
-                },
-                "GravityZone Incident Attack Types": {
-                    "complex": {
-                        "root": "attackTypes",
-                        "filters": [],
-                        "transformers": [
-                            {
-                                "operator": "join",
-                                "args": {
-                                    "separator": {
-                                        "value": {
-                                            "simple": ","
-                                        }
-                                    }
-                                }
-                            }
-                        ]
-                    }
-                },
-                "GravityZone Incident Status": {
-                    "simple": "status"
                 },
                 "Incident Link": {
                     "simple": "incidentLink"

@@ -544,19 +544,21 @@ class Client(BaseClient):
         return self.call("/v1.2/jsonrpc/incidents", "getIncident", {"id": incident_id})
 
     @logger
-    def add_incident_note(self, incident_id: str, note: str) -> dict[str, Any]:
+    def add_incident_note(self, incident_type: str, incident_id: str, note: str) -> dict[str, Any]:
         """
         Add a note to a specific incident.
         Args:
+            incident_type (str): The type of the incident.
             incident_id (str): The ID of the incident.
             note (str): The note to add.
         Returns:
             dict[str, Any]: The response from the add operation.
         """
+        type = f"{incident_type}s"
         return self.call(
             "/v1.0/jsonrpc/incidents",
             "updateIncidentNote",
-            {"type": "incidents", "incidentId": incident_id, "note": note},
+            {"type": type, "incidentId": incident_id, "note": note},
         )
 
     @logger
@@ -1757,6 +1759,9 @@ def get_entries(new_incident: dict, old_incident: dict) -> list[dict]:
         list[dict]: A list of entries reflecting the status change.
     """
 
+    if not new_incident or not old_incident:
+        return []
+
     new_status = new_incident.get("status")
     old_status = old_incident.get("status")
 
@@ -2010,11 +2015,22 @@ def update_remote_system_command(client: Client, args: dict[str, Any]) -> str:
         if not parsed_args.incident_changed:
             return incident_id
 
+        incident = client.get_incident(incident_id)
+        if not incident:
+            raise DemistoException(f"Incident {incident_id} was not found")
+
         if parsed_args.delta.get("closeNotes"):
-            client.add_incident_note(incident_id, parsed_args.delta.get("closeNotes"))
+            incident_type = incident.get("incidentType", "incident")
+            client.add_incident_note(incident_type, incident_id, parsed_args.delta.get("closeNotes"))
 
         gz_status = get_gz_status_matched_to_cortex_status(parsed_args.inc_status, parsed_args.delta.get("closeReason"))
-        client.change_incident_status(incident_id, gz_status)
+        existing_cortex_status = INCIDENT_STATUS_INT_MAPPING.get(
+            incident.get("status", INCIDENT_STATUS_STR_OPEN), IncidentStatus.PENDING
+        )
+        existing_gz_status = INCIDENT_STATUS_MAPPING.get(existing_cortex_status, GRAVITY_ZONE_INCIDENT_STATUS_OPEN)
+        if gz_status != existing_gz_status:
+            demisto.debug(f"Changing incident {incident_id} status to {gz_status} from {existing_gz_status} in GravityZone")
+            client.change_incident_status(incident_id, gz_status)
 
     except Exception:
         pass
@@ -2112,7 +2128,11 @@ def gz_add_incident_note_command(client: Client, args: dict[str, Any]) -> Comman
             "note": note,
         }
         try:
-            result = client.add_incident_note(incident_id, note)
+            incident = client.get_incident(incident_id)
+            if not incident:
+                raise DemistoException(f"Incident {incident_id} was not found")
+            incident_type = incident.get("incidentType", "incident")
+            result = client.add_incident_note(incident_type, incident_id, note)
             if not result:
                 raise DemistoException(f"Incident {incident_id} note was not added successfully")
             status = "Success"

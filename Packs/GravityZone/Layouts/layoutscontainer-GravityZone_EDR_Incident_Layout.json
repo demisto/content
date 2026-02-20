@@ -400,15 +400,6 @@
                                 "listId": "caseinfoid-0c697849-e4f8-4d95-a0b4-28109cc02288",
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "gravityzoneincidentattacktypes",
-                                "height": 26,
-                                "id": "23a4f12a-fe22-4835-96ff-e60b586f3900",
-                                "index": 6,
-                                "sectionItemType": "field",
-                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
