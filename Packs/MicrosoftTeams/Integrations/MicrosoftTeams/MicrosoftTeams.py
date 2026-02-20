@@ -218,6 +218,7 @@ COMMANDS_REQUIRED_PERMISSIONS: dict[str, dict[str, list[GraphPermissions]]] = {
         "microsoft-teams-auth-test": [],
         "microsoft-teams-auth-reset": [],
         "microsoft-teams-token-permissions-list": [],
+        "microsoft-teams-send-proactive-message": [Perms.USER_READ_ALL],
     },
     CLIENT_CREDENTIALS_FLOW: {
         "send-notification": [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
@@ -270,6 +271,7 @@ COMMANDS_REQUIRED_PERMISSIONS: dict[str, dict[str, list[GraphPermissions]]] = {
         "microsoft-teams-auth-test": [],
         "microsoft-teams-auth-reset": [],
         "microsoft-teams-token-permissions-list": [],
+        "microsoft-teams-send-proactive-message": [Perms.USER_READ_ALL],
     },
 }
 HIGHER_PERMISSIONS: dict[GraphPermissions, list[GraphPermissions]] = {
@@ -918,6 +920,136 @@ def get_bot_access_token() -> str:
         raise ValueError("Failed to get bot access token")
 
 
+def resolve_user_id_for_proactive_message(user_identifier: str) -> str:
+    """
+    Resolves a user identifier to user ID and email using Microsoft Graph API.
+
+    :param user_identifier: User identifier - can be displayName, mail, userPrincipalName, or user ID
+    :return: user_id
+    """
+    demisto.debug(f"Resolving user identifier: {user_identifier}")
+
+    # Use get_user() with additional fields to get both ID and email
+    users = get_user(user_identifier, select_fields="id,mail,displayName")
+
+    if not users:
+        raise ValueError(
+            f"User not found: {user_identifier}. "
+            f"Please provide an exact match for email, User Principal Name, or user ID (GUID)."
+        )
+
+    # Security check: If multiple users match, raise an error to prevent sending to wrong user
+    if len(users) > 1:
+        user_list = "\n".join(
+            [f"- {u.get('displayName', 'N/A')} ({u.get('mail', 'N/A')}) - ID: {u.get('id', 'N/A')}" for u in users]
+        )
+        raise ValueError(
+            f"Multiple users found matching '{user_identifier}':\n\n{user_list}\n\n"
+            f"To avoid sending sensitive messages to the wrong user, please provide the exact user ID (GUID) "
+            f"or a unique email address."
+        )
+
+    user_id = users[0].get("id", "")
+
+    if not user_id:
+        raise ValueError(f"User ID not found in response for: {user_identifier}")
+
+    demisto.debug(f"Resolved user '{user_identifier}' to ID: {user_id}")
+    return user_id
+
+
+def create_proactive_conversation(user_id: str) -> str:
+    """
+    Creates a proactive conversation with a user using Bot Framework API.
+    Checks if conversation already exists to avoid unnecessary API calls.
+
+    :param user_id: The Microsoft Teams user ID
+    :return: The conversation ID
+    """
+    integration_context: dict = get_integration_context()
+    bot_id: str = BOT_ID
+    bot_name: str = integration_context.get("bot_name", "")
+    tenant_id: str = integration_context.get("tenant_id", "")
+    service_url: str = integration_context.get("service_url", "")
+
+    if not service_url:
+        raise ValueError(
+            "Service URL not found. Please ensure the bot has been added to a team and has received at least one message."
+        )
+
+    if not tenant_id:
+        raise ValueError(MISS_CONFIGURATION_ERROR_MESSAGE)
+
+    # Check if we have a cached conversation for this user
+    cached_conversations: dict = integration_context.get("proactive_conversations", {})
+    if isinstance(cached_conversations, str):
+        cached_conversations = json.loads(cached_conversations)
+
+    if user_id in cached_conversations:
+        cached_conversation_id = cached_conversations[user_id]
+        demisto.debug(f"Using cached conversation ID for user {user_id}: {cached_conversation_id}")
+        return cached_conversation_id
+
+    # Create new conversation
+    conversation: dict = {
+        "bot": {"id": f"28:{bot_id}", "name": bot_name},
+        "members": [{"id": user_id}],
+        "channelData": {"tenant": {"id": tenant_id}},
+    }
+
+    url: str = f"{service_url}/v3/conversations"
+    demisto.debug(f"Creating proactive conversation with user {user_id}")
+
+    response: dict = cast(dict[Any, Any], http_request("POST", url, json_=conversation, api="bot"))
+    conversation_id: str = response.get("id", "")
+
+    if not conversation_id:
+        raise ValueError("Failed to create conversation: No conversation ID returned")
+
+    # Cache the conversation ID
+    cached_conversations[user_id] = conversation_id
+    integration_context["proactive_conversations"] = json.dumps(cached_conversations)
+    set_integration_context(integration_context)
+
+    demisto.debug(f"Created and cached conversation ID: {conversation_id}")
+    return conversation_id
+
+
+def send_proactive_message_to_conversation(conversation_id: str, message: str = "", adaptive_card: dict = None) -> dict:
+    """
+    Sends a proactive message to a conversation using Bot Framework API.
+
+    :param conversation_id: The conversation ID
+    :param message: The text message to send (optional if adaptive_card is provided)
+    :param adaptive_card: The adaptive card to send (optional if message is provided)
+    :return: The API response
+    """
+    integration_context: dict = get_integration_context()
+    service_url: str = integration_context.get("service_url", "")
+
+    if not service_url:
+        raise ValueError("Service URL not found. Please ensure the bot has been added to a team.")
+
+    # Build the conversation payload
+    conversation_payload: dict = {"type": "message"}
+
+    if adaptive_card:
+        # Handle raw adaptive card format
+        adaptive_card = handle_raw_adaptive_card(adaptive_card)
+        conversation_payload["attachments"] = [adaptive_card]
+    elif message:
+        conversation_payload["text"] = message
+        conversation_payload["entities"] = []
+    else:
+        raise ValueError("Either message or adaptive_card must be provided")
+
+    url: str = f"{service_url}/v3/conversations/{conversation_id}/activities"
+    demisto.debug(f"Sending proactive message to conversation {conversation_id}")
+
+    response: dict = cast(dict[Any, Any], http_request("POST", url, json_=conversation_payload, api="bot"))
+    return response
+
+
 def get_refresh_token_from_auth_code_param() -> str:
     """
     The function is based on MicrosoftClient._get_refresh_token_from_auth_code_param() from 'MicrosoftApiModule'
@@ -1362,7 +1494,7 @@ def get_chat_id_and_type(chat: str, create_dm_chat: bool = True) -> tuple[str, s
     return chat_id, chat_type
 
 
-def get_user(user: str, auth_type: str = AUTH_TYPE) -> list:
+def get_user(user: str, auth_type: str = AUTH_TYPE, select_fields: str = "id, userType") -> list:
     """Retrieves the AAD ID of requested user and the userType
 
     Args:
@@ -1375,7 +1507,7 @@ def get_user(user: str, auth_type: str = AUTH_TYPE) -> list:
     url: str = f"{GRAPH_BASE_URL}/v1.0/users"
     params = {
         "$filter": f"displayName eq '{user}' or mail eq '{user}' or userPrincipalName eq '{user}'",
-        "$select": "id, userType",
+        "$select": select_fields,
     }
     users = cast(dict[Any, Any], http_request("GET", url, params=params, auth_type=auth_type))
     return users.get("value", [])
@@ -2668,6 +2800,83 @@ def message_update_command():
     return_results(results)
 
 
+def send_proactive_message_command():
+    """
+    Sends a proactive message to any Microsoft Teams user.
+    This command enables sending messages to users across the entire organization without requiring
+    the user to be in a specific team or channel.
+
+    The command:
+    1. Resolves the user identifier (displayName, mail, userPrincipalName, or user ID) to the actual user ID
+    2. Creates or retrieves a proactive conversation with the user
+    3. Sends the message or adaptive card to the conversation
+    """
+    args = demisto.args()
+    user_id_arg: str = args.get("user_id", "")
+    message: str = args.get("message", "")
+    adaptive_card_arg = args.get("adaptive_card", "")
+
+    # Validate inputs - message and adaptive_card are both optional, but at least one must be provided
+    if not message and not adaptive_card_arg:
+        raise ValueError("Either message or adaptive_card must be provided.")
+
+    if message and adaptive_card_arg:
+        raise ValueError("Provide either message or adaptive_card, not both.")
+
+    # Step 1: Resolve user identifier to user ID and email
+    demisto.debug(f"Resolving user identifier: {user_id_arg}")
+    user_id = resolve_user_id_for_proactive_message(user_id_arg)
+
+    # Step 2: Create or retrieve proactive conversation
+    demisto.debug(f"Creating/retrieving proactive conversation for user: {user_id}")
+    conversation_id = create_proactive_conversation(user_id)
+
+    # Step 3: Prepare message or adaptive card
+    adaptive_card_obj = None
+    if adaptive_card_arg:
+        # Parse if string, use directly if dict
+        if isinstance(adaptive_card_arg, str):
+            try:
+                adaptive_card: dict = json.loads(adaptive_card_arg)
+            except json.JSONDecodeError as e:
+                raise ValueError(f"Invalid adaptive card JSON format: {str(e)}")
+        else:
+            adaptive_card = adaptive_card_arg  # Already a dict
+
+        # Check for TeamsAsk entitlement - SAME AS send-notification
+        entitlement_match: Match[str] | None = re.search(ENTITLEMENT_REGEX, adaptive_card.get("entitlement", ""))
+        if entitlement_match:
+            # TeamsAsk adaptive card with entitlement
+            adaptive_card_obj = process_teams_ask_adaptive_card(adaptive_card)
+        else:
+            # Regular adaptive card
+            adaptive_card_obj = handle_raw_adaptive_card(adaptive_card)
+
+    # Step 4: Send the proactive message
+    demisto.debug(f"Sending proactive message to conversation: {conversation_id}")
+    response = send_proactive_message_to_conversation(
+        conversation_id=conversation_id, message=message, adaptive_card=adaptive_card_obj
+    )
+    demisto.debug(f"Proactive message sent successfully. ActivityId: {response.get('id', '')}")
+    # Prepare outputs
+    outputs = {
+        "ConversationId": conversation_id,
+        "UserId": user_id,
+        "ActivityId": response.get("id", ""),
+        "UserIdentifier": user_id_arg,
+    }
+
+    result = CommandResults(
+        outputs_prefix="MicrosoftTeams.Conversation",
+        outputs_key_field="ConversationId",
+        outputs=outputs,
+        readable_output="Message was sent successfully.",
+        raw_response=response,
+    )
+
+    return_results(result)
+
+
 def get_channel_id_for_send_notification(team_aad_id: str, channel_name: str, message_type: str):
     """
     Returns the channel ID to send the message to
@@ -3106,7 +3315,7 @@ def entitlement_handler(integration_context: dict, request_body: dict, value: di
     Handles activity the bot received as part of TeamsAsk flow, which includes entitlement
     :param integration_context: Cached object to retrieve relevant data from
     :param request_body: Activity payload
-    :param value: Object which includes
+    :param value: Object which includes entitlement response data
     :param conversation_id: Message conversation ID
     :return: None
     """
@@ -3123,12 +3332,45 @@ def entitlement_handler(integration_context: dict, request_body: dict, value: di
     task_id: str = value.get("task_id", "")
     from_property: dict = request_body.get("from", {})
     team_members_id: str = from_property.get("id", "")
-    team_member: dict = get_team_member(integration_context, team_members_id)
+
+    # Try to get user email - check team cache first, then proactive users cache, then Graph API
+    user_email = ""
+    try:
+        team_member: dict = get_team_member(integration_context, team_members_id)
+        user_email = team_member.get("user_email", "")
+        demisto.debug(f"Found user in team cache: {user_email}")
+    except ValueError:
+        # Not in team cache - check proactive users cache
+        proactive_users: dict = json.loads(integration_context.get("proactive_users", "{}"))
+        if team_members_id in proactive_users:
+            user_email = proactive_users[team_members_id].get("email", "")
+            demisto.debug(f"Found user in proactive users cache: {user_email}")
+        else:
+            # Fallback: use Graph API to get user details (reusing shared function)
+            demisto.debug(f"User {team_members_id} not in cache, querying Graph API")
+            try:
+                user_data = get_user(team_members_id, select_fields="mail,userPrincipalName")
+                if user_data and user_data[0]:
+                    user_email = user_data[0].get("mail") or user_data[0].get("userPrincipalName", "")
+                    demisto.debug(f"Retrieved user email from Graph API: {user_email}")
+
+                    # Cache the user email for future entitlement responses
+                    if user_data[0].get("mail"):
+                        proactive_users[team_members_id] = {"email": user_email}
+                        integration_context["proactive_users"] = json.dumps(proactive_users)
+                        set_integration_context(integration_context)
+                        demisto.debug(f"Cached user email in integration context: {team_members_id} -> {user_email}")
+            except Exception as e:
+                demisto.error(f"Failed to retrieve user details: {str(e)}")
+                # Final fallback: try from_property
+                user_email = from_property.get("email") or from_property.get("userPrincipalName", "")
+                demisto.debug(f"Using email from request from_property: {user_email}")
+
     demisto.handleEntitlementForUser(
         incidentID=investigation_id,
         guid=entitlement_guid,
         taskID=task_id,
-        email=team_member.get("user_email", ""),
+        email=user_email,
         content=response,
     )
     activity_id: str = request_body.get("replyToId", "")
@@ -3782,6 +4024,7 @@ def main():  # pragma: no cover
         "microsoft-teams-create-messaging-endpoint": create_messaging_endpoint_command,
         "microsoft-teams-message-update": message_update_command,
         "microsoft-teams-list-messages": list_messages_command,
+        "microsoft-teams-send-proactive-message": send_proactive_message_command,
     }
 
     commands_auth_code: dict = {

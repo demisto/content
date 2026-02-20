@@ -929,6 +929,45 @@ script:
     - contextPath: MicrosoftTeams.Message.ID
       description: ID of the message sent.
       type: String
+  - arguments:
+    - description: |-
+        The user to send the message to. Accepts any of the following identifiers:
+        - Email address (e.g., "john.doe@example.com")
+        - User Principal Name (e.g., "john.doe@domain.onmicrosoft.com")
+        - Display name (e.g., "John Doe")
+        - User GUID (e.g., "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2")
+        
+        The command will automatically resolve the identifier to the user's ID using Microsoft Graph API.
+      name: user_id
+      required: true
+    - description: The text message to send to the user.
+      name: message
+    - description: The Microsoft Teams adaptive card to send (in JSON format).
+      name: adaptive_card
+    description: |-
+      Sends a proactive message to any Microsoft Teams user across the organization.
+      This command enables direct communication with users without requiring them to be in a specific team or channel.
+      
+      The command will:
+      1. Resolve the user identifier to the actual user ID using Microsoft Graph API
+      2. Create or retrieve an existing conversation with the user
+      3. Send the message or adaptive card via the Bot Framework API
+      
+      Note: Either 'message' or 'adaptive_card' must be provided, but not both.
+    name: microsoft-teams-send-proactive-message
+    outputs:
+    - contextPath: MicrosoftTeams.Conversation.ConversationId
+      description: The ID of the conversation created or used.
+      type: String
+    - contextPath: MicrosoftTeams.Conversation.UserId
+      description: The resolved user ID.
+      type: String
+    - contextPath: MicrosoftTeams.Conversation.ActivityId
+      description: The ID of the sent message activity.
+      type: String
+    - contextPath: MicrosoftTeams.Conversation.UserIdentifier
+      description: The original user identifier provided.
+      type: String
   dockerimage: demisto/teams:1.0.0.6091526
   longRunning: true
   longRunningPort: true

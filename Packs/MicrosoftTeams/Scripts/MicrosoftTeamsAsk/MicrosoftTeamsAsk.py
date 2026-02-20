@@ -18,8 +18,9 @@ def main():
     channel: str = script_arguments.get("channel", "")
     team: str = script_arguments.get("team", "")
     using_instance: str = script_arguments.get("using", "")
+    user_id: str = script_arguments.get("user_id", "")
 
-    if not (team_member or channel):
+    if not (team_member or channel or user_id):
         raise ValueError("Either team member or channel must be provided.")
 
     if team_member and channel:
@@ -47,8 +48,13 @@ def main():
     command_arguments: dict = {}
 
     if adaptive_card:
+        try:
+            adaptive_card_parsed = json.loads(adaptive_card)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Invalid adaptive card JSON format: {str(e)}")
+
         adaptive_card_object: dict = {
-            "adaptive_card": json.loads(adaptive_card),
+            "adaptive_card": adaptive_card_parsed,
             "entitlement": entitlement,
             "investigation_id": investigation_id,
             "task_id": task_id,
@@ -75,15 +81,19 @@ def main():
         command_arguments["using"] = using_instance
         command_arguments["using-brand"] = "Microsoft Teams"
 
+    command_to_use = "send-notification"
     if channel:
         command_arguments["channel"] = channel
         if team:
             command_arguments["team"] = team
     elif team_member:
         command_arguments["team_member"] = team_member
+    else:
+        command_arguments["user_id"] = user_id
+        command_to_use = "microsoft-teams-send-proactive-message"
 
-    demisto.debug(f"Calling command 'send-notification' with arguments:\n{command_arguments}")
-    demisto.results(demisto.executeCommand("send-notification", command_arguments))
+    demisto.debug(f"Calling command '{command_to_use}' with arguments:\n{command_arguments}")
+    demisto.results(demisto.executeCommand(command_to_use, command_arguments))
 
 
 if __name__ == "builtins":
