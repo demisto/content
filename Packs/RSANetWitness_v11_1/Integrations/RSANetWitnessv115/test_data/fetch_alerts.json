@@ -1,24 +1,1269 @@
-{
-    "items": [
-        {
-            "id": "test",
-            "title": "sk_test300",
-            "detail": null,
-            "created": "2023-07-03T11: 04: 16.408Z",
-            "source": "NetWitness Investigate",
-            "riskScore": 50,
-            "type": "Log",
-            "events": []
+[
+    {
+        "_id": "690db4f17ba19a1714249da6",
+        "receivedTime": 1762505969892,
+        "status": "GROUPED_IN_INCIDENT",
+        "originalHeaders": {
+            "name": "Multiple Failed Logons from Same Source IP with Unique Usernames",
+            "description": null,
+            "version": 0,
+            "severity": 3,
+            "timestamp": 1762505967983,
+            "signatureId": "1d8fc6ceb1f94c6326d6d5483d258fcb2e179e9869325b245d105c2219bf69fd",
+            "deviceVendor": "RSA Netwitness",
+            "deviceProduct": "Event Stream Analysis",
+            "deviceVersion": "12.5",
+            "uebaSource": null,
+            "whiteListAlertSources": []
         },
-        {
-            "id": "test ",
-            "title": "sk_test300",
-            "detail": null,
-            "created": "2023-07-03T11: 04: 24.256Z",
-            "source": "NetWitness Investigate",
-            "riskScore": 50,
-            "type": "Log",
-            "events": []
-        }
-    ]
-}
+        "originalAlert": {
+            "severity": 3,
+            "eventSourceId": "a68645fa-b683-4a38-9f5c-653e405a403a:56005:337745",
+            "respondEnabled": true,
+            "moduleType": "ESPER",
+            "engineUri": "testesa",
+            "moduleName": "Multiple Failed Logons from Same Source IP with Unique Usernames",
+            "suppressMessageBus": false,
+            "transientAlert": false,
+            "version": "0.2",
+            "notificationReasons": [],
+            "actualEventsCount": 3,
+            "instanceId": "1d8fc6ceb1f94c6326d6d5483d258fcb2e179e9869325b245d105c2219bf69fd",
+            "statement": "Module_esa000067_v0_2_Alert",
+            "contentUuid": "1d6122d2-eb9e-4898-82b5-06b73183a8e9",
+            "id": "d81a7f7b-e12a-4b7f-a475-a84bf2121612",
+            "time": "Nov 7, 2025 08:59:27 AM UTC",
+            "moduleId": "esa000067_v0_2",
+            "events": [
+                {
+                    "msg": "kcheckpass: pam_unix(kscreensaver:auth): authentication failure; logname= uid=5302 euid=5302 tty=:0 ruser= rhost=  user=user3",
+                    "ec_activity": "Logon",
+                    "header_id": "0007",
+                    "event_cat_name": "User.Activity.Failed Logins",
+                    "com_rsa_netwitness_streams_stream": "testesa",
+                    "device_type": "rhlinux",
+                    "event_source": "pam_unix(kscreensaver:auth)",
+                    "sessionid": 337745,
+                    "medium": 32,
+                    "rid": 337745,
+                    "msg_vid": "kcheckpass",
+                    "event_cat": 1401030000,
+                    "client": "kcheckpass",
+                    "msg_id": "01039:01",
+                    "device_disc": 66,
+                    "ec_subject": "User",
+                    "event_source_id": "a68645fa-b683-4a38-9f5c-653e405a403a:56005:337745",
+                    "com_rsa_netwitness_streams_arrival_timestamp": 1762505967974,
+                    "esa_time": 1762505967983,
+                    "ec_theme": "Authentication",
+                    "terminal": ":0",
+                    "device_disc_type": "rhlinux",
+                    "com_rsa_netwitness_streams_source_trail": [
+                        "10.237.168.21:56005"
+                    ],
+                    "device_ip": "9.4.4.9",
+                    "event_desc": "authentication failure",
+                    "user_dst": "user3",
+                    "size": 182,
+                    "device_class": "Unix",
+                    "time": 1762505966000,
+                    "ec_outcome": "Failure",
+                    "com_rsa_netwitness_streams_arrival_sequence": 60841,
+                    "did": "nwappliance4062",
+                    "forward_ipv6": "0:0:0:0:0:0:0:1",
+                    "username": [
+                        "5302"
+                    ]
+                },
+                {
+                    "msg": "kcheckpass: pam_ldap: error trying to bind as user \"uid=user4,ou=People,dc=host2,dc=site\" (Invalid credentials)",
+                    "ec_activity": "Logon",
+                    "header_id": "0007",
+                    "event_cat_name": "User.Activity.Failed Logins",
+                    "com_rsa_netwitness_streams_stream": "testesa",
+                    "device_type": "rhlinux",
+                    "event_source": "pam_ldap",
+                    "sessionid": 337746,
+                    "medium": 32,
+                    "rid": 337746,
+                    "msg_vid": "kcheckpass",
+                    "result": "Invalid credentials",
+                    "event_cat": 1401030000,
+                    "client": "kcheckpass",
+                    "msg_id": "01039:02",
+                    "device_disc": 70,
+                    "ec_subject": "User",
+                    "event_source_id": "a68645fa-b683-4a38-9f5c-653e405a403a:56005:337746",
+                    "com_rsa_netwitness_streams_arrival_timestamp": 1762505967974,
+                    "esa_time": 1762505967983,
+                    "ec_theme": "Authentication",
+                    "device_disc_type": "rhlinux",
+                    "com_rsa_netwitness_streams_source_trail": [
+                        "10.237.168.21:56005"
+                    ],
+                    "device_ip": "9.4.4.9",
+                    "event_desc": "bind error",
+                    "user_dst": "uid=user4,ou=People,dc=host2,dc=site",
+                    "size": 168,
+                    "device_class": "Unix",
+                    "time": 1762505966000,
+                    "ec_outcome": "Failure",
+                    "com_rsa_netwitness_streams_arrival_sequence": 60842,
+                    "did": "nwappliance4062",
+                    "forward_ipv6": "0:0:0:0:0:0:0:1"
+                },
+                {
+                    "msg": "login(pam_unix)[9101]: 1 more authentication failure; logname= uid=0 euid=0 tty=pts/2 ruser= rhost=lxdm14545.etrade.com  user=srohatgi",
+                    "process_id": 9101,
+                    "ec_activity": "Logon",
+                    "header_id": "0001",
+                    "event_cat_name": "User.Activity.Failed Logins",
+                    "com_rsa_netwitness_streams_stream": "testesa",
+                    "device_type": "rhlinux",
+                    "sessionid": 337828,
+                    "medium": 32,
+                    "rid": 337828,
+                    "msg_vid": "login",
+                    "event_cat": 1401030000,
+                    "host_src": [
+                        "lxdm14545.etrade.com"
+                    ],
+                    "client": "login(pam_unix)",
+                    "msg_id": "00010:03",
+                    "device_disc": 92,
+                    "ec_subject": "User",
+                    "event_source_id": "a68645fa-b683-4a38-9f5c-653e405a403a:56005:337828",
+                    "com_rsa_netwitness_streams_arrival_timestamp": 1762505967974,
+                    "esa_time": 1762505967983,
+                    "ec_theme": "Authentication",
+                    "terminal": "pts/2",
+                    "device_disc_type": "rhlinux",
+                    "com_rsa_netwitness_streams_source_trail": [
+                        "10.237.168.21:56005"
+                    ],
+                    "device_ip": "9.4.4.9",
+                    "event_desc": "authentication failure(s)",
+                    "user_dst": "srohatgi",
+                    "size": 191,
+                    "dclass_c1": 1,
+                    "device_class": "Unix",
+                    "time": 1762505966000,
+                    "ec_outcome": "Failure",
+                    "com_rsa_netwitness_streams_arrival_sequence": 60924,
+                    "did": "nwappliance4062",
+                    "forward_ipv6": "0:0:0:0:0:0:0:1",
+                    "username": [
+                        "0"
+                    ]
+                }
+            ],
+            "suppressNotification": false
+        },
+        "alert": {
+            "groupby_alias_ip": "",
+            "groupby_source_device_mac_address": "",
+            "user_summary": [
+                "5302 , user3",
+                "uid=user4,ou=People,dc=host2,dc=site",
+                "0 , srohatgi"
+            ],
+            "groupby_dst_device_geolocation_domain": "",
+            "source": "Event Stream Analysis",
+            "type": [
+                "Log"
+            ],
+            "groupby_user_src": "",
+            "groupby_src_device_dns_domain": "",
+            "groupby_source_country": "",
+            "groupby_analysis_file": "",
+            "groupby_filename": "",
+            "groupby_source_username": "0,5302",
+            "groupby_detector_ip": "9.4.4.9",
+            "groupby_dst_usr_username": "srohatgi,uid=user4,ou=People,dc=host2,dc=site,user3",
+            "events": [
+                {
+                    "agent_id": "",
+                    "data": [
+                        {
+                            "filename": "",
+                            "size": 182,
+                            "hash": ""
+                        }
+                    ],
+                    "destination": {
+                        "path": "",
+                        "file_SHA256": "",
+                        "filename": "",
+                        "launch_argument": "",
+                        "device": {
+                            "compliance_rating": "",
+                            "netbios_name": "",
+                            "port": "",
+                            "mac_address": "",
+                            "criticality": "",
+                            "asset_type": "",
+                            "ip_address": "",
+                            "facility": "",
+                            "business_unit": "",
+                            "geolocation": {
+                                "country": "",
+                                "city": "",
+                                "latitude": null,
+                                "organization": "",
+                                "domain": "",
+                                "longitude": null
+                            }
+                        },
+                        "user": {
+                            "email_address": "",
+                            "ad_username": "",
+                            "ad_domain": "",
+                            "username": "user3"
+                        },
+                        "hash": ""
+                    },
+                    "description": "authentication failure",
+                    "domain_src": "",
+                    "port_src": "",
+                    "device_type": "rhlinux",
+                    "event_source": "a68645fa-b683-4a38-9f5c-653e405a403a:56005",
+                    "source": {
+                        "path": "",
+                        "file_SHA256": "",
+                        "filename": "",
+                        "launch_argument": "",
+                        "device": {
+                            "compliance_rating": "",
+                            "netbios_name": "",
+                            "port": "",
+                            "mac_address": "",
+                            "criticality": "",
+                            "asset_type": "",
+                            "ip_address": "",
+                            "facility": "",
+                            "business_unit": "",
+                            "geolocation": {
+                                "country": "",
+                                "city": "",
+                                "latitude": null,
+                                "organization": "",
+                                "domain": "",
+                                "longitude": null
+                            }
+                        },
+                        "user": {
+                            "email_address": "",
+                            "ad_username": "",
+                            "ad_domain": "",
+                            "username": "5302"
+                        },
+                        "hash": ""
+                    },
+                    "type": "Log",
+                    "analysis_file": "",
+                    "directory": "",
+                    "registry_key": "",
+                    "enrichment": "",
+                    "user_src": "",
+                    "hostname": "",
+                    "analysis_service": "",
+                    "detected_by": "Unix-rhlinux,9.4.4.9",
+                    "process_vid": "",
+                    "host_src": "",
+                    "function": null,
+                    "context": "",
+                    "action": "",
+                    "operating_system": "",
+                    "alias_ip": "",
+                    "from": "",
+                    "timestamp": 1762505966000,
+                    "ec_subject": "User",
+                    "event_source_id": "337745",
+                    "related_links": [
+                        {
+                            "type": "investigate_original_event",
+                            "url": "/investigation/host/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/event/AUTO/337745"
+                        }
+                    ],
+                    "service_name": "",
+                    "port_dst": "",
+                    "domain_dst": "",
+                    "user_dst": "user3",
+                    "autorun_type": "",
+                    "host_dst": "",
+                    "domain": "",
+                    "user_account": "",
+                    "to": "",
+                    "category": "",
+                    "cert_common": "",
+                    "detector": {
+                        "device_class": "Unix",
+                        "ip_address": "9.4.4.9",
+                        "product_name": "rhlinux"
+                    },
+                    "user": "5302 , user3",
+                    "analysis_session": "",
+                    "event_time": null,
+                    "site_categorization": null,
+                    "username": "5302"
+                },
+                {
+                    "agent_id": "",
+                    "data": [
+                        {
+                            "filename": "",
+                            "size": 168,
+                            "hash": ""
+                        }
+                    ],
+                    "destination": {
+                        "path": "",
+                        "file_SHA256": "",
+                        "filename": "",
+                        "launch_argument": "",
+                        "device": {
+                            "compliance_rating": "",
+                            "netbios_name": "",
+                            "port": "",
+                            "mac_address": "",
+                            "criticality": "",
+                            "asset_type": "",
+                            "ip_address": "",
+                            "facility": "",
+                            "business_unit": "",
+                            "geolocation": {
+                                "country": "",
+                                "city": "",
+                                "latitude": null,
+                                "organization": "",
+                                "domain": "",
+                                "longitude": null
+                            }
+                        },
+                        "user": {
+                            "email_address": "",
+                            "ad_username": "",
+                            "ad_domain": "",
+                            "username": "uid=user4,ou=People,dc=host2,dc=site"
+                        },
+                        "hash": ""
+                    },
+                    "description": "bind error",
+                    "domain_src": "",
+                    "port_src": "",
+                    "device_type": "rhlinux",
+                    "event_source": "a68645fa-b683-4a38-9f5c-653e405a403a:56005",
+                    "source": {
+                        "path": "",
+                        "file_SHA256": "",
+                        "filename": "",
+                        "launch_argument": "",
+                        "device": {
+                            "compliance_rating": "",
+                            "netbios_name": "",
+                            "port": "",
+                            "mac_address": "",
+                            "criticality": "",
+                            "asset_type": "",
+                            "ip_address": "",
+                            "facility": "",
+                            "business_unit": "",
+                            "geolocation": {
+                                "country": "",
+                                "city": "",
+                                "latitude": null,
+                                "organization": "",
+                                "domain": "",
+                                "longitude": null
+                            }
+                        },
+                        "user": {
+                            "email_address": "",
+                            "ad_username": "",
+                            "ad_domain": "",
+                            "username": ""
+                        },
+                        "hash": ""
+                    },
+                    "type": "Log",
+                    "analysis_file": "",
+                    "directory": "",
+                    "registry_key": "",
+                    "enrichment": "",
+                    "user_src": "",
+                    "hostname": "",
+                    "analysis_service": "",
+                    "detected_by": "Unix-rhlinux,9.4.4.9",
+                    "process_vid": "",
+                    "host_src": "",
+                    "function": null,
+                    "context": "",
+                    "action": "",
+                    "operating_system": "",
+                    "alias_ip": "",
+                    "from": "",
+                    "timestamp": 1762505966000,
+                    "ec_subject": "User",
+                    "event_source_id": "337746",
+                    "related_links": [
+                        {
+                            "type": "investigate_original_event",
+                            "url": "/investigation/host/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/event/AUTO/337746"
+                        }
+                    ],
+                    "service_name": "",
+                    "port_dst": "",
+                    "domain_dst": "",
+                    "user_dst": "uid=user4,ou=People,dc=host2,dc=site",
+                    "autorun_type": "",
+                    "host_dst": "",
+                    "domain": "",
+                    "user_account": "",
+                    "to": "",
+                    "category": "",
+                    "cert_common": "",
+                    "detector": {
+                        "device_class": "Unix",
+                        "ip_address": "9.4.4.9",
+                        "product_name": "rhlinux"
+                    },
+                    "user": "uid=user4,ou=People,dc=host2,dc=site",
+                    "analysis_session": "",
+                    "event_time": null,
+                    "site_categorization": null,
+                    "username": ""
+                },
+                {
+                    "agent_id": "",
+                    "data": [
+                        {
+                            "filename": "",
+                            "size": 191,
+                            "hash": ""
+                        }
+                    ],
+                    "destination": {
+                        "path": "",
+                        "file_SHA256": "",
+                        "filename": "",
+                        "launch_argument": "",
+                        "device": {
+                            "compliance_rating": "",
+                            "netbios_name": "",
+                            "port": "",
+                            "mac_address": "",
+                            "criticality": "",
+                            "asset_type": "",
+                            "ip_address": "",
+                            "facility": "",
+                            "business_unit": "",
+                            "geolocation": {
+                                "country": "",
+                                "city": "",
+                                "latitude": null,
+                                "organization": "",
+                                "domain": "",
+                                "longitude": null
+                            }
+                        },
+                        "user": {
+                            "email_address": "",
+                            "ad_username": "",
+                            "ad_domain": "",
+                            "username": "srohatgi"
+                        },
+                        "hash": ""
+                    },
+                    "description": "authentication failure(s)",
+                    "domain_src": "",
+                    "port_src": "",
+                    "device_type": "rhlinux",
+                    "event_source": "a68645fa-b683-4a38-9f5c-653e405a403a:56005",
+                    "source": {
+                        "path": "",
+                        "file_SHA256": "",
+                        "filename": "",
+                        "launch_argument": "",
+                        "device": {
+                            "compliance_rating": "",
+                            "netbios_name": "",
+                            "port": "",
+                            "mac_address": "",
+                            "criticality": "",
+                            "asset_type": "",
+                            "ip_address": "",
+                            "facility": "",
+                            "business_unit": "",
+                            "geolocation": {
+                                "country": "",
+                                "city": "",
+                                "latitude": null,
+                                "organization": "",
+                                "domain": "",
+                                "longitude": null
+                            }
+                        },
+                        "user": {
+                            "email_address": "",
+                            "ad_username": "",
+                            "ad_domain": "",
+                            "username": "0"
+                        },
+                        "hash": ""
+                    },
+                    "type": "Log",
+                    "analysis_file": "",
+                    "directory": "",
+                    "registry_key": "",
+                    "enrichment": "",
+                    "user_src": "",
+                    "hostname": "",
+                    "analysis_service": "",
+                    "detected_by": "Unix-rhlinux,9.4.4.9",
+                    "process_vid": "",
+                    "host_src": "lxdm14545.etrade.com",
+                    "function": null,
+                    "context": "",
+                    "action": "",
+                    "operating_system": "",
+                    "alias_ip": "",
+                    "from": "",
+                    "timestamp": 1762505966000,
+                    "ec_subject": "User",
+                    "event_source_id": "337828",
+                    "related_links": [
+                        {
+                            "type": "investigate_original_event",
+                            "url": "/investigation/host/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/event/AUTO/337828"
+                        }
+                    ],
+                    "service_name": "",
+                    "port_dst": "",
+                    "domain_dst": "",
+                    "user_dst": "srohatgi",
+                    "autorun_type": "",
+                    "host_dst": "",
+                    "domain": "",
+                    "user_account": "",
+                    "to": "",
+                    "category": "",
+                    "cert_common": "",
+                    "detector": {
+                        "device_class": "Unix",
+                        "ip_address": "9.4.4.9",
+                        "product_name": "rhlinux"
+                    },
+                    "user": "0 , srohatgi",
+                    "analysis_session": "",
+                    "event_time": null,
+                    "site_categorization": null,
+                    "username": "0"
+                }
+            ],
+            "groupby_detector_dns_hostname": "",
+            "host_summary": [
+                "Unix-rhlinux,9.4.4.9"
+            ],
+            "groupby_username": "0,5302",
+            "groupby_file_sha_256": "",
+            "groupby_user_dst": "srohatgi,uid=user4,ou=People,dc=host2,dc=site,user3",
+            "groupby_dst_device_dns_hostname": "",
+            "groupby_os": "",
+            "groupby_src_usr_ad_domain": "",
+            "groupby_dst_usr_ad_username": "",
+            "name": "Multiple Failed Logons from Same Source IP with Unique Usernames",
+            "groupby_detector_dns_domain": "",
+            "groupby_host_src": "lxdm14545.etrade.com",
+            "groupby_analysis_service": "",
+            "groupby_destination_device_mac_address": "",
+            "groupby_version": "0",
+            "groupby_dst_device_netbios_name": "",
+            "destination_country": [],
+            "groupby_type": "Log",
+            "groupby_device_type": "rhlinux",
+            "groupby_domain": "",
+            "groupby_destination_country": "",
+            "groupby_dst_device_dns_domain": "",
+            "groupby_analysis_session": "",
+            "signature_id": "1d8fc6ceb1f94c6326d6d5483d258fcb2e179e9869325b245d105c2219bf69fd",
+            "groupby_data_hash": "",
+            "groupby_domain_dst": "",
+            "groupby_src_device_netbios_name": "",
+            "groupby_destination_ip": "",
+            "groupby_host_dst": "",
+            "groupby_source_ip": "",
+            "groupby_detector_mac_address": "",
+            "timestamp": 1762505967983,
+            "severity": 30.0,
+            "related_links": [
+                {
+                    "type": "investigate_session",
+                    "url": "/investigation/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/query/sessionid%3D337745%7C%7Csessionid%3D337746%7C%7Csessionid%3D337828"
+                },
+                {
+                    "type": "investigate_device_ip",
+                    "url": "/investigation/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/query/device.ip%3D9.4.4.9%2Fdate%2F2025-11-07T08%3A49%3A26.000Z%2F2025-11-07T09%3A09%3A26.000Z"
+                }
+            ],
+            "risk_score": 30.0,
+            "groupby_src_device_geolocation_domain": "",
+            "groupby_dst_usr_ad_domain": "",
+            "groupby_destination_port": "",
+            "groupby_c2domain": "",
+            "groupby_host_name": "",
+            "groupby_src_usr_ad_username": "",
+            "groupby_src_device_dns_hostname": "",
+            "source_country": [],
+            "groupby_domain_src": "",
+            "numEvents": 3,
+            "groupby_agent_id": ""
+        },
+        "partOfIncident": true,
+        "lastUpdated": 1762505973068,
+        "risk": "",
+        "tactics": [
+            "TA0006"
+        ],
+        "techniques": [
+            "T1110"
+        ],
+        "_class": "com.rsa.asoc.respond.commons.domain.Alert",
+        "incidentCreated": 1762505973068,
+        "incidentId": "INC-34"
+    },
+    {
+        "_id": "690dc2367ba19a1714249dd5",
+        "receivedTime": 1762509366117,
+        "status": "GROUPED_IN_INCIDENT",
+        "originalHeaders": {
+            "name": "Multiple Failed Logons from Same Source IP with Unique Usernames",
+            "description": null,
+            "version": 0,
+            "severity": 3,
+            "timestamp": 1762509362241,
+            "signatureId": "1d8fc6ceb1f94c6326d6d5483d258fcb2e179e9869325b245d105c2219bf69fd",
+            "deviceVendor": "RSA Netwitness",
+            "deviceProduct": "Event Stream Analysis",
+            "deviceVersion": "12.5",
+            "uebaSource": null,
+            "whiteListAlertSources": []
+        },
+        "originalAlert": {
+            "severity": 3,
+            "eventSourceId": "a68645fa-b683-4a38-9f5c-653e405a403a:56005:342133",
+            "respondEnabled": true,
+            "moduleType": "ESPER",
+            "engineUri": "testesa",
+            "moduleName": "Multiple Failed Logons from Same Source IP with Unique Usernames",
+            "suppressMessageBus": false,
+            "transientAlert": false,
+            "version": "0.2",
+            "notificationReasons": [],
+            "actualEventsCount": 3,
+            "instanceId": "1d8fc6ceb1f94c6326d6d5483d258fcb2e179e9869325b245d105c2219bf69fd",
+            "statement": "Module_esa000067_v0_2_Alert",
+            "contentUuid": "1d6122d2-eb9e-4898-82b5-06b73183a8e9",
+            "id": "2492ef5b-f2ac-47a9-9e63-a160c9fe3a92",
+            "time": "Nov 7, 2025 09:56:02 AM UTC",
+            "moduleId": "esa000067_v0_2",
+            "events": [
+                {
+                    "msg": "kcheckpass: pam_unix(kscreensaver:auth): authentication failure; logname= uid=5302 euid=5302 tty=:0 ruser= rhost=  user=user3",
+                    "ec_activity": "Logon",
+                    "header_id": "0007",
+                    "event_cat_name": "User.Activity.Failed Logins",
+                    "com_rsa_netwitness_streams_stream": "testesa",
+                    "device_type": "rhlinux",
+                    "event_source": "pam_unix(kscreensaver:auth)",
+                    "sessionid": 342133,
+                    "medium": 32,
+                    "rid": 342133,
+                    "msg_vid": "kcheckpass",
+                    "event_cat": 1401030000,
+                    "client": "kcheckpass",
+                    "msg_id": "01039:01",
+                    "device_disc": 66,
+                    "ec_subject": "User",
+                    "event_source_id": "a68645fa-b683-4a38-9f5c-653e405a403a:56005:342133",
+                    "com_rsa_netwitness_streams_arrival_timestamp": 1762509362214,
+                    "esa_time": 1762509362241,
+                    "ec_theme": "Authentication",
+                    "device_group": "All Unix Event Source(s)",
+                    "terminal": ":0",
+                    "device_disc_type": "rhlinux",
+                    "com_rsa_netwitness_streams_source_trail": [
+                        "10.237.168.21:56005"
+                    ],
+                    "device_ip": "9.4.4.9",
+                    "event_desc": "authentication failure",
+                    "user_dst": "user3",
+                    "size": 182,
+                    "device_class": "Unix",
+                    "time": 1762509362000,
+                    "ec_outcome": "Failure",
+                    "com_rsa_netwitness_streams_arrival_sequence": 65229,
+                    "did": "nwappliance4062",
+                    "forward_ipv6": "0:0:0:0:0:0:0:1",
+                    "username": [
+                        "5302"
+                    ]
+                },
+                {
+                    "msg": "kcheckpass: pam_ldap: error trying to bind as user \"uid=user4,ou=People,dc=host2,dc=site\" (Invalid credentials)",
+                    "ec_activity": "Logon",
+                    "header_id": "0007",
+                    "event_cat_name": "User.Activity.Failed Logins",
+                    "com_rsa_netwitness_streams_stream": "testesa",
+                    "device_type": "rhlinux",
+                    "event_source": "pam_ldap",
+                    "sessionid": 342134,
+                    "medium": 32,
+                    "rid": 342134,
+                    "msg_vid": "kcheckpass",
+                    "result": "Invalid credentials",
+                    "event_cat": 1401030000,
+                    "client": "kcheckpass",
+                    "msg_id": "01039:02",
+                    "device_disc": 70,
+                    "ec_subject": "User",
+                    "event_source_id": "a68645fa-b683-4a38-9f5c-653e405a403a:56005:342134",
+                    "com_rsa_netwitness_streams_arrival_timestamp": 1762509362214,
+                    "esa_time": 1762509362241,
+                    "ec_theme": "Authentication",
+                    "device_group": "All Unix Event Source(s)",
+                    "device_disc_type": "rhlinux",
+                    "com_rsa_netwitness_streams_source_trail": [
+                        "10.237.168.21:56005"
+                    ],
+                    "device_ip": "9.4.4.9",
+                    "event_desc": "bind error",
+                    "user_dst": "uid=user4,ou=People,dc=host2,dc=site",
+                    "size": 168,
+                    "device_class": "Unix",
+                    "time": 1762509362000,
+                    "ec_outcome": "Failure",
+                    "com_rsa_netwitness_streams_arrival_sequence": 65230,
+                    "did": "nwappliance4062",
+                    "forward_ipv6": "0:0:0:0:0:0:0:1"
+                },
+                {
+                    "msg": "login(pam_unix)[9101]: 1 more authentication failure; logname= uid=0 euid=0 tty=pts/2 ruser= rhost=lxdm14545.etrade.com  user=srohatgi",
+                    "process_id": 9101,
+                    "ec_activity": "Logon",
+                    "header_id": "0001",
+                    "event_cat_name": "User.Activity.Failed Logins",
+                    "com_rsa_netwitness_streams_stream": "testesa",
+                    "device_type": "rhlinux",
+                    "sessionid": 342216,
+                    "medium": 32,
+                    "rid": 342216,
+                    "msg_vid": "login",
+                    "event_cat": 1401030000,
+                    "host_src": [
+                        "lxdm14545.etrade.com"
+                    ],
+                    "client": "login(pam_unix)",
+                    "msg_id": "00010:03",
+                    "device_disc": 92,
+                    "ec_subject": "User",
+                    "event_source_id": "a68645fa-b683-4a38-9f5c-653e405a403a:56005:342216",
+                    "com_rsa_netwitness_streams_arrival_timestamp": 1762509362216,
+                    "esa_time": 1762509362241,
+                    "ec_theme": "Authentication",
+                    "device_group": "All Unix Event Source(s)",
+                    "terminal": "pts/2",
+                    "device_disc_type": "rhlinux",
+                    "com_rsa_netwitness_streams_source_trail": [
+                        "10.237.168.21:56005"
+                    ],
+                    "device_ip": "9.4.4.9",
+                    "event_desc": "authentication failure(s)",
+                    "user_dst": "srohatgi",
+                    "size": 191,
+                    "dclass_c1": 1,
+                    "device_class": "Unix",
+                    "time": 1762509362000,
+                    "ec_outcome": "Failure",
+                    "com_rsa_netwitness_streams_arrival_sequence": 65312,
+                    "did": "nwappliance4062",
+                    "forward_ipv6": "0:0:0:0:0:0:0:1",
+                    "username": [
+                        "0"
+                    ]
+                }
+            ],
+            "suppressNotification": false
+        },
+        "alert": {
+            "groupby_alias_ip": "",
+            "groupby_source_device_mac_address": "",
+            "user_summary": [
+                "5302 , user3",
+                "uid=user4,ou=People,dc=host2,dc=site",
+                "0 , srohatgi"
+            ],
+            "groupby_dst_device_geolocation_domain": "",
+            "source": "Event Stream Analysis",
+            "type": [
+                "Log"
+            ],
+            "groupby_user_src": "",
+            "groupby_src_device_dns_domain": "",
+            "groupby_source_country": "",
+            "groupby_analysis_file": "",
+            "groupby_filename": "",
+            "groupby_source_username": "0,5302",
+            "groupby_detector_ip": "9.4.4.9",
+            "groupby_dst_usr_username": "srohatgi,uid=user4,ou=People,dc=host2,dc=site,user3",
+            "events": [
+                {
+                    "agent_id": "",
+                    "data": [
+                        {
+                            "filename": "",
+                            "size": 182,
+                            "hash": ""
+                        }
+                    ],
+                    "destination": {
+                        "path": "",
+                        "file_SHA256": "",
+                        "filename": "",
+                        "launch_argument": "",
+                        "device": {
+                            "compliance_rating": "",
+                            "netbios_name": "",
+                            "port": "",
+                            "mac_address": "",
+                            "criticality": "",
+                            "asset_type": "",
+                            "ip_address": "",
+                            "facility": "",
+                            "business_unit": "",
+                            "geolocation": {
+                                "country": "",
+                                "city": "",
+                                "latitude": null,
+                                "organization": "",
+                                "domain": "",
+                                "longitude": null
+                            }
+                        },
+                        "user": {
+                            "email_address": "",
+                            "ad_username": "",
+                            "ad_domain": "",
+                            "username": "user3"
+                        },
+                        "hash": ""
+                    },
+                    "description": "authentication failure",
+                    "domain_src": "",
+                    "port_src": "",
+                    "device_type": "rhlinux",
+                    "event_source": "a68645fa-b683-4a38-9f5c-653e405a403a:56005",
+                    "source": {
+                        "path": "",
+                        "file_SHA256": "",
+                        "filename": "",
+                        "launch_argument": "",
+                        "device": {
+                            "compliance_rating": "",
+                            "netbios_name": "",
+                            "port": "",
+                            "mac_address": "",
+                            "criticality": "",
+                            "asset_type": "",
+                            "ip_address": "",
+                            "facility": "",
+                            "business_unit": "",
+                            "geolocation": {
+                                "country": "",
+                                "city": "",
+                                "latitude": null,
+                                "organization": "",
+                                "domain": "",
+                                "longitude": null
+                            }
+                        },
+                        "user": {
+                            "email_address": "",
+                            "ad_username": "",
+                            "ad_domain": "",
+                            "username": "5302"
+                        },
+                        "hash": ""
+                    },
+                    "type": "Log",
+                    "analysis_file": "",
+                    "directory": "",
+                    "registry_key": "",
+                    "enrichment": "",
+                    "user_src": "",
+                    "hostname": "",
+                    "analysis_service": "",
+                    "detected_by": "Unix-rhlinux,9.4.4.9",
+                    "process_vid": "",
+                    "host_src": "",
+                    "function": null,
+                    "context": "",
+                    "action": "",
+                    "operating_system": "",
+                    "alias_ip": "",
+                    "from": "",
+                    "timestamp": 1762509362000,
+                    "ec_subject": "User",
+                    "event_source_id": "342133",
+                    "related_links": [
+                        {
+                            "type": "investigate_original_event",
+                            "url": "/investigation/host/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/event/AUTO/342133"
+                        }
+                    ],
+                    "service_name": "",
+                    "port_dst": "",
+                    "domain_dst": "",
+                    "user_dst": "user3",
+                    "autorun_type": "",
+                    "host_dst": "",
+                    "domain": "",
+                    "user_account": "",
+                    "to": "",
+                    "category": "",
+                    "cert_common": "",
+                    "detector": {
+                        "device_class": "Unix",
+                        "ip_address": "9.4.4.9",
+                        "product_name": "rhlinux"
+                    },
+                    "user": "5302 , user3",
+                    "analysis_session": "",
+                    "event_time": null,
+                    "site_categorization": null,
+                    "username": "5302"
+                },
+                {
+                    "agent_id": "",
+                    "data": [
+                        {
+                            "filename": "",
+                            "size": 168,
+                            "hash": ""
+                        }
+                    ],
+                    "destination": {
+                        "path": "",
+                        "file_SHA256": "",
+                        "filename": "",
+                        "launch_argument": "",
+                        "device": {
+                            "compliance_rating": "",
+                            "netbios_name": "",
+                            "port": "",
+                            "mac_address": "",
+                            "criticality": "",
+                            "asset_type": "",
+                            "ip_address": "",
+                            "facility": "",
+                            "business_unit": "",
+                            "geolocation": {
+                                "country": "",
+                                "city": "",
+                                "latitude": null,
+                                "organization": "",
+                                "domain": "",
+                                "longitude": null
+                            }
+                        },
+                        "user": {
+                            "email_address": "",
+                            "ad_username": "",
+                            "ad_domain": "",
+                            "username": "uid=user4,ou=People,dc=host2,dc=site"
+                        },
+                        "hash": ""
+                    },
+                    "description": "bind error",
+                    "domain_src": "",
+                    "port_src": "",
+                    "device_type": "rhlinux",
+                    "event_source": "a68645fa-b683-4a38-9f5c-653e405a403a:56005",
+                    "source": {
+                        "path": "",
+                        "file_SHA256": "",
+                        "filename": "",
+                        "launch_argument": "",
+                        "device": {
+                            "compliance_rating": "",
+                            "netbios_name": "",
+                            "port": "",
+                            "mac_address": "",
+                            "criticality": "",
+                            "asset_type": "",
+                            "ip_address": "",
+                            "facility": "",
+                            "business_unit": "",
+                            "geolocation": {
+                                "country": "",
+                                "city": "",
+                                "latitude": null,
+                                "organization": "",
+                                "domain": "",
+                                "longitude": null
+                            }
+                        },
+                        "user": {
+                            "email_address": "",
+                            "ad_username": "",
+                            "ad_domain": "",
+                            "username": ""
+                        },
+                        "hash": ""
+                    },
+                    "type": "Log",
+                    "analysis_file": "",
+                    "directory": "",
+                    "registry_key": "",
+                    "enrichment": "",
+                    "user_src": "",
+                    "hostname": "",
+                    "analysis_service": "",
+                    "detected_by": "Unix-rhlinux,9.4.4.9",
+                    "process_vid": "",
+                    "host_src": "",
+                    "function": null,
+                    "context": "",
+                    "action": "",
+                    "operating_system": "",
+                    "alias_ip": "",
+                    "from": "",
+                    "timestamp": 1762509362000,
+                    "ec_subject": "User",
+                    "event_source_id": "342134",
+                    "related_links": [
+                        {
+                            "type": "investigate_original_event",
+                            "url": "/investigation/host/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/event/AUTO/342134"
+                        }
+                    ],
+                    "service_name": "",
+                    "port_dst": "",
+                    "domain_dst": "",
+                    "user_dst": "uid=user4,ou=People,dc=host2,dc=site",
+                    "autorun_type": "",
+                    "host_dst": "",
+                    "domain": "",
+                    "user_account": "",
+                    "to": "",
+                    "category": "",
+                    "cert_common": "",
+                    "detector": {
+                        "device_class": "Unix",
+                        "ip_address": "9.4.4.9",
+                        "product_name": "rhlinux"
+                    },
+                    "user": "uid=user4,ou=People,dc=host2,dc=site",
+                    "analysis_session": "",
+                    "event_time": null,
+                    "site_categorization": null,
+                    "username": ""
+                },
+                {
+                    "agent_id": "",
+                    "data": [
+                        {
+                            "filename": "",
+                            "size": 191,
+                            "hash": ""
+                        }
+                    ],
+                    "destination": {
+                        "path": "",
+                        "file_SHA256": "",
+                        "filename": "",
+                        "launch_argument": "",
+                        "device": {
+                            "compliance_rating": "",
+                            "netbios_name": "",
+                            "port": "",
+                            "mac_address": "",
+                            "criticality": "",
+                            "asset_type": "",
+                            "ip_address": "",
+                            "facility": "",
+                            "business_unit": "",
+                            "geolocation": {
+                                "country": "",
+                                "city": "",
+                                "latitude": null,
+                                "organization": "",
+                                "domain": "",
+                                "longitude": null
+                            }
+                        },
+                        "user": {
+                            "email_address": "",
+                            "ad_username": "",
+                            "ad_domain": "",
+                            "username": "srohatgi"
+                        },
+                        "hash": ""
+                    },
+                    "description": "authentication failure(s)",
+                    "domain_src": "",
+                    "port_src": "",
+                    "device_type": "rhlinux",
+                    "event_source": "a68645fa-b683-4a38-9f5c-653e405a403a:56005",
+                    "source": {
+                        "path": "",
+                        "file_SHA256": "",
+                        "filename": "",
+                        "launch_argument": "",
+                        "device": {
+                            "compliance_rating": "",
+                            "netbios_name": "",
+                            "port": "",
+                            "mac_address": "",
+                            "criticality": "",
+                            "asset_type": "",
+                            "ip_address": "",
+                            "facility": "",
+                            "business_unit": "",
+                            "geolocation": {
+                                "country": "",
+                                "city": "",
+                                "latitude": null,
+                                "organization": "",
+                                "domain": "",
+                                "longitude": null
+                            }
+                        },
+                        "user": {
+                            "email_address": "",
+                            "ad_username": "",
+                            "ad_domain": "",
+                            "username": "0"
+                        },
+                        "hash": ""
+                    },
+                    "type": "Log",
+                    "analysis_file": "",
+                    "directory": "",
+                    "registry_key": "",
+                    "enrichment": "",
+                    "user_src": "",
+                    "hostname": "",
+                    "analysis_service": "",
+                    "detected_by": "Unix-rhlinux,9.4.4.9",
+                    "process_vid": "",
+                    "host_src": "lxdm14545.etrade.com",
+                    "function": null,
+                    "context": "",
+                    "action": "",
+                    "operating_system": "",
+                    "alias_ip": "",
+                    "from": "",
+                    "timestamp": 1762509362000,
+                    "ec_subject": "User",
+                    "event_source_id": "342216",
+                    "related_links": [
+                        {
+                            "type": "investigate_original_event",
+                            "url": "/investigation/host/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/event/AUTO/342216"
+                        }
+                    ],
+                    "service_name": "",
+                    "port_dst": "",
+                    "domain_dst": "",
+                    "user_dst": "srohatgi",
+                    "autorun_type": "",
+                    "host_dst": "",
+                    "domain": "",
+                    "user_account": "",
+                    "to": "",
+                    "category": "",
+                    "cert_common": "",
+                    "detector": {
+                        "device_class": "Unix",
+                        "ip_address": "9.4.4.9",
+                        "product_name": "rhlinux"
+                    },
+                    "user": "0 , srohatgi",
+                    "analysis_session": "",
+                    "event_time": null,
+                    "site_categorization": null,
+                    "username": "0"
+                }
+            ],
+            "groupby_detector_dns_hostname": "",
+            "host_summary": [
+                "Unix-rhlinux,9.4.4.9"
+            ],
+            "groupby_username": "0,5302",
+            "groupby_file_sha_256": "",
+            "groupby_user_dst": "srohatgi,uid=user4,ou=People,dc=host2,dc=site,user3",
+            "groupby_dst_device_dns_hostname": "",
+            "groupby_os": "",
+            "groupby_src_usr_ad_domain": "",
+            "groupby_dst_usr_ad_username": "",
+            "name": "Multiple Failed Logons from Same Source IP with Unique Usernames",
+            "groupby_detector_dns_domain": "",
+            "groupby_host_src": "lxdm14545.etrade.com",
+            "groupby_analysis_service": "",
+            "groupby_destination_device_mac_address": "",
+            "groupby_version": "0",
+            "groupby_dst_device_netbios_name": "",
+            "destination_country": [],
+            "groupby_type": "Log",
+            "groupby_device_type": "rhlinux",
+            "groupby_domain": "",
+            "groupby_destination_country": "",
+            "groupby_dst_device_dns_domain": "",
+            "groupby_analysis_session": "",
+            "signature_id": "1d8fc6ceb1f94c6326d6d5483d258fcb2e179e9869325b245d105c2219bf69fd",
+            "groupby_data_hash": "",
+            "groupby_domain_dst": "",
+            "groupby_src_device_netbios_name": "",
+            "groupby_destination_ip": "",
+            "groupby_host_dst": "",
+            "groupby_source_ip": "",
+            "groupby_detector_mac_address": "",
+            "timestamp": 1762509362241,
+            "severity": 30.0,
+            "related_links": [
+                {
+                    "type": "investigate_session",
+                    "url": "/investigation/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/query/sessionid%3D342133%7C%7Csessionid%3D342134%7C%7Csessionid%3D342216"
+                },
+                {
+                    "type": "investigate_device_ip",
+                    "url": "/investigation/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/query/device.ip%3D9.4.4.9%2Fdate%2F2025-11-07T09%3A46%3A02.000Z%2F2025-11-07T10%3A06%3A02.000Z"
+                }
+            ],
+            "risk_score": 30.0,
+            "groupby_src_device_geolocation_domain": "",
+            "groupby_dst_usr_ad_domain": "",
+            "groupby_destination_port": "",
+            "groupby_c2domain": "",
+            "groupby_host_name": "",
+            "groupby_src_usr_ad_username": "",
+            "groupby_src_device_dns_hostname": "",
+            "source_country": [],
+            "groupby_domain_src": "",
+            "numEvents": 3,
+            "groupby_agent_id": ""
+        },
+        "partOfIncident": true,
+        "lastUpdated": 1762509367640,
+        "risk": "",
+        "tactics": [
+            "TA0006"
+        ],
+        "techniques": [
+            "T1110"
+        ],
+        "_class": "com.rsa.asoc.respond.commons.domain.Alert",
+        "incidentCreated": 1762505973068,
+        "incidentId": "INC-34"
+    }
+]
