@@ -443,7 +443,7 @@ Describes an entity by ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity_id | Specify the id of the entity. | Required |
+| entity_id | Specify the ID of the entity. | Required |
 | entity_type | Specify the type of the entity. Possible values are: host and account. | Required |
 
 #### Context Output
@@ -546,7 +546,7 @@ Returns a list of detections for a specified entity.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity_id | Specify the id of the entity. | Required |
+| entity_id | Specify the ID of the entity. | Required |
 | entity_type | Specify the type of the entity. Possible values are: account, host. | Required |
 | page | Enables the caller to specify a particular page of results. Default is 1. | Optional |
 | page_size | Specify the desired page size for the request. Maximum is 5000. Default is 50. | Optional |
@@ -1237,7 +1237,7 @@ Add a note to the entity.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity_id | Specify the id of the entity. | Required |
+| entity_id | Specify the ID of the entity. | Required |
 | entity_type | Specify the type of the entity. Possible values are: account, host. | Required |
 | note | Note to be added in the specified entity_id. | Required |
 
@@ -1277,6 +1277,60 @@ Add a note to the entity.
 >
 >Returned Note ID: **19**
 
+### vectra-detection-note-add
+
+***
+Add a note to the detection.
+
+#### Base Command
+
+`vectra-detection-note-add`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| detection_id | Specify the ID of the detection. | Required |
+| note | Note to be added in the specified detection_id. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Vectra.Detection.Notes.detection_id | String | ID of the detection associated with the note. |
+| Vectra.Detection.Notes.note_id | Number | ID of the note. |
+| Vectra.Detection.Notes.id | Number | ID of the note. |
+| Vectra.Detection.Notes.date_created | Date | Date when the note was created. |
+| Vectra.Entity.Notes.date_modified | Unknown | Date when the note was last modified. |
+| Vectra.Detection.Notes.created_by | String | User who created the note. |
+| Vectra.Detection.Notes.modified_by | String | User who last modified the note. |
+| Vectra.Detection.Notes.note | String | Content of the note. |
+
+#### Command example
+
+```!vectra-detection-note-add detection_id=1 note="test note"```
+
+#### Context Example
+
+```json
+{
+  "Vectra.Detection.Notes(val.detection_id && val.detection_id == obj.detection_id && val.note_id && val.note_id == obj.note_id)": {
+    "date_created": "2023-06-21T06:19:15.224449Z",
+    "created_by": "test_user",
+    "note": "test note",
+    "note_id": 19,
+    "id": 19,
+    "detection_id": 1
+  }
+}
+```
+
+#### Human Readable Output
+
+>##### The note has been successfully added to the detection
+>
+>Returned Note ID: **19**
+
 ### vectra-entity-note-update
 
 ***
@@ -1290,7 +1344,7 @@ Update a note in the entity.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity_id | Specify the id of the entity. | Required |
+| entity_id | Specify the ID of the entity. | Required |
 | entity_type | Specify the type of the entity. Possible values are: account, host. | Required |
 | note_id | Specify the ID of the note. | Required |
 | note | Note to be updated for the specified note_id. | Required |
@@ -1331,6 +1385,61 @@ Update a note in the entity.
 
 >##### The note has been successfully updated in the entity
 
+### vectra-detection-note-update
+
+***
+Update a note in the detection.
+
+#### Base Command
+
+`vectra-detection-note-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| detection_id | Specify the ID of the detection. | Required |
+| note_id | Specify the ID of the note. | Required |
+| note | Note to be updated for the specified note_id. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Vectra.Detection.Notes.detection_id | String | ID of the detection associated with the note. |
+| Vectra.Detection.Notes.note_id | Number | ID of the note. |
+| Vectra.Detection.Notes.id | Number | ID of the note. |
+| Vectra.Detection.Notes.date_created | Date | Date when the note was created. |
+| Vectra.Detection.Notes.date_modified | Date | Date when the note was last modified. |
+| Vectra.Detection.Notes.created_by | String | User who created the note. |
+| Vectra.Detection.Notes.modified_by | String | User who last modified the note. |
+| Vectra.Detection.Notes.note | String | Content of the note. |
+
+#### Command example
+
+```!vectra-detection-note-update detection_id=1 note_id=1 note="note modified"```
+
+#### Context Example
+
+```json
+{
+  "Vectra.Detection.Notes(val.detection_id && val.detection_id == obj.detection_id && val.note_id && val.note_id == obj.note_id)": {
+    "date_created": "2023-06-16T04:55:58Z",
+    "date_modified": "2023-06-22T04:57:09Z",
+    "created_by": "test_user",
+    "modified_by": "test_user",
+    "note": "note modified",
+    "note_id": 8,
+    "id": 8,
+    "detection_id": 1
+  }
+}
+```
+
+#### Human Readable Output
+
+>##### The note has been successfully updated in the detection
+
 ### vectra-entity-note-remove
 
 ***
@@ -1366,159 +1475,39 @@ There is no context output for this command.
 
 >##### The note has been successfully removed from the entity
 
-### vectra-entity-tag-add
+### vectra-detection-note-remove
 
 ***
-Add tags in the entity.
+Remove a note from the detection.
 
 #### Base Command
 
-`vectra-entity-tag-add`
+`vectra-detection-note-remove`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity_id | Specify the id of the entity. | Required |
-| entity_type | Specify the type of the entity. Possible values are: host, account. | Required |
-| tags | Comma-separated values of tags to be included in the entity. | Required |
+| detection_id | Specify the ID of the detection. | Required |
+| note_id | Specify the ID of the note. | Required |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Vectra.Entity.Tags.tag_id | String | ID of the tag. |
-| Vectra.Entity.Tags.entity_id | String | ID of the entity associated with the tag. |
-| Vectra.Entity.Tags.entity_type | String | Type of the entity. |
-| Vectra.Entity.Tags.tags | Unknown | A list of tags linked to an entity. |
+There is no context output for this command.
 
-#### Command example
+#### Command Example
 
-```!vectra-entity-tag-add entity_id=1 entity_type=host tags="tag1, tag2"```
+```!vectra-detection-note-remove note_id=1"```
 
 #### Context Example
 
 ```json
-{
-  "Vectra.Entity.Tags(val.tag_id && val.tag_id == obj.tag_id && val.entity_type && val.entity_type == obj.entity_type)": {
-    "tag_id": "1",
-    "tags": [
-        "tag1",
-        "tag2"
-    ],
-    "entity_type": "host",
-    "entity_id": 1
-  }
-}
+{}
 ```
 
 #### Human Readable Output
 
->##### Tags have been successfully added to the entity
->
->Updated list of tags: **tag1**, **tag2**
-
-### vectra-entity-tag-list
-
-***
-Returns a list of tags for a specified entity.
-
-#### Base Command
-
-`vectra-entity-tag-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| entity_id | Specify the id of the entity. | Required |
-| entity_type | Specify the type of the entity. Possible values are: host, account. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Vectra.Entity.Tags.tag_id | String | ID of the tag. |
-| Vectra.Entity.Tags.entity_id | String | ID of the entity associated with the tag. |
-| Vectra.Entity.Tags.entity_type | String | Type of the entity. |
-| Vectra.Entity.Tags.tags | Unknown | A list of tags linked to an entity. |
-
-#### Command example
-
-```!vectra-entity-tag-list entity_id=1 entity_type=host```
-
-#### Context Example
-
-```json
-{
-  "Vectra": {
-    "Entity": {
-      "Tags": {
-        "tag_id": "1",
-        "tags": [
-            "tag1",
-            "tag2"
-        ],
-        "entity_type": "host",
-        "entity_id": 1
-      }
-    }
-  }
-}
-```
-
-#### Human Readable Output
-
->##### List of tags: **tag1**, **tag2**
-
-### vectra-entity-tag-remove
-
-***
-Remove tags from the entity.
-
-#### Base Command
-
-`vectra-entity-tag-remove`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| entity_id | Specify the id of the entity. | Required |
-| entity_type | Specify the type of the entity. Possible values are: host, account. | Required |
-| tags | Comma-separated values of tags to be removed from the entity. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Vectra.Entity.Tags.tag_id | String | ID of the tag. |
-| Vectra.Entity.Tags.entity_id | String | ID of the entity associated with the tag. |
-| Vectra.Entity.Tags.entity_type | String | Type of the entity. |
-| Vectra.Entity.Tags.tags | Unknown | A list of tags linked to an entity. |
-
-#### Command example
-
-```!vectra-entity-tag-remove entity_id=1 entity_type=host tags="tag2"```
-
-#### Context Example
-
-```json
-{
-  "Vectra.Entity.Tags(val.tag_id && val.tag_id == obj.tag_id && val.entity_type && val.entity_type == obj.entity_type && val.entity_id && val.entity_id == obj.entity_id)": {
-    "tag_id": "1",
-    "tags": ["tag1"],
-    "entity_type": "host",
-    "entity_id": 1
-  }
-}
-```
-
-#### Human Readable Output
-
->##### Specified tags have been successfully removed for the entity
->
->Updated list of tags: **tag1**
+>##### The note has been successfully removed from the detection
 
 ### vectra-detections-mark-fixed
 
@@ -1585,6 +1574,160 @@ There is no context output for this command.
 #### Human Readable Output
 
 >##### The provided detection IDs have been successfully unmarked as fixed
+
+### vectra-entity-tag-add
+
+***
+Add tags in the entity.
+
+#### Base Command
+
+`vectra-entity-tag-add`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entity_id | Specify the ID of the entity. | Required |
+| entity_type | Specify the type of the entity. Possible values are: host, account. | Required |
+| tags | Comma-separated values of tags to be included in the entity. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Vectra.Entity.Tags.tag_id | String | ID of the tag. |
+| Vectra.Entity.Tags.entity_id | String | ID of the entity associated with the tag. |
+| Vectra.Entity.Tags.entity_type | String | Type of the entity. |
+| Vectra.Entity.Tags.tags | Unknown | A list of tags linked to an entity. |
+
+#### Command example
+
+```!vectra-entity-tag-add entity_id=1 entity_type=host tags="tag1, tag2"```
+
+#### Context Example
+
+```json
+{
+  "Vectra.Entity.Tags(val.tag_id && val.tag_id == obj.tag_id && val.entity_type && val.entity_type == obj.entity_type)": {
+    "tag_id": "1",
+    "tags": [
+        "tag1",
+        "tag2"
+    ],
+    "entity_type": "host",
+    "entity_id": 1
+  }
+}
+```
+
+#### Human Readable Output
+
+>##### Tags have been successfully added to the entity
+>
+>Updated list of tags: **tag1**, **tag2**
+
+### vectra-entity-tag-remove
+
+***
+Remove tags from the entity.
+
+#### Base Command
+
+`vectra-entity-tag-remove`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entity_id | Specify the ID of the entity. | Required |
+| entity_type | Specify the type of the entity. Possible values are: host, account. | Required |
+| tags | Comma-separated values of tags to be removed from the entity. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Vectra.Entity.Tags.tag_id | String | ID of the tag. |
+| Vectra.Entity.Tags.entity_id | String | ID of the entity associated with the tag. |
+| Vectra.Entity.Tags.entity_type | String | Type of the entity. |
+| Vectra.Entity.Tags.tags | Unknown | A list of tags linked to an entity. |
+
+#### Command example
+
+```!vectra-entity-tag-remove entity_id=1 entity_type=host tags="tag2"```
+
+#### Context Example
+
+```json
+{
+  "Vectra.Entity.Tags(val.tag_id && val.tag_id == obj.tag_id && val.entity_type && val.entity_type == obj.entity_type && val.entity_id && val.entity_id == obj.entity_id)": {
+    "tag_id": "1",
+    "tags": ["tag1"],
+    "entity_type": "host",
+    "entity_id": 1
+  }
+}
+```
+
+#### Human Readable Output
+
+>##### Specified tags have been successfully removed for the entity
+>
+>Updated list of tags: **tag1**
+
+### vectra-entity-tag-list
+
+***
+Returns a list of tags for a specified entity.
+
+#### Base Command
+
+`vectra-entity-tag-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entity_id | Specify the ID of the entity. | Required |
+| entity_type | Specify the type of the entity. Possible values are: host, account. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Vectra.Entity.Tags.tag_id | String | ID of the tag. |
+| Vectra.Entity.Tags.entity_id | String | ID of the entity associated with the tag. |
+| Vectra.Entity.Tags.entity_type | String | Type of the entity. |
+| Vectra.Entity.Tags.tags | Unknown | A list of tags linked to an entity. |
+
+#### Command example
+
+```!vectra-entity-tag-list entity_id=1 entity_type=host```
+
+#### Context Example
+
+```json
+{
+  "Vectra": {
+    "Entity": {
+      "Tags": {
+        "tag_id": "1",
+        "tags": [
+            "tag1",
+            "tag2"
+        ],
+        "entity_type": "host",
+        "entity_id": 1
+      }
+    }
+  }
+}
+```
+
+#### Human Readable Output
+
+>##### List of tags: **tag1**, **tag2**
 
 ### vectra-entity-assignment-add
 
@@ -2402,7 +2545,7 @@ Returns a list of all groups.
 | ips | Filter by IPs. Supports comma-separated values.<br/><br/>Note: Only valid when the group_type parameter is set to "ip". | Optional |
 | description | Filter by group description. | Optional |
 | last_modified_timestamp | Return only the groups which have a last modification timestamp equal to or after the given timestamp.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 May 2023, 01 Mar 2023 04:45:33, 2023-04-17T14:05:44Z. | Optional |
-| last_modified_by | Filters by the user id who made the most recent modification to the group. | Optional |
+| last_modified_by | Filters by the user ID who made the most recent modification to the group. | Optional |
 | group_name | Filters by group name. | Optional |
 
 #### Context Output
@@ -2934,3 +3077,102 @@ Remove tags from the detection.
 >##### Specified tags have been successfully removed for the detection
 >
 >Updated list of tags: **tag**, **tag1**, **tag2**
+
+### vectra-detection-note-list
+
+***
+Returns a list of notes for a specified detection.
+
+#### Base Command
+
+`vectra-detection-note-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| detection_id | Specify the ID of the detection. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Vectra.Detection.Notes.note_id | Number | ID of the note. |
+| Vectra.Detection.Notes.id | Number | ID of the note. |
+| Vectra.Detection.Notes.date_created | Date | Date when the note was created. |
+| Vectra.Detection.Notes.date_modified | Date | Date when the note was last modified. |
+| Vectra.Detection.Notes.created_by | String | User who created the note. |
+| Vectra.Detection.Notes.modified_by | String | User who last modified the note. |
+| Vectra.Detection.Notes.note | String | Content of the note. |
+| Vectra.Detection.Notes.detection_id | String | ID of the detection associated with the note. |
+
+#### Command example
+
+```!vectra-detection-note-list detection_id=1```
+
+#### Context Example
+
+```json
+{
+  "Vectra": {
+    "Entity": {
+      "Notes": [
+        {
+          "created_by": "test_user@mail.com",
+          "date_created": "2023-08-25T07:09:08Z",
+          "detection_id": 1,
+          "id": 1070,
+          "modified_by": "test_user@mail.com",
+          "note": "From XSOAR",
+          "note_id": 1070
+        },
+        {
+          "created_by": "test_user@mail.com",
+          "date_created": "2023-08-25T07:08:58Z",
+          "detection_id": 1,
+          "id": 1069,
+          "modified_by": "test_user@mail.com",
+          "note": "Test note",
+          "note_id": 1069
+        },
+        {
+          "created_by": "api_client",
+          "date_created": "2023-08-16T05:23:33Z",
+          "detection_id": 1,
+          "id": 922,
+          "note": "[Mirrored From XSOAR] XSOAR Incident ID: 14228\n\nNote: **bold**\n\n_Italic_\n\n+Underline+\n\n~~strikethrough~~\n\nAdded By: admin",
+          "note_id": 922
+        }
+      ]
+    }
+  }
+}
+```
+
+### vectra-entity-reset-fetch
+
+***
+Resets the given entity to refetch incidents.
+
+#### Base Command
+
+`vectra-entity-reset-fetch`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entity_id | Specify the ID of the entity. | Required |
+| entity_type | Specify the type of the entity. Possible values are: account, host. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!vectra-entity-reset-fetch entity_id=1 entity_type=host```
+
+#### Human Readable Output
+
+>Reset fetch status for 1-host
