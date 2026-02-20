@@ -1,0 +1,24 @@
+{
+    "name": "Office 365 Message Trace",
+    "description": "Fetches message trace events from Office 365",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Chris Balmer",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Email"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "marketplacev2"
+    ],
+    "devEmail": [
+        "cbalmer@paloaltonetworks.com"
+    ],
+    "githubUser": [
+        "chrisbalmer"
+    ]
+}
