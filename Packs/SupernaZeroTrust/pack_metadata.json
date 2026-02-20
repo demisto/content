@@ -1,0 +1,31 @@
+{
+    "name": "Superna Zero Trust",
+    "description": "Automate ransomware response: critical path snapshots and user NAS lockout/unlock via secure API integration.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Superna",
+    "url": "https://www.superna.io",
+    "email": "support@superna.io",
+    "partnerId": "2989092",
+    "categories": [
+        "Incident Response",
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [
+        "Ransomware",
+        "Incident Response"
+    ],
+    "keywords": [
+        "superna",
+        "zero trust",
+        "nas",
+        "lockout",
+        "unlock",
+        "critical paths"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "xsoar_saas"
+    ]
+}
