@@ -1,10 +1,10 @@
 category: Data Enrichment & Threat Intelligence
-provider: Trend Micro
+provider: TrendAI™
 commonfields:
-  id: Trend Micro Vision One
+  id: TrendAI Vision One
   version: -1
 configuration:
-- additionalinfo: The base url for the Trend Micro Vision One API
+- additionalinfo: The base url for the TrendAI Vision One™ API
   defaultvalue: https://api.xdr.trendmicro.com
   display: API URL (e.g. https://api.xdr.trendmicro.com)
   name: url
@@ -64,10 +64,10 @@ configuration:
   - F - Reliability cannot be judged
   type: 15
   required: false
-description: Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection.
-display: Trend Micro Vision One
+description: TrendAI Vision One™ is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—TrendAI Vision One™ prevents the majority of attacks with automated protection.
+display: TrendAI Vision One™
 defaultmapperin: Trend Micro Vision One XDR - Incoming Mapper
-name: Trend Micro Vision One
+name: TrendAI Vision One
 script:
   commands:
   - arguments:
@@ -125,7 +125,7 @@ script:
       description: Task Status of removing file SHA-1, IP address, domain, or URL object that was added to the User-Defined Suspicious Objects List from block list.
       type: string
   - arguments:
-    - description: Email Message ID from Trend Micro Vision One message activity data.
+    - description: Email Message ID from TrendAI Vision One™ message activity data.
       name: message_id
       required: true
     - description: Email mailbox where the message will be quarantined from.
@@ -150,7 +150,7 @@ script:
       description: The status of moving a message from a mailbox to the quarantine folder.
       type: string
   - arguments:
-    - description: Email Message ID from Trend Micro Vision One message activity data.
+    - description: Email Message ID from TrendAI Vision One™ message activity data.
       name: message_id
       required: true
     - description: Email mailbox where the message will be quarantined from.
@@ -190,7 +190,7 @@ script:
       required: true
     - description: Description.
       name: description
-    description: Disconnects an endpoint from the network (but allows communication with the managing Trend Micro product).
+    description: Disconnects an endpoint from the network (but allows communication with the managing TrendAI™ product).
     name: trendmicro-visionone-isolate-endpoint
     outputs:
     - contextPath: VisionOne.Endpoint_Connection.actionId
@@ -383,7 +383,7 @@ script:
       description: Description of the Operating System.
       type: string
     - contextPath: VisionOne.Endpoint_Info.productCode
-      description: Product code of the Trend Micro product running on the endpoint.
+      description: Product code of the TrendAI™ product running on the endpoint.
       type: string
   - arguments:
     - description: '"hostname", "macaddr" or "ip" of the endpoint to terminate process on.'
@@ -561,7 +561,7 @@ script:
       name: document_password
     - description: The Base64 encoded password for decrypting the submitted archive.
       name: archive_password
-    description: Submits a file to the sandbox for analysis (Note. For more information about the supported file types, see the Trend Micro Vision One Online Help. Submissions require credits. Does not require credits in regions where Sandbox Analysis has not been officially released.)
+    description: Submits a file to the sandbox for analysis (Note. For more information about the supported file types, see the TrendAI Vision One™ Online Help. Submissions require credits. Does not require credits in regions where Sandbox Analysis has not been officially released.)
     name: trendmicro-visionone-submit-file-to-sandbox
     outputs:
     - contextPath: VisionOne.Submit_File_to_Sandbox.message
@@ -606,7 +606,7 @@ script:
       description: The Entry ID for the file.
       type: string
     name: trendmicro-visionone-submit-file-entry-to-sandbox
-    description: Submits the file corresponding to EntryID to the sandbox for analysis (Note. For more information about the supported file types, see the Trend Micro Vision One Online Help. Submissions require credits. Does not require credits in regions where Sandbox Analysis has not been officially released.)
+    description: Submits the file corresponding to EntryID to the sandbox for analysis (Note. For more information about the supported file types, see the TrendAI Vision One™ Online Help. Submissions require credits. Does not require credits in regions where Sandbox Analysis has not been officially released.)
   - arguments:
     - description: polling the task for 30 seconds interval.
       name: polling

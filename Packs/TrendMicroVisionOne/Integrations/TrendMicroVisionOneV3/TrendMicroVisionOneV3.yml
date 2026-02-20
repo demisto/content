@@ -1,13 +1,13 @@
 category: Data Enrichment & Threat Intelligence
-provider: Trend Micro
+provider: TrendAI™
 sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Trend Micro Vision One V3
+  id: TrendAI Vision One V3
   version: -1
 configuration:
-- additionalinfo: The base url for the Trend Vision One API
+- additionalinfo: The base url for the TrendAI Vision One™ API
   defaultvalue: https://api.xdr.trendmicro.com
   display: API URL (e.g. https://api.xdr.trendmicro.com)
   name: url
@@ -102,11 +102,11 @@ configuration:
   defaultvalue: None
   additionalinfo: Choose the direction to mirror incidents. Outgoing mirrors XSOAR changes to Vision One alerts.
   required: false
-description: Trend Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Vision One prevents the majority of attacks with automated protection.
-display: Trend Vision One v3
+description: TrendAI Vision One™ is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—TrendAI Vision One™ prevents the majority of attacks with automated protection.
+display: TrendAI Vision One™ v3
 defaultmapperin: Trend Micro Vision One V3 XDR - Incoming Mapper
 defaultmapperout: Trend Micro Vision One V3 XDR - Outgoing Mapper
-name: Trend Micro Vision One V3
+name: TrendAI Vision One V3
 script:
   commands:
   - arguments:
@@ -240,7 +240,7 @@ script:
       name: endpoint_identifiers
       required: true
       isArray: true
-    description: Disconnects an endpoint from the network (but allows communication with the managing Trend Micro product).
+    description: Disconnects an endpoint from the network (but allows communication with the managing TrendAI™ product).
     name: trendmicro-visionone-isolate-endpoint
     outputs:
     - contextPath: VisionOne.Endpoint_Connection.status
@@ -384,10 +384,10 @@ script:
       description: Description of the Operating System of the endpoint queried.
       type: string
     - contextPath: VisionOne.Endpoint_Info.product_code
-      description: Product code of the Trend Micro product running on the endpoint.
+      description: Product code of the TrendAI™ product running on the endpoint.
       type: string
     - contextPath: VisionOne.Endpoint_Info.installed_product_codes
-      description: Product code of the Trend Micro product installed on the endpoint.
+      description: Product code of the TrendAI™ product installed on the endpoint.
       type: string
     - contextPath: VisionOne.Endpoint_Info.component_update_policy
       description: The update policy for the module/pattern of the agent installed on the endpoint.

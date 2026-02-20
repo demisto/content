@@ -1,15 +1,15 @@
-# Integration Author: Trend Micro
+# Integration Author: TrendAI™
 
 Support and maintenance for this integration are provided by the author. Please use the following contact details:
 
 - **Email**: [integrations@trendmicro.com](mailto:integrations@trendmicro.com)
 
 ***
-Trend Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Vision One prevents the majority of attacks with automated protection.
+TrendAI Vision One™ is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—TrendAI Vision One™ prevents the majority of attacks with automated protection.
 
-## Obtaining Trend Vision One v3 API Credentials
+## Obtaining TrendAI Vision One™ v3 API Credentials
 
-Configuring the Trend Vision One integration requires API credentials generated in Trend Vision One. It is recommended that a new role be created with just the permissions required for this integration. You can create a new role for this integration by following these steps in Trend Vision One.
+Configuring the TrendAI Vision One™ integration requires API credentials generated in TrendAI Vision One™. It is recommended that a new role be created with just the permissions required for this integration. You can create a new role for this integration by following these steps in TrendAI Vision One™.
 
 1. Navigate to **Administration** > **User Roles**
 2. Click on the **Add** button
@@ -37,7 +37,7 @@ Configuring the Trend Vision One integration requires API credentials generated 
 | Response Management | Response Management          | Edit network exceptions                 |
 | Response Management | Response Management          | Submit to sandbox                       |
 
-You can then create a user account and generate an API key to be used for the Cortex XSOAR integration by following these steps in Trend Vision One.
+You can then create a user account and generate an API key to be used for the Cortex XSOAR integration by following these steps in TrendAI Vision One™.
 
 1. Navigate to **Administration** > **User Accounts**
 2. Click on the **Add Account** button
@@ -45,10 +45,10 @@ You can then create a user account and generate an API key to be used for the Co
 4. Complete the account creation process by following the steps in the email sent
 5. This will generate an **Authentication token** that can then be used to configure the Cortex XSOAR integration
 
-## Configure Trend Vision One v3 on Cortex XSOAR
+## Configure TrendAI Vision One™ v3 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Trend Vision One.
+2. Search for TrendAI Vision One.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter**            | **Description**                                                               | **Required** |
