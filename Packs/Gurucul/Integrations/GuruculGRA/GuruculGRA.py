@@ -101,9 +101,7 @@ def fetch_incidents(
 ) -> tuple[dict[str, int], list[dict]]:
     last_fetch = last_run.get("last_fetch", None)
 
-    # Get maxCaseId from integration context (HIDDEN from UI)
-    integration_context = demisto.getIntegrationContext()
-    maxCaseId = integration_context.get("maxCaseId", None)
+    maxCaseId = last_run.get("maxCaseId")
     tempMaxCaseId = maxCaseId
 
     case_status = "OPEN"
@@ -162,11 +160,11 @@ def fetch_incidents(
                 }
             )
 
-    # Update integration context
+    next_run = {
+        "last_fetch": int(url_access_time),
+    }
     if tempMaxCaseId is not None:
-        demisto.setIntegrationContext({"maxCaseId": tempMaxCaseId})
-
-    next_run = {"last_fetch": int(url_access_time)}
+        next_run["maxCaseId"] = tempMaxCaseId
 
     return next_run, incidents
 
