@@ -29,16 +29,52 @@ configuration:
   required: false
   type: 8
   section: Connect
-- display: Fetch incidents
+- display: Source Reliability
+  name: integration_reliability
+  required: true
+  type: 15
+  section: Connect
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+- additionalinfo: If true, ignore the instance Source Reliability setting and use the integration’s computed reliability per indicator.
+  display: Ignore Source Reliability override
+  section: Connect
+  name: disable_integration_reliability_override
+  required: false
+  type: 8
+  defaultvalue: "false"
+- additionalinfo: |-
+    Select which reputation commands should be enabled for this integration instance.
+    Default is none enabled. Only the selected commands will perform enrichment and return DBotScore.
+  section: Connect
+  display: Enable reputation commands
+  name: enabled_reputation_commands
+  required: false
+  type: 16
+  options:
+  - ip
+  - domain
+  - file
+- section: Collect
+  display: Fetch incidents
   name: isFetch
   required: false
   type: 8
-  section: Collect
-- additionalinfo: Type(s) of incidents to fetch from the third party API.
-  display: Collections to fetch
-  section: Collect
-  hidden: false
+- display: Collections to fetch
   name: incident_collections
+  section: Collect
+  required: false
+  type: 16
+  additionalinfo: Type(s) of incidents to fetch from the third party API.
+  hidden: false
   options:
   - compromised/account_group
   - compromised/bank_card_group
@@ -62,29 +98,27 @@ configuration:
   - hi/threat_actor
   - apt/threat_actor
   - apt/threat
-  required: false
-  type: 16
-- additionalinfo: Date to start fetching incidents from.
-  defaultvalue: 3 days
-  section: Collect
-  display: Incidents first fetch
-  hidden: false
+- display: Incidents first fetch
   name: first_fetch
-  required: false
-  type: 0
-- defaultvalue: "false"
   section: Collect
-  display: Exclude All with Combolist type
-  name: exclude_combolist
+  defaultvalue: "3 days"
+  type: 0
   required: false
-  type: 8
-  additionalinfo: This parameter has been deprecated.
-- display: Include combolist type in data
-  name: combolist
+  additionalinfo: Date to start fetching incidents from.
+  hidden: false
+- display: Exclude All with Combolist type
+  name: exclude_combolist
   section: Collect
   required: false
   type: 8
   defaultvalue: "false"
+  additionalinfo: This parameter has been deprecated.
+- display: Include combolist type in data
+  name: combolist
+  section: Collect
+  defaultvalue: "false"
+  type: 8
+  required: false
   additionalinfo: Works only for compromised/account_group. If the parameter is enabled, the response contains combolist data. If you enable “Include unique type in data” with this filter, the response will contain data of both types. If “Include combolist type in data” and “Include unique type in data” are disabled, the response will contain data of both types.
 - display: Include unique type in data
   name: unique
@@ -931,33 +965,84 @@ script:
       description: Start date of search session.
     - name: date_to
       description: End date of search session.
+    - name: requests_limit
+      description: |-
+        Maximum number of API requests (pages) sent to the collection.
+        Default is 1 to keep the command deterministic and avoid long-running executions.
+      defaultValue: "1"
+    - name: page_size_limit
+      description: |-
+        Maximum number of entries per API response (page size).
+        If not set, the service default will be used.
+      defaultValue: "100"
+    - name: seq_update
+      description: |-
+        Optional starting seqUpdate for update-based iteration.
+        Warning: providing an old seqUpdate (or using 0) can cause very long executions.
+    - name: include_raw_feed
+      description: |-
+        If set to true, include the full parsed feed object in outputs as 'raw_feed'.
+        Use with caution: can increase context size.
+      defaultValue: "false"
     description: Command performs Group IB search in selected collection.
     name: gibtia-local-search
     outputs:
-    - contextPath: id
+    - contextPath: GIBTI.search.local.id
       description: Id of a feed that matches a query.
       type: String
-    - contextPath: additional_info
+    - contextPath: GIBTI.search.local.additional_info
       description: Additional info about feed.
+      type: String
+    - contextPath: GIBTI.search.local.seqUpdate
+      description: seqUpdate value of the page/portion that returned the feed.
+      type: Number
+    - contextPath: GIBTI.search.local.raw_feed
+      description: One-line JSON string of the full feed for War Room rendering (only when include_raw_feed=true).
       type: String
   - arguments:
     - description: 'GIB event id.e.g.: 192.168.0.1.'
       name: id
     description: Command performs Group IB event lookup in suspicious_ip/vpn collection by provided ID.
     name: gibtia-get-suspicious-ip-vpn-info
-  - description: Command performs Group IB event lookup in suspicious_ip/scanner collection by provided ID.
-    name: gibtia-get-suspicious-ip-scanner-info
+  - description: Returns Group-IB scoring for IPs (numeric and DBotScore).
+    name: gibti-ip-scoring
     arguments:
-    - name: id
-      description: 'GIB event id.e.g.: 192.168.0.1.'
+    - name: ip
+      description: 'List of IPs to score.'
+      required: true
+      default: true
+      isArray: true
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator value.
+      type: String
+    - contextPath: DBotScore.Type
+      description: Indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: Vendor reporting the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: DBot score (0 unknown, 1 good, 2 suspicious, 3 bad).
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Source reliability.
+      type: String
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+  - arguments:
+    - description: 'GIB event id.e.g.: 192.168.0.1.'
+      name: id
+    description: Command performs Group IB event lookup in suspicious_ip/scanner collection by provided ID.
+    name: gibtia-get-suspicious-ip-scanner-info
   - arguments:
     - description: 'GIB event id.e.g.: 653654fb986b47a31c73d92f4a20a273acd2f779.'
       name: id
     description: Command performs Group IB event lookup in malware/malware collection by provided ID.
     name: gibtia-get-malware-malware-info
   - arguments:
-    - description: |-
-        GIB event id.
+    - description: GIB event id.
       name: id
       required: true
     description: Command performs Group IB event lookup in compromised/bank_card_group collection by provided ID.
@@ -968,7 +1053,939 @@ script:
       required: true
     description: Command performs Group IB event lookup in attacks/phishing_group collection by provided ID.
     name: gibtia-get-phishing-group-info
-  dockerimage: demisto/vendors-sdk:1.0.0.5505539
+  - name: ip
+    description: Runs reputation on IPs.
+    arguments:
+    - name: ip
+      default: true
+      isArray: true
+      description: List of IPs.
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Source reliability.
+      type: String
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+  - name: domain
+    description: Runs reputation on domains.
+    arguments:
+    - name: domain
+      default: true
+      isArray: true
+      description: List of domains.
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Source reliability.
+      type: String
+    - contextPath: Domain.Name
+      description: Domain name.
+      type: String
+  - name: file
+    description: Runs reputation on files.
+    arguments:
+    - name: file
+      default: true
+      isArray: true
+      description: List of files (hashes).
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Source reliability.
+      type: String
+    - contextPath: File.MD5
+      description: File MD5 hash.
+      type: String
+  - arguments:
+    - description: |-
+        GIB event id.
+        e.g.: 253b9a136f0d574149fc43691eaf7ae27aff141a.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in compromised/account collection with provided ID.
+    name: gibti-get-compromised-account-info
+    outputs:
+    - contextPath: GIBTIA.CompromisedAccount.client.ipv4.asn
+      description: Victim IP address.
+      type: String
+    - contextPath: GIBTIA.CompromisedAccount.client.ipv4.countryName
+      description: Country name.
+      type: String
+    - contextPath: GIBTIA.CompromisedAccount.client.ipv4.ip
+      description: Victim IP address.
+      type: String
+    - contextPath: GIBTIA.CompromisedAccount.client.ipv4.region
+      description: Region name.
+      type: String
+    - contextPath: GIBTIA.CompromisedAccount.cnc.domain
+      description: Event CNC domain.
+      type: String
+    - contextPath: GIBTIA.CompromisedAccount.cnc.url
+      description: CNC URL.
+      type: String
+    - contextPath: GIBTIA.CompromisedAccount.cnc.ipv4.ip
+      description: CNC IP address.
+      type: String
+    - contextPath: GIBTIA.CompromisedAccount.dateCompromised
+      description: Date of compromise.
+      type: Date
+    - contextPath: GIBTIA.CompromisedAccount.dateDetected
+      description: Date of detection.
+      type: Date
+    - contextPath: GIBTIA.CompromisedAccount.dropEmail.email
+      description: Email where compromised data were sent to.
+      type: String
+    - contextPath: GIBTIA.CompromisedAccount.dropEmail.domain
+      description: Email domain.
+      type: String
+    - contextPath: GIBTIA.CompromisedAccount.login
+      description: Compromised login.
+      type: String
+    - contextPath: GIBTIA.CompromisedAccount.password
+      description: Compromised password.
+      type: String
+    - contextPath: GIBTIA.CompromisedAccount.malware.name
+      description: Malware name.
+      type: String
+    - contextPath: GIBTIA.CompromisedAccount.malware.id
+      description: Group IB malware ID.
+      type: String
+    - contextPath: GIBTIA.CompromisedAccount.person.name
+      description: Card owner name.
+      type: String
+    - contextPath: GIBTIA.CompromisedAccount.person.email
+      description: Card owner e-mail.
+      type: String
+    - contextPath: GIBTIA.CompromisedAccount.portalLink
+      description: Link to GIB incident.
+      type: String
+    - contextPath: GIBTIA.CompromisedAccount.threatActor.name
+      description: Associated threat actor.
+      type: String
+    - contextPath: GIBTIA.CompromisedAccount.threatActor.isAPT
+      description: Is threat actor APT group.
+      type: Boolean
+    - contextPath: GIBTIA.CompromisedAccount.threatActor.id
+      description: Threat actor GIB ID.
+      type: String
+    - contextPath: GIBTIA.CompromisedAccount.id
+      description: Group IB incident ID.
+      type: String
+    - contextPath: GIBTIA.CompromisedAccount.evaluation.severity
+      description: Event severity.
+      type: String
+  - arguments:
+    - description: |-
+        GIB event id.
+        e.g.: 50a3b4abbfca5dcbec9c8b3a110598f61ba93r33.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in compromised/mule collection with provided ID.
+    name: gibti-get-compromised-mule-info
+    outputs:
+    - contextPath: GIBTIA.CompromisedMule.account
+      description: Account number (card/phone), which was used by threat actor to cash out.
+      type: String
+    - contextPath: GIBTIA.CompromisedMule.cnc.ipv4.asn
+      description: CNC ASN.
+      type: String
+    - contextPath: GIBTIA.CompromisedMule.cnc.ipv4.countryName
+      description: Country name.
+      type: String
+    - contextPath: GIBTIA.CompromisedMule.cnc.ipv4.ip
+      description: Victim IP address.
+      type: String
+    - contextPath: GIBTIA.CompromisedMule.cnc.ipv4.region
+      description: Region name.
+      type: String
+    - contextPath: GIBTIA.CompromisedMule.cnc.url
+      description: CNC URL.
+      type: String
+    - contextPath: GIBTIA.CompromisedMule.cnc.domain
+      description: CNC domain.
+      type: String
+    - contextPath: GIBTIA.CompromisedMule.dateAdd
+      description: Date of detection.
+      type: Date
+    - contextPath: GIBTIA.CompromisedMule.malware.name
+      description: Malware name.
+      type: String
+    - contextPath: GIBTIA.CompromisedMule.portalLink
+      description: Link to GIB incident.
+      type: String
+    - contextPath: GIBTIA.CompromisedMule.threatActor.name
+      description: Associated threat actor.
+      type: String
+    - contextPath: GIBTIA.CompromisedMule.threatActor.id
+      description: Threat actor GIB ID.
+      type: String
+    - contextPath: GIBTIA.CompromisedMule.threatActor.isAPT
+      description: Is threat actor APT group.
+      type: Boolean
+    - contextPath: GIBTIA.CompromisedMule.id
+      description: Group IB incident ID.
+      type: String
+    - contextPath: GIBTIA.CompromisedMule.sourceType
+      description: Information source.
+      type: String
+    - contextPath: GIBTIA.CompromisedMule.evaluation.severity
+      description: Event severity.
+      type: String
+  - arguments:
+    - description: |-
+        GIB event id.
+        e.g.: 6fd344f340f4bdc08548cb36ded62bdf.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in compromised/breached collection with provided ID.
+    name: gibti-get-compromised-breached-info
+    outputs:
+    - contextPath: GIBTIA.DataBreach.email
+      description: List of breached emails.
+      type: String
+    - contextPath: GIBTIA.DataBreach.leakName
+      description: Name of the leak.
+      type: String
+    - contextPath: GIBTIA.DataBreach.password
+      description: List of breached passwords.
+      type: String
+    - contextPath: GIBTIA.DataBreach.uploadTime
+      description: Date of breached data upload.
+      type: Date
+    - contextPath: GIBTIA.DataBreach.id
+      description: Group IB incident ID.
+      type: String
+    - contextPath: GIBTIA.DataBreach.evaluation.severity
+      description: Event severity.
+      type: String
+  - arguments:
+    - description: |-
+        GIB event id.
+        e.g.: f201c253ac71f7d78db39fa111a2af9d7ee7a3f7.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in osi/git_leak collection with provided ID.
+    name: gibti-get-osi-git-leak-info
+    outputs:
+    - contextPath: GIBTIA.GitLeak.dateDetected
+      description: Leak detection date.
+      type: Date
+    - contextPath: GIBTIA.GitLeak.matchesType
+      description: List of matches type.
+      type: String
+    - contextPath: GIBTIA.GitLeak.name
+      description: GIT filename.
+      type: String
+    - contextPath: GIBTIA.GitLeak.repository
+      description: GIT repository.
+      type: String
+    - contextPath: GIBTIA.GitLeak.revisions.file
+      description: Leaked file link.
+      type: String
+    - contextPath: GIBTIA.GitLeak.revisions.fileDiff
+      description: Leaked file diff.
+      type: String
+    - contextPath: GIBTIA.GitLeak.revisions.info.authorName
+      description: Revision author.
+      type: String
+    - contextPath: GIBTIA.GitLeak.revisions.info.authorEmail
+      description: Author name.
+      type: String
+    - contextPath: GIBTIA.GitLeak.revisions.info.dateCreated
+      description: Revision creation date.
+      type: Date
+    - contextPath: GIBTIA.GitLeak.source
+      description: Source(github/gitlab/etc.)
+      type: String
+    - contextPath: GIBTIA.GitLeak.evaluation.severity
+      description: Event severity.
+      type: String
+  - arguments:
+    - description: |-
+        GIB event id.
+        e.g.: a9a5b5cb9b971a2a037e3a0a30654185ea148095.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in osi/public_leak collection with provided ID.
+    name: gibti-get-osi-public-leak-info
+    outputs:
+    - contextPath: GIBTIA.PublicLeak.created
+      description: Leak event detection date.
+      type: Date
+    - contextPath: GIBTIA.PublicLeak.data
+      description: Leaked data.
+      type: String
+    - contextPath: GIBTIA.PublicLeak.hash
+      description: Leak data hash.
+      type: String
+    - contextPath: GIBTIA.PublicLeak.linkList.author
+      description: Leak entry author.
+      type: String
+    - contextPath: GIBTIA.PublicLeak.linkList.dateDetected
+      description: Leak detection date.
+      type: Date
+    - contextPath: GIBTIA.PublicLeak.linkList.datePublished
+      description: Leak publish date.
+      type: Date
+    - contextPath: GIBTIA.PublicLeak.linkList.hash
+      description: Leak hash.
+      type: String
+    - contextPath: GIBTIA.PublicLeak.linkList.link
+      description: Leak link.
+      type: String
+    - contextPath: GIBTIA.PublicLeak.linkList.source
+      description: Leak source.
+      type: String
+    - contextPath: GIBTIA.PublicLeak.matches
+      description: Matches.
+      type: String
+    - contextPath: GIBTIA.PublicLeak.portalLink
+      description: Group IB portal link.
+      type: String
+    - contextPath: GIBTIA.PublicLeak.evaluation.severity
+      description: Event severity.
+      type: String
+  - arguments:
+    - description: |-
+        GIB event id.
+
+        e.g.: CVE-2021-27152.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in osi/vulnerability collection with provided ID.
+    name: gibti-get-osi-vulnerability-info
+    outputs:
+    - contextPath: GIBTIA.OSIVulnerability.affectedSoftware.name
+      description: Affected software name.
+      type: String
+    - contextPath: GIBTIA.OSIVulnerability.affectedSoftware.operator
+      description: Affected software version operator( ex. le=less or equal).
+      type: String
+    - contextPath: GIBTIA.OSIVulnerability.affectedSoftware.version
+      description: Affected software version.
+      type: String
+    - contextPath: GIBTIA.OSIVulnerability.bulletinFamily
+      description: Bulletin family.
+      type: String
+    - contextPath: GIBTIA.OSIVulnerability.cvss.score
+      description: CVSS score.
+      type: String
+    - contextPath: GIBTIA.OSIVulnerability.cvss.vector
+      description: CVSS vector.
+      type: String
+    - contextPath: GIBTIA.OSIVulnerability.dateLastSeen
+      description: Date last seen.
+      type: Date
+    - contextPath: GIBTIA.OSIVulnerability.datePublished
+      description: Date published.
+      type: Date
+    - contextPath: GIBTIA.OSIVulnerability.description
+      description: Vulnerability description.
+      type: String
+    - contextPath: GIBTIA.OSIVulnerability.id
+      description: Vulnerability ID.
+      type: String
+    - contextPath: GIBTIA.OSIVulnerability.reporter
+      description: Vulnerability reporter.
+      type: String
+    - contextPath: GIBTIA.OSIVulnerability.title
+      description: Vulnerability title.
+      type: String
+    - contextPath: GIBTIA.OSIVulnerability.evaluation.severity
+      description: Event severity.
+      type: String
+  - arguments:
+    - description: |-
+        GIB event id.
+        e.g.: 26a05baa4025edff367b058b13c6b43e820538a5.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in attacks/ddos collection with provided ID.
+    name: gibti-get-attacks-ddos-info
+    outputs:
+    - contextPath: GIBTIA.AttacksDDoS.cnc.url
+      description: CNC URL.
+      type: String
+    - contextPath: GIBTIA.AttacksDDoS.cnc.domain
+      description: CNC domain.
+      type: String
+    - contextPath: GIBTIA.AttacksDDoS.cnc.ipv4.asn
+      description: CNC ASN.
+      type: String
+    - contextPath: GIBTIA.AttacksDDoS.cnc.ipv4.countryName
+      description: CNC IP country name.
+      type: String
+    - contextPath: GIBTIA.AttacksDDoS.cnc.ipv4.ip
+      description: CNC IP address.
+      type: String
+    - contextPath: GIBTIA.AttacksDDoS.cnc.ipv4.region
+      description: CNC region name.
+      type: String
+    - contextPath: GIBTIA.AttacksDDoS.target.ipv4.asn
+      description: DDoS target ASN.
+      type: String
+    - contextPath: GIBTIA.AttacksDDoS.target.ipv4.countryName
+      description: DDoS target country name.
+      type: String
+    - contextPath: GIBTIA.AttacksDDoS.target.ipv4.ip
+      description: DDoS target IP address.
+      type: String
+    - contextPath: GIBTIA.AttacksDDoS.target.ipv4.region
+      description: DDoS target region name.
+      type: String
+    - contextPath: GIBTIA.AttacksDDoS.target.category
+      description: DDoS target category.
+      type: String
+    - contextPath: GIBTIA.AttacksDDoS.target.domain
+      description: DDoS target domain.
+      type: String
+    - contextPath: GIBTIA.AttacksDDoS.threatActor.id
+      description: Associated threat actor ID.
+      type: String
+    - contextPath: GIBTIA.AttacksDDoS.threatActor.name
+      description: Associated threat actor.
+      type: String
+    - contextPath: GIBTIA.AttacksDdos.threatActor.isAPT
+      description: Is threat actor APT.
+      type: Boolean
+    - contextPath: GIBTIA.AttacksDDoS.id
+      description: GIB incident ID.
+      type: String
+    - contextPath: GIBTIA.AttacksDDoS.evaluation.severity
+      description: Event severity.
+      type: String
+  - arguments:
+    - description: |-
+        GIB event id.
+        e.g.: 6009637a1135cd001ef46e21.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in attacks/deface collection with provided ID.
+    name: gibti-get-attacks-deface-info
+    outputs:
+    - contextPath: GIBTIA.AttacksDeface.date
+      description: Date of deface.
+      type: Date
+    - contextPath: GIBTIA.AttacksDeface.id
+      description: GIB incident ID.
+      type: String
+    - contextPath: GIBTIA.AttacksDeface.targetIp.asn
+      description: Victim ASN.
+      type: String
+    - contextPath: GIBTIA.AttacksDeface.targetIp.countryName
+      description: Victim country name.
+      type: String
+    - contextPath: GIBTIA.AttacksDeface.targetIp.region
+      description: Victim IP region name.
+      type: String
+    - contextPath: GIBTIA.AttacksDeface.threatActor.id
+      description: Associated threat actor ID.
+      type: String
+    - contextPath: GIBTIA.AttacksDeface.threatActor.name
+      description: Associated threat actor.
+      type: String
+    - contextPath: GIBTIA.AttacksDeface.threatActor.isAPT
+      description: Is threat actor APT.
+      type: Boolean
+    - contextPath: GIBTIA.AttacksDeface.url
+      description: URL of compromised resource.
+      type: String
+    - contextPath: GIBTIA.AttacksDeface.evaluation.severity
+      description: Event severity.
+      type: String
+  - arguments:
+    - description: |-
+        GIB event id.
+        e.g.: 1b09d389d016121afbffe481a14b30ea995876e4.
+      name: id
+      required: true
+    - name: isAPT
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Is threat APT.
+      defaultValue: "false"
+    description: Command performs Group IB event lookup in hi/threat (or in apt/threat if the APT flag is true) collection with provided ID.
+    name: gibti-get-threat-info
+    outputs:
+    - contextPath: GIBTIA.Threat.contacts.account
+      description: Threat accounts found in this threat action.
+      type: String
+    - contextPath: GIBTIA.Threat.contacts.flag
+      description: Is account fake or not.
+      type: String
+    - contextPath: GIBTIA.Threat.contacts.service
+      description: Account service.
+      type: String
+    - contextPath: GIBTIA.Threat.contacts.type
+      description: Type of account(social_network/email/wallet etc.)
+      type: String
+    - contextPath: GIBTIA.Threat.countries
+      description: Affected countries.
+      type: String
+    - contextPath: GIBTIA.Threat.createdAt
+      description: Threat report creation date.
+      type: Date
+    - contextPath: GIBTIA.Threat.cveList.name
+      description: List of abused CVE.
+      type: String
+    - contextPath: GIBTIA.Threat.dateFirstSeen
+      description: Attack first seen date.
+      type: Date
+    - contextPath: GIBTIA.Threat.dateLastSeen
+      description: Attack last seen date.
+      type: Date
+    - contextPath: GIBTIA.Threat.datePublished
+      description: Date published.
+      type: Date
+    - contextPath: GIBTIA.Threat.description
+      description: Threat description.
+      type: String
+    - contextPath: GIBTIA.Threat.forumsAccounts.url
+      description: Related forum URL.
+      type: String
+    - contextPath: GIBTIA.Threat.forumsAccounts.nickname
+      description: Related forums account.
+      type: String
+    - contextPath: GIBTIA.Threat.forumsAccounts.registeredAt
+      description: Related forums account registration date.
+      type: Date
+    - contextPath: GIBTIA.Threat.forumsAccounts.messageCount
+      description: Related forums messages count.
+      type: Number
+    - contextPath: GIBTIA.Threat.id
+      description: GIB internal threat ID.
+      type: String
+    - contextPath: GIBTIA.Threat.indicators
+      description: Can be either network or file indicators.
+      type: String
+    - contextPath: GIBTIA.Threat.langs
+      description: Languages actors related.
+      type: String
+    - contextPath: GIBTIA.Threat.malwareList.name
+      description: Related Malware Name.
+      type: String
+    - contextPath: GIBTIA.Threat.malwareList.id
+      description: Related malware GIB internal ID.
+      type: String
+    - contextPath: GIBTIA.Threat.mitreMatrix.attackPatternId
+      description: MITRE attack pattern ID.
+      type: String
+    - contextPath: GIBTIA.Threat.mitreMatrix.attackTactic
+      description: MITRE attack tactic name.
+      type: String
+    - contextPath: GIBTIA.Threat.mitreMatrix.attackType
+      description: MITRE attack type.
+      type: String
+    - contextPath: GIBTIA.Threat.mitreMatrix.id
+      description: MITRE attack id.
+      type: String
+    - contextPath: GIBTIA.Threat.regions
+      description: Regions affected by attack.
+      type: String
+    - contextPath: GIBTIA.Threat.reportNumber
+      description: GIB report number.
+      type: String
+    - contextPath: GIBTIA.Threat.sectors
+      description: Affected sectors.
+      type: String
+    - contextPath: GIBTIA.Threat.shortDescription
+      description: Short description.
+      type: String
+    - contextPath: GIBTIA.Threat.title
+      description: Threat title.
+      type: String
+    - contextPath: GIBTIA.Threat.targetedCompany
+      description: Targeted company name.
+      type: String
+    - contextPath: GIBTIA.Threat.ThreatActor.name
+      description: Threat actor name.
+      type: String
+    - contextPath: GIBTIA.Threat.ThreatActor.id
+      description: Threat actor ID.
+      type: String
+    - contextPath: GIBTIA.Threat.ThreatActor.isAPT
+      description: Is threat actor APT group.
+      type: Boolean
+    - contextPath: GIBTIA.Threat.sources
+      description: Sources links.
+      type: String
+    - contextPath: GIBTIA.Threat.evaluation.severity
+      description: Event severity.
+      type: String
+  - arguments:
+    - description: |-
+        GIB internal threatActor ID.
+        e.g.: 0d4496592ac3a0f5511cd62ef29887f48d9cb545.
+      name: id
+      required: true
+    - name: isAPT
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Is threat actor APT group.
+      defaultValue: "false"
+    description: Command performs Group IB event lookup in hi/threat_actor (or in apt/threat_actor if the APT flag is true) collection with provided ID.
+    name: gibti-get-threat-actor-info
+    outputs:
+    - contextPath: GIBTIA.ThreatActor.aliases
+      description: Threat actor aliases.
+      type: String
+    - contextPath: GIBTIA.ThreatActor.country
+      description: Threat actor country.
+      type: String
+    - contextPath: GIBTIA.ThreatActor.createdAt
+      description: Threat actor record creation time.
+      type: Date
+    - contextPath: GIBTIA.ThreatActor.description
+      description: Threat actor description.
+      type: String
+    - contextPath: GIBTIA.ThreatActor.goals
+      description: Threat actor goals sectors(financial, diplomatic, etc.)
+      type: String
+    - contextPath: GIBTIA.ThreatActor.id
+      description: Threat actor id.
+      type: String
+    - contextPath: GIBTIA.ThreatActor.isAPT
+      description: Threat actor is APT.
+      type: Boolean
+    - contextPath: GIBTIA.ThreatActor.labels
+      description: GIB internal threat actor labels(hacker, nation-state, etc.)
+      type: String
+    - contextPath: GIBTIA.ThreatActor.langs
+      description: Threat actor communication language.
+      type: String
+    - contextPath: GIBTIA.ThreatActor.name
+      description: Threat actor name.
+      type: String
+    - contextPath: GIBTIA.ThreatActor.roles
+      description: Threat actor roles.
+      type: String
+    - contextPath: GIBTIA.ThreatActor.stat.countries
+      description: Threat actor countries activity found in.
+      type: String
+    - contextPath: GIBTIA.ThreatActor.stat.dateFirstSeen
+      description: Date first seen.
+      type: Date
+    - contextPath: GIBTIA.ThreatActor.stat.dateLastSeen
+      description: Date last seen.
+      type: Date
+    - contextPath: GIBTIA.ThreatActor.stat.regions
+      description: Threat actor activity regions.
+      type: String
+    - contextPath: GIBTIA.ThreatActor.stat.reports.datePublished
+      description: Related threat report publishing date.
+      type: Date
+    - contextPath: GIBTIA.ThreatActor.stat.reports.id
+      description: Related threat report id.
+      type: String
+    - contextPath: GIBTIA.ThreatActor.stat.reports.name.en
+      description: Related threat report language.
+      type: String
+    - contextPath: GIBTIA.ThreatActor.stat.sectors
+      description: Sectors attacked by threat actor.
+      type: String
+  - arguments:
+    - description: |-
+        GIB event id.
+        e.g.: 109.70.100.46.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in suspicious_ip/tor_node collection with provided ID.
+    name: gibti-get-suspicious-ip-tor-node-info
+    outputs:
+    - contextPath: GIBTIA.SuspiciousIPTorNode.ipv4.asn
+      description: Tor node ASN.
+      type: String
+    - contextPath: GIBTIA.SuspiciousIPTorNode.ipv4.countryName
+      description: Tor node IP country name.
+      type: String
+    - contextPath: GIBTIA.SuspiciousIPTorNode.ipv4.ip
+      description: Tor node IP address.
+      type: String
+    - contextPath: GIBTIA.SuspiciousIPTorNode.ipv4.region
+      description: Tor node IP region name.
+      type: String
+    - contextPath: GIBTIA.SuspiciousIPTorNode.id
+      description: GIB id.
+      type: String
+    - contextPath: GIBTIA.SuspiciousIPTorNode.evaluation.severity
+      description: Event severity.
+      type: String
+  - arguments:
+    - description: |-
+        GIB event id.
+        e.g.: cc6a2856da2806b03839f81aa214f22dbcfd7369.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in suspicious_ip/open_proxy collection with provided ID.
+    name: gibti-get-suspicious-ip-open-proxy-info
+    outputs:
+    - contextPath: GIBTIA.SuspiciousIPOpenProxy.ipv4.asn
+      description: Proxy ASN.
+      type: String
+    - contextPath: GIBTIA.SuspiciousIPOpenProxy.ipv4.countryName
+      description: Proxy IP country name.
+      type: String
+    - contextPath: GIBTIA.SuspiciousIPOpenProxy.ipv4.ip
+      description: Proxy IP address.
+      type: String
+    - contextPath: GIBTIA.SuspiciousIPOpenProxy.ipv4.region
+      description: Proxy IP region name.
+      type: String
+    - contextPath: GIBTIA.SuspiciousIPOpenProxy.ipv4.port
+      description: Proxy port.
+      type: Number
+    - contextPath: GIBTIA.SuspiciousIPOpenProxy.ipv4.source
+      description: Information source.
+      type: String
+    - contextPath: GIBTIA.SuspiciousIPOpenProxy.ipv4.anonymous
+      description: Proxy anonymous level.
+      type: String
+    - contextPath: GIBTIA.SuspiciousIPOpenProxy.id
+      description: GIB event ID.
+      type: String
+    - contextPath: GIBTIA.SuspiciousIPOpenProxy.evaluation.severity
+      description: Event severity.
+      type: String
+  - arguments:
+    - description: |-
+        GIB event id.
+        e.g.: 02e385600dfc5bf9b3b3656df8e0e20f5fc5c86e.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in suspicious_ip/socks_proxy collection with provided ID.
+    name: gibti-get-suspicious-ip-socks-proxy-info
+    outputs:
+    - contextPath: GIBTIA.SuspiciousIPSocksProxy.ipv4.asn
+      description: Proxy IP ASN.
+      type: String
+    - contextPath: GIBTIA.SuspiciousIPSocksProxy.ipv4.countryName
+      description: Proxy IP country name.
+      type: String
+    - contextPath: GIBTIA.SuspiciousIPSocksProxy.ipv4.ip
+      description: Proxy IP address.
+      type: String
+    - contextPath: GIBTIA.SuspiciousIPSocksProxy.ipv4.region
+      description: Proxy IP region name.
+      type: String
+    - contextPath: GIBTIA.SuspiciousIPSocksProxy.id
+      description: GIB ID.
+      type: String
+    - contextPath: GIBTIA.SuspiciousIPSocksProxy.evaluation.severity
+      description: Event severity.
+      type: String
+  - arguments: []
+    description: Returns list of available collections.
+    name: gibti-get-available-collections
+    outputs:
+    - contextPath: GIBTIA.OtherInfo.collections
+      description: List of availiable collections.
+      type: String
+  - arguments:
+    - description: |-
+        GIB event id.
+        e.g.: aeed277396e27e375d030a91533aa232444d0089.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in malware/cnc collection by provided ID.
+    name: gibti-get-malware-cnc-info
+    outputs:
+    - contextPath: GIBTIA.MalwareCNC.dateDetected
+      description: Date CNC detected.
+      type: Date
+    - contextPath: GIBTIA.MalwareCNC.dateLastSeen
+      description: Date CNC last seen.
+      type: Date
+    - contextPath: GIBTIA.MalwareCNC.url
+      description: CNC URL.
+      type: String
+    - contextPath: GIBTIA.MalwareCNC.domain
+      description: CNC domain.
+      type: String
+    - contextPath: GIBTIA.MalwareCNC.ipv4.asn
+      description: CNC ASN.
+      type: String
+    - contextPath: GIBTIA.MalwareCNC.ipv4.countryName
+      description: CNC IP country name.
+      type: String
+    - contextPath: GIBTIA.MalwareCNC.ipv4.ip
+      description: CNC IP address.
+      type: String
+    - contextPath: GIBTIA.MalwareCNC.ipv4.region
+      description: CNC region name.
+      type: String
+    - contextPath: GIBTIA.MalwareCNC.malwareList.name
+      description: Associated malware.
+      type: String
+    - contextPath: GIBTIA.MalwareCNC.threatActor.id
+      description: Associated threat actor ID.
+      type: String
+    - contextPath: GIBTIA.MalwareCNC.threatActor.name
+      description: Associated threat actor.
+      type: String
+    - contextPath: GIBTIA.MalwareCNC.threatActor.isAPT
+      description: Is APT or not.
+      type: Boolean
+    - contextPath: GIBTIA.MalwareCNC.id
+      description: GIB event ID.
+      type: String
+  - arguments:
+    - description: |-
+        Query you want to search.
+        e.g.: 8.8.8.8.
+      name: query
+      required: true
+    description: Command performs global Group IB search.
+    name: gibti-global-search
+    outputs:
+    - contextPath: apiPath
+      description: Name of collection in which found matches.
+      type: String
+    - contextPath: count
+      description: Count of feeds matching this query.
+      type: Number
+    - contextPath: GIBLink
+      description: Link to GIB TI&A interface.
+      type: String
+  - arguments:
+    - description: |-
+        Collection you want to search.
+      name: collection_name
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - compromised/account_group
+      - compromised/bank_card_group
+      - compromised/breached
+      - compromised/mule
+      - osi/git_repository
+      - osi/public_leak
+      - osi/vulnerability
+      - attacks/ddos
+      - attacks/deface
+      - attacks/phishing_group
+      - attacks/phishing_kit
+      - suspicious_ip/tor_node
+      - suspicious_ip/open_proxy
+      - suspicious_ip/socks_proxy
+      - suspicious_ip/vpn
+      - suspicious_ip/scanner
+      - malware/cnc
+      - malware/malware
+      - hi/threat
+      - hi/threat_actor
+      - apt/threat_actor
+      - apt/threat
+    - name: query
+      required: true
+      description: |-
+        Query you want to search.
+        e.g.: 8.8.8.8.
+    - name: date_from
+      description: Start date of search session.
+    - name: date_to
+      description: End date of search session.
+    - name: requests_limit
+      description: |-
+        Maximum number of API requests (pages) sent to the collection.
+        Default is 1 to keep the command deterministic and avoid long-running executions.
+      defaultValue: "1"
+    - name: page_size_limit
+      description: |-
+        Maximum number of entries per API response (page size).
+        If not set, the service default will be used.
+      defaultValue: "100"
+    - name: seq_update
+      description: |-
+        Optional starting seqUpdate for update-based iteration.
+        Warning: providing an old seqUpdate (or using 0) can cause very long executions.
+    - name: include_raw_feed
+      description: |-
+        If set to true, include the full parsed feed object in outputs as 'raw_feed'.
+        Use with caution: can increase context size.
+      defaultValue: "false"
+    description: Command performs Group IB search in selected collection.
+    name: gibti-local-search
+    outputs:
+    - contextPath: GIBTI.search.local.id
+      description: Id of a feed that matches a query.
+      type: String
+    - contextPath: GIBTI.search.local.additional_info
+      description: Additional info about feed.
+      type: String
+    - contextPath: GIBTI.search.local.seqUpdate
+      description: seqUpdate value of the page/portion that returned the feed.
+      type: Number
+    - contextPath: GIBTI.search.local.raw_feed
+      description: One-line JSON string of the full feed for War Room rendering (only when include_raw_feed=true).
+      type: String
+  - arguments:
+    - description: 'GIB event id.e.g.: 192.168.0.1.'
+      name: id
+    description: Command performs Group IB event lookup in suspicious_ip/vpn collection by provided ID.
+    name: gibti-get-suspicious-ip-vpn-info
+  - description: Command performs Group IB event lookup in suspicious_ip/scanner collection by provided ID.
+    name: gibti-get-suspicious-ip-scanner-info
+    arguments:
+    - name: id
+      description: 'GIB event id.e.g.: 192.168.0.1.'
+  - arguments:
+    - description: 'GIB event id.e.g.: 653654fb986b47a31c73d92f4a20a273acd2f779.'
+      name: id
+    description: Command performs Group IB event lookup in malware/malware collection by provided ID.
+    name: gibti-get-malware-malware-info
+  - arguments:
+    - description: |-
+        GIB event id.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in compromised/bank_card_group collection by provided ID.
+    name: gibti-get-compromised-card-group-info
+  - arguments:
+    - description: GIB event id.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in attacks/phishing_group collection by provided ID.
+    name: gibti-get-phishing-group-info
+  dockerimage: demisto/vendors-sdk:1.0.0.6383083
   feed: false
   isfetch: true
   longRunning: false

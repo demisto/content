@@ -499,6 +499,14 @@
                         "root": "title",
                         "transformers": []
                     }
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -586,6 +594,14 @@
                 },
                 "GIB Related Indicators Data": {
                     "simple": "indicators"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -670,6 +686,14 @@
                 },
                 "GIB Source": {
                     "simple": "sourceType"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -796,6 +820,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -882,6 +914,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -974,6 +1014,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1027,6 +1075,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1110,6 +1166,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1193,6 +1257,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1255,6 +1327,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1332,6 +1412,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1568,6 +1656,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1731,6 +1827,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1784,6 +1888,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1828,6 +1940,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1872,6 +1992,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1910,6 +2038,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1954,6 +2090,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },

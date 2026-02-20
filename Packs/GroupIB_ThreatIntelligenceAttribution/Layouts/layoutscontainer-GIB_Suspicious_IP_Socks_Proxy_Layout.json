@@ -340,6 +340,15 @@
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "gibtlp",
+                                "height": 22,
+                                "id": "d3bcb5c0-ed28-11f0-9509-45873decf476",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
@@ -454,7 +463,6 @@
     "group": "incident",
     "id": "GIB Suspicious IP Socks Proxy Layout",
     "name": "GIB Suspicious IP Socks Proxy Layout",
-    "system": false,
     "version": -1,
     "fromVersion": "6.10.0"
 }

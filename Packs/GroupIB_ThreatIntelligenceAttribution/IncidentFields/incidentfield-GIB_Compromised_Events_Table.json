@@ -8,6 +8,19 @@
     "closeForm": true,
     "columns": [
         {
+            "displayName": "CVV",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "cvv",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
             "displayName": "Valid Thru Date",
             "fieldCalcScript": "",
             "isDefault": true,

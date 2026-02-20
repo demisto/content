@@ -34,7 +34,7 @@
     "cliName": "gibid",
     "closeForm": false,
     "content": true,
-    "description": "ID of event in GIB TIA",
+    "description": "ID of event in GIB TI",
     "editForm": true,
     "group": 0,
     "hidden": false,

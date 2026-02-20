@@ -57,7 +57,7 @@ These filters have no effect on other collections.
 
 ## Data Collections Overview
 
-Once the configuration is complete, the following collections become available in Cortex XSOAR. For detailed information about each collection, its structure, and available fields, please refer to the [official Collections Details documentation](https://tap.group-ib.com/hc/api?scope=integrations&q=en%2FIntegrations%2FCollections%20Info%2FCollections%20Details%2FCollections%20Details).
+Once the configuration is complete, the following collections become available in Cortex XSOAR. For detailed information about each collection, its structure, and available fields, please refer to the [official Collections Details documentation](https://tap.group-ib.com/hc/api?scope=integrations&q=en%2FIntegrations%2FCollections%20Details%20-%20Feeds%2FThreats%20and%20Actors%20-%20APT%20Threat%20Actors%2FThreats%20and%20Actors%20-%20APT%20Threat%20Actors).
 
 **Note:** If you're using a POC or partner license, access to data is limited to 30 days. The recommended date ranges below are guidelines and can be adjusted according to your needs.
 
@@ -94,10 +94,13 @@ Once the configuration is complete, the following collections become available i
 | Username                       | Enter the email address you use to log into the web interface. The API token serves as your password for authentication. | True |
 | Trust any certificate (not secure) | Whether to allow connections without verifying SSL certificates validity. | False |
 | Use system proxy settings      | Whether to use XSOAR system proxy settings to connect to the API. | False |
-| Colletions to fetch            | Select the collections you want to fetch incidents from. Read more about collections [here](https://tap.group-ib.com/hc/api?scope=integrations&q=en%2FIntegrations%2FCollections%20Info%2FCollections%20Details%2FCollections%20Details). | False |
+| Source Reliability | Reliability of the source providing the intelligence data. Used as a fixed reliability for reputation commands unless overridden by **Ignore Source Reliability override**. | True |
+| Ignore Source Reliability override | If enabled, ignore the instance **Source Reliability** setting and use the integration’s computed reliability per indicator for reputation commands. | False |
+| Colletions to fetch            | Select the collections you want to fetch incidents from. Read more about collections [here](https://tap.group-ib.com/hc/api?scope=integrations&q=en%2FIntegrations%2FCollections%20Details%20-%20Feeds%2FThreats%20and%20Actors%20-%20APT%20Threat%20Actors%2FThreats%20and%20Actors%20-%20APT%20Threat%20Actors). | False |
 | Incidents first fetch          | Specify the date range for initial data fetch (default: "3 days"). | False |
 | Number of requests per collection | Number of API requests per collection in each fetch iteration (default: 3). If you face some runtime errors, lower the value. | False |
 | Limit (items per request) | Number of items requested per API page. This limit applies to all collections in the instance. The limit determines how many records are fetched in a single API request. For example, if "Number of requests per collection" is 2 and limit is 500, the integration will make 2 requests per collection, each requesting up to 500 records, resulting in up to 1000 records per collection per fetch cycle. We recommend following the [official API Limitations documentation](https://tap.group-ib.com/hc/api?scope=integrations&q=en%2FIntegrations%2FStarting%20Guide%2FAPI%20Limitations%2FAPI%20Limitations) for collection-specific limit recommendations. Best practice: create separate integration instances for different collections or groups of collections with similar optimal limit values. | False |
+| Enable reputation commands | Multi-select list of reputation commands to enable for this integration instance (supported: ip, domain, file). **Default: none enabled** (fail-safe). Only selected commands perform enrichment and return DBotScore. | False |
 | Include combolist type in data | Filter to include combolist data from the `compromised/account_group` collection. Works only for `compromised/account_group` collection. Filter logic: If only this filter is enabled, only combolist records are collected. If both combolist and unique filters are enabled, both types are collected. If both are disabled, both types are collected by default. | False |
 | Include unique type in data | Filter to include unique data from the `compromised/account_group` collection. Works only for `compromised/account_group` collection. Filter logic: If only this filter is enabled, only unique records are collected. If both combolist and unique filters are enabled, both types are collected. If both are disabled, both types are collected by default. | False |
 | Enable filter "Probable Corporate Access" | Filter to limit data collection to only corporate accounts. Works only for `compromised/account_group` collection. When both unique and combolist filters are not enabled, you can enable this to limit the whole feed to corporate accounts only. Can also be combined with unique or combolist filters if needed. | False |
@@ -109,7 +112,98 @@ Requests to the following collections come with the Hunting Rules parameter by d
 
 ## Additional Resources
 
-For detailed information about collections, their structure, available fields, and recommended date ranges, refer to the [official Collections Details documentation](https://tap.group-ib.com/hc/api?scope=integrations&q=en%2FIntegrations%2FCollections%20Info%2FCollections%20Details%2FCollections%20Details).
+For detailed information about collections, their structure, available fields, and recommended date ranges, refer to the [official Collections Details documentation](https://tap.group-ib.com/hc/api?scope=integrations&q=en%2FIntegrations%2FCollections%20Details%20-%20Feeds%2FThreats%20and%20Actors%20-%20APT%20Threat%20Actors%2FThreats%20and%20Actors%20-%20APT%20Threat%20Actors).
+
+## Reputation Commands (ip / domain / file)
+
+This integration implements the standard Cortex XSOAR reputation commands:
+
+- `ip`
+- `domain`
+- `file`
+
+### Best practice: use a dedicated instance for reputation
+
+We recommend using a **dedicated** integration instance for reputation commands, such as **Group-IB Threat Intelligence (Partner Contribution)**.
+
+### Enabling reputation commands
+
+Reputation commands are **disabled by default** to avoid unexpected auto-enrichment side effects.
+To enable them, configure the integration instance parameter **Enable reputation commands** and select the command types you want to allow (`ip`, `domain`, `file`).
+
+### Source Reliability and override behavior
+
+The integration supports **two reliability modes** for reputation commands:
+
+- **Instance override mode (fixed reliability)**:
+  - Controlled by the instance parameter **Source Reliability**.
+  - When **Ignore Source Reliability override** is **disabled** (unchecked), the integration attaches the configured **Source Reliability** value to **every reputation response**, regardless of indicator-specific findings.
+
+- **Integration-calculated reliability mode (dynamic reliability)**:
+  - Enabled by the instance parameter **Ignore Source Reliability override**.
+  - When **Ignore Source Reliability override** is **enabled** (checked), the integration ignores the instance **Source Reliability** value and calculates reliability per indicator based on the collections that returned matches (see rules below).
+
+### Score (DBotScore) calculation rules
+
+Score and reliability are calculated independently. A finding may affect reliability without affecting score.
+
+#### `file` score rules
+
+- **BAD**: at least one match in `ioc/common`
+- **UNKNOWN (NONE)**: no matches
+
+Note: For `file` reputation, the integration evaluates **only** the `ioc/common` collection for score.
+
+#### `domain` score rules
+
+The integration uses a **3-year recency window** and the following date fields:
+
+- `ioc/common.dateLastSeen`
+- `hi/open_threats.detected`
+- `attacks/deface.date`
+
+Rules (evaluated top-to-bottom):
+
+- **BAD**: `ioc/common` match with `dateLastSeen` within the last 3 years
+- **SUSPICIOUS**: `hi/open_threats` or `attacks/deface` match with a date within the last 3 years
+- **SUSPICIOUS**: `ioc/common` has records but `dateLastSeen` is missing or older than 3 years
+- **UNKNOWN (NONE)**: no findings (no matches in `ioc/common`, `hi/open_threats`, `attacks/deface`)
+
+#### `ip` score rules
+
+The integration maps the numeric Group-IB `riskScore` (0..100) to DBotScore:
+
+- **GOOD**: 0..49
+- **SUSPICIOUS**: 50..84
+- **BAD**: 85..100
+- **UNKNOWN (NONE)**: score is missing or out of range
+
+### Reliability calculation rules (only when Ignore Source Reliability override is enabled)
+
+When the integration-calculated reliability mode is enabled, reliability is computed as follows:
+
+#### `file` reliability rules
+
+- **A - Completely reliable**: at least one match in `ioc/common`
+- **None**: no matches
+
+#### `domain` and `ip` reliability rules
+
+Reliability is derived from which collections returned matches:
+
+- **A - Completely reliable**:
+  - any match in `apt/threat` or `apt/threat_actor` (nation-state intelligence), or
+  - any match in `ioc/common`
+
+- **B - Usually reliable**:
+  - any match in `attacks/deface`, or
+  - any match in `hi/open_threats`
+
+Final selection logic (deterministic):
+
+- If there is at least one **A - Completely reliable** source → reliability is **A - Completely reliable**
+- Else if there is at least one **B - Usually reliable** source → reliability is **B - Usually reliable**
+- Else → reliability is **None**
 
 ## Commands
 
@@ -120,37 +214,40 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 The following commands are available in this integration:
 
-- `gibtia-get-available-collections` - Returns list of available collections
-- `gibtia-get-compromised-account-info` - Performs Group-IB event lookup in compromised/account collection
-- `gibtia-get-compromised-card-group-info` - Performs Group-IB event lookup in compromised/card collection
-- `gibtia-get-compromised-breached-info` - Performs Group-IB event lookup in compromised/breached collection
-- `gibtia-get-phishing-group-info` - Performs Group-IB event lookup in attacks/phishing_group collection
-- `gibtia-get-osi-git-leak-info` - Performs Group-IB event lookup in osi/git_repository collection
-- `gibtia-get-osi-public-leak-info` - Performs Group-IB event lookup in osi/public_leak collection
-- `gibtia-get-osi-vulnerability-info` - Performs Group-IB event lookup in osi/vulnerability collection
-- `gibtia-get-malware-malware-info` - Performs Group-IB event lookup in malware/malware collection
-- `gibtia-get-compromised-mule-info` - Performs Group-IB event lookup in compromised/mule collection
-- `gibtia-get-attacks-ddos-info` - Performs Group-IB event lookup in attacks/ddos collection
-- `gibtia-get-attacks-deface-info` - Performs Group-IB event lookup in attacks/deface collection
-- `gibtia-get-threat-info` - Performs Group-IB event lookup in hi/threat or apt/threat collection
-- `gibtia-get-threat-actor-info` - Performs Group-IB event lookup in hi/threat_actor or apt/threat_actor collection
-- `gibtia-get-suspicious-ip-tor-node-info` - Performs Group-IB event lookup in suspicious_ip/tor_node collection
-- `gibtia-get-suspicious-ip-open-proxy-info` - Performs Group-IB event lookup in suspicious_ip/open_proxy collection
-- `gibtia-get-suspicious-ip-socks-proxy-info` - Performs Group-IB event lookup in suspicious_ip/socks_proxy collection
-- `gibtia-get-suspicious-ip-vpn-info` - Performs Group-IB event lookup in suspicious_ip/vpn collection
-- `gibtia-get-suspicious-ip-scanner-info` - Performs Group-IB event lookup in suspicious_ip/scanner collection
-- `gibtia-get-malware-cnc-info` - Performs Group-IB event lookup in malware/cnc collection
-- `gibtia-global-search` - Performs global Group-IB search across all collections
-- `gibtia-local-search` - Performs Group-IB search in selected collection
+> Note: Commands now use the `gibti-` prefix. Legacy `gibtia-` commands remain available for backward compatibility and are marked as deprecated in the integration settings.
 
-### gibtia-get-compromised-account-info
+- `gibti-get-available-collections` - Returns list of available collections
+- `gibti-get-compromised-account-info` - Performs Group-IB event lookup in compromised/account collection
+- `gibti-get-compromised-card-group-info` - Performs Group-IB event lookup in compromised/card collection
+- `gibti-get-compromised-breached-info` - Performs Group-IB event lookup in compromised/breached collection
+- `gibti-get-phishing-group-info` - Performs Group-IB event lookup in attacks/phishing_group collection
+- `gibti-get-phishing-kit-info` - Performs Group-IB event lookup in attacks/phishing_kit collection
+- `gibti-get-osi-git-leak-info` - Performs Group-IB event lookup in osi/git_repository collection
+- `gibti-get-osi-public-leak-info` - Performs Group-IB event lookup in osi/public_leak collection
+- `gibti-get-osi-vulnerability-info` - Performs Group-IB event lookup in osi/vulnerability collection
+- `gibti-get-malware-malware-info` - Performs Group-IB event lookup in malware/malware collection
+- `gibti-get-compromised-mule-info` - Performs Group-IB event lookup in compromised/mule collection
+- `gibti-get-attacks-ddos-info` - Performs Group-IB event lookup in attacks/ddos collection
+- `gibti-get-attacks-deface-info` - Performs Group-IB event lookup in attacks/deface collection
+- `gibti-get-threat-info` - Performs Group-IB event lookup in hi/threat or apt/threat collection
+- `gibti-get-threat-actor-info` - Performs Group-IB event lookup in hi/threat_actor or apt/threat_actor collection
+- `gibti-get-suspicious-ip-tor-node-info` - Performs Group-IB event lookup in suspicious_ip/tor_node collection
+- `gibti-get-suspicious-ip-open-proxy-info` - Performs Group-IB event lookup in suspicious_ip/open_proxy collection
+- `gibti-get-suspicious-ip-socks-proxy-info` - Performs Group-IB event lookup in suspicious_ip/socks_proxy collection
+- `gibti-get-suspicious-ip-vpn-info` - Performs Group-IB event lookup in suspicious_ip/vpn collection
+- `gibti-get-suspicious-ip-scanner-info` - Performs Group-IB event lookup in suspicious_ip/scanner collection
+- `gibti-get-malware-cnc-info` - Performs Group-IB event lookup in malware/cnc collection
+- `gibti-global-search` - Performs global Group-IB search across all collections
+- `gibti-local-search` - Performs Group-IB search in selected collection
+
+### gibti-get-compromised-account-info
 
 ***
 Command performs Group-IB event lookup in compromised/account collection with provided ID.
 
 #### Base Command
 
-`gibtia-get-compromised-account-info`
+`gibti-get-compromised-account-info`
 
 #### Input
 
@@ -188,7 +285,7 @@ Command performs Group-IB event lookup in compromised/account collection with pr
 
 #### Command Example
 
-```!gibtia-get-compromised-account-info id=253b9a136f0d574149fc43691eaf7ae27aff141a```
+```!gibti-get-compromised-account-info id=253b9a136f0d574149fc43691eaf7ae27aff141a```
 
 #### Human Readable Output
 
@@ -216,14 +313,14 @@ Command performs Group-IB event lookup in compromised/account collection with pr
 >|---|---|---|---|---|---|
 >| AS1111 | Country | City | 253b9a136f0d574149fc43691eaf7ae27aff141a | red | 11.11.11.11 |
 
-### gibtia-get-compromised-breached-info
+### gibti-get-compromised-breached-info
 
 ***
 Command performs Group-IB event lookup in compromised/breached collection with provided ID.
 
 #### Base Command
 
-`gibtia-get-compromised-breached-info`
+`gibti-get-compromised-breached-info`
 
 #### Input
 
@@ -244,7 +341,7 @@ Command performs Group-IB event lookup in compromised/breached collection with p
 
 #### Command Example
 
-```!gibtia-get-compromised-breached-info id=277c4112d348c91f6dabe9467f0d18ba```
+```!gibti-get-compromised-breached-info id=277c4112d348c91f6dabe9467f0d18ba```
 
 #### Human Readable Output
 
@@ -254,14 +351,14 @@ Command performs Group-IB event lookup in compromised/breached collection with p
 >|---|---|---|---|---|---|---|
 >| address: <br/> | some@gmail.com | admiraltyCode: C3<br/>credibility: 50<br/>reliability: 50<br/>severity: green<br/>tlp: amber<br/>ttl: null | 277c4112d348c91f6dabe9467f0d18ba | some.com | AC91C480FDE9D7ACB8AC4B78310EB2TD,<br/>1390DDDFA28AE085D23518A035703112 | 2021-06-12T03:02:00 |
 
-### gibtia-get-compromised-mule-info
+### gibti-get-compromised-mule-info
 
 ***
 Command performs Group-IB event lookup in compromised/mule collection with provided ID.
 
 #### Base Command
 
-`gibtia-get-compromised-mule-info`
+`gibti-get-compromised-mule-info`
 
 #### Input
 
@@ -292,7 +389,7 @@ Command performs Group-IB event lookup in compromised/mule collection with provi
 
 #### Command Example
 
-```!gibtia-get-compromised-mule-info id=50a3b4abbfca5dcbec9c8b3a110598f61ba90a99```
+```!gibti-get-compromised-mule-info id=50a3b4abbfca5dcbec9c8b3a110598f61ba90a99```
 
 #### Human Readable Output
 
@@ -300,7 +397,7 @@ Command performs Group-IB event lookup in compromised/mule collection with provi
 
 >|account|cnc cnc|cnc domain|cnc ipv4 ip|cnc url|dateAdd|evaluation admiraltyCode|evaluation credibility|evaluation reliability|evaluation severity|evaluation tlp|evaluation ttl|hash|id|malware id|malware name|malware stixGuid|oldId|organization name|portalLink|sourceType|stixGuid|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 1111111111111111 | <<<<<<<<<<http://some.com>>>>>>>>>> | some | 11.11.11.11 | http://some.com | 2020-02-21T13:02:00+00:00 | A2 | 80 | 100 | red | amber | 30 | some | 50a3b4abbfca5dcbec9c8b3a110598f61ba90a99 | 5a2b741f8593f88178623848573abc899f9157d4 | Anubis | 7d837524-7b01-ddc9-a357-46e7136a9852 | 392993084 | Some | <https://group-ib.com/cd/mules?searchValue=id:50a3b4abbfca5dcbec9c8b3a110598f61ba90a99> | Botnet | 2da6b164-9a12-6db5-4346-2a80a4e03255 | Person |
+>| 1111111111111111 | <<<<<<<<<<<<<<<http://some.com>>>>>>>>>>>>>>> | some | 11.11.11.11 | http://some.com | 2020-02-21T13:02:00+00:00 | A2 | 80 | 100 | red | amber | 30 | some | 50a3b4abbfca5dcbec9c8b3a110598f61ba90a99 | 5a2b741f8593f88178623848573abc899f9157d4 | Anubis | 7d837524-7b01-ddc9-a357-46e7136a9852 | 392993084 | Some | <https://group-ib.com/cd/mules?searchValue=id:50a3b4abbfca5dcbec9c8b3a110598f61ba90a99> | Botnet | 2da6b164-9a12-6db5-4346-2a80a4e03255 | Person |
 
 >### URL indicator
 
@@ -320,14 +417,14 @@ Command performs Group-IB event lookup in compromised/mule collection with provi
 >|---|---|---|
 >| 50a3b4abbfca5dcbec9c8b3a110598f61ba90a99 | red | 11.11.11.11 |
 
-### gibtia-get-osi-git-leak-info
+### gibti-get-osi-git-leak-info
 
 ***
 Command performs Group-IB event lookup in osi/git_leak collection with provided ID.
 
 #### Base Command
 
-`gibtia-get-osi-git-leak-info`
+`gibti-get-osi-git-leak-info`
 
 #### Input
 
@@ -353,7 +450,7 @@ Command performs Group-IB event lookup in osi/git_leak collection with provided 
 
 #### Command Example
 
-```!gibtia-get-osi-git-leak-info id=ead0d8ae9f2347789941ebacde88ad2e3b1ef691```
+```!gibti-get-osi-git-leak-info id=ead0d8ae9f2347789941ebacde88ad2e3b1ef691```
 
 #### Human Readable Output
 
@@ -369,14 +466,14 @@ Command performs Group-IB event lookup in osi/git_leak collection with provided 
 >|---|---|---|---|---|---|---|---|---|---|
 >| {'bindBy': 'cert', 'companyId': [2692], 'data': 'cert', 'type': 'keyword'} | 2692 | commonKeywords: {"password": ["password"]} | <https://group-ib.com/api/v2/osi/git_leak/ead0d8ae9f2347789941ebacde88ad2e3b1ef691/file/cmV2aXNpb24tZmlsZS0zOTFkYjVkNWYxN2FiNmNiYmJmN2MzNWQxZjRkMDc2Y2I0YzgzMGYwOTdiMmE5ZWRkZDJkZjdiMDY1MDcwOWE3> | <https://group-ib.com/api/v2/osi/git_leak/ead0d8ae9f2347789941ebacde88ad2e3b1ef691/file/cmV2aXNpb24tZmlsZURpZmYtMzkxZGI1ZDVmMTdhYjZjYmJiZjdjMzVkMWY0ZDA3NmNiNGM4MzBmMDk3YjJhOWVkZGQyZGY3YjA2NTA3MDlhNw>== | a2187ee179076a22e550e8f7fbc51840e87aba260431ab9cb2d4e0192ad4134c | 391db5d5f17ab6cbbbf7c35d1f4d076cb4c830f097b2a9eddd2df7b0650709a7 | Some | authorEmail: some@gmail.com <br>authorName: some<br>dateCreated: 2020-01-03T11:17:52+00:00<br>timestamp: 1617794272 | ead0d8ae9f2347789941ebacde88ad2e3b1ef691 |
 
-### gibtia-get-osi-public-leak-info
+### gibti-get-osi-public-leak-info
 
 ***
 Command performs Group-IB event lookup in osi/public_leak collection with provided ID.
 
 #### Base Command
 
-`gibtia-get-osi-public-leak-info`
+`gibti-get-osi-public-leak-info`
 
 #### Input
 
@@ -403,7 +500,7 @@ Command performs Group-IB event lookup in osi/public_leak collection with provid
 
 #### Command Example
 
-```!gibtia-get-osi-public-leak-info id=a09f2354e52d5fa0a8697c8df0b4ed99cc956273```
+```!gibti-get-osi-public-leak-info id=a09f2354e52d5fa0a8697c8df0b4ed99cc956273```
 
 #### Human Readable Output
 
@@ -419,14 +516,14 @@ Command performs Group-IB event lookup in osi/public_leak collection with provid
 >|---|---|---|---|---|---|---|---|
 >| 2021-04-01T14:57:01+03:00 | 2021-04-01T14:50:45+03:00 | 5d9657dbdf59487a6031820add2cacbe54e86814 | api | <https://some.com> | 709 | some.com | 1 |
 
-### gibtia-get-osi-vulnerability-info
+### gibti-get-osi-vulnerability-info
 
 ***
 Command performs Group-IB event lookup in osi/vulnerability collection with provided ID.
 
 #### Base Command
 
-`gibtia-get-osi-vulnerability-info`
+`gibti-get-osi-vulnerability-info`
 
 #### Input
 
@@ -454,7 +551,7 @@ Command performs Group-IB event lookup in osi/vulnerability collection with prov
 
 #### Command Example
 
-```!gibtia-get-osi-vulnerability-info id=CVE-2021-27152```
+```!gibti-get-osi-vulnerability-info id=CVE-2021-27152```
 
 #### Human Readable Output
 
@@ -470,14 +567,14 @@ Command performs Group-IB event lookup in osi/vulnerability collection with prov
 >|---|---|---|---|
 >| some_firmware | some | some | some |
 
-### gibtia-get-attacks-ddos-info
+### gibti-get-attacks-ddos-info
 
 ***
 Command performs Group-IB event lookup in attacks/ddos collection with provided ID.
 
 #### Base Command
 
-`gibtia-get-attacks-ddos-info`
+`gibti-get-attacks-ddos-info`
 
 #### Input
 
@@ -509,7 +606,7 @@ Command performs Group-IB event lookup in attacks/ddos collection with provided 
 
 #### Command Example
 
-```!gibtia-get-attacks-ddos-info id=26a05baa4025edff367b058b13c6b43e820538a5```
+```!gibti-get-attacks-ddos-info id=26a05baa4025edff367b058b13c6b43e820538a5```
 
 #### Human Readable Output
 
@@ -531,14 +628,14 @@ Command performs Group-IB event lookup in attacks/ddos collection with provided 
 >|---|---|---|---|---|---|
 >| AS11111 | United States | Some | 26a05baa4025edff367b058b13c6b43e820538a5 | red | 11.11.11.11 |
 
-### gibtia-get-attacks-deface-info
+### gibti-get-attacks-deface-info
 
 ***
 Command performs Group-IB event lookup in attacks/deface collection with provided ID.
 
 #### Base Command
 
-`gibtia-get-attacks-deface-info`
+`gibti-get-attacks-deface-info`
 
 #### Input
 
@@ -563,7 +660,7 @@ Command performs Group-IB event lookup in attacks/deface collection with provide
 
 #### Command Example
 
-```!gibtia-get-attacks-deface-info id=6009637a1135cd001ef46e21```
+```!gibti-get-attacks-deface-info id=6009637a1135cd001ef46e21```
 
 #### Human Readable Output
 
@@ -571,7 +668,7 @@ Command performs Group-IB event lookup in attacks/deface collection with provide
 
 >|date|evaluation admiraltyCode|evaluation credibility|evaluation reliability|evaluation severity|evaluation tlp|evaluation ttl|id|mirrorLink|portalLink|providerDomain|siteUrl|source|targetDomain|targetIp countryName|targetIp ip|threatActor id|threatActor isAPT|threatActor name|tsCreate|url|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 2021-01-21T02:22:18+00:00 | B2 | 80 | 80 | orange | amber | 30 | 6009637a1135cd001ef46e21 | <https://some.com/id:-6009637a1135cd001ef46e21>: | <https://group-ib.com/attacks/deface?searchValue=id:6009637a1135cd001ef46e21> | some.com | <<<<<<<<<<http://some.com>>>>>>>>>> | some.com | some.com | Indonesia | 11.11.11.11 | d7ff75c35f93dce6f5410bba9a6c206bdff66555 | false | FRK48 | 2021-01-21T11:19:52+00:00 | http://some.com |
+>| 2021-01-21T02:22:18+00:00 | B2 | 80 | 80 | orange | amber | 30 | 6009637a1135cd001ef46e21 | <https://some.com/id:-6009637a1135cd001ef46e21>: | <https://group-ib.com/attacks/deface?searchValue=id:6009637a1135cd001ef46e21> | some.com | <<<<<<<<<<<<<<<http://some.com>>>>>>>>>>>>>>> | some.com | some.com | Indonesia | 11.11.11.11 | d7ff75c35f93dce6f5410bba9a6c206bdff66555 | false | FRK48 | 2021-01-21T11:19:52+00:00 | http://some.com |
 
 >### URL indicator
 
@@ -591,14 +688,35 @@ Command performs Group-IB event lookup in attacks/deface collection with provide
 >|---|---|---|---|
 >| Indonesia | 6009637a1135cd001ef46e21 | orange | 11.11.11.11 |
 
-### gibtia-get-threat-info
+### gibti-get-phishing-kit-info
+
+***
+Command performs Group-IB event lookup in attacks/phishing_kit collection with provided ID.
+
+#### Base Command
+
+`gibti-get-phishing-kit-info`
+
+> Legacy alias `gibtia-get-phishing-kit-info` remains available for backward compatibility.
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | GIB event id. | Required |
+
+#### Command Example
+
+```!gibti-get-phishing-kit-info id=<phishing-kit-id>```
+
+### gibti-get-threat-info
 
 ***
 Command performs Group-IB event lookup in hi/threat (or in apt/threat if the APT flag is true) collection with provided ID.
 
 #### Base Command
 
-`gibtia-get-threat-info`
+`gibti-get-threat-info`
 
 #### Input
 
@@ -649,7 +767,7 @@ Command performs Group-IB event lookup in hi/threat (or in apt/threat if the APT
 
 #### Command Example
 
-```!gibtia-get-threat-info id=1b09d389d016121afbffe481a14b30ea995876e4 isAPT=true```
+```!gibti-get-threat-info id=1b09d389d016121afbffe481a14b30ea995876e4 isAPT=true```
 
 #### Human Readable Output
 
@@ -689,14 +807,14 @@ Command performs Group-IB event lookup in hi/threat (or in apt/threat if the APT
 >| false | 42a9929807fd954918f9bb603135754be7a6e11c | en | hashes: {"md4": "", "md5": "5d43baf1c9e9e3a939e5defd8f3fbd1d", "md6": "", "ripemd120": "", "sha1": "d5ff73c043f3bb75dd749636307500b60a336150", "sha224": "", "sha256": "867c8b49d29ae1f6e4a7cd31b6fe7e278753a1ba03d4be338ed11fd1efc3dd12", "sha384": "", "sha512": "", "whirlpool": ""}<br>name: 5d43baf1c9e9e3a939e5defd8f8fbd1d<br>size: null | 16107188498634 | file |
 >| false | 12cad1ca535a92a2ed306c0edf3025e7d9776612 | en | domain: some.com <br>ipv4: <br>ipv6: <br>ssl: <br>url: <https://some.com> | 16107188498908 | network |
 
-### gibtia-get-threat-actor-info
+### gibti-get-threat-actor-info
 
 ***
 Command performs Group-IB event lookup in hi/threat_actor (or in apt/threat_actor if the APT flag is true) collection with provided ID.
 
 #### Base Command
 
-`gibtia-get-threat-actor-info`
+`gibti-get-threat-actor-info`
 
 #### Input
 
@@ -731,7 +849,7 @@ Command performs Group-IB event lookup in hi/threat_actor (or in apt/threat_acto
 
 #### Command Example
 
-```!gibtia-get-threat-actor-info id=0d4496592ac3a0f5511cd62ef29887f48d9cb545 isAPT=true```
+```!gibti-get-threat-actor-info id=0d4496592ac3a0f5511cd62ef29887f48d9cb545 isAPT=true```
 
 #### Human Readable Output
 
@@ -747,14 +865,14 @@ Command performs Group-IB event lookup in hi/threat_actor (or in apt/threat_acto
 >|---|---|---|
 >| 2021-02-04 | 59dec5947c5adac898445e3958b1d05e1c260459 | en: Template injection attacks from the Gamaredon group continued: protocol topics |
 
-### gibtia-get-suspicious-ip-tor-node-info
+### gibti-get-suspicious-ip-tor-node-info
 
 ***
 Command performs Group-IB event lookup in suspicious_ip/tor_node collection with provided ID.
 
 #### Base Command
 
-`gibtia-get-suspicious-ip-tor-node-info`
+`gibti-get-suspicious-ip-tor-node-info`
 
 #### Input
 
@@ -775,7 +893,7 @@ Command performs Group-IB event lookup in suspicious_ip/tor_node collection with
 
 #### Command Example
 
-```!gibtia-get-suspicious-ip-tor-node-info id=109.70.100.46```
+```!gibti-get-suspicious-ip-tor-node-info id=109.70.100.46```
 
 #### Human Readable Output
 
@@ -791,14 +909,14 @@ Command performs Group-IB event lookup in suspicious_ip/tor_node collection with
 >|---|---|---|
 >| 11.11.11.11 | green | 11.11.11.11 |
 
-### gibtia-get-suspicious-ip-open-proxy-info
+### gibti-get-suspicious-ip-open-proxy-info
 
 ***
 Command performs Group-IB event lookup in suspicious_ip/open_proxy collection with provided ID.
 
 #### Base Command
 
-`gibtia-get-suspicious-ip-open-proxy-info`
+`gibti-get-suspicious-ip-open-proxy-info`
 
 #### Input
 
@@ -822,7 +940,7 @@ Command performs Group-IB event lookup in suspicious_ip/open_proxy collection wi
 
 #### Command Example
 
-```!gibtia-get-suspicious-ip-open-proxy-info id=cc6a2856da2806b03839f81aa214f22dbcfd7369```
+```!gibti-get-suspicious-ip-open-proxy-info id=cc6a2856da2806b03839f81aa214f22dbcfd7369```
 
 #### Human Readable Output
 
@@ -838,14 +956,14 @@ Command performs Group-IB event lookup in suspicious_ip/open_proxy collection wi
 >|---|---|---|---|---|---|---|
 >| Country | cc6a2856da2806b03839f81aa214f22dbcfd7369 | 11.11.11.11 | 80 | green | some.com | 11.11.11.11 |
 
-### gibtia-get-suspicious-ip-socks-proxy-info
+### gibti-get-suspicious-ip-socks-proxy-info
 
 ***
 Command performs Group-IB event lookup in suspicious_ip/socks_proxy collection with provided ID.
 
 #### Base Command
 
-`gibtia-get-suspicious-ip-socks-proxy-info`
+`gibti-get-suspicious-ip-socks-proxy-info`
 
 #### Input
 
@@ -866,7 +984,7 @@ Command performs Group-IB event lookup in suspicious_ip/socks_proxy collection w
 
 #### Command Example
 
-```!gibtia-get-suspicious-ip-socks-proxy-info id=02e385600dfc5bf9b3b3656df8e0e20f5fc5c86e```
+```!gibti-get-suspicious-ip-socks-proxy-info id=02e385600dfc5bf9b3b3656df8e0e20f5fc5c86e```
 
 #### Human Readable Output
 
@@ -882,14 +1000,14 @@ Command performs Group-IB event lookup in suspicious_ip/socks_proxy collection w
 >|---|---|---|---|---|
 >| AS11111 | Country | 02e385600dfc5bf9b3b3656df8e0e20f5fc5c86e | green | 11.11.11.11 |
 
-### gibtia-get-malware-cnc-info
+### gibti-get-malware-cnc-info
 
 ***
 Command performs Group-IB event lookup in malware/cnc collection by provided ID.
 
 #### Base Command
 
-`gibtia-get-malware-cnc-info`
+`gibti-get-malware-cnc-info`
 
 #### Input
 
@@ -917,7 +1035,7 @@ Command performs Group-IB event lookup in malware/cnc collection by provided ID.
 
 #### Command Example
 
-```!gibtia-get-malware-cnc-info id=aeed277396e27e375d030a91533aa232444d0089```
+```!gibti-get-malware-cnc-info id=aeed277396e27e375d030a91533aa232444d0089```
 
 #### Human Readable Output
 
@@ -925,7 +1043,7 @@ Command performs Group-IB event lookup in malware/cnc collection by provided ID.
 
 >|cnc|dateDetected|dateLastSeen|domain|id|oldId|stixGuid|url|
 >|---|---|---|---|---|---|---|---|
->| <<<<<<<<<<https://some.com>>>>>>>>>> | 2021-04-25T13:37:23+00:00 | 2021-04-25T13:37:23+00:00 | some.com | aeed277396e27e375d030a91533aa232444d0089 | 211146923 | 417b2644-1105-d65b-4b67-a78e82f59b65 | https://some.com |
+>| <<<<<<<<<<<<<<<https://some.com>>>>>>>>>>>>>>> | 2021-04-25T13:37:23+00:00 | 2021-04-25T13:37:23+00:00 | some.com | aeed277396e27e375d030a91533aa232444d0089 | 211146923 | 417b2644-1105-d65b-4b67-a78e82f59b65 | https://some.com |
 
 >### ipv4 table
 
@@ -957,14 +1075,14 @@ Command performs Group-IB event lookup in malware/cnc collection by provided ID.
 >|---|---|---|---|
 >| AS1111 | United States | aeed277396e27e375d030a91533aa232444d0089 | 11.11.11.11 |
 
-### gibtia-get-available-collections
+### gibti-get-available-collections
 
 ***
 Returns list of available collections.
 
 #### Base Command
 
-`gibtia-get-available-collections`
+`gibti-get-available-collections`
 
 #### Input
 
@@ -978,7 +1096,7 @@ There are no input arguments for this command.
 
 #### Command Example
 
-```!gibtia-get-available-collections```
+```!gibti-get-available-collections```
 
 #### Human Readable Output
 
@@ -988,14 +1106,14 @@ There are no input arguments for this command.
 >|---|
 >| compromised/account,<br/>compromised/card,<br/>bp/phishing,<br/>bp/phishing_kit,<br/>osi/git_leak,<br/>osi/public_leak,<br/>malware/targeted_malware,<br/>compromised/mule,<br/>compromised/imei,<br/>attacks/ddos,<br/>attacks/deface,<br/>attacks/phishing,<br/>attacks/phishing_kit,<br/>apt/threat,<br/>hi/threat,<br/>suspicious_ip/tor_node,<br/>suspicious_ip/open_proxy,<br/>suspicious_ip/socks_proxy,<br/>malware/cnc,<br/>osi/vulnerability,<br/>hi/threat_actor,<br/>apt/threat_actor |
 
-### gibtia-global-search
+### gibti-global-search
 
 ***
 Command performs global Group-IB search
 
 #### Base Command
 
-`gibtia-global-search`
+`gibti-global-search`
 
 #### Input
 
@@ -1013,7 +1131,7 @@ Command performs global Group-IB search
 
 #### Command Example
 
-```!gibtia-global-search query=100.100.100.100```
+```!gibti-global-search query=100.100.100.100```
 
 #### Human Readable Output
 
@@ -1027,14 +1145,14 @@ Command performs global Group-IB search
 >| osi/git_leak | 5 | [https://group-ib.com/osi/git_leaks?searchValue=100.100.100.100&q=100.100.100.100](https://group-ib.com/osi/git_leaks?searchValue=100.100.100.100&q=100.100.100.100) |
 >| osi/public_leak | 23 | [https://group-ib.com/osi/public_leak?searchValue=100.100.100.100&q=100.100.100.100](https://group-ib.com/osi/public_leak?searchValue=100.100.100.100&q=100.100.100.100) |
 
-### gibtia-local-search
+### gibti-local-search
 
 ***
 Command performs Group-IB search in selected collection.
 
 #### Base Command
 
-`gibtia-local-search`
+`gibti-local-search`
 
 #### Input
 
@@ -1049,12 +1167,14 @@ Command performs Group-IB search in selected collection.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| id | String | Id of a feed that matches a query |
-| additional_info | String | Additional info about feed |
+| GIBTI.search.local.id | String | Id of a feed that matches a query |
+| GIBTI.search.local.additional_info | String | Additional info about feed |
+| GIBTI.search.local.seqUpdate | Number | seqUpdate value of the page/portion that returned the feed |
+| GIBTI.search.local.raw_feed | String | One-line JSON string of the full feed for War Room rendering (only when include_raw_feed=true) |
 
 #### Command Example
 
-```!gibtia-local-search collection_name=attacks/phishing query=100.100.100.100```
+```!gibti-local-search collection_name=attacks/phishing query=100.100.100.100```
 
 #### Human Readable Output
 
