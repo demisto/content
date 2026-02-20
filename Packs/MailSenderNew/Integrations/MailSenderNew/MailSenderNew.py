@@ -371,6 +371,7 @@ def main():
         elif demisto.command() == "send-mail":
             raw_message = demisto.getArg("raw_message")
             sender = demisto.getArg("sender") or from_email
+            demisto.debug(f"Using '{sender}' as the sender address.")
             if raw_message:
                 to = argToList(demisto.getArg("to"))
                 cc = argToList(demisto.getArg("cc"))
