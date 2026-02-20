@@ -1,4 +1,4 @@
-Automation to duplicate Security Groups with rules modified to remove public exposure of the given port.  The updated list of security groups can then be used to remediate public exposure of an AWS resource by replacing the current list.
+Duplicates security groups and modifies rules to remove public exposure for the specified port. The updated security groups can then be used to remediate public exposure of an AWS resource by replacing the existing list.
 
 ## Script Data
 
@@ -20,6 +20,7 @@ This script uses the following commands and scripts.
 * aws-ec2-security-group-egress-revoke
 * aws-ec2-security-group-ingress-authorize
 * aws-ec2-security-groups-describe
+* aws-ec2-tags-create
 
 ## Inputs
 
@@ -27,13 +28,14 @@ This script uses the following commands and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| account_id | The AWS Account ID. |
-| resource_id | The EC2 Resource ID whose Security Groups are to be remediated. |
-| sg_list | The Security Group ID\(s\) to be recreated, given as a comma separated list. |
+| account_id | The AWS account ID. |
+| resource_id | The EC2 resource ID to remediate security groups for. |
+| sg_list | A comma-separated list of security group IDs to recreate. |
 | port | TCP/UDP port to be restricted. |
-| protocol | Protocol of the port to be restricted. |
-| region | Region where EC2 instance resides. |
-| integration_instance | The AWS Integration Instance to use. |
+| protocol | The protocol of the port to be restricted. |
+| region | The region where the EC2 instance resides. |
+| tags | The tags to apply to the recreated security groups. Use the format \`key=abc,value=123;key=fed,value=456\`, with tags separated by a semicolon \(;\). |
+| integration_instance | The AWS integration instance to use. |
 
 ## Outputs
 
@@ -43,6 +45,6 @@ This script uses the following commands and scripts.
 | --- | --- | --- |
 | AWSPublicExposure.SGReplacements.ReplacementSet.new-sg | ID of the newly created security group with restricted permissions. | String |
 | AWSPublicExposure.SGReplacements.ReplacementSet.old-sg | ID of the original security group before remediation. | String |
-| AWSPublicExposure.SGReplacements.ResourceID | The EC2 Resource ID whose Security Groups are to be remediated. | String |
+| AWSPublicExposure.SGReplacements.ResourceID | The EC2 resource ID to remediate security groups for. | String |
 | AWSPublicExposure.SGReplacements.UpdatedSGList | List of Security Groups to associate to the EC2 resource after remediation. | String |
-| AWSPublicExposure.SGReplacements.RemediationRequired | Indicates whether or not any of the provided Security Groups contained rules requiring remediation. | boolean |
+| AWSPublicExposure.SGReplacements.RemediationRequired | Indicates whether any of the provided security groups contained rules requiring remediation. | boolean |

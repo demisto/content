@@ -90,9 +90,6 @@ def identify_sgs(args: dict[str, Any]) -> CommandResults:
     region = args.get("region", "")
     integration_instance = args.get("integration_instance", "")
 
-    if not account_id or not instance_id or not public_ip:
-        raise ValueError("instance_id, port, protocol, and public_ip all need to be specified")
-
     ec2_interface, sg_list, instance_to_use = ec2_instance_info(account_id, instance_id, public_ip, region, integration_instance)
 
     readable_output = (

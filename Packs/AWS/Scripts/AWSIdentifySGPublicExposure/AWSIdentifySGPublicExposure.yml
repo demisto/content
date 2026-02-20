@@ -63,7 +63,7 @@ scripttarget: 0
 subtype: python3
 tags: []
 type: python
-fromversion: 6.5.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
 engineinfo: {}
@@ -74,9 +74,10 @@ outputs:
   type: string
 - contextPath: AWSPublicExposure.SGAssociations.NetworkInterfaceID
   description: ID of the Elastic Network Interface with public exposure.
+  type: string
 - contextPath: AWSPublicExposure.SGAssociations.SecurityGroups
   description: Security Group IDs associated with this interface.
-  type: unknown
+  type: Unknown
 - contextPath: AWSPublicExposure.SGAssociations.PublicIP
   description: Public IP address exposed.
   type: string

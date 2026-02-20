@@ -1,21 +1,21 @@
 args:
-- description: The Azure Subscription ID where the NSG resides.
+- description: The Azure subscription ID where the NSG resides.
   name: subscription_id
   required: true
-- description: The Azure Resource Group Name where the NSG resides.
+- description: The Azure resource group name where the NSG resides.
   name: resource_group_name
   required: true
-- description: The Azure Network Security Group (NSG) Name to analyze for exposure rules.
+- description: The Azure Network Security Group (NSG) name to analyze for exposure rules.
   name: network_security_group_name
   required: true
 - description: The destination private IP address(es) of the Virtual Machine interface.
   name: private_ip_addresses
   required: true
   isArray: true
-- description: TCP/UDP port to be restricted.
+- description: The TCP/UDP port to restrict.
   name: port
   required: true
-- description: Protocol of the port to be restricted.
+- description: The protocol of the port to restrict.
   auto: PREDEFINED
   name: protocol
   predefined:
@@ -25,13 +25,13 @@ args:
 - description: The number of available priority values below the matching rule to return.
   name: priority_count
   defaultValue: '2'
-- description: The Azure Integration Instance to use.
+- description: The Azure integration instance to use.
   name: integration_instance
-comment: This script identifies the first inbound Allow rule in the specified NSG that matches the criteria for network exposure. It returns details about the identified rule as well as a list of available priority numbers to insert new security rules with a higher priority.
+comment: Identifies the first inbound Allow rule in a specified NSG that matches network exposure criteria. Returns rule details and a list of available priority numbers for inserting higher-priority rules.
 commonfields:
   id: AzureIdentifyNSGExposureRule
   version: -1
-enabled: false
+enabled: true
 name: AzureIdentifyNSGExposureRule
 outputs:
 - contextPath: AzurePublicExposure.MatchingRuleName
@@ -41,10 +41,10 @@ outputs:
   description: The priority number of the matching inbound security rule.
   type: Number
 - contextPath: AzurePublicExposure.NextAvailablePriorityValues
-  description: The next available priority values to insert new security rules before the matching rule, given in descending order.
+  description: The available priority values, in descending order, for inserting rules before the matching rule.
   type: Unknown
 - contextPath: AzurePublicExposure.IntegrationInstance
-  description: The Azure Integration Instance used for identification.
+  description: The Azure integration instance used for identification.
   type: String
 script: ''
 system: false

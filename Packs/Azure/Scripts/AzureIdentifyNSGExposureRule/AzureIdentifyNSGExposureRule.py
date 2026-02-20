@@ -313,7 +313,7 @@ def process_nsg_info(args: dict[str, Any]) -> CommandResults:
     destination_ip_input = args.get("private_ip_addresses", "")
     port = int(args.get("port", ""))
     protocol = args.get("protocol", "")
-    priority_count = int(args.get("priority_count", ""))
+    priority_count = arg_to_number(args.get("priority_count"), required=True) or 0
     integration_instance = args.get("integration_instance", "")
 
     # Format provided IP addresses as a list. Handle both single IP and list of IPs

@@ -35,7 +35,8 @@ This script uses the following commands and scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| AWSPublicExposure.EC2InstanceID | ID of the EC2 instance with public exposure. | string |
-| AWSPublicExposure.NetworkInterfaceID |  | Unknown |
-| AWSPublicExposure.SecurityGroups | Security Group IDs associated with this interface. | unknown |
-| AWSPublicExposure.PublicIP | Public IP address exposed. | string |
+| AWSPublicExposure.SGAssociations.EC2InstanceID | ID of the EC2 instance with public exposure. | string |
+| AWSPublicExposure.SGAssociations.NetworkInterfaceID | ID of the Elastic Network Interface with public exposure. | string |
+| AWSPublicExposure.SGAssociations.SecurityGroups | Security Group IDs associated with this interface. | Unknown |
+| AWSPublicExposure.SGAssociations.PublicIP | Public IP address exposed. | string |
+| AWSPublicExposure.SGAssociations.IntegrationInstance | The AWS Integration Instance used for identification. | string |

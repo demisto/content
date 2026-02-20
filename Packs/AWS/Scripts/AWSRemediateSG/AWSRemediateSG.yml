@@ -12,7 +12,7 @@ args:
 - description: TCP/UDP port to be restricted.
   name: port
   required: true
-- description: Protocol of the port to be restricted.
+- description: The protocol of the port to be restricted.
   auto: PREDEFINED
   name: protocol
   predefined:
@@ -56,6 +56,8 @@ args:
   - me-south-1
   - me-central-1
   - sa-east-1
+- description: The source addresses or CIDR ranges to allow to maintain internal access to the port to be restricted. Format entries as individual IPv4/IPv6 addresses or CIDR ranges, separated by a comma (,).
+  name: remediation_allow_ranges
 - description: The tags to apply to the recreated security groups. Use the format `key=abc,value=123;key=fed,value=456`, with tags separated by a semicolon (;).
   name: tags
 - description: The AWS integration instance to use.
@@ -71,6 +73,7 @@ dependson:
   - AWS|||aws-ec2-security-group-ingress-authorize
   - AWS|||aws-ec2-security-group-egress-authorize
   - AWS|||aws-ec2-security-group-egress-revoke
+  - AWS|||aws-ec2-tags-create
 dockerimage: demisto/python3:3.12.12.7090913
 enabled: true
 name: AWSRemediateSG
@@ -80,7 +83,7 @@ scripttarget: 0
 subtype: python3
 tags: []
 type: python
-fromversion: 6.5.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
 engineinfo: {}
@@ -99,5 +102,5 @@ outputs:
   description: 'List of Security Groups to associate to the EC2 resource after remediation.'
   type: String
 - contextPath: AWSPublicExposure.SGReplacements.RemediationRequired
-  description: Indicates whether or not any of the provided Security Groups contained rules requiring remediation.
+  description: Indicates whether any of the provided security groups contained rules requiring remediation.
   type: boolean
