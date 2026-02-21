@@ -1,0 +1,30 @@
+args:
+- name: value
+  description: The name of the List to open
+- name: type
+  auto: PREDEFINED
+  predefined:
+  - string
+  - json
+  defaultValue: string
+comment: Returns the content of the List with the given Name. If type is "JSON", the content of the List will be parsed and returned as a JSON object.
+commonfields:
+  id: GetListContent
+  version: -1
+enabled: false
+name: GetListContent
+outputs:
+script: '-'
+system: false
+tags:
+- transformer
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.12.6663663
+fromversion: 6.10.0
+marketplaces:
+- xsoar
+- marketplacev2
+tests:
+- No tests (auto formatted)
