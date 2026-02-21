@@ -420,6 +420,9 @@ script:
         - description: The unique ID of the issue. Accepts a comma-separated list.
           name: issue_id
           isArray: true
+        - description: The external ID of the issue. Accepts a comma-separated list.
+          name: external_id
+          isArray: true
         - auto: PREDEFINED
           description: The severity of the issue. Accepts a comma-separated list.
           isArray: true
@@ -3359,6 +3362,140 @@ script:
         - contextPath: Core.CaseResolutionStatus.userInput
           description: User input parameters (for pending playbookTask items).
           type: Unknown
+    - name: core-create-issue
+      description: Creates a new issue in Cortex XDR.
+      arguments:
+        - name: name
+          description: The name of the issue.
+          type: string
+          required: true
+        - name: severity
+          description: The severity of the issue.
+          type: string
+          required: true
+          auto: PREDEFINED
+          predefined:
+            - LOW
+            - MEDIUM
+            - HIGH
+            - CRITICAL
+        - name: description
+          type: string
+          description: The description of the issue.
+          required: true
+        - name: type
+          description: The type of the issue.
+          type: string
+        - name: source
+          description: The source of the issue.
+          type: string
+        - name: domain
+          description: The domain of the issue.
+          defaultValue: Security
+          type: string
+          auto: PREDEFINED
+          predefined:
+          - Health
+          - Hunting
+          - IT
+          - Posture
+          - Security
+        - name: category
+          description: "The category of the issue. For example: Other, Collection, Discovery."
+          defaultValue: Other
+          type: string
+        - name: owner
+          description: The owner of the issue.
+          type: string
+        - name: asset_ids
+          description: A comma-separated list of asset IDs related to the issue.
+          isArray: true
+          type: string
+        - name: mitre_tactics
+          description: A comma-separated list of MITRE tactics.
+          isArray: true
+          type: string
+        - name: mitre_techniques
+          description: A comma-separated list of MITRE techniques.
+          isArray: true
+          type: string
+        - name: extended_description
+          description: Extended description of the issue.
+          type: string
+        - name: impact
+          description: The impact of the issue.
+          type: string
+        - name: tags
+          description: A comma-separated list of tags.
+          isArray: true
+          type: string
+        - name: is_excluded
+          description: Whether the issue is excluded.
+          type: boolean
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: is_starred
+          description: Whether the issue is starred.
+          type: boolean
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: assigned_to
+          description: The email of the user assigned to the issue.
+          type: string
+        - name: assigned_to_pretty
+          description: The display name of the user assigned to the issue.
+          type: string
+        # - name: playbook_id
+        #   description: Playbook ID to assign on the issue.
+        #   required: false
+        #   type: string
+      outputs:
+        - contextPath: Core.CreatedIssue.external_id
+          description: The external ID of the created issue.
+          type: String
+        - contextPath: Core.CreatedIssue.detection_method
+          description: The detection method of the created issue.
+          type: String
+    - name: core-create-artifact
+      description: Creates a new artifact in Cortex XDR.
+      arguments:
+        - name: conversation_id
+          description: The conversation ID.
+          required: true
+        - name: artifact
+          description: The artifact.
+          required: true
+        - name: artifact_id
+          description: The artifact ID.
+          required: true
+        - name: artifact_type
+          description: The artifact type.
+          required: true
+      outputs:
+        - contextPath: Core.Artifact
+          description: The created artifact.
+          type: Unknown
+    - name: core-set-issue-context
+      description: Sets context data for specific issues.
+      arguments:
+        - name: issue_ids
+          description: A comma-separated list of issue IDs.
+          isArray: true
+          required: true
+        - name: key
+          description: The context key to set.
+          required: true
+        - name: value
+          description: The value to set for the key.
+          required: true
+      outputs:
+        - contextPath: Core.SetIssueContext.issue_ids
+          description: The list of issue IDs that were updated.
+          type: String
   runonce: false
   script: "-"
   subtype: python3

@@ -1,0 +1,94 @@
+commonfields:
+  id: CoreCreateIssueAndRunPlaybook
+  version: -1
+name: CoreCreateIssueAndRunPlaybook
+script: ''
+type: python
+tags: []
+comment: Creates a new issue, and runs a specified playbook on it.
+enabled: true
+args:
+- name: name
+  required: true
+  description: The name of the issue.
+- name: severity
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - LOW
+  - MEDIUM
+  - HIGH
+  - CRITICAL
+  description: The severity of the issue.
+- name: description
+  required: true
+  description: The description of the issue.
+- name: domain
+  description: The domain of the issue.
+  defaultValue: Security
+  auto: PREDEFINED
+  predefined:
+  - Health
+  - Hunting
+  - IT
+  - Posture
+  - Security
+- name: category
+  description: "The category of the issue. For example: Other, Collection, Discovery."
+  defaultValue: Other
+- name: type
+  description: The type of the issue.
+- name: source
+  description: The source of the issue.
+# - name: owner
+#   description: The owner of the issue.
+- name: asset_ids
+  description: A comma-separated list of asset IDs related to the issue.
+  isArray: true
+- name: mitre_tactics
+  description: A comma-separated list of MITRE tactics.
+  isArray: true
+- name: mitre_techniques
+  description: A comma-separated list of MITRE techniques.
+  isArray: true
+- name: extended_description
+  description: Extended description of the issue.
+- name: impact
+  description: The impact of the issue.
+# - name: tags
+#   description: A comma-separated list of tags.
+#   isArray: true
+- name: is_excluded
+  type: boolean
+  description: Whether the issue is excluded.
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+- name: is_starred
+  type: boolean
+  description: Whether the issue is starred.
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+- name: assigned_to
+  description: The email of the user assigned to the issue.
+- name: assigned_to_pretty
+  description: The display name of the user assigned to the issue.
+- name: playbook_id
+  required: true
+  description: "The ID of the playbook to run on the created issue. For example: Create Jira Issue, Field Polling - Generic."
+- name: key
+  description: The field key to update.
+- name: value
+  description: The value of the key argument to update.
+outputs:
+- name: Core.CreatedIssueLink.issue_link
+  description: Link to the issue created.
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.11.10.115186
+fromversion: 6.10.0
+tests:
+- No tests
