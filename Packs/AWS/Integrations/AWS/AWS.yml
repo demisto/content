@@ -10963,6 +10963,9 @@ script:
     - name: instance_pools_to_use_count
       description: The number of Spot pools across which to allocate your target Spot capacity.
       required: false
+    - name: max_total_price
+      description: The maximum amount per hour for Spot Instances that you are willing to pay.
+      required: false
     - name: spot_single_instance_type
       description: Indicates that the fleet uses a single instance type to launch all Spot Instances in the fleet.
       required: false
@@ -11004,9 +11007,15 @@ script:
     - name: on_demand_min_target_capacity
       description: The minimum target capacity for On-Demand Instances in the fleet. If the minimum target capacity is not reached, the fleet launches no instances.
       required: false
-    - name: on_demand_min_target_capacity
-      description: The maximum amount per hour for On-Demand Instances that you're willing to pay.
+    - name: on_demand_max_total_price
+      description: The maximum amount per hour for On-Demand Instances that you are willing to pay.
       required: false
+    - name: capacity_reservation_strategy
+      description: Indicates whether to use unused Capacity Reservations for fulfilling On-Demand capacity.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - use-capacity-reservations-first
     - name: excess_capacity_termination_policy
       description: Indicates whether running instances should be terminated if the total target capacity of the EC2 Fleet is decreased below the current size of the EC2 Fleet.
       required: false
@@ -11024,30 +11033,86 @@ script:
       description: The version number of the launch template.
       required: false
       defaultValue: "1"
-    - name: override_instance_type
-      description: A comma-separated list of instance types for launch template overrides.
+    - name: availability_zone
+      description: The Availability Zone in which to launch the instances.
       required: false
-      isArray: true
-    - name: override_max_price
-      description: A comma-separated list of maximum prices per unit hour that you are willing to pay for Spot Instances.
+    - name: availability_zone_id
+      description: The ID of the Availability Zone in which to launch the instances.
       required: false
-      isArray: true
-    - name: override_subnet_id
-      description: A comma-separated list of subnet IDs in which to launch the instances.
+    - name: image_id
+      description: The ID of the AMI.
       required: false
-      isArray: true
-    - name: override_availability_zone
-      description: A comma-separated list of Availability Zones in which to launch the instances.
+    - name: instance_type
+      description: The instance type.
       required: false
-      isArray: true
-    - name: override_weighted_capacity
-      description: A comma-separated list of numbers of units provided by the specified instance types.
+    - name: max_price
+      description: The maximum price per unit hour that you are willing to pay for a Spot Instance.
       required: false
-      isArray: true
-    - name: override_priority
-      description: A comma-separated list of priorities for the launch template overrides.
+    - name: placement_group_id
+      description: The ID of the placement group.
       required: false
-      isArray: true
+    - name: placement_group_name
+      description: The name of the placement group.
+      required: false
+    - name: priority
+      description: The priority for the launch template override. The highest priority is launched first.
+      required: false
+    - name: subnet_id
+      description: The ID of the subnet in which to launch the instances.
+      required: false
+    - name: weighted_capacity
+      description: The number of units provided by the specified instance type.
+      required: false
+    - name: device_name
+      description: "The device name (for example, /dev/sdh or xvdh)."
+      required: false
+    - name: ebs_encrypted
+      description: "Indicates whether the encryption state of an EBS volume is changed while being restored from a backing snapshot."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: ebs_delete_on_termination
+      description: "Indicates whether the EBS volume is deleted on instance termination."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: ebs_iops
+      description: "The number of I/O operations per second (IOPS)."
+      required: false
+    - name: ebs_kms_key_id
+      description: "Identifier for a user-managed CMK under which the EBS volume is encrypted."
+      required: false
+    - name: ebs_snapshot_id
+      description: "The ID of the snapshot."
+      required: false
+    - name: ebs_volume_size
+      description: "The size of the volume, in GiBs."
+      required: false
+    - name: ebs_volume_type
+      description: "The volume type."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - gp2
+      - gp3
+      - io1
+      - io2
+      - st1
+      - sc1
+      - standard
+    - name: ebs_throughput
+      description: "The throughput for the volume, in MiB/s. This parameter is valid only for gp3 volumes."
+      required: false
+    - name: block_device_mappings_no_device
+      description: "Suppresses the specified device included in the block device mapping of the AMI."
+      required: false
+    - name: block_device_mappings_virtual_name
+      description: "The virtual device name (ephemeralN)."
+      required: false
     - name: total_target_capacity
       description: The number of units to request.
       required: true
@@ -11065,6 +11130,14 @@ script:
       - spot
       - on-demand
       - capacity-block
+    - name: target_capacity_unit
+      description: The unit for the target capacity.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - vcpu
+      - memory-mib
+      - units
     - name: terminate_instances_with_expiration
       description: Indicates whether running instances should be terminated when the EC2 Fleet expires.
       required: false
@@ -11518,6 +11591,7 @@ script:
 
   - name: aws-ec2-fleet-modify
     description: Modifies the specified EC2 Fleet.
+    execution: true
     arguments:
     - name: account_id
       description: The AWS account ID.

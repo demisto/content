@@ -398,28 +398,36 @@ def create_launch_template_kwargs_builder(args: Dict[str, Any]) -> Dict[str, Any
 
 
 def aws_ec2_fleet_command_launch_templates_config_args_builder(args: Dict[str, Any]) -> List[Dict[str, Any]]:
-    return [{
+    """
+    Builds the LaunchTemplateConfigs list for EC2 Fleet create/modify commands.
+
+    For the Overrides list, each override field (availability_zone, instance_type, etc.)
+    is read as a single value. Multiple overrides are not supported via this builder.
+    """
+    override = [{
+        "AvailabilityZone": args.get("availability_zone"),
+        "AvailabilityZoneId": args.get("availability_zone_id"),
+        "ImageId": args.get("image_id"),
+        "InstanceType": args.get("instance_type"),
+        "MaxPrice": args.get("max_price"),
+        "Placement": {
+            "GroupId": args.get("placement_group_id"),
+            "GroupName": args.get("placement_group_name"),
+        },
+        "Priority": arg_to_number(args.get("priority")),
+        "SubnetId": args.get("subnet_id"),
+        "WeightedCapacity": arg_to_number(args.get("weighted_capacity")),
+        "BlockDeviceMappings": aws_ec2_block_device_mapping_args_builder(args),
+    }]
+
+    return [remove_empty_elements({
         "LaunchTemplateSpecification": {
             "LaunchTemplateId": args.get("launch_template_id"),
             "LaunchTemplateName": args.get("launch_template_name"),
-            "Version": args.get("launch_template_version", "1"),
+            "Version": args.get("launch_template_version"),
         },
-        "Overrides": [{
-            "AvailabilityZone": args.get("availability_zone"),
-            "AvailabilityZoneId": args.get("availability_zone_id"),
-            "ImageId": args.get("image_id"),
-            "InstanceType": args.get("instance_type"),
-            "MaxPrice": args.get("max_price"),
-            "Placement": {
-                "GroupId": args.get("placement_group_id"),
-                "GroupName": args.get("placement_group_name"),
-            },
-            "Priority": arg_to_number(args.get("priority")),
-            "SubnetId": args.get("subnet_id"),
-            "WeightedCapacity": arg_to_number(args.get("weighted_capacity")),
-            "BlockDeviceMappings": aws_ec2_block_device_mapping_args_builder(args)
-        }]
-    }]
+        "Overrides": override
+    })]
 
 
 class AWSErrorHandler:
@@ -4277,6 +4285,9 @@ class EC2:
         Returns:
             CommandResults: Results containing the created fleet ID
         """
+        launch_template_info = [args.get("launch_template_id"), args.get("launch_template_name")]
+        if len(launch_template_info) != 1:
+            raise DemistoException("Either launch_template_id or launch_template_name must be provided, but not both")
 
         kwargs: Dict[str, Any] = remove_empty_elements({
             "ExcessCapacityTerminationPolicy": args.get("excess_capacity_termination_policy"),
@@ -4289,7 +4300,7 @@ class EC2:
             "SpotOptions": {
                 "AllocationStrategy": args.get("spot_allocation_strategy"),
                 "InstanceInterruptionBehavior": args.get("instance_interruption_behavior"),
-                "InstancePoolsToUseCount": arg_to_number(args.get("instance_pools_to_use")),
+                "InstancePoolsToUseCount": arg_to_number(args.get("instance_pools_to_use_count")),
                 "SingleInstanceType": arg_to_bool_or_none(args.get("spot_single_instance_type")),
                 "SingleAvailabilityZone": arg_to_bool_or_none(args.get("single_availability_zone")),
                 "MinTargetCapacity": arg_to_number(args.get("min_target_capacity")),
@@ -4301,7 +4312,7 @@ class EC2:
                 "SingleAvailabilityZone": arg_to_bool_or_none(args.get("on_demand_single_availability_zone")),
                 "MinTargetCapacity": arg_to_number(args.get("on_demand_min_target_capacity")),
                 "MaxTotalPrice": args.get("on_demand_max_total_price"),
-                "CapacityReservationOptions": {"UsageStrategy": args.get("capacity_reservation_strategy")}
+                "CapacityReservationOptions": {"UsageStrategy": args.get("capacity_reservation_strategy")},
             },
             "TargetCapacitySpecification": {
                 "TotalTargetCapacity": arg_to_number(args.get("total_target_capacity")),
@@ -4311,13 +4322,8 @@ class EC2:
                 "TargetCapacityUnitType": args.get("target_capacity_unit"),
             },
             "TagSpecifications": [{"ResourceType": "fleet", "Tags": parse_tag_field(args.get("tags"))}]
+            if args.get("tags") else None,
         })
-
-        if not args.get("launch_template_id") and not args.get("launch_template_name"):
-            raise DemistoException("Either launch_template_id or launch_template_name must be provided, but not both.")
-
-        if not args.get("tags"):
-            raise DemistoException("Tag specification must have at least one tag")
 
         print_debug_logs(client, f"Creating fleet with parameters: {kwargs}")
         response = client.create_fleet(**kwargs)
@@ -4489,13 +4495,11 @@ class EC2:
         }
 
         return CommandResults(
-            outputs_prefix="AWS.EC2.Fleet",
-            outputs_key_field="FleetId",
             outputs=outputs,
             readable_output=tableToMarkdown(
                 "AWS EC2 Fleets Instances",
                 active_instances,
-                headers=["InstanceId", "InstanceType", "SpotInstanceRequestId", "FleetId", "Region"],
+                headers=["InstanceId", "InstanceType", "SpotInstanceRequestId", "InstanceHealth"],
                 removeNull=True,
                 headerTransform=pascalToSpace,
             ),
@@ -4514,6 +4518,11 @@ class EC2:
         Returns:
             CommandResults: Results of the modification operation
         """
+        # LaunchTemplateConfigs is optional for modify — only include if a template is specified
+        launch_template_configs = None
+        if args.get("launch_template_id") or args.get("launch_template_name"):
+            launch_template_configs = aws_ec2_fleet_command_launch_templates_config_args_builder(args)
+
         kwargs = remove_empty_elements({
             "FleetId": args.get("fleet_id"),
             "ExcessCapacityTerminationPolicy": args.get("excess_capacity_termination_policy"),
@@ -4524,12 +4533,8 @@ class EC2:
                 "DefaultTargetCapacityType": args.get("default_target_capacity_type"),
                 "TargetCapacityUnitType": args.get("target_capacity_unit"),
             },
-            "LaunchTemplateConfigs": aws_ec2_fleet_command_launch_templates_config_args_builder(args)
+            "LaunchTemplateConfigs": launch_template_configs,
         })
-
-        # return CommandResults(readable_output=f"{kwargs=}")
-        if not args.get("launch_template_id") and not args.get("launch_template_name"):
-            raise DemistoException("Either launch_template_id or launch_template_name must be provided, but not both.")
 
         print_debug_logs(client, f"Modifying fleet with parameters: {kwargs}")
         response = client.modify_fleet(**kwargs)
