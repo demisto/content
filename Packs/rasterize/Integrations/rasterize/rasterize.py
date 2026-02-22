@@ -1611,14 +1611,13 @@ def perform_rasterize(
         chrome_processes = get_chrome_processes("")
         ps_aux_output = "\n".join(chrome_processes) if chrome_processes else "No Chrome processes found"
         try:
-            chrome_headless_content = "\n".join(
-                subprocess.check_output(["cat", CHROME_LOG_FILE_PATH], stderr=subprocess.STDOUT, text=True).splitlines()
-            )
-        except subprocess.CalledProcessError:
+            with open(CHROME_LOG_FILE_PATH) as f:
+                chrome_headless_content = f.read().strip()
+        except (FileNotFoundError, PermissionError, OSError):
             chrome_headless_content = f"Could not read {CHROME_LOG_FILE_PATH}"
 
         try:
-            df_output = "\n".join(subprocess.check_output(["df", "-h"], stderr=subprocess.STDOUT, text=True).splitlines())
+            df_output = subprocess.check_output(["df", "-h"], stderr=subprocess.STDOUT, text=True).strip()
         except subprocess.CalledProcessError:
             df_output = "Could not get disk usage information"
 
