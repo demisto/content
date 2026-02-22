@@ -11341,6 +11341,8 @@ def test_ec2_create_launch_template_command_success(mocker):
     assert "AWS Launch Template" in result.readable_output
     assert call_args["LaunchTemplateData"]["Monitoring"]["Enabled"] is True
     assert call_args["LaunchTemplateData"]["EbsOptimized"] is True
+    assert call_args["TagSpecifications"][0]["ResourceType"] == "launch-template"
+    assert call_args["TagSpecifications"][0]["Tags"] == result.outputs["Tags"]
 
 
 def test_ec2_create_launch_template_command_with_network_interfaces(mocker):
