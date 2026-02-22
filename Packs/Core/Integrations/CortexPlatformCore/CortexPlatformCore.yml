@@ -3443,6 +3443,7 @@ script:
     - name: core-get-support-ticket-taxonomy
       description: Retrieves the complete support ticket taxonomy in a single call. Fetches all SME areas and sub-groups, then iterates over every combination to retrieve the full questionnaire catalog including questions and log upload fields.
       arguments: []
+      hidden: true
       outputs:
         - contextPath: Core.SupportTicketTaxonomy.issue_category
           description: The issue category (SME area). Maps to the issue_category argument of core-fill-support-ticket.

@@ -4548,19 +4548,6 @@ def get_support_ticket_taxonomy_command(client: Client, args: dict[str, Any]) ->
 
         taxonomy.append(category_entry)
 
-    # Build a flat readable table for human-readable output
-    flat_rows = []
-    for cat in taxonomy:
-        for conc in cat.get("problem_concentrations", []):
-            for q in conc.get("questions", []):
-                flat_rows.append(
-                    {
-                        "issue_category": cat["issue_category"],
-                        "problem_concentration": conc["problem_concentration"],
-                        **q,
-                    }
-                )
-
     return CommandResults(
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.SupportTicketTaxonomy",
         outputs=taxonomy,
