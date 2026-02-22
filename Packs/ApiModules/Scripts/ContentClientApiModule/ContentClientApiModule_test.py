@@ -82,7 +82,7 @@ def test_nested_value_extraction():
 
 
 def test_get_value_by_path_with_list_index():
-    """Test _get_value_by_path with list indexing."""
+    """Test _get_value_by_path with list indexing test."""
     data = {
         "items": [
             {"id": 1, "name": "first"},
