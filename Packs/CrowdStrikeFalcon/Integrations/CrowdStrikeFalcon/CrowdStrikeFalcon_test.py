@@ -8687,36 +8687,45 @@ def test_build_ngsiem_query_with_limit(query, limit, expected):
 
 
 @pytest.mark.parametrize(
-    "val, expected_type, expected_value, predicate",
+    "val, expected",
     [
-        (None, type(None), None, None),
-        ("", type(None), None, None),
-        (1700000000, int, None, lambda x: x > 0),
-        (1700000000000, int, None, lambda x: x > 0),
-        ("1700000000", int, None, lambda x: x > 0),
-        ("24 hours", int, None, lambda x: x > 0),
-        ("2023-11-14T00:00:00Z", int, None, lambda x: x > 0),
+        (None, None),
+        ("", None),
+        (1700000000, 1700000000000),
+        (1700000000000, 1700000000000),
+        ("1700000000", 1700000000000),
+        ("2023-11-14T00:00:00Z", 1699920000000),
     ],
 )
-def test_arg_to_timestamp(val, expected_type, expected_value, predicate):
+def test_arg_to_timestamp(val, expected):
     """
     Given:
-        - A raw time argument in one of the supported formats (None, empty string,
-          epoch seconds/milliseconds, relative time expression, or ISO-8601 string).
+        - A raw time argument in one of the supported formats (None,
+          epoch seconds/milliseconds, or ISO-8601 string).
     When:
         - Converting it via arg_to_timestamp.
     Then:
-        - Returns None for empty values.
-        - Returns an epoch-milliseconds int for all other valid inputs.
+        - Returns None for None.
+        - Returns the expected epoch-milliseconds int for all other valid inputs.
     """
     from CrowdStrikeFalcon import arg_to_timestamp
 
-    result = arg_to_timestamp(val)
-    assert isinstance(result, expected_type)
-    if expected_value is not None:
-        assert result == expected_value
-    if predicate is not None:
-        assert predicate(result)
+    assert arg_to_timestamp(val) == expected
+
+
+@freeze_time("2023-11-15T00:00:00Z")
+def test_arg_to_timestamp_relative():
+    """
+    Given:
+        - A relative time expression ("24 hours").
+    When:
+        - Converting it via arg_to_timestamp with time frozen at 2023-11-15T00:00:00Z.
+    Then:
+        - Returns the epoch-milliseconds timestamp for 24 hours before the frozen time.
+    """
+    from CrowdStrikeFalcon import arg_to_timestamp
+
+    assert arg_to_timestamp("24 hours") == 1699920000000
 
 
 @pytest.mark.parametrize(
