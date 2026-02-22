@@ -67,6 +67,7 @@ WEBAPP_COMMANDS = [
     "core-list-exception-rules",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
+    "core-fill-support-ticket",
     "core-get-support-ticket-taxonomy",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
@@ -913,6 +914,18 @@ class Client(CoreClient):
             url_suffix=f"case/{case_id}/resolution-plan/tasks",
         )
         return reply
+
+    def check_support_permission(self) -> dict:
+        """
+        Check if the current user has permission to create/manage support tickets.
+
+        Returns:
+            dict: The response containing permission status.
+        """
+        return self._http_request(
+            method="GET",
+            url_suffix="/sfdc_support/check_permission",
+        )
 
     def get_sme_areas_and_sub_groups(self) -> dict:
         """
@@ -4656,6 +4669,23 @@ def verify_platform_version(version: str = "8.13.0"):
         raise DemistoException("This command is not available for this platform version")
 
 
+def verify_support_ticket_permission(client: Client):
+    """
+    Verify that the current user has permission to manage support tickets
+    by calling the sfdc_support/check_permission endpoint.
+
+    Args:
+        client (Client): The client instance used to send the request.
+
+    Raises:
+        DemistoException: If the user does not have the required permissions.
+    """
+    response = client.check_support_permission()
+    reply = response.get("reply", response)
+    if not reply:
+        raise DemistoException("You do not have the required permissions to manage support tickets.")
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -4792,10 +4822,12 @@ def main():  # pragma: no cover
 
         elif command == "core-fill-support-ticket":
             verify_platform_version("8.14.0")
-            return_results(core_fill_support_ticket_command(client, args))
+            verify_support_ticket_permission(client)
+            return_results(core_fill_support_ticket_command(args))
 
         elif command == "core-get-support-ticket-taxonomy":
             verify_platform_version("8.14.0")
+            verify_support_ticket_permission(client)
             return_results(get_support_ticket_taxonomy_command(client, args))
 
     except Exception as err:

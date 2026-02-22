@@ -9525,6 +9525,78 @@ def test_get_case_resolution_statuses_command(mocker):
     assert mock_client.get_case_resolution_statuses.call_count == 2
 
 
+def test_verify_support_ticket_permission_success(mocker: MockerFixture):
+    """
+    GIVEN:
+        A client that returns a truthy reply from the check_permission endpoint.
+    WHEN:
+        verify_support_ticket_permission is called.
+    THEN:
+        No exception is raised.
+    """
+    from CortexPlatformCore import verify_support_ticket_permission, Client
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "check_support_permission", return_value={"reply": True})
+
+    # Should not raise
+    verify_support_ticket_permission(mock_client)
+
+
+def test_verify_support_ticket_permission_no_permission(mocker: MockerFixture):
+    """
+    GIVEN:
+        A client that returns a falsy reply from the check_permission endpoint.
+    WHEN:
+        verify_support_ticket_permission is called.
+    THEN:
+        A DemistoException is raised indicating insufficient permissions.
+    """
+    from CortexPlatformCore import verify_support_ticket_permission, Client, DemistoException
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "check_support_permission", return_value={"reply": False})
+
+    with pytest.raises(DemistoException, match="You do not have the required permissions to manage support tickets."):
+        verify_support_ticket_permission(mock_client)
+
+
+def test_verify_support_ticket_permission_empty_reply(mocker: MockerFixture):
+    """
+    GIVEN:
+        A client that returns an empty reply from the check_permission endpoint.
+    WHEN:
+        verify_support_ticket_permission is called.
+    THEN:
+        A DemistoException is raised indicating insufficient permissions.
+    """
+    from CortexPlatformCore import verify_support_ticket_permission, Client, DemistoException
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "check_support_permission", return_value={"reply": {}})
+
+    with pytest.raises(DemistoException, match="You do not have the required permissions to manage support tickets."):
+        verify_support_ticket_permission(mock_client)
+
+
+def test_verify_support_ticket_permission_none_reply(mocker: MockerFixture):
+    """
+    GIVEN:
+        A client that returns a response without a reply key.
+    WHEN:
+        verify_support_ticket_permission is called.
+    THEN:
+        A DemistoException is raised indicating insufficient permissions.
+    """
+    from CortexPlatformCore import verify_support_ticket_permission, Client, DemistoException
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "check_support_permission", return_value={})
+
+    with pytest.raises(DemistoException, match="You do not have the required permissions to manage support tickets."):
+        verify_support_ticket_permission(mock_client)
+
+
 def test_core_fill_support_ticket_command_success(mocker: MockerFixture):
     """
     GIVEN:
