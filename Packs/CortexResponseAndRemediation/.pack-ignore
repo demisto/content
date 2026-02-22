@@ -64,6 +64,10 @@ ignore=GR109
 [file:Packs/CortexResponseAndRemediation/Triggers/silent-Trigger_-_Rare_remote_service_change_or_creation_via_Remote_Service_SVCCTL_RPC_interface.json]
 ignore=GR109
 
+#GR109 fails on playbooks with different supported modules than the pack
+[file:Packs/CortexResponseAndRemediation/Playbooks/silent-playbook-Script_file_added_to_startup-related_Registry_keys.yml]
+ignore=GR109
+
 [known_words]
 xsiam
 coreirapimodule
