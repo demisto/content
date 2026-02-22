@@ -1,6 +1,6 @@
 fromversion: 8.14.0
-id: salesforce_modeling_rule
-name: Salesforce Modeling Rule
+id: salesforce_realtime_ModelingRule
+name: Salesforce Realtime Modeling Rule
 rules: ''
 schema: ''
 tags: salesforce
