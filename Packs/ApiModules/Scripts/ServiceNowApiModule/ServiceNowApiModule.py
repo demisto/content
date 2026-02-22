@@ -72,7 +72,7 @@ class ServiceNowClient(BaseClient):
         auth=None,
         timeout=None,
     ):
-        ok_codes = (200, 201, 401)  # includes responses that are ok (200) and error responses that should be
+        ok_codes = (200, 201, 401)  # includes test responses that are ok (200) and error responses that should be
         # handled by the client and not in the BaseClient
         try:
             if self.use_oauth:  # add a valid access token to the headers when using OAuth

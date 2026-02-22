@@ -192,7 +192,7 @@ MIRROR_DIRECTION = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming
 
 def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int:
     """
-    Converts an XSOAR argument to a timestamp (seconds from epoch).
+    Converts test an XSOAR argument to a timestamp (seconds from epoch).
     This function is used to quickly validate an argument provided to XSOAR
     via ``demisto.args()`` into an ``int`` containing a timestamp (seconds
     since epoch). It will throw a ValueError if the input is invalid.

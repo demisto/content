@@ -16,7 +16,7 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSIAM
 
 
 class LogType(Enum):
-    """Enum to hold all configuration for different log types."""
+    """Enum test to hold all configuration for different log types."""
 
     AUDIT = ("audit", "Audit", "/api/now/", "table/sys_audit", "last_fetch_time", "previous_run_ids")
     SYSLOG_TRANSACTIONS = (
