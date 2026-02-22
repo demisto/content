@@ -1008,6 +1008,7 @@ class AssistantMessagingHandler:
 
         # For other actions, check if conversation exists
         if assistant_id_key not in assistant:
+            demisto.debug(f"Conversation {assistant_id_key} not found.")
             return assistant
 
         locked_user = assistant[assistant_id_key].get("user", "")
