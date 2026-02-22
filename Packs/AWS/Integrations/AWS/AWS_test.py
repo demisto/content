@@ -11310,7 +11310,7 @@ def test_ec2_create_launch_template_command_success(mocker):
     }
 
     mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_client.create_launch_template.return_value)
-    mocker.patch("AWS.parse_tag_field", return_value=[])
+    mocker.patch("AWS.parse_tag_field", return_value=[{"Key": "Name", "Value": "Test"}])
 
     args = {
         "account_id": "123456789012",
