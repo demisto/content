@@ -74,7 +74,7 @@ def replace_fields(args: dict, replacements: dict) -> dict:
     return args
 
 
-def get_issue_by_id(issue_id: str, from_date: str | None, to_date: str | None):
+def get_issue_by_id(issue_id: str | None, from_date: str | None, to_date: str | None):
     """
     Get issue according to issue id using core-get-issues
     :param issue_id:
@@ -99,26 +99,22 @@ def get_issue_by_id(issue_id: str, from_date: str | None, to_date: str | None):
     if is_error(res):
         return_error(get_error(res))
 
-    contents_1 = res[0].get("Contents", {}) if res else None
-    contents_2 = res[1].get("Contents", {}) if res else None
-    if isinstance(contents_1, dict):
-        issues_res = contents_1.get("alerts", {})
-    elif isinstance(contents_2, dict):
-        issues_res = contents_2.get("alerts", {})
-        
-    if isinstance(issues_res, list) and len(issues_res) > 0:
-        issue = issues_res[0].get("alert_fields")
-    # issues = contents if isinstance(contents, list) else []
-    
-    return issue
+    issues_res = []
+    if res and isinstance(res, list):
+        for entry in res:
+            if isinstance(entry, dict) and (contents := entry.get("Contents")):
+                if isinstance(contents, dict) and (alerts := contents.get("alerts")):
+                    issues_res = alerts
+                    break
+
+    return issues_res[0].get("alert_fields") if issues_res else None
 
 
 def get_all_issues_for_time_window_and_exact_match(
     exact_match_fields: list[str],
     issue: dict,
-    from_date: str,
-    to_date: str,
-    query_sup: str,
+    from_date: str | None,
+    to_date: str | None,
     limit: int,
 ):
     """
@@ -127,7 +123,6 @@ def get_all_issues_for_time_window_and_exact_match(
     :param issue: json representing the current issue
     :param from_date: from_date
     :param to_date: to_date
-    :param query_sup: additional query
     :param limit: limit of how many issues we want to query
     :return:
     """
@@ -150,16 +145,20 @@ def get_all_issues_for_time_window_and_exact_match(
     if is_error(res):
         return_error(get_error(res))
 
-    contents_1 = res[0].get("Contents", {}) if res else None
-    contents_2 = res[1].get("Contents", {}) if res else None
-    if isinstance(contents_1, dict):
-        issues = contents_1.get("alerts", {})
-    else:
-        issues = contents_2.get("alerts", {})
+    issues = []
+    if res and isinstance(res, list):
+        for entry in res:
+            if isinstance(entry, dict) and (contents := entry.get("Contents")):
+                if isinstance(contents, dict) and (alerts := contents.get("alerts")):
+                    issues = alerts
+                    break
     
     # Filter out the current issue
-    issues = [i.get("alert_fields") for i in issues if str(i.get("internal_id")) != str(issue.get("internal_id"))]
-    if len(issues) == 0:
+    issues = [
+        i.get("alert_fields") for i in issues
+        if str(i.get("alert_fields", {}).get("internal_id")) != str(issue.get("internal_id"))
+    ]
+    if not issues:
         msg += f"{MESSAGE_NO_INCIDENT_FETCHED} \n"
         return None, msg
     if len(issues) >= limit:
@@ -176,20 +175,6 @@ def load_current_issue(issue_id: str | None, from_date: str | None, to_date: str
     :param to_date: to_date
     :return:
     """
-    # seems that the if part returned with different fields from the core-get-issues.
-    # if not issue_id:
-    #     # In XSIAM/Platform, issues are often in the context
-    #     incidents = demisto.incidents()
-    #     print(incidents)
-    #     if not incidents:
-    #         return None, None
-    #     issue_id = incidents[0].get("id")
-    #     if not issue_id:
-    #         return None, None
-    #     issue = get_issue_by_id(issue_id, from_date or "", to_date or "")
-    #     if not issue:
-    #         return None, issue_id
-    # else:
     issue = get_issue_by_id(issue_id, from_date, to_date)
     if not issue:
         return None, issue_id
@@ -211,11 +196,12 @@ def get_similar_issues_by_indicators(args: dict):
     return res
 
 
-def get_data_from_indicators_automation(res, TAG_SCRIPT_INDICATORS_VALUE):
-    if res is not None:
+def get_data_from_indicators_automation(res, tag_value):
+    if res:
         for entry in res:
-            if entry and entry.get("Tags") and TAG_SCRIPT_INDICATORS_VALUE in entry.get("Tags"):
-                return entry["Contents"]
+            tags = entry.get("Tags") or []
+            if tag_value in tags:
+                return entry.get("Contents")
     return None
 
 
@@ -260,9 +246,10 @@ def return_outputs_similar_issues(
 
     rename_map = {
         SIMILARITY_COLUNM_NAME: "Similarity Issue",
-        "id": "Issue ID",
-        "created": "Created",
-        "name": "Name"
+        "internal_id": "Issue ID",
+        "issue_description": "Issue Description",
+        "issue_name": "Name",
+        "issue_type": "Issue Type"
     }
 
     colums_to_display = display_df.columns.tolist()
@@ -364,7 +351,6 @@ def create_context_for_issues(similar_issues=pd.DataFrame()):
         SIMILARITY_COLUNM_NAME: "similarityIssue",
         "id": "id",
         "name": "name",
-        "created": "created",
         "details": "details",
         "Identical indicators": "identicalIndicators",
         SIMILARITY_COLUNM_NAME_INDICATOR: "similarityIndicators"
@@ -388,20 +374,22 @@ def main():
     args = demisto.args()
 
     # Apply mappings from SearchSimilarIssues
-    replacements = {"status": "status.progress", "type": "alert_type", "category": "categoryname", "url": "alerturl", "name": "issue_name"}
+    replacements = {"status": "resolution_status", "type": "issue_type", "category": "issue_category", "name": "issue_name", "description": "issue_description"}
     args = replace_fields(args, replacements)
     args = update_args(args)
 
     exact_match_fields, similar_text_field, similar_categorical_field, similar_json_field = get_field_args(args)
 
-    display_fields = list(set(["id", "created", "name", "details"] + argToList(args.get("fieldsToDisplay"))))
+    display_fields = list(set(["internal_id", "issue_name", "issue_description"] + argToList(args.get("fieldsToDisplay"))))
 
-    from_date = date_to_timestamp(arg_to_datetime(args.get("fromDate"), TIME_FORMAT))
-    to_date = date_to_timestamp(arg_to_datetime(args.get("toDate"), TIME_FORMAT))
+    from_date = arg_to_datetime(args.get("fromDate"))
+    to_date = arg_to_datetime(args.get("toDate"))
+
+    from_date_str = str(date_to_timestamp(from_date, TIME_FORMAT)) if from_date else None
+    to_date_str = str(date_to_timestamp(to_date, TIME_FORMAT)) if to_date else None
     show_distance = args.get("showIncidentSimilarityForAllFields")
     confidence = float(args.get("minimunIncidentSimilarity") or 0.2)
     max_issues = int(args.get("maxIncidentsToDisplay") or 100)
-    query = args.get("query") or ""
     aggregate = args.get("aggreagateIncidentsDifferentDate") or "False"
     limit = int(args.get("limit") or 1500)
     show_actual_issue = args.get("showCurrentIncident")
@@ -411,18 +399,18 @@ def main():
     global_msg = ""
 
     populate_fields = (
-        similar_text_field + similar_json_field + similar_categorical_field + exact_match_fields + display_fields + ["id"]
+        similar_text_field + similar_json_field + similar_categorical_field + exact_match_fields + display_fields + ["internal_id"]
     )
     # populate_high_level_fields = keep_high_level_field(populate_fields)
 
-    issue, issue_id = load_current_issue(issue_id, from_date, to_date)
+    issue, issue_id = load_current_issue(issue_id, from_date_str, to_date_str)
     if not issue:
         return_outputs_error(error_msg=f"{MESSAGE_NO_CURRENT_INCIDENT % issue_id} \n")
         return None, global_msg
 
     # load the related issues
     issues, msg = get_all_issues_for_time_window_and_exact_match(
-        exact_match_fields, issue, from_date, to_date, query, limit
+        exact_match_fields, issue, from_date_str, to_date_str, limit
     )
     global_msg += f"{msg} \n"
 
@@ -475,7 +463,13 @@ def main():
         similar_issues = similar_issues.to_frame().T
 
     similar_issues = prepare_incidents_for_display(
-        similar_issues, confidence, str(show_distance or "False"), max_issues, fields_used, str(aggregate), str(include_indicators_similarity)
+        similar_issues,
+        confidence,
+        argToBoolean(show_distance or "False"),
+        max_issues,
+        fields_used,
+        str(aggregate),
+        argToBoolean(include_indicators_similarity)
     )
 
     # Filter issue to investigate
