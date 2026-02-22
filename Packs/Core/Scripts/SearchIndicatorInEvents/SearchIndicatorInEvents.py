@@ -63,6 +63,10 @@ def execute_query(args: dict) -> dict:
 
     entry_result = demisto.executeCommand(command="xdr-xql-generic-query", args={"query": query, "query_name": query_name})
     demisto.debug(f"This is the entry result from executing xdr-xql-generic-query command:\n{entry_result} ")
+
+    if is_error(entry_result):
+        raise DemistoException(f"Failed to execute query: {get_error(entry_result)}")
+
     polling_args = entry_result[0]["Metadata"]["pollingArgs"]
     args_for_next_run = {
         "query_id": polling_args["query_id"],
