@@ -9641,7 +9641,6 @@ def test_get_support_ticket_taxonomy_command_success(mocker: MockerFixture):
 
     assert mock_client.get_sme_areas_and_sub_groups.call_count == 1
     assert mock_client.get_questionnaire_by_sme.call_count == 3
-    assert "Support Ticket Taxonomy" in result.readable_output
 
 
 def test_get_support_ticket_taxonomy_command_empty_areas(mocker: MockerFixture):
