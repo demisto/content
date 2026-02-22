@@ -73,3 +73,9 @@
 !xdr-correlation-rule-create name="CR test" severity=low alert_category=dropper execution_mode=scheduled mapping_strategy=auto xql_query="dataset = xdr_data | limit 1" dataset=alerts alert_name="Test" is_enabled=true drilldown_query_timeframe="ALERT" investigation_query_link="dataset = xdr_data | limit 1" schedule="10 minutes" schedule_linux="*/10 * * * *" search_window="1 hours" suppression_duration="1 hours" suppression_enabled=true suppression_fields="event_type" timezone="Asia/Jerusalem"
 !xdr-correlation-rule-update name="CR test" severity=low alert_category=dropper execution_mode=scheduled mapping_strategy=auto xql_query="dataset = xdr_data | limit 1" dataset=alerts alert_name="Test" is_enabled=true drilldown_query_timeframe="ALERT" investigation_query_link="dataset = xdr_data | limit 1" schedule="10 minutes" schedule_linux="*/10 * * * *" search_window="1 hours" suppression_duration="1 hours" suppression_enabled=true suppression_fields="event_type" timezone="Asia/Jerusalem"
 !xdr-correlation-rule-delete rule_id=14,15
+!xdr-automation-script-create entry_id=abcd1234
+!xdr-automation-script-get field=id value=script_id
+!xdr-automation-script-delete field=id value=script_id
+!xdr-automation-playbook-create entry_id=abcd1234
+!xdr-automation-playbook-get field=id value=playbook_id
+!xdr-automation-playbook-delete field=name value=playbook_name
