@@ -23,12 +23,7 @@ PROTECTED_DIRECTORY_PATHS: set[Path] = {
     )
 }
 
-PROTECTED_FILE_PATHS: set[Path] = {
-    Path(CONTENT_ROOT, file_name)
-    for file_name in (
-        "AGENTS.md",
-    )
-}
+PROTECTED_FILE_PATHS: set[Path] = {Path(CONTENT_ROOT, file_name) for file_name in ("AGENTS.md",)}
 
 EXCEPTIONS: set[Path] = {
     Path(CONTENT_ROOT, "Tests/conf.json"),
@@ -54,9 +49,7 @@ def is_path_change_allowed(path: Path) -> bool:
 
 
 def main(changed_files: list[str]):
-    if unsafe_changes := sorted(
-        path for path in changed_files if not is_path_change_allowed(Path(path))
-    ):
+    if unsafe_changes := sorted(path for path in changed_files if not is_path_change_allowed(Path(path))):
         for path in unsafe_changes:
             print(  # noqa: T201
                 f"::error file={path},line=1,endLine=1,title=Protected folder::"
@@ -68,9 +61,7 @@ def main(changed_files: list[str]):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Check for changes in protected directories."
-    )
+    parser = argparse.ArgumentParser(description="Check for changes in protected directories.")
     parser.add_argument("changed_files", nargs="+", help="List of changed files.")
     args = parser.parse_args()
     main(args.changed_files)
