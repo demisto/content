@@ -65,6 +65,10 @@ ignore=GR109
 ignore=GR109
 
 #GR109 fails on playbooks with different supported modules than the pack
+[file:Packs/CortexResponseAndRemediation/Playbooks/silent-playbook-Script_file_added_to_startup-related_Registry_keys.yml]
+ignore=GR109
+
+#GR109 fails on playbooks with different supported modules than the pack
 [file:silent-playbook-Suspicious_Local_User_Account_Creation.yml]
 ignore=GR109
 
