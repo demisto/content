@@ -9528,7 +9528,7 @@ def test_get_case_resolution_statuses_command(mocker):
 def test_verify_support_ticket_permission_success(mocker: MockerFixture):
     """
     GIVEN:
-        A client that returns a truthy reply from the check_permission endpoint.
+        A client that returns both user_csp_permission and tenant_entitlement_check as true.
     WHEN:
         verify_support_ticket_permission is called.
     THEN:
@@ -9537,16 +9537,20 @@ def test_verify_support_ticket_permission_success(mocker: MockerFixture):
     from CortexPlatformCore import verify_support_ticket_permission, Client
 
     mock_client = Client(base_url="", headers={})
-    mocker.patch.object(mock_client, "check_support_permission", return_value={"reply": True})
+    mocker.patch.object(
+        mock_client,
+        "check_support_permission",
+        return_value={"reply": {"user_csp_permission": True, "tenant_entitlement_check": True}},
+    )
 
     # Should not raise
     verify_support_ticket_permission(mock_client)
 
 
-def test_verify_support_ticket_permission_no_permission(mocker: MockerFixture):
+def test_verify_support_ticket_permission_no_user_permission(mocker: MockerFixture):
     """
     GIVEN:
-        A client that returns a falsy reply from the check_permission endpoint.
+        A client that returns user_csp_permission as false.
     WHEN:
         verify_support_ticket_permission is called.
     THEN:
@@ -9555,7 +9559,55 @@ def test_verify_support_ticket_permission_no_permission(mocker: MockerFixture):
     from CortexPlatformCore import verify_support_ticket_permission, Client, DemistoException
 
     mock_client = Client(base_url="", headers={})
-    mocker.patch.object(mock_client, "check_support_permission", return_value={"reply": False})
+    mocker.patch.object(
+        mock_client,
+        "check_support_permission",
+        return_value={"reply": {"user_csp_permission": False, "tenant_entitlement_check": True}},
+    )
+
+    with pytest.raises(DemistoException, match="You do not have the required permissions to manage support tickets."):
+        verify_support_ticket_permission(mock_client)
+
+
+def test_verify_support_ticket_permission_no_tenant_entitlement(mocker: MockerFixture):
+    """
+    GIVEN:
+        A client that returns tenant_entitlement_check as false.
+    WHEN:
+        verify_support_ticket_permission is called.
+    THEN:
+        A DemistoException is raised indicating insufficient permissions.
+    """
+    from CortexPlatformCore import verify_support_ticket_permission, Client, DemistoException
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(
+        mock_client,
+        "check_support_permission",
+        return_value={"reply": {"user_csp_permission": True, "tenant_entitlement_check": False}},
+    )
+
+    with pytest.raises(DemistoException, match="You do not have the required permissions to manage support tickets."):
+        verify_support_ticket_permission(mock_client)
+
+
+def test_verify_support_ticket_permission_both_false(mocker: MockerFixture):
+    """
+    GIVEN:
+        A client that returns both permission fields as false.
+    WHEN:
+        verify_support_ticket_permission is called.
+    THEN:
+        A DemistoException is raised indicating insufficient permissions.
+    """
+    from CortexPlatformCore import verify_support_ticket_permission, Client, DemistoException
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(
+        mock_client,
+        "check_support_permission",
+        return_value={"reply": {"user_csp_permission": False, "tenant_entitlement_check": False}},
+    )
 
     with pytest.raises(DemistoException, match="You do not have the required permissions to manage support tickets."):
         verify_support_ticket_permission(mock_client)
@@ -9579,10 +9631,10 @@ def test_verify_support_ticket_permission_empty_reply(mocker: MockerFixture):
         verify_support_ticket_permission(mock_client)
 
 
-def test_verify_support_ticket_permission_none_reply(mocker: MockerFixture):
+def test_verify_support_ticket_permission_api_call_fails(mocker: MockerFixture):
     """
     GIVEN:
-        A client that returns a response without a reply key.
+        A client where the check_permission API call raises an exception.
     WHEN:
         verify_support_ticket_permission is called.
     THEN:
@@ -9591,7 +9643,7 @@ def test_verify_support_ticket_permission_none_reply(mocker: MockerFixture):
     from CortexPlatformCore import verify_support_ticket_permission, Client, DemistoException
 
     mock_client = Client(base_url="", headers={})
-    mocker.patch.object(mock_client, "check_support_permission", return_value={})
+    mocker.patch.object(mock_client, "check_support_permission", side_effect=Exception("API connection error"))
 
     with pytest.raises(DemistoException, match="You do not have the required permissions to manage support tickets."):
         verify_support_ticket_permission(mock_client)
