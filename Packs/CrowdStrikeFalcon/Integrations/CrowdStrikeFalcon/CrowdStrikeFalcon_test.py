@@ -8635,7 +8635,7 @@ class TestSpotlightFetchAssets:
 
         mock_handler_cls = mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler")
         mock_handler = mock_handler_cls.return_value
-        mock_handler.receive_aids = mocker.AsyncMock()
+        mock_handler.receive_new_aids = mocker.AsyncMock()
         mock_handler.flush_remaining = mocker.AsyncMock()
         mock_handler.processed_aids = set()
 
@@ -8659,7 +8659,7 @@ class TestSpotlightFetchAssets:
 
         # 3. Verify
         CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_batch.assert_awaited_once()
-        mock_handler.receive_aids.assert_awaited_once_with({"aid1", "aid2"})
+        mock_handler.receive_new_aids.assert_awaited_once_with({"aid1", "aid2"})
 
         mock_create_task.assert_called()
         call_kwargs = mock_create_task.call_args.kwargs
@@ -8693,7 +8693,7 @@ class TestSpotlightFetchAssets:
 
         mock_handler_cls = mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler")
         mock_handler = mock_handler_cls.return_value
-        mock_handler.receive_aids = mocker.AsyncMock()
+        mock_handler.receive_new_aids = mocker.AsyncMock()
         mock_handler.flush_remaining = mocker.AsyncMock()
 
         # Mock fetch_spotlight_vulnerabilities_batch to return empty list
@@ -8718,7 +8718,7 @@ class TestSpotlightFetchAssets:
 
         # 3. Verify
         CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_batch.assert_awaited_once()
-        mock_handler.receive_aids.assert_awaited_once_with(set())
+        mock_handler.receive_new_aids.assert_awaited_once_with(set())
 
         mock_create_task.assert_called_once()
         call_kwargs = mock_create_task.call_args.kwargs
@@ -8809,7 +8809,7 @@ class TestSpotlightFetchAssets:
 
         mock_handler_cls = mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler")
         mock_handler = mock_handler_cls.return_value
-        mock_handler.receive_aids = mocker.AsyncMock()
+        mock_handler.receive_new_aids = mocker.AsyncMock()
         mock_handler.processed_aids = {"aid1"}
         mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
 
@@ -8877,7 +8877,7 @@ class TestSpotlightFetchAssets:
 
         mock_handler_cls = mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler")
         mock_handler_instance = mock_handler_cls.return_value
-        mock_handler_instance.receive_aids = mocker.AsyncMock()
+        mock_handler_instance.receive_new_aids = mocker.AsyncMock()
 
         mocker.patch(
             "CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_batch",
@@ -8931,7 +8931,7 @@ class TestSpotlightFetchAssets:
         handler.enrich_and_ingest_batch = mocker.AsyncMock()
 
         # Execute
-        await handler.receive_aids({f"aid{i}" for i in range(7)})
+        await handler.receive_new_aids({f"aid{i}" for i in range(7)})
 
         # Verify
         assert len(handler.pending_buffer) == 2
@@ -8968,7 +8968,7 @@ class TestSpotlightFetchAssets:
         handler.pending_buffer = {"buffer_1"}
 
         # Execute
-        await handler.receive_aids({"processed_1", "buffer_1", "new_1"})
+        await handler.receive_new_aids({"processed_1", "buffer_1", "new_1"})
 
         # Verify
         assert handler.pending_buffer == {"buffer_1", "new_1"}

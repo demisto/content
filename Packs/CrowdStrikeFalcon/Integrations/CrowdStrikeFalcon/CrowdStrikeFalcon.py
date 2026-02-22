@@ -809,9 +809,9 @@ def modify_detection_summaries_outputs(detection: dict):
     return detection
 
 
-def log_falcon_assets(log_line: str, log_type="debug"):
+def log_falcon_assets(log_line: str, log_type="debug", asset="Spotlight"):
     """Wrapper for log line for spotlight asset collector"""
-    full_log_line = f"[Falcon Asset Collector] {log_line}"
+    full_log_line = f"[Falcon Asset Collector] [{asset}] {log_line}"
     if log_type == "debug":
         demisto.debug(full_log_line)
     elif log_type == "info":
@@ -3978,27 +3978,23 @@ async def fetch_spotlight_vulnerabilities_batch(client: ContentClient, after_tok
     return vulnerabilities, response_data
 
 
-def extract_unique_aids(vulnerabilities: list, existing_aids: set) -> set:
+def extract_unique_aids(vulnerabilities: list, existing_unique_aids: set) -> None:
     """
     Extract unique AIDs (Host IDs) from vulnerabilities and merge with existing set.
     Equivalent to JavaScript: const u_aid = [...new Set(aids)]
-
+    Update the set of unique AIDs in place.
+    
     Args:
         vulnerabilities: List of vulnerability objects
-        existing_aids: Existing set of unique AIDs
-
-    Returns:
-        Updated set of unique AIDs
+        existing_unique_aids: Existing set of unique AIDs
     """
     # Extract AIDs from this batch
     batch_aids = {vuln.get("aid") for vuln in vulnerabilities if vuln.get("aid")}
 
     # Merge with existing
-    existing_aids.update(batch_aids)
+    existing_unique_aids.update(batch_aids)
 
-    log_falcon_assets(f"Batch AIDs: {len(batch_aids)}, Total unique AIDs: {len(existing_aids)}")
-
-    return existing_aids
+    log_falcon_assets(f"Batch AIDs: {len(batch_aids)}, Total unique AIDs: {len(existing_unique_aids)}")
 
 
 class AssetsDeviceHandler:
@@ -4045,7 +4041,7 @@ class AssetsDeviceHandler:
 
         self.running_tasks: set[asyncio.Task] = set()
 
-    async def receive_aids(self, new_aids: set[str]) -> None:
+    async def receive_new_aids(self, new_aids: set[str]) -> None:
         """
         Receive new AIDs and trigger enrichment when buffer reaches batch_limit.
         Keeps at least 1 item in the buffer to ensure we can send the final count with the last batch.
@@ -4135,7 +4131,7 @@ class AssetsDeviceHandler:
                         log_falcon_assets(f"AssetsDeviceHandler: Updated asset_last_saved_batch_number to {saved_batch_num}")
                 except asyncio.CancelledError:
                     log_falcon_assets(
-                        f"AssetsDeviceHandler: [Batch {current_batch_number}] Send task was cancelled (script exiting).", "debug"
+                        f"AssetsDeviceHandler: [Batch {current_batch_number}] Send task was cancelled (script exiting)."
                     )
                 except Exception as e:
                     log_falcon_assets(f"AssetsDeviceHandler: Enrichment task failed: {e}", "error")
@@ -4626,11 +4622,11 @@ async def fetch_spotlight_assets():
             vulnerabilities, response_data = await fetch_spotlight_vulnerabilities_batch(client, after_token)
 
             # Extract unique AIDs from this batch
-            unique_aids = extract_unique_aids(vulnerabilities, unique_aids)
+            extract_unique_aids(vulnerabilities, unique_aids)
 
             # Send AIDs to asset handler for enrichment (async fire-and-forget)
             batch_aids = {vuln.get("aid") for vuln in vulnerabilities if vuln.get("aid")}
-            await asset_handler.receive_aids(batch_aids)
+            await asset_handler.receive_new_aids(batch_aids)
 
             # Update counters
             total_fetched += len(vulnerabilities)
@@ -4747,10 +4743,12 @@ async def fetch_spotlight_assets():
 
 
 def fetch_cnapp_assets():
-    demisto.info("Starting fetch assets 'CNAPP Alerts' execution.")
+    log_falcon_assets("Starting fetch assets execution.", "info", asset="CNAPP Alerts")
     new_last_run, detections, items_count, snapshot_id = get_cnapp_assets()
 
-    demisto.debug(f"Sending a batch of {len(detections)} assets to xsiam with {snapshot_id=}")
+    log_falcon_assets(
+        f"Sending a batch of {len(detections)} assets to xsiam with {snapshot_id=}", log_type="debug", asset="CNAPP Alerts"
+    )
     send_data_to_xsiam(
         data=detections,
         vendor=VENDOR,
@@ -4760,19 +4758,19 @@ def fetch_cnapp_assets():
         items_count=items_count,
         should_update_health_module=False,
     )
-    demisto.debug("Finished sending a batch of assets.")
+    log_falcon_assets("Finished sending a batch of assets.", log_type="debug", asset="CNAPP Alerts")
 
-    demisto.debug(f"Preparing to save assets last run with {new_last_run=}.")
+    log_falcon_assets(f"Preparing to save assets last run with {new_last_run=}.", log_type="debug", asset="CNAPP Alerts")
     demisto.setAssetsLastRun(new_last_run)
-    demisto.debug("Assets last run was saved succesfuly.")
+    log_falcon_assets("Assets last run was saved succesfuly.", log_type="debug", asset="CNAPP Alerts")
 
     demisto.updateModuleHealth({"assetsPulled": len(detections)})
 
-    demisto.info("Finished fetch assets exeuction.")
+    log_falcon_assets("Finished fetch assets exeuction.", log_type="info", asset="CNAPP Alerts")
 
 
 def fetch_assets_command():
-    demisto.debug("Starting fetch assets execution.")
+    log_falcon_assets("Starting fetch assets execution.", "info", asset="")
     params = demisto.params()
     fetch_assets_types = params.get("fetch_assets_type", "")
 
