@@ -20,6 +20,7 @@ MAX_SCRIPTS_LIMIT = 100
 MAX_GET_ENDPOINTS_LIMIT = 100
 MAX_COMPLIANCE_STANDARDS = 100
 AGENTS_TABLE = "AGENTS_TABLE"
+BROKER_CLUSTER_TABLE = "BROKER_CLUSTER_TABLE"
 SECONDS_IN_DAY = 86400  # Number of seconds in one day
 MIN_DIFF_SECONDS = 2 * 3600  # Minimum allowed difference = 2 hours
 MAX_GET_SYSTEM_USERS_LIMIT = 50
@@ -68,6 +69,7 @@ WEBAPP_COMMANDS = [
     "core-list-exception-rules",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
+    "core-diagnose-syslog-collector",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -4285,7 +4287,11 @@ def get_xql_query_results_platform(client: Client, execution_id: str) -> dict:
                 "format": "json",
             }
         }
-        res = client._http_request(method="POST", url_suffix="/xql/get_query_results", json_data=data)
+        res = client._http_request(
+            method="POST",
+            full_url="/api/webapp/public_api/v1/xql/get_query_results",
+            json_data=data,
+        )
         response["error_details"] = res.get("reply", "")
 
     return response
@@ -4540,6 +4546,184 @@ def verify_platform_version(version: str = "8.13.0"):
         raise DemistoException("This command is not available for this platform version")
 
 
+def diagnose_syslog_collector_command(client: Client, args: dict) -> CommandResults:
+    """
+    Diagnoses why the syslog collector on a specified Broker VM is failing.
+
+    This command performs the following checks:
+    1. Verifies the Broker VM exists in the BROKER_CLUSTER_TABLE
+    2. Checks if the Syslog Collector app is present and has "Active" status
+    3. If collector is valid, queries collection_auditing for errors/warnings
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - broker_vm_name (str): The name of the Broker VM to diagnose.
+                         - timeframe (str, optional): Timeframe for error checking (default: "24 hours")
+
+    Returns:
+        CommandResults: Object containing the diagnostic results,
+                        raw response, and outputs for integration context.
+    """
+    broker_vm_name = args.get("broker_vm_name")
+    timeframe = args.get("timeframe", "24 hours")
+    default_limit = 10
+
+    if not broker_vm_name:
+        raise DemistoException("Broker VM name is required for diagnosing the syslog collector.")
+
+    demisto.debug(f"Starting syslog collector diagnosis for broker: {broker_vm_name}")
+
+    # Step 1: Query BROKER_CLUSTER_TABLE to get broker information
+    filter_builder = FilterBuilder()
+    filter_builder.add_field("DEVICE_NAME", FilterType.EQ, broker_vm_name)
+
+    request_data = build_webapp_request_data(
+        table_name=BROKER_CLUSTER_TABLE,
+        filter_dict=filter_builder.to_dict(),
+        limit=default_limit,
+        sort_field="DEVICE_NAME",
+    )
+
+    demisto.debug(f"Querying BROKER_CLUSTER_TABLE with request: {request_data}")
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    brokers = reply.get("brokers", [])
+
+    if not brokers:
+        raise DemistoException(f"Broker VM '{broker_vm_name}' not found in BROKER_CLUSTER_TABLE")
+
+    broker_data = brokers[0]
+    demisto.debug(f"Found broker data: {broker_data}")
+
+    # Step 2: Check if Syslog Collector app exists and is active
+    apps = broker_data.get("APPS", [])
+    syslog_collector = None
+
+    for app in apps:
+        if app.get("display_name") == "Syslog Collector":
+            syslog_collector = app
+            break
+
+    # Build diagnosis report
+    diagnosis_report = []
+
+    if not syslog_collector:
+        status = "ERROR"
+        diagnosis_report.append(
+            f"The Syslog Collector app is not configured on broker '{broker_vm_name}'"
+        )
+    else:
+        collector_status = syslog_collector.get("status", "").lower()
+
+        if collector_status != "active":
+            status = "ERROR"
+            diagnosis_report.append(
+                f"Syslog Collector status is '{collector_status}' (expected 'active')"
+            )
+
+            # Extract additional information from the reasons field
+            reasons = syslog_collector.get("reasons", {})
+            if reasons:
+                errors = reasons.get("errors", [])
+                warnings = reasons.get("warnings", [])
+
+                # Add errors to diagnosis report
+                for error in errors:
+                    if error:
+                        diagnosis_report.append(f"[ERROR] {error}")
+
+                # Add warnings to diagnosis report
+                for warning in warnings:
+                    if warning:
+                        diagnosis_report.append(f"[WARNING] {warning}")
+        else:
+            # Step 3: Collector is active, check for errors in collection_auditing
+            demisto.debug("Syslog Collector is active, checking for errors in collection_auditing")
+
+            xql_query = f"""
+dataset = collection_auditing
+| filter collector_type = "Syslog Collector"
+  and _broker_device_name = "{broker_vm_name}"
+  and classification in ("ERROR", "WARNING")
+| fields _time, classification, description
+| limit {default_limit}
+"""
+            try:
+                # Use the existing XQL query function
+                xql_args = {
+                    "query": xql_query,
+                    "timeframe": timeframe,
+                    "wait_for_results": True,
+                }
+
+                demisto.debug(f"Executing XQL query with args: {xql_args}")
+                xql_result = xql_query_platform_command(client, xql_args)
+                xql_outputs = cast(dict, xql_result.outputs) if xql_result.outputs else {}
+
+                query_status = xql_outputs.get("status")
+                errors_found = xql_outputs.get("results", [])
+
+                demisto.debug(
+                    f"XQL Query finished with {query_status=}, found {len(errors_found)} Syslog errors."
+                )
+
+                if query_status == "SUCCESS":
+                    if errors_found:
+                        status = "WARNING"
+                        # Deduplicate errors by description
+                        seen_descriptions = set()
+                        for error in errors_found:
+                            error_desc = error.get("description", "")
+                            if error_desc and error_desc not in seen_descriptions:
+                                seen_descriptions.add(error_desc)
+                                classification = error.get("classification", "UNKNOWN")
+                                diagnosis_report.append(
+                                    f"[{classification}] {error_desc}"
+                                )
+                    else:
+                        status = "HEALTHY"
+                        diagnosis_report.append(
+                            f"Syslog Collector is active with no errors in the last {timeframe}"
+                        )
+                else:
+                    status = "ERROR"
+                    diagnosis_report.append(
+                        "Internal error while trying to query collection_auditing."
+                    )
+                    error_details = xql_outputs.get("error_details")
+                    if error_details:
+                        demisto.debug(f"Error executing XQL Query: {error_details}")
+
+            except Exception as e:
+                demisto.debug(f"Error executing XQL query: {str(e)}")
+                status = "ERROR"
+                diagnosis_report.append(
+                    "Internal error while trying to query collection_auditing."
+                )
+
+    # Final output with only status and diagnosis_report
+    diagnostics = {
+        "status": status,
+        "diagnosis_report": "\n".join(diagnosis_report),
+    }
+
+    readable_output = tableToMarkdown(
+        f"Syslog Collector Diagnostics for {broker_vm_name}",
+        diagnostics,
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.SyslogCollectorDiagnostics",
+        outputs_key_field="status",
+        outputs=diagnostics,
+        raw_response={"broker_data": broker_data, "diagnostics": diagnostics},
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -4673,6 +4857,9 @@ def main():  # pragma: no cover
         elif command == "core-xql-generic-query-platform":
             verify_platform_version()
             return_results(xql_query_platform_command(client, args))
+
+        elif command == "core-diagnose-syslog-collector":
+            return_results(diagnose_syslog_collector_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
