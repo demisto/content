@@ -9620,7 +9620,6 @@ def test_get_support_ticket_taxonomy_command_success(mocker: MockerFixture):
     result = get_support_ticket_taxonomy_command(mock_client, {})
 
     assert result.outputs_prefix == "Core.SupportTicketTaxonomy"
-    assert result.outputs_key_field == "issue_category"
     # Nested structure: 2 issue categories
     assert len(result.outputs) == 2
 

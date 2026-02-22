@@ -1,5 +1,4 @@
 from typing import Any
-from typing import Dict, Any, Set, List
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
@@ -944,7 +943,7 @@ class Client(CoreClient):
             method="POST",
             headers=self._headers,
             url_suffix="/sfdc_support/get_questions_by_sme_area_and_sub_group/",
-            json_data={"request_data":{"sme_area": sme_area, "sub_group": sub_group}}
+            json_data={"request_data": {"sme_area": sme_area, "sub_group": sub_group}},
         )
 
     def get_custom_fields_metadata(self) -> dict[str, Any]:
@@ -3292,7 +3291,7 @@ def run_playbook_command(client: Client, args: dict) -> CommandResults:
     raise ValueError(f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages))
 
 
-def list_scripts_command(client: Client, args: dict) -> List[CommandResults]:
+def list_scripts_command(client: Client, args: dict) -> list[CommandResults]:
     """
     Retrieves a list of scripts from the platform with optional filtering.
     """
@@ -3637,7 +3636,7 @@ def create_assessment_profile_payload(
     day: str | None,
     time: str | None,
     report_type: str = "ALL",
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Prepare assessment profile payload
 
@@ -3674,7 +3673,7 @@ def list_compliance_standards_payload(
     labels: list[str] | None = None,
     page=0,
     page_size=MAX_COMPLIANCE_STANDARDS,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Prepare assessment profile payload
 
@@ -4233,7 +4232,7 @@ def list_system_users_command(client, args):
     )
 
 
-def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, int]:
+def convert_timeframe_string_to_json(time_to_convert: str) -> dict[str, int]:
     """Convert a timeframe string to a json required for XQL queries.
 
     Args:
@@ -4417,7 +4416,7 @@ def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str
     Returns:
         str: The query execution ID.
     """
-    data: Dict[str, Any] = {
+    data: dict[str, Any] = {
         "query": query,
         "timeframe": timeframe,
     }
@@ -4495,7 +4494,8 @@ def core_fill_support_ticket_command(args: dict[str, Any]) -> CommandResults:
         raw_response=data,
     )
 
-def get_support_ticket_taxonomy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+
+def get_support_ticket_taxonomy_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the complete support ticket taxonomy: all issue categories, their problem concentrations,
     and the questionnaire items for every combination.
@@ -4555,11 +4555,13 @@ def get_support_ticket_taxonomy_command(client: Client, args: Dict[str, Any]) ->
     for cat in taxonomy:
         for conc in cat.get("problem_concentrations", []):
             for q in conc.get("questions", []):
-                flat_rows.append({
-                    "issue_category": cat["issue_category"],
-                    "problem_concentration": conc["problem_concentration"],
-                    **q,
-                })
+                flat_rows.append(
+                    {
+                        "issue_category": cat["issue_category"],
+                        "problem_concentration": conc["problem_concentration"],
+                        **q,
+                    }
+                )
 
     return CommandResults(
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.SupportTicketTaxonomy",
