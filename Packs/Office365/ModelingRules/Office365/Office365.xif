@@ -277,8 +277,8 @@ alter
 	is_itemAttachment_contentType_message = if(arrayindex(attachments -> [], 0) -> contentType ~= "[Mm]essage"),
 	is_fileAttachment = if(arrayindex(attachments -> [], 0) -> ["@odata.type"] = "#microsoft.graph.fileAttachment"),
 	get_attachment = arrayindex(attachments -> [], 0),
-	get_sentDateTime = if(to_string(sentDateTime) ~= "^\d{10}$|^\d{13}$|^\d{16}$", to_integer(sentDateTime), null),
-	get_receivedDateTime = if(to_string(receivedDateTime) ~= "^\d{10}$|^\d{13}$|^\d{16}$", to_integer(receivedDateTime), null)
+	get_sentDateTime = if(to_string(sentDateTime) ~= "^\d{10}$|^\d{13}$|^\d{16}$", to_integer(to_string(sentDateTime)), null),
+	get_receivedDateTime = if(to_string(receivedDateTime) ~= "^\d{10}$|^\d{13}$|^\d{16}$", to_integer(to_string(receivedDateTime)), null)
 | alter
     check_sentDateTime = if(
         to_string(get_sentDateTime) ~= "^\d{10}$", to_timestamp(get_sentDateTime, "SECONDS"),
