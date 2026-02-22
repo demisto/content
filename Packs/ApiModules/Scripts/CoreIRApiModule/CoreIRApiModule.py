@@ -2370,7 +2370,7 @@ def get_endpoints_command(client, args):
 
     last_seen_lte = arg_to_timestamp(arg=args.get("last_seen_lte"), arg_name="last_seen_lte")
 
-    sort_by = args.get("sort_by")
+    sort_by = args.get("sort_by", "first_seen")
     sort_order = args.get("sort_order", "asc").upper()
 
     username = argToList(args.get("username"))
