@@ -11429,40 +11429,40 @@ script:
       description: The minimum target capacity for Spot Instances in the fleet. If the minimum target capacity is not reached, the fleet launches no instances.
       required: false
     - name: on_demand_allocation_strategy
-      description: The order of the launch template overrides to use in fulfilling On-Demand capacity.
+      description: The launch template override order to use to fulfill on-demand capacity.
       required: false
       auto: PREDEFINED
       predefined:
       - lowest-price
       - prioritized
     - name: on_demand_single_instance_type
-      description: Indicates that the fleet uses a single instance type to launch all On-Demand Instances in the fleet.
+      description: Whether the fleet uses a single instance type to launch all on-demand instances in the fleet.
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: on_demand_single_availability_zone
-      description: Indicates that the fleet launches all On-Demand Instances into a single Availability Zone.
+      description: Whether the fleet launches all on-demand instances into a single Availability Zone.
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: on_demand_min_target_capacity
-      description: The minimum target capacity for On-Demand Instances in the fleet. If the minimum target capacity is not reached, the fleet launches no instances.
+      description: The minimum target capacity for on-demand instances in the fleet. If the minimum target capacity is not reached, the fleet launches no instances.
       required: false
     - name: on_demand_max_total_price
-      description: The maximum amount per hour for On-Demand Instances that you are willing to pay.
+      description: The maximum amount per hour you are willing to pay for on-demand instances.
       required: false
     - name: capacity_reservation_strategy
-      description: Indicates whether to use unused Capacity Reservations for fulfilling On-Demand capacity.
+      description: Whether to use unused capacity reservations to fulfill on-demand capacity.
       required: false
       auto: PREDEFINED
       predefined:
       - use-capacity-reservations-first
     - name: excess_capacity_termination_policy
-      description: Indicates whether running instances should be terminated if the total target capacity of the EC2 Fleet is decreased below the current size of the EC2 Fleet.
+      description: Whether running instances should be terminated if the total target capacity of the EC2 Fleet is decreased below the current size of the EC2 Fleet.
       required: false
       auto: PREDEFINED
       predefined:
@@ -11512,14 +11512,14 @@ script:
       description: "The device name (for example, /dev/sdh or xvdh)."
       required: false
     - name: ebs_encrypted
-      description: "Indicates whether the encryption state of an EBS volume is changed while being restored from a backing snapshot."
+      description: "Whether the encryption state of an EBS volume is changed when restored from a backup snapshot."
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: ebs_delete_on_termination
-      description: "Indicates whether the EBS volume is deleted on instance termination."
+      description: "Whether the EBS volume is deleted on instance termination."
       required: false
       auto: PREDEFINED
       predefined:
@@ -11562,13 +11562,13 @@ script:
       description: The number of units to request.
       required: true
     - name: on_demand_target_capacity
-      description: The number of On-Demand units to request.
+      description: The number of on-demand units to request.
       required: false
     - name: spot_target_capacity
       description: The number of Spot units to request.
       required: false
     - name: default_target_capacity_type
-      description: The default TotalTargetCapacity, which is either Spot or On-Demand.
+      description: The default TotalTargetCapacity, which is either Spot or on-demand.
       required: true
       auto: PREDEFINED
       predefined:
@@ -11584,14 +11584,14 @@ script:
       - memory-mib
       - units
     - name: terminate_instances_with_expiration
-      description: Indicates whether running instances should be terminated when the EC2 Fleet expires.
+      description: Whether running instances should be terminated when the EC2 Fleet expires.
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: type
-      description: The type of the request.
+      description: The request type.
       required: false
       auto: PREDEFINED
       predefined:
@@ -11605,7 +11605,7 @@ script:
       description: The end date and time of the request, in YYYY-MM-DD format.
       required: false
     - name: replace_unhealthy_instances
-      description: Indicates whether EC2 Fleet should replace unhealthy instances.
+      description: Whether the EC2 Fleet should replace unhealthy instances.
       required: false
       auto: PREDEFINED
       predefined:
@@ -11649,7 +11649,7 @@ script:
       description: The name of the placement group the instance is in.
       type: string
     - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.Lifecycle
-      description: Indicates if the instance that could not be launched was a Spot Instance or On-Demand Instance.
+      description: Whether the instance that could not be launched was a Spot Instance or an on-demand instance.
       type: string
     - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.ErrorCode
       description: The error code that indicates why the instance could not be launched.
@@ -11688,7 +11688,7 @@ script:
       description: The name of the placement group the instance is in.
       type: string
     - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.Lifecycle
-      description: Indicates if the instance that was launched is a Spot Instance or On-Demand Instance.
+      description: Whether the instance that was launched is a Spot Instance or an on-demand instance.
       type: string
     - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.InstanceIds
       description: The IDs of the instances.
@@ -11751,7 +11751,7 @@ script:
       required: true
       isArray: true
     - name: terminate_instances
-      description: Indicates whether to terminate instances for an EC2 Fleet if it is deleted successfully.
+      description: Whether to terminate instances for an EC2 Fleet if it is deleted successfully.
       required: true
       auto: PREDEFINED
       predefined:
@@ -11855,7 +11855,7 @@ script:
       description: Unique, case-sensitive identifier you provide to ensure the idempotency of the request.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.ExcessCapacityTerminationPolicy
-      description: Indicates whether running instances should be terminated if the target capacity of the EC2 Fleet is decreased below the current size of the EC2 Fleet.
+      description: Whether running instances should be terminated if the target capacity of the EC2 Fleet is decreased below the current size of the EC2 Fleet.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.FulfilledCapacity
       description: The number of units fulfilled by this request compared to the set target capacity.
@@ -11906,7 +11906,7 @@ script:
       description: The default TotalTargetCapacity, which is either Spot or On-Demand.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.TerminateInstancesWithExpiration
-      description: Indicates whether running instances should be terminated when the EC2 Fleet expires.
+      description: Whether running instances should be terminated when the EC2 Fleet expires.
       type: boolean
     - contextPath: AWS.EC2.Fleet.Fleets.Type
       description: The type of request. Indicates whether the EC2 Fleet only requests the target capacity, or also attempts to maintain it.
@@ -11930,10 +11930,10 @@ script:
       description: The number of Spot pools across which to allocate your target Spot capacity.
       type: number
     - contextPath: AWS.EC2.Fleet.Fleets.SpotOptions.SingleInstanceType
-      description: Indicates that the fleet uses a single instance type to launch all Spot Instances in the fleet.
+      description: Whether the fleet uses a single instance type to launch all Spot Instances in the fleet.
       type: boolean
     - contextPath: AWS.EC2.Fleet.Fleets.SpotOptions.SingleAvailabilityZone
-      description: Indicates that the fleet launches all Spot Instances into a single Availability Zone.
+      description: Whether the fleet launches all Spot Instances into a single Availability Zone.
       type: boolean
     - contextPath: AWS.EC2.Fleet.Fleets.SpotOptions.MinTargetCapacity
       description: The minimum target capacity for Spot Instances in the fleet.
@@ -11942,13 +11942,13 @@ script:
       description: The order of the launch template overrides to use in fulfilling On-Demand capacity.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.OnDemandOptions.SingleInstanceType
-      description: Indicates that the fleet uses a single instance type to launch all On-Demand Instances in the fleet.
+      description: Whether the fleet uses a single instance type to launch all on-demand instances in the fleet.
       type: boolean
     - contextPath: AWS.EC2.Fleet.Fleets.OnDemandOptions.SingleAvailabilityZone
-      description: Indicates that the fleet launches all On-Demand Instances into a single Availability Zone.
+      description: Whether the fleet launches all on-demand instances into a single Availability Zone.
       type: boolean
     - contextPath: AWS.EC2.Fleet.Fleets.OnDemandOptions.MinTargetCapacity
-      description: The minimum target capacity for On-Demand Instances in the fleet.
+      description: The minimum target capacity for on-demand instances in the fleet.
       type: number
     - contextPath: AWS.EC2.Fleet.Fleets.Tags.Key
       description: The key of the tag.
@@ -12084,7 +12084,7 @@ script:
       description: The ID of the EC2 Fleet.
       required: true
     - name: excess_capacity_termination_policy
-      description: Indicates whether running instances should be terminated if the total target capacity of the EC2 Fleet is decreased below the current size of the EC2 Fleet.
+      description: Whether running instances should be terminated if the total target capacity of the EC2 Fleet is decreased below the current size of the EC2 Fleet.
       required: false
       auto: PREDEFINED
       predefined:
@@ -12134,14 +12134,14 @@ script:
       description: "The device name (for example, /dev/sdh or xvdh)."
       required: false
     - name: ebs_encrypted
-      description: "Indicates whether the encryption state of an EBS volume is changed while being restored from a backing snapshot."
+      description: "Whether the encryption state of an EBS volume is changed when restored from a backup snapshot."
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: ebs_delete_on_termination
-      description: "Indicates whether the EBS volume is deleted on instance termination."
+      description: "Whether the EBS volume is deleted on instance termination."
       required: false
       auto: PREDEFINED
       predefined:
