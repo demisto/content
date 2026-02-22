@@ -318,6 +318,7 @@ def prepare_create_function_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
 
     return remove_empty_elements(kwargs)
 
+
 def create_launch_template_kwargs_builder(args: Dict[str, Any]) -> Dict[str, Any]:
     kwargs: Dict[str, Any] = {
         "LaunchTemplateName": args.get("launch_template_name"),

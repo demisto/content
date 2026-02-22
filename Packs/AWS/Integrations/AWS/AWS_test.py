@@ -11305,6 +11305,7 @@ def test_ec2_create_launch_template_command_success(mocker):
             "CreatedBy": "arn:aws:iam::123456789012:user/admin",
             "DefaultVersionNumber": 1,
             "LatestVersionNumber": 1,
+            "Tags": [{"Key": "Name", "Value": "Test"}],
         },
     }
 
@@ -11335,8 +11336,9 @@ def test_ec2_create_launch_template_command_success(mocker):
     assert result.outputs_key_field == "LaunchTemplateId"
     assert result.outputs["LaunchTemplateId"] == "lt-new12345"
     assert result.outputs["LaunchTemplateName"] == "new-template"
+    assert result.outputs["Tags"] == [{"Key": "Name", "Value": "Test"}]
     assert call_args["LaunchTemplateData"]["ImageId"] == "ami-12345678"
-    assert "AWS LaunchTemplate" in result.readable_output
+    assert "AWS Launch Template" in result.readable_output
     assert call_args["LaunchTemplateData"]["Monitoring"]["Enabled"] is True
     assert call_args["LaunchTemplateData"]["EbsOptimized"] is True
 
@@ -11455,7 +11457,7 @@ def test_ec2_delete_launch_template_command_success_with_id(mocker):
     assert result.outputs_key_field == "LaunchTemplateId"
     assert result.outputs["LaunchTemplateId"] == "lt-delete123"
     assert result.outputs["LaunchTemplateName"] == "deleted-template"
-    assert "AWS Deleted Launch Template" in result.readable_output
+    assert "Successfully deleted the AWS Launch Template" in result.readable_output
     assert "lt-delete123" in result.readable_output
     assert mock_client.delete_launch_template.call_args.kwargs
     assert mock_client.delete_launch_template.call_args.kwargs.get("LaunchTemplateId") == "lt-delete123"

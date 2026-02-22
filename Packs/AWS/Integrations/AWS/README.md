@@ -3860,7 +3860,6 @@ Creates a Lambda layer from a ZIP archive.
 | AWS.Lambda.LayerVersions.CompatibleArchitectures | array | A list of compatible instruction set architectures. |
 | AWS.Lambda.LayerVersions.Region | string | The AWS Region. |
 
-
 ### aws-ec2-launch-template-delete
 
 ***
