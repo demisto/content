@@ -4840,8 +4840,7 @@ def main():  # pragma: no cover
             return_results(results)
 
         elif command in COMMANDS_MAPPING:
-            result = execute_aws_command(command, args, params)
-            return_results(result)
+            return_results(execute_aws_command(command, args, params))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 
