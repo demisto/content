@@ -95,6 +95,9 @@ scripttarget: 0
 subtype: python3
 tags: []
 type: python
+dependson:
+  must:
+  - servicenow-cmdb-record-get-by-id
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
