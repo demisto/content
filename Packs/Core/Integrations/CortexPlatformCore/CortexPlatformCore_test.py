@@ -9523,3 +9523,129 @@ def test_get_case_resolution_statuses_command(mocker):
     assert len(result.outputs) == 2
     assert len(result.raw_response) == 2
     assert mock_client.get_case_resolution_statuses.call_count == 2
+
+
+def test_get_ai_model_activity_command_empty_response(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client that returns empty data.
+    When:
+        The get_ai_model_activity_command function is called.
+    Then:
+        An empty result is returned with proper structure.
+    """
+    from CortexPlatformCore import Client, get_ai_model_activity_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {"reply": {"DATA": []}}
+    mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {"asset_id": "nonexistent-model"}
+
+    result = get_ai_model_activity_command(mock_client, args)
+
+    assert result.outputs == []
+
+
+def test_get_ai_model_activity_command_single_asset_string(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client and arguments with a single asset ID as a string.
+    When:
+        The get_ai_model_activity_command function is called.
+    Then:
+        The single asset ID is correctly converted to a list and processed.
+    """
+    from CortexPlatformCore import Client, get_ai_model_activity_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "asset_id": "single-model",
+                    "last_used": "2024-01-15T10:30:00Z",
+                    "event_count": 100,
+                    "is_inactive": False,
+                }
+            ]
+        }
+    }
+    mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {"asset_id": "single-model"}
+
+    result = get_ai_model_activity_command(mock_client, args)
+
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["asset_id"] == "single-model"
+
+
+def test_get_ai_model_activity_command_inactive_model(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client and arguments for an inactive AI model.
+    When:
+        The get_ai_model_activity_command function is called.
+    Then:
+        The inactive status is correctly reflected in the output.
+    """
+    from CortexPlatformCore import Client, get_ai_model_activity_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "asset_id": "inactive-model",
+                    "last_used": "2023-06-01T00:00:00Z",
+                    "event_count": 0,
+                    "is_inactive": True,
+                }
+            ]
+        }
+    }
+    mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {"asset_id": "inactive-model"}
+
+    result = get_ai_model_activity_command(mock_client, args)
+
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["is_inactive"] is True
+    assert result.outputs[0]["event_count"] == 0
+
+
+def test_get_ai_model_activity_command_asset_id_list_format(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client and arguments with asset_id as a list.
+    When:
+        The get_ai_model_activity_command function is called.
+    Then:
+        The list is properly processed and all assets are queried.
+    """
+    from CortexPlatformCore import Client, get_ai_model_activity_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {
+        "reply": {
+            "DATA": [
+                {"asset_id": "model-a", "event_count": 10, "is_inactive": False},
+                {"asset_id": "model-b", "event_count": 20, "is_inactive": False},
+            ]
+        }
+    }
+    mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {"asset_id": ["model-a", "model-b"]}
+
+    result = get_ai_model_activity_command(mock_client, args)
+
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["asset_id"] == "model-a"
+    assert result.outputs[1]["asset_id"] == "model-b"
