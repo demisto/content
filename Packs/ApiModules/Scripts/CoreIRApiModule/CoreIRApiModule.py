@@ -1799,6 +1799,7 @@ def init_filter_args_options() -> dict[str, AlertFilterArg]:
         "assignee": AlertFilterArg("assigned_to_pretty", CONTAINS, array),
         "unassigned": AlertFilterArg("assigned_to_pretty", IS_EMPTY, constant),
         "assigned": AlertFilterArg("assigned_to_pretty", NIS_EMPTY, constant),
+        "external_id": AlertFilterArg("external_id", EQ, array),
     }
 
 
