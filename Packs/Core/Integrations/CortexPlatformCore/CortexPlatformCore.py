@@ -67,8 +67,6 @@ WEBAPP_COMMANDS = [
     "core-list-exception-rules",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
-    "core-get-sme-areas-and-sub-groups",
-    "core-get-questionnaire-by-sme",
     "core-get-support-ticket-taxonomy",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
