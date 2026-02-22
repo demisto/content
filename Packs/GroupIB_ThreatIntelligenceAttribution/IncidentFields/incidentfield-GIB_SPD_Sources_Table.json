@@ -42,7 +42,6 @@
 	"content": false,
 	"defaultRows": [
 		{},
-		{},
 		{}
 	],
 	"definitionId": "",
@@ -71,7 +70,7 @@
 	"required": false,
 	"runScriptAfterUpdate": false,
 	"script": "",
-	"selectValues": null,
+	"selectValues": [],
 	"sla": 0,
 	"system": false,
 	"systemAssociatedTypes": null,
