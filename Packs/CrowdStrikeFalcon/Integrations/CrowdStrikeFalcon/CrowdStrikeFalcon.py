@@ -6426,9 +6426,6 @@ def arg_to_timestamp(val: Any) -> Optional[int]:
 
     Returns ``None`` for empty/None values, otherwise an ``int`` (epoch ms).
     """
-    if val is None or val == "":
-        return None
-
     dt = arg_to_datetime(val)
     return int(dt.timestamp() * 1000) if dt else None
 
