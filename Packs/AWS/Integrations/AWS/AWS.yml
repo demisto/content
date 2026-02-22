@@ -7041,6 +7041,1038 @@ script:
     - contextPath: AWS.Lambda.FunctionURLConfig.InvokeMode
       description: BUFFERED or RESPONSE_STREAM.
       type: String
+# aws-lambda-function-get
+  - name: aws-lambda-function-get
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: function_name
+      required: true
+      description: The name of the Lambda function, version, or alias.
+    - name: qualifier
+      description: Specify a version or alias to get details about a published version of the function.
+    description: Returns information about the function or the specified version, including a link to download the deployment package (valid for 10 minutes). If a version is specified, only version-specific details are returned.
+    outputs:
+    - contextPath: AWS.Lambda.Functions.Configuration.FunctionName
+      description: The name of the function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.FunctionArn
+      description: The function's Amazon Resource Name (ARN).
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Runtime
+      description: The identifier of the function's runtime.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Role
+      description: The function's execution role.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Handler
+      description: The function that Lambda calls to begin running your function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.CodeSize
+      description: The size of the function's deployment package, in bytes.
+      type: number
+    - contextPath: AWS.Lambda.Functions.Configuration.Description
+      description: The function's description.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Timeout
+      description: The amount of time in seconds that Lambda allows a function to run before stopping it.
+      type: number
+    - contextPath: AWS.Lambda.Functions.Configuration.MemorySize
+      description: The amount of memory available to the function at runtime.
+      type: number
+    - contextPath: AWS.Lambda.Functions.Configuration.LastModified
+      description: The date and time that the function was last updated, in ISO-8601 format.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.CodeSha256
+      description: The SHA256 hash of the function's deployment package.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Version
+      description: The version of the Lambda function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.VpcConfig.SubnetIds
+      description: A list of VPC subnet IDs.
+      type: array
+    - contextPath: AWS.Lambda.Functions.Configuration.VpcConfig.SecurityGroupIds
+      description: A list of VPC security group IDs.
+      type: array
+    - contextPath: AWS.Lambda.Functions.Configuration.VpcConfig.VpcId
+      description: The ID of the VPC.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Code.RepositoryType
+      description: The repository from which you can download the function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Code.Location
+      description: The presigned URL you can use to download the function's .zip file.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Tags
+      description: The function's tags.
+      type: object
+    - contextPath: AWS.Lambda.Functions.Concurrency.ReservedConcurrentExecutions
+      description: The number of concurrent executions that are reserved for this function.
+      type: number
+    - contextPath: AWS.Lambda.Functions.Region
+      description: The AWS Region.
+      type: string
+
+  - name: aws-lambda-functions-list
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: limit
+      description: "Maximum number of functions to return in a single request. Valid range is 1-50."
+      defaultValue: "50"
+      required: false
+    - name: next_token
+      description: "Token for pagination. Use the value from AWS.Lambda.FunctionsNextToken to retrieve the next page of results."
+      required: false
+    description: Returns a list of your Lambda functions. For each function, the response includes the function configuration information.
+    outputs:
+    - contextPath: AWS.Lambda.Functions.FunctionName
+      description: The name of the function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.FunctionArn
+      description: The function's Amazon Resource Name.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Runtime
+      description: The runtime environment for the Lambda function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Role
+      description: The function's execution role.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Handler
+      description: The function Lambda calls to begin executing your function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.CodeSize
+      description: The size of the function's deployment package in bytes.
+      type: number
+    - contextPath: AWS.Lambda.Functions.Description
+      description: The function's description.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Timeout
+      description: The amount of time that Lambda allows a function to run before terminating it.
+      type: number
+    - contextPath: AWS.Lambda.Functions.MemorySize
+      description: The memory allocated to the function.
+      type: number
+    - contextPath: AWS.Lambda.Functions.LastModified
+      description: The date and time that the function was last updated, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
+      type: date
+    - contextPath: AWS.Lambda.Functions.CodeSha256
+      description: The SHA256 hash of the function's deployment package.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Version
+      description: The version of the Lambda function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.VpcConfig.SubnetIds
+      description: A list of VPC subnet IDs.
+      type: string
+    - contextPath: AWS.Lambda.Functions.VpcConfig.SecurityGroupIds
+      description: A list of VPC security groups IDs.
+      type: string
+    - contextPath: AWS.Lambda.Functions.VpcConfig.VpcId
+      description: The ID of the VPC.
+      type: string
+    - contextPath: AWS.Lambda.Functions.DeadLetterConfig.TargetArn
+      description: The Amazon Resource Name (ARN) of an Amazon SQS queue or Amazon SNS topic.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Environment.Variables
+      description: Environment variable key-value pairs.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Environment.Error.ErrorCode
+      description: The error code for environment variables that could not be applied.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Environment.Error.Message
+      description: The error message for environment variables that could not be applied.
+      type: string
+    - contextPath: AWS.Lambda.Functions.KMSKeyArn
+      description: The KMS key used to encrypt the function's environment variables. Only returned if you've configured a customer managed CMK.
+      type: string
+    - contextPath: AWS.Lambda.Functions.TracingConfig.Mode
+      description: The function's AWS X-Ray tracing configuration mode.
+      type: string
+    - contextPath: AWS.Lambda.Functions.MasterArn
+      description: The ARN of the master function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.RevisionId
+      description: Represents the latest updated revision of the function or alias.
+      type: string
+    - contextPath: AWS.Lambda.Functions.LayerVersions.Arn
+      description: The Amazon Resource Name (ARN) of the function layer.
+      type: string
+    - contextPath: AWS.Lambda.Functions.LayerVersions.CodeSize
+      description: The size of the layer archive in bytes.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Region
+      description: The AWS Region.
+      type: string
+    - contextPath: AWS.Lambda.FunctionsNextToken
+      description: Token to use for pagination in subsequent requests.
+      type: string
+
+  - name: aws-lambda-aliases-list
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - description: The name of the Lambda function.
+      name: function_name
+      required: true
+    - description: Specify a function version to only list aliases that invoke that version.
+      name: function_version
+    - description: The maximum number of aliases to return (default is 50, maximum is 10000).
+      name: limit
+      defaultValue: "50"
+    - description: Specify the pagination token that was returned by a previous request to retrieve the next page of results.
+      name: next_token
+    description: Returns a list of aliases created for a Lambda function.
+    outputs:
+    - contextPath: AWS.Lambda.Aliases.AliasArn
+      description: Lambda function ARN that is qualified using the alias name as the suffix.
+      type: string
+    - contextPath: AWS.Lambda.Aliases.Name
+      description: Alias name.
+      type: string
+    - contextPath: AWS.Lambda.Aliases.FunctionVersion
+      description: Function version to which the alias points.
+      type: string
+    - contextPath: AWS.Lambda.Aliases.Description
+      description: Alias description.
+      type: string
+    - contextPath: AWS.Lambda.Aliases.RoutingConfig.AdditionalVersionWeights
+      description: The name of the second alias, and the percentage of traffic that is routed to it.
+      type: string
+    - contextPath: AWS.Lambda.Aliases.RevisionId
+      description: Represents the latest updated revision of the function or alias.
+      type: string
+    - contextPath: AWS.Lambda.AliasesNextToken
+      description: The pagination token for the next set of aliases.
+
+  - name: aws-lambda-account-settings-get
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    description: Retrieves details about the account's limits and usage in an AWS Region.
+    outputs:
+    - contextPath: AWS.Lambda.AccountSettings.AccountLimit.TotalCodeSize
+      description: The amount of storage space that you can use for all deployment packages and layer archives.
+      type: number
+    - contextPath: AWS.Lambda.AccountSettings.AccountLimit.CodeSizeUnzipped
+      description: The maximum size of your function's code and layers when they're extracted.
+      type: number
+    - contextPath: AWS.Lambda.AccountSettings.AccountLimit.CodeSizeZipped
+      description: The maximum size of a deployment package when it's uploaded directly to AWS Lambda. Use Amazon S3 for larger files.
+      type: number
+    - contextPath: AWS.Lambda.AccountSettings.AccountLimit.ConcurrentExecutions
+      description: The maximum number of simultaneous function executions.
+      type: number
+    - contextPath: AWS.Lambda.AccountSettings.AccountLimit.UnreservedConcurrentExecutions
+      description: The maximum number of simultaneous function executions, minus the capacity that's reserved for individual functions with PutFunctionConcurrency.
+      type: number
+    - contextPath: AWS.Lambda.AccountSettings.AccountUsage.TotalCodeSize
+      description: The amount of storage space, in bytes, that's being used by deployment packages and layer archives.
+      type: number
+    - contextPath: AWS.Lambda.AccountSettings.AccountUsage.FunctionCount
+      description: The number of Lambda functions.
+      type: number
+    - contextPath: AWS.Lambda.AccountSettings.Region
+      description: The AWS Region.
+      type: string
+    - contextPath: AWS.Lambda.AccountSettings.AccountId
+      description: The AWS account ID.
+      type: string
+
+  - name: aws-lambda-function-versions-list
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - description: The name of the Lambda function.
+      name: function_name
+      required: true
+    - description: Specify the pagination token that's returned by a previous request to retrieve the next page of results.
+      name: next_token
+    - description: The maximum number of versions to return. Note that the maximum limit is 50 items in each response.
+      name: limit
+      defaultValue: "50"
+    description: Returns a list of versions, with the version-specific configuration of each.
+    outputs:
+    - contextPath: AWS.Lambda.Functions.FunctionVersionsNextToken
+      description: The pagination token that's included if more results are available.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionArn
+      description: The function's Amazon Resource Name (ARN).
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.FunctionArn
+      description: The function's Amazon Resource Name (ARN).
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.Runtime
+      description: The identifier of the function's runtime. Runtime is required if the deployment package is a .zip file archive.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.Role
+      description: The function's execution role.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.Handler
+      description: The function that Lambda calls to begin running your function.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.CodeSize
+      description: The size of the function's deployment package, in bytes.
+      type: Number
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.Description
+      description: The function's description.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.Timeout
+      description: The amount of time in seconds that Lambda allows a function to run before stopping it.
+      type: Number
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.MemorySize
+      description: The amount of memory available to the function at runtime.
+      type: Number
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.LastModified
+      description: The date and time that the function was last updated, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.CodeSha256
+      description: The SHA256 hash of the function's deployment package.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.Version
+      description: The version of the Lambda function.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.VpcConfig.SubnetIds
+      description: A list of VPC subnet IDs.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.VpcConfig.SecurityGroupIds
+      description: A list of VPC security group IDs.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.VpcConfig.VpcId
+      description: The ID of the VPC.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.DeadLetterConfig.TargetArn
+      description: The Amazon Resource Name (ARN) of an Amazon SQS queue or Amazon SNS topic.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.Environment.Variables
+      description: Environment variable key-value pairs. Omitted from CloudTrail logs.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.Environment.Error.ErrorCode
+      description: The error code for environment variables that couldn't be applied.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.Environment.Error.Message
+      description: The error message for environment variables that couldn't be applied.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.KMSKeyArn
+      description: The ARN of the KMS key used to encrypt the function's environment variables.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.TracingConfig.Mode
+      description: The tracing mode for the Lambda function.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.MasterArn
+      description: The ARN of the main function for Lambda@Edge functions.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.State
+      description: The current state of the function. When the state is Inactive, you can reactivate the function by invoking it.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.StateReason
+      description: The reason for the function's current state.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.StateReasonCode
+      description: The reason code for the current state of the function.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.LastUpdateStatus
+      description: The status of the last update that was performed on the function. This is first set to Successful after function creation completes.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.LastUpdateStatusReason
+      description: The reason for the last update that was performed on the function.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.LastUpdateStatusReasonCode
+      description: The reason code for the last update operation status.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.PackageType
+      description: The type of deployment package. Set to Image for container image and set Zip for .zip file archive.
+      type: String
+
+  - name: aws-lambda-function-url-config-delete
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - description: The name of the Lambda function.
+      name: function_name
+      required: true
+    - description: The alias name or version number.
+      name: qualifier
+    description: Deletes a Lambda function URL. When you delete a function URL, you can't recover it. Creating a new function URL results in a different URL address.
+    execution: true
+
+  - name: aws-lambda-function-create
+    description: Creates a Lambda function. To create a function, you need a deployment package and an execution role.
+    execution: true
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: function_name
+      description: The name of the Lambda function.
+      required: true
+    - name: runtime
+      description: The runtime environment for the function.
+      required: true
+    - name: handler
+      description: "The name of the method within your code that Lambda calls to execute your function. Example: lambda_function.lambda_handler."
+      required: true
+    - name: role
+      description: The Amazon Resource Name (ARN) of the function's execution role.
+      required: true
+    - name: code
+      description: Entry ID of the uploaded base64-encoded contents of the deployment package.
+    - name: s3_bucket
+      description: An Amazon S3 bucket in the same Amazon Web Services Region as your function. The bucket can be in a different Amazon Web Services account.
+    - name: description
+      description: A description of the function.
+    - name: function_timeout
+      description: The amount of time (in seconds) that Lambda allows a function to run before stopping it.
+      defaultValue: "3"
+    - name: memory_size
+      description: The amount of memory (in MB) available to the function at runtime.
+      defaultValue: "128"
+    - name: publish
+      description: Set to true to publish the first version of the function during creation.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - name: subnet_ids
+      description: A comma-separated list of VPC subnet IDs.
+      isArray: true
+    - name: security_group_ids
+      description: A comma-separated list of VPC security group IDs.
+      isArray: true
+    - name: ipv6_allowed_for_dual_stack
+      description: Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - name: package_type
+      description: The type of deployment package.
+      auto: PREDEFINED
+      predefined:
+      - "Image"
+      - "Zip"
+    - name: environment
+      description: The environment variables for the function. Must be separated by a semicolon (;) and specified using the format "key=DB_HOST,value=localhost;key=DEBUG,value=true".
+    - name: tracing_config
+      description: The tracing configuration for the function. Set to Active to sample and trace a subset of incoming requests with X-Ray.
+      defaultValue: "Active"
+      auto: PREDEFINED
+      predefined:
+      - "Active"
+      - "PassThrough"
+    - name: tags
+      description: The list of tags to apply to the function. Must be separated by a semicolon (;) and specified using the format "key=abc,value=123;key=fed,value=456".
+    - name: layers
+      description: A list of function layers to add to the function's execution environment.
+      isArray: true
+    outputs:
+    - contextPath: AWS.Lambda.Functions.FunctionName
+      description: The name of the function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.FunctionArn
+      description: The function's Amazon Resource Name (ARN).
+      type: string
+    - contextPath: AWS.Lambda.Functions.Runtime
+      description: The identifier of the function's runtime.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Role
+      description: The function's execution role.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Handler
+      description: The function that Lambda calls to begin running your function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.CodeSize
+      description: The size of the function's deployment package, in bytes.
+      type: number
+    - contextPath: AWS.Lambda.Functions.Description
+      description: The function's description.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Timeout
+      description: The amount of time in seconds that Lambda allows a function to run before stopping it.
+      type: number
+    - contextPath: AWS.Lambda.Functions.MemorySize
+      description: The amount of memory available to the function at runtime.
+      type: number
+    - contextPath: AWS.Lambda.Functions.Version
+      description: The version of the Lambda function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.VpcConfig.SubnetIds
+      description: A list of VPC subnet IDs.
+      type: array
+    - contextPath: AWS.Lambda.Functions.VpcConfig.SecurityGroupIds
+      description: A list of VPC security group IDs.
+      type: array
+    - contextPath: AWS.Lambda.Functions.VpcConfig.VpcId
+      description: The ID of the VPC.
+      type: string
+    - contextPath: AWS.Lambda.Functions.VpcConfig.Ipv6AllowedForDualStack
+      description: Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets.
+      type: boolean
+    - contextPath: AWS.Lambda.Functions.PackageType
+      description: The type of deployment package. Set to Image for container image and set Zip for .zip file archive.
+      type: string
+    - contextPath: AWS.Lambda.Functions.LastModified
+      description: The date and time that the function was last updated, in ISO-8601 format.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Region
+      description: The AWS Region.
+      type: string
+
+  - name: aws-lambda-layer-version-list
+    description: Lists the versions of an Lambda layer.
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: layer_name
+      description: The name or Amazon Resource Name (ARN) of the layer.
+      required: true
+    - name: compatible_runtime
+      description: A runtime identifier. For example, java21.
+    - name: next_token
+      description: A pagination token returned by a previous call.
+    - name: limit
+      description: The maximum number of versions to return. Note that the maximum limit is 50 items in each response.
+      defaultValue: 50
+    - name: compatible_architecture
+      description: The compatible instruction set architecture.
+    outputs:
+    - contextPath: AWS.Lambda.LayerVersions.VersionsNextToken
+      description: A pagination token returned when the response doesn't contain all versions.
+      type: string
+    - contextPath: AWS.Lambda.LayerVersions.LayerVersionArn
+      description: The ARN of the layer version.
+      type: string
+    - contextPath: AWS.Lambda.LayerVersions.Version
+      description: The version number.
+      type: number
+    - contextPath: AWS.Lambda.LayerVersions.Description
+      description: The description of the version.
+      type: string
+    - contextPath: AWS.Lambda.LayerVersions.CreatedDate
+      description: The date that the version was created, in ISO 8601 format.
+      type: string
+    - contextPath: AWS.Lambda.LayerVersions.CompatibleRuntimes
+      description: The layer's compatible runtimes.
+      type: array
+    - contextPath: AWS.Lambda.LayerVersions.LicenseInfo
+      description: The layer's open-source license.
+      type: string
+    - contextPath: AWS.Lambda.LayerVersions.CompatibleArchitectures
+      description: A list of compatible instruction set architectures.
+      type: array
+
+  - name: aws-lambda-function-delete
+    description: Deletes a Lambda function.
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: function_name
+      description: The name of the Lambda function or version.
+      required: true
+    - name: qualifier
+      description: Specify a version to delete. You can't delete a version that an alias references.
+
+  - name: aws-lambda-layer-version-delete
+    description: Deletes a version of a Lambda layer.
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: layer_name
+      description: The name or Amazon Resource Name (ARN) of the layer.
+      required: true
+    - name: version_number
+      description: The version number to delete.
+      required: true
+
+  - name: aws-lambda-layer-version-publish
+    description: Creates a Lambda layer from a ZIP archive.
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: layer_name
+      description: The name of the layer.
+      required: true
+    - name: description
+      description: The description of the version.
+    - name: zip_file
+      description: The entry ID of the uploaded ZIP file containing the layer code.
+    - name: s3_bucket
+      description: The Amazon S3 bucket of the layer archive.
+    - name: s3_key
+      description: The Amazon S3 key of the layer archive.
+    - name: s3_object_version
+      description: For versioned objects, the version of the layer archive object to use.
+    - name: compatible_runtimes
+      description: A list of compatible function runtimes.
+      isArray: true
+    - name: compatible_architectures
+      description: A list of compatible instruction set architectures.
+      isArray: true
+    outputs:
+    - contextPath: AWS.Lambda.LayerVersions.LayerVersionArn
+      description: The ARN of the layer version.
+      type: string
+    - contextPath: AWS.Lambda.LayerVersions.LayerArn
+      description: The ARN of the layer.
+      type: string
+    - contextPath: AWS.Lambda.LayerVersions.Description
+      description: The description of the version.
+      type: string
+    - contextPath: AWS.Lambda.LayerVersions.CreatedDate
+      description: The date that the layer version was created, in ISO 8601 format.
+      type: string
+    - contextPath: AWS.Lambda.LayerVersions.Version
+      description: The version number.
+      type: number
+    - contextPath: AWS.Lambda.LayerVersions.CompatibleRuntimes
+      description: The layer's compatible runtimes.
+      type: array
+    - contextPath: AWS.Lambda.LayerVersions.CompatibleArchitectures
+      description: A list of compatible instruction set architectures.
+      type: array
+    - contextPath: AWS.Lambda.LayerVersions.Region
+      description: The AWS Region.
+      type: string
 
   - arguments:
     - description: The AWS account ID.
