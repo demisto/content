@@ -2161,7 +2161,8 @@ script:
     - description: A comma-separated list of detection IDs. For example, ldt:1234:1234,ldt:5678:5678. If you use this argument, the fetch_query argument will be ignored.
       isArray: true
       name: ids
-    description: Lists incident summaries.
+    deprecated: true
+    description: Deprecated. Use the cs-falcon-list-case-summaries command instead.
     name: cs-falcon-list-incident-summaries
     outputs:
     - contextPath: CrowdStrike.Incidents.incident_id
@@ -2278,6 +2279,106 @@ script:
     - contextPath: CrowdStrike.Incidents.fine_score
       description: The incident score.
       type: Number
+  - arguments:
+    - description: A comma-separated list of case IDs.
+      isArray: true
+      name: ids
+    description: Lists case summaries.
+    name: cs-falcon-list-case-summaries
+    outputs:
+    - contextPath: CrowdStrike.Case.id
+      description: The ID of the case.
+      type: String
+    - contextPath: CrowdStrike.Case.name
+      description: The name of the case.
+      type: String
+    - contextPath: CrowdStrike.Case.created_timestamp
+      description: The date and time the case was created.
+      type: Date
+    - contextPath: CrowdStrike.Case.status
+      description: The status of the case.
+      type: String
+    - contextPath: CrowdStrike.Case.version
+      description: The version of the case.
+      type: String
+    - contextPath: CrowdStrike.Case.description
+      description: The description of the case.
+      type: String
+    - contextPath: CrowdStrike.Case.severity
+      description: The severity of the case.
+      type: String
+    - contextPath: CrowdStrike.Case.assigned_to
+      description: The name of the user assigned to the case.
+      type: String
+    - contextPath: CrowdStrike.Case.tags
+      description: The tags of the case.
+      type: String
+  - arguments:
+    - description: The ID of the case to retrieve evidence for.
+      name: id
+      required: true
+    description: Get evidence for a specific case.
+    name: cs-falcon-get-evidence-for-case
+    outputs:
+    - contextPath: CrowdStrike.CaseEvidence.alerts
+      description: The alerts associated with the case.
+      type: Array
+    - contextPath: CrowdStrike.CaseEvidence.events
+      description: The events associated with the case.
+      type: Array
+    - contextPath: CrowdStrike.CaseEvidence.leads
+      description: The leads associated with the case.
+      type: Array
+  - arguments:
+    - description: A comma-separated list of tags.
+      isArray: true
+      name: tags
+      required: true
+    - description: The ID of the case the tags will be added to.
+      name: id
+      required: true
+    description: Adds tags to the specified case.
+    name: cs-falcon-add-case-tag
+  - arguments:
+    - description: The ID of the case the tags will be deleted from.
+      name: id
+      required: true
+    - description: The tag to delete.
+      name: tag
+      required: true
+    description: Deletes a tag from the specified case.
+    name: cs-falcon-delete-case-tag
+  - arguments:
+    - description: The ID of the case to resolve.
+      name: id
+      required: true
+    - description: The status to set for the case.
+      name: status
+      auto: PREDEFINED
+      predefined:
+      - new
+      - in_progress
+      - closed
+      - reopened
+    - description: A UUID of a user to assign the case to.
+      name: assigned_to_uuid
+    - description: A new description for the case.
+      name: description
+    - description: "Whether to remove case assignment from the current user.\nIf set to true and assigned_to_uuid is not provided, the case becomes unassigned.\nIf set to false and assigned_to_uuid is provided, the case is reassigned to the specified user UUID.\nIf set to true and assigned_to_uuid is provided, the case is reassigned to the specified user UUID.\nIf this field is omitted and assigned_to_uuid is provided, the case is reassigned to the specified user UUID."
+      name: remove_user_assignment
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - description: The new case severity rating (10-100).
+      name: severity
+    - description: The unique ID of the template to apply to the case.
+      name: template_id
+    - description: The new name for the case.
+      name: name
+    description: Resolves or updates a case.
+    name: cs-falcon-resolve-case
   - arguments:
     - description: The endpoint ID.
       name: id
@@ -2575,7 +2676,8 @@ script:
       name: remove_tag
     - description: Add a comment to the incident. Comment is limited to 1024 characters.
       name: add_comment
-    description: Resolve and update incidents using the specified settings.
+    deprecated: true
+    description: Deprecated. Use the cs-falcon-resolve-case command instead.
     name: cs-falcon-resolve-incident
   - arguments:
     - description: A JSON object with a list of CrowdStrike Falcon indicators to upload.
@@ -2817,7 +2919,8 @@ script:
       description: The incident ID to get detections for. A list of all available incident IDs can be retrieved by running the 'cs-falcon-list-incident-summaries' command.
       name: incident_id
       required: true
-    description: Gets the detections for a specific incident.
+    deprecated: true
+    description: Deprecated. Use the cs-falcon-get-evidence-for-case command instead.
     name: cs-falcon-get-detections-for-incident
     outputs:
     - contextPath: CrowdStrike.IncidentDetection.incident_id
@@ -5027,7 +5130,8 @@ script:
       name: behavior_ids
       isArray: true
       required: true
-    description: Get incident behavior information.
+    deprecated: true
+    description: This command is deprecated.
     name: cs-falcon-get-incident-behavior
     outputs:
     - contextPath: CrowdStrike.IncidentBehavior.behavior_id

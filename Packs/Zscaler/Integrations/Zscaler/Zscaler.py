@@ -1163,7 +1163,7 @@ def edit_ip_destination_group(args: dict):
         "IpCategories",
     ]
     payload: dict = {}
-    ip_group_id = args["ip_group_id"].strip()
+    ip_group_id = str(args["ip_group_id"]).strip()
 
     check_url = f"/ipDestinationGroups/{ip_group_id}"
     demisto.debug(f"Fetching existing IP destination group: {ip_group_id}")
