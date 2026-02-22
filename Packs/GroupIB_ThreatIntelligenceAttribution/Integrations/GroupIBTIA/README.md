@@ -66,7 +66,7 @@ Once the configuration is complete, the following collections become available i
 | `compromised/account_group` | The collection contains credentials collected from various phishing resources, botnets, C&C servers, Darkweb, etc., used by hackers. All indicated sources are unique and private. It also includes combolist and corporate accounts. For Public Breaches - please refer to compromised/breached. | 2-4 years |
 | `compromised/bank_card_group` | Information about compromised bank cards, sourced from card shops, forums, and public leaks. | 2 years |
 | `compromised/mule` | Information on compromised accounts used by threat actors for money laundering and fund transfers. | 90 days |
-| `compromised/spd` | Suspicious payment details (e.g. cryptocurrency wallets, payment data) linked to threat actors and leaks. Each item has type (from API) and value (value.value) for full context. | 90 days |
+| `compromised/spd` | Suspicious payment details collected from underground markets, forums, and messaging platforms. | 90 days |
 | `compromised/breached` | Information about publicly leaked databases containing credentials and personal data. **Note:** Hunting rules are on by default here. | 90 days |
 | `attacks/ddos` | Data on Distributed Denial of Service (DDoS) attacks, including targeted resources and attack durations. | 5-10 days |
 | `attacks/deface` | Records of defacement attacks, highlighting compromised websites and related actors. | 5-10 days |
@@ -418,6 +418,54 @@ Command performs Group-IB event lookup in compromised/mule collection with provi
 >|gibid|severity|value|
 >|---|---|---|
 >| 50a3b4abbfca5dcbec9c8b3a110598f61ba90a99 | red | 11.11.11.11 |
+
+### gibti-get-compromised-spd-info
+
+***
+Command performs Group-IB event lookup in compromised/spd (suspicious payment details) collection with provided ID. Returns payment-related observables (e.g. cryptocurrency wallets) linked to threat actors and leaks, including type, value, events, sources, malware, and evaluation (severity, TLP, TTL).
+
+#### Base Command
+
+`gibti-get-compromised-spd-info`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | GIB event id.<br/>e.g.: 5120a3b4abbfca5dcbed3ac9c8b3a110598f61. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GIBTIA.CompromisedSPD.id | String | Group-IB SPD incident ID. |
+| GIBTIA.CompromisedSPD.type | String | Observable type (e.g. Cryptocurrency Wallet). |
+| GIBTIA.CompromisedSPD.value.value | String | Main observable value (wallet address, etc.). |
+| GIBTIA.CompromisedSPD.serviceType | String | Service type (e.g. BTCLike, XMRLike). |
+| GIBTIA.CompromisedSPD.ownerName | String | Owner name if available. |
+| GIBTIA.CompromisedSPD.illegalScore | Number | Illegal score. |
+| GIBTIA.CompromisedSPD.portalLink | String | Link to GIB incident. |
+| GIBTIA.CompromisedSPD.events | Unknown | Events table (compromisedAt, detectedAt, source, malware, threatActor). |
+| GIBTIA.CompromisedSPD.sources | Unknown | Sources table (name, type). |
+| GIBTIA.CompromisedSPD.malware | Unknown | Malware table (id, name, stixGuid). |
+| GIBTIA.CompromisedSPD.threatActor | Unknown | Threat actor table (id, name, stixGuid). |
+| GIBTIA.CompromisedSPD.evaluation.severity | String | Event severity. |
+| GIBTIA.CompromisedSPD.evaluation.tlp | String | TLP. |
+| GIBTIA.CompromisedSPD.evaluation.ttl | Number | TTL (days). |
+
+#### Command Example
+
+```!gibti-get-compromised-spd-info id=5120a3b4abbfca5dcbed3ac9c8b3a110598f61```
+
+#### Human Readable Output
+
+>### Feed from compromised/spd with ID 5120a3b4abbfca5dcbed3ac9c8b3a110598f61
+
+>| id | type | value | serviceType | illegalScore | portalLink | evaluation severity | evaluation tlp | evaluation ttl |
+>|---|---|---|---|---|---|---|---|---|
+>| 5120a3b4abbfca5dcbed3ac9c8b3a110598f61 | Cryptocurrency Wallet | bc1qrc4zze8zr96pwt49fn6nq53rks625guzn7navy | BTCLike | 100 | https://tap.group-ib.com/cd/suspicious-payment-details?id=5120a3b4abbfca5dcbed3ac9c8b3a110598f61 | red | amber | 30 |
+
+>Events, sources, malware, and threat actor tables are included in the full feed object.
 
 ### gibti-get-osi-git-leak-info
 
