@@ -3414,17 +3414,11 @@ script:
             - Data Security (DSPM)
             - Vulnerability Management
           description: |
-            The category of the issue. Valid values per product:
-            - Cortex XSIAM: Agent, Cases and Issues, Cloud Onboarding, Data Collection, Integrations, and Marketplace, Detection, Investigation and Inventory, Modules, Posture Management, Security Incidents, Server, Tenant Administration and Access Control, Vulnerability and Compliance Management, Web Application and API Security, XDR Agent
-            - Cortex Cloud: AI Security (AISPM), API Security (WAAS), Access Management, Integrations and Authentication, Application Security, CI/CD Prevention, Cases and Issues, Cloud Agent, Cloud Alerts and Events, Cloud Assets and Reports, Cloud Onboarding, Cloud Scan and Agentless, Cloud Workload and Posture Security Settings, Compliance Management, Compute Workload Inventory, Data Collection, Integrations, and Marketplace, Data Security (DSPM), Detection, Investigation and Inventory, Modules, Posture Management, Tenant Administration and Access Control, Vulnerability Management, Vulnerability and Compliance Management, Web Application and API Security, XDR Agent
-            - Cortex XDR: Agent, Cases and Issues, Cloud Onboarding, Data Collection, Integrations, and Marketplace, Detection, Investigation and Inventory, Modules, Posture Management, Security Incidents, Server, Tenant Administration and Access Control, Vulnerability and Compliance Management, Web Application and API Security, XDR Agent
+            The category of the issue.
         - name: problem_concentration
           description: |
             The specific problem concentration. Valid values vary based on the selected issue_category (smeArea) such as Communication, Device Control, Dashboard and Reports, etc.
       outputs:
-        - contextPath: Core.SupportTicket.productType
-          description: The product type associated with the ticket.
-          type: String
         - contextPath: Core.SupportTicket.description
           description: The description of the Filed support ticket.
           type: String
@@ -3436,7 +3430,7 @@ script:
           type: String
         - contextPath: Core.SupportTicket.DateTimeOfIssue
           description: The timestamp of the issue occurrence.
-          type: Date
+          type: Number
         - contextPath: Core.SupportTicket.IssueImpact
           description: The impact level of the ticket.
           type: String
@@ -3445,51 +3439,6 @@ script:
           type: String
         - contextPath: Core.SupportTicket.subGroupName
           description: The specific problem concentration.
-          type: String
-    - name: core-get-sme-areas-and-sub-groups
-      description: Retrieves the available SME areas (issue categories) and their sub-groups (problem concentrations) for the tenant's product type.
-      arguments: []
-      outputs:
-        - contextPath: Core.SmeAreasAndSubGroups.value
-          description: The SME area (issue category) value.
-          type: String
-        - contextPath: Core.SmeAreasAndSubGroups.label
-          description: The SME area (issue category) display label.
-          type: String
-        - contextPath: Core.SmeAreasAndSubGroups.suggestedValues.value
-          description: The sub-group (problem concentration) value.
-          type: String
-        - contextPath: Core.SmeAreasAndSubGroups.suggestedValues.label
-          description: The sub-group (problem concentration) display label.
-          type: String
-    - name: core-get-questionnaire-by-sme
-      description: Retrieves questionnaire mappings (questions and log upload fields) for all SME area and sub-group combinations, or for a specific combination if both sme_area and sub_group are provided. When called without arguments, it first fetches all available SME areas and sub-groups, then iterates over every combination to retrieve the full questionnaire catalog.
-      arguments:
-        - name: issue_category
-          description: The issue category (SME area) to fetch questions for. If omitted (along with problem_concentration), all combinations are fetched. Use core-get-sme-areas-and-sub-groups to get available values. Maps to the issue_category argument of core-fill-support-ticket.
-        - name: problem_concentration
-          description: The problem concentration (sub-group) within the issue category. If omitted (along with issue_category), all combinations are fetched. Use core-get-sme-areas-and-sub-groups to get available values. Maps to the problem_concentration argument of core-fill-support-ticket.
-      outputs:
-        - contextPath: Core.Questionnaire.issue_category
-          description: The issue category (SME area) this questionnaire item belongs to. Maps to the issue_category argument of core-fill-support-ticket.
-          type: String
-        - contextPath: Core.Questionnaire.problem_concentration
-          description: The problem concentration (sub-group) this questionnaire item belongs to. Maps to the problem_concentration argument of core-fill-support-ticket.
-          type: String
-        - contextPath: Core.Questionnaire.key
-          description: The unique key identifier for the questionnaire item.
-          type: String
-        - contextPath: Core.Questionnaire.label
-          description: The display label or question text.
-          type: String
-        - contextPath: Core.Questionnaire.required
-          description: Whether the questionnaire item is required.
-          type: Boolean
-        - contextPath: Core.Questionnaire.type
-          description: The input type of the questionnaire item (e.g., text, file).
-          type: String
-        - contextPath: Core.Questionnaire.questionType
-          description: The type of questionnaire item (e.g., question, log).
           type: String
     - name: core-get-support-ticket-taxonomy
       description: Retrieves the complete support ticket taxonomy in a single call. Fetches all SME areas and sub-groups, then iterates over every combination to retrieve the full questionnaire catalog including questions and log upload fields.
