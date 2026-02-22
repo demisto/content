@@ -4574,7 +4574,7 @@ script:
       required: false
     - name: launch_template_version
       description: "The launch template version number, $Latest, or $Default."
-      required: true
+      required: false
     - name: tags
       description: "One or more tags to apply to a resource when the resource is being created, separated by ';' (for example, key=<name>;value=<value>)."
       required: false

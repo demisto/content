@@ -319,15 +319,6 @@ def prepare_create_function_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
     return remove_empty_elements(kwargs)
 
 
-def parse_date(dt):
-    try:
-        arr = dt.split("-")
-        parsed_date = (datetime(int(arr[0]), int(arr[1]), int(arr[2]))).isoformat()
-    except ValueError as e:
-        raise DemistoException(f"Date could not be parsed. Please check the date again.\n{e}")
-    return parsed_date
-
-
 def aws_ec2_block_device_mapping_args_builder(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     return [
         {
