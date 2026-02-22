@@ -4282,6 +4282,173 @@ class EC2:
             raise DemistoException(f"Waiter error: {str(e)}")
 
     @staticmethod
+    def describe_launch_templates_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes one or more launch templates.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - filters (str, optional): One or more filters separated by ';'
+                - launch_template_ids (str, optional): Comma-separated list of launch template IDs
+                - launch_template_names (str, optional): Comma-separated list of launch template names
+                - limit (int, optional): Maximum number of results to return
+                - next_token (str, optional): Token for the next set of results
+
+        Returns:
+            CommandResults: Results containing launch template information
+        """
+        kwargs: Dict[str, Any] = {
+            "LaunchTemplateIds": argToList(args.get("launch_template_ids")),
+            "LaunchTemplateNames": argToList(args.get("launch_template_names")),
+        }
+
+        # Add filters if provided
+        if filters_arg := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters_arg)
+
+        pagination_kwargs = build_pagination_kwargs(args, minimum_limit=1, max_limit=200)
+        kwargs.update(pagination_kwargs)
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Describing launch templates with parameters: {kwargs}")
+
+        response = client.describe_launch_templates(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        # Serialize response to handle datetime objects
+        response = serialize_response_with_datetime_encoding(response)
+        launch_templates = response.get("LaunchTemplates", [])
+        if not launch_templates:
+            return CommandResults(readable_output="No launch templates were found.")
+
+        outputs = {
+            "AWS.EC2.LaunchTemplates(val.LaunchTemplateId && val.LaunchTemplateId == obj.LaunchTemplateId)": launch_templates,
+            "AWS.EC2(true)": {"LaunchTemplatesNextToken": response.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=tableToMarkdown(
+                "AWS EC2 LaunchTemplates",
+                launch_templates,
+                headers=[
+                    "LaunchTemplateId",
+                    "LaunchTemplateName",
+                    "CreatedBy",
+                    "DefaultVersionNumber",
+                    "LatestVersionNumber",
+                    "CreateTime",
+                ],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def create_launch_template_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates a launch template. A launch template contains the parameters to launch an instance.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including launch template configuration
+
+        Returns:
+            CommandResults: Results containing the created launch template information
+        """
+        kwargs: Dict[str, Any] = remove_empty_elements(create_launch_template_kwargs_builder(args))
+        print_debug_logs(client, f"Creating launch template with parameters: {kwargs}")
+
+        response = client.create_launch_template(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        # Serialize response to handle datetime objects
+        response = serialize_response_with_datetime_encoding(response)
+        launch_template = response.get("LaunchTemplate", {})
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.LaunchTemplates",
+            outputs_key_field="LaunchTemplateId",
+            outputs=launch_template,
+            readable_output=tableToMarkdown(
+                "The AWS Launch Template was created successfully",
+                launch_template,
+                headers=[
+                    "LaunchTemplateId",
+                    "LaunchTemplateName",
+                    "CreateTime",
+                    "CreatedBy",
+                    "DefaultVersionNumber",
+                    "LatestVersionNumber",
+                ],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def delete_launch_template_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deletes a launch template. Deleting a launch template deletes all of its versions.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - launch_template_id (str, optional): The ID of the launch template
+                - launch_template_name (str, optional): The name of the launch template
+
+        Returns:
+            CommandResults: Results of the deletion operation
+        """
+        kwargs: Dict[str, Any] = remove_empty_elements(
+            {
+                "LaunchTemplateId": args.get("launch_template_id"),
+                "LaunchTemplateName": args.get("launch_template_name"),
+            }
+        )
+
+        if not kwargs or len(kwargs) > 1:
+            raise DemistoException("Either launch_template_id or launch_template_name must be provided, but not both.")
+
+        print_debug_logs(client, f"Deleting launch template with parameters: {kwargs}")
+        response = client.delete_launch_template(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        # Serialize response to handle datetime objects
+        response = serialize_response_with_datetime_encoding(response)
+        deleted_template = response.get("LaunchTemplate", {})
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.DeletedLaunchTemplates",
+            outputs_key_field="LaunchTemplateId",
+            outputs=deleted_template,
+            readable_output=tableToMarkdown(
+                "Successfully deleted the AWS Launch Template",
+                deleted_template,
+                headers=[
+                    "LaunchTemplateId",
+                    "LaunchTemplateName",
+                    "CreateTime",
+                    "CreatedBy",
+                    "DefaultVersionNumber",
+                    "LatestVersionNumber",
+                ],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
     def create_fleet_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
         Launches an EC2 Fleet.
@@ -4383,20 +4550,20 @@ class EC2:
         unsuccessful = response.get("UnsuccessfulFleetDeletions", [])
 
         readable_data = [
-            {
-                "FleetId": deletion.get("FleetId"),
-                "CurrentFleetState": deletion.get("CurrentFleetState"),
-                "PreviousFleetState": deletion.get("PreviousFleetState"),
-            }
-            for deletion in successful
-        ] + [
-            {
-                "FleetId": deletion.get("FleetId"),
-                "ErrorCode": deletion.get("Error", {}).get("Code"),
-                "ErrorMessage": deletion.get("Error", {}).get("Message"),
-            }
-            for deletion in unsuccessful
-        ]
+                            {
+                                "FleetId": deletion.get("FleetId"),
+                                "CurrentFleetState": deletion.get("CurrentFleetState"),
+                                "PreviousFleetState": deletion.get("PreviousFleetState"),
+                            }
+                            for deletion in successful
+                        ] + [
+                            {
+                                "FleetId": deletion.get("FleetId"),
+                                "ErrorCode": deletion.get("Error", {}).get("Code"),
+                                "ErrorMessage": deletion.get("Error", {}).get("Message"),
+                            }
+                            for deletion in unsuccessful
+                        ]
 
         if not readable_data:
             return CommandResults(readable_output="No fleets were deleted.")
@@ -4570,7 +4737,6 @@ class EC2:
             else f"Failed to modify EC2 Fleet {args.get('fleet_id')}",
             raw_response=response,
         )
-
 
 class EKS:
     service = AWSServices.EKS
@@ -6783,6 +6949,9 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-volume-attach": EC2.attach_volume_command,
     "aws-ec2-volume-detach": EC2.detach_volume_command,
     "aws-ec2-volume-delete": EC2.delete_volume_command,
+    "aws-ec2-launch-templates-describe": EC2.describe_launch_templates_command,
+    "aws-ec2-launch-template-create": EC2.create_launch_template_command,
+    "aws-ec2-launch-template-delete": EC2.delete_launch_template_command,
     "aws-ec2-fleet-create": EC2.create_fleet_command,
     "aws-ec2-fleet-delete": EC2.delete_fleet_command,
     "aws-ec2-fleets-describe": EC2.describe_fleets_command,
@@ -6911,6 +7080,9 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:AttachVolume",
     "ec2:DetachVolume",
     "ec2:DeleteVolume",
+    "ec2:DescribeLaunchTemplates",
+    "ec2:CreateLaunchTemplate",
+    "ec2:DeleteLaunchTemplate",
 ]
 
 COMMAND_SERVICE_MAP = {
