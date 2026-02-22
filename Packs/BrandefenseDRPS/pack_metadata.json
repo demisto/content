@@ -1,0 +1,58 @@
+{
+    "id": "BrandefenseDRPS",
+    "name": "Brandefense Digital Risk Protection Services",
+    "description": "Brandefense Digital Risk Protection, External Attack Surface Management, and Actionable Threat Intelligence integration for Cortex XSOAR.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Brandefense",
+    "url": "https://www.brandefense.io",
+    "email": "support@brandefense.io",
+    "created": "2026-02-21T00:00:00Z",
+    "serverMinVersion": "6.5.0",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Digital Risk Protection",
+        "External Attack Surface Management",
+        "Threat Intelligence",
+        "Dark Web Monitoring",
+        "Brand Protection",
+        "DRPS",
+        "EASM"
+    ],
+    "useCases": [
+        "Threat Intelligence Management",
+        "Indicator Enrichment",
+        "Phishing Response"
+    ],
+    "keywords": [
+        "brandefense",
+        "threat intelligence",
+        "digital risk",
+        "dark web",
+        "brand monitoring",
+        "attack surface",
+        "phishing",
+        "IOC",
+        "CTI"
+    ],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

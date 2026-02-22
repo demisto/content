@@ -1,0 +1,16 @@
+{
+    "id": "incident_brandefenseincidentmodule",
+    "version": -1,
+    "name": "Brandefense Incident Module",
+    "cliName": "brandefenseincidentmodule",
+    "type": "shortText",
+    "description": "Brandefense module associated with the incident.",
+    "group": 0,
+    "system": false,
+    "content": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Brandefense Incident"
+    ],
+    "fromVersion": "6.5.0"
+}

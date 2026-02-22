@@ -1,0 +1,17 @@
+{
+    "id": "incident_mitretactics",
+    "version": -1,
+    "name": "MITRE Tactics",
+    "cliName": "mitretactics",
+    "type": "shortText",
+    "description": "MITRE ATT&CK tactics associated with the incident.",
+    "group": 0,
+    "system": false,
+    "content": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Brandefense Incident",
+        "Brandefense Intelligence"
+    ],
+    "fromVersion": "6.5.0"
+}

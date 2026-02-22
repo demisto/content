@@ -1,0 +1,16 @@
+{
+    "id": "incident_brandefenseintelligencecreatedat",
+    "version": -1,
+    "name": "Brandefense Intelligence Created At",
+    "cliName": "brandefenseintelligencecreatedat",
+    "type": "shortText",
+    "description": "Creation timestamp of the Brandefense intelligence report.",
+    "group": 0,
+    "system": false,
+    "content": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Brandefense Intelligence"
+    ],
+    "fromVersion": "6.5.0"
+}

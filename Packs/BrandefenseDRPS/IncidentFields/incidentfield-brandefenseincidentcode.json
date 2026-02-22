@@ -1,0 +1,16 @@
+{
+    "id": "incident_brandefenseincidentcode",
+    "version": -1,
+    "name": "Brandefense Incident Code",
+    "cliName": "brandefenseincidentcode",
+    "type": "shortText",
+    "description": "Brandefense incident code identifier.",
+    "group": 0,
+    "system": false,
+    "content": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Brandefense Incident"
+    ],
+    "fromVersion": "6.5.0"
+}
