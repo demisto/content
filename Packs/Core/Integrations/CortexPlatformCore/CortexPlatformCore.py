@@ -670,13 +670,6 @@ class Client(CoreClient):
             json_data=request_data,
         )
 
-    def get_webapp_counts(self, request_data: dict) -> dict:
-        return self._http_request(
-            method="POST",
-            url_suffix="/get_counts",
-            json_data=request_data,
-        )
-
     def get_webapp_view_def(self, request_data: dict) -> dict:
         return self._http_request(
             method="GET",
@@ -4595,20 +4588,10 @@ def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandR
     reply = response.get("reply", {})
     data = reply.get("DATA", [])
 
-    counts_request_data: dict = {
-        "type": "grid",
-        "table_name": FINDINGS_TABLE,
-        "extraData": None,
-        "filter_data": {
-            "sort": [],
-            "filter": filter_builder.to_dict(),
-            "free_text": "",
-            "visible_columns": None,
-            "locked": {},
-            "paging": {"from": start_index, "to": end_index},
-        },
-        "jsons": [],
-    }
+    counts_request_data = build_webapp_counts_request_data(
+        table_name=FINDINGS_TABLE,
+        filter_dict=filter_builder.to_dict(),
+    )
 
     counts_response = client.get_webapp_counts(counts_request_data)
     counts_reply = counts_response.get("reply", {})
@@ -4631,19 +4614,6 @@ def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandR
             readable_output=tableToMarkdown(
                 "Findings",
                 findings,
-                headers=[
-                    "id",
-                    "category",
-                    "name",
-                    "description",
-                    "asset_id",
-                    "asset_name",
-                    "asset_class",
-                    "asset_category",
-                    "asset_type",
-                    "first_observed",
-                    "last_observed",
-                ],
                 headerTransform=string_to_table_header,
             ),
             outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Findings",

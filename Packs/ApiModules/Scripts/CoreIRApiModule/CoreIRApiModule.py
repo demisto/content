@@ -1374,6 +1374,13 @@ class CoreClient(BaseClient):
             json_data={"request_data": {"user_emails": user_emails, "role_name": ""}},
         )
 
+    def get_webapp_counts(self, request_data: dict) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/get_counts",
+            json_data=request_data,
+        )
+
     def terminate_on_agent(
         self,
         url_suffix_endpoint: str,
@@ -1665,6 +1672,35 @@ def build_webapp_request_data(
         "filter_data": filter_data,
         "jsons": [],
         "onDemandFields": on_demand_fields,
+    }
+
+
+def build_webapp_counts_request_data(
+    table_name: str,
+    filter_dict: dict,
+    extra_data: Any | None = None,
+) -> dict:
+    """
+    Builds the request data for the generic /api/webapp/get_counts endpoint.
+    
+    Args:
+        table_name: The name of the table to query
+        filter_dict: The filter dictionary to apply
+        start_page: The starting index for pagination (default: 0)
+        limit: The limit for pagination (default: 100)
+        extra_data: Optional extra data to include in the request
+    
+    Returns:
+        dict: Request data formatted for the get_counts endpoint
+    """
+    
+    return {
+        "type": "grid",
+        "table_name": table_name,
+        "extraData": extra_data,
+        "filter_data":  {
+        "filter": filter_dict,
+    }
     }
 
 
