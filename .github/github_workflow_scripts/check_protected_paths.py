@@ -49,7 +49,7 @@ def is_path_change_allowed(path: Path) -> bool:
 
 
 def main(changed_files: list[str]):
-    if unsafe_changes := sorted(path for path in changed_files if not is_path_change_allowed(Path(path))):
+    if unsafe_changes := sorted(full_path for full_path in changed_files if not is_path_change_allowed(Path(full_path))):
         for path in unsafe_changes:
             print(  # noqa: T201
                 f"::error file={path},line=1,endLine=1,title=Protected folder::"
