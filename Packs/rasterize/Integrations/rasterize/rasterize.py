@@ -1606,23 +1606,41 @@ def perform_rasterize(
         chrome_options = demisto.params().get("chrome_options", "None")
         chrome_port = chrome_options_dict.get(chrome_options, {}).get("chrome_port", "")
 
-        ps_aux_output = "\n".join(
-            subprocess.check_output(  # noqa: S602
-                "ps aux | grep chrom | grep port= | grep -- --headless",
-                shell=True,
-                text=True,
-                stderr=subprocess.STDOUT,
-            ).splitlines()
-        )
-        chrome_headless_content = "\n".join(
-            subprocess.check_output(["cat", CHROME_LOG_FILE_PATH], stderr=subprocess.STDOUT, text=True).splitlines()
-        )
-        df_output = "\n".join(subprocess.check_output(["df", "-h"], stderr=subprocess.STDOUT, text=True).splitlines())
-        free_output = "\n".join(subprocess.check_output(["free", "-h"], stderr=subprocess.STDOUT, text=True).splitlines())
-        chromedriver = subprocess.check_output(["chromedriver", "--version"], stderr=subprocess.STDOUT, text=True).splitlines()
-        chrome_version = subprocess.check_output(["google-chrome", "--version"], stderr=subprocess.STDOUT, text=True).splitlines()
+        # Get all Chrome headless processes for diagnostic purposes
+        # Using get_chrome_processes("") to match any port (equivalent to grep port=)
+        chrome_processes = get_chrome_processes("")
+        ps_aux_output = "\n".join(chrome_processes) if chrome_processes else "No Chrome processes found"
+        try:
+            chrome_headless_content = "\n".join(
+                subprocess.check_output(["cat", CHROME_LOG_FILE_PATH], stderr=subprocess.STDOUT, text=True).splitlines()
+            )
+        except subprocess.CalledProcessError:
+            chrome_headless_content = f"Could not read {CHROME_LOG_FILE_PATH}"
 
-        get_chrome_processes(chrome_port)
+        try:
+            df_output = "\n".join(subprocess.check_output(["df", "-h"], stderr=subprocess.STDOUT, text=True).splitlines())
+        except subprocess.CalledProcessError:
+            df_output = "Could not get disk usage information"
+
+        try:
+            free_output = "\n".join(subprocess.check_output(["free", "-h"], stderr=subprocess.STDOUT, text=True).splitlines())
+        except subprocess.CalledProcessError:
+            free_output = "Could not get memory information"
+
+        try:
+            chromedriver = subprocess.check_output(
+                ["chromedriver", "--version"], stderr=subprocess.STDOUT, text=True
+            ).splitlines()
+        except subprocess.CalledProcessError:
+            chromedriver = ["chromedriver not found or not executable"]
+
+        try:
+            chrome_version = subprocess.check_output(
+                ["google-chrome", "--version"], stderr=subprocess.STDOUT, text=True
+            ).splitlines()
+        except subprocess.CalledProcessError:
+            chrome_version = ["google-chrome not found or not executable"]
+
         demisto.debug(f"{chrome_instances_contents=}")
         demisto.debug(f"ps aux command result:\n{ps_aux_output}")
         demisto.debug(f"chrome_headless.log:\n{chrome_headless_content}")
