@@ -39,28 +39,6 @@
 						]
 					}
 				},
-				"Cymulate Compliance Support": {
-					"complex": {
-						"filters": [],
-						"root": "nistControls",
-						"transformers": [
-							{
-								"args": {
-									"headers": {},
-									"is_auto_json_transform": {},
-									"json_transform_properties": {},
-									"title": {
-										"value": {
-											"simple": "nistControls"
-										}
-									},
-									"url_keys": {}
-								},
-								"operator": "JsonToTable"
-							}
-						]
-					}
-				},
 				"Cymulate Defense Bypassed": {
 					"simple": "defenceBypassed"
 				},

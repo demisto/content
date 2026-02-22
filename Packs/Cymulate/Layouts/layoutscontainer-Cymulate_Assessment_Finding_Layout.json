@@ -1,12 +1,7 @@
 {
-	"cacheVersn": 0,
-	"close": null,
 	"definitionId": "",
 	"description": "Layout for Cymulate Assessment Findings incidents. Provides a structured view with all relevant fields organized for easy review and analysis of security findings from Cymulate's breach and attack simulation platform.",
-	"detached": false,
-	"details": null,
 	"detailsV2": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
@@ -747,22 +742,11 @@
 			}
 		]
 	},
-	"edit": null,
-	"fromServerVersion": "",
-	"fromVersion": "6.10.0",
+	"fromVersion": "6.0.0",
 	"group": "incident",
 	"id": "Cymulate Assessment Findings Layout",
-	"indicatorsDetails": null,
-	"indicatorsQuickView": null,
-	"itemVersion": "",
-	"locked": false,
-	"mobile": null,
 	"name": "Cymulate Assessment Findings Layout",
-	"packID": "",
-	"packName": "",
-	"quickView": null,
-	"quickViewV2": null,
 	"system": false,
-	"toServerVersion": "",
-	"version": -1
+	"version": -1,
+    "marketplaces": ["xsoar"]
 }

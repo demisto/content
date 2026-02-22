@@ -256,6 +256,7 @@ tasks:
           left:
             value:
               simple: incident.sha256
+            iscontext: true
         - operator: isNotEmpty
           left:
             value:
