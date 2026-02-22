@@ -1,5 +1,5 @@
 {
-    "autorun": false,
+    "autorun": true,
     "color": "#EEC1C1",
     "days": 0,
     "daysR": 0,
@@ -52,5 +52,6 @@
     "version": -1,
     "weeks": 0,
     "weeksR": 0,
+    "playbookId": "Cymulate IOC Findings Mitigation",
     "fromVersion": "6.10.0"
 }
