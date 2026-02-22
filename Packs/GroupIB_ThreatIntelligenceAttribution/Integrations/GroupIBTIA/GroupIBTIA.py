@@ -2060,11 +2060,7 @@ class IncidentBuilder:
         elif self.collection_name == "compromised/spd":
             # name = type + value
             ptype = self.incident.get("type") or "Payment data"
-            value_raw = self.incident.get("value")
-            if isinstance(value_raw, dict):
-                value_str = value_raw.get("value") or self.incident.get("id") or "—"
-            else:
-                value_str = self.incident.get("id") or "—"
+            value_str = self.incident.get("value")
             name = f"{prefix}: {ptype} {value_str}"
         else:
             name = f"{prefix}: {self.incident['name']}"

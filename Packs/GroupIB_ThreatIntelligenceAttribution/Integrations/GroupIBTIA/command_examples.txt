@@ -2,6 +2,7 @@
 !gibti-get-compromised-account-info id=253b9a136f0d574149fc43691eaf7ae27aff141a
 !gibti-get-compromised-card-group-info id=ecda6f4dc85596f447314ce01e215
 !gibti-get-compromised-breached-info id=277c4112d348c91f6dabe9467f0d18ba
+!gibti-get-compromised-spd-info id=5120a3b4abbfca5dcbed3ac9c8b3a110598f61
 !gibti-get-phishing-group-info id=42a22d6c8d642ba628294b2c91acfe322ffe16dda3
 !gibti-get-osi-git-leak-info id=ead0d8ae9f2347789941ebacde88ad2e3b1ef691
 !gibti-get-osi-public-leak-info id=a09f2354e52d5fa0a8697c8df0b4ed99cc956273

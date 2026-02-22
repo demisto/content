@@ -1390,12 +1390,7 @@
                     "simple": "threatActor"
                 },
                 "GIB TLP": {
-                    "complex": {
-                        "accessor": "tlp",
-                        "filters": [],
-                        "root": "evaluation",
-                        "transformers": []
-                    }
+                    "simple": "evaluation.tlp"
                 },
                 "GIB TTL": {
                     "simple": "evaluation.ttl"
@@ -1404,12 +1399,7 @@
                     "simple": "type"
                 },
                 "GIB SPD Value": {
-                    "complex": {
-                        "accessor": "value",
-                        "filters": [],
-                        "root": "value",
-                        "transformers": []
-                    }
+                    "simple": "value"
                 },
                 "severity": {
                     "simple": "systemSeverity"
