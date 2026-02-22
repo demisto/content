@@ -158,25 +158,25 @@ script:
     - description: The name of the Amazon S3 bucket.
       name: bucket
       required: true
-    - description: Weather Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket.
+    - description: Whether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket.
       name: block_public_acls
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - description: Weather Amazon S3 should ignore public ACLs for this bucket and objects in this bucket.
+    - description: Whether Amazon S3 should ignore public ACLs for this bucket and objects in this bucket.
       name: ignore_public_acls
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - description: Weather Amazon S3 should block public bucket policies for this bucket.
+    - description: Whether Amazon S3 should block public bucket policies for this bucket.
       name: block_public_policy
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - description: Weather Amazon S3 should restrict public bucket policies for this bucket.
+    - description: Whether Amazon S3 should restrict public bucket policies for this bucket.
       name: restrict_public_buckets
       auto: PREDEFINED
       predefined:
@@ -539,7 +539,7 @@ script:
     - description: The name of the bucket for which to set the logging parameters.
       name: bucket
       required: true
-    - description: Weather MFA delete is enabled in the bucket versioning configuration. This element is only returned if the bucket has been configured with MFA delete. If the bucket has never been so configured, this element is not returned.
+    - description: Whether MFA delete is enabled in the bucket versioning configuration. This element is only returned if the bucket has been configured with MFA delete. If the bucket has never been so configured, this element is not returned.
       name: mfa_delete
       required: false
     - auto: PREDEFINED
@@ -978,13 +978,13 @@ script:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: Weather IAM user passwords must contain at least one uppercase character from the ISO basic Latin alphabet (A to Z). Can be "True" or "False".
+      description: Whether IAM user passwords must contain at least one uppercase character from the ISO basic Latin alphabet (A to Z). Can be "True" or "False".
       name: require_uppercase_characters
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: Weather IAM user passwords must contain at least one lowercase character from the ISO basic Latin alphabet (a to z). Can be "True" or "False".
+      description: Whether IAM user passwords must contain at least one lowercase character from the ISO basic Latin alphabet (a to z). Can be "True" or "False".
       name: require_lowercase_characters
       predefined:
       - 'true'
@@ -1676,13 +1676,13 @@ script:
       description: 'The DB cluster identifier for the modified cluster. This parameter is not case sensitive and is valid for Aurora DB and Multi-AZ DB cluster types. It must match the identifier of an existing DB cluster.'
       required: true
     - name: deletion_protection
-      description: 'Weather the DB cluster has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled.'
+      description: 'Whether the DB cluster has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled.'
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: enable_iam_database_authentication
-      description: 'Weather to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
+      description: 'Whether to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -3688,21 +3688,21 @@ script:
       description: The name of the Amazon SNS topic defined for notification of log file delivery.
       required: false
     - name: include_global_service_events
-      description: Weather the trail is publishing events from global services such as IAM to the log files.
+      description: Whether the trail is publishing events from global services such as IAM to the log files.
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: is_multi_region_trail
-      description: Weather the trail applies only to the current region or to all regions. The default is false. If the trail exists only in the current region and this value is set to true, shadow trails (replications of the trail) will be created in the other regions. If the trail exists in all regions and this value is set to false, the trail will remain in the region where it was created, and its shadow trails in other regions will be deleted.
+      description: Whether the trail applies only to the current region or to all regions. The default is false. If the trail exists only in the current region and this value is set to true, shadow trails (replications of the trail) will be created in the other regions. If the trail exists in all regions and this value is set to false, the trail will remain in the region where it was created, and its shadow trails in other regions will be deleted.
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: enable_log_file_validation
-      description: Weather log file validation is enabled. The default is false.
+      description: Whether log file validation is enabled. The default is false.
       required: false
       auto: PREDEFINED
       predefined:
@@ -3740,13 +3740,13 @@ script:
       description: Set to True to include AWS API calls from AWS global services such as IAM.
       type: boolean
     - contextPath: AWS.CloudTrail.Trail.IsMultiRegionTrail
-      description: Weather the trail exists only in one region or exists in all regions.
+      description: Whether the trail exists only in one region or exists in all regions.
       type: boolean
     - contextPath: AWS.CloudTrail.Trail.HomeRegion
       description: The region in which the trail was created.
       type: string
     - contextPath: AWS.CloudTrail.Trail.LogFileValidationEnabled
-      description: Weather log file validation is enabled.
+      description: Whether log file validation is enabled.
       type: boolean
     - contextPath: AWS.CloudTrail.Trail.CloudWatchLogsLogGroupArn
       description: Amazon Resource Name (ARN), a unique identifier that represents the log group to which CloudTrail logs will be delivered.
@@ -3761,7 +3761,7 @@ script:
       description: Specifies if the trail has custom event selectors.
       type: boolean
     - contextPath: AWS.CloudTrail.Trail.HasInsightSelectors
-      description: Weather a trail has insight selectors enabled.
+      description: Whether a trail has insight selectors enabled.
       type: boolean
     - contextPath: AWS.CloudTrail.Trail.IsOrganizationTrail
       description: Whether the trail is an organization trail.
@@ -3792,7 +3792,7 @@ script:
         prettypredefined:
           Name: ${asset.xdm.asset.name}
       - name: enable_log_file_validation
-        description: Weather log file validation is enabled.
+        description: Whether log file validation is enabled.
         defaultValue: 'true'
         hidden: true
     outputs:
@@ -10895,6 +10895,452 @@ script:
         description: The ID of the volume.
         required: true
     outputs: [ ]
+
+  - name: aws-ec2-launch-templates-describe
+    description: Describes one or more launch templates.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS Region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: filters
+        description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
+        required: false
+      - name: launch_template_ids
+        description: A comma-separated list of launch template IDs.
+        required: false
+        isArray: true
+      - name: launch_template_names
+        description: A comma-separated list of launch template names.
+        required: false
+        isArray: true
+      - name: limit
+        description: The maximum number of results to return in a single call. Maximum value of 200.
+        required: false
+      - name: next_token
+        description: The token for the next set of results.
+        required: false
+    outputs:
+      - contextPath: AWS.EC2.LaunchTemplatesNextToken
+        description: Token to use for pagination in subsequent requests.
+        type: String
+      - contextPath: AWS.EC2.LaunchTemplates.LaunchTemplateId
+        description: The ID of the launch template.
+        type: string
+      - contextPath: AWS.EC2.LaunchTemplates.LaunchTemplateName
+        description: The name of the launch template.
+        type: string
+      - contextPath: AWS.EC2.LaunchTemplates.CreateTime
+        description: The time launch template was created.
+        type: date
+      - contextPath: AWS.EC2.LaunchTemplates.CreatedBy
+        description: The principal that created the launch template.
+        type: string
+      - contextPath: AWS.EC2.LaunchTemplates.DefaultVersionNumber
+        description: The default version number of the launch template.
+        type: number
+      - contextPath: AWS.EC2.LaunchTemplates.LatestVersionNumber
+        description: The latest version number of the launch template.
+        type: number
+      - contextPath: AWS.EC2.LaunchTemplates.Tags.Key
+        description: The key of the tag.
+        type: string
+      - contextPath: AWS.EC2.LaunchTemplates.Tags.Value
+        description: The value of the tag.
+        type: string
+
+  - name: aws-ec2-launch-template-create
+    description: Creates a launch template. A launch template contains the parameters to launch an instance.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS Region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: launch_template_name
+        description: A name for the launch template.
+        required: true
+      - name: version_description
+        description: A description for the first version of the launch template.
+        required: false
+      - name: kernel_id
+        description: The ID of the kernel.
+        required: false
+      - name: ebs_optimized
+        description: Whether the instance is optimized for Amazon EBS I/O.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: iam_instance_profile_arn
+        description: The Amazon Resource Name (ARN) of the instance profile.
+        required: false
+      - name: iam_instance_profile_name
+        description: The name of the instance profile.
+        required: false
+      - name: image_id
+        description: The ID of the AMI.
+        required: false
+      - name: instance_type
+        description: The instance type.
+        required: false
+      - name: key_name
+        description: The name of the key pair.
+        required: false
+      - name: monitoring
+        description: Set to true to enable detailed monitoring. Set to false to enable basic monitoring.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: disable_api_termination
+        description: If set to true, you can't terminate the instance using the Amazon EC2 console, CLI, or API.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: instance_initiated_shutdown_behavior
+        description: Whether an instance stops or terminates when you initiate shutdown from the instance.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - stop
+          - terminate
+      - name: user_data
+        description: The Base64-encoded user data to make available to the instance.
+        required: false
+      - name: security_group_ids
+        description: A comma-separated list of security group IDs.
+        required: false
+        isArray: true
+      - name: security_groups
+        description: A comma-separated list of security group names.
+        required: false
+        isArray: true
+      - name: device_name
+        description: The device name (for example, /dev/sdh or xvdh).
+        required: false
+      - name: ebs_encrypted
+        description: Indicates whether the EBS volume is encrypted.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: ebs_delete_on_termination
+        description: Indicates whether the EBS volume is deleted on instance termination.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: ebs_iops
+        description: The number of I/O operations per second (IOPS) that the volume supports.
+        required: false
+      - name: ebs_kms_key_id
+        description: The ARN of the AWS Key Management Service (AWS KMS) CMK used for encryption.
+        required: false
+      - name: ebs_snapshot_id
+        description: The ID of the snapshot.
+        required: false
+      - name: ebs_volume_size
+        description: The size of the volume, in GiB.
+        required: false
+      - name: ebs_volume_type
+        description: The volume type.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - standard
+          - io1
+          - io2
+          - gp2
+          - gp3
+          - sc1
+          - st1
+      - name: ebs_card_index
+        description: The index of the EBS card. Some instance types support multiple EBS cards. The default EBS card index is 0.
+        required: false
+      - name: ebs_throughput
+        description: The throughput to provision for a gp3 volume, with a maximum of 2,000 MiB/s. The minimum value of 125, and maximum value of 2,000.
+        required: false
+      - name: ebs_initialization_rate
+        description: Specifies the Amazon EBS Provisioned Rate for Volume Initialization (volume initialization rate), in MiB/s, at which to download the snapshot blocks from Amazon S3 to the volume.
+        required: false
+      - name: block_device_mappings_no_device
+        description: To omit the device from the block device mapping, specify an empty string.
+        required: false
+      - name: block_device_mappings_virtual_name
+        description: The virtual device name (ephemeralN).
+        required: false
+      - name: network_interfaces_associate_public_ip_address
+        description: Associates a public IPv4 address with eth0 for a new network interface.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: network_interfaces_delete_on_termination
+        description: Whether the network interface is deleted when the instance is terminated.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: network_interfaces_description
+        description: A description for the network interface.
+        required: false
+      - name: network_interfaces_device_index
+        description: The device index for the network interface attachment.
+        required: false
+      - name: network_interface_groups
+        description: A comma-separated list of security group IDs.
+        required: false
+        isArray: true
+      - name: subnet_id
+        description: The ID of the subnet for the network interface.
+        required: false
+      - name: private_ip_address
+        description: The primary private IPv4 address of the network interface.
+        required: false
+      - name: ipv6_address_count
+        description: The number of IPv6 addresses to assign to a network interface.
+        required: false
+      - name: ipv6_addresses
+        description: One or more specific IPv6 addresses from the IPv6 CIDR block range of your subnet.
+        required: false
+      - name: network_interface_id
+        description: The ID of the network interface.
+        required: false
+      - name: availability_zone
+        description: The Availability Zone for the instance.
+        required: false
+      - name: placement_tenancy
+        description: The tenancy of the instance.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - default
+          - dedicated
+          - host
+      - name: ram_disk_id
+        description: The ID of the RAM disk.
+        required: false
+      - name: tags
+        description: "The tags to assign to the Elastic IP address. Format: key=<key>,value=<value>;key=<key>,value=<value>."
+        required: false
+      - name: market_type
+        description: The market type.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - spot
+          - capacity-block
+          - interruptible-capacity-reservation
+      - name: spot_options_instance_type
+        description: The Spot Instance request type.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - one-time
+          - persistent
+      - name: spot_options_max_price
+        description: The maximum hourly price you're willing to pay for the Spot Instances.
+        required: false
+      - name: spot_options_instance_interruption_behavior
+        description: The behavior when a Spot Instance is interrupted.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - hibernate
+          - stop
+          - terminate
+    outputs:
+      - contextPath: AWS.EC2.LaunchTemplates.LaunchTemplateId
+        description: The ID of the launch template.
+        type: string
+      - contextPath: AWS.EC2.LaunchTemplates.LaunchTemplateName
+        description: The name of the launch template.
+        type: string
+      - contextPath: AWS.EC2.LaunchTemplates.CreateTime
+        description: The time launch template was created.
+        type: date
+      - contextPath: AWS.EC2.LaunchTemplates.CreatedBy
+        description: The principal that created the launch template.
+        type: string
+      - contextPath: AWS.EC2.LaunchTemplates.DefaultVersionNumber
+        description: The default version number of the launch template.
+        type: number
+      - contextPath: AWS.EC2.LaunchTemplates.LatestVersionNumber
+        description: The latest version number of the launch template.
+        type: number
+      - contextPath: AWS.EC2.LaunchTemplates.Tags.Key
+        description: The key of the tag.
+        type: string
+      - contextPath: AWS.EC2.LaunchTemplates.Tags.Value
+        description: The value of the tag.
+        type: string
+
+  - name: aws-ec2-launch-template-delete
+    description: Deletes a launch template. Deleting a launch template deletes all of its versions.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: launch_template_id
+        description: The ID of the launch template. You must specify either the launch template ID or launch template name, but not both.
+        required: false
+      - name: launch_template_name
+        description: The name of the launch template. You must specify either the launch template ID or launch template name, but not both.
+        required: false
+    outputs:
+      - contextPath: AWS.EC2.DeletedLaunchTemplates.LaunchTemplateId
+        description: The ID of the launch template.
+        type: string
+      - contextPath: AWS.EC2.DeletedLaunchTemplates.LaunchTemplateName
+        description: The name of the launch template.
+        type: string
+      - contextPath: AWS.EC2.DeletedLaunchTemplates.CreateTime
+        description: The time launch template was created.
+        type: date
+      - contextPath: AWS.EC2.DeletedLaunchTemplates.CreatedBy
+        description: The principal that created the launch template.
+        type: string
+      - contextPath: AWS.EC2.DeletedLaunchTemplates.DefaultVersionNumber
+        description: The default version number of the launch template.
+        type: number
+      - contextPath: AWS.EC2.DeletedLaunchTemplates.LatestVersionNumber
+        description: The latest version number of the launch template.
+        type: number
+      - contextPath: AWS.EC2.DeletedLaunchTemplates.Operator
+        description: The entity that manages the launch template.
+        type: Object
+      - contextPath: AWS.EC2.DeletedLaunchTemplates.Tags.Key
+        description: The key of the tag.
+        type: string
+      - contextPath: AWS.EC2.DeletedLaunchTemplates.Tags.Value
+        description: The value of the tag.
+        type: string
+
 
   isfetch: false
   runonce: false

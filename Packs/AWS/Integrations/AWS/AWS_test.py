@@ -11150,3 +11150,427 @@ def test_prepare_create_function_kwargs_with_s3_and_all_optional_params():
     assert result["VpcConfig"]["SubnetIds"] == ["subnet-123"]
     assert result["VpcConfig"]["SecurityGroupIds"] == ["sg-456"]
     assert result["VpcConfig"]["Ipv6AllowedForDualStack"] is True
+
+
+def test_ec2_describe_launch_templates_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client with valid launch templates response.
+    When: describe_launch_templates_command is called successfully.
+    Then: It should return CommandResults with launch template data and proper outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_launch_templates.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "LaunchTemplates": [
+            {
+                "LaunchTemplateId": "lt-1234567890abcdef0",
+                "LaunchTemplateName": "test-template",
+                "CreateTime": datetime(2023, 10, 15, 14, 30, 45),
+                "CreatedBy": "arn:aws:iam::123456789012:user/test-user",
+                "DefaultVersionNumber": 1,
+                "LatestVersionNumber": 1,
+                "Tags": [{"Key": "Environment", "Value": "Test"}],
+            }
+        ],
+    }
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_client.describe_launch_templates.return_value)
+
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    result = EC2.describe_launch_templates_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "AWS.EC2.LaunchTemplates(val.LaunchTemplateId && val.LaunchTemplateId == obj.LaunchTemplateId)" in result.outputs
+    assert "AWS.EC2(true)" in result.outputs
+    launch_templates = result.outputs[
+        "AWS.EC2.LaunchTemplates(val.LaunchTemplateId && val.LaunchTemplateId == obj.LaunchTemplateId)"
+    ]
+    assert len(launch_templates) == 1
+    assert launch_templates[0]["LaunchTemplateId"] == "lt-1234567890abcdef0"
+    assert launch_templates[0]["LaunchTemplateName"] == "test-template"
+    assert "AWS EC2 LaunchTemplates" in result.readable_output
+
+
+def test_ec2_describe_launch_templates_command_with_filters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and launch template arguments with filters.
+    When: describe_launch_templates_command is called with filters.
+    Then: It should pass filters to the API call and return filtered results.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_launch_templates.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "LaunchTemplates": [
+            {
+                "LaunchTemplateId": "lt-filtered123",
+                "LaunchTemplateName": "filtered-template",
+                "CreateTime": datetime(2023, 10, 15, 14, 30, 45),
+                "CreatedBy": "arn:aws:iam::123456789012:user/admin",
+                "DefaultVersionNumber": 2,
+                "LatestVersionNumber": 3,
+            }
+        ],
+    }
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_client.describe_launch_templates.return_value)
+    mocker.patch("AWS.parse_filter_field", return_value=[{"Name": "tag:Environment", "Values": ["Production"]}])
+
+    args = {"account_id": "123456789012", "region": "us-west-2", "filters": "name=tag:Environment,values=Production"}
+
+    result = EC2.describe_launch_templates_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    mock_client.describe_launch_templates.assert_called_once()
+    call_args = mock_client.describe_launch_templates.call_args[1]
+    assert "Filters" in call_args
+
+
+def test_ec2_describe_launch_templates_command_no_results(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning empty launch templates list.
+    When: describe_launch_templates_command is called with no matching templates.
+    Then: It should return CommandResults with no templates message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_launch_templates.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "LaunchTemplates": [],
+    }
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "launch_template_ids": "lt-nonexistent"}
+
+    result = EC2.describe_launch_templates_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "No launch templates were found."
+
+
+def test_ec2_describe_launch_templates_command_with_pagination(mocker):
+    """
+    Given: A mocked boto3 EC2 client and pagination arguments.
+    When: describe_launch_templates_command is called with limit and next_token.
+    Then: It should pass pagination parameters to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_launch_templates.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "LaunchTemplates": [
+            {
+                "LaunchTemplateId": "lt-page1",
+                "LaunchTemplateName": "template-page1",
+                "CreateTime": datetime(2023, 10, 15, 14, 30, 45),
+                "CreatedBy": "arn:aws:iam::123456789012:user/test",
+                "DefaultVersionNumber": 1,
+                "LatestVersionNumber": 1,
+            }
+        ],
+        "NextToken": "next-page-token",
+    }
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_client.describe_launch_templates.return_value)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "limit": "10", "next_token": "prev-token"}
+
+    result = EC2.describe_launch_templates_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "AWS.EC2(true)" in result.outputs
+    assert result.outputs["AWS.EC2(true)"]["LaunchTemplatesNextToken"] == "next-page-token"
+    mock_client.describe_launch_templates.assert_called_once()
+    call_args = mock_client.describe_launch_templates.call_args[1]
+    assert call_args["MaxResults"] == 10
+    assert call_args["NextToken"] == "prev-token"
+
+
+def test_ec2_create_launch_template_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid launch template creation arguments.
+    When: create_launch_template_command is called successfully.
+    Then: It should return CommandResults with new template data and proper outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_launch_template.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "LaunchTemplate": {
+            "LaunchTemplateId": "lt-new12345",
+            "LaunchTemplateName": "new-template",
+            "CreateTime": datetime(2023, 10, 15, 14, 30, 45),
+            "CreatedBy": "arn:aws:iam::123456789012:user/admin",
+            "DefaultVersionNumber": 1,
+            "LatestVersionNumber": 1,
+            "Tags": [{"Key": "Name", "Value": "Test"}],
+        },
+    }
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_client.create_launch_template.return_value)
+    mocker.patch("AWS.parse_tag_field", return_value=[{"Key": "Name", "Value": "Test"}])
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "launch_template_name": "new-template",
+        "version_description": "Initial version",
+        "image_id": "ami-12345678",
+        "instance_type": "t3.micro",
+        "key_name": "my-key",
+        "monitoring": "true",
+        "ebs_optimized": "true",
+        "security_group_ids": "sg-123,sg-456",
+        "user_data": "IyEvYmluL2Jhc2gKZWNobyAiSGVsbG8gV29ybGQi",
+        "iam_instance_profile_arn": "arn:aws:iam::123456789012:instance-profile/MyProfile",
+        "tags": "key=Name,value=Test",
+    }
+
+    result = EC2.create_launch_template_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    mock_client.create_launch_template.assert_called_once()
+    call_args = mock_client.create_launch_template.call_args[1]
+    assert result.outputs_prefix == "AWS.EC2.LaunchTemplates"
+    assert result.outputs_key_field == "LaunchTemplateId"
+    assert result.outputs["LaunchTemplateId"] == "lt-new12345"
+    assert result.outputs["LaunchTemplateName"] == "new-template"
+    assert result.outputs["Tags"] == [{"Key": "Name", "Value": "Test"}]
+    assert call_args["LaunchTemplateData"]["ImageId"] == "ami-12345678"
+    assert "AWS Launch Template" in result.readable_output
+    assert call_args["LaunchTemplateData"]["Monitoring"]["Enabled"] is True
+    assert call_args["LaunchTemplateData"]["EbsOptimized"] is True
+    assert call_args["TagSpecifications"][0]["ResourceType"] == "launch-template"
+    assert call_args["TagSpecifications"][0]["Tags"] == result.outputs["Tags"]
+
+
+def test_ec2_create_launch_template_command_with_network_interfaces(mocker):
+    """
+    Given: A mocked boto3 EC2 client and launch template arguments with network interface configuration.
+    When: create_launch_template_command is called with network interface parameters.
+    Then: It should configure network interfaces correctly in the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_launch_template.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "LaunchTemplate": {
+            "LaunchTemplateId": "lt-network123",
+            "LaunchTemplateName": "network-template",
+            "CreateTime": datetime(2023, 10, 15, 14, 30, 45),
+            "CreatedBy": "arn:aws:iam::123456789012:user/admin",
+            "DefaultVersionNumber": 1,
+            "LatestVersionNumber": 1,
+        },
+    }
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_client.create_launch_template.return_value)
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "launch_template_name": "network-template",
+        "network_interfaces_associate_public_ip_address": "true",
+        "network_interfaces_delete_on_termination": "true",
+        "network_interfaces_description": "Primary network interface",
+        "network_interfaces_device_index": "0",
+        "network_interface_groups": "sg-123,sg-456",
+        "subnet_id": "subnet-12345678",
+        "private_ip_address": "private_ip_address",
+    }
+
+    result = EC2.create_launch_template_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.create_launch_template.call_args[1]
+    assert "NetworkInterfaces" in call_args["LaunchTemplateData"]
+    # NetworkInterfaces is a list with one dict
+    assert isinstance(call_args["LaunchTemplateData"]["NetworkInterfaces"], list)
+    network_interface = call_args["LaunchTemplateData"]["NetworkInterfaces"][0]
+    assert network_interface["AssociatePublicIpAddress"] is True
+    assert network_interface["DeleteOnTermination"] is True
+    assert network_interface["DeviceIndex"] == 0
+    assert network_interface["SubnetId"] == "subnet-12345678"
+    assert network_interface["PrivateIpAddress"] == "private_ip_address"
+    assert network_interface["Groups"] == ["sg-123", "sg-456"]
+
+
+def test_ec2_create_launch_template_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning non-OK status code.
+    When: create_launch_template_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_launch_template.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "launch_template_name": "test-template"}
+
+    EC2.create_launch_template_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_delete_launch_template_command_success_with_id(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid launch template ID.
+    When: delete_launch_template_command is called successfully with template ID.
+    Then: It should return CommandResults with deleted template data and success message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "LaunchTemplate": {
+            "LaunchTemplateId": "lt-delete123",
+            "LaunchTemplateName": "deleted-template",
+            "CreateTime": datetime(2023, 10, 15, 14, 30, 45),
+            "CreatedBy": "arn:aws:iam::123456789012:user/admin",
+            "DefaultVersionNumber": 1,
+            "LatestVersionNumber": 1,
+        },
+    }
+
+    serialized_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "LaunchTemplate": {
+            "LaunchTemplateId": "lt-delete123",
+            "LaunchTemplateName": "deleted-template",
+            "CreateTime": "2023-10-15T14:30:45",
+            "CreatedBy": "arn:aws:iam::123456789012:user/admin",
+            "DefaultVersionNumber": 1,
+            "LatestVersionNumber": 1,
+        },
+    }
+
+    mock_client.delete_launch_template.return_value = mock_response
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=serialized_response)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "launch_template_id": "lt-delete123"}
+
+    result = EC2.delete_launch_template_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.DeletedLaunchTemplates"
+    assert result.outputs_key_field == "LaunchTemplateId"
+    assert result.outputs["LaunchTemplateId"] == "lt-delete123"
+    assert result.outputs["LaunchTemplateName"] == "deleted-template"
+    assert "Successfully deleted the AWS Launch Template" in result.readable_output
+    assert "lt-delete123" in result.readable_output
+    assert mock_client.delete_launch_template.call_args.kwargs
+    assert mock_client.delete_launch_template.call_args.kwargs.get("LaunchTemplateId") == "lt-delete123"
+    assert "LaunchTemplateName" not in mock_client.delete_launch_template.call_args.kwargs
+    mock_client.delete_launch_template.assert_called_once_with(LaunchTemplateId="lt-delete123")
+
+
+def test_ec2_delete_launch_template_command_success_with_name(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid launch template name.
+    When: delete_launch_template_command is called successfully with template name.
+    Then: It should return CommandResults with deleted template data and success message.
+    """
+    from AWS import EC2
+
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "LaunchTemplate": {
+            "LaunchTemplateId": "lt-byname123",
+            "LaunchTemplateName": "template-to-delete",
+            "CreateTime": datetime(2023, 10, 15, 14, 30, 45),
+            "CreatedBy": "arn:aws:iam::123456789012:user/admin",
+            "DefaultVersionNumber": 1,
+            "LatestVersionNumber": 2,
+        },
+    }
+
+    serialized_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "LaunchTemplate": {
+            "LaunchTemplateId": "lt-byname123",
+            "LaunchTemplateName": "template-to-delete",
+            "CreateTime": "2023-10-15T14:30:45",
+            "CreatedBy": "arn:aws:iam::123456789012:user/admin",
+            "DefaultVersionNumber": 1,
+            "LatestVersionNumber": 2,
+        },
+    }
+
+    mock_client = mocker.Mock()
+    mock_client.delete_launch_template.return_value = mock_response
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=serialized_response)
+
+    args = {"account_id": "123456789012", "region": "us-west-2", "launch_template_name": "template-to-delete"}
+
+    result = EC2.delete_launch_template_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs["LaunchTemplateName"] == "template-to-delete"
+    assert "template-to-delete" in result.readable_output
+    assert "LaunchTemplateId" not in mock_client.delete_launch_template.call_args.kwargs
+    assert mock_client.delete_launch_template.call_args.kwargs.get("LaunchTemplateName") == "template-to-delete"
+    mock_client.delete_launch_template.assert_called_once_with(LaunchTemplateName="template-to-delete")
+
+
+def test_ec2_delete_launch_template_command_no_identifier(mocker):
+    """
+    Given: A mocked boto3 EC2 client and arguments without template ID or name.
+    When: delete_launch_template_command is called without identifier.
+    Then: It should raise DemistoException requiring one of the parameters.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    with pytest.raises(
+        DemistoException, match="Either launch_template_id or launch_template_name must be provided, but not both."
+    ):
+        EC2.delete_launch_template_command(mock_client, args)
+
+
+def test_ec2_delete_launch_template_command_both_identifiers(mocker):
+    """
+    Given: A mocked boto3 EC2 client and arguments with both template ID and name.
+    When: delete_launch_template_command is called with both identifiers.
+    Then: It should raise DemistoException prohibiting both parameters.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "launch_template_id": "lt-123",
+        "launch_template_name": "my-template",
+    }
+
+    with pytest.raises(
+        DemistoException, match="Either launch_template_id or launch_template_name must be provided, but not both."
+    ):
+        EC2.delete_launch_template_command(mock_client, args)
+
+
+def test_ec2_delete_launch_template_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning non-OK status code.
+    When: delete_launch_template_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.delete_launch_template.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.NOT_FOUND}}
+
+    mocker.patch("AWS.demisto.command", return_value="aws-ec2-launch-template-delete")
+    args = {"account_id": "123456789012", "region": "us-east-1", "launch_template_id": "lt-nonexistent"}
+    mocker.patch("AWS.demisto.args", return_value=args)
+    demisto_results = mocker.patch("AWS.demisto.results")
+
+    with pytest.raises(SystemExit):
+        EC2.delete_launch_template_command(mock_client, args)
+
+    # Verify that demisto.results was called (error handler was invoked)
+    demisto_results.assert_called_once()
