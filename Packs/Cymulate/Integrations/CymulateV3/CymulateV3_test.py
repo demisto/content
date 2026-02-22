@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from unittest.mock import MagicMock
 
 import pytest
@@ -128,7 +128,7 @@ def test_fetch_incidents_happy_path(requests_mock, mock_client, mock_demisto):
         },
     )
 
-    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=timezone.utc)
+    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=UTC)
     incidents, last_run = fetch_incidents(
         client=mock_client,
         first_fetch=first_fetch,
@@ -153,7 +153,7 @@ def test_fetch_incidents_empty_assessments(requests_mock, mock_client, mock_demi
         json={"data": [], "nextCursor": None},
     )
 
-    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=timezone.utc)
+    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=UTC)
     incidents, last_run = fetch_incidents(
         client=mock_client,
         first_fetch=first_fetch,
@@ -205,7 +205,7 @@ def test_fetch_incidents_threat_feed_filter(requests_mock, mock_client, mock_dem
         },
     )
 
-    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=timezone.utc)
+    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=UTC)
     incidents, last_run = fetch_incidents(
         client=mock_client,
         first_fetch=first_fetch,
@@ -264,7 +264,7 @@ def test_fetch_incidents_dedup_via_assessment_date(requests_mock, mock_client, m
         },
     )
 
-    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=timezone.utc)
+    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=UTC)
     incidents, last_run = fetch_incidents(
         client=mock_client,
         first_fetch=first_fetch,
@@ -286,7 +286,7 @@ def test_fetch_incidents_transient_error_assessments(mock_client, mock_demisto, 
         MagicMock(side_effect=ChunkedEncodingError("Connection broken: IncompleteRead")),
     )
 
-    first_fetch = datetime(2025, 11, 1, tzinfo=timezone.utc)
+    first_fetch = datetime(2025, 11, 1, tzinfo=UTC)
 
     with pytest.raises(DemistoException, match="Error fetching assessments"):
         fetch_incidents(
@@ -338,7 +338,7 @@ def test_fetch_incidents_transient_error_with_partial_data(mock_client, mock_dem
         ),
     )
 
-    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=timezone.utc)
+    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=UTC)
     incidents, last_run = fetch_incidents(
         client=mock_client,
         first_fetch=first_fetch,
@@ -418,7 +418,7 @@ def test_fetch_incidents_pagination_assessments(requests_mock, mock_client, mock
         },
     )
 
-    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=timezone.utc)
+    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=UTC)
     incidents, last_run = fetch_incidents(
         client=mock_client,
         first_fetch=first_fetch,
@@ -462,7 +462,7 @@ def test_fetch_incidents_max_fetch_cap(requests_mock, mock_client, mock_demisto)
         json={"findings": findings, "nextCursor": None},
     )
 
-    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=timezone.utc)
+    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=UTC)
     incidents, last_run = fetch_incidents(
         client=mock_client,
         first_fetch=first_fetch,
@@ -525,7 +525,7 @@ def test_fetch_incidents_findings_pagination(requests_mock, mock_client, mock_de
         ],
     )
 
-    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=timezone.utc)
+    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=UTC)
     incidents, last_run = fetch_incidents(
         client=mock_client,
         first_fetch=first_fetch,
@@ -589,7 +589,7 @@ def test_fetch_incidents_boundary_dedup(requests_mock, mock_client, monkeypatch)
         },
     )
 
-    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=timezone.utc)
+    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=UTC)
     incidents, last_run = fetch_incidents(
         client=mock_client,
         first_fetch=first_fetch,
@@ -640,7 +640,7 @@ def test_fetch_incidents_lastrun_not_advanced_on_max_fetch(requests_mock, mock_c
         json={"findings": findings, "nextCursor": None},
     )
 
-    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=timezone.utc)
+    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=UTC)
     incidents, last_run = fetch_incidents(
         client=mock_client,
         first_fetch=first_fetch,
@@ -709,7 +709,7 @@ def test_fetch_incidents_stores_pending_state_on_max_fetch(requests_mock, mock_c
         json={"findings": findings, "nextCursor": None},
     )
 
-    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=timezone.utc)
+    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=UTC)
     incidents, last_run = fetch_incidents(
         client=mock_client,
         first_fetch=first_fetch,
@@ -778,7 +778,7 @@ def test_fetch_incidents_resumes_from_pending_assessment(requests_mock, mock_cli
         json={"findings": findings, "nextCursor": None},
     )
 
-    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=timezone.utc)
+    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=UTC)
     incidents, last_run = fetch_incidents(
         client=mock_client,
         first_fetch=first_fetch,
@@ -845,7 +845,7 @@ def test_fetch_incidents_pending_cursor_advances_to_next_page_when_page_exhauste
         ],
     )
 
-    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=timezone.utc)
+    first_fetch = datetime(2025, 11, 5, 12, 0, tzinfo=UTC)
     incidents, last_run = fetch_incidents(
         client=mock_client,
         first_fetch=first_fetch,

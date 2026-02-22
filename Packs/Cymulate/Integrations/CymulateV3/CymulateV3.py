@@ -1,5 +1,5 @@
 import traceback
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, UTC
 
 import urllib3
 from CommonServerPython import *  # pylint: disable=unused-wildcard-import
@@ -103,22 +103,22 @@ class Client(BaseClient):
 
 
 def get_end_time():
-    return datetime.now(timezone.utc).strftime(DATE_FORMAT)
+    return datetime.now(UTC).strftime(DATE_FORMAT)
 
 
 def normalize_to_utc(dt: datetime | None) -> datetime | None:
     if not dt:
         return None
     if dt.tzinfo is None:
-        return dt.replace(tzinfo=timezone.utc)
-    return dt.astimezone(timezone.utc)
+        return dt.replace(tzinfo=UTC)
+    return dt.astimezone(UTC)
 
 
 def test_module(client: Client) -> str:
     """Tests API connectivity and authentication."""
     test_message = "ok"
     try:
-        to_date = datetime.now(timezone.utc)
+        to_date = datetime.now(UTC)
         from_date = to_date - timedelta(hours=1)
         client.list_assessments(
             from_date=from_date.strftime(DATE_FORMAT),
