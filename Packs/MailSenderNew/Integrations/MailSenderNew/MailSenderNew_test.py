@@ -130,12 +130,18 @@ def test_attachments(mocker):
 @pytest.mark.parametrize(
     "args, params, expected_from",
     [
-        (
+        pytest.param(
             {"to": "test@test.com", "subject": "test", "body": "test", "sender": "override@test.com"},
             {"from": "default@test.com"},
             "override@test.com",
+            id="use_explicit_sender_override",
         ),
-        ({"to": "test@test.com", "subject": "test", "body": "test"}, {"from": "default@test.com"}, "default@test.com"),
+        pytest.param(
+            {"to": "test@test.com", "subject": "test", "body": "test"},
+            {"from": "default@test.com"},
+            "default@test.com",
+            id="fallback_to_default_sender",
+        ),
     ],
 )
 def test_create_msg_sender_override(mocker, args, params, expected_from):
