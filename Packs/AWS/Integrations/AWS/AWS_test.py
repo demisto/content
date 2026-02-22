@@ -11151,6 +11151,7 @@ def test_prepare_create_function_kwargs_with_s3_and_all_optional_params():
     assert result["VpcConfig"]["SecurityGroupIds"] == ["sg-456"]
     assert result["VpcConfig"]["Ipv6AllowedForDualStack"] is True
 
+
 def test_create_fleet_command_success(mocker):
     """
     Given: A mocked EC2 client and valid fleet creation arguments with a launch template ID.
@@ -11232,7 +11233,9 @@ def test_create_fleet_command_both_templates_provided(mocker):
         "default_target_capacity_type": "spot",
     }
 
-    with pytest.raises(DemistoException, match="Only one of launch_template_id or launch_template_name"):
+    with pytest.raises(
+        DemistoException, match="Either launch_template_id or launch_template_name must be provided, but not both"
+    ):
         EC2.create_fleet_command(mock_client, args)
 
 
@@ -11333,9 +11336,7 @@ def test_delete_fleet_command_success(mocker):
     mock_client = mocker.Mock()
     mock_client.delete_fleets.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
-        "SuccessfulFleetDeletions": [
-            {"FleetId": "fleet-aaa", "CurrentFleetState": "deleted", "PreviousFleetState": "active"}
-        ],
+        "SuccessfulFleetDeletions": [{"FleetId": "fleet-aaa", "CurrentFleetState": "deleted", "PreviousFleetState": "active"}],
         "UnsuccessfulFleetDeletions": [],
     }
     mocker.patch(
@@ -11374,9 +11375,7 @@ def test_delete_fleet_command_partial_failure(mocker):
     mock_client = mocker.Mock()
     mock_client.delete_fleets.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
-        "SuccessfulFleetDeletions": [
-            {"FleetId": "fleet-ok", "CurrentFleetState": "deleted", "PreviousFleetState": "active"}
-        ],
+        "SuccessfulFleetDeletions": [{"FleetId": "fleet-ok", "CurrentFleetState": "deleted", "PreviousFleetState": "active"}],
         "UnsuccessfulFleetDeletions": [
             {"FleetId": "fleet-fail", "Error": {"Code": "InvalidFleetId", "Message": "Fleet not found"}}
         ],
@@ -11384,9 +11383,7 @@ def test_delete_fleet_command_partial_failure(mocker):
     mocker.patch(
         "AWS.serialize_response_with_datetime_encoding",
         return_value={
-            "SuccessfulFleetDeletions": [
-                {"FleetId": "fleet-ok", "CurrentFleetState": "deleted", "PreviousFleetState": "active"}
-            ],
+            "SuccessfulFleetDeletions": [{"FleetId": "fleet-ok", "CurrentFleetState": "deleted", "PreviousFleetState": "active"}],
             "UnsuccessfulFleetDeletions": [
                 {"FleetId": "fleet-fail", "Error": {"Code": "InvalidFleetId", "Message": "Fleet not found"}}
             ],
@@ -11454,10 +11451,20 @@ def test_describe_fleets_command_success(mocker):
 
     mock_client = mocker.Mock()
     fleets = [
-        {"FleetId": "fleet-111", "FleetState": "active", "ActivityStatus": "fulfilled",
-         "FulfilledCapacity": 2.0, "TargetCapacitySpecification": {"TotalTargetCapacity": 2}},
-        {"FleetId": "fleet-222", "FleetState": "active", "ActivityStatus": "pending_fulfillment",
-         "FulfilledCapacity": 0.0, "TargetCapacitySpecification": {"TotalTargetCapacity": 1}},
+        {
+            "FleetId": "fleet-111",
+            "FleetState": "active",
+            "ActivityStatus": "fulfilled",
+            "FulfilledCapacity": 2.0,
+            "TargetCapacitySpecification": {"TotalTargetCapacity": 2},
+        },
+        {
+            "FleetId": "fleet-222",
+            "FleetState": "active",
+            "ActivityStatus": "pending_fulfillment",
+            "FulfilledCapacity": 0.0,
+            "TargetCapacitySpecification": {"TotalTargetCapacity": 1},
+        },
     ]
     mock_client.describe_fleets.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
@@ -11521,8 +11528,13 @@ def test_describe_fleets_command_with_pagination(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    fleet = {"FleetId": "fleet-paged", "FleetState": "active", "ActivityStatus": "fulfilled",
-             "FulfilledCapacity": 1.0, "TargetCapacitySpecification": {"TotalTargetCapacity": 1}}
+    fleet = {
+        "FleetId": "fleet-paged",
+        "FleetState": "active",
+        "ActivityStatus": "fulfilled",
+        "FulfilledCapacity": 1.0,
+        "TargetCapacitySpecification": {"TotalTargetCapacity": 1},
+    }
     mock_client.describe_fleets.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "Fleets": [fleet],
@@ -11562,10 +11574,8 @@ def test_describe_fleet_instances_command_success(mocker):
 
     mock_client = mocker.Mock()
     instances = [
-        {"InstanceId": "i-aaa111", "InstanceType": "t3.micro", "SpotInstanceRequestId": "sir-001",
-         "InstanceHealth": "healthy"},
-        {"InstanceId": "i-bbb222", "InstanceType": "t3.small", "SpotInstanceRequestId": "sir-002",
-         "InstanceHealth": "healthy"},
+        {"InstanceId": "i-aaa111", "InstanceType": "t3.micro", "SpotInstanceRequestId": "sir-001", "InstanceHealth": "healthy"},
+        {"InstanceId": "i-bbb222", "InstanceType": "t3.small", "SpotInstanceRequestId": "sir-002", "InstanceHealth": "healthy"},
     ]
     mock_client.describe_fleet_instances.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
@@ -11632,8 +11642,9 @@ def test_describe_fleet_instances_command_with_filter(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    instances = [{"InstanceId": "i-filtered", "InstanceType": "t3.micro",
-                  "SpotInstanceRequestId": "sir-003", "InstanceHealth": "healthy"}]
+    instances = [
+        {"InstanceId": "i-filtered", "InstanceType": "t3.micro", "SpotInstanceRequestId": "sir-003", "InstanceHealth": "healthy"}
+    ]
     mock_client.describe_fleet_instances.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "ActiveInstances": instances,
