@@ -1,0 +1,114 @@
+commonfields:
+  id: CreateAppsecRule
+  version: -1
+name: CreateAppsecRule
+script: ''
+type: python
+tags:
+- Utilities
+comment: Get all cases.
+enabled: true
+args:
+- name: rule_name
+  underlyingargname: rule_name
+  description: >
+    Must be unique if exist generate new one
+    A unique name for the AppSec rule following the organization's naming conventions.
+  type: string
+  required: true
+- name: description
+  underlyingargname: description
+  description: >
+    A descriptive summary of the rule's objective and expected outcomes.
+  type: string
+  required: false
+- name: labels
+  underlyingargname: labels
+  description: >
+    A comma-separated list of rule labels to apply the rule to.
+  type: string
+  required: false
+- name: severity
+  underlyingargname: severity
+  description: >
+    Filter findings based on their severity level.
+    Options: CRITICAL, HIGH, MEDIUM, LOW.
+  type: string
+  required: true
+- name: scanner
+  underlyingargname: scanner
+  description: >
+    The type of security scanner used to detect findings of this rule. 
+    Options: SECRETS, IAC.
+  type: string
+  required: true
+- name: category
+  underlyingargname: category
+  description: >
+    Custom rule secret category
+    Options: 
+    if scanner is SECRETS : API_KEYS, DATABASE_CREDENTIALS, ENCRYPTION_KEYS, CLOUD_SERVICE_PROVIDER_KEYS, SSH_KEYS, ENVIRONMENT_VARIABLES, SENSITIVE_TOKENS, THIRD_PARTY_SERVICES.
+    if scanner is IAC : AI_ML, COMPUTE, IAM, KUBERNETES, LOGGING, MONITORING, NETWORKING, PUBLIC, STORAGE.
+  type: string
+  required: true
+- name: sub_category
+  underlyingargname: sub_category
+  description: >
+    required only if scanner is IAC 
+    Custom rule IAC sub_category
+    Options: 
+    if category is AI_ML: GUARDRAILS, RISKY_MODELS, PUBLIC_EXPOSURE, PERMISSIONS.
+    if category is COMPUTE: OVERPROVISIONED, STARTUP_SCRIPT_LEAKS, DEFAULT_CREDENTIALS_OR_AUTH, UNSANCTIONED_RESOURCE_OR_TYPE.
+    if category is IAM: OVERLY_PERMISSIVE, UNUSED, CREDENTIAL_EXPOSURE, MFA, ROLE_SEPARATION, SHARED, EXPIRED_KEY_CONTROLS, AUTHENTICATION_POLICIES.
+    if category is KUBERNETES: NETWORK_POLICIES, ACCESS_CONTROL, LOGGING_AND_MONITORING, RESOURCE_MANAGEMENT, NATIVE_SECURITY_CONTROLS, MANAGEMENT_SERVICES_EXPOSURE.
+    if category is LOGGING: ENCRYPTION, PERMISSIONS, RETENTION, FORMATS, DISABLED_OR_MISSING, PUBLIC_EXPOSURE, UNDER_USE.
+    if category is MONITORING: TAGS_AND_METADATA, RESOURCE_HEALTH, PERFORMANCE_MONITORING, ALERTING_AND_NOTIFICATIONS, UNINTEGRATED, STORAGE.
+    if category is NETWORKING: LOAD_BALANCING, INGRESS_CONTROLS, EGRESS_CONTROLS, ENCRYPTION_AND_PROTOCOLS, VPC_VCN_VNET, FLOW_LOGS.
+    if category is PUBLIC: ADMIN_INTERFACES, DATABASE_ENDPOINTS, STORAGE_BUCKETS, APIS, SENSITIVE_PORTS.
+    if category is STORAGE: ENCRYPTION, PERMISSIONS, BACKUPS, VERSIONING, REPLICATION, ALERTING, REDUNDANCY.
+  type: string
+  required: false
+- name: frameworks
+  underlyingargname: frameworks
+  description: >
+    An array of JSON objects defining framework-specific rules.
+    if scanner is SECRETS:
+      Each object requires:
+      - 'name': Framework type (Options: GIT).
+      - 'remediationDescription': String explaining how to fix the violation.
+      - 'definition': A stringified YAML block. If missing, you MUST generate it based on the security goal using this structure:
+          definition:
+            cond_type: 'String'
+            value:     - "Regex String"
+      Example 'definition' string:
+      "definition:\n   cond_type: 'secrets'\n   value:\n     - '(?<![A-Za-z0-9])[AK][A-Z0-9]{20}(?![A-Za-z0-9])'"
+    if scanner is IAC:
+      Each object requires:
+      - 'name': Framework type (Options: ARM, BICEP, CLOUDFORMATION, KUBERNETES, TERRAFORM).
+      - 'remediationDescription': String explaining how to fix the violation.
+      - 'definition': A stringified YAML block. If missing, you MUST generate it based on the security goal using this structure:
+          scope:
+              provider: "String (alibaba_cloud|aws|azure|gcp|oci)" # Optional
+          definition:
+              [and|or|not]:
+                  - cond_type: "attribute"
+                      resource_types: ["String"]
+                      attribute: "String"
+                      operator: "String"
+                      value: "String"
+
+      Example 'definition' string:
+      "scope:\n  provider: 'aws'\ndefinition:\n  or:\n      - cond_type: 'attribute'\n          resource_types: ['aws_instance']\n          attribute: 'instance_type'\n          operator: 'equals'\n          value: 't3.micro'"  
+outputs:
+- contextPath: Appsec.Rule.RULE_NAME
+  description: The name of the Rule.
+  type: String
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.12.6391686
+fromversion: 8.13.0
+isInternal: true
+tests:
+- No tests (auto formatted)
+marketplaces:
+- platform
