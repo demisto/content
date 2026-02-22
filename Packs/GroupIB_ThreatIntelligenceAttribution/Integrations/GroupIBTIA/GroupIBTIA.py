@@ -2136,6 +2136,9 @@ class IncidentBuilder:
                         clean_data = CommonHelpers.remove_underscore_and_lowercase_keys(
                             transformed_and_replaced_empty_values_data  # type: ignore
                         )
+                        # SPD events: show malware/threatActor id and name as strings (e.g. "Lockbit" not ["Lockbit"])
+                        if self.collection_name == "compromised/spd" and field == "events":
+                            clean_data = CommonHelpers.transform_list_to_str(clean_data)
 
                         self.incident[field] = clean_data
                     else:
