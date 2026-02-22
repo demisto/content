@@ -4002,7 +4002,6 @@ Describes one or more launch templates.
 | AWS.EC2.LaunchTemplates.Tags.Key | string | The key of the tag. |
 | AWS.EC2.LaunchTemplates.Tags.Value | string | The value of the tag. |
 
-
 ### aws-ec2-fleet-create
 
 ***

@@ -4550,20 +4550,20 @@ class EC2:
         unsuccessful = response.get("UnsuccessfulFleetDeletions", [])
 
         readable_data = [
-                            {
-                                "FleetId": deletion.get("FleetId"),
-                                "CurrentFleetState": deletion.get("CurrentFleetState"),
-                                "PreviousFleetState": deletion.get("PreviousFleetState"),
-                            }
-                            for deletion in successful
-                        ] + [
-                            {
-                                "FleetId": deletion.get("FleetId"),
-                                "ErrorCode": deletion.get("Error", {}).get("Code"),
-                                "ErrorMessage": deletion.get("Error", {}).get("Message"),
-                            }
-                            for deletion in unsuccessful
-                        ]
+            {
+                "FleetId": deletion.get("FleetId"),
+                "CurrentFleetState": deletion.get("CurrentFleetState"),
+                "PreviousFleetState": deletion.get("PreviousFleetState"),
+            }
+            for deletion in successful
+        ] + [
+            {
+                "FleetId": deletion.get("FleetId"),
+                "ErrorCode": deletion.get("Error", {}).get("Code"),
+                "ErrorMessage": deletion.get("Error", {}).get("Message"),
+            }
+            for deletion in unsuccessful
+        ]
 
         if not readable_data:
             return CommandResults(readable_output="No fleets were deleted.")
@@ -4737,6 +4737,7 @@ class EC2:
             else f"Failed to modify EC2 Fleet {args.get('fleet_id')}",
             raw_response=response,
         )
+
 
 class EKS:
     service = AWSServices.EKS
