@@ -1027,19 +1027,19 @@ script:
     - contextPath: GIBTI.search.local.raw_feed
       description: One-line JSON string of the full feed for War Room rendering (only when include_raw_feed=true).
       type: String
-  - arguments:
-    - description: 'GIB event id.e.g.: 192.168.0.1.'
-      name: id
-    description: Command performs Group IB event lookup in suspicious_ip/vpn collection by provided ID.
+  - description: Command performs Group IB event lookup in suspicious_ip/vpn collection by provided ID.
     name: gibtia-get-suspicious-ip-vpn-info
-  - description: Returns Group-IB scoring for IPs (numeric and DBotScore).
-    name: gibti-ip-scoring
     arguments:
-    - name: ip
-      description: 'List of IPs to score.'
+    - name: id
+      description: 'GIB event id.e.g.: 192.168.0.1.'
+  - arguments:
+    - description: 'List of IPs to score.'
+      name: ip
       required: true
       default: true
       isArray: true
+    description: Returns Group-IB scoring for IPs (numeric and DBotScore).
+    name: gibti-ip-scoring
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator value.

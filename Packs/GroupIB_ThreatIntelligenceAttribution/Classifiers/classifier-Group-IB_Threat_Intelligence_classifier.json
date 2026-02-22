@@ -9,7 +9,6 @@
         "compromised/account_group": "GIB Compromised Account Group",
         "compromised/bank_card_group": "GIB Compromised Card Group",
         "compromised/mule": "GIB Compromised Mule",
-        "compromised/spd": "GIB SPD",
         "suspicious_ip/vpn": "GIB Suspicious IP VPN",
         "suspicious_ip/scanner": "GIB Suspicious IP Scanner",
         "suspicious_ip/tor_node": "GIB Suspicious IP TOR Node",
@@ -25,7 +24,8 @@
         "hi/threat_actor": "GIB Cybercriminal Threat Actor",
         "apt/threat_actor": "GIB Nation-State Cybercriminals Threat Actor",
         "apt/threat": "GIB Nation-State Cybercriminals Threat",
-        "osi/vulnerability": "GIB OSI Vulnerability"
+        "osi/vulnerability": "GIB OSI Vulnerability",
+        "compromised/spd": "GIB SPD"
     },
     "name": "Group-IB Threat Intelligence (classifier)",
     "transformer": {

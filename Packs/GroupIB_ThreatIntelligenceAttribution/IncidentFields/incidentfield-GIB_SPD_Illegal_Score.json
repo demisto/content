@@ -1,6 +1,8 @@
 {
     "associatedToAll": false,
-    "associatedTypes": ["GIB SPD"],
+    "associatedTypes": [
+        "GIB SPD"
+    ],
     "caseInsensitive": true,
     "cliName": "gibspdillegalscore",
     "closeForm": false,
@@ -17,7 +19,9 @@
     "required": false,
     "sla": 0,
     "system": false,
-    "systemAssociatedTypes": ["GIB SPD"],
+    "systemAssociatedTypes": [
+        "GIB SPD"
+    ],
     "threshold": 72,
     "type": "number",
     "unmapped": false,

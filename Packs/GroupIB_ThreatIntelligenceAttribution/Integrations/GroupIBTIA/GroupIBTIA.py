@@ -707,11 +707,11 @@ MAPPING = {
         # END Information from Group-IB
         # Group-IB Evaluation
         "evaluation": {
-            "admiraltyCode": "evaluation.admiraltyCode", # GIB Admiralty Code
-            "credibility": "evaluation.credibility", # GIB Credibility
-            "reliability": "evaluation.reliability", # GIB Reliability
-            "severity": "evaluation.severity", # GIB Severity
-            "tlp": "evaluation.tlp", # GIB TLP
+            "admiraltyCode": "evaluation.admiraltyCode",  # GIB Admiralty Code
+            "credibility": "evaluation.credibility",  # GIB Credibility
+            "reliability": "evaluation.reliability",  # GIB Reliability
+            "severity": "evaluation.severity",  # GIB Severity
+            "tlp": "evaluation.tlp",  # GIB TLP
             "ttl": "evaluation.ttl",  # GIB TTL
         },
         # END Group-IB Evaluation
