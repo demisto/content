@@ -835,27 +835,27 @@ Retrieve quarantine messages.
 | **Argument Name** | **Description**                                                           | **Required** |
 | --- |---------------------------------------------------------------------------| --- |
 | identity | The identity of a single message to retrieve.                             | Optional |
-| entity_type | The workload type of the entity to retrieve.                              | Optional |
-| recipient_address | Email address of the recipient to filter by.                              | Optional |
-| sender_address | Email address of the sender to filter by.                                 | Optional |
-| teams_conversation_types | Filter by Teams conversation types.                                       | Optional |
-| direction | Direction of the message.                                                 | Optional |
+| entity_type | Filters by entity workload type.                              | Optional |
+| recipient_address | Filters by the recipient email address.                              | Optional |
+| sender_address | Filters by the sender email address.                                 | Optional |
+| teams_conversation_types | Filters by one or more Teams conversation types.                                       | Optional |
+| direction | The message direction (inbound or outbound).                                                 | Optional |
 | domain | Domain associated with the message.                                       | Optional |
 | end_expires_date | End date for the message expiration.                                      | Optional |
-| end_received_date | End of the received date range. Supported format 'MM/dd/yyyy HH:mm:ss'.   | Optional |
+| end_received_date | The end of the received message date range. Supports the format 'MM/dd/yyyy HH:mm:ss'.   | Optional |
 | include_messages_from_blocked_sender_address | Whether to include messages from blocked sender addresses.                | Optional |
-| message_id | The Internet Message ID (Client ID) found in the email headers.           | Optional |
+| message_id | The internet message ID (client ID) found in the email headers.           | Optional |
 | my_items | Include only items belonging to the user.                                 | Optional |
 | page | Page number for pagination.                                               | Optional |
-| page_size | Number of items per page. Maximum is 1000. Default is 50.                               | Optional |
+| page_size | The number of items per page. Maximum is 1000. Default is 50.                               | Optional |
 | policy_name | Name of the policy associated with the message.                           | Optional |
 | policy_types | Filter by types of policies.                                              | Optional |
-| quarantine_types | Filter by specific quarantine types.                                      | Optional |
-| recipient_tag | Filter by priority tag associated with the recipient.                     | Optional |
-| release_status | Filter by the release status of the message.                              | Optional |
+| quarantine_types | Filters by one or more quarantine types.                                      | Optional |
+| recipient_tag | Filters by the priority tag associated with the recipient.                     | Optional |
+| release_status | Filters by the message release status.                              | Optional |
 | reported | Whether to include only reported messages.                                | Optional |
 | start_expires_date | Start date for the message expiration.                                    | Optional |
-| start_received_date | Start of the received date range. Supported format 'MM/dd/yyyy HH:mm:ss'. | Optional |
+| start_received_date | The start of the received message date range. Supported format  'MM/dd/yyyy HH:mm:ss'. | Optional |
 | subject | Subject of the message.                                                   | Optional |
 | type | Type of the message.                                                      | Optional |
 
@@ -1035,7 +1035,7 @@ Retrieve quarantine messages.
 ### ews-release-quarantinemessage
 
 ***
-Release quarantine messages.
+Releases the quarantined messages. Uses the PowerShell Release-QuarantineMessage cmdlet.
 
 #### Base Command
 
@@ -1045,15 +1045,15 @@ Release quarantine messages.
 
 | **Argument Name**      | **Description**                                            | **Required** |
 |------------------------|------------------------------------------------------------|--------------|
-| user                   | The email address of the user to whom you want to release the quarantined message.           | Optional |
+| user                   | The email address of the user you want to release the quarantined message to.           | Optional |
 | identities             | A comma-separated list of identities of the messages to release. | Optional |
 | identity               | The identity of a single message to release.               | Optional |
 | release_to_all         | Specify whether to release the message to all recipients.  | Optional |
 | allow_sender           | Specify whether to allow the sender.                       | Optional |
-| entity_type            | The workload type of the entity being released.                         | Optional |
+| entity_type            | The entity workload type being released.                         | Optional |
 | force                  | Specify whether to force the release.                      | Optional |
 | report_false_positive  | Specify whether to report the message as a false positive. | Optional |
-| action_type            | The action to perform on the quarantine message. Default is 'Release'.     | Optional |
+| action_type            | The action to perform on the quarantined message.     | Optional |
 
 #### Context Output
 
