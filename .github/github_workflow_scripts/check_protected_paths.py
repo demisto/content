@@ -36,15 +36,9 @@ def is_path_change_allowed(path: Path) -> bool:
     if full_path in PROTECTED_FILE_PATHS:
         return full_path in EXCEPTIONS
 
-    if CONTENT_ROOT.name in path.parts:
-        # Absolute path
-        first_level_dir = path.relative_to(CONTENT_ROOT).parts[0]  # e.g. Packs, Utils
-    else:
-        # Relative path (without `content/`)
-        first_level_dir = path.parts[0]
-
-    if Path(CONTENT_ROOT, first_level_dir) in PROTECTED_DIRECTORY_PATHS:
-        return path in EXCEPTIONS  # if in exception, it's allowed
+    first_level_dir = Path(CONTENT_ROOT, full_path.relative_to(CONTENT_ROOT).parts[0])
+    if first_level_dir in PROTECTED_DIRECTORY_PATHS:
+        return full_path in EXCEPTIONS
     return True
 
 
