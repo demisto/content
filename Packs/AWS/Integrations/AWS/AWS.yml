@@ -11023,6 +11023,7 @@ script:
     - name: launch_template_version
       description: The version number of the launch template.
       required: false
+      defaultValue: "1"
     - name: override_instance_type
       description: A comma-separated list of instance types for launch template overrides.
       required: false
@@ -11048,7 +11049,7 @@ script:
       required: false
       isArray: true
     - name: total_target_capacity
-      description: The number of units to request, filled using DefaultTargetCapacityType.
+      description: The number of units to request.
       required: true
     - name: on_demand_target_capacity
       description: The number of On-Demand units to request.
@@ -11063,6 +11064,7 @@ script:
       predefined:
       - spot
       - on-demand
+      - capacity-block
     - name: terminate_instances_with_expiration
       description: Indicates whether running instances should be terminated when the EC2 Fleet expires.
       required: false
@@ -11310,7 +11312,7 @@ script:
       required: false
       isArray: true
     - name: limit
-      description: The maximum number of results to return in a single call. Specify a value between 1 and 1000.
+      description: The maximum number of results to return in a single call. Specify a value between 2 and 1000.
       required: false
     - name: next_token
       description: The token for the next set of results.
@@ -11569,6 +11571,96 @@ script:
       predefined:
       - no-termination
       - termination
+    - name: launch_template_id
+      description: The ID of the launch template.
+      required: false
+    - name: launch_template_name
+      description: The name of the launch template.
+      required: false
+    - name: launch_template_version
+      description: The version number of the launch template.
+      required: false
+      defaultValue: "1"
+    - name: availability_zone
+      description: The Availability Zone in which to launch the instances.
+      required: false
+    - name: availability_zone_id
+      description: The ID of the Availability Zone in which to launch the instances.
+      required: false
+    - name: image_id
+      description: The ID of the AMI.
+      required: false
+    - name: instance_type
+      description: The instance type.
+      required: false
+    - name: max_price
+      description: The maximum price per unit hour that you are willing to pay for a Spot Instance.
+      required: false
+    - name: placement_group_id
+      description: The ID of the placement group.
+      required: false
+    - name: placement_group_name
+      description: The name of the placement group.
+      required: false
+    - name: priority
+      description: The priority for the launch template override.
+      required: false
+    - name: subnet_id
+      description: The ID of the subnet in which to launch the instances.
+      required: false
+    - name: weighted_capacity
+      description: The number of units provided by the specified instance type.
+      required: false
+    - name: device_name
+      description: "The device name (for example, /dev/sdh or xvdh)."
+      required: false
+    - name: ebs_encrypted
+      description: "Indicates whether the encryption state of an EBS volume is changed while being restored from a backing snapshot."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: ebs_delete_on_termination
+      description: "Indicates whether the EBS volume is deleted on instance termination."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: ebs_iops
+      description: "The number of I/O operations per second (IOPS). For gp3, io1, and io2 volumes, this represents the number of IOPS that are provisioned for the volume. For gp2 volumes, this represents the baseline performance of the volume and the rate at which the volume accumulates I/O credits for bursting. This parameter is required for io1 and io2 volumes. The default for gp3 volumes is 3,000 IOPS."
+      required: false
+    - name: ebs_kms_key_id
+      description: "Identifier (key ID, key alias, ID ARN, or alias ARN) for a user-managed CMK under which the EBS volume is encrypted."
+      required: false
+    - name: ebs_snapshot_id
+      description: "The ID of the snapshot."
+      required: false
+    - name: ebs_volume_size
+      description: "The size of the volume, in GiBs. You must specify either an ebs_snapshot_id or an ebs_volume_size. If you specify a snapshot, the default is the snapshot size. You can specify a volume size that is equal to or larger than the snapshot size."
+      required: false
+    - name: ebs_volume_type
+      description: "The volume type."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - gp2
+      - gp3
+      - io1
+      - io2
+      - st1
+      - sc1
+      - standard
+    - name: ebs_throughput
+      description: "The throughput for the volume, in MiB/s. This parameter is valid only for gp3 volumes."
+      required: false
+    - name: block_device_mappings_no_device
+      description: "Suppresses the specified device included in the block device mapping of the AMI."
+      required: false
+    - name: block_device_mappings_virtual_name
+      description: "The virtual device name (ephemeralN)."
+      required: false
     - name: total_target_capacity
       description: The number of units to request, filled using DefaultTargetCapacityType.
       required: true
@@ -11585,6 +11677,17 @@ script:
       predefined:
       - spot
       - on-demand
+      - capacity-block
+    - name: target_capacity_unit
+      description: The unit for the target capacity.
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - vcpu
+        - memory-mib
+        - units
+
+
 
   isfetch: false
   runonce: false
