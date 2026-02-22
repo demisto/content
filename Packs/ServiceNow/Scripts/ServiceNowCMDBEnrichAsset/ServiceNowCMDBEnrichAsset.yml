@@ -97,6 +97,7 @@ tags: []
 type: python
 dependson:
   must:
+  - servicenow-cmdb-records-list
   - servicenow-cmdb-record-get-by-id
 fromversion: 6.10.0
 tests:
