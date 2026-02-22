@@ -68,6 +68,10 @@ ignore=GR109
 [file:silent-playbook-Privileged_certificate_request_via_certificate_template.yml]
 ignore=GR109
 
+#GR109 fails on playbooks with different supported modules than the pack
+[file:Packs/CortexResponseAndRemediation/Playbooks/silent-playbook-Script_file_added_to_startup-related_Registry_keys.yml]
+ignore=GR109
+
 [known_words]
 xsiam
 coreirapimodule
