@@ -9523,3 +9523,56 @@ def test_get_case_resolution_statuses_command(mocker):
     assert len(result.outputs) == 2
     assert len(result.raw_response) == 2
     assert mock_client.get_case_resolution_statuses.call_count == 2
+
+
+def test_mark_timeline_record_as_evidence_command(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client and valid arguments for marking a timeline record as evidence.
+    WHEN:
+        The mark_timeline_record_as_evidence_command function is called.
+    THEN:
+        The client method is called with correct data and results are returned.
+    """
+    from CortexPlatformCore import mark_timeline_record_as_evidence_command
+
+    mock_client = mocker.Mock()
+    mock_response = {"reply": {"success": True, "record_id": "000b9a47ea3542d7b6102160793a7fba", "is_evidence": True}}
+    mock_client.mark_timeline_record_as_evidence.return_value = mock_response
+
+    args = {"record_id": "000b9a47ea3542d7b6102160793a7fba", "is_evidence": "true", "comment": "Marking as key evidence"}
+
+    result = mark_timeline_record_as_evidence_command(mock_client, args)
+
+    assert result.outputs == mock_response["reply"]
+    assert result.outputs_prefix == "Core.TimelineRecord"
+    assert result.outputs_key_field == "record_id"
+    mock_client.mark_timeline_record_as_evidence.assert_called_once_with(
+        {"record_id": "000b9a47ea3542d7b6102160793a7fba", "is_evidence": True, "comment": "Marking as key evidence"}
+    )
+
+
+@pytest.mark.parametrize(
+    "args, expected_request_data",
+    [
+        ({"record_id": "rec1", "is_evidence": "true"}, {"record_id": "rec1", "is_evidence": True}),
+        (
+            {"record_id": "rec2", "is_evidence": "false", "comment": "unmarking"},
+            {"record_id": "rec2", "is_evidence": False, "comment": "unmarking"},
+        ),
+    ],
+)
+def test_mark_timeline_record_as_evidence_scenarios(mocker, args, expected_request_data):
+    """
+    Validates command behavior across multiple input scenarios.
+    """
+    from CortexPlatformCore import mark_timeline_record_as_evidence_command
+
+    mock_client = mocker.Mock()
+    mock_response = {"reply": {"success": True, "record_id": args["record_id"], "is_evidence": args["is_evidence"] == "true"}}
+    mock_client.mark_timeline_record_as_evidence.return_value = mock_response
+
+    result = mark_timeline_record_as_evidence_command(mock_client, args)
+
+    assert result.outputs["record_id"] == args["record_id"]
+    mock_client.mark_timeline_record_as_evidence.assert_called_once_with(expected_request_data)

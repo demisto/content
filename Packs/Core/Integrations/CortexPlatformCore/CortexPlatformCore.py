@@ -73,6 +73,7 @@ DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
 ENDPOINT_COMMANDS = ["core-get-endpoint-support-file"]
 XSOAR_COMMANDS = ["core-run-playbook", "core-get-case-resolution-statuses"]
+TIMELINE_COMMANDS = ["core-mark-timeline-record-as-evidence"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
@@ -957,6 +958,22 @@ class Client(CoreClient):
             method="POST",
             url_suffix="/cases/get_ai_case_details",
             json_data={"case_id": case_id},
+        )
+
+    def mark_timeline_record_as_evidence(self, request_data: dict) -> dict:
+        """
+        Mark or unmark timeline records as evidence with optional comments.
+
+        Args:
+            request_data (dict): The structured parameters for the API call.
+
+        Returns:
+            dict: The parsed JSON response from the service.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/mark_as_evidence/",
+            json_data=request_data,
         )
 
 
@@ -4467,6 +4484,7 @@ def init_client(api_type: str) -> Client:
         "appsec": f"{webapp_root}/public_api/appsec",
         "xsoar": "/xsoar",
         "agents": f"{webapp_root}/agents",
+        "timeline": f"{webapp_root}/public_api/incident/timeline",
     }
 
     # Fallback to public API if the type isn't recognized
@@ -4535,6 +4553,33 @@ def get_case_resolution_statuses(client, args):
     )
 
 
+def mark_timeline_record_as_evidence_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Mark or unmark timeline records as evidence with optional comments.
+    """
+    record_id = args.get("record_id")
+    is_evidence = argToBoolean(args.get("is_evidence"))
+    comment = args.get("comment")
+
+    request_data = {
+        "record_id": record_id,
+        "is_evidence": is_evidence,
+    }
+    if comment:
+        request_data["comment"] = comment
+
+    response = client.mark_timeline_record_as_evidence(request_data)
+    reply = response.get("reply", {})
+
+    return CommandResults(
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.TimelineRecord",
+        outputs_key_field="record_id",
+        outputs=reply,
+        readable_output=tableToMarkdown("Timeline Record Evidence Status", reply, headerTransform=string_to_table_header),
+        raw_response=response,
+    )
+
+
 def verify_platform_version(version: str = "8.13.0"):
     if not is_demisto_version_ge(version):
         raise DemistoException("This command is not available for this platform version")
@@ -4561,6 +4606,8 @@ def main():  # pragma: no cover
         api_type = "agents"
     elif command in XSOAR_COMMANDS:
         api_type = "xsoar"
+    elif command in TIMELINE_COMMANDS:
+        api_type = "timeline"
     else:
         api_type = "public"
 
@@ -4669,6 +4716,9 @@ def main():  # pragma: no cover
         elif command == "core-get-case-resolution-statuses":
             verify_platform_version()
             return_results(get_case_resolution_statuses(client, args))
+
+        elif command == "core-mark-timeline-record-as-evidence":
+            return_results(mark_timeline_record_as_evidence_command(client, args))
 
         elif command == "core-xql-generic-query-platform":
             verify_platform_version()

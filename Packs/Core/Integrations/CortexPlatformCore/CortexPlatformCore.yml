@@ -1615,7 +1615,7 @@ script:
             - critical
         - name: assignee
           description: |
-            The email of the user assigned to the vulnerability. Accepts a comma-separated list. 
+            The email of the user assigned to the vulnerability. Accepts a comma-separated list.
             Use 'unassigned' for unassigned vulnerabilities or 'assigned' for all assigned vulnerabilities.
           isArray: true
         - auto: PREDEFINED
@@ -2315,7 +2315,7 @@ script:
           isArray: true
         - name: assignee
           description: |
-            The email of the user assigned to the issue. Accepts a comma-separated list. 
+            The email of the user assigned to the issue. Accepts a comma-separated list.
             Use 'unassigned' for all unassigned issues or 'assigned' for all assigned issues.
           isArray: true
         - name: collaborator
@@ -3359,6 +3359,32 @@ script:
         - contextPath: Core.CaseResolutionStatus.userInput
           description: User input parameters (for pending playbookTask items).
           type: Unknown
+    - arguments:
+        - description: The unique identifier of the timeline record.
+          name: record_id
+          required: true
+        - auto: PREDEFINED
+          description: Whether to mark the record as evidence.
+          name: is_evidence
+          predefined:
+            - "true"
+            - "false"
+          required: true
+        - description: An optional comment to add when marking as evidence.
+          name: comment
+      description: Mark or unmark timeline records as evidence with optional comments.
+      hidden: true
+      name: core-mark-timeline-record-as-evidence
+      outputs:
+        - contextPath: Core.TimelineRecord.success
+          description: Whether the operation was successful.
+          type: Boolean
+        - contextPath: Core.TimelineRecord.record_id
+          description: The unique identifier of the timeline record.
+          type: String
+        - contextPath: Core.TimelineRecord.is_evidence
+          description: Whether the record is marked as evidence.
+          type: Boolean
   runonce: false
   script: "-"
   subtype: python3
