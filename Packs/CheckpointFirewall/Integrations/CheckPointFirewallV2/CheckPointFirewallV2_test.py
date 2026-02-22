@@ -213,7 +213,7 @@ def test_checkpoint_add_host_command(mocker):
     assert result[0].get("name") == "add host"
     assert result[0].get("uid") == "123"
     assert result[0].get("type") == "host"
-    assert len(result[0]) == 12
+    assert len(result[0]) == 14
 
 
 def test_checkpoint_update_host_command(mocker):
@@ -226,7 +226,7 @@ def test_checkpoint_update_host_command(mocker):
     assert result.get("name") == "update host"
     assert result.get("uid") == "123"
     assert result.get("type") == "host"
-    assert len(result) == 11
+    assert len(result) == 12
 
 
 def test_checkpoint_delete_host_command(mocker):
@@ -272,7 +272,7 @@ def test_checkpoint_add_group_command(mocker):
     assert result.get("name") == "groupi"
     assert result.get("uid") == "1234"
     assert result.get("type") == "group"
-    assert len(result) == 12
+    assert len(result) == 14
 
 
 def test_checkpoint_update_group_command(mocker):
@@ -285,7 +285,7 @@ def test_checkpoint_update_group_command(mocker):
     assert result.get("name") == "group_test"
     assert result.get("uid") == "1234"
     assert result.get("type") == "group"
-    assert len(result) == 9
+    assert len(result) == 11
 
 
 def test_checkpoint_delete_group_command(mocker):
@@ -382,7 +382,7 @@ def test_checkpoint_add_address_range_command(mocker):
     assert result.get("name") == "address_range_1"
     assert result.get("uid") == "1234"
     assert result.get("type") == "address-range"
-    assert len(result) == 13
+    assert len(result) == 15
 
 
 def test_checkpoint_update_address_range_command(mocker):
@@ -395,7 +395,7 @@ def test_checkpoint_update_address_range_command(mocker):
     assert result.get("name") == "address_range_1"
     assert result.get("uid") == "1234"
     assert result.get("type") == "address-range"
-    assert len(result) == 11
+    assert len(result) == 12
 
 
 def test_checkpoint_delete_address_range_command(mocker):
@@ -752,9 +752,14 @@ def test_add_host_with_nat_settings(mocker):
     mocked_client.add_host.return_value = mock_response
 
     checkpoint_add_host_command(
-        mocked_client, "host1", "1.2.3.4",
-        nat_auto_rule="true", nat_method="hide",
-        nat_ip="10.0.0.1", nat_install_on="GW1", nat_hide_behind="gateway",
+        mocked_client,
+        "host1",
+        "1.2.3.4",
+        nat_auto_rule="true",
+        nat_method="hide",
+        nat_ip="10.0.0.1",
+        nat_install_on="GW1",
+        nat_hide_behind="gateway",
     )
 
     call_kwargs = mocked_client.add_host.call_args
@@ -775,15 +780,16 @@ def test_add_host_with_interfaces(mocker):
     mocked_client.add_host.return_value = mock_response
 
     checkpoint_add_host_command(
-        mocked_client, "host1", "1.2.3.4",
-        interfaces_name="eth0", interfaces_subnet="10.0.0.0",
+        mocked_client,
+        "host1",
+        "1.2.3.4",
+        interfaces_name="eth0",
+        interfaces_subnet="10.0.0.0",
         interfaces_mask_length="24",
     )
 
     call_kwargs = mocked_client.add_host.call_args
-    assert call_kwargs[1]["interfaces"] == [
-        {"name": "eth0", "subnet4": "10.0.0.0", "mask-length4": 24}
-    ]
+    assert call_kwargs[1]["interfaces"] == [{"name": "eth0", "subnet4": "10.0.0.0", "mask-length4": 24}]
 
 
 def test_add_host_with_color_and_tags(mocker):
@@ -794,8 +800,12 @@ def test_add_host_with_color_and_tags(mocker):
     mocked_client.add_host.return_value = mock_response
 
     checkpoint_add_host_command(
-        mocked_client, "host1", "1.2.3.4",
-        color="red", tags="tag1,tag2", comments="test comment",
+        mocked_client,
+        "host1",
+        "1.2.3.4",
+        color="red",
+        tags="tag1,tag2",
+        comments="test comment",
     )
 
     call_kwargs = mocked_client.add_host.call_args
@@ -827,8 +837,10 @@ def test_update_host_with_nat_settings(mocker):
     mocked_client.update_host.return_value = mock_response
 
     checkpoint_update_host_command(
-        mocked_client, "host1",
-        nat_auto_rule="true", nat_method="static",
+        mocked_client,
+        "host1",
+        nat_auto_rule="true",
+        nat_method="static",
         nat_ip="192.168.1.100",
     )
 
@@ -848,15 +860,15 @@ def test_update_host_with_interfaces(mocker):
     mocked_client.update_host.return_value = mock_response
 
     checkpoint_update_host_command(
-        mocked_client, "host1",
-        interfaces_name="eth1", interfaces_subnet="172.16.0.0",
+        mocked_client,
+        "host1",
+        interfaces_name="eth1",
+        interfaces_subnet="172.16.0.0",
         interfaces_mask_length="16",
     )
 
     call_kwargs = mocked_client.update_host.call_args
-    assert call_kwargs[1]["interfaces"] == [
-        {"name": "eth1", "subnet4": "172.16.0.0", "mask-length4": 16}
-    ]
+    assert call_kwargs[1]["interfaces"] == [{"name": "eth1", "subnet4": "172.16.0.0", "mask-length4": 16}]
 
 
 def test_update_host_with_color_tags_comments(mocker):
@@ -867,9 +879,13 @@ def test_update_host_with_color_tags_comments(mocker):
     mocked_client.update_host.return_value = mock_response
 
     checkpoint_update_host_command(
-        mocked_client, "host1",
-        color="blue", tags="tagA,tagB", comments="updated comment",
-        new_name="host1_renamed", ip_address="5.5.5.5",
+        mocked_client,
+        "host1",
+        color="blue",
+        tags="tagA,tagB",
+        comments="updated comment",
+        new_name="host1_renamed",
+        ip_address="5.5.5.5",
     )
 
     call_kwargs = mocked_client.update_host.call_args
@@ -971,10 +987,14 @@ def test_add_group_with_new_args(mocker):
     mocked_client.add_group.return_value = mock_response
 
     checkpoint_add_group_command(
-        mocked_client, "group1",
-        members="member1,member2", comments="group comment",
-        color="green", tags="tag1,tag2",
-        ignore_warnings="true", ignore_errors="false",
+        mocked_client,
+        "group1",
+        members="member1,member2",
+        comments="group comment",
+        color="green",
+        tags="tag1,tag2",
+        ignore_warnings="true",
+        ignore_errors="false",
     )
 
     call_kwargs = mocked_client.add_group.call_args
@@ -1008,9 +1028,13 @@ def test_update_group_with_new_args(mocker):
     mocked_client.update_group.return_value = mock_response
 
     checkpoint_update_group_command(
-        mocked_client, "group1",
-        new_name="group1_renamed", comments="updated",
-        color="red", tags="tagX", details_level="full",
+        mocked_client,
+        "group1",
+        new_name="group1_renamed",
+        comments="updated",
+        color="red",
+        tags="tagX",
+        details_level="full",
     )
 
     call_kwargs = mocked_client.update_group.call_args
@@ -1043,8 +1067,12 @@ def test_list_groups_with_new_args(mocker):
     mocked_client.list_groups.return_value = mock_response
 
     checkpoint_list_groups_command(
-        mocked_client, 10, 0,
-        details_level="full", domains_to_process="dom1,dom2", filter="test_filter",
+        mocked_client,
+        10,
+        0,
+        details_level="full",
+        domains_to_process="dom1,dom2",
+        filter="test_filter",
     )
 
     call_args = mocked_client.list_groups.call_args
@@ -1104,10 +1132,18 @@ def test_add_address_range_with_nat_and_color(mocker):
     mocked_client.add_address_range.return_value = mock_response
 
     checkpoint_add_address_range_command(
-        mocked_client, "range1", "10.0.0.1", "10.0.0.100",
-        color="blue", tags="tag1,tag2", comments="range comment",
-        nat_auto_rule="true", nat_method="hide",
-        nat_ip="192.168.1.1", nat_install_on="GW1", nat_hide_behind="gateway",
+        mocked_client,
+        "range1",
+        "10.0.0.1",
+        "10.0.0.100",
+        color="blue",
+        tags="tag1,tag2",
+        comments="range comment",
+        nat_auto_rule="true",
+        nat_method="hide",
+        nat_ip="192.168.1.1",
+        nat_install_on="GW1",
+        nat_hide_behind="gateway",
     )
 
     call_kwargs = mocked_client.add_address_range.call_args
@@ -1131,7 +1167,13 @@ def test_add_address_range_without_new_args(mocker):
     mocked_client.add_address_range.return_value = mock_response
 
     checkpoint_add_address_range_command(
-        mocked_client, "range1", "10.0.0.1", "10.0.0.100", False, False, False,
+        mocked_client,
+        "range1",
+        "10.0.0.1",
+        "10.0.0.100",
+        False,
+        False,
+        False,
     )
 
     call_kwargs = mocked_client.add_address_range.call_args
@@ -1147,8 +1189,12 @@ def test_update_address_range_with_nat_and_color(mocker):
     mocked_client.update_address_range.return_value = mock_response
 
     checkpoint_update_address_range_command(
-        mocked_client, "range1",
-        color="red", tags="tagA", nat_method="static", nat_ip="10.10.10.10",
+        mocked_client,
+        "range1",
+        color="red",
+        tags="tagA",
+        nat_method="static",
+        nat_ip="10.10.10.10",
     )
 
     call_kwargs = mocked_client.update_address_range.call_args
@@ -1182,8 +1228,11 @@ def test_list_address_range_with_new_args(mocker):
     mocked_client.list_address_ranges.return_value = mock_response
 
     checkpoint_list_address_range_command(
-        mocked_client, 10, 0,
-        details_level="full", domains_to_process="dom1,dom2",
+        mocked_client,
+        10,
+        0,
+        details_level="full",
+        domains_to_process="dom1,dom2",
     )
 
     call_args = mocked_client.list_address_ranges.call_args
@@ -1214,9 +1263,13 @@ def test_add_threat_indicator_with_new_args(mocker):
     mocked_client.add_threat_indicator.return_value = mock_response
 
     checkpoint_add_threat_indicator_command(
-        mocked_client, "indicator1",
-        comments="indicator comment", color="yellow",
-        tags="tag1,tag2", action="Prevent", profile="profile1,profile2",
+        mocked_client,
+        "indicator1",
+        comments="indicator comment",
+        color="yellow",
+        tags="tag1,tag2",
+        action="Prevent",
+        profile="profile1,profile2",
         ignore_warnings="true",
     )
 
@@ -1251,8 +1304,11 @@ def test_update_threat_indicator_with_new_args(mocker):
     mocked_client.update_threat_indicator.return_value = mock_response
 
     checkpoint_update_threat_indicator_command(
-        mocked_client, "indicator1",
-        profile="prof1", color="orange", tags="tagZ",
+        mocked_client,
+        "indicator1",
+        profile="prof1",
+        color="orange",
+        tags="tagZ",
     )
 
     call_kwargs = mocked_client.update_threat_indicator.call_args
@@ -1283,8 +1339,12 @@ def test_list_threat_indicator_with_new_args(mocker):
     mocked_client.list_threat_indicators.return_value = mock_response
 
     checkpoint_list_threat_indicator_command(
-        mocked_client, 10, 0,
-        domain_names="dom1,dom2", details_level="full", filter="test_filter",
+        mocked_client,
+        10,
+        0,
+        domain_names="dom1,dom2",
+        details_level="full",
+        filter="test_filter",
     )
 
     call_args = mocked_client.list_threat_indicators.call_args
@@ -1317,10 +1377,15 @@ def test_add_access_rule_with_track_and_install_on(mocker):
     mocked_client.add_rule.return_value = mock_response
 
     checkpoint_add_access_rule_command(
-        mocked_client, "Network", "top",
-        comments="rule comment", install_on="GW1,GW2",
-        enabled="true", track_type="Log",
-        track_accounting="true", track_per_session="false",
+        mocked_client,
+        "Network",
+        "top",
+        comments="rule comment",
+        install_on="GW1,GW2",
+        enabled="true",
+        track_type="Log",
+        track_accounting="true",
+        track_per_session="false",
     )
 
     call_kwargs = mocked_client.add_rule.call_args
@@ -1357,12 +1422,20 @@ def test_update_access_rule_with_track_and_incremental(mocker):
     mocked_client.update_rule.return_value = mock_response
 
     checkpoint_update_access_rule_command(
-        mocked_client, "rule1", "Network",
-        comments="updated rule", track_type="Extended Log",
-        track_accounting="false", track_per_session="true",
-        install_on="GW1", source_add="src1,src2", source_remove="src3",
-        destination_add="dst1", destination_remove="dst2",
-        service_add="svc1", service_remove="svc2",
+        mocked_client,
+        "rule1",
+        "Network",
+        comments="updated rule",
+        track_type="Extended Log",
+        track_accounting="false",
+        track_per_session="true",
+        install_on="GW1",
+        source_add="src1,src2",
+        source_remove="src3",
+        destination_add="dst1",
+        destination_remove="dst2",
+        service_add="svc1",
+        service_remove="svc2",
     )
 
     call_kwargs = mocked_client.update_rule.call_args
@@ -1403,8 +1476,12 @@ def test_list_access_rule_with_new_args(mocker):
     mocked_client.list_access_rule.return_value = mock_response
 
     checkpoint_list_access_rule_command(
-        mocked_client, "Network", 10, 0,
-        details_level="full", show_hits="true",
+        mocked_client,
+        "Network",
+        10,
+        0,
+        details_level="full",
+        show_hits="true",
     )
 
     call_args = mocked_client.list_access_rule.call_args
@@ -1435,9 +1512,14 @@ def test_add_application_site_with_new_args(mocker):
     mocked_client.add_application_site.return_value = mock_response
 
     checkpoint_add_application_site_command(
-        mocked_client, "app1", "TestCat", "example.com",
-        description="test desc", comments="app comment",
-        color="cyan", tags="tag1,tag2",
+        mocked_client,
+        "app1",
+        "TestCat",
+        "example.com",
+        description="test desc",
+        comments="app comment",
+        color="cyan",
+        tags="tag1,tag2",
     )
 
     call_kwargs = mocked_client.add_application_site.call_args
@@ -1469,8 +1551,12 @@ def test_update_application_site_with_new_args(mocker):
     mocked_client.update_application_site.return_value = mock_response
 
     checkpoint_update_application_site_command(
-        mocked_client, "app1", False,
-        comments="updated app", color="magenta", tags="tagM",
+        mocked_client,
+        "app1",
+        False,
+        comments="updated app",
+        color="magenta",
+        tags="tagM",
     )
 
     call_kwargs = mocked_client.update_application_site.call_args
@@ -1501,8 +1587,11 @@ def test_list_application_site_with_new_args(mocker):
     mocked_client.list_application_site.return_value = mock_response
 
     checkpoint_list_application_site_command(
-        mocked_client, 10, 0,
-        details_level="full", domains_to_process="dom1,dom2",
+        mocked_client,
+        10,
+        0,
+        details_level="full",
+        domains_to_process="dom1,dom2",
     )
 
     call_args = mocked_client.list_application_site.call_args

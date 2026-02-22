@@ -239,9 +239,7 @@ class Client(BaseClient):
             body["domains-to-process"] = domains_to_process
         if filter_exp:
             body["filter"] = filter_exp
-        return self._http_request(
-            method="POST", url_suffix="show-groups", headers=self.headers, json_data=body
-        )
+        return self._http_request(method="POST", url_suffix="show-groups", headers=self.headers, json_data=body)
 
     def get_group(self, identifier: str, details_level: str | None = None):
         body: dict = {"name": identifier}
@@ -325,9 +323,7 @@ class Client(BaseClient):
             body["details-level"] = details_level
         if domains_to_process:
             body["domains-to-process"] = domains_to_process
-        return self._http_request(
-            method="POST", url_suffix="show-address-ranges", headers=self.headers, json_data=body
-        )
+        return self._http_request(method="POST", url_suffix="show-address-ranges", headers=self.headers, json_data=body)
 
     def get_address_range(self, identifier: str):
         return self._http_request(
@@ -425,9 +421,7 @@ class Client(BaseClient):
             body["details-level"] = details_level
         if filter_exp:
             body["filter"] = filter_exp
-        return self._http_request(
-            method="POST", url_suffix="show-threat-indicators", headers=self.headers, json_data=body
-        )
+        return self._http_request(method="POST", url_suffix="show-threat-indicators", headers=self.headers, json_data=body)
 
     def get_threat_indicator(self, identifier):
         return self._http_request(
@@ -1092,9 +1086,7 @@ def checkpoint_list_groups_command(
         filter (str): Search expression to filter objects by.
     """
     domains_list = argToList(domains_to_process) if domains_to_process else None
-    result = client.list_groups(
-        limit, offset, details_level=details_level, domains_to_process=domains_list, filter_exp=filter
-    )
+    result = client.list_groups(limit, offset, details_level=details_level, domains_to_process=domains_list, filter_exp=filter)
     result = result.get("objects")
 
     printable_result = []
@@ -1272,8 +1264,17 @@ def checkpoint_update_group_command(
         details_level=details_level,
     )
     headers = [
-        "name", "uid", "type", "domain-name", "domain-type", "domain-uid",
-        "creator", "last-modifier", "read-only", "color", "comments",
+        "name",
+        "uid",
+        "type",
+        "domain-name",
+        "domain-type",
+        "domain-uid",
+        "creator",
+        "last-modifier",
+        "read-only",
+        "color",
+        "comments",
     ]
     printable_result = build_printable_result(headers, result)
     readable_output = tableToMarkdown("CheckPoint data for updating a group:", printable_result, headers=headers, removeNull=True)
@@ -1453,8 +1454,17 @@ def checkpoint_add_address_range_command(
     ]
 
     result = client.add_address_range(
-        name, ip_address_first, ip_address_last, set_if_exists_bool, ignore_warnings_bool, ignore_errors_bool,
-        groups=groups_list, comments=comments, color=color, nat_settings=nat_settings, tags=tags_list,
+        name,
+        ip_address_first,
+        ip_address_last,
+        set_if_exists_bool,
+        ignore_warnings_bool,
+        ignore_errors_bool,
+        groups=groups_list,
+        comments=comments,
+        color=color,
+        nat_settings=nat_settings,
+        tags=tags_list,
     )
     printable_result = build_printable_result(headers, result)
     readable_output = tableToMarkdown(
@@ -1517,10 +1527,17 @@ def checkpoint_update_address_range_command(
     nat_settings = build_nat_settings(None, nat_method, nat_ip, nat_install_on, nat_hide_behind)
 
     result = client.update_address_range(
-        identifier, ignore_warnings_bool, ignore_errors_bool,
-        ip_address_first=ip_address_first, ip_address_last=ip_address_last,
-        new_name=new_name, comments=comments, groups=groups_list,
-        color=color, nat_settings=nat_settings, tags=tags_list,
+        identifier,
+        ignore_warnings_bool,
+        ignore_errors_bool,
+        ip_address_first=ip_address_first,
+        ip_address_last=ip_address_last,
+        new_name=new_name,
+        comments=comments,
+        groups=groups_list,
+        color=color,
+        nat_settings=nat_settings,
+        tags=tags_list,
     )
     headers = [
         "name",
@@ -1714,9 +1731,14 @@ def checkpoint_add_threat_indicator_command(
         observables_list.append(observable)
 
     result = client.add_threat_indicator(
-        name, observables_list,
-        comments=comments, color=color, tags=tags_list,
-        ignore_warnings=ignore_warnings_bool, action=action, profile=profile_list,
+        name,
+        observables_list,
+        comments=comments,
+        color=color,
+        tags=tags_list,
+        ignore_warnings=ignore_warnings_bool,
+        action=action,
+        profile=profile_list,
     )
     printable_result = {"task-id": result.get("task-id")}
     readable_output = tableToMarkdown("CheckPoint data for adding an threat indicator:", printable_result)
@@ -1758,8 +1780,13 @@ def checkpoint_update_threat_indicator_command(
     tags_list = argToList(tags) if tags else None
 
     result = client.update_threat_indicator(
-        identifier, action=action, new_name=new_name, comments=comments,
-        profile=profile_list, color=color, tags=tags_list,
+        identifier,
+        action=action,
+        new_name=new_name,
+        comments=comments,
+        profile=profile_list,
+        color=color,
+        tags=tags_list,
     )
     headers = [
         "name",
@@ -1918,9 +1945,18 @@ def checkpoint_add_access_rule_command(
     headers = ["name", "uid", "type", "domain-name", "domain-type", "domain-uid", "enabled", "layer", "creator", "last-modifier"]
 
     result = client.add_rule(
-        layer, position, action, name=name, vpn=vpn, destination=destination,
-        service=service, source=source, comments=comments, install_on=install_on_list,
-        enabled=enabled_bool, track=track,
+        layer,
+        position,
+        action,
+        name=name,
+        vpn=vpn,
+        destination=destination,
+        service=service,
+        source=source,
+        comments=comments,
+        install_on=install_on_list,
+        enabled=enabled_bool,
+        track=track,
     )
     printable_result = build_printable_result(headers, result)
     readable_output = tableToMarkdown(
@@ -2026,10 +2062,20 @@ def checkpoint_update_access_rule_command(
             service_obj["remove"] = argToList(service_remove)
 
     result = client.update_rule(
-        identifier, layer, ignore_warnings_bool, ignore_errors_bool,
-        enabled=enabled_bool, action=action, new_name=new_name, new_position=new_position,
-        comments=comments, track=track, install_on=install_on_list,
-        source=source_obj, destination=destination_obj, service=service_obj,
+        identifier,
+        layer,
+        ignore_warnings_bool,
+        ignore_errors_bool,
+        enabled=enabled_bool,
+        action=action,
+        new_name=new_name,
+        new_position=new_position,
+        comments=comments,
+        track=track,
+        install_on=install_on_list,
+        source=source_obj,
+        destination=destination_obj,
+        service=service_obj,
     )
     headers = [
         "name",
@@ -2191,8 +2237,14 @@ def checkpoint_add_application_site_command(
     ]
 
     result = client.add_application_site(
-        name, primary_category, identifier, groups=groups,
-        description=description, comments=comments, color=color, tags=tags_list,
+        name,
+        primary_category,
+        identifier,
+        groups=groups,
+        description=description,
+        comments=comments,
+        color=color,
+        tags=tags_list,
     )
     printable_result = build_printable_result(headers, result)
     readable_output = tableToMarkdown(
