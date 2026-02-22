@@ -1,0 +1,6 @@
+{
+    "host": "example.com",
+    "records": {
+        "a": [{"target": "8.8.8.8", "ttl": 3600}]
+    }
+}

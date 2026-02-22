@@ -120,10 +120,6 @@
             "type": "int",
             "is_array": false
         },
-        "violation_triggers": {
-            "type": "int",
-            "is_array": false
-        },
         "timeStamp": {
             "type": "datetime",
             "is_array": false
