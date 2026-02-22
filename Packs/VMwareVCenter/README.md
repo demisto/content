@@ -2,7 +2,12 @@
 # VMware vCenter
 
 <~XSIAM>
-This pack includes Cortex XSIAM content.
+## This pack includes
+
+### Data normalization capabilities
+
+* Rules for VMware vCenter logs ingested via the Broker VM into Cortex XSIAM.
+* Normalization to Virtualization Stories, available for usage from v1.0.15.
   
 ## Configuration on Server Side
 
