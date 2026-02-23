@@ -2788,6 +2788,374 @@ def test_replace_dots_in_keys():
 
 
 @pytest.mark.parametrize(
+    "file_name, file_content",
+    [
+        ("test_script.py", b"print('hello world')"),
+        ("script_with_spaces.py", b"import os\nos.listdir('.')"),
+        ("empty_script.py", b""),
+    ],
+    ids=["simple-script", "multi-line-script", "empty-script"],
+)
+def test_automation_script_create_command(mocker, tmp_path, file_name, file_content):
+    """
+    Given:
+        - An XDR client
+        - An entry_id pointing to a file to upload as an automation script
+    When:
+        - Running automation_script_create_command
+    Then:
+        - Verify the command returns a success message
+        - Verify the client.create_automation_script is called with the correct file data
+    """
+    from CortexXDRIR import Client, automation_script_create_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+
+    # Create a temporary file to simulate the war room file
+    test_file = tmp_path / file_name
+    test_file.write_bytes(file_content)
+
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": str(test_file), "name": file_name})
+    mock_create = mocker.patch.object(Client, "create_automation_script")
+
+    args = {"entry_id": "test_entry_id"}
+    result = automation_script_create_command(client, args)
+
+    assert result.readable_output == "Automation script created successfully."
+    mock_create.assert_called_once()
+    call_args = mock_create.call_args
+    files_arg = call_args[0][0] if call_args[0] else call_args[1]["files"]
+    assert files_arg["file"][0] == file_name
+    assert files_arg["file"][1] == file_content
+
+
+@pytest.mark.parametrize(
+    "field, value, expected_filename",
+    [
+        ("script_uid", "abc123", "automation_script_abc123"),
+        ("script_name", "my_script", "automation_script_my_script"),
+        ("script_uid", "uid-with-dashes", "automation_script_uid-with-dashes"),
+    ],
+    ids=["by-uid", "by-name", "uid-with-special-chars"],
+)
+def test_automation_script_get_command(mocker, field, value, expected_filename):
+    """
+    Given:
+        - An XDR client
+        - Arguments specifying a field and value to identify the script
+    When:
+        - Running automation_script_get_command
+    Then:
+        - Verify the command returns a file result with the correct filename
+        - Verify the client.get_automation_script is called with the correct request data
+    """
+    from CortexXDRIR import Client, automation_script_get_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+
+    mock_file_content = b"script file content bytes"
+    mocker.patch.object(Client, "get_automation_script", return_value=mock_file_content)
+    mock_file_result = mocker.patch(
+        "CortexXDRIR.fileResult",
+        return_value={"Contents": "", "ContentsFormat": "text", "Type": 3, "File": expected_filename, "FileID": "123"},
+    )
+
+    args = {"field": field, "value": value}
+    result = automation_script_get_command(client, args)
+
+    expected_request_data = {"request_data": {"filter": {"field": field, "value": value}}}
+    Client.get_automation_script.assert_called_once_with(expected_request_data)
+    mock_file_result.assert_called_once_with(filename=expected_filename, data=mock_file_content)
+    assert result["File"] == expected_filename
+
+
+@pytest.mark.parametrize(
+    "field, value",
+    [
+        ("script_uid", "abc123"),
+        ("script_name", "my_script"),
+        ("script_uid", "uid-456"),
+    ],
+    ids=["delete-by-uid", "delete-by-name", "delete-by-uid-2"],
+)
+def test_automation_script_delete_command(mocker, field, value):
+    """
+    Given:
+        - An XDR client
+        - Arguments specifying a field and value to identify the script to delete
+    When:
+        - Running automation_script_delete_command
+    Then:
+        - Verify the command returns a success message
+        - Verify the client.delete_automation_script is called with the correct request data
+    """
+    from CortexXDRIR import Client, automation_script_delete_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mock_delete = mocker.patch.object(Client, "delete_automation_script")
+
+    args = {"field": field, "value": value}
+    result = automation_script_delete_command(client, args)
+
+    expected_request_data = {"request_data": {"filter": {"field": field, "value": value}}}
+    mock_delete.assert_called_once_with(expected_request_data)
+    assert result.readable_output == "Automation script deleted successfully."
+
+
+@pytest.mark.parametrize(
+    "file_name, file_content",
+    [
+        ("test_playbook.json", b'{"name": "test playbook"}'),
+        ("playbook.yml", b"name: test\nsteps:\n  - step1"),
+        ("empty_playbook.json", b""),
+    ],
+    ids=["json-playbook", "yaml-playbook", "empty-playbook"],
+)
+def test_automation_playbook_create_command(mocker, tmp_path, file_name, file_content):
+    """
+    Given:
+        - An XDR client
+        - An entry_id pointing to a file to upload as an automation playbook
+    When:
+        - Running automation_playbook_create_command
+    Then:
+        - Verify the command returns a success message
+        - Verify the client.create_automation_playbook is called with the correct file data
+    """
+    from CortexXDRIR import Client, automation_playbook_create_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+
+    # Create a temporary file to simulate the war room file
+    test_file = tmp_path / file_name
+    test_file.write_bytes(file_content)
+
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": str(test_file), "name": file_name})
+    mock_create = mocker.patch.object(Client, "create_automation_playbook")
+
+    args = {"entry_id": "test_entry_id"}
+    result = automation_playbook_create_command(client, args)
+
+    assert result.readable_output == "Automation playbook created successfully."
+    mock_create.assert_called_once()
+    call_args = mock_create.call_args
+    files_arg = call_args[0][0] if call_args[0] else call_args[1]["files"]
+    assert files_arg["file"][0] == file_name
+    assert files_arg["file"][1] == file_content
+
+
+@pytest.mark.parametrize(
+    "field, value, expected_filename",
+    [
+        ("playbook_uid", "pb-123", "automation_playbook_pb-123"),
+        ("playbook_name", "my_playbook", "automation_playbook_my_playbook"),
+        ("playbook_uid", "uid-with-dashes", "automation_playbook_uid-with-dashes"),
+    ],
+    ids=["by-uid", "by-name", "uid-with-special-chars"],
+)
+def test_automation_playbook_get_command(mocker, field, value, expected_filename):
+    """
+    Given:
+        - An XDR client
+        - Arguments specifying a field and value to identify the playbook
+    When:
+        - Running automation_playbook_get_command
+    Then:
+        - Verify the command returns a file result with the correct filename
+        - Verify the client.get_automation_playbook is called with the correct request data
+    """
+    from CortexXDRIR import Client, automation_playbook_get_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+
+    mock_file_content = b"playbook file content bytes"
+    mocker.patch.object(Client, "get_automation_playbook", return_value=mock_file_content)
+    mock_file_result = mocker.patch(
+        "CortexXDRIR.fileResult",
+        return_value={"Contents": "", "ContentsFormat": "text", "Type": 3, "File": expected_filename, "FileID": "456"},
+    )
+
+    args = {"field": field, "value": value}
+    result = automation_playbook_get_command(client, args)
+
+    expected_request_data = {"request_data": {"filter": {"field": field, "value": value}}}
+    Client.get_automation_playbook.assert_called_once_with(expected_request_data)
+    mock_file_result.assert_called_once_with(filename=expected_filename, data=mock_file_content)
+    assert result["File"] == expected_filename
+
+
+@pytest.mark.parametrize(
+    "field, value",
+    [
+        ("playbook_uid", "pb-123"),
+        ("playbook_name", "my_playbook"),
+        ("playbook_uid", "uid-789"),
+    ],
+    ids=["delete-by-uid", "delete-by-name", "delete-by-uid-2"],
+)
+def test_automation_playbook_delete_command(mocker, field, value):
+    """
+    Given:
+        - An XDR client
+        - Arguments specifying a field and value to identify the playbook to delete
+    When:
+        - Running automation_playbook_delete_command
+    Then:
+        - Verify the command returns a success message
+        - Verify the client.delete_automation_playbook is called with the correct request data
+    """
+    from CortexXDRIR import Client, automation_playbook_delete_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mock_delete = mocker.patch.object(Client, "delete_automation_playbook")
+
+    args = {"field": field, "value": value}
+    result = automation_playbook_delete_command(client, args)
+
+    expected_request_data = {"request_data": {"filter": {"field": field, "value": value}}}
+    mock_delete.assert_called_once_with(expected_request_data)
+    assert result.readable_output == "Automation playbook deleted successfully."
+
+
+@pytest.mark.parametrize(
+    "args, expected_filters, expected_sort",
+    [
+        (
+            {"case_id": "100", "status": "new"},
+            [
+                {"field": "case_id", "operator": "in", "value": [100]},
+                {"field": "status_progress", "operator": "in", "value": ["new"]},
+            ],
+            {},
+        ),
+        (
+            {"severity": "high", "sort_field": "creation_time", "sort_order": "asc"},
+            [{"field": "severity", "operator": "in", "value": ["high"]}],
+            {"field": "creation_time", "keyword": "asc"},
+        ),
+        (
+            {"case_domain": "example.com", "limit": "10"},
+            [{"field": "case_domain", "operator": "in", "value": ["example.com"]}],
+            {},
+        ),
+    ],
+)
+def test_case_list_command(args, expected_filters, expected_sort):
+    """
+    Given:
+        - args for case list command
+    When:
+        - Running case_list_command
+    Then:
+        - Verify the client.search_cases is called with correct arguments
+    """
+    from CortexXDRIR import Client, case_list_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    with patch.object(Client, "search_cases", return_value=[{"case_id": 1}]) as mock_search:
+        case_list_command(client, args)
+
+        call_args = mock_search.call_args[0][0]
+        assert call_args["request_data"]["filters"] == expected_filters
+        assert call_args["request_data"]["sort"] == expected_sort
+
+
+@pytest.mark.parametrize(
+    "args, expected_update_data",
+    [
+        ({"case_id": "100", "status": "new"}, {"status_progress": "NEW"}),
+        (
+            {"case_id": "100", "resolve_reason": "resolved_known_issue", "resolve_comment": "done"},
+            {"resolve_reason": "Resolved - Known Issue", "resolve_comment": "done"},
+        ),
+        (
+            {"case_id": "100", "status": "closed", "resolve_reason": "resolved_other"},
+            {"status_progress": "CLOSED", "resolve_reason": "Resolved - Other"},
+        ),
+    ],
+)
+def test_case_update_command(args, expected_update_data):
+    """
+    Given:
+        - args for case update command
+    When:
+        - Running case_update_command
+    Then:
+        - Verify the client.update_case is called with correct arguments
+    """
+    from CortexXDRIR import Client, case_update_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    with patch.object(Client, "update_case") as mock_update:
+        res = case_update_command(client, args)
+
+        assert res.readable_output == f"Case {args['case_id']} updated successfully"
+        mock_update.assert_called_with(args["case_id"], request_data={"request_data": {"update_data": expected_update_data}})
+
+
+@pytest.mark.parametrize(
+    "mock_response, expected_count_network, expected_count_file",
+    [
+        (
+            [
+                {
+                    "network_artifacts": {"DATA": [{"id": 1}], "TOTAL_COUNT": 1},
+                    "file_artifacts": {"DATA": [{"id": 2}], "TOTAL_COUNT": 1},
+                }
+            ],
+            1,
+            1,
+        ),
+        (
+            [
+                {
+                    "network_artifacts": {"DATA": [], "TOTAL_COUNT": 0},
+                    "file_artifacts": {"DATA": [{"id": 2}], "TOTAL_COUNT": 1},
+                }
+            ],
+            0,
+            1,
+        ),
+        (
+            [
+                {
+                    "network_artifacts": {"DATA": [], "TOTAL_COUNT": 0},
+                    "file_artifacts": {"DATA": [], "TOTAL_COUNT": 0},
+                }
+            ],
+            0,
+            0,
+        ),
+    ],
+)
+def test_case_artifact_list_command(mock_response, expected_count_network, expected_count_file):
+    """
+    Given:
+        - mock response for get_case_artifacts
+    When:
+        - Running case_artifact_list_command
+    Then:
+        - Verify the number of returned results matches expected artifacts
+    """
+    from CortexXDRIR import Client, case_artifact_list_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    with patch.object(Client, "get_case_artifacts", return_value=mock_response):
+        res = case_artifact_list_command(client, {"case_id": "100"})
+
+        if expected_count_network == 0 and expected_count_file == 0:
+            assert len(res) == 1
+            assert "No artifacts found" in res[0].readable_output
+        else:
+            count = 0
+            if expected_count_network > 0:
+                count += 1
+            if expected_count_file > 0:
+                count += 1
+            assert len(res) == count
+
+
+@pytest.mark.parametrize(
     "args, expected_request_data",
     [
         (
