@@ -4695,7 +4695,7 @@ def get_case_resolution_statuses(client, args):
                 f"Case {case_id} Resolution Statuses",
                 case_output,
                 headers=headers,
-                headerTransform=string_to_table_header,
+                headerTransform=pascalToSpace,
             )
         )
     readable_output = "\n".join(readable_parts)
