@@ -514,6 +514,8 @@ def create_launch_template_kwargs_builder(args: Dict[str, Any]) -> Dict[str, Any
     if args.get("tags"):
         kwargs["TagSpecifications"] = [{"ResourceType": "launch-template", "Tags": parse_tag_field(args.get("tags"))}]
 
+    return kwargs
+
 
 def build_kwargs_network_interface_attribute(args: dict, network_interface_id: str) -> dict:
     """
