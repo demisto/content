@@ -83,3 +83,43 @@ Returns system log events extracted from Citrix.
 #### Context Output
 
 There is no context output for this command.
+
+---
+# Citrix DaaS Integration
+
+Citrix DaaS simplifies the delivery and management of Citrix technologies by enabling organizations to deliver secure virtual apps and desktops from the cloud while maintaining centralized control and configuration management.
+
+This integration focuses on configuration logging and administrative activities, including:
+
+- Configuration changes initiated from the **Manage** section
+- Administrative activities from the **Monitor** node
+- PowerShell script execution
+- REST API requests
+
+---
+
+## Configure Citrix DaaS in Cortex
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | Base URL of the Citrix Cloud API | True |
+| Client Id | Service principal Client ID | True |
+| Client Secret | Service principal Client Secret | True |
+| Customer ID | Citrix Customer ID (Citrix-CustomerId header) | True |
+| Site Name | Specific Citrix DaaS site name (if applicable) | False |
+| Max events per fetch | Maximum number of events to retrieve. Requires configuration logging database to be enabled. Results are returned most-recent first. | False |
+| Trust any certificate (not secure) | Trust unverified SSL certificates | False |
+| Use system proxy settings | Use Cortex system proxy settings | False |
+
+---
+
+## Configuration Steps
+
+The authentication setup for Citrix DaaS uses the same Service Principal process described above in the Citrix Cloud section.
+
+Ensure that:
+
+- The Service Principal has sufficient API permissions.
+- Configuration logging is enabled in the Citrix DaaS environment.
+- The correct Customer ID is configured.
+- (Optional) Site Name is specified if working with multiple sites.
