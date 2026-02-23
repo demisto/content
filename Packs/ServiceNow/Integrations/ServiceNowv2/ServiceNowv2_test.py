@@ -634,28 +634,33 @@ def test_get_ticket_notes_command_use_display_value_no_comments(mocker):
         (
             [
                 {
-                    "value": "First comment",
+                    "value": "[code]<p>test</p>[/code]",
                     "sys_created_by": "Test User",
                     "sys_created_on": "2022-11-21 20:45:37",
                     "element": "comments",
                 }
             ],
-            {"comment_tag_from_servicenow": "CommentFromServiceNow"},
+            {
+                "comment_tag_from_servicenow": "CommentFromServiceNow",
+                "comment_format": "html",
+            },
             [
                 {
                     "Type": 1,
                     "Category": None,
-                    "Contents": "Type: comments\nCreated By: Test User\nCreated On: 2022-11-21 20:45:37\nFirst comment",
-                    "ContentsFormat": None,
+                    "Contents": "Type: comments\nCreated By: Test User\nCreated On: 2022-11-21 20:45:37\n<p>test</p>",
+                    "ContentsFormat": "html",
                     "Tags": ["CommentFromServiceNow"],
                     "Note": True,
-                    "EntryContext": {"comments_and_work_notes": "First comment"},
+                    "EntryContext": {
+                        "comments_and_work_notes": "[code]<p>test</p>[/code]"
+                    },
                 }
             ],
         )
     ],
 )
-def test_get_entries_for_notes_with_comment(notes, params, expected):
+def test_get_entries_for_notes_with_comment_and_format(notes, params, expected):
     """
     Given
         - A list of notes
@@ -3780,7 +3785,7 @@ def test_get_remote_data_with_new_attachment_attachment_is_note(mock_is_new_inci
         ]
     }
 
-    new_mock_params = mock_params | {"mark_attachment_as_note": True}
+    new_mock_params = mock_params | {"mark_attachments_as_note": True}
 
     attachment_entry = {"File": "evidence.txt", "FileID": "mock_file_id", "Tags": [mock_params["file_tag_from_service_now"]]}
 
