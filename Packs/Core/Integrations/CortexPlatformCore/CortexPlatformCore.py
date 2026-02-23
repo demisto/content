@@ -4693,7 +4693,7 @@ def get_case_resolution_statuses(client, args):
         readable_parts.append(
             tableToMarkdown(
                 f"Case {case_id} Resolution Statuses",
-                case_output if case_output else "No resolution statuses found.",
+                case_output,
                 headers=headers,
                 headerTransform=string_to_table_header,
             )
