@@ -12888,7 +12888,117 @@ def test_describe_fleet_instances_command_with_filter(mocker):
     assert call_kwargs["Filters"][0]["Name"] == "instance-type"
 
 
-# ── aws-ec2-fleet-modify ──────────────────────────────────────────────────────
+def test_describe_fleet_instances_command_outputs_structure(mocker):
+    """
+    Given: A mocked EC2 client returning active instances with a FleetId and no NextToken.
+    When: describe_fleet_instances_command is called.
+    Then: The outputs dict should contain the correct context keys, ResponseMetadata should be
+          excluded from response_data, and FleetInstancesNextToken should be None.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    instances = [
+        {"InstanceId": "i-out001", "InstanceType": "m5.large", "SpotInstanceRequestId": "sir-out1", "InstanceHealth": "healthy"}
+    ]
+    raw_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ActiveInstances": instances,
+        "FleetId": "fleet-out-001",
+        "NextToken": None,
+    }
+    serialized = {"ActiveInstances": instances, "FleetId": "fleet-out-001", "NextToken": None}
+    mock_client.describe_fleet_instances.return_value = raw_response
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=serialized)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "fleet_id": "fleet-out-001"}
+
+    result = EC2.describe_fleet_instances_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    # ResponseMetadata must be stripped from the context output
+    fleet_output = result.outputs["AWS.EC2.Fleet(val.FleetId && val.FleetId == obj.FleetId)"]
+    assert "ResponseMetadata" not in fleet_output
+    assert fleet_output.get("FleetId") == "fleet-out-001"
+    # NextToken sentinel should be present but None
+    assert result.outputs["AWS.EC2(true)"]["FleetInstancesNextToken"] is None
+
+
+def test_describe_fleet_instances_command_next_token_propagated(mocker):
+    """
+    Given: A mocked EC2 client returning a NextToken in the response.
+    When: describe_fleet_instances_command is called.
+    Then: FleetInstancesNextToken in the AWS.EC2(true) output should match the response NextToken.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    instances = [
+        {"InstanceId": "i-page001", "InstanceType": "t3.nano", "SpotInstanceRequestId": "sir-page1", "InstanceHealth": "healthy"}
+    ]
+    serialized = {"ActiveInstances": instances, "FleetId": "fleet-page-001", "NextToken": "next-token-xyz"}
+    mock_client.describe_fleet_instances.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        **serialized,
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=serialized)
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "fleet_id": "fleet-page-001",
+        "limit": "1",
+    }
+
+    result = EC2.describe_fleet_instances_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs["AWS.EC2(true)"]["FleetInstancesNextToken"] == "next-token-xyz"
+    call_kwargs = mock_client.describe_fleet_instances.call_args[1]
+    assert call_kwargs.get("MaxResults") == 1
+
+
+def test_describe_fleet_instances_command_readable_output_headers(mocker):
+    """
+    Given: A mocked EC2 client returning instances with all four expected header fields.
+    When: describe_fleet_instances_command is called.
+    Then: The readable output table should contain all four column headers and the raw_response
+          should be attached to the CommandResults.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    instances = [
+        {
+            "InstanceId": "i-hdr001",
+            "InstanceType": "c5.xlarge",
+            "SpotInstanceRequestId": "sir-hdr1",
+            "InstanceHealth": "unhealthy",
+        }
+    ]
+    serialized = {"ActiveInstances": instances, "FleetId": "fleet-hdr-001", "NextToken": None}
+    mock_client.describe_fleet_instances.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        **serialized,
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=serialized)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "fleet_id": "fleet-hdr-001"}
+
+    result = EC2.describe_fleet_instances_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    # All four table headers must appear in the markdown output
+    for header in ("Instance Id", "Instance Type", "Spot Instance Request Id", "Instance Health"):
+        assert header in result.readable_output, f"Expected header '{header}' not found in readable_output"
+    # Instance values must appear
+    assert "i-hdr001" in result.readable_output
+    assert "unhealthy" in result.readable_output
+    # raw_response must be attached
+    assert result.raw_response is not None
+    assert result.raw_response.get("FleetId") == "fleet-hdr-001"
+
+
 
 
 def test_modify_fleet_command_success(mocker):

@@ -566,6 +566,7 @@ def build_kwargs_network_interface_attribute(args: dict, network_interface_id: s
     demisto.debug(f"After remove_empty_elements: {kwargs}")
     return kwargs
 
+
 def aws_ec2_fleet_command_launch_templates_config_args_builder(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     Builds the LaunchTemplateConfigs list for EC2 Fleet create/modify commands.
