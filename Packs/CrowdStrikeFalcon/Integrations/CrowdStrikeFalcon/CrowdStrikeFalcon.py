@@ -3983,7 +3983,7 @@ def extract_unique_aids(vulnerabilities: list, existing_unique_aids: set) -> Non
     Extract unique AIDs (Host IDs) from vulnerabilities and merge with existing set.
     Equivalent to JavaScript: const u_aid = [...new Set(aids)]
     Update the set of unique AIDs in place.
-    
+
     Args:
         vulnerabilities: List of vulnerability objects
         existing_unique_aids: Existing set of unique AIDs
