@@ -4687,7 +4687,6 @@ def get_case_resolution_statuses(client, args):
         raw_responses.append(response)
         outputs.append(postprocess_case_resolution_statuses(client, response))
     return CommandResults(
-        readable_output=tableToMarkdown("Case Resolution Statuses", outputs, headerTransform=string_to_table_header),
         outputs_prefix="Core.CaseResolutionStatus",
         outputs=outputs,
         raw_response=raw_responses,
