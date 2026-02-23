@@ -5,7 +5,7 @@ from AdaptiveShieldSSPM import (
     get_events_command,
     module_test_command,
 )
-
+import AdaptiveShieldSSPM
 
 NEXT_PAGE_URI = "https://api.adaptive-shield.com/api/v1/accounts/ACCT/security_checks?offset={offset}&limit={limit}"
 
