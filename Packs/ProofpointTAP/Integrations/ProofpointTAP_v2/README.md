@@ -1404,3 +1404,40 @@ Decodes URLs that have been rewritten by TAP to their original, target URL.
 >|Encoded Url|Decoded Url|
 >|---|---|
 >| https://urldefense.proofpoint.com/v2/url?u=http-3A__links.mkt3337.com_ctt-3Fkn-3D3-26ms-3DMzQ3OTg3MDQS1-26r-3DMzkxNzk3NDkwMDA0S0-26b-3D0-26j-3DMTMwMjA1ODYzNQS2-26mt-3D1-26rt-3D0&d=DwMFaQ&c=Vxt5e0Osvvt2gflwSlsJ5DmPGcPvTRKLJyp031rXjhg&r=MujLDFBJstxoxZI_GKbsW7wxGM7nnIK__qZvVy6j9Wc&m=QJGhloAyfD0UZ6n8r6y9dF-khNKqvRAIWDRU_K65xPI&s=ew-rOtBFjiX1Hgv71XQJ5BEgl9TPaoWRm_Xp9Nuo8bk&e= | http://links.mkt3337.com/ctt?kn=3&ms=MzQ3OTg3MDQS1&r=MzkxNzk3NDkwMDA0S0&b=0&j=MTMwMjA1ODYzNQS2&mt=1&rt=0 |
+>
+### proofpoint-get-threat-summary
+
+***
+In order to use this command - run proofpoint-get-events before and use context data (context field Proofpoint.MessagesDelivered.threatsInfoMap.threatId) For mor specific type of events : proofpoint-get-events-clicks-blocked (context field Proofpoint.ClicksBlocked.threatID) proofpoint-get-events-clicks-permitted (context field Proofpoint.ClicksPermitted.threatID)
+
+#### Base Command
+
+`proofpoint-get-threat-summary`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| threat_id | The ID of the threat to get its summary. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Proofpoint.ThreatSummary.id | String | A unique threat ID. |
+| Proofpoint.ThreatSummary.identifiedAt | String | Proofpoint identified the threat at this time. |
+| Proofpoint.ThreatSummary.name | String | The threat name |
+| Proofpoint.ThreatSummary.type | String | The threat type \(attachment, url, or message text\). |
+| Proofpoint.ThreatSummary.category | String | The threat category \(impostor, malware, phish, or spam\). |
+| Proofpoint.ThreatSummary.status | String | The threat status \(active or cleared\) |
+| Proofpoint.ThreatSummary.detectionType | String | New field created called detectionType |
+| Proofpoint.ThreatSummary.severity | String | The threat severity score ranges from 0-1000. |
+| Proofpoint.ThreatSummary.attackSpread | String | The number of Proofpoint customers that also received this threat. |
+| Proofpoint.ThreatSummary.notable | String | Whether the threat is marked as notable by Proofpoint's Threat Analysts. |
+| Proofpoint.ThreatSummary.verticals | String | Whether the threat is identified as vertically targeted. |
+| Proofpoint.ThreatSummary.geographies | String | Whether the threat is identified as geographically targeted. |
+| Proofpoint.ThreatSummary.actors | String | The id and name of the actor associated with the threat. |
+| Proofpoint.ThreatSummary.families | String | The id\(s\) and name\(s\) of the threat families associated with the threat. |
+| Proofpoint.ThreatSummary.malware | String | The id\(s\) and name\(s\) of the malware associated with the threat. |
+| Proofpoint.ThreatSummary.techniques | String | The id\(s\) and name\(s\) of the techniques associated with the threat. |
+| Proofpoint.ThreatSummary.brands | unknown | The id\(s\) and name\(s\) of the brands associated with the threat. |

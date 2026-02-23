@@ -933,13 +933,11 @@ def test_validate_first_fetch_time_not_valid():
 
 def test_get_threat_summary_command(requests_mock):
     """
-    Scenario: Decode URLs that have been rewritten by TAP to their original, target URL.
+    Scenario: retrieve a threat summary.
     Given:
      - User has provided valid credentials and arguments.
-    When:
-     - A url-decode command is called.
+    When:get threat summary command is called.
     Then:
-     - Ensure number of items is correct.
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
 
