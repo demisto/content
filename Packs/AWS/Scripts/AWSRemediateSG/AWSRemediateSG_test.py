@@ -190,6 +190,128 @@ def test_split_rule(rule, first_rule_created):
     assert result[0] == first_rule_created
 
 
+def test_split_rule_all_traffic_preserves_private_cidrs():
+    """Tests that split_rule preserves non-public CIDRs from all-traffic rules.
+
+    Given:
+        - An all-traffic rule (IpProtocol "-1", no FromPort) containing both public
+          (0.0.0.0/0) and private (10.0.1.0/24) IPv4 CIDRs, plus a public IPv6 CIDR (::/0).
+    When:
+        - split_rule is called to exclude TCP port 22.
+    Then:
+        - The result contains the standard 3 split rules for public CIDRs (tcp 0-21, tcp 23-65535, udp 0-65535).
+        - An additional all-traffic rule is appended that preserves the private CIDR (10.0.1.0/24)
+          with IpProtocol "-1" and no public CIDRs.
+    """
+    from AWSRemediateSG import split_rule
+
+    rule = {
+        "IpProtocol": "-1",
+        "IpRanges": [
+            {"CidrIp": "0.0.0.0/0", "Description": "All traffic - ipv4"},
+            {"CidrIp": "10.0.1.0/24", "Description": "Allow internal access"},
+        ],
+        "Ipv6Ranges": [
+            {"CidrIpv6": "::/0", "Description": "All traffic - ipv6"},
+        ],
+        "PrefixListIds": [],
+        "UserIdGroupPairs": [],
+    }
+
+    result = split_rule(rule, port=22, protocol="tcp")
+
+    # Should have 4 rules: tcp 0-21, tcp 23-65535, udp 0-65535, and the private CIDR all-traffic rule
+    assert len(result) == 4
+
+    # First 3 rules should be the public CIDR split rules
+    assert result[0]["IpProtocol"] == "tcp"
+    assert result[0]["FromPort"] == 0
+    assert result[0]["ToPort"] == 21
+
+    assert result[1]["IpProtocol"] == "tcp"
+    assert result[1]["FromPort"] == 23
+    assert result[1]["ToPort"] == 65535
+
+    assert result[2]["IpProtocol"] == "udp"
+    assert result[2]["FromPort"] == 0
+    assert result[2]["ToPort"] == 65535
+
+    # Fourth rule should preserve the private CIDR with all-traffic protocol
+    private_rule = result[3]
+    assert private_rule["IpProtocol"] == "-1"
+    assert private_rule["IpRanges"] == [{"CidrIp": "10.0.1.0/24", "Description": "Allow internal access"}]
+    assert private_rule["Ipv6Ranges"] == []
+    assert private_rule["PrefixListIds"] == []
+    assert private_rule["UserIdGroupPairs"] == []
+
+
+def test_split_rule_all_traffic_no_private_cidrs():
+    """Tests that split_rule does not add an extra rule when there are no private CIDRs.
+
+    Given:
+        - An all-traffic rule containing only public CIDRs (0.0.0.0/0 and ::/0).
+    When:
+        - split_rule is called to exclude TCP port 22.
+    Then:
+        - The result contains exactly 3 split rules (no extra private CIDR rule).
+    """
+    from AWSRemediateSG import split_rule
+
+    rule = {
+        "IpProtocol": "-1",
+        "IpRanges": [{"CidrIp": "0.0.0.0/0"}],
+        "Ipv6Ranges": [{"CidrIpv6": "::/0"}],
+        "PrefixListIds": [],
+        "UserIdGroupPairs": [],
+    }
+
+    result = split_rule(rule, port=22, protocol="tcp")
+
+    # Should have exactly 3 rules, no private CIDR rule
+    assert len(result) == 3
+
+
+def test_split_rule_all_traffic_preserves_multiple_private_cidrs():
+    """Tests that split_rule preserves multiple non-public CIDRs from all-traffic rules.
+
+    Given:
+        - An all-traffic rule containing public CIDRs and multiple private IPv4 and IPv6 CIDRs.
+    When:
+        - split_rule is called to exclude TCP port 3389.
+    Then:
+        - The private CIDRs are all preserved in a single additional all-traffic rule.
+    """
+    from AWSRemediateSG import split_rule
+
+    rule = {
+        "IpProtocol": "-1",
+        "IpRanges": [
+            {"CidrIp": "0.0.0.0/0"},
+            {"CidrIp": "10.0.0.0/8", "Description": "RFC1918 Class A"},
+            {"CidrIp": "172.16.0.0/12", "Description": "RFC1918 Class B"},
+        ],
+        "Ipv6Ranges": [
+            {"CidrIpv6": "::/0"},
+            {"CidrIpv6": "fd00::/8", "Description": "ULA range"},
+        ],
+        "PrefixListIds": [],
+        "UserIdGroupPairs": [],
+    }
+
+    result = split_rule(rule, port=3389, protocol="tcp")
+
+    # Should have 4 rules: 3 split rules + 1 private CIDR rule
+    assert len(result) == 4
+
+    private_rule = result[3]
+    assert private_rule["IpProtocol"] == "-1"
+    assert len(private_rule["IpRanges"]) == 2
+    assert private_rule["IpRanges"][0]["CidrIp"] == "10.0.0.0/8"
+    assert private_rule["IpRanges"][1]["CidrIp"] == "172.16.0.0/12"
+    assert len(private_rule["Ipv6Ranges"]) == 1
+    assert private_rule["Ipv6Ranges"][0]["CidrIpv6"] == "fd00::/8"
+
+
 def test_fix_excessive_access(mocker):
     """Tests determine_excessive_access helper function.
 

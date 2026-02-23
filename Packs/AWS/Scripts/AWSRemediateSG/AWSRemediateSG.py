@@ -108,11 +108,13 @@ def split_rule(rule: dict, port: int, protocol: str) -> list[dict]:
         )
         ipv4_ranges = (
             [{"CidrIp": "0.0.0.0/0", "Description": description}]
-            if any(d["CidrIp"] == "0.0.0.0/0" for d in rule["IpRanges"])
+            if any(d.get("CidrIp") == "0.0.0.0/0" for d in rule.get("IpRanges", []))
             else []
         )
         ipv6_ranges = (
-            [{"CidrIpv6": "::/0", "Description": description}] if any(d["CidrIpv6"] == "::/0" for d in rule["Ipv6Ranges"]) else []
+            [{"CidrIpv6": "::/0", "Description": description}]
+            if any(d.get("CidrIpv6") == "::/0" for d in rule.get("Ipv6Ranges", []))
+            else []
         )
         # Preserve original values for PrefixListIds and UserIdGroupPairs, as we don't expect these to allow public access
         preserved_fields: dict = {
@@ -153,6 +155,21 @@ def split_rule(rule: dict, port: int, protocol: str) -> list[dict]:
                 "ToPort": 65535,
             }
         )
+
+        # Preserve any non-public (private) CIDRs from the original all-traffic rule.
+        # These are CIDRs that are not 0.0.0.0/0 or ::/0 and should retain their original
+        # all-traffic permission in the new security group.
+        private_v4 = [d for d in rule.get("IpRanges", []) if d.get("CidrIp") != "0.0.0.0/0"]
+        private_v6 = [d for d in rule.get("Ipv6Ranges", []) if d.get("CidrIpv6") != "::/0"]
+        if private_v4 or private_v6:
+            res_list.append(
+                {
+                    **preserved_fields,
+                    "IpProtocol": "-1",
+                    "IpRanges": private_v4,
+                    "Ipv6Ranges": private_v6,
+                }
+            )
 
     return res_list
 
@@ -379,7 +396,7 @@ def sg_fix(
 
     This function examines all ingress rules in a security group, identifies rules that expose
     the specified port to 0.0.0.0/0, and creates a new security group with those rules modified
-    or removed. Private IP ranges (RFC 1918) are automatically allowed for the restricted port.
+    or removed. Specified IP ranges are automatically allowed for the restricted port.
 
     Args:
         account_id (str): AWS account ID where the security group exists
@@ -624,8 +641,7 @@ def aws_recreate_sg(args: dict[str, Any]) -> CommandResults:
 
     This function creates new security groups that are copies of existing ones but with
     public access removed for sensitive ports. The new security groups maintain access
-    from private IP ranges (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) for the specified port.
-    Over-permissive is defined as allowing access from 0.0.0.0/0 (internet) to sensitive ports.
+    from any specified IP addresses/ranges provided in the remediation_allow_ranges argument.
 
     Args:
         args (Dict[str, Any]): Demisto.args() object
