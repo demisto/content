@@ -1,11 +1,10 @@
-from AdaptiveShieldSSPMEventCollector import (
+from AdaptiveShieldSSPM import (
     Client,
     AdaptiveShieldSSPMParams,
     fetch_events_command,
     get_events_command,
     module_test_command,
 )
-import AdaptiveShieldSSPMEventCollector
 
 
 NEXT_PAGE_URI = "https://api.adaptive-shield.com/api/v1/accounts/ACCT/security_checks?offset={offset}&limit={limit}"
@@ -506,7 +505,7 @@ class TestGetEventsCommand:
             {"id": "1", "creation_date": "2026-01-01T00:00:00Z", "_time": "2026-01-01T00:00:00Z"},
         ]
         mocker.patch.object(client, "get_security_checks_with_pagination", return_value=(mock_events, 0))
-        mock_send = mocker.patch.object(AdaptiveShieldSSPMEventCollector, "send_events_to_xsiam")
+        mock_send = mocker.patch.object(AdaptiveShieldSSPM, "send_events_to_xsiam")
 
         get_events_command(client, args={"limit": "1", "should_push_events": "true"})
 
