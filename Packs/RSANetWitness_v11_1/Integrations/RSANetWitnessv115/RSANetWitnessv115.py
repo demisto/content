@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from requests import HTTPError
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 from typing import Any
 
 ERROR_TITLES = {
@@ -519,9 +519,9 @@ def list_incidents_command(client: Client, args: dict[str, Any]) -> CommandResul
     else:
         response, items = paging_command(limit, page_size, page_number, client.list_incidents_request, until=until, since=since)
 
-        context_data = prepare_paging_context_data(response, items, "Incidents")
-        page_number = response.get("pageNumber")
-        total_pages = response.get("totalPages")
+        context_data = prepare_paging_context_data(response, items, "Incidents")  # type: ignore[arg-type]
+        page_number = response.get("pageNumber")  # type: ignore[attr-defined]
+        total_pages = response.get("totalPages")  # type: ignore[attr-defined]
         text = f"Total Retrieved Incidents : {len(items)}\n Page number {page_number} out of {total_pages} "
 
         output = prepare_incidents_readable_items(items)
@@ -606,7 +606,7 @@ def incident_list_alerts_command(client: Client, args: dict[str, Any]) -> Comman
     id_ = args.get("id")
     limit = arg_to_number(args.get("limit"))
     items: list = []
-    response = client.incident_list_alerts_request(limit, id_)
+    response = client.incident_list_alerts_request(limit, id_)  # type: ignore[arg-type]
     if isinstance(response, list):
         items = response
 
@@ -964,7 +964,7 @@ def fetch_alerts_related_incident(client: Client, incident_id: str, max_alerts: 
         items = []
         if isinstance(response_body, list):
             items = [item.get("alert") for item in response_body if isinstance(item, dict)]
-        alerts.extend(items[: max_alerts - len(alerts)])
+        alerts.extend(items[: max_alerts - len(alerts)])  # type: ignore[arg-type]
         page_number += 1
         has_next = False
         if response_body:
@@ -1236,7 +1236,7 @@ def epoch_ms_to_utc(epoch_ms: int | None) -> str | None:
     dt = arg_to_datetime(epoch_ms)
 
     # Format using integration DATE_FORMAT
-    return dt.strftime(DATE_FORMAT)
+    return dt.strftime(DATE_FORMAT)  # type: ignore[union-attr]
 
 
 def exception_handler(res):
@@ -1446,7 +1446,7 @@ def update_remote_system_command(client: Client, args: dict, params: dict) -> st
     response_status = response[0].get("status")
     if rsa_status and response_status != rsa_status:
         demisto.debug(f"Current status should be {rsa_status} on RSA but is {response_status}, updating incident...")
-        response = client.update_incident_request(parsed_args.remote_incident_id, rsa_status, response[0].get("assignee"))
+        response = client.update_incident_request(parsed_args.remote_incident_id, rsa_status, response[0].get("assignee"))  # type: ignore[assignment]
         demisto.debug(json.dumps(response))
     else:
         demisto.debug(
@@ -1590,13 +1590,13 @@ def clean_old_inc_context(max_time_mirror_inc: int):
     int_cont = demisto.getIntegrationContext()
     inc_data = int_cont.get("IncidentsDataCount", {})
     current_time = datetime.now()
-    current_time = current_time.replace(tzinfo=timezone.utc)
+    current_time = current_time.replace(tzinfo=UTC)
     total_know = 0
     res = {}
     for inc_id, inc in inc_data.items():
         inc_created = arg_to_datetime(inc["Created"])
         if inc_created:
-            inc_created = inc_created.replace(tzinfo=timezone.utc)
+            inc_created = inc_created.replace(tzinfo=UTC)
             diff = current_time - inc_created
             if diff.days <= max_time_mirror_inc:  # maximum RSA aggregation time 24 days
                 res[inc_id] = inc
