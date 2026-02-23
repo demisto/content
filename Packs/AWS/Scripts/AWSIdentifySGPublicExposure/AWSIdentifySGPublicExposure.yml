@@ -71,16 +71,16 @@ runonce: false
 outputs:
 - contextPath: AWSPublicExposure.SGAssociations.EC2InstanceID
   description: ID of the EC2 instance with public exposure.
-  type: string
+  type: String
 - contextPath: AWSPublicExposure.SGAssociations.NetworkInterfaceID
   description: ID of the Elastic Network Interface with public exposure.
-  type: string
+  type: String
 - contextPath: AWSPublicExposure.SGAssociations.SecurityGroups
   description: Security Group IDs associated with this interface.
   type: Unknown
 - contextPath: AWSPublicExposure.SGAssociations.PublicIP
   description: Public IP address exposed.
-  type: string
+  type: String
 - contextPath: AWSPublicExposure.SGAssociations.IntegrationInstance
   description: The AWS Integration Instance used for identification.
-  type: string
+  type: String

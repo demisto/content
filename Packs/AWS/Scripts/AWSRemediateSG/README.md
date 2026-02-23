@@ -34,7 +34,7 @@ This script uses the following commands and scripts.
 | port | TCP/UDP port to be restricted. |
 | protocol | The protocol of the port to be restricted. |
 | region | The region where the EC2 instance resides. |
-| tags | The tags to apply to the recreated security groups. Use the format \`key=abc,value=123;key=fed,value=456\`, with tags separated by a semicolon \(;\). |
+| tags | The tags to apply to the recreated security groups. Use the format `key=abc,value=123;key=fed,value=456`, with tags separated by a semicolon (;). |
 | integration_instance | The AWS integration instance to use. |
 
 ## Outputs
@@ -47,4 +47,4 @@ This script uses the following commands and scripts.
 | AWSPublicExposure.SGReplacements.ReplacementSet.old-sg | ID of the original security group before remediation. | String |
 | AWSPublicExposure.SGReplacements.ResourceID | The EC2 resource ID to remediate security groups for. | String |
 | AWSPublicExposure.SGReplacements.UpdatedSGList | List of Security Groups to associate to the EC2 resource after remediation. | String |
-| AWSPublicExposure.SGReplacements.RemediationRequired | Indicates whether any of the provided security groups contained rules requiring remediation. | boolean |
+| AWSPublicExposure.SGReplacements.RemediationRequired | Indicates whether any of the provided security groups contained rules requiring remediation. | Boolean |

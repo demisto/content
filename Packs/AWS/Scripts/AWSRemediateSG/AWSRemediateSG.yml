@@ -103,4 +103,4 @@ outputs:
   type: String
 - contextPath: AWSPublicExposure.SGReplacements.RemediationRequired
   description: Indicates whether any of the provided security groups contained rules requiring remediation.
-  type: boolean
+  type: Boolean
