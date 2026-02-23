@@ -3547,6 +3547,571 @@ script:
         - contextPath: Core.CaseResolutionStatus.userInput
           description: User input parameters (for pending playbookTask items).
           type: Unknown
+    - name: core-get-ai-model-activity
+      description: Retrieves AI model activity information including usage statistics and inactive status.
+      hidden: true
+      arguments:
+        - name: asset_id
+          description: A comma-separated list of AI model asset IDs.
+          required: true
+          isArray: true
+      outputs:
+        - contextPath: Core.AIModelActivity.asset_id
+          description: The unique identifier of the AI model asset.
+          type: String
+        - contextPath: Core.AIModelActivity.last_used
+          description: The timestamp when the model was last used.
+          type: Date
+        - contextPath: Core.AIModelActivity.event_count
+          description: The number of events associated with the model.
+          type: Number
+        - contextPath: Core.AIModelActivity.is_inactive
+          description: Whether the model is currently inactive.
+          type: Boolean
+    - arguments:
+        - description: The name of the profile.
+          name: profile_name
+          required: true
+        - description: The description of the profile.
+          name: profile_description
+        - auto: PREDEFINED
+          defaultValue: disabled
+          description: Analyze ASP and ASPX files written to the file system, and quarantine them if found to be malicious.
+          name: asp_aspx_files
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: disabled
+          description: Breach & Attack Simulation (BAS) tool settings.
+          name: breach_attack_simulation_tools_settings
+          predefined:
+            - enabled
+            - disabled
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against UAC bypass mechanisms associated with process privilege elevation.
+          name: uac_bypass_prevention
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: disabled
+          description: Periodically scans endpoints and attached removable drives for dormant malware.
+          name: on_demand_file_examination
+          predefined:
+            - disabled
+            - enabled
+        - auto: PREDEFINED
+          defaultValue: enabled
+          description: Locally scans endpoints and attached removable drives for dormant malware.
+          name: end_user_initiated_local_scan
+          predefined:
+            - disabled
+            - enabled
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Analyzes and halts ransomware-related encryption activity to prevent data loss.
+          name: ransomware_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against cryptominers.
+          name: cryptominers_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against tampering attempts, such as modification or termination of the Cortex XDR agent.
+          name: anti_tampering_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against IIS-related attacks.
+          name: iis_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against UEFI manipulation attempts.
+          name: uefi_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against the connection of potentially malicious Human Interface Devices (HIDs).
+          name: malicious_device_prevention
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: terminateSession
+          description: Analyzes network packet data to detect malicious behavior.
+          name: network_packet_inspection_engine
+          predefined:
+            - terminateSession
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against processes attempting to access or steal passwords and other sensitive credentials.
+          name: credential_gathering_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against processes dropping malicious webshells.
+          name: anti_webshell_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Analyzes and prevents malicious macros in Microsoft Office Word or Excel files from executing.
+          name: office_files_with_macros_examination
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Prevents evasive attacks using shellcodes to load malicious code.
+          name: in_process_shellcode_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Analyzes and prevents malicious JScript files from running.
+          name: jscript_file_examination
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Prevents script-based malware attacks by blocking targeted processes from launching child processes.
+          name: malicious_child_process_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Analyzes and prevents malicious VB files from running.
+          name: vb_scripts_examination
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Prevents attacks using built-in OS executables and administration utilities by monitoring endpoint activity for malicious causality chains.
+          name: global_behavioral_threat_protection_rules
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Analyzes and prevents malicious PowerShell script files from running.
+          name: powershell_script_files
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against financial and banking malware techniques.
+          name: financial_malware_threat_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against security-bypass techniques.
+          name: security_measures_bypass
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Provides runtime protection against the abuse of kernel drivers.
+          name: dynamic_driver_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against malicious processes running at boot time.
+          name: dynamic_kernel_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: enabled
+          description: Prevents attacks using the Mimikatz tool to extract passwords from memory.
+          name: password_theft_protection
+          predefined:
+            - disabled
+            - enabled
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Analyzes and prevents malicious executable and DLL files from running.
+          name: portable_executables_and_dll_examination
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: enabled
+          description: Configure agent automatic response actions to malicious causality chains.
+          name: respond_to_malicious_causality_chains
+          predefined:
+            - disabled
+            - enabled
+      description: Creates a new windows malware profile.
+      name: core-create-windows-malware-profile
+      hidden: true
+      outputs:
+        - contextPath: Core.Profile.profile_id
+          description: The ID of the created profile.
+          type: String
+    - arguments:
+        - description: The ID of the profile.
+          name: profile_id
+          required: true
+        - description: The new name for the profile.
+          name: profile_name
+        - description: The new description for the profile.
+          name: profile_description
+        - auto: PREDEFINED
+          description: Analyzes ASP and ASPX files written to the file system and quarantines malicious files.
+          name: asp_aspx_files
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Enables or disables Breach & Attack Simulation (BAS) tool settings.
+          name: breach_attack_simulation_tools_settings
+          predefined:
+            - enabled
+            - disabled
+        - auto: PREDEFINED
+          description: Protects against UAC bypass mechanisms associated with process privilege elevation.
+          name: uac_bypass_prevention
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Periodically scans endpoints and attached removable drives for dormant malware.
+          name: on_demand_file_examination
+          predefined:
+            - disabled
+            - enabled
+        - auto: PREDEFINED
+          description: Locally scans endpoints and attached removable drives for dormant malware.
+          name: end_user_initiated_local_scan
+          predefined:
+            - disabled
+            - enabled
+        - auto: PREDEFINED
+          description: Targets encryption based activity associated with ransomware to analyze and halt ransomware before any data loss occurs.
+          name: ransomware_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protects against cryptominers.
+          name: cryptominers_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protects against tampering attempts, such as modification or termination of the Cortex XDR agent.
+          name: anti_tampering_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protects against IIS-related attacks.
+          name: iis_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protects against UEFI manipulation attempts.
+          name: uefi_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protects against the connection of potentially malicious Human Interface Devices (HIDs).
+          name: malicious_device_prevention
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Analyzes network packet data to detect malicious behavior.
+          name: network_packet_inspection_engine
+          predefined:
+            - terminateSession
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protects against processes attempting to access or steal passwords and other sensitive credentials.
+          name: credential_gathering_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protects against processes dropping malicious webshells.
+          name: anti_webshell_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Analyzes and prevents malicious macros in Microsoft Office Word or Excel files from executing.
+          name: office_files_with_macros_examination
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Prevents evasive attacks using shellcodes to load malicious code.
+          name: in_process_shellcode_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Analyzes and prevents malicious JScript files from running.
+          name: jscript_file_examination
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Prevents script-based malware attacks by blocking targeted processes from launching child processes.
+          name: malicious_child_process_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Analyzes and prevents malicious VB files from running.
+          name: vb_scripts_examination
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Prevents attacks using built-in OS executables and administration utilities by monitoring endpoint activity for malicious causality chains.
+          name: global_behavioral_threat_protection_rules
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Analyzes and prevents malicious PowerShell script files from running.
+          name: powershell_script_files
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protects against financial and banking malware techniques.
+          name: financial_malware_threat_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protects against security-bypass techniques.
+          name: security_measures_bypass
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Provides runtime protection against the abuse of kernel drivers.
+          name: dynamic_driver_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protects against malicious processes running at boot time.
+          name: dynamic_kernel_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Prevents attacks using the Mimikatz tool to extract passwords from memory.
+          name: password_theft_protection
+          predefined:
+            - disabled
+            - enabled
+        - auto: PREDEFINED
+          description: Analyzes and prevents malicious executable and DLL files from running.
+          name: portable_executables_and_dll_examination
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Configures automatic agent response actions for malicious causality chains.
+          name: respond_to_malicious_causality_chains
+          predefined:
+            - disabled
+            - enabled
+      description: Updates the specified Windows malware profile.
+      name: core-update-windows-malware-profile
+      hidden: true
+      outputs: []
+    - arguments:
+        - description: The profile name.
+          name: profile_name
+          required: true
+        - description: The profile description.
+          name: profile_description
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against browser exploits.
+          name: browser_exploits_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against logical exploits.
+          name: logical_exploits_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against known vulnerable processes.
+          name: known_vulnerable_processes_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against operating system exploits.
+          name: operating_system_exploit_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: disabled
+          description: Provides exploit protection for additional processes.
+          name: exploit_protection_for_additional_processes
+          predefined:
+            - block
+            - disabled
+            - report
+      description: Creates a new Windows exploit profile.
+      name: core-create-windows-exploit-profile
+      hidden: true
+      outputs:
+        - contextPath: Core.Profile.profile_id
+          description: The ID of the created profile.
+          type: String
+    - arguments:
+        - description: The profile ID.
+          name: profile_id
+          required: true
+        - description: The profile name.
+          name: profile_name
+        - description: The profile description.
+          name: profile_description
+        - auto: PREDEFINED
+          description: Protects against browser exploits.
+          name: browser_exploits_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protects against logical exploits.
+          name: logical_exploits_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protects against known vulnerable processes.
+          name: known_vulnerable_processes_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protects against operating system exploits.
+          name: operating_system_exploit_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Provides exploit protection for additional processes.
+          name: exploit_protection_for_additional_processes
+          predefined:
+            - block
+            - disabled
+            - report
+      description: Updates the specified Windows exploit profile.
+      name: core-update-windows-exploit-profile
+      hidden: true
+      outputs: []
+    - arguments:
+        - description: The IDs of the profiles.
+          name: profile_ids
+          required: true
+          isArray: true
+      description: Deletes the provided profiles.
+      name: core-delete-profile
+      hidden: true
+      outputs: []
     - arguments:
         - description: 'Time to look back for issues. Supports relative date (for example: "1 day", "3 weeks ago"). The default is 30 days.'
           name: timeframe
