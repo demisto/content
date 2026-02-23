@@ -221,7 +221,7 @@ script:
     - description: Comments string.
       name: comments
     - auto: PREDEFINED
-      description: Whether to enable automatic NAT rule generation. Required only when any nat_* argument is provided; otherwise omitted.
+      description: Whether to enable automatic NAT rule generation. Required only when any nat argument is provided.
       name: nat_auto_rule
       predefined:
       - 'true'
@@ -284,8 +284,10 @@ script:
       - ip_address
     - description: Interface name.
       name: interfaces_name
+      required: true
     - description: IPv4 or IPv6 network address for the interface. If both addresses are required use subnet4 and subnet6 fields explicitly.
       name: interfaces_subnet
+      required: true
     - description: IPv4 or IPv6 network mask length for the interface. If both masks are required use mask-length4 and mask-length6 fields explicitly.
       name: interfaces_mask_length
     - description: Collection of tag identifiers.
