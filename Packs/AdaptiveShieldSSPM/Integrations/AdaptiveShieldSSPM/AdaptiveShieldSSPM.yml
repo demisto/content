@@ -1,3 +1,6 @@
+name: AdaptiveShieldSSPM
+display: Adaptive Shield SSPM
+description: Adaptive Shield SSPM fetches security check events from Adaptive Shield and sends them to Cortex XSIAM.
 category: Analytics & SIEM
 provider: Adaptive Shield
 sectionorder:
@@ -47,14 +50,11 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Adaptive Shield SSPM fetches security check events from Adaptive Shield and sends them to Cortex XSIAM.
-display: Adaptive Shield SSPM
-name: AdaptiveShieldSSPM
 script:
   commands:
   - name: adaptive-shield-sspm-get-events
     description: |-
-      Fetches security check events from Adaptive Shield. Use with caution during development or debugging; this command may trigger event duplication or exceed API request limits.
+      Fetches security check events from Adaptive Shield. Use with caution during development or debugging. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
     arguments:
     - name: should_push_events
       auto: PREDEFINED
