@@ -458,7 +458,7 @@ def alarm_to_incident(alarm: dict[str, Any], show_content: bool = True) -> dict[
 
     if alarm_text:
         details_parts.append("\n Alarm Description:")
-        details_parts.append(alarm_text[:1024])
+        details_parts.append(alarm_text[:2048])
 
     if show_content and content is not None:
         details_parts.append("\nAlarm Content:")
