@@ -1,5 +1,4 @@
 import logging
-import re
 from datetime import datetime, timedelta
 from typing import Any
 
@@ -43,12 +42,11 @@ def _is_skippable_error(e: DemistoException) -> bool:
     Returns:
         True if the error can be safely skipped, False otherwise.
     """
-    error_str = str(e)
-    # Extract status code from "Error in API call [<code>] - <reason>" format
-    match = re.search(r"\[(\d{3})\]", error_str)
-    if not match:
+    status_code = None
+    if e.res is not None and hasattr(e.res, "status_code"):
+        status_code = e.res.status_code
+    if status_code is None:
         return False
-    status_code = int(match.group(1))
     return 400 <= status_code < 500 and status_code not in NON_SKIPPABLE_STATUS_CODES
 
 

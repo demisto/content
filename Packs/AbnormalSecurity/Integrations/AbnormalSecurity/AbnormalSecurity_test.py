@@ -1506,23 +1506,29 @@ def test_download_message_eml_command_with_quarantine(mocker):
 
 
 @pytest.mark.parametrize(
-    "error_msg, expected",
+    "status_code, expected",
     [
-        ("Error in API call [404] - Not Found", True),
-        ("Error in API call [400] - Bad Request", True),
-        ("Error in API call [410] - Gone", True),
-        ("Error in API call [405] - Method Not Allowed", True),
-        ("Error in API call [401] - Unauthorized", False),
-        ("Error in API call [403] - Forbidden", False),
-        ("Error in API call [429] - Too Many Requests", False),
-        ("Error in API call [500] - Internal Server Error", False),
-        ("Error in API call [502] - Bad Gateway", False),
-        ("Some unexpected error with no status code", False),
+        (404, True),
+        (400, True),
+        (410, True),
+        (405, True),
+        (401, False),
+        (403, False),
+        (429, False),
+        (500, False),
+        (502, False),
     ],
 )
-def test_is_skippable_error(error_msg, expected):
-    """Test that _is_skippable_error correctly categorizes errors."""
-    assert _is_skippable_error(DemistoException(error_msg)) == expected
+def test_is_skippable_error(status_code, expected):
+    """Test that _is_skippable_error correctly categorizes errors by response status code."""
+    exc = DemistoException(f"Error in API call [{status_code}]", res=MockResponse(None, status_code))
+    assert _is_skippable_error(exc) == expected
+
+
+def test_is_skippable_error_no_response():
+    """Test that errors without a response object are not skippable."""
+    exc = DemistoException("Some unexpected error with no status code")
+    assert _is_skippable_error(exc) is False
 
 
 """
@@ -1554,7 +1560,7 @@ def test_generate_threat_incidents_skips_4xx_error(mocker):
 
     def mock_get_details(threat_id, **kwargs):
         if threat_id == "deleted-threat-id":
-            raise DemistoException("Error in API call [404] - Not Found")
+            raise DemistoException("Error in API call [404] - Not Found", res=MockResponse(None, 404))
         return valid_threat_response
 
     client = mock_client(mocker, response=None)
@@ -1574,14 +1580,14 @@ def test_generate_threat_incidents_skips_4xx_error(mocker):
     assert incidents[0]["dbotMirrorId"] == "valid-threat-id"
 
 
-@pytest.mark.parametrize("status_code,reason", [("401", "Unauthorized"), ("403", "Forbidden"), ("429", "Too Many Requests")])
+@pytest.mark.parametrize("status_code,reason", [(401, "Unauthorized"), (403, "Forbidden"), (429, "Too Many Requests")])
 def test_generate_threat_incidents_raises_non_skippable_errors(mocker, status_code, reason):
     """
-    Test that non-skippable errors (401, 403, 429) and 5xx errors are re-raised.
+    Test that non-skippable errors (401, 403, 429) are re-raised.
     """
 
     def mock_get_details(threat_id, **kwargs):
-        raise DemistoException(f"Error in API call [{status_code}] - {reason}")
+        raise DemistoException(f"Error in API call [{status_code}] - {reason}", res=MockResponse(None, status_code))
 
     client = mock_client(mocker, response=None)
     mocker.patch.object(client, "get_details_of_a_threat_request", side_effect=mock_get_details)
@@ -1594,14 +1600,14 @@ def test_generate_threat_incidents_raises_non_skippable_errors(mocker, status_co
     with pytest.raises(DemistoException) as exc_info:
         generate_threat_incidents(client, threats, 1, start_datetime, end_datetime)
 
-    assert status_code in str(exc_info.value)
+    assert str(status_code) in str(exc_info.value)
 
 
 def test_generate_threat_incidents_raises_5xx_errors(mocker):
     """Test that 5xx errors are re-raised."""
 
     def mock_get_details(threat_id, **kwargs):
-        raise DemistoException("Error in API call [500] - Internal Server Error")
+        raise DemistoException("Error in API call [500] - Internal Server Error", res=MockResponse(None, 500))
 
     client = mock_client(mocker, response=None)
     mocker.patch.object(client, "get_details_of_a_threat_request", side_effect=mock_get_details)
@@ -1635,7 +1641,7 @@ def test_generate_threat_incidents_handles_4xx_mid_pagination(mocker):
                     "nextPageNumber": 2,
                 }
             else:
-                raise DemistoException("Error in API call [404] - Not Found")
+                raise DemistoException("Error in API call [404] - Not Found", res=MockResponse(None, 404))
         return {
             "threatId": "valid-threat-id",
             "messages": [
@@ -1678,7 +1684,7 @@ def test_generate_abuse_campaign_incidents_skips_4xx_error(mocker):
 
     def mock_get_campaign(campaign_id, **kwargs):
         if campaign_id == "deleted-campaign-id":
-            raise DemistoException("Error in API call [404] - Not Found")
+            raise DemistoException("Error in API call [404] - Not Found", res=MockResponse(None, 404))
         return valid_campaign_response
 
     client = mock_client(mocker, response=None)
@@ -1699,7 +1705,7 @@ def test_generate_abuse_campaign_incidents_raises_non_skippable_errors(mocker):
     """Test that non-skippable errors (401) are re-raised."""
 
     def mock_get_campaign(campaign_id, **kwargs):
-        raise DemistoException("Error in API call [401] - Unauthorized")
+        raise DemistoException("Error in API call [401] - Unauthorized", res=MockResponse(None, 401))
 
     client = mock_client(mocker, response=None)
     mocker.patch.object(client, "get_details_of_an_abuse_mailbox_campaign_request", side_effect=mock_get_campaign)
@@ -1725,7 +1731,7 @@ def test_generate_account_takeover_cases_incidents_skips_4xx_error(mocker):
 
     def mock_get_case(case_id, **kwargs):
         if case_id == "deleted-case-id":
-            raise DemistoException("Error in API call [410] - Gone")
+            raise DemistoException("Error in API call [410] - Gone", res=MockResponse(None, 410))
         return valid_case_response
 
     client = mock_client(mocker, response=None)
@@ -1746,7 +1752,7 @@ def test_generate_account_takeover_cases_incidents_raises_non_skippable_errors(m
     """Test that non-skippable errors (429) are re-raised."""
 
     def mock_get_case(case_id, **kwargs):
-        raise DemistoException("Error in API call [429] - Too Many Requests")
+        raise DemistoException("Error in API call [429] - Too Many Requests", res=MockResponse(None, 429))
 
     client = mock_client(mocker, response=None)
     mocker.patch.object(client, "get_details_of_an_abnormal_case_request", side_effect=mock_get_case)
