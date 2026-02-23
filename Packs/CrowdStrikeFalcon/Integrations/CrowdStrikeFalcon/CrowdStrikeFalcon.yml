@@ -300,7 +300,7 @@ configuration:
   advanced: false
   required: false
   additionalinfo: |-
-      Select the asset sources to ingest into the Cortex XSIAM Unified Asset Inventory. You can select any combination.
+      The asset sources to ingest into the Cortex Unified Asset Inventory. 
   options:
   - Spotlight
   - CNAPP Alerts

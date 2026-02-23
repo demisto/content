@@ -8832,7 +8832,19 @@ class TestSpotlightFetchAssets:
         )
 
         mock_save_state = mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
-        mock_update_state = mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata")
+
+        def _track_state_update(spotlight_state, cursor, **kwargs):
+            """Allow the mock to propagate state updates to the mock_state object,
+            mirroring the real update_spotlight_state_and_metadata behavior."""
+            spotlight_state.cursor = cursor
+            spotlight_state.metadata = {
+                "snapshot_id": kwargs.get("snapshot_id", ""),
+                "total_fetched_until_now": kwargs.get("total_fetched", 0),
+                "unique_aids": list(kwargs.get("unique_aids", set())),
+                "processed_aids": list(kwargs.get("processed_aids", set())),
+            }
+
+        mock_update_state = mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata", side_effect=_track_state_update)
 
         # 2. Execute
         with pytest.raises(Exception, match="Crash on Page 2"):
