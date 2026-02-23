@@ -14,6 +14,7 @@ SOCRADAR_SEVERITIES = ["INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
 MAX_INCIDENTS_TO_FETCH = 100000
 MAX_INCIDENTS_PER_PAGE = 100
 
+
 STATUS_REASON_MAP = {
     "OPEN": 0,
     "INVESTIGATING": 1,
@@ -334,6 +335,7 @@ def parse_alarm_date(date_str: str | None) -> datetime | None:
         ("%Y-%m-%d %H:%M:%S", 19),
         ("%Y-%m-%dT%H:%M:%S.%f", 26),
         ("%Y-%m-%dT%H:%M:%S", 19),
+        ("%Y-%m-%d", 10),
     ]
 
     for fmt, slice_end in formats:
@@ -352,15 +354,15 @@ def format_value(value, indent=0):
 
     if isinstance(value, dict):
         for k, v in value.items():
-            if isinstance(v, (dict, list)):
+            if isinstance(v, dict | list):
                 lines.append(f"{prefix}{k}:")
                 lines.extend(format_value(v, indent + 1))
             else:
                 lines.append(f"{prefix}{k}: {v}")
 
     elif isinstance(value, list):
-        for i, item in enumerate(value):
-            if isinstance(item, (dict, list)):
+        for _, item in enumerate(value):
+            if isinstance(item, dict | list):
                 lines.append(f"{prefix}-")
                 lines.extend(format_value(item, indent + 1))
             else:
@@ -458,7 +460,7 @@ def alarm_to_incident(alarm: dict[str, Any], show_content: bool = True) -> dict[
 
     if alarm_text:
         details_parts.append("\n Alarm Description:")
-        details_parts.append(alarm_text[:2048])
+        details_parts.append(alarm_text[:3072])
 
     if show_content and content is not None:
         details_parts.append("\nAlarm Content:")
@@ -656,7 +658,10 @@ def fetch_incidents(
                     next_run_incidents_to_skip += len(page_incidents)
                 else:
                     next_run_incidents_to_skip = len(page_incidents)
-                demisto.debug(f"[SOCRadar] Reached max_results ({max_results}), fetch pages is stopped. Next run will start from the date of the latest run with skipping {next_run_incidents_to_skip} incidents")
+                demisto.debug(
+                    f"[SOCRadar] Reached max_results ({max_results}), fetch pages is stopped. "
+                    f"Next run will start from the date of the latest run with skipping {next_run_incidents_to_skip} incidents"
+                )
                 break
             else:
                 next_run_incidents_to_skip = 0
@@ -720,7 +725,8 @@ def change_status_command(client: Client, args: dict[str, str]) -> CommandResult
     status_reason = args.get("status_reason", "")
     comments = args.get("comments")
     company_id = args.get("company_id")
-    update_related_finding_status = args.get("update_related_finding_status")
+    update_related_finding_status_str = args.get("update_related_finding_status")
+    update_related_finding_status: bool | None = argToBoolean(update_related_finding_status_str) if update_related_finding_status_str else None
     email = args.get("email")
 
     if not alarm_ids_str or not status_reason:
