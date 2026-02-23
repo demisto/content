@@ -338,12 +338,12 @@ def events_to_ec(raw_response: list) -> tuple[list, list, list]:
 
 
 @logger
-def test_module_command(client: Client) -> tuple[None, None, str]:
+def test_module_command(client: Client, config_ids: str) -> tuple[None, None, str]:
     """Performs a basic GET request to check if the API is reachable and authentication is successful.
 
     Args:
         client: Client object with request
-        *_: Usually demisto.args()
+        config_ids: Validated config IDs from params
 
     Returns:
         'ok' if test successful.
@@ -352,7 +352,7 @@ def test_module_command(client: Client) -> tuple[None, None, str]:
         DemistoException: If test failed.
     """
     # Test on the following date Monday, 6 March 2017 16:07:22
-    events, offset = client.get_events(config_ids=demisto.params().get("configIds"), from_epoch="1488816442", limit="1")
+    events, offset = client.get_events(config_ids=config_ids, from_epoch="1488816442", limit="1")
     if isinstance(events, list):
         return None, None, "ok"
     raise DemistoException(f"Test module failed, {events}")
@@ -1220,6 +1220,14 @@ def send_events_to_xsiam_akamai(
 
 def main():  # pragma: no cover
     params = demisto.params()
+
+    # Validate that configIds is not empty
+    config_ids = params.get("configIds")
+    if not config_ids:
+        raise DemistoException(
+            "Config IDs parameter is required and cannot be empty. Please provide your Akamai security configuration ID(s). "
+        )
+
     client = Client(
         base_url=urljoin(params.get("host"), "/siem/v1/configs"),
         verify=not params.get("insecure", False),
@@ -1247,7 +1255,7 @@ def main():  # pragma: no cover
                 client,
                 fetch_time=params.get("fetchTime"),
                 fetch_limit=params.get("fetchLimit"),
-                config_ids=params.get("configIds"),
+                config_ids=config_ids,
                 last_run=demisto.getLastRun().get("lastRun"),
             )
             demisto.incidents(incidents)
@@ -1273,7 +1281,7 @@ def main():  # pragma: no cover
                     client,
                     params.get("fetchTime", "5 minutes"),
                     fetch_limit=limit,
-                    config_ids=params.get("configIds", ""),
+                    config_ids=config_ids,
                     ctx=get_integration_context() or {},
                     page_size=page_size,
                     should_skip_decode_events=should_skip_decode_events,
@@ -1335,7 +1343,7 @@ def main():  # pragma: no cover
                     client,
                     from_time=params.get("fetchTime", "5 minutes"),
                     page_size=page_size,
-                    config_ids=params.get("configIds", ""),
+                    config_ids=config_ids,
                     ctx=get_integration_context() or {},
                     should_skip_decode_events=should_skip_decode_events,
                     max_concurrent_tasks=max_concurrent_tasks,
@@ -1343,7 +1351,10 @@ def main():  # pragma: no cover
             )
 
         else:
-            human_readable, entry_context, raw_response = commands[command](client, **demisto.args())
+            if command == "test-module":
+                human_readable, entry_context, raw_response = commands[command](client, config_ids)
+            else:
+                human_readable, entry_context, raw_response = commands[command](client, **demisto.args())
             return_outputs(human_readable, entry_context, raw_response)
 
     except Exception as e:
