@@ -923,7 +923,7 @@ class Client(CoreClient):
             dict: The response containing permission status.
         """
         return self._http_request(
-            method="GET",
+            method="POST",
             url_suffix="/sfdc_support/check_permission",
         )
 
