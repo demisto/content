@@ -68,6 +68,7 @@ WEBAPP_COMMANDS = [
     "core-list-exception-rules",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
+    "core-get-ai-model-activity",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -80,6 +81,7 @@ ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
 CASES_TABLE = "CASE_MANAGER_TABLE"
 SCRIPTS_TABLE = "SCRIPTS_TABLE"
+AI_MODEL_ACTIVITY_TABLE = "AISPM_MODEL_ACTIVITY"
 
 
 class ScriptManagement:
@@ -1646,8 +1648,9 @@ def build_get_cases_filter(args: dict) -> FilterBuilder:
     gte_modification_time = args.get("gte_modification_time")
     lte_modification_time = args.get("lte_modification_time")
 
-    status_values = [CaseManagement.STATUS[status] for status in argToList(args.get("status"))]
-    severity_values = [CaseManagement.SEVERITY[severity] for severity in argToList(args.get("severity"))]
+    not_status_values = [CaseManagement.STATUS.get(status) for status in argToList(args.get("not_status"))]
+    status_values = [CaseManagement.STATUS.get(status) for status in argToList(args.get("status"))]
+    severity_values = [CaseManagement.SEVERITY.get(severity) for severity in argToList(args.get("severity"))]
     tag_values = [CaseManagement.TAGS.get(tag, tag) for tag in argToList(args.get("tag"))]
     filter_builder = FilterBuilder()
     filter_builder.add_time_range_field(CaseManagement.FIELDS["creation_time"], gte_creation_time, lte_creation_time)
@@ -1667,6 +1670,7 @@ def build_get_cases_filter(args: dict) -> FilterBuilder:
         since_modification_end_time,
     )
     filter_builder.add_field(CaseManagement.FIELDS["status"], FilterType.EQ, status_values)
+    filter_builder.add_field(CaseManagement.FIELDS["status"], FilterType.NEQ, not_status_values)
     filter_builder.add_field(CaseManagement.FIELDS["severity"], FilterType.EQ, severity_values)
     filter_builder.add_field(
         CaseManagement.FIELDS["case_id_list"],
@@ -1764,7 +1768,7 @@ def get_cases_command(client, args):
     command_results = [
         CommandResults(
             outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CasesMetadata",
-            outputs={"filter_count": filter_count, "returned_count": returned_count},
+            outputs={"filtered_count": filter_count, "returned_count": returned_count},
         )
     ]
 
@@ -2405,6 +2409,55 @@ def get_asset_coverage_histogram_command(client: Client, args: dict):
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Coverage.Histogram",
         outputs=outputs,
+        raw_response=response,
+    )
+
+
+def get_ai_model_activity_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves AI model activity information using the generic /api/webapp/get_data endpoint.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - asset_id (str): Comma-separated list of asset IDs to query.
+
+    Returns:
+        CommandResults: Object containing the formatted AI model activity data,
+                        raw response, and outputs for integration context.
+    """
+    demisto.debug(f"get_ai_model_activity_command called with args: {args}")
+    asset_ids = argToList(args.get("asset_id"))
+    filter_builder = FilterBuilder()
+    filter_builder.add_field("asset_id", FilterType.EQ, asset_ids)
+    filter_dict = filter_builder.to_dict()
+    demisto.debug(f"Built filter_dict: {filter_dict}")
+
+    request_data = build_webapp_request_data(
+        table_name=AI_MODEL_ACTIVITY_TABLE,
+        filter_dict=filter_dict,
+        limit=len(asset_ids),
+        sort_field=None,
+    )
+    demisto.debug(f"Built request_data: {request_data}")
+
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+
+    readable_output = tableToMarkdown(
+        "AI Model Activity",
+        data,
+        headerTransform=string_to_table_header,
+        sort_headers=False,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AIModelActivity",
+        outputs_key_field="asset_id",
+        outputs=data,
         raw_response=response,
     )
 
@@ -4671,6 +4724,8 @@ def main():  # pragma: no cover
         elif command == "core-xql-generic-query-platform":
             verify_platform_version()
             return_results(xql_query_platform_command(client, args))
+        elif command == "core-get-ai-model-activity":
+            return_results(get_ai_model_activity_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
