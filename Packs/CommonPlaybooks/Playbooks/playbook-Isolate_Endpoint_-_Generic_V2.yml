@@ -341,3 +341,7 @@ tests:
 - Isolate and unisolate endpoint - test
 fromversion: 5.5.0
 toversion: 6.7.9
+supportedModules:
+- cloud_runtime_security
+- xsiam
+- edr

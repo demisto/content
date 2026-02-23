@@ -9,6 +9,7 @@ from unittest.mock import Mock, patch
 import unittest
 from CortexPlatformCore import (
     get_appsec_suggestion,
+    get_remediation_techniques_suggestion,
     populate_playbook_and_quick_action_suggestions,
     map_qa_name_to_data,
     get_issue_recommendations_command,
@@ -4710,6 +4711,75 @@ class TestGetAppsecSuggestion(unittest.TestCase):
             "suggested_code_block": "new code",
         }
         assert result == expected
+
+
+class TestGetRemediationTechniquesSuggestion(unittest.TestCase):
+    @patch("CortexPlatformCore.demisto")
+    def test_get_remediation_techniques_suggestion_match(self, mock_demisto):
+        """
+        Given:
+            - An issue with asset_types and remediationTechniques that match.
+        When:
+            - Calling get_remediation_techniques_suggestion.
+        Then:
+            - The matching remediation techniques are returned.
+        """
+        issue = {
+            "asset_types": ["AWS EC2 Instance"],
+            "extended_fields": {
+                "remediationTechniques": [
+                    {"techniqueAssetType": "AWS_EC2_INSTANCE", "description": "Fix it"},
+                    {"techniqueAssetType": "AZURE_VM", "description": "Ignore it"},
+                ]
+            },
+        }
+        current_issue_id = "123"
+
+        result = get_remediation_techniques_suggestion(issue, current_issue_id)
+
+        assert len(result) == 1
+        assert result[0]["techniqueAssetType"] == "AWS_EC2_INSTANCE"
+        assert result[0]["description"] == "Fix it"
+
+    @patch("CortexPlatformCore.demisto")
+    def test_get_remediation_techniques_suggestion_no_match(self, mock_demisto):
+        """
+        Given:
+            - An issue with asset_types and remediationTechniques that do not match.
+        When:
+            - Calling get_remediation_techniques_suggestion.
+        Then:
+            - An empty list is returned.
+        """
+        issue = {
+            "asset_types": ["GCP VM"],
+            "extended_fields": {"remediationTechniques": [{"techniqueAssetType": "AWS_EC2_INSTANCE", "description": "Fix it"}]},
+        }
+        current_issue_id = "123"
+
+        result = get_remediation_techniques_suggestion(issue, current_issue_id)
+
+        assert result == []
+
+    @patch("CortexPlatformCore.demisto")
+    def test_get_remediation_techniques_suggestion_missing_remediation_techniques(self, mock_demisto):
+        """
+        Given:
+            - An issue with asset_types but missing remediationTechniques.
+        When:
+            - Calling get_remediation_techniques_suggestion.
+        Then:
+            - An empty list is returned.
+        """
+        issue = {
+            "asset_types": ["AWS EC2 Instance"],
+            "extended_fields": {},
+        }
+        current_issue_id = "123"
+
+        result = get_remediation_techniques_suggestion(issue, current_issue_id)
+
+        assert result == []
 
 
 class TestPopulatePlaybookAndQuickActionSuggestions(unittest.TestCase):
@@ -9453,3 +9523,345 @@ def test_get_case_resolution_statuses_command(mocker):
     assert len(result.outputs) == 2
     assert len(result.raw_response) == 2
     assert mock_client.get_case_resolution_statuses.call_count == 2
+
+
+def test_get_ai_model_activity_command_empty_response(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client that returns empty data.
+    When:
+        The get_ai_model_activity_command function is called.
+    Then:
+        An empty result is returned with proper structure.
+    """
+    from CortexPlatformCore import Client, get_ai_model_activity_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {"reply": {"DATA": []}}
+    mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {"asset_id": "nonexistent-model"}
+
+    result = get_ai_model_activity_command(mock_client, args)
+
+    assert result.outputs == []
+
+
+def test_get_ai_model_activity_command_single_asset_string(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client and arguments with a single asset ID as a string.
+    When:
+        The get_ai_model_activity_command function is called.
+    Then:
+        The single asset ID is correctly converted to a list and processed.
+    """
+    from CortexPlatformCore import Client, get_ai_model_activity_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "asset_id": "single-model",
+                    "last_used": "2024-01-15T10:30:00Z",
+                    "event_count": 100,
+                    "is_inactive": False,
+                }
+            ]
+        }
+    }
+    mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {"asset_id": "single-model"}
+
+    result = get_ai_model_activity_command(mock_client, args)
+
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["asset_id"] == "single-model"
+
+
+def test_get_ai_model_activity_command_inactive_model(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client and arguments for an inactive AI model.
+    When:
+        The get_ai_model_activity_command function is called.
+    Then:
+        The inactive status is correctly reflected in the output.
+    """
+    from CortexPlatformCore import Client, get_ai_model_activity_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "asset_id": "inactive-model",
+                    "last_used": "2023-06-01T00:00:00Z",
+                    "event_count": 0,
+                    "is_inactive": True,
+                }
+            ]
+        }
+    }
+    mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {"asset_id": "inactive-model"}
+
+    result = get_ai_model_activity_command(mock_client, args)
+
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["is_inactive"] is True
+    assert result.outputs[0]["event_count"] == 0
+
+
+def test_get_ai_model_activity_command_asset_id_list_format(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client and arguments with asset_id as a list.
+    When:
+        The get_ai_model_activity_command function is called.
+    Then:
+        The list is properly processed and all assets are queried.
+    """
+    from CortexPlatformCore import Client, get_ai_model_activity_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {
+        "reply": {
+            "DATA": [
+                {"asset_id": "model-a", "event_count": 10, "is_inactive": False},
+                {"asset_id": "model-b", "event_count": 20, "is_inactive": False},
+            ]
+        }
+    }
+    mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {"asset_id": ["model-a", "model-b"]}
+
+    result = get_ai_model_activity_command(mock_client, args)
+
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["asset_id"] == "model-a"
+    assert result.outputs[1]["asset_id"] == "model-b"
+
+
+class TestProfileCommands:
+    def test_create_profile_modules_by_type_malware_defaults(self):
+        """
+        Given:
+            No arguments provided.
+        When:
+            Calling create_profile_modules_by_type with "Malware" profile type.
+        Then:
+            Default malware profile modules are returned.
+        """
+        from CortexPlatformCore import create_profile_modules_by_type
+
+        args = {}
+        modules = create_profile_modules_by_type(args, "Malware")
+
+        assert modules["scanEndpoints"]["periodicScan"]["mode"] == "disabled"
+        assert modules["aspFiles"]["mode"] == "disabled"
+        assert modules["ransomware"]["mode"] == "block"
+
+    def test_create_profile_modules_by_type_malware_custom(self):
+        """
+        Given:
+            Custom arguments for scanEndpoints and ransomware.
+        When:
+            Calling create_profile_modules_by_type with "Malware" profile type.
+        Then:
+            Custom malware profile modules are returned reflecting the arguments.
+        """
+        from CortexPlatformCore import create_profile_modules_by_type, Profile
+
+        args = {Profile.FIELDS["scanEndpoints"]: "enabled", Profile.FIELDS["ransomware"]: "report"}
+        modules = create_profile_modules_by_type(args, "Malware")
+
+        assert modules["scanEndpoints"]["periodicScan"]["mode"] == "enabled"
+        assert modules["ransomware"]["mode"] == "report"
+
+    def test_create_profile_modules_by_type_exploit_defaults(self):
+        """
+        Given:
+            No arguments provided.
+        When:
+            Calling create_profile_modules_by_type with "Exploit" profile type.
+        Then:
+            Default exploit profile modules are returned.
+        """
+        from CortexPlatformCore import create_profile_modules_by_type
+
+        args = {}
+        modules = create_profile_modules_by_type(args, "Exploit")
+
+        assert modules["vulnerableApps"]["mode"] == "block"
+        assert modules["logicalExploits"]["mode"] == "block"
+
+    def test_create_profile_command_success(self, mocker):
+        """
+        Given:
+            Valid arguments for creating a profile.
+        When:
+            Calling create_profile_command.
+        Then:
+            The profile is created successfully and the result contains the profile ID.
+        """
+        from CortexPlatformCore import create_profile_command, Client
+
+        mock_client = mocker.Mock(spec=Client)
+        mock_client.create_profile.return_value = {"reply": "12345"}
+
+        args = {"profile_name": "Test Profile", "profile_description": "Test Description"}
+
+        result = create_profile_command(mock_client, args, "Malware")
+
+        assert result.outputs["profile_id"] == "12345"
+        assert "Profile 12345 created successfully" in result.readable_output
+
+        mock_client.create_profile.assert_called_once()
+        call_args = mock_client.create_profile.call_args[0][0]
+        assert call_args["request_data"]["name"] == "Test Profile"
+        assert call_args["request_data"]["profile_type"] == "Malware"
+
+    def test_create_profile_command_invalid_arg(self, mocker):
+        """
+        Given:
+            Invalid argument for ransomware protection.
+        When:
+            Calling create_profile_command.
+        Then:
+            A DemistoException is raised indicating the invalid argument.
+        """
+        from CortexPlatformCore import create_profile_command, Client, DemistoException
+
+        mock_client = mocker.Mock(spec=Client)
+
+        args = {"profile_name": "Test Profile", "ransomware_protection": "invalid_value"}
+
+        with pytest.raises(DemistoException, match="Invalid value 'invalid_value' for argument 'ransomware_protection'"):
+            create_profile_command(mock_client, args, "Malware")
+
+    def test_update_profile_command_success(self, mocker):
+        """
+        Given:
+            Valid arguments for updating a profile.
+        When:
+            Calling update_profile_command.
+        Then:
+            The profile is updated successfully.
+        """
+        from CortexPlatformCore import update_profile_command, Client, Profile
+
+        mock_client = mocker.Mock(spec=Client)
+        mock_client.get_profile.return_value = {
+            "reply": {
+                "PROFILE_NAME": "Old Name",
+                "PROFILE_DESCRIPTION": "Old Desc",
+                "PROFILE_MODULES": {"ransomware": {"mode": {"value": "block"}}},
+            }
+        }
+        mock_client.update_profile.return_value = {}
+
+        args = {"profile_id": "12345", "profile_name": "New Name", Profile.FIELDS["ransomware"]: "report"}
+
+        result = update_profile_command(mock_client, args)
+
+        assert "Profile 12345 updated successfully" in result.readable_output
+
+        mock_client.update_profile.assert_called_once()
+        call_args = mock_client.update_profile.call_args[0][0]
+        assert call_args["profile_id"] == "12345"
+        assert call_args["update_data"]["PROFILE_NAME"] == "New Name"
+        assert call_args["update_data"]["PROFILE_MODULES"]["ransomware"]["mode"]["value"] == "report"
+
+    def test_update_profile_command_invalid_arg(self, mocker):
+        """
+        Given:
+            Invalid argument for ransomware protection.
+        When:
+            Calling update_profile_command.
+        Then:
+            A DemistoException is raised indicating the invalid argument.
+        """
+        from CortexPlatformCore import update_profile_command, Client, DemistoException
+
+        mock_client = mocker.Mock(spec=Client)
+
+        args = {"profile_id": "12345", "ransomware_protection": "invalid_value"}
+
+        with pytest.raises(DemistoException, match="Invalid value 'invalid_value' for argument 'ransomware_protection'"):
+            update_profile_command(mock_client, args)
+
+    def test_update_profile_command_multiple_invalid_args(self, mocker):
+        """
+        Given:
+            Multiple invalid arguments.
+        When:
+            Calling update_profile_command.
+        Then:
+            A DemistoException is raised listing all invalid arguments.
+        """
+        from CortexPlatformCore import update_profile_command, Client, DemistoException
+
+        mock_client = mocker.Mock(spec=Client)
+
+        args = {
+            "profile_id": "12345",
+            "ransomware_protection": "invalid_value_1",
+            "cryptominers_protection": "invalid_value_2",
+        }
+
+        with pytest.raises(DemistoException) as excinfo:
+            update_profile_command(mock_client, args)
+
+        assert "Invalid value 'invalid_value_1' for argument 'ransomware_protection'" in str(excinfo.value)
+        assert "Allowed values are: block, disabled, report" in str(excinfo.value)
+        assert "Invalid value 'invalid_value_2' for argument 'cryptominers_protection'" in str(excinfo.value)
+        assert "Allowed values are: block, disabled, report" in str(excinfo.value)
+
+    def test_update_profile_command_not_found(self, mocker):
+        """
+        Given:
+            A profile ID that does not exist.
+        When:
+            Calling update_profile_command.
+        Then:
+            A DemistoException is raised indicating the profile doesn't exist.
+        """
+        from CortexPlatformCore import update_profile_command, Client, DemistoException
+
+        mock_client = mocker.Mock(spec=Client)
+        mock_client.get_profile.return_value = {"reply": None}
+
+        args = {"profile_id": "12345"}
+
+        with pytest.raises(DemistoException, match="Profile 12345 doesn't exist"):
+            update_profile_command(mock_client, args)
+
+    def test_delete_profile_command_success(self, mocker):
+        """
+        Given:
+            Valid profile IDs to delete.
+        When:
+            Calling delete_profile_command.
+        Then:
+            The profiles are deleted successfully.
+        """
+        from CortexPlatformCore import delete_profile_command, Client
+
+        mock_client = mocker.Mock(spec=Client)
+        mock_client.delete_profile.return_value = {}
+
+        args = {"profile_ids": "12345,67890"}
+
+        result = delete_profile_command(mock_client, args)
+
+        assert "Your request was sent successfully." in result.readable_output
+        mock_client.delete_profile.assert_called_once_with(["12345", "67890"])
