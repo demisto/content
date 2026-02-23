@@ -7,11 +7,11 @@ configuration:
   name: hostname
   required: true
   type: 0
-- display: ''
-  displaypassword: API Key
+- display: API Key
   name: api_key
   required: true
   type: 9
+  displaypassword: API Key
   hiddenusername: true
 - defaultvalue: Firewall
   display: Device Type
@@ -29,56 +29,56 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: Manage and orchestrate High Availability (HA) features on Palo Alto Networks Firewalls and Panorama using the pan-os-python library.
+description: Manage and orchestrate High Availability (HA) features on Palo Alto Networks Firewalls and Panorama.
 display: PANOS-HA
 name: PANOS-HA
 script:
   commands:
   - arguments: []
-    description: Retrieves the current High Availability state of a firewall. Not applicable to Panorama.
+    description: Retrieves the current High Availability state of a firewall.
     name: panos-ha-get-state
     outputs:
-    - contextPath: PANOSHA.HAState.enabled
+    - contextPath: PANOS-HA.State.enabled
       description: Whether HA is enabled.
       type: String
-    - contextPath: PANOSHA.HAState.mode
+    - contextPath: PANOS-HA.State.mode
       description: The current HA mode (e.g., active-passive).
       type: String
-    - contextPath: PANOSHA.HAState.localState
+    - contextPath: PANOS-HA.State.LocalState
       description: The HA state of the local device (e.g., active, passive, suspended).
       type: String
-    - contextPath: PANOSHA.HAState.localSerial
+    - contextPath: PANOS-HA.State.LocalSerial
       description: The serial number of the local device.
       type: String
-    - contextPath: PANOSHA.HAState.localPriority
+    - contextPath: PANOS-HA.State.LocalPriority
       description: The priority of the local device.
       type: String
-    - contextPath: PANOSHA.HAState.localPreemptive
-      description: Whether preemptive failover is enabled on the local device.
+    - contextPath: PANOS-HA.State.LocalPreemptive
+      description: Whether preemption is enabled on the local device.
       type: String
-    - contextPath: PANOSHA.HAState.peerState
+    - contextPath: PANOS-HA.State.PeerState
       description: The HA state of the peer device.
       type: String
-    - contextPath: PANOSHA.HAState.peerSerial
+    - contextPath: PANOS-HA.State.PeerSerial
       description: The serial number of the peer device.
       type: String
-    - contextPath: PANOSHA.HAState.peerConnStatus
+    - contextPath: PANOS-HA.State.PeerConnStatus
       description: The connection status of the peer device.
       type: String
   - arguments: []
-    description: Suspends the local firewall in an HA pair, forcing a failover to the peer. This is a disruptive action.
+    description: Suspends the local firewall in an HA pair, forcing a failover to the peer.
     name: panos-ha-suspend-peer
   - arguments: []
-    description: Requests that the local (currently passive) firewall becomes the active peer. This will cause a failover if the current active peer is functional.
+    description: Brings a suspended firewall back to a functional state.
     name: panos-ha-make-peer-functional
   - arguments: []
-    description: Manually forces the active firewall to synchronize its running configuration with its passive peer.
+    description: Forces the active firewall to synchronize its running configuration with the passive peer.
     name: panos-ha-sync-config
   - arguments: []
-    description: Manually forces the active firewall to synchronize its state (session table, etc.) with its passive peer.
+    description: Forces the active firewall to synchronize its state (session table) with the passive peer.
     name: panos-ha-sync-state
   - arguments: []
-    description: Issues a "revert to running HA state" command to a Panorama peer. Used to re-integrate a peer after maintenance or failure.
+    description: Issues a revert to running HA state command to a Panorama peer.
     name: panos-panorama-ha-reconfigure
   - arguments:
     - defaultValue: "1"
@@ -97,8 +97,15 @@ script:
       - auto
       - shutdown
     - defaultValue: "100"
-      description: Device priority for HA election (0-255). Higher priority becomes active. Default is 100.
+      description: Device priority for HA election (0-255). Higher priority becomes active.
       name: device_priority
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Enable backup heartbeat monitoring (recommended for production HA).
+      name: heartbeat_backup
+      predefined:
+      - "true"
+      - "false"
     - description: The primary control link (HA1) interface port (e.g., ha1-a, ethernet1/1).
       name: ha1_port
     - description: The IP address for the primary control link (HA1) interface.
@@ -119,7 +126,7 @@ script:
       name: ha2_ip_address
     - description: The netmask for the primary data link (HA2) interface.
       name: ha2_netmask
-    - description: The backup data link (HA2-Backup) interface port for session synchronization.
+    - description: The backup data link (HA2-Backup) interface port.
       name: ha2_backup_port
     - description: The IP address for the backup data link (HA2-Backup) interface.
       name: ha2_backup_ip_address
@@ -127,15 +134,32 @@ script:
       name: ha2_backup_netmask
     - auto: PREDEFINED
       defaultValue: "false"
-      description: Commit the configuration change immediately.
-      name: commit
+      description: Enable state (session) synchronization over the HA2 data link.
+      name: state_sync
       predefined:
       - "true"
       - "false"
     - auto: PREDEFINED
       defaultValue: "false"
-      description: Force a configuration sync to the peer after commit. 'commit' must also be true.
-      name: force_sync
+      description: Enable HA2 keep-alive monitoring to detect failures on the HA2 data link.
+      name: ha2_keepalive
+      predefined:
+      - "true"
+      - "false"
+    - defaultValue: "10000"
+      description: HA2 keep-alive threshold in milliseconds (5000-60000).
+      name: ha2_keepalive_threshold
+    - auto: PREDEFINED
+      defaultValue: log-only
+      description: Action to take when HA2 keep-alive fails.
+      name: ha2_keepalive_action
+      predefined:
+      - log-only
+      - log-and-reboot
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Commit the configuration change immediately.
+      name: commit
       predefined:
       - "true"
       - "false"
@@ -143,110 +167,92 @@ script:
     name: panos-ha-configure
   - arguments:
     - defaultValue: "false"
-      description: Set to "true" to automatically commit the configuration changes after applying them.
+      description: Set to true to automatically commit the configuration changes.
       name: commit
-    description: Disables the HA functionality on a firewall. This effectively removes it from an HA pair. This is a configuration change and requires a commit.
+    description: Disables the HA functionality on a firewall.
     name: panos-ha-disable
   - arguments: []
-    description: Retrieves the current High Availability (HA) configuration from a firewall.
+    description: Retrieves the current High Availability configuration from a firewall.
     name: panos-ha-get-config
     outputs:
-    - contextPath: PANOSHA.Config.enabled
+    - contextPath: PANOS-HA.Config.enabled
       description: Whether HA is enabled on the device.
       type: String
-    - contextPath: PANOSHA.Config.groupId
+    - contextPath: PANOS-HA.Config.GroupId
       description: The Group ID for the HA pair.
       type: String
-    - contextPath: PANOSHA.Config.mode
+    - contextPath: PANOS-HA.Config.mode
       description: The HA mode (e.g., Active/Passive).
       type: String
-    - contextPath: PANOSHA.Config.peerIp
+    - contextPath: PANOS-HA.Config.PeerIp
       description: The IP address of the HA peer.
       type: String
-    - contextPath: PANOSHA.Config.peerIpBackup
+    - contextPath: PANOS-HA.Config.PeerIpBackup
       description: The backup IP address of the HA peer.
       type: String
-    - contextPath: PANOSHA.Config.ha1Port
+    - contextPath: PANOS-HA.Config.Ha1Port
       description: The interface port for the HA1 (Control) link.
       type: String
-    - contextPath: PANOSHA.Config.ha1Ip
+    - contextPath: PANOS-HA.Config.Ha1Ip
       description: The IP address for the HA1 (Control) link.
       type: String
-    - contextPath: PANOSHA.Config.ha1BackupPort
+    - contextPath: PANOS-HA.Config.Ha1BackupPort
       description: The interface port for the HA1-Backup link.
       type: String
-    - contextPath: PANOSHA.Config.ha1BackupIp
+    - contextPath: PANOS-HA.Config.Ha1BackupIp
       description: The IP address for the HA1-Backup link.
       type: String
-    - contextPath: PANOSHA.Config.ha2Port
+    - contextPath: PANOS-HA.Config.Ha2Port
       description: The interface port for the HA2 (Data) link.
       type: String
-    - contextPath: PANOSHA.Config.ha2Ip
+    - contextPath: PANOS-HA.Config.Ha2Ip
       description: The IP address for the HA2 (Data) link.
       type: String
-    - contextPath: PANOSHA.Config.ha2BackupPort
+    - contextPath: PANOS-HA.Config.Ha2BackupPort
       description: The interface port for the HA2-Backup link.
       type: String
-    - contextPath: PANOSHA.Config.ha2BackupIp
+    - contextPath: PANOS-HA.Config.Ha2BackupIp
       description: The IP address for the HA2-Backup link.
       type: String
-    - contextPath: PANOSHA.Config.linkMonitoring
-      description: Whether link monitoring is enabled.
-      type: String
-    - contextPath: PANOSHA.Config.pathMonitoring
-      description: Whether path monitoring is enabled.
-      type: String
-    - contextPath: PANOSHA.Config.linkMonitoringGroups
+    - contextPath: PANOS-HA.Config.LinkMonitoring
       description: A list of Link Monitoring group configurations.
       type: Unknown
-    - contextPath: PANOSHA.Config.linkMonitoringGroups.Name
-      description: The name of the link monitoring group.
-      type: String
-    - contextPath: PANOSHA.Config.linkMonitoringGroups.Enabled
-      description: Whether the link monitoring group is enabled.
-      type: String
-    - contextPath: PANOSHA.Config.linkMonitoringGroups.FailureCondition
-      description: The failure condition for the group (any or all).
-      type: String
-    - contextPath: PANOSHA.Config.linkMonitoringGroups.Interfaces
-      description: A comma-separated list of monitored interfaces.
-      type: String
   - arguments:
     - defaultValue: "false"
-      description: Set to "true" to automatically commit the configuration changes after applying them.
+      description: Set to true to automatically commit the configuration changes.
       name: commit
-    description: Enables the HA functionality on a firewall. This effectively establishes an HA pair from previous configuration. This is a configuration change and requires a commit.
+    description: Enables the HA functionality on a firewall from previous configuration.
     name: panos-ha-enable
   - arguments: []
-    description: Lists all available network interfaces on the firewall, including ethernet, HA control/data, loopback, tunnel, and VLAN interfaces.
+    description: Lists all available network interfaces on the firewall.
     name: panos-ha-list-interfaces
     outputs:
-    - contextPath: PANOSHA.AvailableInterfaces.Hostname
+    - contextPath: PANOS-HA.AvailableInterfaces.Hostname
       description: The hostname of the firewall.
       type: String
-    - contextPath: PANOSHA.AvailableInterfaces.InterfaceCount
+    - contextPath: PANOS-HA.AvailableInterfaces.InterfaceCount
       description: Total number of interfaces found.
       type: Number
-    - contextPath: PANOSHA.AvailableInterfaces.Interfaces
+    - contextPath: PANOS-HA.AvailableInterfaces.Interfaces
       description: List of all available interface names.
       type: Unknown
   - arguments:
-    - description: Comma-separated list of interface names to validate (e.g., "ha1-a,ha2-a,ethernet1/1").
+    - description: Comma-separated list of interface names to validate (e.g., ha1-a,ha2-a,ethernet1/1).
       name: interfaces
       required: true
-    description: Validates that specified interfaces exist on the firewall before attempting HA configuration. Critical for preventing configuration errors.
+    description: Validates that specified interfaces exist on the firewall before HA configuration.
     name: panos-ha-validate-interfaces
     outputs:
-    - contextPath: PANOSHA.InterfaceValidation.Hostname
+    - contextPath: PANOS-HA.InterfaceValidation.Hostname
       description: The hostname of the firewall.
       type: String
-    - contextPath: PANOSHA.InterfaceValidation.AllValid
+    - contextPath: PANOS-HA.InterfaceValidation.AllValid
       description: Whether all specified interfaces were found.
       type: Boolean
-    - contextPath: PANOSHA.InterfaceValidation.ValidatedInterfaces
+    - contextPath: PANOS-HA.InterfaceValidation.ValidatedInterfaces
       description: List of interfaces that were validated.
       type: Unknown
-    - contextPath: PANOSHA.InterfaceValidation.MissingInterfaces
+    - contextPath: PANOS-HA.InterfaceValidation.MissingInterfaces
       description: List of interfaces that were not found on the device.
       type: Unknown
   dockerimage: demisto/pan-os-python:1.0.0.4889421
@@ -254,3 +260,6 @@ script:
   script: ''
   subtype: python3
   type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

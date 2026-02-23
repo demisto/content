@@ -1,357 +1,125 @@
-# PAN-OS High Availability (HA) Integration
+## PAN-OS High Availability (HA) Integration
 
-## Overview
+Manage and orchestrate High Availability features on Palo Alto Networks Firewalls and Panorama. Supports automated failover workflows, HA configuration with interface validation, state management, and disaster recovery operations.
 
-This integration provides comprehensive management and orchestration of High Availability (HA) features on Palo Alto Networks Firewalls and Panorama. It supports automated failover workflows, HA configuration with validation, state management, and disaster recovery operations.
+### Commands
 
-## Key Features
+| Command | Description |
+|---------|-------------|
+| panos-ha-get-state | Retrieves the current live HA state of a firewall pair |
+| panos-ha-get-config | Retrieves the saved HA configuration from a firewall |
+| panos-ha-configure | Configures HA on a firewall with interface validation |
+| panos-ha-enable | Enables HA functionality on a firewall |
+| panos-ha-disable | Disables HA functionality on a firewall |
+| panos-ha-suspend-peer | Suspends a firewall, forcing failover to the peer |
+| panos-ha-make-peer-functional | Brings a suspended firewall back to functional state |
+| panos-ha-sync-config | Forces configuration synchronization to the passive peer |
+| panos-ha-sync-state | Forces session state synchronization to the passive peer |
+| panos-ha-list-interfaces | Lists all available interfaces on a firewall |
+| panos-ha-validate-interfaces | Validates specified interfaces exist on a firewall |
+| panos-panorama-ha-reconfigure | Issues a revert to running HA state command to Panorama |
 
-- **Interface Validation**: Automatically validates that HA interfaces exist before configuration
-- **HA State Management**: Monitor and control HA state (active/passive/suspended)
-- **Configuration Synchronization**: Force config and session synchronization between HA peers
-- **Automated Failover Support**: Commands designed for automated failover orchestration workflows
-- **Panorama HA Support**: Manage HA on both firewalls and Panorama appliances
-
-## Configuration Parameters
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| Hostname or IP Address | Yes | Management IP address or hostname of the PAN-OS device |
-| API Key | Yes | API key with sufficient permissions (Superuser role recommended) |
-| Device Type | Yes | Either `Firewall` or `Panorama` |
-| VSYS | No | Virtual System name (e.g., vsys1) if using multi-vsys |
-| Trust any certificate | No | Check for self-signed certificates (not recommended for production) |
-
-## Commands
-
-### Operational Commands (No Commit Required)
-
-#### panos-ha-get-state
+### panos-ha-get-state
 
 Retrieves the current live HA state of a firewall pair.
 
-**Arguments:** None
+#### Base Command
 
-**Example:**
-```
-!panos-ha-get-state
-```
+`panos-ha-get-state`
 
-**Outputs:**
-- PANOSHA.HAState.enabled - Whether HA is enabled
-- PANOSHA.HAState.mode - HA mode (active-passive)
-- PANOSHA.HAState.localState - Local device state (active/passive/suspended)
-- PANOSHA.HAState.peerState - Peer device state
-- PANOSHA.HAState.peerConnStatus - Peer connection status
+#### Input
 
----
+There are no input arguments for this command.
 
-#### panos-ha-suspend-peer
+#### Context Output
 
-Suspends the local firewall, forcing failover to the peer. Use for planned maintenance.
+| Path | Type | Description |
+|------|------|-------------|
+| PANOS-HA.State.enabled | String | Whether HA is enabled |
+| PANOS-HA.State.mode | String | The current HA mode |
+| PANOS-HA.State.LocalState | String | The HA state of the local device |
+| PANOS-HA.State.LocalSerial | String | The serial number of the local device |
+| PANOS-HA.State.LocalPriority | String | The priority of the local device |
+| PANOS-HA.State.PeerState | String | The HA state of the peer device |
+| PANOS-HA.State.PeerSerial | String | The serial number of the peer device |
+| PANOS-HA.State.PeerConnStatus | String | The connection status of the peer device |
 
-**Arguments:** None
+### panos-ha-configure
 
-**Example:**
-```
-!panos-ha-suspend-peer
-```
+Configures HA on a firewall with automatic interface validation.
 
----
+#### Base Command
 
-#### panos-ha-make-peer-functional
+`panos-ha-configure`
 
-Brings a suspended or passive firewall back to functional state.
+#### Input
 
-**Arguments:** None
+| Argument | Description | Required |
+|----------|-------------|----------|
+| peer_ip | Peer firewall's primary HA1 control link IP | Required |
+| group_id | HA Group ID (1-255). Default: 1 | Optional |
+| peer_ip_backup | Peer firewall's backup HA1 control link IP | Optional |
+| passive_link_state | Link state of passive device (auto/shutdown). Default: auto | Optional |
+| device_priority | Device priority for HA election (0-255). Default: 100 | Optional |
+| heartbeat_backup | Enable backup heartbeat monitoring. Default: false | Optional |
+| ha1_port | Primary control link interface (e.g., ha1-a) | Optional |
+| ha1_ip_address | IP address for HA1 interface | Optional |
+| ha1_netmask | Netmask for HA1 interface | Optional |
+| ha1_gateway | Gateway for HA1 interface | Optional |
+| ha1_backup_port | Backup control link interface | Optional |
+| ha1_backup_ip_address | IP address for HA1 backup interface | Optional |
+| ha1_backup_netmask | Netmask for HA1 backup interface | Optional |
+| ha2_port | Data link interface for session sync | Optional |
+| ha2_ip_address | IP address for HA2 interface | Optional |
+| ha2_netmask | Netmask for HA2 interface | Optional |
+| ha2_backup_port | Backup data link interface | Optional |
+| ha2_backup_ip_address | IP address for HA2 backup interface | Optional |
+| ha2_backup_netmask | Netmask for HA2 backup interface | Optional |
+| state_sync | Enable session synchronization. Default: false | Optional |
+| ha2_keepalive | Enable HA2 keep-alive monitoring. Default: false | Optional |
+| ha2_keepalive_threshold | Keep-alive threshold in ms (5000-60000). Default: 10000 | Optional |
+| ha2_keepalive_action | Action on keep-alive failure. Default: log-only | Optional |
+| commit | Commit immediately. Default: false | Optional |
 
-**Example:**
-```
-!panos-ha-make-peer-functional
-```
+### panos-ha-list-interfaces
 
----
+Lists all available network interfaces on a firewall.
 
-#### panos-ha-sync-config
+#### Base Command
 
-Manually forces configuration synchronization from active to passive peer.
+`panos-ha-list-interfaces`
 
-**Arguments:** None
+#### Input
 
-**Example:**
-```
-!panos-ha-sync-config
-```
+There are no input arguments for this command.
 
----
+#### Context Output
 
-#### panos-ha-sync-state
+| Path | Type | Description |
+|------|------|-------------|
+| PANOS-HA.AvailableInterfaces.Hostname | String | The hostname of the firewall |
+| PANOS-HA.AvailableInterfaces.InterfaceCount | Number | Total number of interfaces found |
+| PANOS-HA.AvailableInterfaces.Interfaces | Unknown | List of all available interface names |
 
-Manually forces session state synchronization from active to passive peer.
+### panos-ha-validate-interfaces
 
-**Arguments:** None
+Validates that specified interfaces exist on a firewall.
 
-**Example:**
-```
-!panos-ha-sync-state
-```
+#### Base Command
 
----
+`panos-ha-validate-interfaces`
 
-### Configuration Commands (Require Commit)
+#### Input
 
-#### panos-ha-get-config
+| Argument | Description | Required |
+|----------|-------------|----------|
+| interfaces | Comma-separated list of interface names | Required |
 
-Retrieves the saved HA configuration from a firewall.
+#### Context Output
 
-**Arguments:** None
-
-**Example:**
-```
-!panos-ha-get-config
-```
-
-**Outputs:**
-- PANOSHA.Config.enabled - Whether HA is enabled
-- PANOSHA.Config.groupId - HA Group ID
-- PANOSHA.Config.peerIp - Peer IP address
-- PANOSHA.Config.ha1Port - HA1 interface port
-- PANOSHA.Config.ha2Port - HA2 interface port
-
----
-
-#### panos-ha-configure
-
-Configures High Availability on a firewall with automatic interface validation.
-
-:::caution
-This command validates that all specified HA interfaces exist on the device before attempting configuration. If any interface is missing, the command will fail with a clear error message listing the missing interfaces.
-:::
-
-**Arguments:**
-
-| Argument | Required | Default | Description |
-|----------|----------|---------|-------------|
-| group_id | No | 1 | HA Group ID (1-255) |
-| peer_ip | Yes | - | Peer firewall's primary HA1 control link IP |
-| peer_ip_backup | No | - | Peer firewall's backup HA1 control link IP |
-| passive_link_state | No | auto | Link state of passive device (auto/shutdown) |
-| ha1_port | No | - | Primary control link interface (e.g., ha1-a, ethernet1/1) |
-| ha1_ip_address | No | - | IP address for HA1 interface |
-| ha1_netmask | No | - | Netmask for HA1 interface |
-| ha1_gateway | No | - | Gateway for HA1 interface |
-| ha1_backup_port | No | - | Backup control link interface |
-| ha1_backup_ip_address | No | - | IP address for HA1 backup interface |
-| ha1_backup_netmask | No | - | Netmask for HA1 backup interface |
-| ha2_port | No | - | Data link interface for session sync |
-| ha2_ip_address | No | - | IP address for HA2 interface |
-| ha2_netmask | No | - | Netmask for HA2 interface |
-| commit | No | false | Commit configuration immediately |
-| force_sync | No | false | Force config sync after commit (requires commit=true) |
-
-**Example:**
-```
-!panos-ha-configure peer_ip=192.168.26.102 ha1_port=ha1-a ha1_ip_address=192.168.26.101 ha1_netmask=255.255.255.252 ha2_port=ha2-a ha2_ip_address=192.168.27.101 ha2_netmask=255.255.255.252 commit=true
-```
-
----
-
-#### panos-ha-enable
-
-Enables HA functionality on a firewall (requires existing HA configuration).
-
-**Arguments:**
-
-| Argument | Required | Default | Description |
-|----------|----------|---------|-------------|
-| commit | No | false | Commit configuration immediately |
-
-**Example:**
-```
-!panos-ha-enable commit=true
-```
-
----
-
-#### panos-ha-disable
-
-Disables HA functionality on a firewall (removes device from HA pair).
-
-**Arguments:**
-
-| Argument | Required | Default | Description |
-|----------|----------|---------|-------------|
-| commit | No | false | Commit configuration immediately |
-
-**Example:**
-```
-!panos-ha-disable commit=true
-```
-
----
-
-### Interface Validation Commands
-
-#### panos-ha-list-interfaces
-
-Lists all available network interfaces on the firewall. Use this command before configuring HA to identify valid interface names.
-
-**Arguments:** None
-
-**Example:**
-```
-!panos-ha-list-interfaces
-```
-
-**Outputs:**
-- PANOSHA.AvailableInterfaces.Hostname - Firewall hostname
-- PANOSHA.AvailableInterfaces.InterfaceCount - Total number of interfaces
-- PANOSHA.AvailableInterfaces.Interfaces - List of interface names
-
----
-
-#### panos-ha-validate-interfaces
-
-Validates that specified interfaces exist on the firewall before attempting HA configuration. Critical for preventing configuration errors in automated workflows.
-
-**Arguments:**
-
-| Argument | Required | Description |
-|----------|----------|-------------|
-| interfaces | Yes | Comma-separated list of interface names (e.g., "ha1-a,ha2-a,ethernet1/1") |
-
-**Example:**
-```
-!panos-ha-validate-interfaces interfaces="ha1-a,ha2-a,ethernet1/1"
-```
-
-**Outputs:**
-- PANOSHA.InterfaceValidation.Hostname - Firewall hostname
-- PANOSHA.InterfaceValidation.AllValid - Boolean indicating if all interfaces exist
-- PANOSHA.InterfaceValidation.ValidatedInterfaces - List of validated interfaces
-- PANOSHA.InterfaceValidation.MissingInterfaces - List of missing interfaces
-
----
-
-### Panorama Commands
-
-#### panos-panorama-ha-reconfigure
-
-Issues a "revert to running HA state" command to a Panorama peer. Used to re-integrate a peer after maintenance or failure.
-
-**Arguments:** None
-
-**Example:**
-```
-!panos-panorama-ha-reconfigure
-```
-
----
-
-## Automated Failover Workflow
-
-This integration is designed to support automated failover orchestration workflows. Below is an example workflow for handling FW1/2 failure with FW3 as standby:
-
-### Workflow Steps (Cortex XSOAR Playbook)
-
-1. **Trigger**: SIEM SYSLOG event indicating FW1/2 unavailable
-2. **Grace Period**: Wait 60 seconds to confirm failure
-3. **Validation**: Check SIEM logs to confirm device still down
-4. **Network Isolation**: SSH to Cisco switches and shutdown failed FW interfaces
-5. **HA Reconfiguration**:
-   - Use `panos-ha-disable` to remove failed FW from HA
-   - Use `panos-ha-configure` on FW3 to join as passive peer
-6. **Network Restoration (Phase 1)**:
-   - Un-shutdown HA/cluster interfaces first
-   - Use `panos-ha-get-state` to verify FW3 is passive/standby
-7. **Network Restoration (Phase 2)**:
-   - Un-shutdown data/Internet interfaces
-8. **Notification**: Send email with failover status
-
-### Pre-Failover Validation
-
-Before executing automated failover:
-
-```
-# Step 1: List available interfaces on FW3
-!panos-ha-list-interfaces using="FW3-instance"
-
-# Step 2: Validate required HA interfaces exist
-!panos-ha-validate-interfaces using="FW3-instance" interfaces="ha1-a,ha2-a"
-
-# Step 3: Get current HA state
-!panos-ha-get-state using="FW3-instance"
-```
-
-### Failover Execution
-
-```
-# Step 1: Disable HA on failed FW (if accessible)
-!panos-ha-disable using="FW1-instance" commit=true
-
-# Step 2: Configure FW3 as passive peer
-!panos-ha-configure using="FW3-instance" peer_ip=<Active-FW-IP> ha1_port=ha1-a ha1_ip_address=<IP> ha1_netmask=<Mask> ha2_port=ha2-a ha2_ip_address=<IP> ha2_netmask=<Mask> commit=true
-
-# Step 3: Verify HA state
-!panos-ha-get-state using="FW3-instance"
-```
-
-## Best Practices
-
-1. **Always validate interfaces** before configuring HA using `panos-ha-validate-interfaces`
-2. **Test failover procedures** in a lab environment before implementing in production
-3. **Use specific interface names** - consult `panos-ha-list-interfaces` output
-4. **Monitor HA synchronization** status after configuration changes
-5. **Document your HA topology** including interface mappings and switch connections
-6. **Use API keys with minimal required privileges** for production deployments
-7. **Implement proper error handling** in playbooks for each failover step
-
-## Troubleshooting
-
-### Interface Validation Failed
-
-**Error:** "HA Configuration Failed: Interface Validation Error"
-
-**Solution:**
-1. Run `!panos-ha-list-interfaces` to see all available interfaces
-2. Verify interface names match exactly (case-sensitive)
-3. Check that interfaces are configured on the device (not just physically present)
-
-### HA State Not Synchronizing
-
-**Cause:** HA interfaces may be down or misconfigured
-
-**Solution:**
-1. Check interface status using PAN-OS CLI or GUI
-2. Verify HA1 and HA2 links are up
-3. Check for network connectivity between HA peers
-4. Review HA configuration using `panos-ha-get-config`
-
-### Cannot Commit HA Configuration
-
-**Cause:** Template override or Panorama management
-
-**Solution:**
-1. If device is managed by Panorama, configure HA via Panorama templates
-2. Use `force` parameter with caution if local override is required
-3. Check for existing configuration locks
-
-## Technical Notes
-
-- Most HA operational commands bypass vsys context and operate at the device level
-- Interface validation queries the device's network interface configuration
-- HA interfaces (ha1-a, ha1-b, ha2, ha2-a, ha2-b, ha3) are predefined and always considered available
-- Configuration changes require a commit to take effect
-- Session synchronization requires HA2 interface configuration
-
-## API Permissions Required
-
-- **Read-only operations**: Superuser (read-only) role
-- **Configuration changes**: Superuser role
-- **Minimum API version**: PAN-OS 8.0+
-
-## Dependencies
-
-- Docker image: demisto/pan-os-python:1.0.0.4889421
-- Python library: pan-os-python
-- Supported PAN-OS versions: 8.0 and above
+| Path | Type | Description |
+|------|------|-------------|
+| PANOS-HA.InterfaceValidation.Hostname | String | The hostname of the firewall |
+| PANOS-HA.InterfaceValidation.AllValid | Boolean | Whether all interfaces were found |
+| PANOS-HA.InterfaceValidation.ValidatedInterfaces | Unknown | List of validated interfaces |
+| PANOS-HA.InterfaceValidation.MissingInterfaces | Unknown | List of missing interfaces |
