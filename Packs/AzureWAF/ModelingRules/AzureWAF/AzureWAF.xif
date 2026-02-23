@@ -234,19 +234,16 @@ alter
 
 
 [MODEL: dataset=msft_azure_waf_raw]
-config case_sensitive = true
-| filter Category = "FrontDoorAccessLog"
+filter Category = "FrontDoorAccessLog"
 | call msft_azure_resourcelogs_common_fields
 | call front_door_common_fields
 | call front_door_access_log;
 
-config case_sensitive = true
-| filter Category = "FrontDoorWebApplicationFirewallLog"
+filter Category = "FrontDoorWebApplicationFirewallLog"
 | call msft_azure_resourcelogs_common_fields
 | call front_door_common_fields
 | call front_door_waf_log ;
 
-config case_sensitive = true
-| filter Category in ("ApplicationGatewayAccessLog", "ApplicationGatewayFirewallLog") OR type in ("AGWAccessLogs", "AGWFirewallLogs")
+filter Category in ("ApplicationGatewayAccessLog", "ApplicationGatewayFirewallLog") OR type in ("AGWAccessLogs", "AGWFirewallLogs")
 | call msft_azure_resourcelogs_common_fields
 | call application_gateway_access_and_waf_logs;
