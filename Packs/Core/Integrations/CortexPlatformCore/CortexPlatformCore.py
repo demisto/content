@@ -72,7 +72,7 @@ WEBAPP_COMMANDS = [
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
-ENDPOINT_COMMANDS = ["core-get-endpoint-support-file", "core-perform-endpoint-heartbeat"]
+ENDPOINT_COMMANDS = ["core-get-endpoint-support-file", "core-send-endpoint-heartbeat"]
 XSOAR_COMMANDS = ["core-run-playbook", "core-get-case-resolution-statuses"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
@@ -771,7 +771,7 @@ class Client(CoreClient):
             url_suffix="/retrieve_endpoint_tsf",
         )
 
-    def perform_endpoint_heartbeat(self, json_data: dict) -> dict:
+    def send_endpoint_heartbeat(self, json_data: dict) -> dict:
         """
         Perform endpoint heartbeat.
         Args:
@@ -2948,7 +2948,7 @@ def get_endpoint_support_file_command(client: Client, args: dict) -> CommandResu
     )
 
 
-def perform_endpoint_heartbeat_command(client: Client, args: dict) -> CommandResults:
+def send_endpoint_heartbeat_command(client: Client, args: dict) -> CommandResults:
     """
     Perform endpoint heartbeat.
     Args:
@@ -2970,7 +2970,7 @@ def perform_endpoint_heartbeat_command(client: Client, args: dict) -> CommandRes
         }
     }
 
-    client.perform_endpoint_heartbeat(json_data)
+    client.send_endpoint_heartbeat(json_data)
 
     return CommandResults(
         readable_output=f"Heartbeat performed successfully for endpoint {endpoint_id}",
@@ -4693,8 +4693,8 @@ def main():  # pragma: no cover
         elif command == "core-get-endpoint-support-file":
             return_results(get_endpoint_support_file_command(client, args))
 
-        elif command == "core-perform-endpoint-heartbeat":
-            return_results(perform_endpoint_heartbeat_command(client, args))
+        elif command == "core-send-endpoint-heartbeat":
+            return_results(send_endpoint_heartbeat_command(client, args))
 
         elif command == "core-list-exception-rules":
             return_results(list_exception_rules_command(client, args))
