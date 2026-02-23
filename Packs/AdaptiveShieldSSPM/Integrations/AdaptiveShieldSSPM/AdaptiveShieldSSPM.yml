@@ -47,7 +47,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Adaptive Shield SSPM Event Collector fetches security check events from Adaptive Shield and sends them to Cortex XSIAM.
+description: Adaptive Shield SSPM fetches security check events from Adaptive Shield and sends them to Cortex XSIAM.
 display: Adaptive Shield SSPM
 name: AdaptiveShieldSSPM
 script:
