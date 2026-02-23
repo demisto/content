@@ -1,0 +1,43 @@
+{
+    "id": "test_123",
+    "identifiedAt": "2020-07-21T15:30:10.000Z",
+    "name": "test_name",
+    "type": "attachment",
+    "category": "malware",
+    "status": "active",
+    "severity": 20,
+    "attackSpread": 62,
+    "notable": false,
+    "verticals": false,
+    "geographies": false,
+    "actors": [
+        {
+            "id": "6e3b86b0-a823-4ed6-8d75-db4d7ead43ba",
+            "name": "TA505"
+        }
+    ],
+    "families": [
+        {
+            "id": "cfd29eb5-544f-4ef4-920c-7c4e428931e0",
+            "name": "Banking"
+        }
+    ],
+    "malware": [
+        {
+            "id": "8faf65ef-0524-45e0-a036-d1b6e261825c",
+            "name": "Ursnif"
+        }
+    ],
+    "techniques": [
+        {
+            "id": "accc60d8-4426-4ba2-b2f5-f9ec2eb4685b",
+            "name": "XL4 macros"
+        }
+    ],
+    "brands": [
+        {
+            "id": "acasd60d8-4426-4ba2-b2f5-f9ec2eb4685b",
+            "name": "DocuSign"
+        }
+    ]
+}
