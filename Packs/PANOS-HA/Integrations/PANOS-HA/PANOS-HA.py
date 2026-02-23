@@ -19,6 +19,7 @@ DEVICE_TYPE_FIREWALL = 'Firewall'
 DEVICE_TYPE_PANORAMA = 'Panorama'
 INTEGRATION_NAME = 'PANOSHA'
 
+
 # HELPER FUNCTIONS
 def get_pan_device(device_type: str, hostname: str, api_key: str, vsys: Optional[str], insecure: bool) -> PanDevice:
     """
@@ -31,7 +32,10 @@ def get_pan_device(device_type: str, hostname: str, api_key: str, vsys: Optional
     elif device_type == DEVICE_TYPE_PANORAMA:
         return Panorama(hostname=hostname, api_key=api_key, ssl_verify=ssl_verify)
     else:
-        raise ValueError(f"Invalid device type specified: {device_type}. Must be '{DEVICE_TYPE_FIREWALL}' or '{DEVICE_TYPE_PANORAMA}'.")
+        raise ValueError(
+            f"Invalid device type specified: {device_type}."
+            f" Must be '{DEVICE_TYPE_FIREWALL}' or '{DEVICE_TYPE_PANORAMA}'."
+        )
 
 
 def get_available_interfaces(client: Firewall) -> list:
@@ -131,6 +135,7 @@ def validate_interfaces_exist(client: Firewall, interfaces_to_check: list) -> tu
         demisto.debug(f"Validation failed. Missing interfaces: {missing_interfaces}")
 
     return all_valid, missing_interfaces
+
 
 # COMMAND FUNCTIONS
 def get_ha_state_command(client: PanDevice, args: dict, insecure: bool) -> CommandResults:
@@ -247,7 +252,7 @@ def get_ha_config_command(client: PanDevice) -> CommandResults:
     try:
         response = client.xapi.get(xpath=xpath)
         if response is None:
-             return CommandResults(readable_output="No configuration found at the specified path.")
+            return CommandResults(readable_output="No configuration found at the specified path.")
         ha_config = response.find('./result/high-availability')
         if ha_config is None:
             return CommandResults(readable_output="High Availability is not configured on this device.")
@@ -286,7 +291,9 @@ def get_ha_config_command(client: PanDevice) -> CommandResults:
         "Device Priority": find_text(group, 'election-option/device-priority'),
         "Preemptive": find_text(group, 'election-option/preemptive', 'no').capitalize(),
         "Heartbeat Backup": find_text(group, 'election-option/heartbeat-backup', 'no').capitalize(),
-        "Timers": "Recommended" if group is not None and group.find('election-option/timers/recommended') is not None else "Custom"
+        "Timers": ("Recommended"
+                   if group is not None and group.find('election-option/timers/recommended') is not None
+                   else "Custom")
     }
 
     # --- HA1 Interface (Primary Control Link) ---
@@ -327,7 +334,7 @@ def get_ha_config_command(client: PanDevice) -> CommandResults:
     }
 
     # --- Build Markdown ---
-    md = f"# High Availability Configuration\n"
+    md = "# High Availability Configuration\n"
     md += f"**Device:** {client.hostname}\n\n"
 
     md += "## Overview\n"
@@ -444,9 +451,11 @@ def request_ha_failover_command(client: PanDevice, suspend: bool, insecure: bool
         demisto.debug(f"Caught PanXapiError: {e}")
         error_message = str(e)
         if "already in suspend state" in error_message and suspend:
-             return CommandResults(readable_output=f"Device {client.hostname} is already suspended.")
+            return CommandResults(readable_output=f"Device {client.hostname} is already suspended.")
         elif "Cannot make this firewall active" in error_message and not suspend:
-             return CommandResults(readable_output=f"Device {client.hostname} cannot be made active. It may already be active or in a non-functional state.")
+            msg = f"Device {client.hostname} cannot be made active." \
+                " It may already be active or in a non-functional state."
+            return CommandResults(readable_output=msg)
         raise DemistoException(f"Failed to execute HA state change command: {e}")
     except Exception as e:
         demisto.debug(f"Caught unexpected exception: {e}")
@@ -632,12 +641,12 @@ def configure_ha_command(client: PanDevice, args: dict, insecure: bool = False) 
         all_valid, missing_interfaces = validate_interfaces_exist(client, interfaces_to_validate)
 
         if not all_valid:
-            error_msg = f"**HA Configuration Failed: Interface Validation Error**\n\n"
+            error_msg = "**HA Configuration Failed: Interface Validation Error**\n\n"
             error_msg += f"The following interface(s) do not exist on {client.hostname}:\n"
             for iface in missing_interfaces:
                 error_msg += f"- {iface}\n"
-            error_msg += f"\nPlease verify the interface names and ensure they are configured on the device.\n"
-            error_msg += f"Use `!panos-ha-list-interfaces` to see all available interfaces."
+            error_msg += "\nPlease verify the interface names and ensure they are configured on the device.\n"
+            error_msg += "Use `!panos-ha-list-interfaces` to see all available interfaces."
 
             raise DemistoException(error_msg)
 
@@ -652,15 +661,15 @@ def configure_ha_command(client: PanDevice, args: dict, insecure: bool = False) 
     passive_link_state = args.get('passive_link_state', 'auto')
     device_priority = arg_to_number(args.get('device_priority', '100'))
 
-    demisto.debug(f"Creating HighAvailability object:")
-    demisto.debug(f"  - enabled=True")
+    demisto.debug("Creating HighAvailability object:")
+    demisto.debug("  - enabled=True")
     demisto.debug(f"  - group_id={group_id}")
     demisto.debug(f"  - peer_ip={peer_ip}")
     demisto.debug(f"  - peer_ip_backup={peer_ip_backup if peer_ip_backup else 'Not configured'}")
-    demisto.debug(f"  - mode=active-passive")
+    demisto.debug("  - mode=active-passive")
     demisto.debug(f"  - passive_link_state={passive_link_state}")
     demisto.debug(f"  - device_priority={device_priority}")
-    demisto.debug(f"  - config_sync=True")
+    demisto.debug("  - config_sync=True")
 
     ha_config = HighAvailability(
         enabled=True,
@@ -789,7 +798,8 @@ def configure_ha_command(client: PanDevice, args: dict, insecure: bool = False) 
                 demisto.debug("Force sync flag is true. Initiating config sync to peer.")
                 ssl_verify = not insecure
                 temp_fw_client = Firewall(hostname=client.hostname, api_key=client.api_key, ssl_verify=ssl_verify)
-                sync_cmd = "<request><high-availability><sync><to-peer><running-config/></to-peer></sync></high-availability></request>"
+                sync_cmd = ("<request><high-availability><sync><to-peer>"
+                            "<running-config/></to-peer></sync></high-availability></request>")
                 temp_fw_client.xapi.op(cmd=sync_cmd)
                 demisto.debug("Configuration sync to peer initiated successfully.")
                 message += "\n\n**Configuration sync initiated to peer.**"

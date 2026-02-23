@@ -7,12 +7,13 @@ We must inject mock modules into sys.modules BEFORE importing the integration mo
 import sys
 import importlib
 import xml.etree.ElementTree as ET
-from unittest.mock import MagicMock, patch, PropertyMock
+from unittest.mock import MagicMock, patch
 import pytest
 
 # ---------------------------------------------------------------------------
 # 1. Build mock panos module hierarchy and inject into sys.modules
 # ---------------------------------------------------------------------------
+
 
 # Create real exception classes so isinstance checks and raise statements work
 class MockPanDeviceError(Exception):
@@ -161,13 +162,13 @@ Panorama = panos_ha_module.Panorama
 
 def _make_firewall(**overrides):
     """Create a mock Firewall instance that passes isinstance checks."""
-    defaults = dict(hostname='fw1.local', api_key='TESTKEY', vsys='vsys1', ssl_verify=True)
+    defaults = {'hostname': 'fw1.local', 'api_key': 'TESTKEY', 'vsys': 'vsys1', 'ssl_verify': True}
     defaults.update(overrides)
     return Firewall(**defaults)
 
 
 def _make_panorama(**overrides):
-    defaults = dict(hostname='panorama.local', api_key='TESTKEY', ssl_verify=True)
+    defaults = {'hostname': 'panorama.local', 'api_key': 'TESTKEY', 'ssl_verify': True}
     defaults.update(overrides)
     return Panorama(**defaults)
 
@@ -524,7 +525,6 @@ class TestGetHaConfigCommand:
 def _patch_firewall_constructor(temp_fw):
     """Context manager that patches the Firewall constructor to return temp_fw
     while keeping Firewall as a valid type for isinstance() checks."""
-    original_init = Firewall.__init__
 
     def patched_init(self, **kwargs):
         # Copy attributes from temp_fw to self
@@ -617,9 +617,8 @@ class TestSynchronizeHaPeersCommand:
         client = _make_firewall()
         temp_fw = self._make_temp_fw(xapi_side_effect=MockPanXapiError("sync failed"))
 
-        with _patch_firewall_constructor(temp_fw):
-            with pytest.raises(Exception, match="Failed to execute HA sync"):
-                synchronize_ha_peers_command(client, 'config', insecure=False)
+        with _patch_firewall_constructor(temp_fw), pytest.raises(Exception, match="Failed to execute HA sync"):
+            synchronize_ha_peers_command(client, 'config', insecure=False)
 
     def test_invalid_sync_type(self):
         client = _make_firewall()
@@ -646,7 +645,7 @@ class TestPanoramaReconfigureHaCommand:
     def test_api_error(self):
         client = _make_panorama()
         # We need the HighAvailability.revert_to_running to raise
-        original_revert = _MockHighAvailability.revert_to_running
+        saved_revert = _MockHighAvailability.revert_to_running
 
         def raise_error(self):
             raise MockPanDeviceError("revert failed")
@@ -656,7 +655,7 @@ class TestPanoramaReconfigureHaCommand:
             with pytest.raises(Exception, match="Failed to send HA reconfiguration"):
                 panorama_reconfigure_ha_command(client)
         finally:
-            _MockHighAvailability.revert_to_running = original_revert
+            _MockHighAvailability.revert_to_running = saved_revert
 
 
 class TestConfigureHaCommand:
@@ -719,7 +718,7 @@ class TestConfigureHaCommand:
             'peer_ip': '10.0.0.2',
             'commit': 'false',
         }
-        result = configure_ha_command(client, args)
+        configure_ha_command(client, args)
         client.commit.assert_not_called()
 
     def test_with_commit_and_force_sync(self):
@@ -770,7 +769,7 @@ class TestSetHaEnabledState:
     def test_enable_ha(self):
         client = _make_firewall()
         args = {'commit': 'false'}
-        result = set_ha_enabled_state(client, args, enabled=True)
+        set_ha_enabled_state(client, args, enabled=True)
         # Verify xapi.edit was called with enabled=yes
         client.xapi.edit.assert_called_once()
         call_kwargs = client.xapi.edit.call_args
@@ -779,7 +778,7 @@ class TestSetHaEnabledState:
     def test_disable_ha(self):
         client = _make_firewall()
         args = {'commit': 'false'}
-        result = set_ha_enabled_state(client, args, enabled=False)
+        set_ha_enabled_state(client, args, enabled=False)
         call_kwargs = client.xapi.edit.call_args
         assert '<enabled>no</enabled>' in call_kwargs.kwargs.get('element', call_kwargs[1].get('element', ''))
 
@@ -787,7 +786,7 @@ class TestSetHaEnabledState:
         client = _make_firewall()
         client.commit = MagicMock(return_value="Commit OK")
         args = {'commit': 'true'}
-        result = set_ha_enabled_state(client, args, enabled=True)
+        set_ha_enabled_state(client, args, enabled=True)
         client.commit.assert_called_once_with(sync=True)
 
     def test_non_firewall_raises(self):
