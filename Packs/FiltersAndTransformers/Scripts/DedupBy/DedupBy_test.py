@@ -1,4 +1,5 @@
 import json
+
 import DedupBy
 import demistomock as demisto
 
@@ -18,7 +19,7 @@ def test_1(mocker):
             DedupBy.main()
             assert DedupBy.return_results.call_count == 1
             ret = DedupBy.return_results.call_args[0][0]
-            assert json.dumps(ret) == json.dumps(expected)
+            assert ret == expected
 
 
 def test_performance_large_input(mocker):
