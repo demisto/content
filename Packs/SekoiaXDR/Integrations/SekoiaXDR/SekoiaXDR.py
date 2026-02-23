@@ -534,6 +534,10 @@ def check_id_in_context(alert_id: str, cache: dict[str, Any] | None) -> tuple[di
 
 
 def apply_time_buffer(date_str: str, delta_minutes: int) -> str:
+    # Handle None gracefully
+    if date_str is None:
+        return None
+
     try:
         clean_date_str = date_str.replace("Z", "+00:00") if date_str.endswith("Z") else date_str
         dt_obj = datetime.fromisoformat(clean_date_str)
@@ -652,7 +656,7 @@ def fetch_incidents(
         last_fetch = first_fetch_time
     else:
         # otherwise use the stored last fetch
-        last_fetch = int(last_fetch)
+        last_fetch = cast(int, last_fetch)
 
     # Convert time from epoch to ISO8601 in the correct format and add the ,now also
     alerts_created_at = f"{time_converter(str(last_fetch))},now"
