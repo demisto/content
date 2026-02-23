@@ -85,7 +85,6 @@ configuration:
 description: Collects alerts, devices and activities from Armis resources.
 display: Armis Event Collector
 name: ArmisEventCollector
-supportlevelheader: xsoar
 script:
   commands:
   - arguments:
