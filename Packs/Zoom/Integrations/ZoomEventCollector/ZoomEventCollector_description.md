@@ -2,24 +2,9 @@
 Use this integration to collect operation logs and activity reports automatically from Zoom.
 You can also use the ***zoom-get-events*** command to manually collect events.
 
-In order to use this integration, you need to enter your Zoom credentials in the relevant integration instance parameters.
 
-Log in to your Zoom admin user account, and follow these steps:
-Click [here](https://marketplace.zoom.us/develop/create) to create an app.
-### For the OAuth method:
-- Enable permissions.
-- Create an Server-to-Server OAuth app.
-- Add relevant scopes: report:read:admin
-- With your Admin user navigate to User Management > Roles. In the role associated with the installed user, navigate to **Reports** and enable view access to the following :
-    - **Admin Activity Logs**
-    - **Sign In/Sign Out**
-- Use the following account credentials to get an access token:
-    Account ID
-    Client ID
-    Client secret
+### Troubleshooting
 
-For more information about creating an OAuth app click [here](https://marketplace.zoom.us/docs/guides/build/server-to-server-oauth-app/).
-
-### Rate Limits
-The API requests in the integration are heavy rate limits. 
-Rate limits are applied based on the account plan: Free, Pro, and Business+. For more information, see: [Rate limits by account type](https://developers.zoom.us/docs/api/rest/rate-limits/#rate-limits-by-account-type).
+- Indicators that are passed through the integration undergo formatting and deduplication, which may lead to an apparent loss of indicators.  
+  For instance, enabling the `Strip ports from URLs` option may cause two URLs that are similar but use different ports to be merged into a single indicator after formatting, resulting in the removal of one of them as a duplicate.
+- In case all fields are selected, there is a potential memory issue when dealing with CSV or JSON format files that exceed 150,000 entries.
