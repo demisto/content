@@ -1438,6 +1438,66 @@ script:
     - contextPath: Proofpoint.URL.success
       description: Indicates whether the URL could successfully be decoded.
       type: Boolean
+  - arguments:
+    - description: The ID of the threat to get its summary.
+      name: threat_id
+      required: true
+    description: "In order to use this command - run proofpoint-get-events before and use context data (context field Proofpoint.MessagesDelivered.threatsInfoMap.threatId)
+For mor specific type of events :
+proofpoint-get-events-clicks-blocked (context field Proofpoint.ClicksBlocked.threatID)
+proofpoint-get-events-clicks-permitted (context field Proofpoint.ClicksPermitted.threatID)"
+    name: proofpoint-get-threat-summary
+    outputs:
+    - contextPath: Proofpoint.ThreatSummary.id
+      description: A unique threat ID.
+      type: String
+    - contextPath: Proofpoint.ThreatSummary.identifiedAt
+      description: Proofpoint identified the threat at this time.
+      type: String
+    - contextPath: Proofpoint.ThreatSummary.name
+      description: The threat name
+      type: String
+    - contextPath: Proofpoint.ThreatSummary.type
+      description: The threat type (attachment, url, or message text).
+      type: String
+    - contextPath: Proofpoint.ThreatSummary.category
+      description: The threat category (impostor, malware, phish, or spam).
+      type: String
+    - contextPath: Proofpoint.ThreatSummary.status
+      description: The threat status (active or cleared)
+      type: String
+    - contextPath: Proofpoint.ThreatSummary.detectionType
+      description: New field created called detectionType
+      type: String
+    - contextPath: Proofpoint.ThreatSummary.severity
+      description: The threat severity score ranges from 0-1000.
+      type: String
+    - contextPath: Proofpoint.ThreatSummary.attackSpread
+      description: The number of Proofpoint customers that also received this threat.
+      type: String
+    - contextPath: Proofpoint.ThreatSummary.notable
+      description: Whether the threat is marked as notable by Proofpoint's Threat Analysts.
+      type: String
+    - contextPath: Proofpoint.ThreatSummary.verticals
+      description: Whether the threat is identified as vertically targeted.
+      type: String
+    - contextPath: Proofpoint.ThreatSummary.geographies
+      description: Whether the threat is identified as geographically targeted.
+      type: String
+    - contextPath: Proofpoint.ThreatSummary.actors
+      description: The id and name of the actor associated with the threat.
+      type: String
+    - contextPath: Proofpoint.ThreatSummary.families
+      description: The id(s) and name(s) of the threat families associated with the threat.
+      type: String
+    - contextPath: Proofpoint.ThreatSummary.malware
+      description: The id(s) and name(s) of the malware associated with the threat.
+      type: String
+    - contextPath: Proofpoint.ThreatSummary.techniques
+      description: The id(s) and name(s) of the techniques associated with the threat.
+      type: String
+    - contextPath: Proofpoint.ThreatSummary.brands
+      description: The id(s) and name(s) of the brands associated with the threat.
   dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
