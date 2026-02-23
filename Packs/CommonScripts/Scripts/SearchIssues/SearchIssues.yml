@@ -101,11 +101,9 @@ args:
       - ASC
   - defaultValue: "0"
     description: The first page from which we bring the issues.
-    isArray: true
     name: offset
   - defaultValue: "50"
     description: The last page from which we bring the issues.
-    isArray: true
     name: limit
   - description: Additional output fields.
     isArray: true
@@ -232,6 +230,9 @@ outputs:
     description: The identity type of the account.
     type: String
 isInternal: true
+dependson:
+  must:
+  - core-get-issues
 script: "-"
 subtype: python3
 tags:

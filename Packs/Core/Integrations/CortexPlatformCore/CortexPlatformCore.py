@@ -1639,16 +1639,19 @@ def get_case_extra_data(client, args):
     """
     demisto.debug(f"Calling core-get-case-extra-data, {args=}")
     # Set the base URL for this API call to use the public API v1 endpoint
-    case_extra_data = get_extra_data_for_case_id_command(init_client("public"), args).outputs
+    try:
+        case_extra_data = get_extra_data_for_case_id_command(init_client("public"), args).outputs
+    except Exception as e:
+        demisto.debug(f"Failed to retrieve extra data for case ID {args.get('case_id')}: {str(e)}")
+        return {}
     demisto.debug(f"After calling core-get-case-extra-data, {case_extra_data=}")
     issue_ids = extract_ids(case_extra_data)
     case_data = case_extra_data.get("case", {})
     notes = case_data.get("notes")
     xdr_url = case_data.get("xdr_url")
     starred_manually = case_data.get("starred_manually")
-    manual_description = case_data.get("manual_description")
     detection_time = case_data.get("detection_time")
-    manual_description = case_extra_data.get("manual_description")
+    manual_description = case_extra_data.get("manual_description") or case_data.get("manual_description")
     network_artifacts = case_extra_data.get("network_artifacts")
     file_artifacts = case_extra_data.get("file_artifacts")
     extra_data = {
@@ -1915,13 +1918,17 @@ def get_cases_command(client, args):
 
     else:
         if get_enriched_case_data:
+            demisto.info(
+                f"Enriched case data requested but {len(data)} cases were returned (limit is 10). "
+                "Falling back to standard case data."
+            )
             command_results.append(
                 CommandResults(
-                    readable_output="Cannot retrieve enriched case data for more than 10 cases. "
-                    "Only standard case data will be shown. "
+                    readable_output="Note: Cannot retrieve enriched case data for more than 10 cases. "
+                    "Returning standard case data instead. "
                     "Try using a more specific query, "
                     "for example specific case IDs you want to get enriched data for.",
-                    entry_type=4,
+                    entry_type=1,
                 )
             )
 
@@ -2078,6 +2085,14 @@ def get_extra_data_for_case_id_command(client: CoreClient, args):
                         raw response, and outputs for integration context.
     """
     case_id = args.get("case_id")
+    if not case_id:
+        raise DemistoException("case_id is required. Please provide a valid numeric case ID.")
+    case_id = str(case_id).strip()
+    if not case_id.isdigit():
+        raise DemistoException(
+            f"Invalid case_id '{case_id}'. The case_id must be a valid numeric identifier. "
+            "Use the core-get-cases command to retrieve valid case IDs."
+        )
     issues_limit = min(int(args.get("issues_limit", 1000)), 1000)
     response = client.get_incident_data(case_id, issues_limit, full_alert_fields=True)
     mapped_response = preprocess_get_case_extra_data_outputs(response)
