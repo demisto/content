@@ -652,7 +652,7 @@ def fetch_incidents(
         last_fetch = first_fetch_time
     else:
         # otherwise use the stored last fetch
-        last_fetch = int(cast(int, last_fetch))
+        last_fetch = int(last_fetch)
 
     # Convert time from epoch to ISO8601 in the correct format and add the ,now also
     alerts_created_at = f"{time_converter(str(last_fetch))},now"
