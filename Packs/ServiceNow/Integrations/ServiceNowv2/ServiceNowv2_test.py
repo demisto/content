@@ -634,33 +634,28 @@ def test_get_ticket_notes_command_use_display_value_no_comments(mocker):
         (
             [
                 {
-                    "value": "[code]<p>test</p>[/code]",
+                    "value": "First comment",
                     "sys_created_by": "Test User",
                     "sys_created_on": "2022-11-21 20:45:37",
                     "element": "comments",
                 }
             ],
-            {
-                "comment_tag_from_servicenow": "CommentFromServiceNow",
-                "comment_format": "html",
-            },
+            {"comment_tag_from_servicenow": "CommentFromServiceNow"},
             [
                 {
                     "Type": 1,
                     "Category": None,
-                    "Contents": "Type: comments\nCreated By: Test User\nCreated On: 2022-11-21 20:45:37\n<p>test</p>",
-                    "ContentsFormat": "html",
+                    "Contents": "Type: comments\nCreated By: Test User\nCreated On: 2022-11-21 20:45:37\nFirst comment",
+                    "ContentsFormat": None,
                     "Tags": ["CommentFromServiceNow"],
                     "Note": True,
-                    "EntryContext": {
-                        "comments_and_work_notes": "[code]<p>test</p>[/code]"
-                    },
+                    "EntryContext": {"comments_and_work_notes": "First comment"},
                 }
             ],
         )
     ],
 )
-def test_get_entries_for_notes_with_comment_and_format(notes, params, expected):
+def test_get_entries_for_notes_with_comment(notes, params, expected):
     """
     Given
         - A list of notes
