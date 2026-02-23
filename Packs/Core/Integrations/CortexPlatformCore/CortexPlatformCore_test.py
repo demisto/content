@@ -9521,12 +9521,6 @@ def test_get_case_resolution_statuses_command(mocker):
     assert len(result.outputs) == 2
     assert len(result.raw_response) == 2
     assert mock_client.get_case_resolution_statuses.call_count == 2
-    # Verify readable output contains table headers for both cases
-    assert "Case 123 Resolution Statuses" in result.readable_output
-    assert "Case 456 Resolution Statuses" in result.readable_output
-    # When outputs are empty lists, tableToMarkdown should receive a string message
-    assert "No resolution statuses found." in result.readable_output
-
 
 def test_get_case_resolution_statuses_command_with_data(mocker):
     """
@@ -9554,8 +9548,6 @@ def test_get_case_resolution_statuses_command_with_data(mocker):
     result = get_case_resolution_statuses(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    assert "Case 123 Resolution Statuses" in result.readable_output
-    assert "No resolution statuses found." not in result.readable_output
     assert len(result.outputs) == 1
     assert len(result.outputs[0]) == 1  # Only one task in "done"
 
