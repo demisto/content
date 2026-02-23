@@ -482,10 +482,13 @@ def fetch_alerts_asc_mode(
 def handle_alert_events_query(
     client: Client, alert: dict, earliest_time: str, latest_time: str, events_term: str
 ) -> dict[str, Any]:
+    buffered_earliest = apply_time_buffer(earliest_time, -1)
+    buffered_latest = apply_time_buffer(latest_time, 1)
+
     # Create a query to get events
     search = client.query_events(
-        events_earliest_time=earliest_time,
-        events_latest_time=latest_time,
+        events_earliest_time=buffered_earliest,
+        events_latest_time=buffered_latest,
         events_term=events_term,
         max_last_events=None,
     )
@@ -530,13 +533,24 @@ def check_id_in_context(alert_id: str, cache: dict[str, Any] | None) -> tuple[di
     return None
 
 
+def apply_time_buffer(date_str: str, delta_minutes: int) -> str:
+    try:
+        clean_date_str = date_str.replace("Z", "+00:00") if date_str.endswith("Z") else date_str
+        dt_obj = datetime.fromisoformat(clean_date_str)
+        dt_buffered = dt_obj + timedelta(minutes=delta_minutes)
+        iso_str = dt_buffered.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]
+        return iso_str.replace("+00:00", "Z")
+    except ValueError:
+        return date_str
+
+
 """ COMMAND FUNCTIONS """
 
 
 def fetch_incidents(
     client: Client,
     max_results: int | None,
-    last_run: dict[str, int],
+    last_run: dict[str, int | list[str]],
     first_fetch_time: int | None,
     alert_status: str | None,
     alert_urgency: str | None,
@@ -545,7 +559,7 @@ def fetch_incidents(
     mirror_direction: str | None,
     fetch_with_assets: bool | None,
     fetch_with_kill_chain: bool | None,
-) -> tuple[dict[str, int], list[dict]]:
+) -> tuple[dict[str, int | list[str]], list[dict[str, Any]]]:
     """
     This function retrieves new alerts every interval (default is 1 minute).
     It has to implement the logic of making sure that incidents are fetched only onces and no incidents are missed.
@@ -618,9 +632,9 @@ def fetch_incidents(
         cached_context["fetch_cache"] = not_finished_incident
         set_integration_context(cached_context)
 
-    # Get the last fetch time, if exists
-    # last_run is a dict with a single key, called last_fetch
+    # Get the last fetch time and processed alert IDs from last_run
     last_fetch = last_run.get("last_fetch")
+    processed_alert_ids: list[str] = cast(list[str], last_run.get("processed_ids", []))
 
     # The case where no last_fetch or first_fetch_time are present.
     if last_fetch is None and first_fetch_time is None:
@@ -634,13 +648,16 @@ def fetch_incidents(
         last_fetch = first_fetch_time
     else:
         # otherwise use the stored last fetch
-        last_fetch = int(last_fetch)
+        last_fetch = int(cast(int, last_fetch))
 
     # Convert time from epoch to ISO8601 in the correct format and add the ,now also
     alerts_created_at = f"{time_converter(str(last_fetch))},now"
 
     # for type checking, making sure that latest_created_time is int
     latest_created_time = cast(int, last_fetch)
+
+    # Track IDs of alerts with the latest timestamp for next run
+    current_processed_ids: list[str] = []
 
     alerts = fetch_alerts_asc_mode(
         client,
@@ -661,9 +678,20 @@ def fetch_incidents(
         # convert it from the Sekoia XDR API response
         incident_created_time = int(alert.get("created_at", "0"))
         incident_created_time_ms = incident_created_time * 1000
+        alert_id = alert.get("short_id")
+
+        # Skip alerts without a valid ID
+        if not alert_id:
+            demisto.debug(f"Skipping alert without short_id: {alert}")
+            continue
+
+        # Skip if this alert was already processed (same timestamp as last_fetch and in processed list)
+        if incident_created_time == last_fetch and alert_id in processed_alert_ids:
+            demisto.debug(f"Skipping already processed alert {alert_id} with timestamp {incident_created_time}")
+            continue
 
         # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
-        if last_fetch and incident_created_time <= last_fetch:
+        if last_fetch and incident_created_time < last_fetch:
             continue
 
         # If no name is present it will throw an exception
@@ -723,9 +751,15 @@ def fetch_incidents(
             incident["rawJSON"] = alert
             cached_incidents.append(incident)
 
-        # Update last run and add incident if the incident is newer than last fetch
+        # Update latest_created_time and track processed IDs
+        # If timestamp is newer than last_fetch, reset the processed_ids list
         if incident_created_time > latest_created_time:
             latest_created_time = incident_created_time
+            current_processed_ids = [alert_id]  # Reset for new timestamp
+        elif incident_created_time == latest_created_time:
+            # Same timestamp, add to list if not already there
+            if alert_id not in current_processed_ids:
+                current_processed_ids.append(alert_id)
 
     # Store the list of all alert in the cache
     if len(cached_incidents) > 0:
@@ -741,8 +775,8 @@ def fetch_incidents(
             context_cache["fetch_cache"] = fetch_cache_list
             set_integration_context(context_cache)
 
-    # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {"last_fetch": latest_created_time}
+    # Save the next_run with both timestamp and processed IDs in last_run (persistent)
+    next_run: dict[str, int | list[str]] = {"last_fetch": latest_created_time, "processed_ids": current_processed_ids}
     return next_run, incidents
 
 
