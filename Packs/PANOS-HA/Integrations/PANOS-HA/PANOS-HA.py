@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from typing import Optional
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as ET  # type: ignore[no-redef]
 
 # PAN-OS-PYTHON IMPORTS
 try:
@@ -1062,10 +1062,11 @@ def main():
 
     if not (hostname and api_key):
         return_error("Hostname and API Key must be provided.")
+        return
 
     try:
         client = get_pan_device(
-            device_type, hostname, api_key, vsys,
+            device_type, hostname, str(api_key), vsys,
             insecure=insecure,
         )
 
