@@ -699,9 +699,7 @@ class Client(CoreClient):
             dict: API response
         """
         return self._http_request(
-            method="POST",
-            json_data={"issue_ids": [issue_id], "case_ids": case_ids},
-            url_suffix="/cases/link_issues",
+            method="POST", json_data={"issue_ids": [issue_id], "case_ids": case_ids}, url_suffix="/cases/link_issues"
         )
 
     def unlink_issue_from_cases(self, issue_id, case_ids: list) -> dict:
@@ -715,9 +713,7 @@ class Client(CoreClient):
             dict: API response
         """
         return self._http_request(
-            method="POST",
-            json_data={"issue_id": issue_id, "case_ids": case_ids},
-            url_suffix="/cases/unlink_issue",
+            method="POST", json_data={"issue_id": issue_id, "case_ids": case_ids}, url_suffix="/cases/unlink_issue"
         )
 
     def search_assets(self, filter, page_number, page_size, on_demand_fields):
@@ -883,13 +879,7 @@ class Client(CoreClient):
         Returns:
             dict: Response from the API for the case update.
         """
-        request_data = {
-            "request_data": {
-                "newIncidentInterface": True,
-                "case_id": case_id,
-                **case_update_payload,
-            }
-        }
+        request_data = {"request_data": {"newIncidentInterface": True, "case_id": case_id, **case_update_payload}}
         return self._http_request(
             method="POST",
             url_suffix="/case/set_data",
@@ -899,17 +889,7 @@ class Client(CoreClient):
     def bulk_update_case(self, case_update_payload, case_ids):
         request_data = {
             "request_data": {
-                "filter_data": {
-                    "filter": {
-                        "OR": [
-                            {
-                                "SEARCH_FIELD": "CASE_ID",
-                                "SEARCH_TYPE": "IN",
-                                "SEARCH_VALUE": case_ids,
-                            }
-                        ]
-                    }
-                },
+                "filter_data": {"filter": {"OR": [{"SEARCH_FIELD": "CASE_ID", "SEARCH_TYPE": "IN", "SEARCH_VALUE": case_ids}]}},
                 "update_attrs": case_update_payload,
             }
         }
@@ -1519,11 +1499,7 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
         argToList(args.get("severity")),
         VULNERABILITIES_SEVERITY_MAPPING,
     )
-    filter_builder.add_field(
-        "FINDING_SOURCES",
-        FilterType.CONTAINS_IN_LIST,
-        argToList(args.get("finding_sources")),
-    )
+    filter_builder.add_field("FINDING_SOURCES", FilterType.CONTAINS_IN_LIST, argToList(args.get("finding_sources")))
     filter_builder.add_field("ISSUE_ID", FilterType.CONTAINS, argToList(args.get("issue_id")))
     filter_builder.add_time_range_field("LAST_OBSERVED", args.get("start_time"), args.get("end_time"))
     filter_builder.add_field_with_mappings(
@@ -1535,15 +1511,9 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
             "assigned": FilterType.NIS_EMPTY,
         },
     )
+    filter_builder.add_field("CORTEX_VULNERABILITY_RISK_SCORE", FilterType.GTE, arg_to_number(args.get("cvrs_gte")))
     filter_builder.add_field(
-        "CORTEX_VULNERABILITY_RISK_SCORE",
-        FilterType.GTE,
-        arg_to_number(args.get("cvrs_gte")),
-    )
-    filter_builder.add_field(
-        "COMPENSATING_CONTROLS_DETECTED_COVERAGE",
-        FilterType.EQ,
-        argToList(args.get("compensating_controls_effective_coverage")),
+        "COMPENSATING_CONTROLS_DETECTED_COVERAGE", FilterType.EQ, argToList(args.get("compensating_controls_effective_coverage"))
     )
 
     request_data = build_webapp_request_data(
@@ -2204,21 +2174,9 @@ def search_assets_command(client: Client, args):
         FilterType.EQ,
         argToList(args.get("asset_categories", "")),
     )
-    filter.add_field(
-        ASSET_FIELDS["asset_classes"],
-        FilterType.EQ,
-        argToList(args.get("asset_classes", "")),
-    )
-    filter.add_field(
-        ASSET_FIELDS["software_package_versions"],
-        FilterType.EQ,
-        argToList(software_package_versions),
-    )
-    filter.add_field(
-        ASSET_FIELDS["kubernetes_cluster_versions"],
-        FilterType.EQ,
-        argToList(kubernetes_cluster_versions),
-    )
+    filter.add_field(ASSET_FIELDS["asset_classes"], FilterType.EQ, argToList(args.get("asset_classes", "")))
+    filter.add_field(ASSET_FIELDS["software_package_versions"], FilterType.EQ, argToList(software_package_versions))
+    filter.add_field(ASSET_FIELDS["kubernetes_cluster_versions"], FilterType.EQ, argToList(kubernetes_cluster_versions))
     filter_str = filter.to_dict()
 
     demisto.debug(f"Search Assets Filter: {filter_str}")
@@ -3266,10 +3224,7 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
             return []
 
         reverse_tags = {v: k for k, v in CaseManagement.TAGS.items()}
-        grouping_status_map = {
-            "enabled": "GROUPING_STATUS_010_ENABLED",
-            "disabled": "GROUPING_STATUS_020_DISABLED",
-        }
+        grouping_status_map = {"enabled": "GROUPING_STATUS_010_ENABLED", "disabled": "GROUPING_STATUS_020_DISABLED"}
 
         target = []
         for raw_case in case_list:
@@ -3290,10 +3245,7 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
                         "scortex": raw_case.get("SCORTEX"),
                     },
                     "notes": None,
-                    "description": {
-                        "isUser": True,
-                        "value": raw_case.get("DESCRIPTION"),
-                    },
+                    "description": {"isUser": True, "value": raw_case.get("DESCRIPTION")},
                     "caseDomain": raw_case.get("INCIDENT_DOMAIN"),
                     "creationTime": raw_case.get("CREATION_TIME"),
                     "lastUpdateTime": raw_case.get("LAST_UPDATE_TIME"),
@@ -3306,10 +3258,7 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
                     },
                     "severity": CaseManagement.SEVERITY.get(raw_severity),
                     "userSeverity": raw_case.get("USER_SEVERITY"),
-                    "assigned": {
-                        "mail": raw_case.get("ASSIGNED_USER"),
-                        "pretty": raw_case.get("ASSIGNED_USER_PRETTY"),
-                    },
+                    "assigned": {"mail": raw_case.get("ASSIGNED_USER"), "pretty": raw_case.get("ASSIGNED_USER_PRETTY")},
                     "severityCounters": {
                         "SEV_020_LOW": raw_case.get("LOW_SEVERITY_ALERTS", 0),
                         "SEV_030_MEDIUM": raw_case.get("MEDIUM_SEVERITY_ALERTS", 0),
@@ -3322,10 +3271,7 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
                         "USERS": len(raw_case.get("USERS", []) or []),
                     },
                     "tags": [
-                        {
-                            "tag_id": reverse_tags.get(tag.get("tag_name")),
-                            "tag_name": tag.get("tag_name"),
-                        }
+                        {"tag_id": reverse_tags.get(tag.get("tag_name")), "tag_name": tag.get("tag_name")}
                         for tag in (raw_case.get("CURRENT_TAGS", []) or [])
                     ],
                     "groupingStatus": {
@@ -3620,13 +3566,7 @@ def run_script_agentix_command(client: Client, args: dict) -> PollResult:
 
     client._base_url = "/api/webapp/public_api/v1"
     return script_run_polling_command(
-        {
-            "endpoint_ids": endpoint_ids,
-            "script_uid": script_uid,
-            "parameters": parameters,
-            "is_core": True,
-        },
-        client,
+        {"endpoint_ids": endpoint_ids, "script_uid": script_uid, "parameters": parameters, "is_core": True}, client
     )
 
 
@@ -3711,64 +3651,24 @@ def build_endpoint_filters(args: dict):
 
     filter_builder = FilterBuilder()
     filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["endpoint_status"], FilterType.EQ, endpoint_status)
-    filter_builder.add_field(
-        Endpoints.ENDPOINT_FIELDS["operational_status"],
-        FilterType.EQ,
-        operational_status,
-    )
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["operational_status"], FilterType.EQ, operational_status)
     filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["endpoint_type"], FilterType.EQ, endpoint_type)
     filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["platform"], FilterType.EQ, platform)
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["assigned_prevention_policy"], FilterType.EQ, assigned_prevention_policy)
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["endpoint_name"], FilterType.EQ, argToList(args.get("endpoint_name")))
     filter_builder.add_field(
-        Endpoints.ENDPOINT_FIELDS["assigned_prevention_policy"],
-        FilterType.EQ,
-        assigned_prevention_policy,
+        Endpoints.ENDPOINT_FIELDS["operating_system"], FilterType.CONTAINS, argToList(args.get("operating_system"))
     )
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["agent_version"], FilterType.EQ, argToList(args.get("agent_version")))
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["os_version"], FilterType.EQ, argToList(args.get("os_version")))
     filter_builder.add_field(
-        Endpoints.ENDPOINT_FIELDS["endpoint_name"],
-        FilterType.EQ,
-        argToList(args.get("endpoint_name")),
+        Endpoints.ENDPOINT_FIELDS["ip_address"], FilterType.ADVANCED_IP_MATCH_EXACT, argToList(args.get("ip_address"))
     )
-    filter_builder.add_field(
-        Endpoints.ENDPOINT_FIELDS["operating_system"],
-        FilterType.CONTAINS,
-        argToList(args.get("operating_system")),
-    )
-    filter_builder.add_field(
-        Endpoints.ENDPOINT_FIELDS["agent_version"],
-        FilterType.EQ,
-        argToList(args.get("agent_version")),
-    )
-    filter_builder.add_field(
-        Endpoints.ENDPOINT_FIELDS["os_version"],
-        FilterType.EQ,
-        argToList(args.get("os_version")),
-    )
-    filter_builder.add_field(
-        Endpoints.ENDPOINT_FIELDS["ip_address"],
-        FilterType.ADVANCED_IP_MATCH_EXACT,
-        argToList(args.get("ip_address")),
-    )
-    filter_builder.add_field(
-        Endpoints.ENDPOINT_FIELDS["domain"],
-        FilterType.EQ,
-        argToList(args.get("domain")),
-    )
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["domain"], FilterType.EQ, argToList(args.get("domain")))
     filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["tags"], FilterType.EQ, argToList(args.get("tags")))
-    filter_builder.add_field(
-        Endpoints.ENDPOINT_FIELDS["endpoint_id"],
-        FilterType.EQ,
-        argToList(args.get("endpoint_id")),
-    )
-    filter_builder.add_field(
-        Endpoints.ENDPOINT_FIELDS["cloud_provider"],
-        FilterType.EQ,
-        argToList(args.get("cloud_provider")),
-    )
-    filter_builder.add_field(
-        Endpoints.ENDPOINT_FIELDS["cloud_region"],
-        FilterType.EQ,
-        argToList(args.get("cloud_region")),
-    )
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["endpoint_id"], FilterType.EQ, argToList(args.get("endpoint_id")))
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["cloud_provider"], FilterType.EQ, argToList(args.get("cloud_provider")))
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["cloud_region"], FilterType.EQ, argToList(args.get("cloud_region")))
     filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["agent_eol"], FilterType.EQ, supported_version)
     filter_dict = filter_builder.to_dict()
 
@@ -3834,15 +3734,7 @@ def parse_frequency(day: str | None, time: str | None) -> str:
     :param time: Time in HH:MM format
     :return: Cron-style frequency string
     """
-    DAY_MAP = {
-        "sunday": 0,
-        "monday": 1,
-        "tuesday": 2,
-        "wednesday": 3,
-        "thursday": 4,
-        "friday": 5,
-        "saturday": 6,
-    }
+    DAY_MAP = {"sunday": 0, "monday": 1, "tuesday": 2, "wednesday": 3, "thursday": 4, "friday": 5, "saturday": 6}
 
     target_time = time if time else "12:00"
     try:
@@ -3933,11 +3825,7 @@ def list_compliance_standards_payload(
 
     if created_by:
         payload["request_data"]["filters"].append(
-            {
-                "field": "IS_CUSTOM",
-                "operator": "in",
-                "value": ["yes" if created_by == "Custom" else "no"],
-            }
+            {"field": "IS_CUSTOM", "operator": "in", "value": ["yes" if created_by == "Custom" else "no"]}
         )
 
     if labels:
@@ -4101,10 +3989,7 @@ def core_list_compliance_standards_command(client: Client, args: dict) -> list[C
     command_results.append(
         CommandResults(
             outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ComplianceStandardsMetadata",
-            outputs={
-                "filtered_count": filtered_count,
-                "returned_count": returned_count,
-            },
+            outputs={"filtered_count": filtered_count, "returned_count": returned_count},
         )
     )
 
@@ -4163,11 +4048,7 @@ def transform_distributions(response):
             )
             flattened.append(new_item)
 
-    new_response = {
-        "platform_count": response.get("platform_count"),
-        "total_count": total_count,
-        "distributions": flattened,
-    }
+    new_response = {"platform_count": response.get("platform_count"), "total_count": total_count, "distributions": flattened}
     return new_response
 
 
@@ -4194,9 +4075,7 @@ def get_endpoint_update_version_command(client, args):
     flattened_response = transform_distributions(response)
     return CommandResults(
         readable_output=tableToMarkdown(
-            "Endpoint Update Versions",
-            flattened_response.get("distributions"),
-            headerTransform=string_to_table_header,
+            "Endpoint Update Versions", flattened_response.get("distributions"), headerTransform=string_to_table_header
         ),
         outputs=flattened_response,
         outputs_prefix="Core.EndpointUpdateVersion",
@@ -4449,10 +4328,7 @@ def list_exception_rules_command(client, args: dict[str, Any]) -> list[CommandRe
         ),
         CommandResults(
             outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ExceptionRulesMetadata",
-            outputs={
-                "filter_count": total_filter_count,
-                "returned_count": len(all_outputs),
-            },
+            outputs={"filter_count": total_filter_count, "returned_count": len(all_outputs)},
         ),
     ]
 
@@ -4506,10 +4382,7 @@ def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, int]:
                         "Failed to parse timeframe argument, please use a valid format."
                         " (e.g. '1 day', '3 weeks ago', 'between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00')"
                     )
-                return {
-                    "from": int(time_from.timestamp() * 1000),
-                    "to": int(time_to.timestamp() * 1000),
-                }
+                return {"from": int(time_from.timestamp() * 1000), "to": int(time_to.timestamp() * 1000)}
         else:
             relative = dateparser.parse(time_to_convert, settings={"TIMEZONE": "UTC"})
             now_date = datetime.utcnow()
@@ -4544,10 +4417,7 @@ def get_xql_query_results_platform(client: Client, execution_id: str) -> dict:
     # Call the Client function and get the raw response
     demisto.debug(f"Calling get_query_results with {data=}")
     response = client.platform_http_request(
-        method="POST",
-        json_data=data,
-        url_suffix="/xql_queries/results/info/",
-        ok_codes=[200],
+        method="POST", json_data=data, url_suffix="/xql_queries/results/info/", ok_codes=[200]
     )
 
     response["execution_id"] = execution_id
@@ -4558,10 +4428,7 @@ def get_xql_query_results_platform(client: Client, execution_id: str) -> dict:
         }
         demisto.debug(f"Requesting query results using {data=}")
         query_data = client.platform_http_request(
-            method="POST",
-            json_data=data,
-            url_suffix="/xql_queries/results/",
-            ok_codes=[200],
+            method="POST", json_data=data, url_suffix="/xql_queries/results/", ok_codes=[200]
         )
         if isinstance(query_data, str):
             response["results"] = [json.loads(line) for line in query_data.split("\n") if line.strip()]
@@ -4789,10 +4656,7 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
             )
 
     return CommandResults(
-        outputs_prefix="GenericXQLQuery",
-        outputs_key_field="execution_id",
-        outputs=outputs,
-        raw_response=outputs,
+        outputs_prefix="GenericXQLQuery", outputs_key_field="execution_id", outputs=outputs, raw_response=outputs
     )
 
 
@@ -4829,10 +4693,7 @@ def init_client(api_type: str) -> Client:
     # Fallback to public API if the type isn't recognized
     client_url = url_map.get(api_type, url_map["public"])
 
-    headers: dict = {
-        "Authorization": params.get("api_key"),
-        "Content-Type": "application/json",
-    }
+    headers: dict = {"Authorization": params.get("api_key"), "Content-Type": "application/json"}
 
     return Client(
         base_url=client_url,
