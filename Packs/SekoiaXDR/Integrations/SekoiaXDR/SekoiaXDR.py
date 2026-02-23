@@ -538,8 +538,12 @@ def apply_time_buffer(date_str: str, delta_minutes: int) -> str:
         clean_date_str = date_str.replace("Z", "+00:00") if date_str.endswith("Z") else date_str
         dt_obj = datetime.fromisoformat(clean_date_str)
         dt_buffered = dt_obj + timedelta(minutes=delta_minutes)
-        iso_str = dt_buffered.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]
-        return iso_str.replace("+00:00", "Z")
+        iso_str = dt_buffered.isoformat()
+        # Truncate fractional seconds to milliseconds if present, while preserving timezone/offset.
+        iso_str = re.sub(r"(.*\.\d{3})\d*(Z|[+-]\d{2}:\d{2})$", r"\1\2", iso_str)
+        # Normalize UTC offset to 'Z'.
+        iso_str = iso_str.replace("+00:00", "Z")
+        return iso_str
     except ValueError:
         return date_str
 
