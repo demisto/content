@@ -3325,7 +3325,7 @@ script:
         - contextPath: Core.EmailCampaignForensics.lcaas_id
           description: The LCaaS (Log Collection as a Service) identifier for the email.
           type: String
-        - contextPath: Core.EmailCampaignForensics.external_id
+        - contextPath: Core.EmailCampaignForensics.issue_id
           description: External identifier for the email from the source system.
           type: String
         - contextPath: Core.EmailCampaignForensics.observation_time
@@ -3334,11 +3334,11 @@ script:
         - contextPath: Core.EmailCampaignForensics.created_time
           description: Timestamp when the email record was created.
           type: Date
-        - contextPath: Core.EmailCampaignForensics.alert_name
-          description: Unique list of alert names triggered by this email campaign.
+        - contextPath: Core.EmailCampaignForensics.issue_name
+          description: Unique list of issue names triggered by this email campaign.
           type: Array
-        - contextPath: Core.EmailCampaignForensics.alert_full_description
-          description: List of full alert descriptions from all related issues.
+        - contextPath: Core.EmailCampaignForensics.issue_full_description
+          description: List of full issue descriptions from all related issues.
           type: Array
         - contextPath: Core.EmailCampaignForensics.detector_id
           description: The detector ID that identified the threat.

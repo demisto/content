@@ -1030,16 +1030,23 @@ class Client(CoreClient):
 
         Args:
             internet_message_id: The Internet Message ID of the email campaign
-            external_id: The unique identifier for the alert across all email security services
+            issue_id: The unique identifier for the alert across all email security services
             action: The remediation action to execute (DeleteEmail, UndeleteEmail,
                    SendAlertEmail, MoveEmailToFolder, TagEmailAsPhishing)
 
         Returns:
             dict: Action execution status with success, message, or error fields
         """
+        # Include USER_AGENT_HEADER to identify the request as originating from Agentix,
+        # allowing the backend to apply specialized handling.
+        USER_AGENT_HEADER = "userAgent"
         return self._http_request(
             method="POST",
             url_suffix="/email-security/actions/on-demand",
+            headers={
+                **self._headers,
+                USER_AGENT_HEADER: "Agentix",
+            },
             json_data={
                 "internet_message_ids": internet_message_id,
                 "alert_id": issue_id,
