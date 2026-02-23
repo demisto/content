@@ -3991,6 +3991,18 @@ script:
         - contextPath: Core.EmailInvestigationSummary.unique_attachments_count
           description: The number of distinct files attached to the email.
           type: Number
+        - contextPath: Core.EmailInvestigationSummary.malicious_attachment_count
+          description: The number of attachments identified as malicious in the email.
+          type: Number
+        - contextPath: Core.EmailInvestigationSummary.malicious_attachment_hashes
+          description: A list of SHA256 hashes of the malicious attachments found in the email.
+          type: Array
+        - contextPath: Core.EmailInvestigationSummary.affected_mailboxes
+          description: A list of mailbox addresses that received the email.
+          type: Array
+        - contextPath: Core.EmailInvestigationSummary.malicious_url_count
+          description: The number of URLs identified as malicious in the email.
+          type: Number
     - arguments:
         - description: The unique internet message ID of the email to decrypt. Accepts a comma-separated list.
           name: internet_message_id
