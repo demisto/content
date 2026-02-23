@@ -2,7 +2,10 @@ import pytest
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import xml.etree.ElementTree as ET
-from unittest.mock import patch, MagicMock
+from importlib import import_module
+from unittest.mock import MagicMock
+
+mod = import_module('PANOS-HA')
 
 
 @pytest.fixture(autouse=True)
@@ -11,31 +14,11 @@ def mock_demisto_debug(mocker):
     mocker.patch.object(demisto, 'error')
 
 
-def create_mock_firewall(hostname='10.0.0.1'):
-    """Creates a mock Firewall object."""
-    mock_fw = MagicMock()
-    mock_fw.hostname = hostname
-    mock_fw.api_key = 'test-api-key'
-    mock_fw.__class__.__name__ = 'Firewall'
-    return mock_fw
-
-
-def create_mock_panorama(hostname='10.0.0.2'):
-    """Creates a mock Panorama object."""
-    mock_pan = MagicMock()
-    mock_pan.hostname = hostname
-    mock_pan.api_key = 'test-api-key'
-    mock_pan.__class__.__name__ = 'Panorama'
-    return mock_pan
-
-
 class TestGetPanDevice:
     """Tests for get_pan_device function."""
 
-    @patch('PANOS-HA.Firewall')
-    def test_firewall_device(self, mock_fw_class):
-        from importlib import import_module
-        mod = import_module('PANOS-HA')
+    def test_firewall_device(self, mocker):
+        mock_fw_class = mocker.patch.object(mod, 'Firewall')
         mock_fw_class.return_value = MagicMock()
         result = mod.get_pan_device(
             'Firewall', '10.0.0.1', 'key', 'vsys1', False
@@ -46,10 +29,8 @@ class TestGetPanDevice:
         )
         assert result is not None
 
-    @patch('PANOS-HA.Panorama')
-    def test_panorama_device(self, mock_pan_class):
-        from importlib import import_module
-        mod = import_module('PANOS-HA')
+    def test_panorama_device(self, mocker):
+        mock_pan_class = mocker.patch.object(mod, 'Panorama')
         mock_pan_class.return_value = MagicMock()
         result = mod.get_pan_device(
             'Panorama', '10.0.0.2', 'key', None, True
@@ -61,8 +42,6 @@ class TestGetPanDevice:
         assert result is not None
 
     def test_invalid_device_type(self):
-        from importlib import import_module
-        mod = import_module('PANOS-HA')
         with pytest.raises(ValueError, match="Invalid device type"):
             mod.get_pan_device(
                 'InvalidType', '10.0.0.1', 'key', None, False
@@ -72,12 +51,7 @@ class TestGetPanDevice:
 class TestGetHaStateCommand:
     """Tests for get_ha_state_command function."""
 
-    @patch('PANOS-HA.Firewall')
-    def test_ha_state_active_passive(self, mock_fw_class):
-        from importlib import import_module
-        mod = import_module('PANOS-HA')
-
-        # Build a mock HA state XML response
+    def test_ha_state_active_passive(self, mocker):
         xml_str = """<response status="success">
             <result>
                 <enabled>yes</enabled>
@@ -103,9 +77,9 @@ class TestGetHaStateCommand:
         mock_temp_fw.show_highavailability_state.return_value = (
             xml_element
         )
+        mock_fw_class = mocker.patch.object(mod, 'Firewall')
         mock_fw_class.return_value = mock_temp_fw
 
-        # Create a mock client that passes isinstance check
         from panos.firewall import Firewall
         client = MagicMock(spec=Firewall)
         client.hostname = '10.0.0.1'
@@ -120,11 +94,7 @@ class TestGetHaStateCommand:
         assert result.outputs['PeerState'] == 'passive'
         assert result.outputs['PeerConnStatus'] == 'up'
 
-    @patch('PANOS-HA.Firewall')
-    def test_ha_not_enabled(self, mock_fw_class):
-        from importlib import import_module
-        mod = import_module('PANOS-HA')
-
+    def test_ha_not_enabled(self, mocker):
         xml_str = """<response status="success">
             <result>
                 <enabled>no</enabled>
@@ -136,6 +106,7 @@ class TestGetHaStateCommand:
         mock_temp_fw.show_highavailability_state.return_value = (
             xml_element
         )
+        mock_fw_class = mocker.patch.object(mod, 'Firewall')
         mock_fw_class.return_value = mock_temp_fw
 
         from panos.firewall import Firewall
@@ -146,11 +117,7 @@ class TestGetHaStateCommand:
         result = mod.get_ha_state_command(client, {}, False)
         assert 'not enabled' in result.readable_output.lower()
 
-    @patch('PANOS-HA.Firewall')
-    def test_ha_state_tuple_response(self, mock_fw_class):
-        from importlib import import_module
-        mod = import_module('PANOS-HA')
-
+    def test_ha_state_tuple_response(self, mocker):
         xml_str = """<response status="success">
             <result>
                 <enabled>yes</enabled>
@@ -176,6 +143,7 @@ class TestGetHaStateCommand:
         mock_temp_fw.show_highavailability_state.return_value = (
             True, xml_element,
         )
+        mock_fw_class = mocker.patch.object(mod, 'Firewall')
         mock_fw_class.return_value = mock_temp_fw
 
         from panos.firewall import Firewall
@@ -188,9 +156,6 @@ class TestGetHaStateCommand:
         assert result.outputs['LocalState'] == 'passive'
 
     def test_ha_state_not_firewall(self):
-        from importlib import import_module
-        mod = import_module('PANOS-HA')
-
         from panos.panorama import Panorama
         client = MagicMock(spec=Panorama)
 
@@ -202,9 +167,6 @@ class TestGetHaConfigCommand:
     """Tests for get_ha_config_command function."""
 
     def test_ha_config_basic(self):
-        from importlib import import_module
-        mod = import_module('PANOS-HA')
-
         xml_str = """<response status="success">
             <result>
                 <high-availability>
@@ -264,9 +226,6 @@ class TestGetHaConfigCommand:
         assert result.outputs['Ha2Port'] == 'ha2-a'
 
     def test_ha_not_configured(self):
-        from importlib import import_module
-        mod = import_module('PANOS-HA')
-
         xml_str = """<response status="success">
             <result/>
         </response>"""
@@ -285,13 +244,10 @@ class TestGetHaConfigCommand:
 class TestRequestHaFailoverCommand:
     """Tests for request_ha_failover_command function."""
 
-    @patch('PANOS-HA.Firewall')
-    def test_suspend_peer(self, mock_fw_class):
-        from importlib import import_module
-        mod = import_module('PANOS-HA')
-
+    def test_suspend_peer(self, mocker):
         mock_temp_fw = MagicMock()
         mock_temp_fw.xapi = MagicMock()
+        mock_fw_class = mocker.patch.object(mod, 'Firewall')
         mock_fw_class.return_value = mock_temp_fw
 
         from panos.firewall import Firewall
@@ -304,13 +260,10 @@ class TestRequestHaFailoverCommand:
         )
         assert 'suspend' in result.readable_output.lower()
 
-    @patch('PANOS-HA.Firewall')
-    def test_make_functional(self, mock_fw_class):
-        from importlib import import_module
-        mod = import_module('PANOS-HA')
-
+    def test_make_functional(self, mocker):
         mock_temp_fw = MagicMock()
         mock_temp_fw.xapi = MagicMock()
+        mock_fw_class = mocker.patch.object(mod, 'Firewall')
         mock_fw_class.return_value = mock_temp_fw
 
         from panos.firewall import Firewall
@@ -327,13 +280,10 @@ class TestRequestHaFailoverCommand:
 class TestSynchronizeHaPeersCommand:
     """Tests for synchronize_ha_peers_command function."""
 
-    @patch('PANOS-HA.Firewall')
-    def test_sync_config(self, mock_fw_class):
-        from importlib import import_module
-        mod = import_module('PANOS-HA')
-
+    def test_sync_config(self, mocker):
         mock_temp_fw = MagicMock()
         mock_temp_fw.xapi = MagicMock()
+        mock_fw_class = mocker.patch.object(mod, 'Firewall')
         mock_fw_class.return_value = mock_temp_fw
 
         from panos.firewall import Firewall
@@ -346,13 +296,10 @@ class TestSynchronizeHaPeersCommand:
         )
         assert 'configuration' in result.readable_output.lower()
 
-    @patch('PANOS-HA.Firewall')
-    def test_sync_state(self, mock_fw_class):
-        from importlib import import_module
-        mod = import_module('PANOS-HA')
-
+    def test_sync_state(self, mocker):
         mock_temp_fw = MagicMock()
         mock_temp_fw.xapi = MagicMock()
+        mock_fw_class = mocker.patch.object(mod, 'Firewall')
         mock_fw_class.return_value = mock_temp_fw
 
         from panos.firewall import Firewall
@@ -366,9 +313,6 @@ class TestSynchronizeHaPeersCommand:
         assert 'state' in result.readable_output.lower()
 
     def test_invalid_sync_type(self):
-        from importlib import import_module
-        mod = import_module('PANOS-HA')
-
         from panos.firewall import Firewall
         client = MagicMock(spec=Firewall)
         client.hostname = '10.0.0.1'
@@ -383,14 +327,13 @@ class TestSynchronizeHaPeersCommand:
 class TestListInterfacesCommand:
     """Tests for list_interfaces_command function."""
 
-    @patch('PANOS-HA.get_available_interfaces')
-    def test_list_interfaces(self, mock_get_interfaces):
-        from importlib import import_module
-        mod = import_module('PANOS-HA')
-
-        mock_get_interfaces.return_value = [
-            'ethernet1/1', 'ethernet1/2', 'ha1-a', 'ha2-a',
-        ]
+    def test_list_interfaces(self, mocker):
+        mocker.patch.object(
+            mod, 'get_available_interfaces',
+            return_value=[
+                'ethernet1/1', 'ethernet1/2', 'ha1-a', 'ha2-a',
+            ],
+        )
 
         from panos.firewall import Firewall
         client = MagicMock(spec=Firewall)
@@ -401,12 +344,11 @@ class TestListInterfacesCommand:
         assert result.outputs['InterfaceCount'] == 4
         assert 'ethernet1/1' in result.outputs['Interfaces']
 
-    @patch('PANOS-HA.get_available_interfaces')
-    def test_no_interfaces(self, mock_get_interfaces):
-        from importlib import import_module
-        mod = import_module('PANOS-HA')
-
-        mock_get_interfaces.return_value = []
+    def test_no_interfaces(self, mocker):
+        mocker.patch.object(
+            mod, 'get_available_interfaces',
+            return_value=[],
+        )
 
         from panos.firewall import Firewall
         client = MagicMock(spec=Firewall)
@@ -419,12 +361,11 @@ class TestListInterfacesCommand:
 class TestValidateInterfacesCommand:
     """Tests for validate_interfaces_command function."""
 
-    @patch('PANOS-HA.validate_interfaces_exist')
-    def test_all_valid(self, mock_validate):
-        from importlib import import_module
-        mod = import_module('PANOS-HA')
-
-        mock_validate.return_value = (True, [])
+    def test_all_valid(self, mocker):
+        mocker.patch.object(
+            mod, 'validate_interfaces_exist',
+            return_value=(True, []),
+        )
 
         from panos.firewall import Firewall
         client = MagicMock(spec=Firewall)
@@ -435,12 +376,11 @@ class TestValidateInterfacesCommand:
         assert result.outputs['AllValid'] is True
         assert result.outputs['MissingInterfaces'] == []
 
-    @patch('PANOS-HA.validate_interfaces_exist')
-    def test_missing_interfaces(self, mock_validate):
-        from importlib import import_module
-        mod = import_module('PANOS-HA')
-
-        mock_validate.return_value = (False, ['ha3'])
+    def test_missing_interfaces(self, mocker):
+        mocker.patch.object(
+            mod, 'validate_interfaces_exist',
+            return_value=(False, ['ha3']),
+        )
 
         from panos.firewall import Firewall
         client = MagicMock(spec=Firewall)
@@ -452,9 +392,6 @@ class TestValidateInterfacesCommand:
         assert 'ha3' in result.outputs['MissingInterfaces']
 
     def test_empty_interfaces(self):
-        from importlib import import_module
-        mod = import_module('PANOS-HA')
-
         from panos.firewall import Firewall
         client = MagicMock(spec=Firewall)
 
@@ -468,9 +405,6 @@ class TestSetHaEnabledState:
     """Tests for set_ha_enabled_state function."""
 
     def test_enable_ha(self):
-        from importlib import import_module
-        mod = import_module('PANOS-HA')
-
         from panos.firewall import Firewall
         client = MagicMock(spec=Firewall)
         client.hostname = '10.0.0.1'
@@ -483,9 +417,6 @@ class TestSetHaEnabledState:
         client.xapi.edit.assert_called_once()
 
     def test_disable_ha(self):
-        from importlib import import_module
-        mod = import_module('PANOS-HA')
-
         from panos.firewall import Firewall
         client = MagicMock(spec=Firewall)
         client.hostname = '10.0.0.1'
@@ -497,9 +428,6 @@ class TestSetHaEnabledState:
         assert 'disabled' in result.readable_output.lower()
 
     def test_enable_with_commit(self):
-        from importlib import import_module
-        mod = import_module('PANOS-HA')
-
         from panos.firewall import Firewall
         client = MagicMock(spec=Firewall)
         client.hostname = '10.0.0.1'
@@ -516,9 +444,11 @@ class TestSetHaEnabledState:
 class TestPanoramaReconfigureHaCommand:
     """Tests for panorama_reconfigure_ha_command function."""
 
-    def test_panorama_reconfigure(self):
-        from importlib import import_module
-        mod = import_module('PANOS-HA')
+    def test_panorama_reconfigure(self, mocker):
+        mock_ha = MagicMock()
+        mocker.patch.object(
+            mod, 'HighAvailability', return_value=mock_ha
+        )
 
         from panos.panorama import Panorama
         client = MagicMock(spec=Panorama)
@@ -526,11 +456,10 @@ class TestPanoramaReconfigureHaCommand:
 
         result = mod.panorama_reconfigure_ha_command(client)
         assert 'panorama' in result.readable_output.lower()
+        client.add.assert_called_once_with(mock_ha)
+        mock_ha.revert_to_running.assert_called_once()
 
     def test_not_panorama(self):
-        from importlib import import_module
-        mod = import_module('PANOS-HA')
-
         from panos.firewall import Firewall
         client = MagicMock(spec=Firewall)
 
