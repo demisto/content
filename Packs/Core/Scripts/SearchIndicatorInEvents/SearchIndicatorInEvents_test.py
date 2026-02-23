@@ -1,15 +1,11 @@
 def test_retrieve_data_from_xdr_sanity_check(mocker):
     """
     Given:
-    - All the required args
-
+        All the required args.
     When:
-    - Executing retrieve_data_from_xdr function (first case of executing query)
-
+        Executing retrieve_data_from_xdr function (first case of executing query).
     Then:
-    - Ensure executeCommand was called once
-    - Ensure the correct args were sent in executeCommand call
-    - Ensure shorten_text function generated a correct output (a part of the query's check)
+        Ensure executeCommand was called once with the correct query and time_frame args.
     """
 
     # Mock input arguments
@@ -31,7 +27,9 @@ def test_retrieve_data_from_xdr_sanity_check(mocker):
     poll_result = retrieve_data_from_xdr(args)
 
     assert mock_execute.call_count == 1
-    assert mock_execute.mock_calls[0][2]["args"]["query"] == 'config timeframe = 7d | search "1.2.3.4" dataset = xdr_data'
+    call_args = mock_execute.mock_calls[0][2]["args"]
+    assert call_args["query"] == 'search "1.2.3.4" dataset = xdr_data'
+    assert call_args["time_frame"] == "7 days"
     assert poll_result.scheduled_command._args["query_id"] == "abc123"
 
 
