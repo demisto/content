@@ -3281,6 +3281,10 @@ script:
         defaultValue: 180
       - description: The execution id of a previously executed query to fetch results from.
         name: execution_id
+      - description: The name of the widget to display the query results.
+        name: widget_name
+      - description: A description of the widget that displays the query results.
+        name: widget_description
       description: |-
         Execute an XQL query and retrieve a link to the query in the query center.
         If set to wait for results, the command will be executed every 10 seconds until results are retrieved or until the timeout is reached.
@@ -3306,6 +3310,12 @@ script:
         type: List
       - contextPath: GenericXQLQuery.query_limit_modified
         description: Contains a message if the query's LIMIT clauses were automatically reduced to the maximum supported limit.
+        type: String
+      - contextPath: GenericXQLQuery.widget_name
+        description: The name of the widget to display the query results.
+        type: String
+      - contextPath: GenericXQLQuery.widget_description
+        description: A description of the widget that displays the query results.
         type: String
     - arguments:
         - description: A comma separated list of case ids to retrieve resolution statuses for.

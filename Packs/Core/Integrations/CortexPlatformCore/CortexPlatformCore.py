@@ -4616,11 +4616,16 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
         raise DemistoException("Failed to start query\n")
 
     query_url = "/".join([demisto.demistoUrls().get("server", ""), "xql/xql-search", execution_id])
-    outputs = {
+    outputs: dict[str, Any] = {
         "execution_id": execution_id,
         "query_url": query_url,
         "query": full_query,
     }
+
+    if widget_name := args.get("widget_name"):
+        outputs["widget_name"] = widget_name
+    if widget_description := args.get("widget_description"):
+        outputs["widget_description"] = widget_description
     if query != query_with_limit:
         outputs["query_limit_modified"] = (
             f"Limit clauses larger than {MAX_QUERY_LIMIT} are currently not supported and have been reduced to {MAX_QUERY_LIMIT}"
