@@ -38,9 +38,18 @@ SEARCH_SHA256_FIELDS = [
 ]
 
 
+NUMERIC_ARGS = {"issue_id", "offset", "limit"}
+
+
 def remove_empty_string_values(args: dict) -> dict:
-    """Remove empty or blank string values from the args dictionary."""
-    return {key: value for key, value in args.items() if str(value).strip() not in ("", ",")}
+    """Remove empty/invalid values from the args dictionary.
+    - Removes keys with empty string values.
+    - For numeric args, removes non-numeric values to prevent be3 crashes (e.g. 'n/a', 'invalid_offset').
+    """
+    return {
+        key: value for key, value in args.items()
+        if value != "" and (key not in NUMERIC_ARGS or str(value).strip().isdigit())
+    }
 
 
 def prepare_start_end_time(args: dict):

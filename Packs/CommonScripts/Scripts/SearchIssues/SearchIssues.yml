@@ -1,5 +1,5 @@
 args:
-  - description: The unique ID of the issue.
+  - description: The unique numeric ID of the issue (integer only, e.g. 12345). Do not pass placeholder values such as 'n/a', 'unknown', or any non-numeric string.
     isArray: true
     name: issue_id
   - auto: PREDEFINED
@@ -100,10 +100,10 @@ args:
       - DESC
       - ASC
   - defaultValue: "0"
-    description: The first page from which we bring the issues.
+    description: The starting offset for pagination (integer only, e.g. 0, 50, 100). Do not pass placeholder values such as 'n/a' or any non-numeric string. Defaults to 0.
     name: offset
   - defaultValue: "50"
-    description: The last page from which we bring the issues.
+    description: The maximum number of issues to return (integer only, e.g. 50, 100). Do not pass placeholder values such as 'n/a' or any non-numeric string. Defaults to 50.
     name: limit
   - description: Additional output fields.
     isArray: true
