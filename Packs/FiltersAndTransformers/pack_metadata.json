@@ -2,24 +2,15 @@
     "name": "Filters And Transformers",
     "description": "Frequently used filters and transformers pack.",
     "support": "xsoar",
-    "currentVersion": "1.4.11",
+    "currentVersion": "1.4.12",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "categories": [
-        "Utilities"
-    ],
-    "tags": [
-        "Core"
-    ],
+    "categories": ["Utilities"],
+    "tags": ["Core"],
     "useCases": [],
     "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "xpanse",
-        "platform"
-    ],
+    "marketplaces": ["xsoar", "marketplacev2", "xpanse", "platform"],
     "supportedModules": [
         "C1",
         "C3",
