@@ -424,7 +424,7 @@ class VectraClient(BaseClient):
         )
         return notes
 
-    def list_detection_note_request(self, detection_id: int = None) -> dict:
+    def list_detection_note_request(self, detection_id: int) -> dict:
         """
         List detection notes.
 

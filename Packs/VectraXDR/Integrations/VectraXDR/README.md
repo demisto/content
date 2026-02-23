@@ -1301,9 +1301,7 @@ Add a note to the detection.
 | Vectra.Detection.Notes.note_id | Number | ID of the note. |
 | Vectra.Detection.Notes.id | Number | ID of the note. |
 | Vectra.Detection.Notes.date_created | Date | Date when the note was created. |
-| Vectra.Entity.Notes.date_modified | Unknown | Date when the note was last modified. |
 | Vectra.Detection.Notes.created_by | String | User who created the note. |
-| Vectra.Detection.Notes.modified_by | String | User who last modified the note. |
 | Vectra.Detection.Notes.note | String | Content of the note. |
 
 #### Command example
@@ -1497,7 +1495,7 @@ There is no context output for this command.
 
 #### Command Example
 
-```!vectra-detection-note-remove note_id=1"```
+```!vectra-detection-note-remove note_id=1```
 
 #### Context Example
 
@@ -1609,7 +1607,7 @@ Add tags in the entity.
 
 ```json
 {
-  "Vectra.Entity.Tags(val.tag_id && val.tag_id == obj.tag_id && val.entity_type && val.entity_type == obj.entity_type)": {
+  "Vectra.Entity.Tags(val.tag_id && val.tag_id == obj.tag_id && val.entity_type && val.entity_type == obj.entity_type && val.entity_id && val.entity_id == obj.entity_id)": {
     "tag_id": "1",
     "tags": [
         "tag1",
@@ -3115,7 +3113,7 @@ Returns a list of notes for a specified detection.
 ```json
 {
   "Vectra": {
-    "Entity": {
+    "Detection": {
       "Notes": [
         {
           "created_by": "test_user@mail.com",
