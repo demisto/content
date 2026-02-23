@@ -553,9 +553,7 @@ class TestConfigureHaCommand:
         )
         mock_ha_class = mocker.patch.object(mod, "HighAvailability")
         mock_ha_instance = MagicMock()
-        mock_ha_instance.element_str.return_value = (
-            "<entry><group><group-id>1</group-id></group></entry>"
-        )
+        mock_ha_instance.element_str.return_value = "<entry><group><group-id>1</group-id></group></entry>"
         mock_ha_class.return_value = mock_ha_instance
 
         from panos.firewall import Firewall
@@ -582,9 +580,7 @@ class TestConfigureHaCommand:
         )
         mock_ha_class = mocker.patch.object(mod, "HighAvailability")
         mock_ha_instance = MagicMock()
-        mock_ha_instance.element_str.return_value = (
-            "<entry><group><group-id>1</group-id></group></entry>"
-        )
+        mock_ha_instance.element_str.return_value = "<entry><group><group-id>1</group-id></group></entry>"
         mock_ha_class.return_value = mock_ha_instance
 
         mock_ha1 = mocker.patch.object(mod, "HA1")
@@ -621,9 +617,7 @@ class TestConfigureHaCommand:
         )
         mock_ha_class = mocker.patch.object(mod, "HighAvailability")
         mock_ha_instance = MagicMock()
-        mock_ha_instance.element_str.return_value = (
-            "<entry><group><group-id>1</group-id></group></entry>"
-        )
+        mock_ha_instance.element_str.return_value = "<entry><group><group-id>1</group-id></group></entry>"
         mock_ha_class.return_value = mock_ha_instance
 
         from panos.firewall import Firewall
@@ -675,9 +669,7 @@ class TestConfigureHaCommand:
         )
         mock_ha_class = mocker.patch.object(mod, "HighAvailability")
         mock_ha_instance = MagicMock()
-        mock_ha_instance.element_str.return_value = (
-            "<entry><group><group-id>1</group-id></group></entry>"
-        )
+        mock_ha_instance.element_str.return_value = "<entry><group><group-id>1</group-id></group></entry>"
         mock_ha_class.return_value = mock_ha_instance
 
         mock_ha1_backup = mocker.patch.object(mod, "HA1Backup")
@@ -755,9 +747,7 @@ class TestMain:
         mocker.patch.object(demisto, "args", return_value={})
         mocker.patch.object(demisto, "command", return_value="panos-ha-get-state")
         mock_return = mocker.patch.object(mod, "return_results")
-        mock_cmd = mocker.patch.object(
-            mod, "get_ha_state_command", return_value="result"
-        )
+        mock_cmd = mocker.patch.object(mod, "get_ha_state_command", return_value="result")
         mock_device = MagicMock()
         mocker.patch.object(mod, "get_pan_device", return_value=mock_device)
         mocker.patch.object(mod, "handle_proxy")
