@@ -1114,10 +1114,20 @@ class AssistantMessagingHandler:
                         # Fallback
                         await self.update_message(channel_id, message_ts, text=decision_indicator, blocks=[])
 
+                    # Send thinking indicator
+                    thinking_response = await self.send_message_async(
+                        channel_id, AssistantMessages.THINKING_INDICATOR, thread_id=thread_id
+                    )
+                    thinking_ts = thinking_response.get("ts") if thinking_response else None
+
                     # Update status
                     assistant[assistant_id_key]["status"] = AssistantStatus.AWAITING_BACKEND_RESPONSE.value
                     assistant[assistant_id_key]["sensitive_action_response"] = "approved" if is_approved else "rejected"
                     assistant[assistant_id_key]["last_updated"] = datetime.now(UTC).timestamp()
+
+                    # Store thinking message timestamp if sent successfully
+                    if thinking_ts:
+                        assistant[assistant_id_key]["thinking_message_ts"] = thinking_ts
                 else:
                     # Backend call failed - show appropriate error
                     if backend_response.error_type == BackendErrorType.USER_NOT_FOUND:
