@@ -159,6 +159,8 @@ If MFA is enabled for your user, follow the next steps:
 | Trust any certificate (not secure) |  | False |
 | Incidents Fetch Interval |  | False |
 | Advanced: Minutes to look back when fetching | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
+| Interpret comments in the specific format | Define the format of the ServiceNow comments. Per default the format is supplied by ServiceNow during the fetch as part of the comments data (Source). This can be overwritten to a specific format for all comments. Use HTML if a html editor is used within ServiceNow to add comments. Defaults to "Source". | False |
+| Mark attachment as notes | Mark the file attachment as notes. This ensure that note and comments can be found withing the warroom as Notes. Defaults to "false". | False |
 
 3. Click **Test** to validate the URLs, token, and connection.
 4. Click **Done.**
