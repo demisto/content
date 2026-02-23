@@ -34,12 +34,12 @@ EVENT_TYPE_CONFIG = {
         "url_suffix": "/tm-api/getAlertList",
         "use_token_auth": True,
     },
-    "Get Addressable Alerts": {
+    "Addressable Alerts": {
         "source_log_type": "AddressableAlerts",
         "url_suffix": "/tm-api/getAddressableAlerts",
         "use_token_auth": False,
     },
-    "Get Detect And Protect Alerts": {
+    "Detect And Protect Alerts": {
         "source_log_type": "DetectAndProtectAlerts",
         "url_suffix": "/tm-api/getDetectAndProtectAlerts",
         "use_token_auth": False,

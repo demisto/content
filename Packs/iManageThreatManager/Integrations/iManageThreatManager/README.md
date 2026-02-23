@@ -7,12 +7,12 @@ This is the default integration for this content pack when configured by the Dat
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | Should be in format https://&lt;your-instance&gt;.tm-cloudimanage.com | True |
-| User Name | Username for user sign-in authentication. Required for Get Addressable Alerts and Get Detect And Protect Alerts. | Conditional |
-| Password | Password for user sign-in authentication. Required for Get Addressable Alerts and Get Detect And Protect Alerts. | Conditional |
+| User Name | Username for user sign-in authentication. Required for Addressable Alerts and Detect And Protect Alerts. | Conditional |
+| Password | Password for user sign-in authentication. Required for Addressable Alerts and Detect And Protect Alerts. | Conditional |
 | Token | Application token for API token authentication. Required for Behavior Analytics alerts. | Conditional |
 | Secret | Application secret for API token authentication. Required for Behavior Analytics alerts. | Conditional |
 | Fetch events | Whether to fetch events. | False |
-| Events types to fetch | Select which event types to fetch: Behavior Analytics alerts, Get Addressable Alerts, Get Detect And Protect Alerts. Default is Behavior Analytics alerts. | False |
+| Events types to fetch | Select which event types to fetch: Behavior Analytics alerts, Addressable Alerts, Detect And Protect Alerts. Default is Behavior Analytics alerts. | False |
 | Maximum number of events per type | Default and maximum is 900 events to fetch for each type. | False |
 | Trust any certificate (not secure) | Use SSL secure connection or not. | False |
 | Use system proxy settings | Use proxy settings for connection or not. | False |
@@ -36,7 +36,7 @@ To generate an application token and secret from the Threat Manager admin consol
 
 **Note:** The Integrations Manager role is required to generate an application token. If a user with the Integration Manager role is made inactive or the role is removed, all existing application tokens created by that user become inactive.
 
-### User Sign-in Authentication (for Get Addressable Alerts and Get Detect And Protect Alerts)
+### User Sign-in Authentication (for Addressable Alerts and Detect And Protect Alerts)
 
 Use your iManage Threat Manager username and password. This provides a similar level of access to what the user would have in the admin console.
 
@@ -61,7 +61,7 @@ Fetches events from iManage Threat Manager. This manual command is used for deve
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | should_push_events | If true, the command creates events; otherwise, it only displays them. Possible values are true and false. The default value is false. | Required |
-| event_type | Type of events to fetch. Possible values are: Behavior Analytics alerts, Get Addressable Alerts, Get Detect And Protect Alerts. Default is Behavior Analytics alerts. | Optional |
+| event_type | Type of events to fetch. Possible values are: Behavior Analytics alerts, Addressable Alerts, Detect And Protect Alerts. Default is Behavior Analytics alerts. | Optional |
 | limit | Maximum number of results to return. Default is 50. | Optional |
 | from_date | Start date from which to get events. Supports ISO format or natural language (e.g., "7 days ago", "1 hour ago"). Default is 1 hour ago. | Optional |
 | to_date | End date until which to get events. Supports ISO format or natural language (e.g., "now", "30 minutes ago"). Default is now. | Optional |

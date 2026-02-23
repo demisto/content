@@ -16,7 +16,7 @@ configuration:
   - display: User Name
     name: credentials_user
     displaypassword: Password
-    additionalinfo: Required for Get Addressable Alerts and Get Detect And Protect Alerts event types.
+    additionalinfo: Required for Addressable Alerts and Detect And Protect Alerts event types.
     required: false
     type: 9
     section: Connect
@@ -52,8 +52,8 @@ configuration:
     section: Collect
     options:
       - Behavior Analytics alerts
-      - Get Addressable Alerts
-      - Get Detect And Protect Alerts
+      - Addressable Alerts
+      - Detect And Protect Alerts
   - display: Maximum number of events per type
     name: max_events_per_type
     defaultvalue: "900"
@@ -79,8 +79,8 @@ script:
           description: Type of events to fetch.
           predefined:
             - Behavior Analytics alerts
-            - Get Addressable Alerts
-            - Get Detect And Protect Alerts
+            - Addressable Alerts
+            - Detect And Protect Alerts
           defaultValue: Behavior Analytics alerts
           required: false
         - name: limit
