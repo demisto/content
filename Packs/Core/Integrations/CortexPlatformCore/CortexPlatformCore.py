@@ -1079,6 +1079,91 @@ class Client(CoreClient):
             json_data={"case_id": case_id},
         )
 
+    def create_profile(self, profile_data: dict) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/profiles/prevention/add",
+            json_data=profile_data,
+        )
+
+    def get_profile(self, profile_id: str) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/profiles/get_profile_view_by_id",
+            json_data={"profile_id": profile_id},
+        )
+
+    def update_profile(self, update_data: dict) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/profiles/edit_profile",
+            json_data=update_data,
+        )
+
+    def delete_profile(self, profile_ids: list) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/profiles/delete_profiles",
+            json_data={"profile_ids": profile_ids},
+        )
+
+    def get_email_campaign_consolidated_forensic_enrichment(self, internet_message_id: str, days_timeframe: int) -> dict:
+        """
+        Get consolidated forensic enrichment for an email campaign.
+
+        Aggregates, deduplicates, and presents a unified forensic view of an entire
+        email campaign by merging telemetry from all associated issues.
+
+        Args:
+            internet_message_id: The Internet Message ID of the email
+            days_timeframe: Number of days to look back for related issues
+
+        Returns:
+            dict: Consolidated forensic enrichment data
+        """
+        body = {
+            "internet_message_id": internet_message_id,
+            "days_timeframe": days_timeframe,
+        }
+        return self._http_request(
+            method="POST",
+            url_suffix="/email-security/investigation/consolidated-forensic-enrichment",
+            json_data=body,
+        )
+
+    def execute_email_security_remediation(self, internet_message_id: list[str], issue_id: str, action: str) -> dict:
+        """
+        Execute automated email security remediation action.
+
+        Triggers remediation actions such as deleting, undeleting, moving, or tagging emails
+        based on the security verdict.
+
+        Args:
+            internet_message_id: The Internet Message ID of the email campaign
+            issue_id: The unique identifier for the alert across all email security services
+            action: The remediation action to execute (DeleteEmail, UndeleteEmail,
+                   SendAlertEmail, MoveEmailToFolder, TagEmailAsPhishing)
+
+        Returns:
+            dict: Action execution status with success, message, or error fields
+        """
+        # Include USER_AGENT_HEADER to identify the request as originating from Agentix,
+        # allowing the backend to apply specialized handling.
+        USER_AGENT_HEADER = "userAgent"
+        return self._http_request(
+            method="POST",
+            url_suffix="/email-security/actions/on-demand",
+            headers={
+                **self._headers,
+                USER_AGENT_HEADER: "Agentix",
+            },
+            json_data={
+                "internet_message_ids": internet_message_id,
+                "alert_id": issue_id,
+                "action": {"id": action, "attributes": {}},
+            },
+        )
+
 
 def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
     """
