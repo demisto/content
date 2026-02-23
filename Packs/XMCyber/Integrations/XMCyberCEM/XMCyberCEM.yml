@@ -1,0 +1,293 @@
+category: Data Enrichment & Threat Intelligence
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: XMCyberCEM
+  version: -1
+configuration:
+- display: Server URL
+  name: server_url
+  required: true
+  type: 0
+  additionalinfo: "The server URL of the XM Cyber instance."
+  section: Connect
+- displaypassword: API Key
+  additionalinfo: The API Key using which the API calls would be made to the XM Cyber instance.
+  name: credentials
+  hiddenusername: true
+  required: true
+  type: 9
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+description: "The XM Cyber integration connects XM Cyber's Continuous Exposure Management (CEM) platform with XSOAR, enhancing your Security Information and Event Management (SIEM) and Security Orchestration, Automation, and Response processes with attack graph context and prioritization, while also feeding relevant entities back to CEM to be defined as breach points in CEM scenarios."
+display: XM Cyber CEM
+name: XMCyberCEM
+script:
+  commands:
+  - description: Enriches Hostname and User entities on the SOAR platform by using information available in the XM Cyber platform.
+    name: xmcyber-enrich-incident
+    arguments:
+    - name: entity_values
+      required: true
+      description: Specify the Hostname or User to enrich. Supports comma-separated values.
+      isArray: true
+    outputs:
+    - contextPath: XMCyber.Entity.id
+      description: The unique identifier of the entity.
+      type: String
+    - contextPath: XMCyber.Entity.collectedAt
+      description: The timestamp when the entity data was collected.
+      type: Date
+    - contextPath: XMCyber.Entity.name
+      description: The name of the entity.
+      type: String
+    - contextPath: XMCyber.Entity.os.name
+      description: The operating system name of the agent entity.
+      type: String
+    - contextPath: XMCyber.Entity.osType
+      description: The operating system type (Windows, Linux, etc.).
+      type: String
+    - contextPath: XMCyber.Entity.type
+      description: The type of the entity (agent, activeDirectoryUser, etc.).
+      type: String
+    - contextPath: XMCyber.Entity.xmLabels.id
+      description: The labels assigned to the entity by XM Cyber.
+      type: String
+    - contextPath: XMCyber.Entity.affectedUniqueEntities
+      description: The number of unique entities affected by this entity.
+      type: Number
+    - contextPath: XMCyber.Entity.chokePointScore
+      description: The choke point score of the entity.
+      type: Number
+    - contextPath: XMCyber.Entity.displayName
+      description: The display name of the Active Directory user entity.
+      type: String
+    - contextPath: XMCyber.Entity.domainName
+      description: The domain name of the Active Directory user entity.
+      type: String
+    - contextPath: XMCyber.Entity.isEnabled
+      description: Indicates if the Active Directory user account is enabled.
+      type: Boolean
+    - contextPath: XMCyber.Entity.lastLogon
+      description: The last logon timestamp of the Active Directory user.
+      type: Date
+    - contextPath: XMCyber.Entity.pwdLastSet
+      description: The timestamp when the password was last set for the Active Directory user.
+      type: Date
+    - contextPath: XMCyber.Entity.riskScore
+      description: The risk score of the entity.
+      type: Number
+    - contextPath: XMCyber.Entity.sid
+      description: The Security Identifier (SID) of the Active Directory user entity.
+      type: String
+    - contextPath: XMCyber.Entity.account_type
+      description: The account type of the entity.
+      type: String
+    - contextPath: XMCyber.Entity.chokePointScoreLevel
+      description: The choke point score level of the entity.
+      type: String
+    - contextPath: XMCyber.Entity.importedLabels
+      description: The imported labels assigned to the entity.
+      type: String
+    - contextPath: XMCyber.Entity.riskScoreLevel
+      description: The risk score level of the entity.
+      type: String
+  - description: Adds a breach point label to the specified entities based on defined criteria and pushes the label as an Imported Attribute to XM Cyber CEM's platform.
+    name: xmcyber-push-breach-point
+    arguments:
+    - name: entity_values
+      required: true
+      description: Specify the Hostname or User to label with the breach point. Supports comma-separated values.
+      isArray: true
+    - name: attribute_name
+      required: false
+      defaultValue: XSOAR_BP
+      description: The name of the custom label you want to push to CEM as an imported attribute.
+    - name: parameter
+      required: false
+      defaultValue: All
+      description: When setting up the condition for when to push the breach point data, this is the parameter of the condition. It is a list of predefined parameters for determining the criteria. Select 'All' to apply the breach point label to all entities.
+      auto: PREDEFINED
+      predefined:
+      - All
+      - Entity ID
+      - Affected Unique Entities
+      - Compromise Risk Score
+      - Choke Point Score
+      - Domain Name
+      - Is Enabled
+      - Labels
+      - Last Login Date
+      - Last Password Set Date
+    - name: operator
+      required: false
+      defaultValue: Equals
+      description: When setting up the condition for when to push the breach point data, this is the operator of the condition.
+      auto: PREDEFINED
+      predefined:
+      - Less than
+      - Greater than
+      - Less than equal to
+      - Greater than equal to
+      - Equals
+      - Not equal to
+      - Contains
+      - Not Contains
+    - name: value
+      required: false
+      defaultValue: 'True'
+      description: "When setting up the condition for when to push the breach point data, this is the value of the condition. Can be boolean, string, integer, float, or date values.\n\nSupported date formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 Dec 2025, 01 Dec 2025 04:45:33, 2025-12-10T14:05:44Z."
+    outputs:
+    - contextPath: XMCyber.BreachPoint.attributeName
+      description: The name of the attribute that was applied to the XM Cyber entities.
+      type: String
+    - contextPath: XMCyber.BreachPoint.matchedEntities
+      description: The entities that matched the criteria.
+      type: String
+    - contextPath: XMCyber.BreachPoint.notMatchedEntities
+      description: The entities that did not match the criteria.
+      type: String
+    - contextPath: XMCyber.BreachPoint.parameter
+      description: The entity parameter used to filter entities.
+      type: String
+    - contextPath: XMCyber.BreachPoint.operator
+      description: The comparison operator used to match entity values.
+      type: String
+    - contextPath: XMCyber.BreachPoint.value
+      description: The value used to match against entity properties.
+      type: String
+    - contextPath: XMCyber.BreachPoint.userSuppliedEntities
+      description: The entities that were provided by the user.
+      type: String
+  - name: xmcyber-remove-breach-point
+    description: Removes a breach point label from the specified entities in XM Cyber CEM's platform.
+    arguments:
+    - name: entity_values
+      required: true
+      description: Specify the Hostname or User to remove a breach point label. Supports comma-separated values.
+      isArray: true
+    - name: attribute_name
+      required: false
+      defaultValue: XSOAR_BP
+      description: The name of the custom label you want to remove from CEM as an imported attribute.
+    outputs:
+    - contextPath: XMCyber.RemoveBreachPoint.attributeName
+      description: The name of the attribute that was removed from the XM Cyber entities.
+      type: String
+    - contextPath: XMCyber.RemoveBreachPoint.removedLabelEntities
+      description: The entities from which the label was successfully removed.
+      type: String
+    - contextPath: XMCyber.RemoveBreachPoint.userSuppliedEntities
+      description: The entities that were provided by the user.
+      type: String
+  - description: Calculates the overall risk score for entities based on their Compromise Risk Score and Choke Point Score from XM Cyber enrichment data.
+    name: xmcyber-calculate-risk-score
+    arguments:
+    - name: entity_values
+      required: true
+      description: Specify the Hostname or User to calculate the risk score. Supports comma-separated values.
+      isArray: true
+    - name: compromise_risk_score
+      required: false
+      defaultValue: "0.5"
+      description: Specify the weight of Compromise Risk Score to apply to the final score calculation. Provide the value between 0 and 1.
+    - name: choke_point_score
+      required: false
+      defaultValue: "0.5"
+      description: Specify the weight of Choke Point Score to apply to the final score calculation. Provide the value between 0 and 1.
+    outputs:
+    - contextPath: XMCyber.CalculateRiskScore.entities
+      description: The entity values that were evaluated.
+      type: String
+    - contextPath: XMCyber.CalculateRiskScore.compromisedRiskScoreLevel
+      description: The risk level based on the highest Compromise Risk Score found.
+      type: String
+    - contextPath: XMCyber.CalculateRiskScore.compromisedRiskScore
+      description: The highest Compromise Risk Score found across all evaluated entities.
+      type: Number
+    - contextPath: XMCyber.CalculateRiskScore.compromisedChokePointScoreLevel
+      description: The risk level based on the highest Choke Point Score found.
+      type: String
+    - contextPath: XMCyber.CalculateRiskScore.compromisedChokePointScore
+      description: The highest Choke Point Score found across all evaluated entities.
+      type: Number
+    - contextPath: XMCyber.CalculateRiskScore.calculatedRiskScore
+      description: The final calculated risk score based on weighted combination of Compromise Risk Score and Choke Point Score.
+      type: Number
+  - name: xmcyber-get-dashboard-data
+    description: Gets dashboard data from the XM Cyber server.
+    hidden: true
+    outputs:
+    - contextPath: XMCyber.Dashboard.SecurityScore.score
+      description: The security score.
+      type: String
+    - contextPath: XMCyber.Dashboard.SecurityScore.grade
+      description: The security grade.
+      type: String
+    - contextPath: XMCyber.Dashboard.SecurityScore.trend
+      description: The security trend.
+      type: String
+    - contextPath: XMCyber.Dashboard.ChokePoints.name
+      description: The choke point name.
+      type: String
+    - contextPath: XMCyber.Dashboard.ChokePoints.severity
+      description: The choke point severity.
+      type: String
+    - contextPath: XMCyber.Dashboard.ChokePoints.severityScore
+      description: The choke point severity score.
+      type: String
+    - contextPath: XMCyber.Dashboard.CriticalAssets.name
+      description: The critical asset name.
+      type: String
+    - contextPath: XMCyber.Dashboard.CriticalAssets.severity
+      description: The critical asset risk severity.
+      type: String
+    - contextPath: XMCyber.Dashboard.CriticalAssets.severityScore
+      description: The critical asset risk severity score.
+      type: String
+    - contextPath: XMCyber.Dashboard.CompromisingExposures.name
+      description: The compromising exposure name.
+      type: String
+    - contextPath: XMCyber.Dashboard.CompromisingExposures.chokePoints
+      description: The choke points.
+      type: String
+    - contextPath: XMCyber.Dashboard.CompromisingExposures.severity
+      description: The severity level.
+      type: String
+    - contextPath: XMCyber.Dashboard.CompromisingExposures.complexity
+      description: The complexity level.
+      type: String
+    - contextPath: XMCyber.Dashboard.CompromisingExposures.entities
+      description: The entities.
+      type: String
+    - contextPath: XMCyber.Dashboard.CompromisingExposures.criticalAssets
+      description: The critical assets.
+      type: String
+    - contextPath: XMCyber.Dashboard.CompromisingExposures.criticalAssetsAtRisk
+      description: The critical assets at risk.
+      type: String
+    - contextPath: XMCyber.Dashboard.CompromisingExposures.totalAssets
+      description: The total assets.
+      type: String
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.12.6922358
+fromversion: 6.10.0
+marketplaces:
+- xsoar
+- marketplacev2
+tests:
+- No tests (auto formatted)
