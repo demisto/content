@@ -1,0 +1,59 @@
+{
+    "host": "amazon.com",
+    "dns_records": {
+        "ns": [
+            {
+                "target": "ns1.amzndns.net",
+                "ip": "8.8.8.8",
+                "country_code": "US",
+                "country_name": "United States of America",
+                "isp": "Vercara LLC"
+            },
+            {
+                "target": "ns2.amzndns.com",
+                "ip": "8.8.8.8",
+                "country_code": "US",
+                "country_name": "United States of America",
+                "isp": "Vercara LLC"
+            }
+        ],
+        "mx": [
+            {
+                "target": "amazon-smtp.amazon.com",
+                "ip": "8.8.8.8",
+                "country_code": "US",
+                "country_name": "United States of America",
+                "isp": "Amazon Technologies Inc."
+            }
+        ],
+        "cname": ""
+    },
+    "domain_blacklist": {"engines": [], "detections": 0, "engines_count": 30},
+    "server_details": {
+        "ip": "8.8.8.8",
+        "hostname": "test.com",
+        "continent_code": "NA",
+        "continent_name": "North America",
+        "country_code": "US",
+        "country_name": "United States of America",
+        "region_name": "Virginia",
+        "city_name": "Ashburn",
+        "latitude": 39.039474,
+        "longitude": -77.491809,
+        "isp": "test.com Inc.",
+        "asn": "test"
+    },
+    "security_checks": {
+        "is_suspended_site": false,
+        "is_most_abused_tld": false,
+        "is_domain_blacklisted": false,
+        "is_suspicious_domain": false,
+        "is_website_popular": true,
+        "is_domain_recent": "no",
+        "domain_creation_date": "1994-11-01",
+        "domain_age_in_days": 11034,
+        "domain_age_in_months": 355,
+        "domain_age_in_years": 30
+    },
+    "trust_score": {"result": 100}
+}

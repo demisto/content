@@ -1143,7 +1143,7 @@ def main():
             proxy=params.get("proxy", False)
         )
         
-        if command == "test-module":
+        if command == "test_module":  # Replace underscore with dash
             return_results(test_module(client))
         elif command == "fetch-incidents":
             incidents = fetch_incidents(client, params.get("max_fetch", 50))
