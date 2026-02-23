@@ -1432,7 +1432,11 @@ def get_kill_chain_command(client: Client, args: dict[str, Any]) -> CommandResul
 def http_request_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Parameters"""
     method = args["method"]
-    url_suffix = args["url_suffix"]
+    url_suffix = args.get("url_suffix") or args.get("url_sufix")
+
+    if not url_suffix:
+        raise DemistoException("Either 'url_suffix' or 'url_sufix' parameter must be provided")
+
     params = args.get("parameters", {})
     data_arg = args.get("data", "")
 
@@ -1440,7 +1444,6 @@ def http_request_command(client: Client, args: dict[str, Any]) -> CommandResults
     data = None
     if data_arg:
         try:
-            # Replace single quotes with double quotes to ensure valid JSON format
             data = json.loads(data_arg.replace("'", '"'))
         except json.JSONDecodeError as e:
             raise DemistoException(f"Data argument is not a valid JSON: {e}")
