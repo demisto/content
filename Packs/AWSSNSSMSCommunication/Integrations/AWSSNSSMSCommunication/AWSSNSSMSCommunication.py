@@ -1,44 +1,54 @@
 # VERSION: 1.0.38
 # CHANGELOG:
-# v1.0.38 - Updated integration description, Help tab, and README documentation with Reply Code Mode feature details and sequential mode examples.
-# v1.0.37 - Added replyCodeMode configuration parameter: 'sequential' mode uses simple incrementing numbers (1, 2, 3...) instead of random 4-digit codes for simpler UX.
-# v1.0.36 - Security: Replaced kwargs logging with explicit parameter names to ensure no secrets are ever logged accidentally.
-# v1.0.35 - Enhanced debug logging throughout for better troubleshooting: added descriptive logs for entitlement parsing, feedback settings, AWS client creation, and reply processing decisions.
-# v1.0.34 - Split reply feedback into separate toggles: successFeedbackEnabled and failureFeedbackEnabled. Added customizable failureMessage template.
-# v1.0.33 - Added SMS reply feedback feature: sends confirmation SMS for successful replies and lists available codes for unrecognized replies. Configurable success message.
-# v1.0.32 - Fixed multi-line message handling in clean_ask_task_message_and_generate_codes (added re.DOTALL flag). Added support for 2-4 options in SMSAskUser (option3, option4)
-# v1.0.31 - Removed dramatic language from documentation (CRITICAL, warning emoji) for professional tone
-# v1.0.30 - Updated documentation: clarified built-in Ask tasks work (via browser), SMSAskUser is recommended for native SMS. Removed playbook YAML examples
-# v1.0.29 - Created AWSSNSSMSCommunication_description.md file (proper XSOAR pattern for Help tab), removed inline detaileddescription
-# v1.0.28 - Added full README.md contents to detaileddescription field for comprehensive Help tab documentation
-# v1.0.27 - Added detaileddescription field (lowercase) with comprehensive markdown documentation for Help tab
-# v1.0.26 - Simplified integration description to single line
-# v1.0.25 - Removed detailedDescription from YAML (not rendering in XSOAR UI), moved key info to main description field
-# v1.0.24 - CRITICAL FIX: Fixed task ID not being saved in entitlements. extract_entitlement_from_message() now extracts full GUID@incident|task string instead of just GUID
-# v1.0.23 - Fixed SMSAskUser Python 2 compatibility (replaced f-strings with .format())
-# v1.0.22 - Added debug logging to SMSAskUser for task ID parameter troubleshooting
-# v1.0.21 - Enhanced detailedDescription in YAML with clearer formatting, visual separators, and better readability for integration configuration UI
-# v1.0.20 - CRITICAL FIX: Added automatic AWS credential refresh in long-running execution to prevent ExpiredToken errors. Refreshes at 80% of sessionDuration
-# v1.0.19 - Completely rewrote integration README.md with critical Ask task documentation, SMSAskUser examples, and complete version history
-# v1.0.18 - Updated integration detailed description with Ask task documentation. Beautified SMSAskUser script with versioning and comments
-# v1.0.17 - Added aws-sns-sms-inject-reply test command to simulate SMS replies for debugging without requiring SQS
-# v1.0.16 - REMOVED non-functional URL decoding. SMSAskUser is the ONLY supported method for Ask-style communication (built-in Ask tasks not supported)
-# v1.0.15 - DEPRECATED: Attempted URL decoding for built-in Ask tasks (does not work - URLs created after send-notification returns)
-# v1.0.14 - Added support for SMSAskUser automation script format (Question - Reply Yes or No: GUID@incident)
-# v1.0.13 - BREAKING: Redesigned reply code system - each option now has unique code (e.g., Yes(1234) No(5678)) for proper multi-question support
-# v1.0.12 - Fixed XSOAR Ask task integration by cleaning URL-based messages and converting to SMS-friendly format with reply codes
-# v1.0.11 - Added aws-sns-sms-list-entitlements command to list active entitlements with phone numbers and reply codes, added comprehensive debug logging throughout
-# v1.0.10 - Changed test-module to use SQS get_queue_attributes instead of SNS list_topics (matches official AWS integrations pattern and required IAM permissions)
-# v1.0.9 - Fixed test-module command by removing unsupported MaxItems parameter from SNS list_topics API call
-# v1.0.8 - Added SMSAskUser automation script for Ask task integration
-# v1.0.7 - Updated Docker image to demisto/boto3py3:1.0.0.115129
-# v1.0.6 - Added version tracking and changelog to integration Python code
-# v1.0.5 - Added messaging/communication tags, updated category to "Messaging and Conferencing"
-# v1.0.4 - Renamed command to "send-notification" for Ask task compatibility
-# v1.0.3 - Added Role ARN authentication, timeout/retries config, STS regional endpoints
-# v1.0.2 - Updated author and community support notice
-# v1.0.1 - Added integration image
-# v1.0.0 - Initial release with SNS SMS sending, SQS reply polling, entitlement handling
+# v1.0.38 - Updated description, Help tab, README with Reply Code Mode
+#   details and sequential mode examples.
+# v1.0.37 - Added replyCodeMode config: 'sequential' mode uses simple
+#   incrementing numbers (1,2,3) instead of random 4-digit codes.
+# v1.0.36 - Security: Replaced kwargs logging with explicit param names.
+# v1.0.35 - Enhanced debug logging for entitlement parsing, feedback
+#   settings, AWS client creation, and reply processing.
+# v1.0.34 - Split reply feedback into successFeedbackEnabled and
+#   failureFeedbackEnabled. Added customizable failureMessage.
+# v1.0.33 - Added SMS reply feedback: confirmation SMS for successful
+#   replies, lists codes for unrecognized replies. Configurable message.
+# v1.0.32 - Fixed multi-line handling in clean_ask_task_message (added
+#   re.DOTALL). Added 2-4 options support in SMSAskUser.
+# v1.0.31 - Removed dramatic language from docs for professional tone.
+# v1.0.30 - Clarified built-in Ask tasks work via browser, SMSAskUser
+#   recommended for native SMS. Removed playbook YAML examples.
+# v1.0.29 - Created description.md file, removed inline
+#   detaileddescription.
+# v1.0.28 - Added README.md contents to detaileddescription field.
+# v1.0.27 - Added detaileddescription field with markdown docs.
+# v1.0.26 - Simplified integration description to single line.
+# v1.0.25 - Removed detailedDescription from YAML, moved to description.
+# v1.0.24 - Fixed task ID not saved in entitlements.
+#   extract_entitlement_from_message() extracts full GUID@incident|task.
+# v1.0.23 - Fixed SMSAskUser Python 2 compat (replaced f-strings).
+# v1.0.22 - Added debug logging to SMSAskUser for task ID.
+# v1.0.21 - Enhanced detailedDescription formatting in YAML.
+# v1.0.20 - Added auto AWS credential refresh in long-running execution
+#   to prevent ExpiredToken errors. Refreshes at 80% sessionDuration.
+# v1.0.19 - Rewrote README.md with Ask task docs, SMSAskUser examples.
+# v1.0.18 - Updated detailed description. Beautified SMSAskUser script.
+# v1.0.17 - Added aws-sns-sms-inject-reply test command.
+# v1.0.16 - Removed non-functional URL decoding. SMSAskUser only.
+# v1.0.15 - Deprecated URL decoding for built-in Ask tasks.
+# v1.0.14 - Added SMSAskUser format support.
+# v1.0.13 - Redesigned reply code system with unique codes per option.
+# v1.0.12 - Fixed Ask task integration, SMS-friendly format with codes.
+# v1.0.11 - Added list-entitlements command, comprehensive debug logging.
+# v1.0.10 - Changed test-module to use SQS get_queue_attributes.
+# v1.0.9 - Fixed test-module: removed unsupported MaxItems parameter.
+# v1.0.8 - Added SMSAskUser automation script.
+# v1.0.7 - Updated Docker image to demisto/boto3py3:1.0.0.115129.
+# v1.0.6 - Added version tracking and changelog.
+# v1.0.5 - Added messaging/communication tags.
+# v1.0.4 - Renamed command to "send-notification".
+# v1.0.3 - Added Role ARN auth, timeout/retries, STS regional endpoints.
+# v1.0.2 - Updated author and community support notice.
+# v1.0.1 - Added integration image.
+# v1.0.0 - Initial release: SNS SMS, SQS reply polling, entitlements.
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -48,7 +58,7 @@ import random
 import string
 import time
 import traceback
-from typing import Any
+from typing import Any  # noqa: F401
 
 # ===== CONSTANTS =====
 INTEGRATION_NAME = "AWS SNS SMS Communication"
@@ -56,7 +66,10 @@ INTEGRATION_VERSION = "1.0.38"
 
 # Default feedback messages
 DEFAULT_SUCCESS_MESSAGE = "{reply_code} - Thank you for your response!"
-DEFAULT_FAILURE_MESSAGE = "We couldn't process your response. Please respond with one of the available reply codes: {available_codes}"
+DEFAULT_FAILURE_MESSAGE = (
+    "We couldn't process your response. Please respond with one of"
+    " the available reply codes: {available_codes}"
+)
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 DEFAULT_TTL_HOURS = 24
 DEFAULT_POLL_INTERVAL_SECONDS = 10
@@ -155,8 +168,9 @@ def extract_entitlement_from_message(message: str) -> tuple:
     return None, message
 
 
-def clean_ask_task_message_and_generate_codes(message: str, existing_codes: set,
-                                               reply_code_mode: str = REPLY_CODE_MODE_RANDOM) -> tuple:
+def clean_ask_task_message_and_generate_codes(
+        message: str, existing_codes: set,
+        reply_code_mode: str = REPLY_CODE_MODE_RANDOM) -> tuple:
     """
     Clean SMSAskUser message and generate reply codes for each option.
 
@@ -312,7 +326,10 @@ def get_active_entitlements_for_phone(phone_number: str) -> list:
 
     active = [e for e in entitlements if e.get("phone_number") == phone_number and not e.get("answered", False)]
 
-    demisto.debug(f"get_active_entitlements_for_phone: found {len(active)} active entitlements out of {len(entitlements)} total for phone={phone_number}")
+    demisto.debug(
+        f"get_active_entitlements_for_phone: found {len(active)} active"
+        f" entitlements out of {len(entitlements)} total for phone={phone_number}"
+    )
 
     return active
 
@@ -413,7 +430,10 @@ def mark_entitlement_answered(entitlement_id: str):
             ent["answered"] = True
             ent["answered_at"] = datetime.utcnow().strftime(DATE_FORMAT)
             found = True
-            demisto.debug(f"mark_entitlement_answered: successfully marked entitlement_id={entitlement_id} as answered at {ent['answered_at']}")
+            demisto.debug(
+                f"mark_entitlement_answered: marked entitlement_id={entitlement_id}"
+                f" as answered at {ent['answered_at']}"
+            )
             break
 
     if not found:
@@ -463,7 +483,10 @@ def get_available_codes_for_phone(phone_number: str) -> list:
         for code, option in codes_to_options.items():
             available_codes.append((code, option))
 
-    demisto.debug(f"get_available_codes_for_phone: found {len(available_codes)} available codes for phone={phone_number}: {available_codes}")
+    demisto.debug(
+        f"get_available_codes_for_phone: found {len(available_codes)}"
+        f" available codes for phone={phone_number}: {available_codes}"
+    )
 
     return available_codes
 
@@ -568,7 +591,10 @@ def get_aws_client(params: dict, service_name: str):
             if session_duration:
                 kwargs["DurationSeconds"] = int(session_duration)
 
-            demisto.debug(f"STS AssumeRole (with access key): role_arn={role_arn}, session_name={role_session_name}, duration={session_duration}s")
+            demisto.debug(
+                f"STS AssumeRole (with access key): role_arn={role_arn},"
+                f" session_name={role_session_name}, duration={session_duration}s"
+            )
             sts_response = sts_client.assume_role(**kwargs)
             demisto.debug(f"STS AssumeRole successful, credentials expire at: {sts_response['Credentials'].get('Expiration')}")
 
@@ -690,7 +716,12 @@ def send_notification_command(args: dict, params: dict) -> CommandResults:
             "Entitlement": entitlement_full,
             "CodesToOptions": codes_to_options
         },
-        readable_output=f"SMS sent successfully to {phone_number}\nMessageId: {response.get('MessageId')}\nReply Codes: {codes_display}\nEntitlement: {entitlement_full}"
+        readable_output=(
+            f"SMS sent successfully to {phone_number}\n"
+            f"MessageId: {response.get('MessageId')}\n"
+            f"Reply Codes: {codes_display}\n"
+            f"Entitlement: {entitlement_full}"
+        )
     )
 
 
@@ -808,7 +839,9 @@ def long_running_execution_command(params: dict):
     demisto.info(f"Configuration: sqs_queue_url={sqs_queue_url}")
     demisto.info(f"Configuration: poll_interval={poll_interval}s, ttl_hours={ttl_hours}h, session_duration={session_duration}s")
     demisto.info(f"Configuration: token_refresh_interval={token_refresh_interval}s ({token_refresh_interval / 60:.1f} minutes)")
-    demisto.info(f"Configuration: success_feedback={params.get('successFeedbackEnabled', True)}, failure_feedback={params.get('failureFeedbackEnabled', True)}")
+    success_fb = params.get('successFeedbackEnabled', True)
+    failure_fb = params.get('failureFeedbackEnabled', True)
+    demisto.info(f"Configuration: success_feedback={success_fb}, failure_feedback={failure_fb}")
 
     # Create initial SQS client
     sqs_client = get_aws_client(params, "sqs")
@@ -902,7 +935,11 @@ def process_sms_reply(sqs_message: dict, params: dict):
     success_message_template = params.get("successMessage", DEFAULT_SUCCESS_MESSAGE)
     failure_message_template = params.get("failureMessage", DEFAULT_FAILURE_MESSAGE)
 
-    demisto.debug(f"process_sms_reply: feedback settings - success_enabled={success_feedback_enabled}, failure_enabled={failure_feedback_enabled}")
+    demisto.debug(
+        f"process_sms_reply: feedback settings -"
+        f" success_enabled={success_feedback_enabled},"
+        f" failure_enabled={failure_feedback_enabled}"
+    )
 
     # Parse SNS message from SQS body
     body = json.loads(sqs_message.get("Body", "{}"))
@@ -940,12 +977,15 @@ def process_sms_reply(sqs_message: dict, params: dict):
         if failure_feedback_enabled and available_codes:
             codes_list = ", ".join([f"{opt} ({code})" for code, opt in available_codes])
             failure_message = failure_message_template.format(available_codes=codes_list, phone_number=phone_number)
-            demisto.debug(f"Sending failure feedback SMS to {phone_number} (invalid format, {len(available_codes)} active codes available)")
+            demisto.debug(
+                f"Sending failure feedback SMS to {phone_number}"
+                f" (invalid format, {len(available_codes)} active codes)"
+            )
             send_feedback_sms(phone_number, failure_message, params)
         elif not failure_feedback_enabled:
-            demisto.debug(f"Skipping failure feedback SMS - failure_feedback_enabled=False")
+            demisto.debug("Skipping failure feedback - failure_feedback_enabled=False")
         elif not available_codes:
-            demisto.debug(f"Skipping failure feedback SMS - no active entitlements for {phone_number}")
+            demisto.debug(f"Skipping failure feedback - no active entitlements for {phone_number}")
         return
 
     # Find matching entitlement and get the chosen option
@@ -957,12 +997,15 @@ def process_sms_reply(sqs_message: dict, params: dict):
         if failure_feedback_enabled and available_codes:
             codes_list = ", ".join([f"{opt} ({code})" for code, opt in available_codes])
             failure_message = failure_message_template.format(available_codes=codes_list, phone_number=phone_number)
-            demisto.debug(f"Sending failure feedback SMS to {phone_number} (code not found, {len(available_codes)} active codes available)")
+            demisto.debug(
+                f"Sending failure feedback SMS to {phone_number}"
+                f" (code not found, {len(available_codes)} active codes)"
+            )
             send_feedback_sms(phone_number, failure_message, params)
         elif not failure_feedback_enabled:
-            demisto.debug(f"Skipping failure feedback SMS - failure_feedback_enabled=False")
+            demisto.debug("Skipping failure feedback - failure_feedback_enabled=False")
         elif not available_codes:
-            demisto.debug(f"Skipping failure feedback SMS - no active entitlements for {phone_number}")
+            demisto.debug(f"Skipping failure feedback - no active entitlements for {phone_number}")
         return
 
     demisto.info(f"Found entitlement, user chose option: {chosen_option}")
@@ -996,10 +1039,13 @@ def process_sms_reply(sqs_message: dict, params: dict):
                 chosen_option=chosen_option,
                 phone_number=phone_number
             )
-            demisto.debug(f"Sending success feedback SMS to {phone_number} (reply_code={reply_code}, chosen_option={chosen_option})")
+            demisto.debug(
+                f"Sending success feedback SMS to {phone_number}"
+                f" (reply_code={reply_code}, chosen_option={chosen_option})"
+            )
             send_feedback_sms(phone_number, success_message, params)
         else:
-            demisto.debug(f"Skipping success feedback SMS - success_feedback_enabled=False")
+            demisto.debug("Skipping success feedback SMS - success_feedback_enabled=False")
 
     except Exception as e:
         demisto.error(f"Failed to handle entitlement {entitlement_id}: {str(e)}\n{traceback.format_exc()}")
@@ -1095,10 +1141,13 @@ def inject_reply_command(args: dict, params: dict) -> CommandResults:
             })
 
         return CommandResults(
-            readable_output=f"❌ No matching entitlement found\n\n"
-                          f"Phone: {phone_number}\n"
-                          f"Reply Code: {reply_code}\n\n"
-                          f"Active entitlements for this phone:\n{json.dumps(codes_info, indent=2)}",
+            readable_output=(
+                f"No matching entitlement found\n\n"
+                f"Phone: {phone_number}\n"
+                f"Reply Code: {reply_code}\n\n"
+                f"Active entitlements for this phone:\n"
+                f"{json.dumps(codes_info, indent=2)}"
+            ),
             outputs_prefix="AWS.SNS.SMS.TestReply",
             outputs={
                 "Success": False,
