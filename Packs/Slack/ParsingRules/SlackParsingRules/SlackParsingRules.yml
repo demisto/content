@@ -1,6 +1,6 @@
 fromversion: 8.13.0
-id: Slack Slack ParsingRule
-name: Slack Slack Parsing Rule
+id: Slack ParsingRule
+name: Slack Parsing Rule
 rules: ''
 samples: ''
 supportedModules:
