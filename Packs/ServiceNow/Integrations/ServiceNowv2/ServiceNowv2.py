@@ -1918,6 +1918,8 @@ def get_entries_for_notes(notes: list[dict], params) -> list[dict]:
                         value = value.replace('[code]','')
                         note['value'] = value
                 entry_format = comment_format
+            else:
+                entry_format = note.get("format")
 
 
             entries.append(
@@ -1926,7 +1928,7 @@ def get_entries_for_notes(notes: list[dict], params) -> list[dict]:
                     "Category": note.get("category"),
                     "Contents": f"Type: {note.get('element')}\nCreated By: {note.get('sys_created_by')}\n"
                     f"Created On: {note.get('sys_created_on')}\n{note.get('value')}",
-                    "ContentsFormat": note.get("format"),
+                    "ContentsFormat": entry_format,
                     "Tags": tags,
                     "Note": True,
                     "EntryContext": comments_context,
