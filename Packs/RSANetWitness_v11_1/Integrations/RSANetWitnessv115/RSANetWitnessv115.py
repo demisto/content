@@ -1,8 +1,8 @@
-from datetime import UTC, datetime, timedelta
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from requests import HTTPError
+from datetime import datetime, timedelta, timezone
+from typing import Any
 
 ERROR_TITLES = {
     400: "400 Bad Request - The request was malformed, check the given arguments\n",
@@ -62,8 +62,19 @@ class Client(BaseClient):
         params = assign_params(until=until, since=since, pageSize=page_size, pageNumber=page_number)
         return self._http_request("GET", "rest/api/incidents", params=params)
 
-    def get_incident_request(self, inc_id: str | None) -> dict:
-        return self._http_request("GET", f"rest/api/incidents/{inc_id}")
+    def get_incident_request(self, inc_id: str | None) -> list:
+        data = {
+            "meta_name": "id",
+            "meta_value": inc_id,
+            "numberOfRecords": "0",
+        }
+        response = self._http_request("GET", "rest/api/incident/fetch", json_data=data)
+
+        # Ensure the response is a list
+        if not isinstance(response, list):
+            raise ValueError("Expected the response to be a list")
+
+        return response
 
     def update_incident_request(self, id_: Any | None, status: Any | None, assignee: Any | None) -> dict:
         data = assign_params(status=status, assignee=assignee)
@@ -82,9 +93,32 @@ class Client(BaseClient):
             return_empty_response=True,
         )
 
-    def incident_list_alerts_request(self, page_size: str | None, page_number: str | None, id_: str | None) -> dict:
-        params = assign_params(pageNumber=page_number, pageSize=page_size)
-        return self._http_request("GET", f"rest/api/incidents/{id_}/alerts", params=params)
+    def incident_list_alerts_request(self, limit: int, id_: str | None) -> list:
+        if limit:
+            no_of_records = limit
+        else:
+            no_of_records = DEFAULT_MAX_INCIDENT_ALERTS
+
+        payload = {
+            "meta_name": "incidentId",
+            "meta_value": id_,  # MUST be a string
+            "numberOfRecords": no_of_records,
+            "includeFields": "null",  # MUST be empty list
+        }
+
+        demisto.debug(f"RSA alert fetch payload: {payload}")
+
+        response = self._http_request(
+            method="GET",
+            url_suffix="rest/api/alert/fetch",
+            json_data=payload,
+        )
+
+        # Ensure the response is a list
+        if not isinstance(response, list):
+            raise ValueError("Expected the response to be a list")
+
+        return response
 
     def services_list_request(self, name: Any | None) -> dict:
         params = assign_params(name=name)
@@ -387,7 +421,13 @@ class Client(BaseClient):
 
 
 def paging_command(
-    limit: int | None, page_size: Union[str, None, int], page_number: str | None, func_command, page_size_def="50", **kwargs
+    limit: int | None,
+    page_size: Union[str, None, int],
+    page_number: str | None,
+    func_command,
+    page_size_def="50",
+    is_list_response: bool = False,
+    **kwargs,
 ) -> tuple[Any, Union[list, Any]]:
     """Generic command for requests that support paging.
 
@@ -402,25 +442,29 @@ def paging_command(
         (dict) The last request response.
         (list) The retrieved items.
     """
-    response = {}
-    items = []
-    if not limit:
-        page_size = page_size or page_size_def
-        response = func_command(page_size, page_number, **kwargs)
-        items = response.get("items", [])
+    if is_list_response:
+        response = func_command(limit, page_size, page_number, **kwargs)
+        items = response
     else:
-        if page_number or page_size:
-            raise DemistoException("Can't supply limit and page number/page size")
-        page_size = page_size if limit > 100 else limit
-        total = 0
-        while total < limit:
+        response = {}
+        items = []
+        if not limit:
+            page_size = page_size or page_size_def
             response = func_command(page_size, page_number, **kwargs)
-            items += response.get("items", [])
-            if not response.get("hasNext"):
-                break
-            total += len(response.get("items", []))
-            page_number = response.get("pageNumber", 0) + 1
-        items = items[:limit]
+            items = response.get("items", [])
+        else:
+            if page_number or page_size:
+                raise DemistoException("Can't supply limit and page number/page size")
+            page_size = page_size if limit > 100 else limit
+            total = 0
+            while total < limit:
+                response = func_command(page_size, page_number, **kwargs)
+                items += response.get("items", [])
+                if not response.get("hasNext"):
+                    break
+                total += len(response.get("items", []))
+                page_number = response.get("pageNumber", 0) + 1
+            items = items[:limit]
 
     return response, items
 
@@ -435,39 +479,73 @@ def list_incidents_command(client: Client, args: dict[str, Any]) -> CommandResul
 
     if inc_id := args.get("id"):
         response = client.get_incident_request(inc_id)
-        items = [response]
-        context_data = {"RSANetWitness115.Incidents(val.id === obj.id)": response}
-        text = f"Incident {inc_id} retrieved-"
+        if isinstance(response, list):
+            items = response
+        else:
+            items = [response]
+
+        context_data = {"RSANetWitness115.Incidents(val.id === obj.id)": items}
+
+        text = f"Incident {inc_id} retrieved"
+        output = prepare_incident_fetch_readable_items(items)
+        humanReadable = tableToMarkdown(
+            text,
+            output,
+            [
+                "Id",
+                "Name",
+                "Summary",
+                "Priority",
+                "PrioritySort",
+                "Status",
+                "Risk Score",
+                "AlertCount",
+                "Created",
+                "LastUpdated",
+                "FirstAlertTime",
+                "BreachExportStatus",
+                "BreachData",
+                "DeletedAlertCount",
+                "HasRemediationTasks",
+                "Assignee",
+                "Sources",
+                "Categories",
+                "CreatedBy",
+                "Event Count",
+                "Tactics",
+                "Techniques",
+            ],
+        )
     else:
         response, items = paging_command(limit, page_size, page_number, client.list_incidents_request, until=until, since=since)
+
         context_data = prepare_paging_context_data(response, items, "Incidents")
         page_number = response.get("pageNumber")
         total_pages = response.get("totalPages")
         text = f"Total Retrieved Incidents : {len(items)}\n Page number {page_number} out of {total_pages} "
-    output = prepare_incidents_readable_items(items)
-    humanReadable = tableToMarkdown(
-        text,
-        output,
-        [
-            "Id",
-            "Title",
-            "Summary",
-            "Priority",
-            "RiskScore",
-            "Status",
-            "AlertCount",
-            "Created",
-            "LastUpdated",
-            "Assignee",
-            "Sources",
-            "Categories",
-        ],
-    )
-    return CommandResults(
-        outputs=context_data,
-        readable_output=humanReadable,
-        raw_response=response,
-    )
+
+        output = prepare_incidents_readable_items(items)
+
+        humanReadable = tableToMarkdown(
+            text,
+            output,
+            [
+                "Id",
+                "Title",
+                "Summary",
+                "Priority",
+                "RiskScore",
+                "Status",
+                "AlertCount",
+                "Created",
+                "LastUpdated",
+                "Assignee",
+                "Sources",
+                "Categories",
+            ],
+        )
+
+    return CommandResults(outputs=context_data, readable_output=humanReadable, raw_response=response)
 
 
 def update_incident_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -526,27 +604,43 @@ def incident_add_journal_entry_command(client: Client, args: dict[str, Any]) -> 
 
 def incident_list_alerts_command(client: Client, args: dict[str, Any]) -> CommandResults:
     id_ = args.get("id")
-    page_number = args.get("page_number")
-    page_size = args.get("page_size")
     limit = arg_to_number(args.get("limit"))
-
-    response, items = paging_command(limit, page_size, page_number, client.incident_list_alerts_request, id_=id_)
+    items: list = []
+    response = client.incident_list_alerts_request(limit, id_)
+    if isinstance(response, list):
+        items = response
 
     # remove duplicates that might occur from paging
-    items = remove_duplicates_in_items(items, "id")
+    items = remove_duplicates_in_items(items, "_id")
     for item in items:
-        item["IncidentId"] = id_
-    context_data = prepare_paging_context_data(response, items, "IncidentAlerts")
-    page_number = response.get("pageNumber")
+        item["incidentId"] = id_
+    context_data = {"RSANetWitness115.IncidentAlerts(val.id === obj.id)": response} if response else {}
     output = prepare_alerts_readable_items(items)
-    total_pages = response.get("totalPages")
-    text = f"Total Retrieved Alerts : {len(output)} for incident {id_}\n Page number {page_number} out of {total_pages}"
+
+    text = f"Total Retrieved Alerts: {len(output)} for incident {id_}"
     humanReadable = tableToMarkdown(
         text,
         output,
-        ["Id", "Title", "Detail", "Created", "Source", "RiskScore", "Type", "Events"],
+        headers=[
+            "Alert ID",
+            "Name",
+            "ReceivedTime",
+            "LastUpdated",
+            "Source",
+            "Type",
+            "Risk Score",
+            "Severity",
+            "Events",
+            "Detected At",
+            "Incident ID",
+            "Device Type",
+            "Tactics",
+            "Techniques",
+            "IncidentCreated",
+        ],
         removeNull=True,
     )
+
     return CommandResults(
         outputs=context_data,
         readable_output=humanReadable,
@@ -667,7 +761,7 @@ def snapshot_details_get_command(client: Client, args: dict[str, Any]) -> Comman
 
     results = response[offset : offset + limit]
     humanReadable = tableToMarkdown(
-        f"Snapshot details for agent id {agent_id}- \nshowing {len(results)} results out of {len(response)}",
+        f"Snapshot details for agent id {agent_id}-" f" \nshowing {len(results)} results out of {len(response)}",
         results,
         ["hostName", "agentId", "scanStartTime", "directory", "fileName"],
     )
@@ -858,7 +952,7 @@ def fetch_alerts_related_incident(client: Client, incident_id: str, max_alerts: 
     while has_next and len(alerts) < max_alerts:
         demisto.debug(f"fetching alerts, {page_number=}")
         try:
-            response_body = client.incident_list_alerts_request(page_number=str(page_number), id_=incident_id, page_size=None)
+            response_body = client.incident_list_alerts_request(limit=max_alerts, id_=incident_id)
         except HTTPError as e:
             if e.response is not None and e.response.status_code == 429:
                 raise DemistoException("Too many requests, try later or reduce the number of Fetch Limit parameter.") from e
@@ -867,12 +961,14 @@ def fetch_alerts_related_incident(client: Client, incident_id: str, max_alerts: 
         except Exception:
             demisto.error(f"Error occurred while fetching alerts related to {incident_id=}. {page_number=}")
             raise
-
-        items = response_body.get("items", [])
+        items = []
+        if isinstance(response_body, list):
+            items = [item.get("alert") for item in response_body if isinstance(item, dict)]
         alerts.extend(items[: max_alerts - len(alerts)])
         page_number += 1
-        has_next = response_body.get("hasNext", False)
-
+        has_next = False
+        if response_body:
+            has_next = response_body[0].get("hasNext", False)
     return alerts
 
 
@@ -989,20 +1085,83 @@ def prepare_incidents_readable_items(items: list[dict[str, Any]]) -> list:
     ]
 
 
-def prepare_alerts_readable_items(items: list[dict[str, Any]]) -> list:
-    return [
-        {
+def prepare_incident_fetch_readable_items(items: list[dict[str, Any]]) -> list:
+    """
+    Prepare incident details from incident fetch command and put it in a table.
+    """
+    readable_items = []
+    for item in items:
+        # Handle timestamp safely (milliseconds OR ISO string)
+        raw_created = item.get("created")
+        raw_updated = item.get("lastUpdated")
+        raw_firstalert = item.get("firstAlertTime")
+        created_at = timestamp_handler(raw_created)
+        updated_at = timestamp_handler(raw_updated)
+        first_alert_at = timestamp_handler(raw_firstalert)
+        readable_item = {
             "Id": item.get("id"),
-            "Title": item.get("title"),
-            "Detail": item.get("detail"),
-            "Created": item.get("created"),
-            "Source": item.get("source"),
-            "RiskScore": item.get("riskScore"),
-            "Type": item.get("type"),
-            "Events": item.get("events"),
+            "Name": item.get("name"),
+            "Summary": item.get("summary"),
+            "Priority": item.get("priority"),
+            "PrioritySort": item.get("prioritySort"),
+            "Status": item.get("status"),
+            "Risk Score": item.get("riskScore"),
+            "AlertCount": item.get("alertCount"),
+            "Created": created_at,
+            "LastUpdated": updated_at,
+            "FirstAlertTime": first_alert_at,
+            "BreachExportStatus": item.get("breachExportStatus"),
+            "BreachData": item.get("breachData"),
+            "DeletedAlertCount": item.get("deletedAlertCount"),
+            "HasRemediationTasks": item.get("hasRemediationTasks"),
+            "Assignee": item.get("assignee"),
+            "Sources": item.get("sources"),
+            "Categories": item.get("categories"),
+            "CreatedBy": item.get("createdBy"),
+            "Event Count": item.get("eventCount"),
+            "Tactics": item.get("tactics"),
+            "Techniques": item.get("techniques"),
         }
-        for item in items
-    ]
+        readable_items.append(readable_item)
+
+    return readable_items
+
+
+def prepare_alerts_readable_items(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """
+    Prepare alerts data for readable output table.
+    Supports both millisecond timestamps and ISO string timestamps.
+    """
+
+    readable_items = []
+
+    for item in items:
+        alert = item.get("alert", {})
+
+        # Handle timestamp safely (milliseconds OR ISO string)
+        raw_ts = alert.get("timestamp")
+        detected_at = timestamp_handler(raw_ts)
+        readable_item = {
+            "Alert ID": item.get("_id") or item.get("id"),
+            "Name": alert.get("name"),
+            "ReceivedTime": epoch_ms_to_utc(item.get("receivedTime")),
+            "LastUpdated": epoch_ms_to_utc(item.get("lastUpdated")),
+            "Source": alert.get("source"),
+            "Type": ", ".join(alert.get("type", [])) if isinstance(alert.get("type"), list) else alert.get("type"),
+            "Risk Score": alert.get("risk_score"),
+            "Severity": alert.get("severity"),
+            "Events": alert.get("numEvents"),
+            "Detected At": detected_at,
+            "Incident ID": item.get("incidentId"),
+            "Device Type": alert.get("groupby_device_type"),
+            "Tactics": item.get("tactics"),
+            "Techniques": item.get("techniques"),
+            "IncidentCreated": epoch_ms_to_utc(item.get("incidentCreated")),
+        }
+
+        readable_items.append(readable_item)
+
+    return readable_items
 
 
 def prepare_hosts_readable_items(items: list[dict[str, Any]]) -> list[dict]:
@@ -1051,6 +1210,33 @@ def prepare_paging_context_data(response: dict[str, Any], items: list[dict[str, 
             },
         }
     )
+
+
+def timestamp_handler(raw_ts):
+    """# Handle timestamp safely (milliseconds OR ISO string)"""
+    ts_formated = None
+    if raw_ts:
+        # milliseconds (int or numeric string)
+        if isinstance(raw_ts, int | float) or (isinstance(raw_ts, str) and raw_ts.isdigit()):
+            ts_formated = timestamp_to_datestring(raw_ts)
+        else:
+            # assume already ISO formatted string
+            ts_formated = raw_ts
+    return ts_formated
+
+
+def epoch_ms_to_utc(epoch_ms: int | None) -> str | None:
+    """
+    Convert epoch in milliseconds to UTC string formatted for Cortex XSOAR.
+    """
+    if not epoch_ms:
+        return None
+
+    # arg_to_datetime automatically handles epoch (ms or sec)
+    dt = arg_to_datetime(epoch_ms)
+
+    # Format using integration DATE_FORMAT
+    return dt.strftime(DATE_FORMAT)
 
 
 def exception_handler(res):
@@ -1248,7 +1434,7 @@ def update_remote_system_command(client: Client, args: dict, params: dict) -> st
     """
     parsed_args = UpdateRemoteSystemArgs(args)
     if parsed_args.delta:
-        demisto.debug(f"Got the following delta keys {list(parsed_args.delta.keys())!s}")
+        demisto.debug(f"Got the following delta keys {str(list(parsed_args.delta.keys()))}")
 
     demisto.debug(f"Starting mirror out for the remote incident {parsed_args.remote_incident_id}")
     new_incident_id: str = parsed_args.remote_incident_id
@@ -1257,53 +1443,52 @@ def update_remote_system_command(client: Client, args: dict, params: dict) -> st
     xsoar_close_reason = parsed_args.data.get("closeReason")
     response = client.get_incident_request(new_incident_id)
     rsa_status = xsoar_status_to_rsa_status(xsoar_status, xsoar_close_reason)
-
-    if rsa_status and response["status"] != rsa_status:
-        demisto.debug(f"Current status should be {rsa_status} on RSA but is {response['status']}, updating incident...")
-        response = client.update_incident_request(parsed_args.remote_incident_id, rsa_status, response.get("assignee"))
+    response_status = response[0].get("status")
+    if rsa_status and response_status != rsa_status:
+        demisto.debug(f"Current status should be {rsa_status} on RSA but is {response_status}, updating incident...")
+        response = client.update_incident_request(parsed_args.remote_incident_id, rsa_status, response[0].get("assignee"))
         demisto.debug(json.dumps(response))
     else:
         demisto.debug(
-            f"Skipping updating remote incident fields [{parsed_args.remote_incident_id}] as it is not new nor changed."
+            f"Skipping updating remote incident fields [{parsed_args.remote_incident_id}] as it is " f"not new nor changed."
         )
 
     return new_incident_id
 
 
 def get_remote_data_command(client: Client, args: dict, params: dict):
-    """
-    get-remote-data command: Returns an updated incident and entries
-    Args:
-        client: XSOAR client to use
-        args:
-            id: incident id to retrieve
-            lastUpdate: when was the last time we retrieved data
-
-    Returns:
-        GetRemoteDataResponse: The Response containing the update incident to mirror and the entries
-    """
-
     entries = []
+
     remote_args = GetRemoteDataArgs(args)
     inc_id = remote_args.remote_incident_id
+
     close_incident = argToBoolean(params.get("close_incident", True))
     fetch_alert = argToBoolean(params.get("import_alerts", False))
     max_fetch_alerts = min(arg_to_number(params.get("max_alerts")) or DEFAULT_MAX_INCIDENT_ALERTS, DEFAULT_MAX_INCIDENT_ALERTS)
 
     response = client.get_incident_request(inc_id)
 
-    # check if the user enable alerts fetching
+    # Normalize list → dict
+    if isinstance(response, list) and response:
+        incident = response[0]
+    else:
+        incident = response
+
+    # Pull alerts if enabled
     if fetch_alert:
         demisto.debug(f"Pulling alerts from incident {inc_id} !")
-        inc_alert_count = int(response["alertCount"])
+
+        inc_alert_count = int(incident.get("alertCount", 0))
+
         if inc_alert_count <= max_fetch_alerts:
             alerts = fetch_alerts_related_incident(client, inc_id, inc_alert_count)
             demisto.debug(f"{len(alerts)} alerts pulled !")
-            response["alerts"] = alerts
+            incident["alerts"] = alerts
         else:
             demisto.debug("Skipping this step, max number of pull alerts reached for this incident !")
 
-    if (response.get("status") == "Closed" or response.get("status") == "ClosedFalsePositive") and close_incident:
+    # Close XSOAR incident if RSA closed
+    if incident.get("status") in ["Closed", "ClosedFalsePositive"] and close_incident:
         demisto.info(f"Closing incident related to incident {inc_id}")
         entries = [
             {
@@ -1313,12 +1498,16 @@ def get_remote_data_command(client: Client, args: dict, params: dict):
             }
         ]
 
-    int_cont = get_integration_context()
+    # Update integration context
+    int_cont = demisto.getIntegrationContext()
     inc_data = int_cont.get("IncidentsDataCount", {})
-    inc_data[inc_id] = struct_inc_context(response.get("alertCount"), response.get("eventCount"), response.get("created"))
+
+    inc_data[inc_id] = struct_inc_context(incident.get("alertCount"), incident.get("eventCount"), incident.get("created"))
+
+    int_cont["IncidentsDataCount"] = inc_data
     demisto.setIntegrationContext(int_cont)
 
-    return GetRemoteDataResponse(mirrored_object=response, entries=entries)
+    return GetRemoteDataResponse(mirrored_object=incident, entries=entries)
 
 
 def get_modified_remote_data_command(client: Client, args: dict, params: dict):
@@ -1354,12 +1543,14 @@ def get_modified_remote_data_command(client: Client, args: dict, params: dict):
 
     # clean the integration context data of "old" incident
     clean_old_inc_context(max_time_mirror_inc)
-    intCont = get_integration_context().get("IncidentsDataCount", {})
+    intCont = demisto.getIntegrationContext().get("IncidentsDataCount", {})
     for inc in items:
         if intCont.get(inc.get("id")):
             save_alert_count = intCont.get(inc.get("id"), {}).get("alertCount")
             save_event_count = intCont.get(inc.get("id"), {}).get("eventCount")
-            demisto.debug(f"Last run incident {inc.get('id')} => Alert count: {save_alert_count} Event count: {save_event_count}")
+            demisto.debug(
+                f"Last run incident {inc.get('id')} => " f"Alert count: {save_alert_count} " f"Event count: {save_event_count}"
+            )
             if save_alert_count != inc.get("alertCount") or save_event_count != inc.get("eventCount"):
                 # compare the save nb of alert to see if we need to pull the alert or not
                 if save_alert_count <= max_fetch_alerts:
@@ -1399,13 +1590,13 @@ def clean_old_inc_context(max_time_mirror_inc: int):
     int_cont = demisto.getIntegrationContext()
     inc_data = int_cont.get("IncidentsDataCount", {})
     current_time = datetime.now()
-    current_time = current_time.replace(tzinfo=UTC)
+    current_time = current_time.replace(tzinfo=timezone.utc)
     total_know = 0
     res = {}
     for inc_id, inc in inc_data.items():
         inc_created = arg_to_datetime(inc["Created"])
         if inc_created:
-            inc_created = inc_created.replace(tzinfo=UTC)
+            inc_created = inc_created.replace(tzinfo=timezone.utc)
             diff = current_time - inc_created
             if diff.days <= max_time_mirror_inc:  # maximum RSA aggregation time 24 days
                 res[inc_id] = inc
