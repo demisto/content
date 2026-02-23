@@ -49,12 +49,12 @@ configuration:
   hiddenusername: true
   required: false
   section: Connect
-- defaultvalue: '50170'
+- name: configIds
   display: Config IDs to fetch
-  name: configIds
   required: true
   type: 0
   section: Collect
+  additionalinfo: Your Akamai security configuration ID(s). Multiple IDs can be separated by semicolons (e.g., 12345;2345;3456). Config IDs are unique to your account.
 - display: Incident type
   name: incidentType
   type: 13
@@ -255,7 +255,7 @@ script:
     - contextPath: IP.Geo.Country
       description: The country in which the IP address is located.
       type: String
-  dockerimage: demisto/auth-utils:1.0.0.5476008
+  dockerimage: demisto/auth-utils:1.0.0.6111183
   isfetch: true
   isfetch:marketplacev2: false
   isfetchevents: true
