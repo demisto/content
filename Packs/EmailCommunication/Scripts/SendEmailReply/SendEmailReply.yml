@@ -38,6 +38,9 @@ args:
   - HTML
 - description: The mailbox address to send the email from.
   name: from
+- name: timezone
+  defaultValue: UTC
+  description: Timezone used for email thread timestamps (must be a valid IANA timezone such as UTC, Europe/London, or America/New_York; defaults to UTC if not specified or invalid).
 comment: |-
   Send email reply
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
