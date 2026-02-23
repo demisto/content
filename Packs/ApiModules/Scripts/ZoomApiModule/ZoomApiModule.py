@@ -157,49 +157,20 @@ class Zoom_Client(BaseClient):
         # This is needed because the OAuth token may not behave consistently,
         # First the func will make an http request with a token,
         # and if it turns out to be invalid, the func will retry again with a new token.
-        try:
-            return super()._http_request(
-                method=method,
-                url_suffix=url_suffix,
-                full_url=full_url,
-                headers=headers,
-                auth=auth,
-                json_data=json_data,
-                params=params,
-                files=files,
-                data=data,
-                return_empty_response=return_empty_response,
-                resp_type=resp_type,
-                stream=stream,
-            )
-        except DemistoException as e:
-            if any(
-                message in e.message
-                for message in ["Invalid access token", "Access token is expired.", "Invalid authorization token"]
-            ):
-                if url_suffix == "/im/chat/messages":
-                    demisto.debug("generate new bot client token")
-                    self.bot_access_token = self.generate_oauth_client_token()
-                    headers = {"authorization": f"Bearer {self.bot_access_token}"}
-                else:
-                    self.access_token = self.generate_oauth_token()
-                    headers = {"authorization": f"Bearer {self.access_token}"}
-                return super()._http_request(
-                    method=method,
-                    url_suffix=url_suffix,
-                    full_url=full_url,
-                    headers=headers,
-                    auth=auth,
-                    json_data=json_data,
-                    params=params,
-                    files=files,
-                    data=data,
-                    return_empty_response=return_empty_response,
-                    resp_type=resp_type,
-                    stream=stream,
-                )
-            else:
-                raise DemistoException(e.message, url_suffix)
 
+        return super()._http_request(
+            method=method,
+            url_suffix=url_suffix,
+            full_url=full_url,
+            headers=headers,
+            auth=auth,
+            json_data=json_data,
+            params=params,
+            files=files,
+            data=data,
+            return_empty_response=return_empty_response,
+            resp_type=resp_type,
+            stream=stream,
+        )
 
 """ HELPER FUNCTIONS """
