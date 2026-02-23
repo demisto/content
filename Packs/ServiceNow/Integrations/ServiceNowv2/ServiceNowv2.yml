@@ -350,6 +350,7 @@ configuration:
   name: comment_format
   section: Collect
   defaultvalue: source
+  additionalinfo:  Define the format of the ServiceNow comments. Per default the format is supplied by ServiceNow during the fetch as part of the comments data (Source). This can be overwritten to a specific format for all comments. Use HTML if a html editor is used within ServiceNow to add comments. Defaults to Source.
   type: 15
   required: false
   options:
@@ -358,8 +359,9 @@ configuration:
   - html
   - source
 - section: Collect
-  display: Mark attachment as notes
-  name: mark_attachment_as_notes
+  display: Mark attachment as note
+  name: mark_attachments_as_note
+  additionalinfo: Mark attachments as note. Set this to yes if you prefer to mark file attachments from ServiceNow as Notes.
   defaultvalue: "false"
   type: 8
   required: false

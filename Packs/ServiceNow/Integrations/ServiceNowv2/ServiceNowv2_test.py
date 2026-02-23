@@ -669,6 +669,51 @@ def test_get_entries_for_notes_with_comment(notes, params, expected):
 
 
 @pytest.mark.parametrize(
+    "notes, params, expected",
+    [
+        (
+            [
+                {
+                    "value": "[code]<p>test</p>[/code]",
+                    "sys_created_by": "Test User",
+                    "sys_created_on": "2022-11-21 20:45:37",
+                    "element": "comments",
+                }
+            ],
+            {
+                "comment_tag_from_servicenow": "CommentFromServiceNow",
+                "comment_format": "html"
+            },
+            [
+                {
+                    "Type": 1,
+                    "Category": None,
+                    "Contents": "Type: comments\nCreated By: Test User\nCreated On: 2022-11-21 20:45:37\n<p>test</p>",
+                    "ContentsFormat": "html",
+                    "Tags": ["CommentFromServiceNow"],
+                    "Note": True,
+                    "EntryContext": {"comments_and_work_notes": "First comment"},
+                }
+            ],
+        )
+    ],
+)
+
+
+def test_get_entries_for_notes_with_comment_and_format(notes, params, expected):
+    """
+    Given
+        - A list of notes
+        - Params containing comment tag
+    When
+        - Calling get_entries_for_notes
+    Then
+        - Should return a list of entry contexts
+    """
+    assert get_entries_for_notes(notes, params) == expected
+
+
+@pytest.mark.parametrize(
     "command, args, response, expected_result, expected_auto_extract",
     [
         (update_ticket_command, {"id": "1234", "impact": "2"}, RESPONSE_UPDATE_TICKET, EXPECTED_UPDATE_TICKET, True),
@@ -3706,6 +3751,54 @@ def test_get_remote_data_with_new_attachment(mock_is_new_incident: MagicMock, mo
         assert isinstance(result, list)
         assert len(result) == 2
         assert result[1]["File"] == "evidence.txt"
+        assert result[1]["Tags"] == [mock_params["file_tag_from_service_now"]]
+
+
+@patch("ServiceNowv2.is_new_incident", return_value=False)
+def test_get_remote_data_with_new_attachment_attachment_is_note(mock_is_new_incident: MagicMock, mock_client: MagicMock, mock_params) -> None:
+    """
+    Tests that new file attachments are fetched and formatted correctly.
+
+    Args:
+        mock_is_new_incident: Mock of is_new_incident function.
+        mock_client: The mocked ServiceNow client.
+        mock_params: The mocked integration parameters.
+    """
+    # Arrange
+    ticket_id = "INC12345"
+    last_update_ts = int((datetime.now() - timedelta(days=1)).timestamp())
+    ticket_updated_on = datetime.now()
+
+    args = {"id": ticket_id, "lastUpdate": str(last_update_ts)}
+
+    ticket_data = {
+        "result": [
+            {
+                "sys_id": ticket_id,
+                "sys_updated_on": ticket_updated_on.strftime("%Y-%m-%d %H:%M:%S"),
+            }
+        ]
+    }
+
+    new_mock_params = mock_params | {"mark_attachment_as_note": True}
+
+    attachment_entry = {"File": "evidence.txt", "FileID": "mock_file_id", "Tags": [mock_params["file_tag_from_service_now"]]}
+
+    mock_client.get.return_value = ticket_data
+    mock_client.get_ticket_attachment_entries.return_value = [attachment_entry]
+    mock_client.query.return_value = {"result": []}  # No new comments
+
+    with patch("ServiceNowv2.demisto") as mock_demisto:
+        mock_demisto.params.return_value = {"isFetch": True}
+
+        # Act
+        result = get_remote_data_command(mock_client, args, new_mock_params)
+
+        # Assert
+        assert isinstance(result, list)
+        assert len(result) == 2
+        assert result[1]["File"] == "evidence.txt"
+        assert result[1]["Note"] == True
         assert result[1]["Tags"] == [mock_params["file_tag_from_service_now"]]
 
 
