@@ -432,3 +432,379 @@ class TestPanoramaReconfigureHaCommand:
 
         with pytest.raises(ValueError, match="Panorama"):
             mod.panorama_reconfigure_ha_command(client)
+
+
+class TestGetAvailableInterfaces:
+    """Tests for get_available_interfaces function."""
+
+    def test_returns_all_interface_types(self):
+        xml_str = """<response status="success">
+            <result>
+                <interface>
+                    <ethernet>
+                        <entry name="ethernet1/1"/>
+                        <entry name="ethernet1/2"/>
+                    </ethernet>
+                    <aggregate-ethernet>
+                        <entry name="ae1"/>
+                    </aggregate-ethernet>
+                    <loopback>
+                        <entry name="1"/>
+                    </loopback>
+                    <tunnel>
+                        <entry name="1"/>
+                    </tunnel>
+                    <vlan>
+                        <entry name="100"/>
+                    </vlan>
+                </interface>
+            </result>
+        </response>"""
+        xml_element = ET.fromstring(xml_str)
+
+        from panos.firewall import Firewall
+
+        client = MagicMock(spec=Firewall)
+        client.xapi = MagicMock()
+        client.xapi.get.return_value = xml_element
+
+        result = mod.get_available_interfaces(client)
+        assert "ethernet1/1" in result
+        assert "ethernet1/2" in result
+        assert "ae1" in result
+        assert "loopback.1" in result
+        assert "tunnel.1" in result
+        assert "vlan.100" in result
+        assert "ha1-a" in result
+        assert "ha2-a" in result
+
+    def test_no_interface_config(self):
+        xml_str = """<response status="success">
+            <result/>
+        </response>"""
+        xml_element = ET.fromstring(xml_str)
+
+        from panos.firewall import Firewall
+
+        client = MagicMock(spec=Firewall)
+        client.xapi = MagicMock()
+        client.xapi.get.return_value = xml_element
+
+        result = mod.get_available_interfaces(client)
+        assert result == []
+
+    def test_none_response(self):
+        from panos.firewall import Firewall
+
+        client = MagicMock(spec=Firewall)
+        client.xapi = MagicMock()
+        client.xapi.get.return_value = None
+
+        result = mod.get_available_interfaces(client)
+        assert result == []
+
+
+class TestValidateInterfacesExist:
+    """Tests for validate_interfaces_exist function."""
+
+    def test_all_valid(self, mocker):
+        mocker.patch.object(
+            mod,
+            "get_available_interfaces",
+            return_value=["ethernet1/1", "ha1-a", "ha2-a"],
+        )
+        from panos.firewall import Firewall
+
+        client = MagicMock(spec=Firewall)
+        all_valid, missing = mod.validate_interfaces_exist(client, ["ha1-a", "ha2-a"])
+        assert all_valid is True
+        assert missing == []
+
+    def test_missing_interface(self, mocker):
+        mocker.patch.object(
+            mod,
+            "get_available_interfaces",
+            return_value=["ethernet1/1", "ha1-a"],
+        )
+        from panos.firewall import Firewall
+
+        client = MagicMock(spec=Firewall)
+        all_valid, missing = mod.validate_interfaces_exist(client, ["ha1-a", "ha3"])
+        assert all_valid is False
+        assert "ha3" in missing
+
+    def test_empty_list(self):
+        from panos.firewall import Firewall
+
+        client = MagicMock(spec=Firewall)
+        all_valid, missing = mod.validate_interfaces_exist(client, [])
+        assert all_valid is True
+        assert missing == []
+
+
+class TestConfigureHaCommand:
+    """Tests for configure_ha_command function."""
+
+    def test_basic_config(self, mocker):
+        mocker.patch.object(
+            mod,
+            "validate_interfaces_exist",
+            return_value=(True, []),
+        )
+        mock_ha_class = mocker.patch.object(mod, "HighAvailability")
+        mock_ha_instance = MagicMock()
+        mock_ha_instance.element_str.return_value = (
+            "<entry><group><group-id>1</group-id></group></entry>"
+        )
+        mock_ha_class.return_value = mock_ha_instance
+
+        from panos.firewall import Firewall
+
+        client = MagicMock(spec=Firewall)
+        client.hostname = "10.0.0.1"
+        client.xapi = MagicMock()
+
+        args = {
+            "peer_ip": "192.168.1.2",
+            "group_id": "1",
+            "device_priority": "100",
+            "commit": "false",
+        }
+        result = mod.configure_ha_command(client, args)
+        assert "candidate config" in result.readable_output.lower()
+        client.xapi.edit.assert_called_once()
+
+    def test_config_with_ha1_ha2(self, mocker):
+        mocker.patch.object(
+            mod,
+            "validate_interfaces_exist",
+            return_value=(True, []),
+        )
+        mock_ha_class = mocker.patch.object(mod, "HighAvailability")
+        mock_ha_instance = MagicMock()
+        mock_ha_instance.element_str.return_value = (
+            "<entry><group><group-id>1</group-id></group></entry>"
+        )
+        mock_ha_class.return_value = mock_ha_instance
+
+        mock_ha1 = mocker.patch.object(mod, "HA1")
+        mock_ha2 = mocker.patch.object(mod, "HA2")
+
+        from panos.firewall import Firewall
+
+        client = MagicMock(spec=Firewall)
+        client.hostname = "10.0.0.1"
+        client.xapi = MagicMock()
+
+        args = {
+            "peer_ip": "192.168.1.2",
+            "group_id": "1",
+            "device_priority": "100",
+            "ha1_port": "ha1-a",
+            "ha1_ip_address": "192.168.26.1",
+            "ha1_netmask": "255.255.255.252",
+            "ha2_port": "ha2-a",
+            "ha2_ip_address": "192.168.27.1",
+            "ha2_netmask": "255.255.255.252",
+            "commit": "false",
+        }
+        result = mod.configure_ha_command(client, args)
+        assert "candidate config" in result.readable_output.lower()
+        mock_ha1.assert_called_once()
+        mock_ha2.assert_called_once()
+
+    def test_config_with_commit(self, mocker):
+        mocker.patch.object(
+            mod,
+            "validate_interfaces_exist",
+            return_value=(True, []),
+        )
+        mock_ha_class = mocker.patch.object(mod, "HighAvailability")
+        mock_ha_instance = MagicMock()
+        mock_ha_instance.element_str.return_value = (
+            "<entry><group><group-id>1</group-id></group></entry>"
+        )
+        mock_ha_class.return_value = mock_ha_instance
+
+        from panos.firewall import Firewall
+
+        client = MagicMock(spec=Firewall)
+        client.hostname = "10.0.0.1"
+        client.xapi = MagicMock()
+        client.commit.return_value = "Commit OK"
+
+        args = {
+            "peer_ip": "192.168.1.2",
+            "commit": "true",
+        }
+        result = mod.configure_ha_command(client, args)
+        assert "commit" in result.readable_output.lower()
+        client.commit.assert_called_once_with(sync=True)
+
+    def test_config_missing_interface_fails(self, mocker):
+        mocker.patch.object(
+            mod,
+            "validate_interfaces_exist",
+            return_value=(False, ["ha3"]),
+        )
+        from panos.firewall import Firewall
+
+        client = MagicMock(spec=Firewall)
+        client.hostname = "10.0.0.1"
+
+        args = {
+            "peer_ip": "192.168.1.2",
+            "ha1_port": "ha3",
+        }
+        with pytest.raises(DemistoException, match="not found"):
+            mod.configure_ha_command(client, args)
+
+    def test_config_not_firewall(self):
+        from panos.panorama import Panorama
+
+        client = MagicMock(spec=Panorama)
+
+        with pytest.raises(ValueError, match="only applicable"):
+            mod.configure_ha_command(client, {})
+
+    def test_config_with_backup_interfaces(self, mocker):
+        mocker.patch.object(
+            mod,
+            "validate_interfaces_exist",
+            return_value=(True, []),
+        )
+        mock_ha_class = mocker.patch.object(mod, "HighAvailability")
+        mock_ha_instance = MagicMock()
+        mock_ha_instance.element_str.return_value = (
+            "<entry><group><group-id>1</group-id></group></entry>"
+        )
+        mock_ha_class.return_value = mock_ha_instance
+
+        mock_ha1_backup = mocker.patch.object(mod, "HA1Backup")
+        mock_ha2_backup = mocker.patch.object(mod, "HA2Backup")
+        mocker.patch.object(mod, "HA1")
+        mocker.patch.object(mod, "HA2")
+
+        from panos.firewall import Firewall
+
+        client = MagicMock(spec=Firewall)
+        client.hostname = "10.0.0.1"
+        client.xapi = MagicMock()
+
+        args = {
+            "peer_ip": "192.168.1.2",
+            "ha1_port": "ha1-a",
+            "ha1_ip_address": "192.168.26.1",
+            "ha1_netmask": "255.255.255.252",
+            "ha1_backup_port": "ha1-b",
+            "ha1_backup_ip_address": "192.168.28.1",
+            "ha1_backup_netmask": "255.255.255.252",
+            "ha2_port": "ha2-a",
+            "ha2_ip_address": "192.168.27.1",
+            "ha2_netmask": "255.255.255.252",
+            "ha2_backup_port": "ha2-b",
+            "ha2_backup_ip_address": "192.168.29.1",
+            "ha2_backup_netmask": "255.255.255.252",
+            "heartbeat_backup": "true",
+            "commit": "false",
+        }
+        result = mod.configure_ha_command(client, args)
+        assert "candidate config" in result.readable_output.lower()
+        mock_ha1_backup.assert_called_once()
+        mock_ha2_backup.assert_called_once()
+
+
+class TestMain:
+    """Tests for main function."""
+
+    def test_test_module(self, mocker):
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "hostname": "10.0.0.1",
+                "api_key": {"password": "testkey"},
+                "device_type": "Firewall",
+                "insecure": False,
+                "vsys": "vsys1",
+            },
+        )
+        mocker.patch.object(demisto, "args", return_value={})
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        mock_return = mocker.patch.object(mod, "return_results")
+        mock_device = MagicMock()
+        mocker.patch.object(mod, "get_pan_device", return_value=mock_device)
+        mocker.patch.object(mod, "handle_proxy")
+
+        mod.main()
+
+        mock_device.refresh_system_info.assert_called_once()
+        mock_return.assert_called_once_with("ok")
+
+    def test_get_state_command_dispatch(self, mocker):
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "hostname": "10.0.0.1",
+                "api_key": "testkey",
+                "device_type": "Firewall",
+                "insecure": False,
+            },
+        )
+        mocker.patch.object(demisto, "args", return_value={})
+        mocker.patch.object(demisto, "command", return_value="panos-ha-get-state")
+        mock_return = mocker.patch.object(mod, "return_results")
+        mock_cmd = mocker.patch.object(
+            mod, "get_ha_state_command", return_value="result"
+        )
+        mock_device = MagicMock()
+        mocker.patch.object(mod, "get_pan_device", return_value=mock_device)
+        mocker.patch.object(mod, "handle_proxy")
+
+        mod.main()
+
+        mock_cmd.assert_called_once()
+        mock_return.assert_called_once_with("result")
+
+    def test_unknown_command(self, mocker):
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "hostname": "10.0.0.1",
+                "api_key": {"password": "testkey"},
+                "device_type": "Firewall",
+                "insecure": False,
+            },
+        )
+        mocker.patch.object(demisto, "args", return_value={})
+        mocker.patch.object(demisto, "command", return_value="unknown-command")
+        mock_return_error = mocker.patch.object(mod, "return_error")
+        mock_device = MagicMock()
+        mocker.patch.object(mod, "get_pan_device", return_value=mock_device)
+        mocker.patch.object(mod, "handle_proxy")
+
+        mod.main()
+
+        mock_return_error.assert_called_once()
+        assert "not implemented" in mock_return_error.call_args[0][0].lower()
+
+    def test_missing_hostname(self, mocker):
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "hostname": "",
+                "api_key": "testkey",
+            },
+        )
+        mocker.patch.object(demisto, "args", return_value={})
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        mock_return_error = mocker.patch.object(mod, "return_error")
+        mocker.patch.object(mod, "handle_proxy")
+
+        mod.main()
+
+        mock_return_error.assert_called_once()
+        assert "hostname" in mock_return_error.call_args[0][0].lower()
