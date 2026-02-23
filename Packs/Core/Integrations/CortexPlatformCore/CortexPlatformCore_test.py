@@ -9522,6 +9522,7 @@ def test_get_case_resolution_statuses_command(mocker):
     assert len(result.raw_response) == 2
     assert mock_client.get_case_resolution_statuses.call_count == 2
 
+
 def test_get_case_resolution_statuses_command_with_data(mocker):
     """
     GIVEN:
