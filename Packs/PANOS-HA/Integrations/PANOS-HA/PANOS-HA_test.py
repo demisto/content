@@ -48,7 +48,7 @@ class TestGetPanDevice:
 class TestGetHaStateCommand:
     """Tests for get_ha_state_command function."""
 
-    def test_ha_state_active_passive(self, mocker):
+    def test_ha_state_active_passive(self):
         xml_str = """<response status="success">
             <result>
                 <enabled>yes</enabled>
@@ -70,18 +70,13 @@ class TestGetHaStateCommand:
         </response>"""
         xml_element = ET.fromstring(xml_str)
 
-        mock_temp_fw = MagicMock()
-        mock_temp_fw.show_highavailability_state.return_value = xml_element
-        mock_fw_class = mocker.patch.object(mod, "Firewall")
-        mock_fw_class.return_value = mock_temp_fw
-
         from panos.firewall import Firewall
 
         client = MagicMock(spec=Firewall)
         client.hostname = "10.0.0.1"
-        client.api_key = "test-key"
+        client.show_highavailability_state.return_value = xml_element
 
-        result = mod.get_ha_state_command(client, {}, False)
+        result = mod.get_ha_state_command(client, {})
 
         assert "active" in result.readable_output.lower()
         assert result.outputs is not None
@@ -90,7 +85,7 @@ class TestGetHaStateCommand:
         assert result.outputs["PeerState"] == "passive"
         assert result.outputs["PeerConnStatus"] == "up"
 
-    def test_ha_not_enabled(self, mocker):
+    def test_ha_not_enabled(self):
         xml_str = """<response status="success">
             <result>
                 <enabled>no</enabled>
@@ -98,21 +93,16 @@ class TestGetHaStateCommand:
         </response>"""
         xml_element = ET.fromstring(xml_str)
 
-        mock_temp_fw = MagicMock()
-        mock_temp_fw.show_highavailability_state.return_value = xml_element
-        mock_fw_class = mocker.patch.object(mod, "Firewall")
-        mock_fw_class.return_value = mock_temp_fw
-
         from panos.firewall import Firewall
 
         client = MagicMock(spec=Firewall)
         client.hostname = "10.0.0.1"
-        client.api_key = "test-key"
+        client.show_highavailability_state.return_value = xml_element
 
-        result = mod.get_ha_state_command(client, {}, False)
+        result = mod.get_ha_state_command(client, {})
         assert "not enabled" in result.readable_output.lower()
 
-    def test_ha_state_tuple_response(self, mocker):
+    def test_ha_state_tuple_response(self):
         xml_str = """<response status="success">
             <result>
                 <enabled>yes</enabled>
@@ -134,21 +124,13 @@ class TestGetHaStateCommand:
         </response>"""
         xml_element = ET.fromstring(xml_str)
 
-        mock_temp_fw = MagicMock()
-        mock_temp_fw.show_highavailability_state.return_value = (
-            True,
-            xml_element,
-        )
-        mock_fw_class = mocker.patch.object(mod, "Firewall")
-        mock_fw_class.return_value = mock_temp_fw
-
         from panos.firewall import Firewall
 
         client = MagicMock(spec=Firewall)
         client.hostname = "10.0.0.1"
-        client.api_key = "test-key"
+        client.show_highavailability_state.return_value = (True, xml_element)
 
-        result = mod.get_ha_state_command(client, {}, False)
+        result = mod.get_ha_state_command(client, {})
         assert result.outputs is not None
         assert result.outputs["LocalState"] == "passive"
 
@@ -158,7 +140,7 @@ class TestGetHaStateCommand:
         client = MagicMock(spec=Panorama)
 
         with pytest.raises(ValueError, match="only applicable"):
-            mod.get_ha_state_command(client, {}, False)
+            mod.get_ha_state_command(client, {})
 
 
 class TestGetHaConfigCommand:
@@ -244,79 +226,62 @@ class TestGetHaConfigCommand:
 class TestRequestHaFailoverCommand:
     """Tests for request_ha_failover_command function."""
 
-    def test_suspend_peer(self, mocker):
-        mock_temp_fw = MagicMock()
-        mock_temp_fw.xapi = MagicMock()
-        mock_fw_class = mocker.patch.object(mod, "Firewall")
-        mock_fw_class.return_value = mock_temp_fw
-
+    def test_suspend_peer(self):
         from panos.firewall import Firewall
 
         client = MagicMock(spec=Firewall)
         client.hostname = "10.0.0.1"
-        client.api_key = "test-key"
+        client.xapi = MagicMock()
 
-        result = mod.request_ha_failover_command(client, suspend=True, insecure=False)
+        result = mod.request_ha_failover_command(client, suspend=True)
         assert "suspend" in result.readable_output.lower()
+        client.xapi.op.assert_called_once()
 
-    def test_make_functional(self, mocker):
-        mock_temp_fw = MagicMock()
-        mock_temp_fw.xapi = MagicMock()
-        mock_fw_class = mocker.patch.object(mod, "Firewall")
-        mock_fw_class.return_value = mock_temp_fw
-
+    def test_make_functional(self):
         from panos.firewall import Firewall
 
         client = MagicMock(spec=Firewall)
         client.hostname = "10.0.0.1"
-        client.api_key = "test-key"
+        client.xapi = MagicMock()
 
-        result = mod.request_ha_failover_command(client, suspend=False, insecure=False)
+        result = mod.request_ha_failover_command(client, suspend=False)
         assert "functional" in result.readable_output.lower()
+        client.xapi.op.assert_called_once()
 
 
 class TestSynchronizeHaPeersCommand:
     """Tests for synchronize_ha_peers_command function."""
 
-    def test_sync_config(self, mocker):
-        mock_temp_fw = MagicMock()
-        mock_temp_fw.xapi = MagicMock()
-        mock_fw_class = mocker.patch.object(mod, "Firewall")
-        mock_fw_class.return_value = mock_temp_fw
-
+    def test_sync_config(self):
         from panos.firewall import Firewall
 
         client = MagicMock(spec=Firewall)
         client.hostname = "10.0.0.1"
-        client.api_key = "test-key"
+        client.xapi = MagicMock()
 
-        result = mod.synchronize_ha_peers_command(client, "config", insecure=False)
+        result = mod.synchronize_ha_peers_command(client, "config")
         assert "configuration" in result.readable_output.lower()
+        client.xapi.op.assert_called_once()
 
-    def test_sync_state(self, mocker):
-        mock_temp_fw = MagicMock()
-        mock_temp_fw.xapi = MagicMock()
-        mock_fw_class = mocker.patch.object(mod, "Firewall")
-        mock_fw_class.return_value = mock_temp_fw
-
+    def test_sync_state(self):
         from panos.firewall import Firewall
 
         client = MagicMock(spec=Firewall)
         client.hostname = "10.0.0.1"
-        client.api_key = "test-key"
+        client.xapi = MagicMock()
 
-        result = mod.synchronize_ha_peers_command(client, "state", insecure=False)
+        result = mod.synchronize_ha_peers_command(client, "state")
         assert "state" in result.readable_output.lower()
+        client.xapi.op.assert_called_once()
 
     def test_invalid_sync_type(self):
         from panos.firewall import Firewall
 
         client = MagicMock(spec=Firewall)
         client.hostname = "10.0.0.1"
-        client.api_key = "test-key"
 
         with pytest.raises(ValueError, match="Invalid sync_type"):
-            mod.synchronize_ha_peers_command(client, "invalid", insecure=False)
+            mod.synchronize_ha_peers_command(client, "invalid")
 
 
 class TestListInterfacesCommand:

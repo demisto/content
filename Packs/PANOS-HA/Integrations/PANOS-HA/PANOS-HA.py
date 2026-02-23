@@ -122,18 +122,16 @@ def validate_interfaces_exist(client: Firewall, interfaces_to_check: list) -> tu
 
 
 # COMMAND FUNCTIONS
-def get_ha_state_command(client: PanDevice, args: dict, insecure: bool) -> CommandResults:
+def get_ha_state_command(client: PanDevice, args: dict) -> CommandResults:
     """Retrieves the current HA state of a firewall."""
     if not isinstance(client, Firewall):
         raise ValueError("This command is only applicable to Firewalls.")
 
-    demisto.debug("Creating temporary client for HA state check.")
+    demisto.debug("Retrieving HA state from firewall.")
     try:
-        ssl_verify = not insecure
-        temp_fw_client = Firewall(hostname=client.hostname, api_key=client.api_key, ssl_verify=ssl_verify)
-        ha_state_response = temp_fw_client.show_highavailability_state()
+        ha_state_response = client.show_highavailability_state()
     except Exception as e:
-        raise DemistoException(f"Failed to create temporary client or get HA state: {e}")
+        raise DemistoException(f"Failed to get HA state: {e}")
 
     demisto.debug(f"Received response. Type: {type(ha_state_response)}")
 
@@ -391,7 +389,7 @@ def get_ha_config_command(client: PanDevice) -> CommandResults:
     )
 
 
-def request_ha_failover_command(client: PanDevice, suspend: bool, insecure: bool) -> CommandResults:
+def request_ha_failover_command(client: PanDevice, suspend: bool) -> CommandResults:
     """Suspends or makes functional an HA peer."""
     if not isinstance(client, Firewall):
         raise ValueError("This command is only applicable to Firewalls.")
@@ -401,14 +399,7 @@ def request_ha_failover_command(client: PanDevice, suspend: bool, insecure: bool
     demisto.debug(f"Action: {action_tag}. Command: {cmd_xml}")
 
     try:
-        ssl_verify = not insecure
-        temp_fw_client = Firewall(
-            hostname=client.hostname,
-            api_key=client.api_key,
-            ssl_verify=ssl_verify,
-        )
-        temp_fw_client.xapi.op(cmd=cmd_xml)
-
+        client.xapi.op(cmd=cmd_xml)
         message = f"Successfully requested HA peer to become '{action_tag}' on {client.hostname}."
         return CommandResults(readable_output=message)
     except PanXapiError as e:
@@ -422,7 +413,7 @@ def request_ha_failover_command(client: PanDevice, suspend: bool, insecure: bool
         raise DemistoException(f"An unexpected error occurred: {e}")
 
 
-def synchronize_ha_peers_command(client: PanDevice, sync_type: str, insecure: bool) -> CommandResults:
+def synchronize_ha_peers_command(client: PanDevice, sync_type: str) -> CommandResults:
     """Synchronizes configuration or state between HA peers."""
     if not isinstance(client, Firewall):
         raise ValueError("This command is only applicable to Firewalls.")
@@ -440,13 +431,7 @@ def synchronize_ha_peers_command(client: PanDevice, sync_type: str, insecure: bo
     demisto.debug(f"Sync type: {sync_type}. Command: {cmd_xml}")
 
     try:
-        ssl_verify = not insecure
-        temp_fw_client = Firewall(
-            hostname=client.hostname,
-            api_key=client.api_key,
-            ssl_verify=ssl_verify,
-        )
-        temp_fw_client.xapi.op(cmd=cmd_xml)
+        client.xapi.op(cmd=cmd_xml)
         return CommandResults(readable_output=message)
     except PanXapiError as e:
         raise DemistoException(f"Failed to execute HA sync command: {e}")
@@ -796,17 +781,17 @@ def main():
             client.refresh_system_info()
             return_results("ok")
         elif command == "panos-ha-get-state":
-            return_results(get_ha_state_command(client, args, insecure))
+            return_results(get_ha_state_command(client, args))
         elif command == "panos-ha-get-config":
             return_results(get_ha_config_command(client))
         elif command == "panos-ha-suspend-peer":
-            return_results(request_ha_failover_command(client, suspend=True, insecure=insecure))
+            return_results(request_ha_failover_command(client, suspend=True))
         elif command == "panos-ha-make-peer-functional":
-            return_results(request_ha_failover_command(client, suspend=False, insecure=insecure))
+            return_results(request_ha_failover_command(client, suspend=False))
         elif command == "panos-ha-sync-config":
-            return_results(synchronize_ha_peers_command(client, "config", insecure=insecure))
+            return_results(synchronize_ha_peers_command(client, "config"))
         elif command == "panos-ha-sync-state":
-            return_results(synchronize_ha_peers_command(client, "state", insecure=insecure))
+            return_results(synchronize_ha_peers_command(client, "state"))
         elif command == "panos-panorama-ha-reconfigure":
             return_results(panorama_reconfigure_ha_command(client))
         elif command == "panos-ha-configure":
