@@ -47,8 +47,7 @@ def remove_empty_string_values(args: dict) -> dict:
     - For numeric args, removes non-numeric values to prevent be3 crashes (e.g. 'n/a', 'invalid_offset').
     """
     return {
-        key: value for key, value in args.items()
-        if value != "" and (key not in NUMERIC_ARGS or str(value).strip().isdigit())
+        key: value for key, value in args.items() if value != "" and (key not in NUMERIC_ARGS or str(value).strip().isdigit())
     }
 
 
