@@ -346,7 +346,7 @@ configuration:
   advanced: true
   required: false
   section: Collect
-- display: Interpret comments in a specific format. Use source to set format within servicenow.
+- display: Interpret comments in a specific format
   name: comment_format
   section: Collect
   defaultvalue: source
