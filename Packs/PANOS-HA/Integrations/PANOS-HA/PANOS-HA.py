@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Optional, Any
+from typing import Optional
 import xml.etree.ElementTree as ET
 
 # PAN-OS-PYTHON IMPORTS
@@ -17,7 +17,7 @@ except ImportError as e:
 # CONSTANTS
 DEVICE_TYPE_FIREWALL = 'Firewall'
 DEVICE_TYPE_PANORAMA = 'Panorama'
-INTEGRATION_NAME = 'PAN-OS HA'
+INTEGRATION_NAME = 'PANOSHA'
 
 # HELPER FUNCTIONS
 def get_pan_device(device_type: str, hostname: str, api_key: str, vsys: Optional[str], insecure: bool) -> PanDevice:
@@ -87,8 +87,8 @@ def get_available_interfaces(client: Firewall) -> list:
                 interface_list.append(f"vlan.{if_name}")
 
         # Add HA interfaces (these are typically predefined and may not appear in network/interface)
-        # Common HA interface names in PAN-OS
-        ha_interfaces = ['ha1-a', 'ha1-b', 'ha2-a', 'ha2-b', 'ha3']
+        # Covers dedicated HA ports on all PAN-OS platforms
+        ha_interfaces = ['ha1-a', 'ha1-b', 'ha2', 'ha2-a', 'ha2-b', 'ha3']
         interface_list.extend(ha_interfaces)
 
         demisto.debug(f"Found {len(interface_list)} interfaces: {interface_list}")
@@ -200,30 +200,24 @@ def get_ha_state_command(client: PanDevice, args: dict, insecure: bool) -> Comma
     context_data = {
         'enabled': result.findtext('enabled'),
         'mode': mode_element.text if mode_element is not None else None,
-        'local-info': {},
-        'peer-info': {}
     }
 
     if local_info is not None:
         readable_info['Local State'] = local_info.findtext('state', 'N/A')
         readable_info['Local Priority'] = local_info.findtext('priority', 'N/A')
         readable_info['Local Serial'] = local_info.findtext('serial-num', 'N/A')
-        context_data['local-info'] = {
-            'state': local_info.findtext('state'),
-            'priority': local_info.findtext('priority'),
-            'serial': local_info.findtext('serial-num'),
-            'preemptive': local_info.findtext('preemptive')
-        }
+        context_data['localState'] = local_info.findtext('state')
+        context_data['localPriority'] = local_info.findtext('priority')
+        context_data['localSerial'] = local_info.findtext('serial-num')
+        context_data['localPreemptive'] = local_info.findtext('preemptive')
 
     if peer_info is not None:
         readable_info['Peer State'] = peer_info.findtext('state', 'N/A')
         readable_info['Peer Connection'] = peer_info.findtext('conn-status', 'N/A')
         readable_info['Peer Serial'] = peer_info.findtext('serial-num', 'N/A')
-        context_data['peer-info'] = {
-            'state': peer_info.findtext('state'),
-            'conn-status': peer_info.findtext('conn-status'),
-            'serial': peer_info.findtext('serial-num')
-        }
+        context_data['peerState'] = peer_info.findtext('state')
+        context_data['peerConnStatus'] = peer_info.findtext('conn-status')
+        context_data['peerSerial'] = peer_info.findtext('serial-num')
 
     demisto.debug(f"Phase 5: Final readable_info dictionary before creating markdown: {readable_info}")
 
@@ -237,7 +231,7 @@ def get_ha_state_command(client: PanDevice, args: dict, insecure: bool) -> Comma
     return CommandResults(
         readable_output=md,
         outputs_prefix=f"{INTEGRATION_NAME}.HAState",
-        outputs_key_field="local-info.serial",
+        outputs_key_field="localSerial",
         outputs=context_data
     )
 
@@ -336,16 +330,16 @@ def get_ha_config_command(client: PanDevice) -> CommandResults:
     md = f"# High Availability Configuration\n"
     md += f"**Device:** {client.hostname}\n\n"
 
-    md += "## 📊 Overview\n"
+    md += "## Overview\n"
     md += tableToMarkdown("Main Details", main_details, headers=main_details.keys())
 
-    md += "\n## 🔗 Peer Configuration\n"
+    md += "\n## Peer Configuration\n"
     md += tableToMarkdown("Peer Information", peer_info, headers=peer_info.keys())
 
-    md += "\n## ⚡ Election Settings\n"
+    md += "\n## Election Settings\n"
     md += tableToMarkdown("Election Configuration", election_settings, headers=election_settings.keys())
 
-    md += "\n## 🔌 Interface Configuration\n"
+    md += "\n## Interface Configuration\n"
 
     md += "\n### HA1 - Primary Control Link\n"
     md += tableToMarkdown("HA1 Interface", ha1_details, headers=ha1_details.keys())
@@ -368,14 +362,34 @@ def get_ha_config_command(client: PanDevice) -> CommandResults:
     else:
         md += "*Not configured*\n"
 
-    md += "\n## 📡 Monitoring\n"
+    md += "\n## Monitoring\n"
     md += tableToMarkdown("Monitoring Settings", monitoring_settings, headers=monitoring_settings.keys())
+
+    # --- Build Context Data ---
+    context_data = {
+        'enabled': find_text(ha_config, 'enabled', 'no'),
+        'groupId': find_text(group, 'group-id'),
+        'mode': "Active/Passive" if group is not None and group.find('mode/active-passive') is not None else "Active/Active",
+        'peerIp': find_text(group, 'peer-ip'),
+        'peerIpBackup': find_text(group, 'peer-ip-backup'),
+        'ha1Port': find_text(interface, 'ha1/port'),
+        'ha1Ip': find_text(interface, 'ha1/ip-address'),
+        'ha1BackupPort': find_text(interface, 'ha1-backup/port'),
+        'ha1BackupIp': find_text(interface, 'ha1-backup/ip-address'),
+        'ha2Port': find_text(interface, 'ha2/port'),
+        'ha2Ip': find_text(interface, 'ha2/ip-address'),
+        'ha2BackupPort': find_text(interface, 'ha2-backup/port'),
+        'ha2BackupIp': find_text(interface, 'ha2-backup/ip-address'),
+        'linkMonitoring': find_text(group, 'monitoring/link-monitoring/enabled', 'no') if group else 'no',
+        'pathMonitoring': find_text(group, 'monitoring/path-monitoring/enabled', 'no') if group else 'no',
+    }
 
     # --- Link Monitoring Groups ---
     if group is not None:
         link_groups = group.findall('monitoring/link-monitoring/link-group/entry')
         if link_groups:
             md += "\n### Link Monitoring Groups\n"
+            link_monitoring_data = []
             for lg in link_groups:
                 group_name = lg.get('name', 'Unknown')
                 enabled = find_text(lg, 'enabled', 'yes')
@@ -383,12 +397,26 @@ def get_ha_config_command(client: PanDevice) -> CommandResults:
                 interfaces = lg.findall('interface/member')
                 interface_list = [iface.text for iface in interfaces if iface.text]
 
-                status = "✅ Enabled" if enabled.lower() == 'yes' else "❌ Disabled"
+                status = "Enabled" if enabled.lower() == 'yes' else "Disabled"
                 md += f"\n**{group_name}** - {status}\n"
                 md += f"- **Failure Condition:** {failure_condition}\n"
                 md += f"- **Monitored Interfaces:** {', '.join(interface_list) if interface_list else 'None'}\n"
 
-    return CommandResults(readable_output=md)
+                link_monitoring_data.append({
+                    'Name': group_name,
+                    'Enabled': enabled,
+                    'FailureCondition': failure_condition,
+                    'Interfaces': ', '.join(interface_list) if interface_list else 'None',
+                })
+
+            context_data['linkMonitoringGroups'] = link_monitoring_data
+
+    return CommandResults(
+        readable_output=md,
+        outputs_prefix=f'{INTEGRATION_NAME}.Config',
+        outputs_key_field='groupId',
+        outputs=context_data
+    )
 
 
 def request_ha_failover_command(client: PanDevice, suspend: bool, insecure: bool) -> CommandResults:
@@ -486,10 +514,7 @@ def list_interfaces_command(client: PanDevice) -> CommandResults:
     if not interfaces:
         return CommandResults(readable_output="No interfaces found on this device.")
 
-    md = f"### Available Interfaces on {client.hostname}\n"
-    md += f"Total interfaces found: {len(interfaces)}\n\n"
-    md += "|Interface Name|Type|\n|---|---|\n"
-
+    table_data = []
     for iface in sorted(interfaces):
         if iface.startswith('ethernet'):
             iface_type = 'Ethernet'
@@ -506,7 +531,11 @@ def list_interfaces_command(client: PanDevice) -> CommandResults:
         else:
             iface_type = 'Other'
 
-        md += f"|{iface}|{iface_type}|\n"
+        table_data.append({'Interface Name': iface, 'Type': iface_type})
+
+    md = f"Total interfaces found: {len(interfaces)}\n\n"
+    md += tableToMarkdown(f'Available Interfaces on {client.hostname}', table_data,
+                          headers=['Interface Name', 'Type'])
 
     context_data = {
         'Hostname': client.hostname,
@@ -516,7 +545,7 @@ def list_interfaces_command(client: PanDevice) -> CommandResults:
 
     return CommandResults(
         readable_output=md,
-        outputs_prefix='PANOS-HA.AvailableInterfaces',
+        outputs_prefix=f'{INTEGRATION_NAME}.AvailableInterfaces',
         outputs_key_field='Hostname',
         outputs=context_data
     )
@@ -528,21 +557,23 @@ def validate_interfaces_command(client: PanDevice, args: dict) -> CommandResults
         raise ValueError("This command is only applicable to Firewalls.")
 
     # Get comma-separated list of interfaces to validate
-    interfaces_str = args.get('interfaces', '')
-    if not interfaces_str:
+    interfaces_to_check = argToList(args.get('interfaces', ''))
+    if not interfaces_to_check:
         raise ValueError("The 'interfaces' argument is required.")
 
-    interfaces_to_check = [iface.strip() for iface in interfaces_str.split(',')]
     demisto.debug(f"Validating interfaces: {interfaces_to_check}")
 
     all_valid, missing_interfaces = validate_interfaces_exist(client, interfaces_to_check)
 
+    table_data = []
+    for iface in interfaces_to_check:
+        status = 'Exists' if iface not in missing_interfaces else 'Not Found'
+        table_data.append({'Interface': iface, 'Status': status})
+
     if all_valid:
-        md = f"### Interface Validation Result for {client.hostname}\n"
-        md += f"✅ **All {len(interfaces_to_check)} interface(s) validated successfully.**\n\n"
-        md += "|Interface|Status|\n|---|---|\n"
-        for iface in interfaces_to_check:
-            md += f"|{iface}|✅ Exists|\n"
+        md = f"All {len(interfaces_to_check)} interface(s) validated successfully.\n\n"
+        md += tableToMarkdown(f'Interface Validation Result for {client.hostname}', table_data,
+                              headers=['Interface', 'Status'])
 
         context_data = {
             'Hostname': client.hostname,
@@ -551,15 +582,9 @@ def validate_interfaces_command(client: PanDevice, args: dict) -> CommandResults
             'MissingInterfaces': []
         }
     else:
-        md = f"### Interface Validation Result for {client.hostname}\n"
-        md += f"❌ **Validation failed. {len(missing_interfaces)} interface(s) not found.**\n\n"
-        md += "|Interface|Status|\n|---|---|\n"
-        for iface in interfaces_to_check:
-            if iface in missing_interfaces:
-                md += f"|{iface}|❌ Not Found|\n"
-            else:
-                md += f"|{iface}|✅ Exists|\n"
-
+        md = f"Validation failed. {len(missing_interfaces)} interface(s) not found.\n\n"
+        md += tableToMarkdown(f'Interface Validation Result for {client.hostname}', table_data,
+                              headers=['Interface', 'Status'])
         md += f"\n**Missing interfaces:** {', '.join(missing_interfaces)}\n"
 
         context_data = {
@@ -571,13 +596,13 @@ def validate_interfaces_command(client: PanDevice, args: dict) -> CommandResults
 
     return CommandResults(
         readable_output=md,
-        outputs_prefix='PANOS-HA.InterfaceValidation',
+        outputs_prefix=f'{INTEGRATION_NAME}.InterfaceValidation',
         outputs_key_field='Hostname',
         outputs=context_data
     )
 
 
-def configure_ha_command(client: PanDevice, args: dict) -> CommandResults:
+def configure_ha_command(client: PanDevice, args: dict, insecure: bool = False) -> CommandResults:
     """Configures a detailed HA setup on a firewall using the pan-os-python object model."""
     if not isinstance(client, Firewall):
         raise ValueError("This command is only applicable to Firewalls.")
@@ -586,7 +611,7 @@ def configure_ha_command(client: PanDevice, args: dict) -> CommandResults:
     demisto.debug("PANOS-HA: Starting HA configuration process")
     demisto.debug("=" * 80)
     demisto.debug(f"Target device: {client.hostname}")
-    demisto.debug(f"Received parameters: {', '.join([f'{k}={v}' for k, v in args.items() if v is not None])}")
+    demisto.debug(f"Received parameters: {', '.join([k for k, v in args.items() if v is not None])}")
 
     demisto.debug("\n--- Phase 1: Validating HA interfaces before configuration ---")
 
@@ -607,7 +632,7 @@ def configure_ha_command(client: PanDevice, args: dict) -> CommandResults:
         all_valid, missing_interfaces = validate_interfaces_exist(client, interfaces_to_validate)
 
         if not all_valid:
-            error_msg = f"❌ **HA Configuration Failed: Interface Validation Error**\n\n"
+            error_msg = f"**HA Configuration Failed: Interface Validation Error**\n\n"
             error_msg += f"The following interface(s) do not exist on {client.hostname}:\n"
             for iface in missing_interfaces:
                 error_msg += f"- {iface}\n"
@@ -616,7 +641,7 @@ def configure_ha_command(client: PanDevice, args: dict) -> CommandResults:
 
             raise DemistoException(error_msg)
 
-        demisto.debug("✅ All interfaces validated successfully. Proceeding with HA configuration.")
+        demisto.debug("All interfaces validated successfully. Proceeding with HA configuration.")
 
     demisto.debug("\n--- Phase 2: Building HighAvailability object from arguments ---")
 
@@ -651,11 +676,11 @@ def configure_ha_command(client: PanDevice, args: dict) -> CommandResults:
     if device_priority is not None and device_priority != 100:
         try:
             ha_config.device_priority = device_priority
-            demisto.debug(f"✅ Device priority set to {device_priority}")
+            demisto.debug(f"Device priority set to {device_priority}")
         except Exception as e:
-            demisto.debug(f"⚠️ Warning: Could not set device_priority: {e}")
+            demisto.debug(f"Warning: Could not set device_priority: {e}")
 
-    demisto.debug("✅ HighAvailability base object created successfully.")
+    demisto.debug("HighAvailability base object created successfully.")
 
     # HA1 Interface
     demisto.debug("\nConfiguring HA1 (Primary Control Link):")
@@ -672,12 +697,12 @@ def configure_ha_command(client: PanDevice, args: dict) -> CommandResults:
                 gateway=args.get('ha1_gateway')
             )
             ha_config.add(ha1)
-            demisto.debug("✅ HA1 object created and added successfully.")
+            demisto.debug("HA1 object created and added successfully.")
         except Exception as e:
-            demisto.debug(f"❌ Failed to create HA1 object: {e}")
+            demisto.debug(f"Failed to create HA1 object: {e}")
             raise
     else:
-        demisto.debug("⚠️  HA1 parameters incomplete - skipping HA1 configuration.")
+        demisto.debug("HA1 parameters incomplete - skipping HA1 configuration.")
 
     # HA1 Backup Interface
     demisto.debug("\nConfiguring HA1-Backup (Backup Control Link):")
@@ -692,12 +717,12 @@ def configure_ha_command(client: PanDevice, args: dict) -> CommandResults:
                 netmask=args['ha1_backup_netmask']
             )
             ha_config.add(ha1_backup)
-            demisto.debug("✅ HA1-Backup object created and added successfully.")
+            demisto.debug("HA1-Backup object created and added successfully.")
         except Exception as e:
-            demisto.debug(f"❌ Failed to create HA1-Backup object: {e}")
+            demisto.debug(f"Failed to create HA1-Backup object: {e}")
             raise
     else:
-        demisto.debug("⚠️  HA1-Backup parameters incomplete - skipping HA1-Backup configuration.")
+        demisto.debug("HA1-Backup parameters incomplete - skipping HA1-Backup configuration.")
 
     # HA2 Interface
     demisto.debug("\nConfiguring HA2 (Primary Data Link):")
@@ -712,12 +737,12 @@ def configure_ha_command(client: PanDevice, args: dict) -> CommandResults:
                 netmask=args['ha2_netmask']
             )
             ha_config.add(ha2)
-            demisto.debug("✅ HA2 object created and added successfully.")
+            demisto.debug("HA2 object created and added successfully.")
         except Exception as e:
-            demisto.debug(f"❌ Failed to create HA2 object: {e}")
+            demisto.debug(f"Failed to create HA2 object: {e}")
             raise
     else:
-        demisto.debug("⚠️  HA2 parameters incomplete - skipping HA2 configuration.")
+        demisto.debug("HA2 parameters incomplete - skipping HA2 configuration.")
 
     # HA2 Backup Interface
     demisto.debug("\nConfiguring HA2-Backup (Backup Data Link):")
@@ -732,36 +757,45 @@ def configure_ha_command(client: PanDevice, args: dict) -> CommandResults:
                 netmask=args['ha2_backup_netmask']
             )
             ha_config.add(ha2_backup)
-            demisto.debug("✅ HA2-Backup object created and added successfully.")
+            demisto.debug("HA2-Backup object created and added successfully.")
         except Exception as e:
-            demisto.debug(f"❌ Failed to create HA2-Backup object: {e}")
+            demisto.debug(f"Failed to create HA2-Backup object: {e}")
             raise
     else:
-        demisto.debug("⚠️  HA2-Backup parameters incomplete - skipping HA2-Backup configuration.")
+        demisto.debug("HA2-Backup parameters incomplete - skipping HA2-Backup configuration.")
 
     try:
         demisto.debug("\n--- Phase 3: Applying HA configuration object to the device ---")
         demisto.debug("Adding HA configuration object to client's object tree...")
         # First add the object to the client's object tree
         client.add(ha_config)
-        demisto.debug("✅ HA configuration object added to client.")
+        demisto.debug("HA configuration object added to client.")
 
         demisto.debug("Applying configuration to candidate config...")
         # Then apply the configuration to the candidate config
         ha_config.apply()
-        demisto.debug("✅ Configuration successfully written to candidate config.")
+        demisto.debug("Configuration successfully written to candidate config.")
 
-        message = "✅ **Configuration successfully applied to candidate config.**"
+        message = "**Configuration successfully applied to candidate config.**"
 
         if argToBoolean(args.get('commit', 'false')):
             demisto.debug("\n--- Phase 4: Committing configuration ---")
             demisto.debug("Commit flag is true. Initiating commit (this may take 30-60 seconds)...")
             commit_result = str(client.commit(sync=True))
-            demisto.debug(f"✅ Commit completed successfully. Result: {commit_result}")
-            message += f"\n\n💾 **Commit successful!** The configuration is now active. Details: {commit_result}"
+            demisto.debug(f"Commit completed successfully. Result: {commit_result}")
+            message += f"\n\n**Commit successful!** The configuration is now active. Details: {commit_result}"
+
+            if argToBoolean(args.get('force_sync', 'false')):
+                demisto.debug("Force sync flag is true. Initiating config sync to peer.")
+                ssl_verify = not insecure
+                temp_fw_client = Firewall(hostname=client.hostname, api_key=client.api_key, ssl_verify=ssl_verify)
+                sync_cmd = "<request><high-availability><sync><to-peer><running-config/></to-peer></sync></high-availability></request>"
+                temp_fw_client.xapi.op(cmd=sync_cmd)
+                demisto.debug("Configuration sync to peer initiated successfully.")
+                message += "\n\n**Configuration sync initiated to peer.**"
         else:
             demisto.debug("\n--- Phase 4: Commit phase skipped (commit=false) ---")
-            demisto.debug("⚠️  Configuration is in candidate mode. Manual commit required.")
+            demisto.debug("Configuration is in candidate mode. Manual commit required.")
             message += "\n\n> **Action Required:** A commit is needed to apply these changes."
 
         demisto.debug("\n" + "=" * 80)
@@ -769,12 +803,12 @@ def configure_ha_command(client: PanDevice, args: dict) -> CommandResults:
         demisto.debug("=" * 80)
         return CommandResults(readable_output=message)
     except PanDeviceError as e:
-        demisto.debug(f"\n❌ PAN-OS API Error during configuration: {e}")
+        demisto.debug(f"\nPAN-OS API Error during configuration: {e}")
         demisto.debug(f"Error type: {type(e).__name__}")
         demisto.debug(f"Error details: {str(e)}")
         raise DemistoException(f"Failed to apply HA configuration: {e}")
     except Exception as e:
-        demisto.debug(f"\n❌ Unexpected error during configuration: {e}")
+        demisto.debug(f"\nUnexpected error during configuration: {e}")
         demisto.debug(f"Error type: {type(e).__name__}")
         demisto.debug(f"Error details: {str(e)}")
         raise
@@ -798,12 +832,12 @@ def set_ha_enabled_state(client: PanDevice, args: dict, enabled: bool) -> Comman
         demisto.debug("Phase 3: XML edit command sent successfully.")
 
         status_verb = "Enabled" if enabled else "Disabled"
-        message = f"✅ **'{status_verb}' setting successfully applied to candidate config.**"
+        message = f"**'{status_verb}' setting successfully applied to candidate config.**"
 
         if argToBoolean(args.get('commit', 'false')):
             demisto.debug("Commit flag is true. Committing changes.")
             commit_result = str(client.commit(sync=True))
-            message += f"\n\n💾 **Commit successful!** The configuration is now active. Details: {commit_result}"
+            message += f"\n\n**Commit successful!** The configuration is now active. Details: {commit_result}"
         else:
             message += "\n\n> **Action Required:** A commit is needed to apply these changes."
         return CommandResults(readable_output=message)
@@ -831,6 +865,8 @@ def main():
     if not (hostname and api_key):
         return_error("Hostname and API Key must be provided.")
 
+    handle_proxy()
+
     try:
         client = get_pan_device(device_type, hostname, api_key, vsys, insecure=insecure)
 
@@ -852,7 +888,7 @@ def main():
         elif command == 'panos-panorama-ha-reconfigure':
             return_results(panorama_reconfigure_ha_command(client))
         elif command == 'panos-ha-configure':
-            return_results(configure_ha_command(client, args))
+            return_results(configure_ha_command(client, args, insecure=insecure))
         elif command == 'panos-ha-enable':
             return_results(set_ha_enabled_state(client, args, enabled=True))
         elif command == 'panos-ha-disable':

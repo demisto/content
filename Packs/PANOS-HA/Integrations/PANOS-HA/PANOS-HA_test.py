@@ -340,6 +340,7 @@ class TestGetAvailableInterfaces:
         assert 'ethernet1/2' in result
         # HA interfaces are always appended
         assert 'ha1-a' in result
+        assert 'ha2' in result
 
     def test_with_mixed_interfaces(self):
         client = _make_firewall()
@@ -421,8 +422,8 @@ class TestGetHaStateCommand:
 
         assert 'active' in result.readable_output.lower()
         assert result.outputs is not None
-        assert result.outputs['local-info']['state'] == 'active'
-        assert result.outputs['peer-info']['state'] == 'passive'
+        assert result.outputs['localState'] == 'active'
+        assert result.outputs['peerState'] == 'passive'
 
     def test_ha_not_configured_tuple(self):
         """When HA is not configured, the response may be a tuple without XML Element."""
@@ -460,7 +461,7 @@ class TestGetHaStateCommand:
         with patch.object(Firewall, 'show_highavailability_state', return_value=ha_xml):
             result = get_ha_state_command(client, {}, insecure=False)
 
-        assert result.outputs['local-info']['state'] == 'passive'
+        assert result.outputs['localState'] == 'passive'
 
     def test_tuple_with_xml_element(self):
         """Response is a tuple where second element is an XML Element."""
@@ -471,7 +472,7 @@ class TestGetHaStateCommand:
         with patch.object(Firewall, 'show_highavailability_state', return_value=tuple_resp):
             result = get_ha_state_command(client, {}, insecure=False)
 
-        assert result.outputs['local-info']['state'] == 'active'
+        assert result.outputs['localState'] == 'active'
 
 
 class TestGetHaConfigCommand:
@@ -484,6 +485,12 @@ class TestGetHaConfigCommand:
         assert 'High Availability Configuration' in result.readable_output
         assert 'ha1-a' in result.readable_output
         assert '10.0.0.2' in result.readable_output
+        # Verify context data is returned
+        assert result.outputs is not None
+        assert result.outputs['ha1Port'] == 'ha1-a'
+        assert result.outputs['peerIp'] == '10.0.0.2'
+        assert result.outputs['enabled'] == 'yes'
+        assert result.outputs['mode'] == 'Active/Passive'
 
     def test_ha_not_configured(self):
         client = _make_firewall()
@@ -714,6 +721,27 @@ class TestConfigureHaCommand:
         }
         result = configure_ha_command(client, args)
         client.commit.assert_not_called()
+
+    def test_with_commit_and_force_sync(self):
+        client = _make_firewall()
+        client.commit = MagicMock(return_value="Commit OK")
+        # Create a temp firewall mock for the force_sync call
+        temp_fw = _MockFirewall(hostname='fw1.local', api_key='TESTKEY')
+        temp_fw.xapi = MagicMock()
+        temp_fw.xapi.op.return_value = ET.fromstring('<response status="success"/>')
+
+        args = {
+            'group_id': '1',
+            'peer_ip': '10.0.0.2',
+            'commit': 'true',
+            'force_sync': 'true',
+        }
+        with _patch_firewall_constructor(temp_fw):
+            result = configure_ha_command(client, args, insecure=False)
+
+        client.commit.assert_called_once_with(sync=True)
+        temp_fw.xapi.op.assert_called_once()
+        assert 'sync' in result.readable_output.lower()
 
     def test_invalid_interface_raises(self):
         client = _make_firewall()

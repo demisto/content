@@ -38,11 +38,11 @@ Retrieves the current live HA state of a firewall pair.
 ```
 
 **Outputs:**
-- PANOS-HA.State.enabled - Whether HA is enabled
-- PANOS-HA.State.mode - HA mode (active-passive)
-- PANOS-HA.State.local-info.state - Local device state (active/passive/suspended)
-- PANOS-HA.State.peer-info.state - Peer device state
-- PANOS-HA.State.peer-info.conn-status - Peer connection status
+- PANOSHA.HAState.enabled - Whether HA is enabled
+- PANOSHA.HAState.mode - HA mode (active-passive)
+- PANOSHA.HAState.localState - Local device state (active/passive/suspended)
+- PANOSHA.HAState.peerState - Peer device state
+- PANOSHA.HAState.peerConnStatus - Peer connection status
 
 ---
 
@@ -112,11 +112,11 @@ Retrieves the saved HA configuration from a firewall.
 ```
 
 **Outputs:**
-- PANOS-HA.Config.enabled - Whether HA is enabled
-- PANOS-HA.Config.group-id - HA Group ID
-- PANOS-HA.Config.peer.ip - Peer IP address
-- PANOS-HA.Config.interfaces.ha1.port - HA1 interface port
-- PANOS-HA.Config.interfaces.ha2.port - HA2 interface port
+- PANOSHA.Config.enabled - Whether HA is enabled
+- PANOSHA.Config.groupId - HA Group ID
+- PANOSHA.Config.peerIp - Peer IP address
+- PANOSHA.Config.ha1Port - HA1 interface port
+- PANOSHA.Config.ha2Port - HA2 interface port
 
 ---
 
@@ -124,7 +124,9 @@ Retrieves the saved HA configuration from a firewall.
 
 Configures High Availability on a firewall with automatic interface validation.
 
-**CRITICAL:** This command validates that all specified HA interfaces exist on the device before attempting configuration. If any interface is missing, the command will fail with a clear error message listing the missing interfaces.
+:::caution
+This command validates that all specified HA interfaces exist on the device before attempting configuration. If any interface is missing, the command will fail with a clear error message listing the missing interfaces.
+:::
 
 **Arguments:**
 
@@ -137,6 +139,7 @@ Configures High Availability on a firewall with automatic interface validation.
 | ha1_port | No | - | Primary control link interface (e.g., ha1-a, ethernet1/1) |
 | ha1_ip_address | No | - | IP address for HA1 interface |
 | ha1_netmask | No | - | Netmask for HA1 interface |
+| ha1_gateway | No | - | Gateway for HA1 interface |
 | ha1_backup_port | No | - | Backup control link interface |
 | ha1_backup_ip_address | No | - | IP address for HA1 backup interface |
 | ha1_backup_netmask | No | - | Netmask for HA1 backup interface |
@@ -187,7 +190,7 @@ Disables HA functionality on a firewall (removes device from HA pair).
 
 ---
 
-### Interface Validation Commands (New in v1.0.0)
+### Interface Validation Commands
 
 #### panos-ha-list-interfaces
 
@@ -201,9 +204,9 @@ Lists all available network interfaces on the firewall. Use this command before 
 ```
 
 **Outputs:**
-- PANOS-HA.AvailableInterfaces.Hostname - Firewall hostname
-- PANOS-HA.AvailableInterfaces.InterfaceCount - Total number of interfaces
-- PANOS-HA.AvailableInterfaces.Interfaces - List of interface names
+- PANOSHA.AvailableInterfaces.Hostname - Firewall hostname
+- PANOSHA.AvailableInterfaces.InterfaceCount - Total number of interfaces
+- PANOSHA.AvailableInterfaces.Interfaces - List of interface names
 
 ---
 
@@ -223,10 +226,10 @@ Validates that specified interfaces exist on the firewall before attempting HA c
 ```
 
 **Outputs:**
-- PANOS-HA.InterfaceValidation.Hostname - Firewall hostname
-- PANOS-HA.InterfaceValidation.AllValid - Boolean indicating if all interfaces exist
-- PANOS-HA.InterfaceValidation.ValidatedInterfaces - List of validated interfaces
-- PANOS-HA.InterfaceValidation.MissingInterfaces - List of missing interfaces
+- PANOSHA.InterfaceValidation.Hostname - Firewall hostname
+- PANOSHA.InterfaceValidation.AllValid - Boolean indicating if all interfaces exist
+- PANOSHA.InterfaceValidation.ValidatedInterfaces - List of validated interfaces
+- PANOSHA.InterfaceValidation.MissingInterfaces - List of missing interfaces
 
 ---
 
@@ -249,11 +252,11 @@ Issues a "revert to running HA state" command to a Panorama peer. Used to re-int
 
 This integration is designed to support automated failover orchestration workflows. Below is an example workflow for handling FW1/2 failure with FW3 as standby:
 
-### Workflow Steps (XSOAR Playbook)
+### Workflow Steps (Cortex XSOAR Playbook)
 
-1. **Trigger**: QRadar SYSLOG event indicating FW1/2 unavailable
+1. **Trigger**: SIEM SYSLOG event indicating FW1/2 unavailable
 2. **Grace Period**: Wait 60 seconds to confirm failure
-3. **Validation**: Check QRadar logs to confirm device still down
+3. **Validation**: Check SIEM logs to confirm device still down
 4. **Network Isolation**: SSH to Cisco switches and shutdown failed FW interfaces
 5. **HA Reconfiguration**:
    - Use `panos-ha-disable` to remove failed FW from HA
@@ -337,7 +340,7 @@ Before executing automated failover:
 
 - Most HA operational commands bypass vsys context and operate at the device level
 - Interface validation queries the device's network interface configuration
-- HA interfaces (ha1-a, ha1-b, ha2-a, ha2-b, ha3) are predefined and always considered available
+- HA interfaces (ha1-a, ha1-b, ha2, ha2-a, ha2-b, ha3) are predefined and always considered available
 - Configuration changes require a commit to take effect
 - Session synchronization requires HA2 interface configuration
 

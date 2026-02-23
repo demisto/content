@@ -1,6 +1,6 @@
 {
   "name": "PAN-OS High Availability",
-  "description": "Automated failover orchestration and High Availability management for Palo Alto Networks Firewalls and Panorama. Provides comprehensive HA configuration, state management, and automated failover capabilities for perimeter firewalls.",
+  "description": "Manage and orchestrate High Availability features on Palo Alto Networks Firewalls and Panorama.",
   "support": "community",
   "currentVersion": "1.1.5",
   "author": "Maciej Drobniuch",
@@ -25,6 +25,7 @@
   ],
   "keywords": [
     "panos",
+    "palo alto networks",
     "firewall",
     "ha",
     "high availability",
@@ -36,6 +37,7 @@
   ],
   "dependencies": {},
   "displayedImages": [],
-  "githubUser": [],
-  "certification": "verified"
+  "githubUser": [
+    "mdrobniu"
+  ]
 }
