@@ -5,9 +5,9 @@ alter // init aliases for root level & common objects for supporting both camelC
 | alter 
     finding_process = coalesce(finding_service -> RuntimeDetails.Process{}, service -> runtimeDetails.process{}), 
     finding_network = coalesce(finding_service -> Action.NetworkConnectionAction{}, service -> action.networkConnectionAction{}),
-    finding_aws_api = coalesce(finding_service -> Action.AwsApiCallAction, service -> action.awsApiCallAction),
-    finding_k8s_api = coalesce(finding_service -> Action.KubernetesApiCallAction, service -> action.kubernetesApiCallAction),
-    finding_rds_login = coalesce(finding_service -> Action.RdsLoginAttemptAction, service -> action.rdsLoginAttemptAction)
+    finding_aws_api = coalesce(finding_service -> Action.AwsApiCallAction{}, service -> action.awsApiCallAction{}),
+    finding_k8s_api = coalesce(finding_service -> Action.KubernetesApiCallAction{}, service -> action.kubernetesApiCallAction{}),
+    finding_rds_login = coalesce(finding_service -> Action.RdsLoginAttemptAction{}, service -> action.rdsLoginAttemptAction{})
     
 | alter  // extract common finding fields: https://docs.aws.amazon.com/guardduty/latest/APIReference/API_Finding.html
     finding_account_id = coalesce(AccountId, accountId), // The ID of the account in which the finding was generated. 
