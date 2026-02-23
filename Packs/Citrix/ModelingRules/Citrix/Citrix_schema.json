@@ -44,7 +44,47 @@
         "type": "string",
         "is_array": false
       },
+      "Id": {
+        "type": "string",
+        "is_array": false
+      },
       "actorType": {
+        "type": "string",
+        "is_array": false
+      },
+      "Text": {
+        "type": "string",
+        "is_array": false
+      },
+      "OperationType": {
+        "type": "string",
+        "is_array": false
+      },
+      "IsSuccessful": {
+        "type": "string",
+        "is_array": false
+      },
+      "AdminMachineIP": {
+        "type": "string",
+        "is_array": false
+      },
+      "Source": {
+        "type": "string",
+        "is_array": false
+      },
+      "User": {
+        "type": "string",
+        "is_array": false
+      },
+      "UserIdentity": {
+        "type": "string",
+        "is_array": false
+      },
+      "TargetTypes": {
+        "type": "string",
+        "is_array": false
+      },
+      "Parameters": {
         "type": "string",
         "is_array": false
       }
