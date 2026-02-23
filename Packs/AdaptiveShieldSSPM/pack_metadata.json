@@ -1,6 +1,6 @@
 {
     "name": "Adaptive Shield SSPM",
-    "description": "Adaptive Shield SSPM Event Collector fetches security check events from Adaptive Shield and sends them to Cortex XSIAM.",
+    "description": "Adaptive Shield SSPM fetches security check events from Adaptive Shield and sends them to Cortex XSIAM.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

@@ -33,7 +33,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### adaptive-shield-sspm-get-events
 
 ***
-Fetches security check events from Adaptive Shield. Use with caution during development or debugging; this command may trigger event duplication or exceed API request limits.
+Fetches security check events from Adaptive Shield. Use with caution during development or debugging. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
 
 #### Base Command
 
