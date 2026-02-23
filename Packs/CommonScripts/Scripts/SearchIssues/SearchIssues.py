@@ -39,8 +39,8 @@ SEARCH_SHA256_FIELDS = [
 
 
 def remove_empty_string_values(args: dict) -> dict:
-    """Remove empty string values from the args dictionary."""
-    return {key: value for key, value in args.items() if value != ""}
+    """Remove empty or blank string values from the args dictionary."""
+    return {key: value for key, value in args.items() if str(value).strip() not in ("", ",")}
 
 
 def prepare_start_end_time(args: dict):
