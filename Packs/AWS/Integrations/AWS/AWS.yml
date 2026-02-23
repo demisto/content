@@ -11918,7 +11918,7 @@ script:
       description: The end date and time of the request, in UTC format.
       type: date
     - contextPath: AWS.EC2.Fleet.Fleets.ReplaceUnhealthyInstances
-      description: Indicates whether EC2 Fleet should replace unhealthy instances.
+      description: Whether EC2 Fleet should replace unhealthy instances.
       type: boolean
     - contextPath: AWS.EC2.Fleet.Fleets.SpotOptions.AllocationStrategy
       description: Indicates how to allocate the target capacity across the Spot pools specified by the Spot Fleet request.

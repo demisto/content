@@ -429,6 +429,43 @@ def aws_ec2_fleet_command_launch_templates_config_args_builder(args: Dict[str, A
     ]
 
 
+def aws_ec2_fleet_create_args_builder(args: Dict[str, Any]) -> Dict[str, Any]:
+    return {
+        "ExcessCapacityTerminationPolicy": args.get("excess_capacity_termination_policy"),
+        "ReplaceUnhealthyInstances": arg_to_bool_or_none(args.get("replace_unhealthy_instances")),
+        "TerminateInstancesWithExpiration": arg_to_bool_or_none(args.get("terminate_instances_with_expiration")),
+        "Type": args.get("type"),
+        "ValidFrom": datetime_to_string(args.get("valid_from")),
+        "ValidUntil": datetime_to_string(args.get("valid_until")),
+        "LaunchTemplateConfigs": aws_ec2_fleet_command_launch_templates_config_args_builder(args),
+        "SpotOptions": {
+            "AllocationStrategy": args.get("spot_allocation_strategy"),
+            "InstanceInterruptionBehavior": args.get("instance_interruption_behavior"),
+            "InstancePoolsToUseCount": arg_to_number(args.get("instance_pools_to_use_count")),
+            "SingleInstanceType": arg_to_bool_or_none(args.get("spot_single_instance_type")),
+            "SingleAvailabilityZone": arg_to_bool_or_none(args.get("single_availability_zone")),
+            "MinTargetCapacity": arg_to_number(args.get("min_target_capacity")),
+            "MaxTotalPrice": args.get("max_total_price"),
+        },
+        "OnDemandOptions": {
+            "AllocationStrategy": args.get("on_demand_allocation_strategy"),
+            "SingleInstanceType": arg_to_bool_or_none(args.get("on_demand_single_instance_type")),
+            "SingleAvailabilityZone": arg_to_bool_or_none(args.get("on_demand_single_availability_zone")),
+            "MinTargetCapacity": arg_to_number(args.get("on_demand_min_target_capacity")),
+            "MaxTotalPrice": args.get("on_demand_max_total_price"),
+            "CapacityReservationOptions": {"UsageStrategy": args.get("capacity_reservation_strategy")},
+        },
+        "TargetCapacitySpecification": {
+            "TotalTargetCapacity": arg_to_number(args.get("total_target_capacity")),
+            "DefaultTargetCapacityType": args.get("default_target_capacity_type"),
+            "OnDemandTargetCapacity": arg_to_number(args.get("on_demand_target_capacity")),
+            "SpotTargetCapacity": arg_to_number(args.get("spot_target_capacity")),
+            "TargetCapacityUnitType": args.get("target_capacity_unit"),
+        },
+        "TagSpecifications": [{"ResourceType": "fleet", "Tags": parse_tag_field(args.get("tags"))}],
+    }
+
+
 class AWSErrorHandler:
     """
     Centralized error handling for AWS boto3 client errors.
@@ -4455,44 +4492,7 @@ class EC2:
         if len(launch_template_info) != 1:
             raise DemistoException("Either launch_template_id or launch_template_name must be provided, but not both")
 
-        kwargs: Dict[str, Any] = remove_empty_elements(
-            {
-                "ExcessCapacityTerminationPolicy": args.get("excess_capacity_termination_policy"),
-                "ReplaceUnhealthyInstances": arg_to_bool_or_none(args.get("replace_unhealthy_instances")),
-                "TerminateInstancesWithExpiration": arg_to_bool_or_none(args.get("terminate_instances_with_expiration")),
-                "Type": args.get("type"),
-                "ValidFrom": datetime_to_string(args.get("valid_from")),
-                "ValidUntil": datetime_to_string(args.get("valid_until")),
-                "LaunchTemplateConfigs": aws_ec2_fleet_command_launch_templates_config_args_builder(args),
-                "SpotOptions": {
-                    "AllocationStrategy": args.get("spot_allocation_strategy"),
-                    "InstanceInterruptionBehavior": args.get("instance_interruption_behavior"),
-                    "InstancePoolsToUseCount": arg_to_number(args.get("instance_pools_to_use_count")),
-                    "SingleInstanceType": arg_to_bool_or_none(args.get("spot_single_instance_type")),
-                    "SingleAvailabilityZone": arg_to_bool_or_none(args.get("single_availability_zone")),
-                    "MinTargetCapacity": arg_to_number(args.get("min_target_capacity")),
-                    "MaxTotalPrice": args.get("max_total_price"),
-                },
-                "OnDemandOptions": {
-                    "AllocationStrategy": args.get("on_demand_allocation_strategy"),
-                    "SingleInstanceType": arg_to_bool_or_none(args.get("on_demand_single_instance_type")),
-                    "SingleAvailabilityZone": arg_to_bool_or_none(args.get("on_demand_single_availability_zone")),
-                    "MinTargetCapacity": arg_to_number(args.get("on_demand_min_target_capacity")),
-                    "MaxTotalPrice": args.get("on_demand_max_total_price"),
-                    "CapacityReservationOptions": {"UsageStrategy": args.get("capacity_reservation_strategy")},
-                },
-                "TargetCapacitySpecification": {
-                    "TotalTargetCapacity": arg_to_number(args.get("total_target_capacity")),
-                    "DefaultTargetCapacityType": args.get("default_target_capacity_type"),
-                    "OnDemandTargetCapacity": arg_to_number(args.get("on_demand_target_capacity")),
-                    "SpotTargetCapacity": arg_to_number(args.get("spot_target_capacity")),
-                    "TargetCapacityUnitType": args.get("target_capacity_unit"),
-                },
-                "TagSpecifications": [{"ResourceType": "fleet", "Tags": parse_tag_field(args.get("tags"))}]
-                if args.get("tags")
-                else None,
-            }
-        )
+        kwargs: Dict[str, Any] = remove_empty_elements(aws_ec2_fleet_create_args_builder(args))
 
         print_debug_logs(client, f"Creating fleet with parameters: {kwargs}")
         response = client.create_fleet(**kwargs)
