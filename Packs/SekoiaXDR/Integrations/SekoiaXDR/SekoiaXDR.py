@@ -624,7 +624,7 @@ def fetch_incidents(
                     demisto.debug(f"Error fetching incident {incident['rawJSON']['short_id']}: {e}")
                     # Rerun command to get events
                     earliest_time = incident["rawJSON"]["first_seen_at"]
-                    latest_time = "now"
+                    latest_time = incident["rawJSON"]["last_seen_at"]
                     term = f"alert_short_ids:{incident['rawJSON']['short_id']}"
 
                     alert = handle_alert_events_query(client, incident["rawJSON"], earliest_time, latest_time, term)
@@ -725,7 +725,7 @@ def fetch_incidents(
         # Add events information to the alert, if fetch_mode is set to "Fetch With All Events"
         if fetch_mode == "Fetch With All Events":
             earliest_time = alert["first_seen_at"]
-            latest_time = "now"
+            latest_time = alert["last_seen_at"]
             term = f"alert_short_ids:{alert['short_id']}"
 
             alert = handle_alert_events_query(client, alert, earliest_time, latest_time, term)
@@ -845,7 +845,7 @@ def get_remote_data_command(
         # Add the events to the alert
         if mirror_events and alert["status"]["name"] not in ["Closed", "Rejected"]:
             earliest_time = alert["first_seen_at"]
-            latest_time = "now"
+            latest_time = alert["last_seen_at"]
             term = f"alert_short_ids:{alert['short_id']}"
 
             alert = handle_alert_events_query(client, alert, earliest_time, latest_time, term)
@@ -938,7 +938,7 @@ def get_remote_data_command(
             demisto.debug(f"Error fetching incident {alert_object['alert']['short_id']}: {e}")
             # Rerun command to get events
             earliest_time = alert_object["alert"]["first_seen_at"]
-            latest_time = "now"
+            latest_time = alert_object["alert"]["last_seen_at"]
             term = f"alert_short_ids:{alert_object['alert']['short_id']}"
 
             alert = handle_alert_events_query(client, alert_object["alert"], earliest_time, latest_time, term)
