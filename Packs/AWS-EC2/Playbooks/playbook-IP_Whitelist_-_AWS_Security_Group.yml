@@ -2,6 +2,7 @@ id: IP Whitelist - AWS Security Group
 version: -1
 name: IP Whitelist - AWS Security Group
 description: Sync a list of IP addresses to an AWS Security Group.
+internal: true
 starttaskid: "0"
 tasks:
   "0":
