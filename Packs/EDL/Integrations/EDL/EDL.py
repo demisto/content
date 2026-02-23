@@ -593,7 +593,16 @@ def ip_groups_to_cidrs(ip_range_groups: Iterable):
     ip_ranges = set()
     for cidr in ip_range_groups:
         # handle single ips
-        if len(cidr) == 1:
+        try:
+            cidr_size = cidr.size
+        except AttributeError:
+            # Fallback for objects without .size property
+            cidr_size = len(cidr)
+        except:
+            demisto.error(f"edl: Failed to collapse IP group {cidr} to CIDRs.")
+            raise
+
+        if cidr_size == 1:
             # CIDR with a single IP appears with "/32" suffix so handle them differently
             ip_ranges.add(str(cidr[0]))
             continue
@@ -616,7 +625,17 @@ def ip_groups_to_ranges(ip_range_groups: Iterable):
     ip_ranges = set()
     for group in ip_range_groups:
         # handle single ips
-        if len(group) == 1:
+        # Use .size property instead of len() to avoid IndexError for very large ranges
+        try:
+            group_size = group.size
+        except AttributeError:
+            # Fallback for objects without .size property
+            group_size = len(group)
+        except:
+            demisto.error(f"edl: Failed to collapse IP group {group} to range.")
+            raise
+
+        if group_size == 1:
             ip_ranges.add(str(group[0]))
             continue
 
