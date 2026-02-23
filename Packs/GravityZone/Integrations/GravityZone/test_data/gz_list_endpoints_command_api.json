@@ -85,48 +85,48 @@
             "managedWithBest": true,
             "policy": {
               "id": "63171c4569cad087a809a316",
-              "name": "slozovan cu RS",
+              "name": "POLICY_NAME",
               "applied": true
             }
           },
           {
             "id": "685e4b4170db527d0f254033",
-            "name": "sf-xdr-nsva",
+            "name": "ENDPOINT_NAME",
             "label": "",
-            "fqdn": "sf-xdr-nsva",
+            "fqdn": "ENDPOINT_NAME",
             "groupId": "GROUP_ID",
             "isManaged": true,
             "machineType": 2,
             "operatingSystemVersion": "Linux Ubuntu 24.04.2 LTS",
             "ip": "IP_93",
             "macs": [
-              "005056b1ca43"
+              "ENDPOINT_MAC"
             ],
             "ssid": "",
             "policy": {
               "id": "63171c4569cad087a809a316",
-              "name": "slozovan cu RS",
+              "name": "POLICY_NAME",
               "applied": true
             }
           },
           {
             "id": "6940eb0b646e8e69399ce4a6",
-            "name": "TABK3SPKIJ4N",
+            "name": "ENDPOINT_NAME",
             "label": "",
-            "fqdn": "tabk3spkij4n",
+            "fqdn": "ENDPOINT_NAME",
             "groupId": "GROUP_ID",
             "isManaged": true,
             "machineType": 2,
             "operatingSystemVersion": "Windows 10 Enterprise",
             "ip": "IP_214",
             "macs": [
-              "005056b8f2b1"
+              "ENDPOINT_MAC"
             ],
             "ssid": "",
             "managedWithBest": true,
             "policy": {
               "id": "63171c4569cad087a809a316",
-              "name": "slozovan cu RS",
+              "name": "POLICY_NAME",
               "applied": true
             }
           },

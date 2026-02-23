@@ -1,1 +1,36 @@
-{}
+{
+    "GravityZone.EndpointsList(val.ID && val.ID == obj.ID)": [
+        {
+            "ID": "67c87017f3e11f09dc9143e8",
+            "Hostname": "HOST_NAME",
+            "IP": "IP_158",
+            "OS": "Windows 10 Pro",
+            "MAC": "005056b1ef97",
+            "Vendor": "GravityZone"
+        },
+        {
+            "ID": "685e4b4170db527d0f254033",
+            "Hostname": "ENDPOINT_NAME",
+            "IP": "IP_93",
+            "OS": "Linux Ubuntu 24.04.2 LTS",
+            "MAC": "ENDPOINT_MAC",
+            "Vendor": "GravityZone"
+        },
+        {
+            "ID": "6940eb0b646e8e69399ce4a6",
+            "Hostname": "ENDPOINT_NAME",
+            "IP": "IP_214",
+            "OS": "Windows 10 Enterprise",
+            "MAC": "ENDPOINT_MAC",
+            "Vendor": "GravityZone"
+        },
+        {
+            "ID": "ENDPOINT_ID",
+            "Hostname": "ENDPOINT_NAME",
+            "IP": "ENDPOINT_IP",
+            "OS": "Windows 10 Pro",
+            "MAC": "ENDPOINT_MAC",
+            "Vendor": "GravityZone"
+        }
+    ]
+}

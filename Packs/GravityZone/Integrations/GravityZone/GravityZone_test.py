@@ -187,7 +187,7 @@ def test_get_modified_remote_data_command(mock_demisto, requests_mock):
     mock_demisto.params.return_value = {}
     load_api_mocked_data(requests_mock, "get-modified-remote-data")
     client = get_client()
-    result = get_modified_remote_data_command(client, {"lastUpdate": ""})
+    result = get_modified_remote_data_command(client, {"lastUpdate": "2026-01-01T00:00:00Z"})
     assert result.to_entry().get("Contents") == ["6940ee975f5c8b75247c3f38", "6940eeadaa87b3d57af088aa"]
 
 
@@ -273,32 +273,6 @@ def test_gz_list_endpoints_command(mock_demisto, requests_mock):
 
     # Assert command response
     assert_command_mocked_data("gz-list-endpoints", command_response)
-
-
-@patch("GravityZone.demisto")
-def test_endpoint_command(mock_demisto, requests_mock):
-    """
-    Given
-            All relevant arguments for the command that is executed
-    When
-            Calling endpoint command
-    Then
-            Make sure the outputs, outputs_prefix and outputs_key_field values are as expected.
-    """
-
-    # Prepare
-    from GravityZone import endpoint_command
-
-    mock_demisto.command.return_value = "endpoint"
-    mock_demisto.params.return_value = {}
-    load_api_mocked_data(requests_mock, "endpoint")
-    client = get_client()
-
-    # Execute command
-    command_response = endpoint_command(client=client, args={"id": "ENDPOINT_ID"})
-
-    # Assert command response
-    assert_command_mocked_data("endpoint", command_response)
 
 
 @patch("GravityZone.demisto")
@@ -966,7 +940,8 @@ def test_gz_download_investigation_package_from_endpoint_command(mock_demisto, m
     [("6942a43afe8d4e463ca5c197")],
 )
 @patch("GravityZone.demisto")
-def test_gz_upload_file_to_endpoint_command(mock_demisto, requests_mock, endpoint_id):
+@patch("GravityZone.FileManagement.get_file")
+def test_gz_upload_file_to_endpoint_command(mock_get_file, mock_demisto, requests_mock, endpoint_id):
     """
     Given
             All relevant arguments for the command that is executed
@@ -983,11 +958,7 @@ def test_gz_upload_file_to_endpoint_command(mock_demisto, requests_mock, endpoin
     )
 
     mock_demisto.command.return_value = "gz-upload-file-to-endpoint"
-    mock_demisto.getFilePath.return_value = {
-        "id": "abc",
-        "path": os.path.join(os.path.dirname(__file__), "test_data", "file_to_upload.txt"),
-        "name": "file_to_upload.txt",
-    }
+    mock_get_file.return_value = ("file_to_upload.txt", b"file_content")
     mock_demisto.params.return_value = {}
     load_api_mocked_data(requests_mock, "gz-upload-file-to-endpoint")
     client = get_client()

@@ -63,6 +63,7 @@ configuration:
   additionalinfo: The time period from which the first fetch will start.
 
 - name: mirror_direction
+  additionalinfo: The mirroring direction in which to mirror the incident. You can mirror "Incoming" (from GravityZone to Cortex XSOAR), "Outgoing" (from Cortex XSOAR to GravityZone), or in both directions.
   display: Mirroring Direction
   type: 15
   options:
@@ -71,10 +72,13 @@ configuration:
   - Outgoing
   - Both
   section: Collect
+  required: false
+
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 defaultmapperin: GravityZone - Incoming Mapper
 defaultclassifier: GravityZone - Classifier
 description: GravityZone provides secure access to incident and endpoint data and enables remediation actions through its APIs.
@@ -89,34 +93,30 @@ script:
 
   - name: gz-list-endpoints
     description: Retrieves the list of managed endpoints.
-    arguments: []
-
-  - name: endpoint
-    description: Retrieves details about an endpoint.
     arguments:
-    - name: id
+    - name: limit
       isArray: false
-      description: The ID of the endpoint to retrieve.
-      required: true
+      description: The maximum number of endpoints to retrieve.
+      required: false
       secret: false
       default: false
     outputs:
-    - contextPath: Endpoint.ID
+    - contextPath: GravityZone.EndpointsList.ID
       description: The endpoint ID.
       type: String
-    - contextPath: Endpoint.Hostname
+    - contextPath: GravityZone.EndpointsList.Hostname
       description: The endpoint hostname.
       type: String
-    - contextPath: Endpoint.IPAddress
+    - contextPath: GravityZone.EndpointsList.IP
       description: The endpoint IP address.
       type: String
-    - contextPath: Endpoint.OS
+    - contextPath: GravityZone.EndpointsList.OS
       description: The endpoint operating system version.
       type: String
-    - contextPath: Endpoint.Status
-      description: The endpoint status.
+    - contextPath: GravityZone.EndpointsList.MAC
+      description: The endpoint MAC address.
       type: String
-    - contextPath: Endpoint.Vendor
+    - contextPath: GravityZone.EndpointsList.Vendor
       description: The endpoint vendor.
       type: String
 
@@ -150,6 +150,24 @@ script:
       type: String
     - contextPath: GravityZone.Endpoint.LastLoggedUsers
       description: The last users who logged on the endpoint.
+      type: String
+    - contextPath: Endpoint.ID
+      description: The endpoint ID.
+      type: String
+    - contextPath: Endpoint.Hostname
+      description: The endpoint hostname.
+      type: String
+    - contextPath: Endpoint.IPAddress
+      description: The endpoint IP address.
+      type: String
+    - contextPath: Endpoint.OS
+      description: The endpoint operating system version.
+      type: String
+    - contextPath: Endpoint.Status
+      description: The endpoint status.
+      type: String
+    - contextPath: Endpoint.Vendor
+      description: The endpoint vendor.
       type: String
 
   - name: gz-download-investigation-package-from-endpoint
@@ -651,14 +669,32 @@ script:
       type: String
     - contextPath: GravityZone.Incident.Alerts.Resources
       description: The list of resources involved in the 'incident'-type incidents.
-      type: Unknown
+      type: Array
     - contextPath: GravityZone.Incident.RawJSON
       description: The raw JSON response from the GravityZone API.
-      type: Unknown
+      type: JSON
 
   - name: gz-list-incidents
     description: Retrieves incidents within the last three days from all endpoints or a specific endpoint.
     arguments:
+    - name: from_date
+      isArray: false
+      description: The start date to retrieve incidents from. The default value is the current date minus three days.
+      required: false
+      secret: false
+      default: false
+    - name: to_date
+      isArray: false
+      description: The end date to retrieve incidents until. The default value is the current date and time.
+      required: false
+      secret: false
+      default: false
+    - name: limit
+      isArray: false
+      description: The maximum number of incidents to retrieve.
+      required: false
+      secret: false
+      default: false
     - name: endpoint_id
       isArray: false
       description: The ID of the endpoint to list incidents for.
@@ -707,7 +743,7 @@ script:
       type: String
     - contextPath: GravityZone.SummarizedIncidents.RawJSON
       description: The raw JSON response from the GravityZone API.
-      type: Unknown
+      type: JSON
 
   - name: gz-add-incident-note
     description: Adds a note to one or more incidents.
@@ -759,7 +795,7 @@ script:
     outputs:
     - contextPath: GravityZone.Command.ChangeIncidentStatus.IncidentID
       description: The incident ID.
-      type: Unknown
+      type: String
     - contextPath: GravityZone.Command.ChangeIncidentStatus.IncidentStatus
       description: The requested status of the incident.
       type: String

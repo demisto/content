@@ -1,6 +1,7 @@
 {
     "name": "GravityZone",
     "description": "Retrieve security events and threats from GravityZone and manage the incident response",
+    "created": "2026-02-01T00:00:00Z",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Bitdefender",

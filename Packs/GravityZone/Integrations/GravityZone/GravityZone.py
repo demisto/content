@@ -50,6 +50,9 @@ LIVE_SEARCH_INTERVAL = 10
 LIVE_SEARCH_QUERY_PROCESS_PER_HASH = "QUERY_PROCESS_PER_HASH"
 LIVE_SEARCH_QUERY_RUNNING_HASH = "QUERY_RUNNING_HASH"
 
+GET_INCIDENTS_DELTA_DAYS = 3
+LOOPBACK_DAYS = 1
+
 POLL_TIMEOUT = 1200
 POLL_INTERVAL = 10
 
@@ -109,6 +112,9 @@ INCIDENT_STATUS_MAPPING = {
 
 ENDPOINT_DEVICE_STATE_MAPPING = {1: "Online", 2: "Offline", 3: "Offline"}
 
+ENDPOINTS_PER_PAGE = 100
+LIVE_SEARCH_PER_PAGE = 100
+INCIDENTS_PER_PAGE = 100
 
 """ CLIENT CLASS """
 
@@ -196,7 +202,7 @@ class Client(BaseClient):
         self,
         bucket_name: str,
         file_name: str,
-        file_path: str,
+        file_bytes: bytes,
         metadata: dict | None = None,
     ) -> Any:
         """
@@ -204,15 +210,12 @@ class Client(BaseClient):
         Args:
             bucket_name (str): The name of the storage bucket.
             file_name (str): The name of the file to upload.
-            file_path (str): The local path to the file.
+            file_bytes (bytes): The content of the file in bytes.
             metadata (Optional[dict]): Optional metadata for the file.
         Returns:
             Any: The response from the upload operation.
         """
-        with open(file_path, "rb") as f:
-            file_content = f.read()
-
-        files = {"file": (file_name, file_content, "application/octet-stream")}
+        files = {"file": (file_name, file_bytes, "application/octet-stream")}
         data = {}
         if metadata:
             data["metadata"] = json.dumps(metadata)
@@ -284,7 +287,7 @@ class Client(BaseClient):
         )
 
     @logger
-    def get_live_search_query_task_result(self, task_id: str, page: int = 1, per_page: int = 5000) -> Any:
+    def get_live_search_query_task_result(self, task_id: str, page: int = 1, per_page: int = LIVE_SEARCH_PER_PAGE) -> Any:
         """
         Get the results of a live search query task.
         Args:
@@ -310,9 +313,11 @@ class Client(BaseClient):
         return self.call("/v1.0/jsonrpc/companies", "getCompanyDetails")
 
     @logger
-    def get_endpoints(self) -> list[Any]:
+    def get_endpoints(self, limit: int) -> list[Any]:
         """
         Get the list of managed endpoints.
+        Args:
+            limit (int): The maximum number of endpoints to retrieve.
         Returns:
             list[Any]: A list of managed endpoints.
         """
@@ -320,7 +325,7 @@ class Client(BaseClient):
         parent_id = company_details["id"]
         all_endpoints = []
         page = 1
-        per_page = 100
+        per_page = ENDPOINTS_PER_PAGE
         while True:
             response = self.call(
                 "/v1.0/jsonrpc/network",
@@ -329,10 +334,10 @@ class Client(BaseClient):
             )
             items = response.get("items", [])
             all_endpoints.extend(items)
-            if page >= response.get("pagesCount", 1) or not items:
+            if len(all_endpoints) >= limit or page >= response.get("pagesCount", 1) or not items:
                 break
             page += 1
-        return all_endpoints
+        return all_endpoints[:limit]
 
     @logger
     def get_endpoint(self, endpoint_id: str) -> Any:
@@ -507,16 +512,17 @@ class Client(BaseClient):
         Returns:
             List[dict[str, Any]]: A list of incidents.
         """
-        params = {
-            "filters": {},
+        filters: dict[str, Any] = {}
+        if start_time and end_time:
+            filters.update({"startDate": start_time, "endDate": end_time})
+        if target_id:
+            filters.update({"endpointId": target_id})
+        params: dict[str, Any] = {
+            "filters": filters,
             "options": {"includeChildCompanies": True},
             "page": 1,
-            "perPage": 1000,
+            "perPage": INCIDENTS_PER_PAGE,
         }
-        if start_time and end_time:
-            params["filters"] = {"startDate": start_time, "endDate": end_time}
-        if target_id:
-            params["filters"] = {"endpointId": target_id}
 
         page = 1
         all_incidents = []
@@ -586,6 +592,30 @@ class FileManagement:
         self.client = client
 
     @logger
+    def get_file(self, entry_id: str) -> tuple[str, bytes]:
+        """
+        Get the file name and content for a given Demisto entry ID.
+        Args:
+            entry_id (str): The Demisto entry ID of the file.
+        Returns:
+            tuple[str, bytes]: The file name and its content as bytes.
+        """
+        file_ = demisto.getFilePath(entry_id)
+
+        file_name = file_.get("name")
+        file_path = file_.get("path")
+
+        if not file_path:
+            raise DemistoException(f"Could not find file for entry ID {entry_id}")
+        if not file_name:
+            raise DemistoException(f"Could not determine the file name for entry ID {entry_id}")
+
+        with open(file_path, "rb") as fopen:
+            file_bytes = fopen.read()
+
+        return file_name, file_bytes
+
+    @logger
     def upload_file(self, bucket_name: str, entry_id: str, metadata: dict | None = None) -> dict[str, Any]:
         """
         Upload a file to the GravityZone storage bucket from a Demisto entry ID.
@@ -596,17 +626,11 @@ class FileManagement:
         Returns:
             dict[str, Any]: The response from the upload operation.
         """
-        file_ = demisto.getFilePath(entry_id)
-        file_name = file_.get("name")
-        file_path = file_.get("path")
-        if not file_path:
-            raise DemistoException(f"Could not find file for entry ID {entry_id}")
-        if not file_name:
-            raise DemistoException(f"Could not determine the file name for entry ID {entry_id}")
+        file_name, file_bytes = self.get_file(entry_id)
         try:
-            return self.client.upload_file(bucket_name, file_name, file_path, metadata)
+            return self.client.upload_file(bucket_name, file_name, file_bytes, metadata)
         except FileNotFoundError:
-            raise DemistoException(f"File not found: {file_path}")
+            raise DemistoException(f"File not found: {file_name} for entry ID {entry_id}")
 
     @logger
     def _read_zip_from_memory(self, zip_bytes: bytes) -> bytes | None:
@@ -1285,6 +1309,26 @@ def generate_endpoint_by_contex_standard(device) -> Common.Endpoint:
     return endpoint
 
 
+def generate_endpoint_entry_from_list(device) -> dict[str, Any]:
+    """
+    Generate an endpoint entry dictionary from device data obtained from the list of endpoints.
+    Args:
+        device (dict): The device data from GravityZone.
+    Returns:
+        Dict[str, Any]: The generated endpoint entry.
+    """
+    device_id = device.get("id")
+    entry = {
+        "ID": device_id,
+        "Hostname": device.get("name"),
+        "IP": device.get("ip"),
+        "OS": device.get("operatingSystemVersion"),
+        "MAC": device.get("macs")[0],
+        "Vendor": INTEGRATION_NAME,
+    }
+    return entry
+
+
 def generate_endpoint_entry(device) -> dict[str, Any]:
     """
     Generate an endpoint entry dictionary from device data.
@@ -1553,10 +1597,14 @@ def generate_context_live_search_result(result: dict[str, Any], metadata: dict[s
         result (Dict[str, Any]): The raw live search result data.
     Returns:
         Dict[str, Any]: The formatted live search result."""
-    try:
-        json_data = json.loads(result.get("results", "{}"))
-    except Exception:
-        json_data = {}
+    results = result.get("results", {})
+    if isinstance(results, str):
+        try:
+            json_data = json.loads(results)
+        except Exception:
+            json_data = {}
+    else:
+        json_data = results if isinstance(results, dict) else {}
     data = {
         "EndpointID": result.get("protectedEntityId"),
         "Cmdline": json_data.get("cmdline", None),
@@ -1601,7 +1649,7 @@ def fill_task_output_with_metadata(data: dict[str, Any], task_type: str, metadat
 def fill_task_headers_with_metadata(task_type: str, metadata: dict[str, Any], headers: list) -> None:
     """
     Fill the task output headers with additional metadata based on the task type.
-    Args:x
+    Args:
         task_type (str): The type of the task.
         metadata (Dict[str, Any]): The additional metadata.
         headers (list): The list of headers to be updated.
@@ -1805,7 +1853,8 @@ def test_module(client: Client, args: dict[str, Any]) -> str:
     try:
         params = demisto.params()
         now_dt = datetime.now(UTC)
-        if params.get("isFetch"):
+        is_fetch = argToBoolean(params.get("isFetch", False))
+        if is_fetch:
             first_fetch_time = (now_dt - timedelta(minutes=1)).strftime(GZ_DATE_FORMAT)
             fetch_incidents(
                 client=client,
@@ -1896,9 +1945,9 @@ def fetch_incidents_command(client: Client, args: dict[str, Any]) -> None:
     incidents = []
 
     fetch_limit_param = params.get("max_fetch", FETCH_LIMIT)
-    look_back = int(params.get("look_back", 300))
+    look_back = arg_to_number(params.get("look_back")) or 300
     first_fetch = params.get("first_fetch", "3 days")
-    time_zone = params.get("time_zone", 0)
+    time_zone = arg_to_number(params.get("time_zone")) or 0
 
     last_run = demisto.getLastRun()
 
@@ -1952,14 +2001,14 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
         GetModifiedRemoteDataResponse: The response containing modified incident IDs.
     """
     remote_args = GetModifiedRemoteDataArgs(args)
-    end_time = datetime.now(UTC) + timedelta(days=7)
-    last_update_utc = dateparser.parse(remote_args.last_update, settings={"TIMEZONE": "UTC"})
-    # if last_update_utc is None:
-    last_update_utc = datetime.now(UTC) - timedelta(days=7)
+
+    last_update_utc = dateparser.parse(remote_args.last_update, settings={"TIMEZONE": "UTC"}) or datetime.now(UTC)
+    start_time = (last_update_utc - timedelta(days=LOOPBACK_DAYS)).strftime(GZ_DATE_FORMAT)
+    end_time = (datetime.now(UTC) + timedelta(days=LOOPBACK_DAYS)).strftime(GZ_DATE_FORMAT)
 
     raw_incidents = client.get_incidents(
-        start_time=last_update_utc.strftime(GZ_DATE_FORMAT),
-        end_time=end_time.strftime(GZ_DATE_FORMAT),
+        start_time=start_time,
+        end_time=end_time,
         max_fetch=1000,
     )
     modified_incident_ids = [incident.get("incidentId") for incident in raw_incidents]
@@ -1998,17 +2047,6 @@ def update_remote_system_command(client: Client, args: dict[str, Any]) -> str:
     """
     parsed_args = UpdateRemoteSystemArgs(args)
 
-    demisto.debug(
-        f"update_remote_system_command command args are:"
-        f"id: {parsed_args.remote_incident_id}, "
-        f"data: {parsed_args.data}, "
-        f"entries: {parsed_args.entries}, "
-        f"incident_changed: {parsed_args.incident_changed}, "
-        f"remote_incident_id: {parsed_args.remote_incident_id}, "
-        f"inc_status: {parsed_args.inc_status}, "
-        f"delta: {parsed_args.delta}"
-    )
-
     incident_id: str = parsed_args.remote_incident_id
 
     try:
@@ -2029,7 +2067,6 @@ def update_remote_system_command(client: Client, args: dict[str, Any]) -> str:
         )
         existing_gz_status = INCIDENT_STATUS_MAPPING.get(existing_cortex_status, GRAVITY_ZONE_INCIDENT_STATUS_OPEN)
         if gz_status != existing_gz_status:
-            demisto.debug(f"Changing incident {incident_id} status to {gz_status} from {existing_gz_status} in GravityZone")
             client.change_incident_status(incident_id, gz_status)
 
     except Exception:
@@ -2071,20 +2108,26 @@ def gz_list_incidents_command(client: Client, args: dict[str, Any]) -> CommandRe
     Args:
         client (Client): The GravityZone client instance.
         args (Dict[str, Any]): The command arguments.
+            from_date (str, optional): The start time for filtering incidents. Default is 3 days ago.
+            to_date (str, optional): The end time for filtering incidents. Default is now.
+            limit (int, optional): The maximum number of incidents to retrieve. Default is 50.
             endpoint_id (str, optional): The ID of the endpoint to filter incidents.
     Returns:
         CommandResults: The command results containing the list of incidents.
     """
     endpoint_id = args.get("endpoint_id", "")
+    from_date = arg_to_datetime(args.get("from_date")) or (datetime.now(UTC) - timedelta(days=GET_INCIDENTS_DELTA_DAYS))
+    to_date = arg_to_datetime(args.get("to_date")) or (datetime.now(UTC) + timedelta(minutes=5))
+    limit = arg_to_number(args.get("limit")) or FETCH_LIMIT
     incidents = []
 
-    now_dt = datetime.now(UTC)
-    start_time = (now_dt - timedelta(days=3)).strftime(GZ_DATE_FORMAT)
-    end_time = (now_dt + timedelta(days=3)).strftime(GZ_DATE_FORMAT)
+    start_time = from_date.strftime(GZ_DATE_FORMAT)
+    end_time = to_date.strftime(GZ_DATE_FORMAT)
 
     incidents = client.get_incidents(
         start_time=start_time,
         end_time=end_time,
+        max_fetch=limit,
         target_id=endpoint_id if endpoint_id else None,
     )
     context_data = generate_context_for_summarized_incidents(incidents)
@@ -2110,7 +2153,7 @@ def gz_add_incident_note_command(client: Client, args: dict[str, Any]) -> Comman
     Returns:
         CommandResults: The command results containing the status of the note addition.
     """
-    incident_ids = argToList(str(args.get("id", "UNKNOWN_INCIDENT_ID")))
+    incident_ids = argToList(args.get("id", []))
     note = args.get("note", "")
 
     command = "AddIncidentNote"
@@ -2169,7 +2212,7 @@ def gz_change_incident_status_command(client: Client, args: dict[str, Any]) -> C
     Returns:
         CommandResults: The command results containing the status of the status change.
     """
-    incident_ids = argToList(str(args.get("id", None)))
+    incident_ids = argToList(args.get("id", []))
     status = args.get("status", "PENDING")
 
     valid_statuses = {
@@ -2265,47 +2308,31 @@ def gz_list_endpoints_command(client: Client, args: dict[str, Any]) -> CommandRe
     Args:
         client (Client): The GravityZone client instance.
         args (Dict[str, Any]): The command arguments.
+            limit (int): The maximum number of endpoints to retrieve. Default is 100.
     Returns:
         CommandResults: The command results containing the list of endpoints.
     """
-    endpoints_details = client.get_endpoints()
-    endpoints = []
+    limit = arg_to_number(args.get("limit")) or ENDPOINTS_PER_PAGE
+    endpoints_details = client.get_endpoints(limit=limit)
     raw_endpoints = []
+    outputs = []
     for endpoint_details in endpoints_details:
-        endpoint = generate_endpoint_from_list_by_contex_standard(endpoint_details)
-        endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
-        endpoints.append(endpoint_context)
         raw_endpoints.append(endpoint_details)
+        outputs.append(generate_endpoint_entry_from_list(endpoint_details))
 
     return CommandResults(
-        readable_output=tableToMarkdown("Gravity Zone Endpoints", endpoints),
+        readable_output=tableToMarkdown(
+            "Gravity Zone Endpoints", outputs, headers=["ID", "Hostname", "IP", "OS", "MAC", "Vendor"]
+        ),
         raw_response=raw_endpoints,
+        outputs=outputs,
+        outputs_prefix="GravityZone.EndpointsList",
+        outputs_key_field="ID",
+        entry_type=EntryType.NOTE,
     )
 
 
-def endpoint_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """
-    Get an endpoint from GravityZone by its ID.
-    Args:
-        client (Client): The GravityZone client instance.
-        args (Dict[str, Any]): The command arguments.
-            id (str): The ID of the endpoint to retrieve.
-    Returns:
-        CommandResults: The command results containing the endpoint data.
-    """
-    endpoint_id = args.get("id", "")
-
-    endpoint_details = client.get_endpoint(endpoint_id)
-    endpoint = generate_endpoint_by_contex_standard(endpoint_details)
-    endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
-
-    return CommandResults(
-        readable_output=tableToMarkdown("Gravity Zone Endpoint", endpoint_context),
-        raw_response=endpoint_details,
-        indicator=endpoint,
-    )
-
-
+@logger
 def gz_get_endpoint_by_id_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get an endpoint from GravityZone by its ID.
@@ -2346,6 +2373,7 @@ def gz_get_endpoint_by_id_command(client: Client, args: dict[str, Any]) -> Comma
     )
 
 
+@logger
 def gz_isolate_endpoint_command(client: Client, args: dict[str, Any]) -> PollResult:
     """
     Isolate an endpoint in GravityZone by its ID.
@@ -2363,6 +2391,7 @@ def gz_isolate_endpoint_command(client: Client, args: dict[str, Any]) -> PollRes
     return get_task_results(client, result[0], {"endpointId": endpoint_id})
 
 
+@logger
 def gz_deisolate_endpoint_command(client: Client, args: dict[str, Any]) -> PollResult:
     """
     Deisolate an endpoint in GravityZone by its ID.
@@ -2380,6 +2409,7 @@ def gz_deisolate_endpoint_command(client: Client, args: dict[str, Any]) -> PollR
     return get_task_results(client, result[0], {"endpointId": endpoint_id})
 
 
+@logger
 def gz_run_command_on_endpoint_command(client: Client, args: dict[str, Any]) -> PollResult:
     """
     Run a command on an endpoint in GravityZone by its ID.
@@ -2409,6 +2439,7 @@ def gz_run_command_on_endpoint_command(client: Client, args: dict[str, Any]) -> 
     )
 
 
+@logger
 def gz_download_file_from_endpoint_command(client: Client, args: dict[str, Any]) -> PollResult:
     """
     Download a file from an endpoint in GravityZone by its ID.
@@ -2441,6 +2472,7 @@ def gz_download_file_from_endpoint_command(client: Client, args: dict[str, Any])
     )
 
 
+@logger
 def gz_upload_file_to_endpoint_command(client: Client, args: dict[str, Any]) -> PollResult:
     """
     Upload a file to an endpoint in GravityZone by its ID.
@@ -2475,6 +2507,7 @@ def gz_upload_file_to_endpoint_command(client: Client, args: dict[str, Any]) -> 
     )
 
 
+@logger
 def gz_download_investigation_package_from_endpoint_command(client: Client, args: dict[str, Any]) -> PollResult:
     """
     Download an investigation package from an endpoint in GravityZone by its ID.
@@ -2515,6 +2548,7 @@ def gz_download_investigation_package_from_endpoint_command(client: Client, args
     )
 
 
+@logger
 def gz_kill_process_on_endpoint_command(client: Client, args: dict[str, Any]) -> PollResult:
     """
     Kill a process on an endpoint in GravityZone by its Process ID.
@@ -2527,7 +2561,14 @@ def gz_kill_process_on_endpoint_command(client: Client, args: dict[str, Any]) ->
         PollResult: The command results of the process kill.
     """
     endpoint_id = args.get("id", "")
-    process_id = int(args.get("pid", 0))
+    process_id = arg_to_number(args.get("pid"))
+    if process_id is None:
+        return PollResult(
+            CommandResults(
+                readable_output="Invalid process ID.",
+                entry_type=EntryType.ERROR,
+            )
+        )
 
     kill_task_id = client.start_kill_process_on_endpoint(endpoint_id, process_id)
 
@@ -2562,7 +2603,6 @@ def main():
             "gz-poll-live-search-status": gz_poll_live_search_status_command,
             ### GravityZone Endpoint Commands ###
             "gz-list-endpoints": gz_list_endpoints_command,
-            "endpoint": endpoint_command,
             "gz-get-endpoint-by-id": gz_get_endpoint_by_id_command,
             "gz-download-investigation-package-from-endpoint": gz_download_investigation_package_from_endpoint_command,
             "gz-download-file-from-endpoint": gz_download_file_from_endpoint_command,
