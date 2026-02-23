@@ -15,11 +15,11 @@ Follow these steps for a self-deployed configuration.
 2. Search for Stairwell.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | API Key | True |
-    | Use system proxy settings | False |
-    | Trust any certificate (not secure) | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| API Key | True |
+| Use system proxy settings | False |
+| Trust any certificate (not secure) | False |
 
 4. Click **Test** to validate the API key and connection.
 

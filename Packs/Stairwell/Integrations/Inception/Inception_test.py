@@ -1,7 +1,7 @@
 from Inception import (
-    Client, 
-    variant_discovery_command, 
-    file_enrichment_command, 
+    Client,
+    variant_discovery_command,
+    file_enrichment_command,
     intake_preflight_and_upload,
     ai_triage_summarize_command,
     object_sightings_command,
@@ -23,7 +23,13 @@ from Inception import (
     utilities_canonicalize_hostname_command,
     utilities_compute_etld_plus_one_command,
     utilities_batch_canonicalize_urls_command,
-    utilities_canonicalize_url_command
+    utilities_canonicalize_url_command,
+    yara_create_rule_command,
+    yara_get_rule_command,
+    yara_query_matches_command,
+    asset_list_command,
+    asset_create_command,
+    asset_get_command
 )
 import json
 import io
@@ -49,14 +55,21 @@ test_client_v1 = Client(
     base_url='https://app.stairwell.com/v1/objects/',
     verify=False,
     proxy=False,
-    headers={"X-Apikey": API_KEY}
+    headers={"Authorization": API_KEY}
 )
 
 test_client_network = Client(
     base_url='https://app.stairwell.com/v1/network/',
     verify=False,
     proxy=False,
-    headers={"X-Apikey": API_KEY}
+    headers={"Authorization": API_KEY}
+)
+
+test_client_v1_base = Client(
+    base_url='https://app.stairwell.com/v1/',
+    verify=False,
+    proxy=False,
+    headers={"Authorization": API_KEY}
 )
 
 
@@ -110,11 +123,11 @@ def test_intake_preflight_and_upload_missing_args():
     """Test intake_preflight_and_upload with missing required arguments"""
     # Test missing asset_id
     results = intake_preflight_and_upload(asset_id="", file_path="/path/to/file")
-    assert results.readable_output == "Missing required arguments: assetId"
+    assert results.readable_output == "Missing required arguments: asset_id"
     
     # Test missing file_path
     results = intake_preflight_and_upload(asset_id="test-asset", file_path="")
-    assert results.readable_output == "Missing required arguments: filePath"
+    assert results.readable_output == "Missing required arguments: file_path"
 
 
 def test_intake_preflight_and_upload_already_exists(requests_mock):
@@ -437,7 +450,7 @@ def test_run_to_ground_generate_command_success(requests_mock):
         base_url='https://app.stairwell.com/v1/',
         verify=False,
         proxy=False,
-        headers={"X-Apikey": API_KEY}
+        headers={"Authorization": API_KEY}
     )
     
     mock_response = {
@@ -467,7 +480,7 @@ def test_run_to_ground_generate_command_missing_args():
         base_url='https://app.stairwell.com/v1/',
         verify=False,
         proxy=False,
-        headers={"X-Apikey": API_KEY}
+        headers={"Authorization": API_KEY}
     )
     
     results = run_to_ground_generate_command(test_client_rtg, "")
@@ -482,7 +495,7 @@ def test_run_to_ground_generate_command_multiple_objects(requests_mock):
         base_url='https://app.stairwell.com/v1/',
         verify=False,
         proxy=False,
-        headers={"X-Apikey": API_KEY}
+        headers={"Authorization": API_KEY}
     )
     
     mock_response = {"analysis": {"objects": [TEST_OBJECT_ID, TEST_FILE_HASH]}}
@@ -508,7 +521,7 @@ def test_asn_get_whois_command_success(requests_mock):
         "country": "US"
     }
     
-    requests_mock.get("https://app.stairwell.com/v1/network/asn/12345/whois", json=mock_response)
+    requests_mock.get("https://app.stairwell.com/v1/network/asns/12345/whois", json=mock_response)
     
     results = asn_get_whois_command(test_client_network, "12345")
     
@@ -519,7 +532,7 @@ def test_asn_get_whois_command_success(requests_mock):
 
 def test_asn_get_whois_command_notfound(requests_mock):
     """Test ASN get whois command with 404 error"""
-    requests_mock.get("https://app.stairwell.com/v1/network/asn/99999/whois", status_code=404)
+    requests_mock.get("https://app.stairwell.com/v1/network/asns/99999/whois", status_code=404)
     
     results = asn_get_whois_command(test_client_network, "99999")
     
@@ -589,7 +602,7 @@ def test_hostname_batch_get_resolutions_command_success(requests_mock):
         }
     }
     
-    requests_mock.post("https://app.stairwell.com/v1/network/hostname/batch/resolutions", json=mock_response)
+    requests_mock.post("https://app.stairwell.com/v1/network/hostnames:batch-resolutions", json=mock_response)
     
     results = hostname_batch_get_resolutions_command(test_client_network, "example.com,test.com")
     
@@ -758,7 +771,7 @@ def test_utilities_batch_canonicalize_urls_command_success(requests_mock):
         }
     }
     
-    requests_mock.post("https://app.stairwell.com/v1/network/utilities/batch/canonicalizeurls", json=mock_response)
+    requests_mock.post("https://app.stairwell.com/v1/network/utilities/urls:batch-canonicalize", json=mock_response)
     
     results = utilities_batch_canonicalize_urls_command(test_client_network, "HTTPS://EXAMPLE.COM/PATH,HTTP://TEST.COM/")
     
@@ -780,3 +793,176 @@ def test_utilities_canonicalize_url_command_success(requests_mock):
     assert results
     assert results.outputs_prefix == "Stairwell.Utilities.CanonicalizedURL"
     assert results.outputs.get("canonicalized") == "https://example.com/path"
+
+
+# YARA Rules Tests
+def test_yara_create_rule_command_success(requests_mock):
+    """Test YARA create rule command with successful response"""
+    TEST_ENV = "test-environment-id"
+    mock_response = {
+        "name": "environments/test-environment-id/yaraRules/rule-123",
+        "definition": "rule simple_rule { condition: true }",
+        "state": "ACTIVE"
+    }
+
+    requests_mock.post(
+        f"https://app.stairwell.com/v1/environments/{TEST_ENV}/yaraRules",
+        json=mock_response
+    )
+
+    results = yara_create_rule_command(test_client_v1_base, TEST_ENV, "rule simple_rule { condition: true }")
+
+    assert results
+    assert results.outputs_prefix == "Stairwell.YaraRule"
+
+
+def test_yara_create_rule_command_missing_args():
+    """Test YARA create rule command with missing arguments"""
+    results = yara_create_rule_command(test_client_v1_base, "", "rule simple_rule { condition: true }")
+
+    assert results
+    assert "Missing required arguments" in results.readable_output
+
+
+def test_yara_get_rule_command_success(requests_mock):
+    """Test YARA get rule command with successful response"""
+    TEST_ENV = "test-environment-id"
+    TEST_RULE = "rule-123"
+    mock_response = {
+        "name": f"environments/{TEST_ENV}/yaraRules/{TEST_RULE}",
+        "definition": "rule simple_rule { condition: true }",
+        "state": "ACTIVE",
+        "matchCounts": {}
+    }
+
+    requests_mock.get(
+        f"https://app.stairwell.com/v1/environments/{TEST_ENV}/yaraRules/{TEST_RULE}",
+        json=mock_response
+    )
+
+    results = yara_get_rule_command(test_client_v1_base, TEST_ENV, TEST_RULE)
+
+    assert results
+    assert results.outputs_prefix == "Stairwell.YaraRule"
+
+
+def test_yara_get_rule_command_notfound(requests_mock):
+    """Test YARA get rule command with 404 error"""
+    TEST_ENV = "test-environment-id"
+    TEST_RULE = "nonexistent-rule"
+
+    requests_mock.get(
+        f"https://app.stairwell.com/v1/environments/{TEST_ENV}/yaraRules/{TEST_RULE}",
+        status_code=404
+    )
+
+    results = yara_get_rule_command(test_client_v1_base, TEST_ENV, TEST_RULE)
+
+    assert results
+
+
+def test_yara_query_matches_command_success(requests_mock):
+    """Test YARA query matches command with successful response"""
+    TEST_ENV = "test-environment-id"
+    TEST_RULE = "rule-123"
+    mock_response = {
+        "objects": [
+            {"sha256": TEST_FILE_HASH, "md5": "abc123", "sha1": "def456"},
+        ],
+        "nextPageToken": ""
+    }
+
+    requests_mock.get(
+        f"https://app.stairwell.com/v1/environments/{TEST_ENV}/yaraRules/{TEST_RULE}/matchingObjects",
+        json=mock_response
+    )
+
+    results = yara_query_matches_command(test_client_v1_base, TEST_ENV, TEST_RULE)
+
+    assert results
+    assert results.outputs_prefix == "Stairwell.YaraRuleMatches"
+
+
+# Asset Management Tests
+def test_asset_list_command_success(requests_mock):
+    """Test asset list command with successful response"""
+    TEST_ENV = "test-environment-id"
+    mock_response = {
+        "assets": [
+            {"name": "assets/VPNB84-P9L3H4-QDTEFJ-JCJ2U8A6", "label": "test-endpoint"},
+            {"name": "assets/XXXX-YYYY-ZZZZ", "label": "another-endpoint"}
+        ]
+    }
+
+    requests_mock.get(
+        f"https://app.stairwell.com/v1/environments/{TEST_ENV}/assets",
+        json=mock_response
+    )
+
+    results = asset_list_command(test_client_v1_base, TEST_ENV)
+
+    assert results
+    assert results.outputs_prefix == "Stairwell.Assets"
+
+
+def test_asset_list_command_missing_args():
+    """Test asset list command with missing arguments"""
+    results = asset_list_command(test_client_v1_base, "")
+
+    assert results
+    assert "Missing required arguments" in results.readable_output
+
+
+def test_asset_create_command_success(requests_mock):
+    """Test asset create command with successful response"""
+    TEST_ENV = "test-environment-id"
+    mock_response = {
+        "name": "assets/VPNB84-P9L3H4-QDTEFJ-JCJ2U8A6",
+        "label": "test-endpoint",
+        "uploadToken": "token-abc-123"
+    }
+
+    requests_mock.post(
+        f"https://app.stairwell.com/v1/environments/{TEST_ENV}/assets",
+        json=mock_response
+    )
+
+    results = asset_create_command(test_client_v1_base, TEST_ENV, "test-endpoint")
+
+    assert results
+    assert results.outputs_prefix == "Stairwell.Asset"
+
+
+def test_asset_get_command_success(requests_mock):
+    """Test asset get command with successful response"""
+    TEST_ASSET = "VPNB84-P9L3H4-QDTEFJ-JCJ2U8A6"
+    mock_response = {
+        "name": f"assets/{TEST_ASSET}",
+        "label": "test-endpoint",
+        "uploadToken": "token-abc-123"
+    }
+
+    requests_mock.get(
+        f"https://app.stairwell.com/v1/assets/{TEST_ASSET}",
+        json=mock_response
+    )
+
+    results = asset_get_command(test_client_v1_base, TEST_ASSET)
+
+    assert results
+    assert results.outputs_prefix == "Stairwell.Asset"
+
+
+def test_asset_get_command_notfound(requests_mock):
+    """Test asset get command with 404 error"""
+    TEST_ASSET = "NONEXISTENT-ASSET-ID"
+
+    requests_mock.get(
+        f"https://app.stairwell.com/v1/assets/{TEST_ASSET}",
+        status_code=404
+    )
+
+    results = asset_get_command(test_client_v1_base, TEST_ASSET)
+
+    assert results
+    assert "not found" in results.readable_output.lower()

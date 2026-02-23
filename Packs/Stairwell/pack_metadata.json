@@ -1,8 +1,9 @@
 {
     "name": "Stairwell",
-    "description": "Stairwell continuously collects, stores, and analyzes threat intelligence, malware and executable files, scripts, and artifacts in a private vault. Upload files from War Room, URLs, or file paths with automatic analysis.",
+    "description": "Stairwell continuously collects, stores, and analyzes threat intelligence and malware files in a private, out-of-band vault.",
     "support": "partner",
     "currentVersion": "2.0.0",
+    "created": "2024-05-20T00:00:00Z",
     "author": "Stairwell",
     "url": "https://www.stairwell.com",
     "email": "support@stairwell.com",
@@ -20,6 +21,7 @@
         "Threat Intelligence Management"
     ],
     "keywords": [
+        "Stairwell",
         "Malware",
         "Enrichment",
         "Variant Discovery",

@@ -32,28 +32,6 @@ UPLOAD_TIMEOUT = 600      # seconds for GCS upload
 RETRY_COUNT = 3
 RETRY_BACKOFF_FACTOR = 1.5  # exponential backoff factor
 
-# HTTP Error Code Mappings for User-Friendly Messages
-HTTP_ERROR_MESSAGES = {
-    400: "Bad request. Check command parameters - one or more values may be invalid or incorrectly formatted.",
-    401: "Authentication failed. Check your API Key in the integration configuration.",
-    403: "Permission denied. Your API Key does not have permission for this operation.",
-    404: "Resource not found. The requested {resource_type} does not exist or may have been deleted.",
-    429: "Rate limit exceeded. Too many requests to Stairwell API. Please wait and try again.",
-    500: "Internal server error. Stairwell API is experiencing issues. Try again later.",
-    502: "Bad gateway. Unable to reach Stairwell API servers.",
-    503: "Service unavailable. Stairwell API is temporarily down for maintenance.",
-    504: "Gateway timeout. Stairwell API took too long to respond."
-}
-
-
-def get_http_error_message(status_code: int, resource_type: str = "resource", custom_context: str = "") -> str:
-    """Get user-friendly error message for HTTP status code."""
-    base_message = HTTP_ERROR_MESSAGES.get(status_code, f"Request failed with status {status_code}")
-    message = base_message.replace("{resource_type}", resource_type)
-    if custom_context:
-        message = f"{message} {custom_context}"
-    return message
-
 
 # --------------------------------
 # Helpers
@@ -487,6 +465,15 @@ class Client(BaseClient):
             timeout=HTTP_TIMEOUT
         )
 
+    def intake_preflight(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        """Send intake preflight request to Stairwell Intake API."""
+        return self._http_request(
+            method='POST',
+            url_suffix='',
+            json_data=payload,
+            timeout=HTTP_TIMEOUT
+        )
+
     # YARA Rules API Methods
     def list_yara_rules(self, environment: str, page_size: Optional[int] = None, page_token: Optional[str] = None) -> Dict[str, Any]:
         """List all YARA rules in an environment."""
@@ -640,7 +627,7 @@ def test_module(client):  # pragma: no cover
 
 
 def file_enrichment_command(client: Client, file_hash: str) -> CommandResults:
-    missing = _require_args({"fileHash": file_hash})
+    missing = _require_args({"file_hash": file_hash})
     if missing:
         return missing
     try:
@@ -758,7 +745,7 @@ def ai_triage_summarize_command(client: Client, object_id: str) -> CommandResult
     """
     Get AI-generated summary for a file using Stairwell AI Triage.
     """
-    missing = _require_args({"objectId": object_id})
+    missing = _require_args({"object_id": object_id})
     if missing:
         return missing
     
@@ -936,7 +923,7 @@ def ai_triage_summarize_command(client: Client, object_id: str) -> CommandResult
 
 
 def object_sightings_command(client: Client, object_id: str) -> CommandResults:
-    missing = _require_args({"objectId": object_id})
+    missing = _require_args({"object_id": object_id})
     if missing:
         return missing
 
@@ -963,7 +950,7 @@ def object_sightings_command(client: Client, object_id: str) -> CommandResults:
 
 
 def object_detonation_trigger_command(client: Client, object_id: str) -> CommandResults:
-    missing = _require_args({"objectId": object_id})
+    missing = _require_args({"object_id": object_id})
     if missing:
         return missing
 
@@ -991,7 +978,7 @@ def object_detonation_trigger_command(client: Client, object_id: str) -> Command
 
 
 def object_detonation_get_command(client: Client, object_id: str) -> CommandResults:
-    missing = _require_args({"objectId": object_id})
+    missing = _require_args({"object_id": object_id})
     if missing:
         return missing
 
@@ -1017,7 +1004,7 @@ def object_detonation_get_command(client: Client, object_id: str) -> CommandResu
 
 
 def object_opinions_command(client: Client, object_id: str) -> CommandResults:
-    missing = _require_args({"objectId": object_id})
+    missing = _require_args({"object_id": object_id})
     if missing:
         return missing
 
@@ -1044,7 +1031,7 @@ def object_opinions_command(client: Client, object_id: str) -> CommandResults:
 
 
 def run_to_ground_generate_command(client: Client, object_ids: str) -> CommandResults:
-    missing = _require_args({"objectIds": object_ids})
+    missing = _require_args({"object_ids": object_ids})
     if missing:
         return missing
 
@@ -1172,7 +1159,7 @@ def hostname_batch_get_resolutions_command(client: Client, hostnames: str, start
         # Parse includeErrors boolean
         include_errors_bool = None
         if include_errors:
-            include_errors_bool = include_errors.lower() in ["true", "yes", "1"]
+            include_errors_bool = argToBoolean(include_errors)
 
         response = client.batch_get_hostname_resolutions(hostname_list, start_time, end_time, record_types_list, include_errors_bool)
 
@@ -1202,7 +1189,7 @@ def hostname_batch_get_resolutions_command(client: Client, hostnames: str, start
 # Network Intel Command Functions - IP Address
 def ipaddress_get_command(client: Client, ip_address: str) -> CommandResults:
     """Get IP address entity with enrichment data."""
-    missing = _require_args({"ipAddress": ip_address})
+    missing = _require_args({"ip_address": ip_address})
     if missing:
         return missing
 
@@ -1229,7 +1216,7 @@ def ipaddress_get_command(client: Client, ip_address: str) -> CommandResults:
 
 def ipaddress_lookup_cloud_provider_command(client: Client, ip_address: str) -> CommandResults:
     """Check if an IP address belongs to a known cloud provider."""
-    missing = _require_args({"ipAddress": ip_address})
+    missing = _require_args({"ip_address": ip_address})
     if missing:
         return missing
 
@@ -1256,7 +1243,7 @@ def ipaddress_lookup_cloud_provider_command(client: Client, ip_address: str) -> 
 
 def ipaddress_get_hostnames_resolving_to_ip_command(client: Client, ip_address: str, start_time: Optional[str] = None, end_time: Optional[str] = None) -> CommandResults:
     """Get all hostnames resolved to by an IP address."""
-    missing = _require_args({"ipAddress": ip_address})
+    missing = _require_args({"ip_address": ip_address})
     if missing:
         return missing
 
@@ -1284,7 +1271,7 @@ def ipaddress_get_hostnames_resolving_to_ip_command(client: Client, ip_address: 
 
 def ipaddress_get_whois_command(client: Client, ip_address: str) -> CommandResults:
     """Get WHOIS information for an IP address."""
-    missing = _require_args({"ipAddress": ip_address})
+    missing = _require_args({"ip_address": ip_address})
     if missing:
         return missing
 
@@ -1485,7 +1472,8 @@ def utilities_canonicalize_url_command(client: Client, url: str) -> CommandResul
             raise DemistoException(f"Failed to canonicalize URL '{url}': {err}") from err
 
 
-def intake_preflight_and_upload(asset_id: Optional[str] = None,
+def intake_preflight_and_upload(client: Optional[Any] = None,
+                                asset_id: Optional[str] = None,
                                 entry_id: Optional[str] = None,
                                 url: Optional[str] = None,
                                 file_path: Optional[str] = None,
@@ -1501,7 +1489,7 @@ def intake_preflight_and_upload(asset_id: Optional[str] = None,
     Implements Stairwell Intake API 'preflight' + conditional upload with retries.
     """
     # Validate required args
-    missing = _require_args({"assetId": asset_id})
+    missing = _require_args({"asset_id": asset_id})
     if missing:
         return missing
 
@@ -1563,28 +1551,22 @@ def intake_preflight_and_upload(asset_id: Optional[str] = None,
         }
 
         proxies = handle_proxy() if use_proxy else None
-        # Preflight with retries using session-based retry mechanism
-        session = _create_session_with_retries()
 
         try:
-            resp = session.post(
-                INTAKE_PREFLIGHT_URL,
-                json=payload,
-                verify=verify,
-                proxies=proxies,
-                timeout=HTTP_TIMEOUT
-            )
-            resp.raise_for_status()
-
-            try:
-                preflight = resp.json() if resp.content else {}
-            except (ValueError, TypeError, json.JSONDecodeError) as e:
-                return CommandResults(
-                    readable_output=f"Failed to parse preflight response. Raw response: {resp.text[:200]}",
-                    outputs_prefix="Stairwell.Intake",
-                    outputs={"error": "json_parse_error", "details": str(e)}
+            if client is not None:
+                preflight = client.intake_preflight(payload)
+            else:
+                # Fallback: direct session POST (no auth)
+                session = _create_session_with_retries()
+                resp = session.post(
+                    INTAKE_PREFLIGHT_URL,
+                    json=payload,
+                    verify=verify,
+                    proxies=proxies,
+                    timeout=HTTP_TIMEOUT
                 )
-
+                resp.raise_for_status()
+                preflight = resp.json() if resp.content else {}
         except requests.exceptions.Timeout:
             return CommandResults(
                 readable_output=f"Intake preflight request timed out after {HTTP_TIMEOUT} seconds. The Stairwell API may be experiencing high load. Please try again later.",
@@ -1597,9 +1579,9 @@ def intake_preflight_and_upload(asset_id: Optional[str] = None,
                 outputs_prefix="Stairwell.Intake",
                 outputs={"error": str(e)}
             )
-        except requests.HTTPError as http_err:
+        except (requests.exceptions.HTTPError, DemistoException) as http_err:
             return CommandResults(
-                readable_output=f"HTTP error during Intake preflight: {http_err}",
+                readable_output=f"HTTP error during Intake preflight/upload: {http_err}",
                 outputs_prefix="Stairwell.Intake",
                 outputs={"error": str(http_err)}
             )
@@ -1724,7 +1706,7 @@ def intake_preflight_and_upload(asset_id: Optional[str] = None,
 # YARA Rules Command Functions
 def yara_create_rule_command(client: Client, environment: str, rule_definition: str) -> CommandResults:
     """Create a new YARA rule."""
-    missing = _require_args({"environment": environment, "ruleDefinition": rule_definition})
+    missing = _require_args({"environment": environment, "rule_definition": rule_definition})
     if missing:
         return missing
 
@@ -1752,7 +1734,7 @@ def yara_create_rule_command(client: Client, environment: str, rule_definition: 
 def yara_get_rule_command(client: Client, environment: str, yara_rule: str,
                          match_count_envs: Optional[str] = None) -> CommandResults:
     """Get a specific YARA rule."""
-    missing = _require_args({"environment": environment, "yaraRule": yara_rule})
+    missing = _require_args({"environment": environment, "yara_rule": yara_rule})
     if missing:
         return missing
 
@@ -1775,7 +1757,7 @@ def yara_query_matches_command(client: Client, environment: str, yara_rule: str,
                                included_environments: Optional[str] = None, page_size: Optional[str] = None,
                                page_token: Optional[str] = None) -> CommandResults:
     """Query objects matching a YARA rule."""
-    missing = _require_args({"environment": environment, "yaraRule": yara_rule})
+    missing = _require_args({"environment": environment, "yara_rule": yara_rule})
     if missing:
         return missing
 
@@ -1906,7 +1888,7 @@ def main() -> None:  # pragma: no cover
                 verify=verify_certificate,
                 headers={"Authorization": api_key},
                 proxy=proxy)
-            result = file_enrichment_command(client, args.get('fileHash'))
+            result = file_enrichment_command(client, args.get('file_hash'))
             return_results(result)
 
         elif command == 'stairwell-variant-discovery':
@@ -1921,17 +1903,23 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'stairwell-intake-upload':
             # Uses preflight and conditionally uploads
+            intake_client = Client(
+                base_url=INTAKE_PREFLIGHT_URL,
+                verify=verify_certificate,
+                headers={"Authorization": api_key},
+                proxy=proxy)
             result = intake_preflight_and_upload(
-                asset_id=args.get('assetId'),
-                entry_id=args.get('entryID'),
+                client=intake_client,
+                asset_id=args.get('asset_id'),
+                entry_id=args.get('entry_id'),
                 url=args.get('url'),
-                file_path=args.get('filePath'),
+                file_path=args.get('file_path'),
                 sha256=args.get('sha256'),
-                detonation_plan=args.get('detonationPlan'),
-                origin_type=args.get('originType'),
-                origin_referrer_url=args.get('originReferrerUrl'),
-                origin_host_url=args.get('originHostUrl'),
-                origin_zone_id=_parse_int_arg(args.get('originZoneId'), "originZoneId"),
+                detonation_plan=args.get('detonation_plan'),
+                origin_type=args.get('origin_type'),
+                origin_referrer_url=args.get('origin_referrer_url'),
+                origin_host_url=args.get('origin_host_url'),
+                origin_zone_id=_parse_int_arg(args.get('origin_zone_id'), "origin_zone_id"),
                 verify=verify_certificate,
                 use_proxy=proxy
             )
@@ -1943,7 +1931,7 @@ def main() -> None:  # pragma: no cover
                 verify=verify_certificate,
                 headers={"Authorization": api_key},
                 proxy=proxy)
-            result = object_sightings_command(client, args.get('objectId'))
+            result = object_sightings_command(client, args.get('object_id'))
             return_results(result)
 
         elif command == 'stairwell-object-detonation-trigger':
@@ -1952,7 +1940,7 @@ def main() -> None:  # pragma: no cover
                 verify=verify_certificate,
                 headers={"Authorization": api_key},
                 proxy=proxy)
-            result = object_detonation_trigger_command(client, args.get('objectId'))
+            result = object_detonation_trigger_command(client, args.get('object_id'))
             return_results(result)
 
         elif command == 'stairwell-object-detonation-get':
@@ -1961,7 +1949,7 @@ def main() -> None:  # pragma: no cover
                 verify=verify_certificate,
                 headers={"Authorization": api_key},
                 proxy=proxy)
-            result = object_detonation_get_command(client, args.get('objectId'))
+            result = object_detonation_get_command(client, args.get('object_id'))
             return_results(result)
 
         elif command == 'stairwell-object-opinions':
@@ -1970,7 +1958,7 @@ def main() -> None:  # pragma: no cover
                 verify=verify_certificate,
                 headers={"Authorization": api_key},
                 proxy=proxy)
-            result = object_opinions_command(client, args.get('objectId'))
+            result = object_opinions_command(client, args.get('object_id'))
             return_results(result)
 
         elif command == 'stairwell-run-to-ground-generate':
@@ -1979,7 +1967,7 @@ def main() -> None:  # pragma: no cover
                 verify=verify_certificate,
                 headers={"Authorization": api_key},
                 proxy=proxy)
-            result = run_to_ground_generate_command(client, args.get('objectIds'))
+            result = run_to_ground_generate_command(client, args.get('object_ids'))
             return_results(result)
 
         elif command == 'stairwell-ai-triage-summarize':
@@ -1988,7 +1976,7 @@ def main() -> None:  # pragma: no cover
                 verify=verify_certificate,
                 headers={"Authorization": api_key},
                 proxy=proxy)
-            result = ai_triage_summarize_command(client, args.get('objectId'))
+            result = ai_triage_summarize_command(client, args.get('object_id'))
             return_results(result)
 
         # Network Intel Commands - ASN
@@ -2008,7 +1996,7 @@ def main() -> None:  # pragma: no cover
                 verify=verify_certificate,
                 headers={"Authorization": api_key},
                 proxy=proxy)
-            result = hostname_get_command(client, args.get('hostname'), args.get('recordType'))
+            result = hostname_get_command(client, args.get('hostname'), args.get('record_type'))
             return_results(result)
 
         elif command == 'stairwell-hostname-get-resolutions':
@@ -2020,8 +2008,8 @@ def main() -> None:  # pragma: no cover
             result = hostname_get_resolutions_command(
                 client,
                 args.get('hostname'),
-                args.get('startTime'),
-                args.get('endTime')
+                args.get('start_time'),
+                args.get('end_time')
             )
             return_results(result)
 
@@ -2034,10 +2022,10 @@ def main() -> None:  # pragma: no cover
             result = hostname_batch_get_resolutions_command(
                 client,
                 args.get('hostnames'),
-                args.get('startTime'),
-                args.get('endTime'),
-                args.get('recordTypes'),
-                args.get('includeErrors')
+                args.get('start_time'),
+                args.get('end_time'),
+                args.get('record_types'),
+                args.get('include_errors')
             )
             return_results(result)
 
@@ -2048,7 +2036,7 @@ def main() -> None:  # pragma: no cover
                 verify=verify_certificate,
                 headers={"Authorization": api_key},
                 proxy=proxy)
-            result = ipaddress_get_command(client, args.get('ipAddress'))
+            result = ipaddress_get_command(client, args.get('ip_address'))
             return_results(result)
 
         elif command == 'stairwell-ipaddress-lookup-cloud-provider':
@@ -2057,7 +2045,7 @@ def main() -> None:  # pragma: no cover
                 verify=verify_certificate,
                 headers={"Authorization": api_key},
                 proxy=proxy)
-            result = ipaddress_lookup_cloud_provider_command(client, args.get('ipAddress'))
+            result = ipaddress_lookup_cloud_provider_command(client, args.get('ip_address'))
             return_results(result)
 
         elif command == 'stairwell-ipaddress-get-hostnames-resolving-to-ip':
@@ -2068,9 +2056,9 @@ def main() -> None:  # pragma: no cover
                 proxy=proxy)
             result = ipaddress_get_hostnames_resolving_to_ip_command(
                 client,
-                args.get('ipAddress'),
-                args.get('startTime'),
-                args.get('endTime')
+                args.get('ip_address'),
+                args.get('start_time'),
+                args.get('end_time')
             )
             return_results(result)
 
@@ -2080,7 +2068,7 @@ def main() -> None:  # pragma: no cover
                 verify=verify_certificate,
                 headers={"Authorization": api_key},
                 proxy=proxy)
-            result = ipaddress_get_whois_command(client, args.get('ipAddress'))
+            result = ipaddress_get_whois_command(client, args.get('ip_address'))
             return_results(result)
 
         # Network Intel Commands - Utilities
@@ -2157,7 +2145,7 @@ def main() -> None:  # pragma: no cover
             result = yara_create_rule_command(
                 client,
                 args.get('environment'),
-                args.get('ruleDefinition')
+                args.get('rule_definition')
             )
             return_results(result)
 
@@ -2170,8 +2158,8 @@ def main() -> None:  # pragma: no cover
             result = yara_get_rule_command(
                 client,
                 args.get('environment'),
-                args.get('yaraRule'),
-                args.get('matchCountEnvs')
+                args.get('yara_rule'),
+                args.get('match_count_envs')
             )
             return_results(result)
 
@@ -2184,10 +2172,10 @@ def main() -> None:  # pragma: no cover
             result = yara_query_matches_command(
                 client,
                 args.get('environment'),
-                args.get('yaraRule'),
-                args.get('includedEnvironments'),
-                args.get('pageSize'),
-                args.get('pageToken')
+                args.get('yara_rule'),
+                args.get('included_environments'),
+                args.get('page_size'),
+                args.get('page_token')
             )
             return_results(result)
 
@@ -2201,8 +2189,8 @@ def main() -> None:  # pragma: no cover
             result = asset_list_command(
                 client,
                 args.get('environment'),
-                args.get('pageSize'),
-                args.get('pageToken')
+                args.get('page_size'),
+                args.get('page_token')
             )
             return_results(result)
 
@@ -2216,10 +2204,10 @@ def main() -> None:  # pragma: no cover
                 client,
                 args.get('environment'),
                 args.get('label'),
-                args.get('idempotencyKey'),
+                args.get('idempotency_key'),
                 args.get('os'),
-                args.get('osVersion'),
-                args.get('forwarderVersion')
+                args.get('os_version'),
+                args.get('forwarder_version')
             )
             return_results(result)
 

@@ -49,7 +49,7 @@
 !stairwell-yara-create-rule environment=YOUR_ENV_ID ruleDefinition=`rule Stairwell_Test_Upload_xsoar
 {
     meta:
-        author = "Zach Daniel"
+        author = "Security Analyst"
         description = "Basic test rule for upload validation"
         date = "2026-01-27"
 

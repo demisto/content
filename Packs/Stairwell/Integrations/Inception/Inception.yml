@@ -19,7 +19,7 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-description: Stairwell helps security teams speed up security workflows by continuously tying signal intelligence with their enterprise’s files, performing private file and malware analysis, and bringing data search techniques to finding threats that others miss.
+description: Stairwell helps security teams speed up security workflows by continuously tying signal intelligence with their enterprise's files, performing private file and malware analysis, and bringing data search techniques to finding threats that others miss.
 display: 'Stairwell'
 name: Stairwell
 script:
@@ -28,409 +28,409 @@ script:
     arguments:
     - name: sha256
       required: true
-      description: File hash (SHA256)
-    description: Discover variants using a file hash (SHA256)
+      description: The SHA256 hash of the file.
+    description: Discovers file variants using a SHA256 hash.
     outputs:
     - contextPath: Stairwell.Variants
       type: Dictionary
-      description: Variants discovered
+      description: Variants discovered.
   - name: stairwell-file-enrichment
     arguments:
-    - name: fileHash
+    - name: file_hash
       required: true
-      description: File hash (MD5, SHA1, or SHA256)
-    description: Enrich files using file hash (MD5, SHA1, SHA256)
+      description: The file hash (MD5, SHA1, or SHA256) to enrich.
+    description: Enriches file details using a file hash (MD5, SHA1, or SHA256).
     outputs:
     - contextPath: Stairwell.File_Details
       type: Dictionary
-      description: File details from enrichment
+      description: File details from enrichment.
   - name: stairwell-intake-upload
     arguments:
-    - name: assetId
+    - name: asset_id
       required: true
-      description: Asset ID for the upload
-    - name: entryID
+      description: The ID of the asset to upload the file to.
+    - name: entry_id
       required: false
-      description: Entry ID of the file from the War Room context (XSOAR file entry)
+      description: The entry ID of the file from the War Room.
     - name: url
       required: false
-      description: HTTP/HTTPS URL to download the file from
-    - name: filePath
+      description: The HTTP or HTTPS URL to download the file from.
+    - name: file_path
       required: false
-      description: Direct file path (for development/testing). One of entryID, url, or filePath must be provided.
+      description: The direct path to the file. Used for development and testing.
     - name: sha256
       required: false
-      description: File hash (SHA256) - Optional, will be auto-calculated if not provided
-    - name: detonationPlan
+      description: The SHA256 hash of the file. If not provided, it will be calculated automatically.
+    - name: detonation_plan
       required: false
-      description: Detonation plan name
-    - name: originType
+      description: The name of the detonation plan to use.
+    - name: origin_type
       required: false
-      description: Origin type (web or unspecified)
-    - name: originReferrerUrl
+      description: The origin type of the file. Can be web or unspecified.
+    - name: origin_referrer_url
       required: false
-      description: HTTP referer URL
-    - name: originHostUrl
+      description: The HTTP referrer URL for the file origin.
+    - name: origin_host_url
       required: false
-      description: Original host URL
-    - name: originZoneId
+      description: The original host URL for the file origin.
+    - name: origin_zone_id
       required: false
-      description: Zone ID (integer)
-    description: Upload files to Stairwell
+      description: The zone ID (integer) for the file origin.
+    description: Uploads a file to Stairwell for analysis.
     outputs:
     - contextPath: Stairwell.Intake
       type: Dictionary
-      description: Intake upload details
+      description: Intake upload details.
   - name: stairwell-object-sightings
     arguments:
-    - name: objectId
+    - name: object_id
       required: true
-      description: Object identifier (SHA256 hash or object ID)
-    description: List sightings for an object
+      description: The SHA256 hash or object ID of the object.
+    description: Lists all sightings for an object across the organization's assets.
     outputs:
     - contextPath: Stairwell.Sightings
       type: Dictionary
-      description: Object sightings
+      description: Object sightings.
   - name: stairwell-object-detonation-trigger
     arguments:
-    - name: objectId
+    - name: object_id
       required: true
-      description: Object identifier (SHA256 hash or object ID)
-    description: Trigger a detonation for an object
+      description: The SHA256 hash or object ID of the object.
+    description: Triggers a sandbox detonation for an object.
     outputs:
     - contextPath: Stairwell.Detonation.Trigger
       type: Dictionary
-      description: Detonation trigger response
+      description: Detonation trigger response.
   - name: stairwell-object-detonation-get
     arguments:
-    - name: objectId
+    - name: object_id
       required: true
-      description: Object identifier (SHA256 hash or object ID)
-    description: Get detonation details for an object
+      description: The SHA256 hash or object ID of the object.
+    description: Gets sandbox detonation details for an object.
     outputs:
     - contextPath: Stairwell.Detonation
       type: Dictionary
-      description: Detonation details
+      description: Detonation details.
   - name: stairwell-object-opinions
     arguments:
-    - name: objectId
+    - name: object_id
       required: true
-      description: Object identifier (SHA256 hash or object ID)
-    description: List opinions for an object
+      description: The SHA256 hash or object ID of the object.
+    description: Lists threat intelligence opinions for an object.
     outputs:
     - contextPath: Stairwell.Opinions
       type: Dictionary
-      description: Opinions for the object
+      description: Opinions for the object.
   - name: stairwell-run-to-ground-generate
     arguments:
-    - name: objectIds
+    - name: object_ids
       required: true
-      description: Comma-separated list of object IDs or hashes
-    description: Generate Run-To-Ground analysis for objects
+      description: A comma-separated list of object IDs or SHA256 hashes.
+    description: Generates a run-to-ground analysis for one or more objects.
     outputs:
     - contextPath: Stairwell.RunToGround
       type: Dictionary
-      description: Run-To-Ground analysis results
+      description: Run-to-ground analysis results.
   - name: stairwell-ai-triage-summarize
     arguments:
-    - name: objectId
+    - name: object_id
       required: true
-      description: Object identifier (SHA256 hash or object ID)
-    description: Get AI-generated summary for a file using Stairwell AI Triage
+      description: The SHA256 hash or object ID of the object.
+    description: Gets an AI-generated summary for a file using Stairwell AI triage.
     outputs:
     - contextPath: Stairwell.AI_Triage
       type: Dictionary
-      description: AI Triage summary results
+      description: AI triage summary results.
   - name: stairwell-asn-get-whois
     arguments:
     - name: asn
       required: true
-      description: ASN number
-    description: Get ASN WHOIS information
+      description: The ASN number to query.
+    description: Gets WHOIS information for an ASN.
     outputs:
     - contextPath: Stairwell.ASN.WHOIS
       type: Dictionary
-      description: ASN WHOIS information
+      description: ASN WHOIS information.
   - name: stairwell-hostname-get
     arguments:
     - name: hostname
       required: true
-      description: Hostname to lookup
-    - name: recordType
+      description: The hostname to look up.
+    - name: record_type
       required: false
-      description: DNS record type filter (A, AAAA, or MX)
+      description: The DNS record type to filter by. Can be A, AAAA, or MX.
       auto: PREDEFINED
       predefined:
       - A
       - AAAA
       - MX
-    description: Get hostname entity with DNS resolution data
+    description: Gets a hostname entity with DNS resolution data.
     outputs:
     - contextPath: Stairwell.Hostname
       type: Dictionary
-      description: Hostname entity with DNS resolution data
+      description: Hostname entity with DNS resolution data.
   - name: stairwell-hostname-get-resolutions
     arguments:
     - name: hostname
       required: true
-      description: Hostname to lookup
-    - name: startTime
+      description: The hostname to look up.
+    - name: start_time
       required: false
-      description: Start time for resolution range (ISO 8601 format)
-    - name: endTime
+      description: The start time of the resolution range in ISO 8601 format.
+    - name: end_time
       required: false
-      description: End time for resolution range (ISO 8601 format)
-    description: Get all addresses resolved to by a hostname over a time range
+      description: The end time of the resolution range in ISO 8601 format.
+    description: Gets all IP addresses resolved to by a hostname over a time range.
     outputs:
     - contextPath: Stairwell.Hostname.Resolutions
       type: Dictionary
-      description: Hostname resolutions
+      description: Hostname resolution history.
   - name: stairwell-hostname-batch-get-resolutions
     arguments:
     - name: hostnames
       required: true
-      description: Comma-separated list of hostnames
-    - name: startTime
+      description: A comma-separated list of hostnames.
+    - name: start_time
       required: false
-      description: Start time for resolution range (ISO 8601 format)
-    - name: endTime
+      description: The start time of the resolution range in ISO 8601 format.
+    - name: end_time
       required: false
-      description: End time for resolution range (ISO 8601 format)
-    - name: recordTypes
+      description: The end time of the resolution range in ISO 8601 format.
+    - name: record_types
       required: false
-      description: Comma-separated DNS record types (A, AAAA, MX)
-    - name: includeErrors
+      description: A comma-separated list of DNS record types (A, AAAA, or MX).
+    - name: include_errors
       required: false
-      description: Include DNS error responses (true/false)
-    description: Get resolution summaries for multiple hostnames
+      description: Whether to include DNS error responses in the results.
+    description: Gets DNS resolution summaries for multiple hostnames.
     outputs:
     - contextPath: Stairwell.Hostname.BatchResolutions
       type: Dictionary
-      description: Batch hostname resolutions
+      description: Batch hostname resolution summaries.
   - name: stairwell-ipaddress-get
     arguments:
-    - name: ipAddress
+    - name: ip_address
       required: true
-      description: IP address to lookup
-    description: Get IP address entity with enrichment data
+      description: The IP address to look up.
+    description: Gets an IP address entity with enrichment data.
     outputs:
     - contextPath: Stairwell.IPAddress
       type: Dictionary
-      description: IP address entity with enrichment data
+      description: IP address entity with enrichment data.
   - name: stairwell-ipaddress-lookup-cloud-provider
     arguments:
-    - name: ipAddress
+    - name: ip_address
       required: true
-      description: IP address to check
-    description: Check if an IP address belongs to a known cloud provider
+      description: The IP address to check.
+    description: Checks whether an IP address belongs to a known cloud provider.
     outputs:
     - contextPath: Stairwell.IPAddress.CloudProvider
       type: Dictionary
-      description: Cloud provider lookup results
+      description: Cloud provider lookup results.
   - name: stairwell-ipaddress-get-hostnames-resolving-to-ip
     arguments:
-    - name: ipAddress
+    - name: ip_address
       required: true
-      description: IP address to lookup
-    - name: startTime
+      description: The IP address to look up.
+    - name: start_time
       required: false
-      description: Start time for resolution range (ISO 8601 format)
-    - name: endTime
+      description: The start time of the resolution range in ISO 8601 format.
+    - name: end_time
       required: false
-      description: End time for resolution range (ISO 8601 format)
-    description: Get all hostnames resolved to by an IP address over a time interval
+      description: The end time of the resolution range in ISO 8601 format.
+    description: Gets all hostnames that resolved to an IP address over a time interval.
     outputs:
     - contextPath: Stairwell.IPAddress.Hostnames
       type: Dictionary
-      description: Hostnames resolving to IP address
+      description: Hostnames that resolved to the IP address.
   - name: stairwell-ipaddress-get-whois
     arguments:
-    - name: ipAddress
+    - name: ip_address
       required: true
-      description: IP address to lookup
-    description: Get WHOIS information for an IP address
+      description: The IP address to look up.
+    description: Gets WHOIS information for an IP address.
     outputs:
     - contextPath: Stairwell.IPAddress.WHOIS
       type: Dictionary
-      description: IP address WHOIS information
+      description: IP address WHOIS information.
   - name: stairwell-utilities-get-cloud-ip-ranges
     arguments:
     - name: provider
       required: false
-      description: Cloud provider name (optional filter)
-    description: Get IP ranges for known cloud providers
+      description: The cloud provider name to filter by.
+    description: Gets IP address ranges for known cloud providers.
     outputs:
     - contextPath: Stairwell.Utilities.CloudIPRanges
       type: Dictionary
-      description: Cloud IP ranges
+      description: Cloud provider IP address ranges.
   - name: stairwell-utilities-batch-canonicalize-hostnames
     arguments:
     - name: hostnames
       required: true
-      description: Comma-separated list of hostnames to canonicalize
-    description: Canonicalize multiple hostnames in bulk
+      description: A comma-separated list of hostnames to canonicalize.
+    description: Canonicalizes multiple hostnames in bulk.
     outputs:
     - contextPath: Stairwell.Utilities.CanonicalizedHostnames
       type: Dictionary
-      description: Canonicalized hostnames
+      description: Canonicalized hostnames.
   - name: stairwell-utilities-batch-compute-etld-plus-one
     arguments:
     - name: domains
       required: true
-      description: Comma-separated list of domains
-    description: Compute effective top-level domain plus one for multiple domains
+      description: A comma-separated list of domains.
+    description: Computes the effective top-level domain plus one for multiple domains.
     outputs:
     - contextPath: Stairwell.Utilities.ETLDPlusOne
       type: Dictionary
-      description: ETLD+1 results
+      description: eTLD+1 results.
   - name: stairwell-utilities-canonicalize-hostname
     arguments:
     - name: hostname
       required: true
-      description: Hostname to canonicalize
-    description: Canonicalize a single hostname
+      description: The hostname to canonicalize.
+    description: Canonicalizes a single hostname.
     outputs:
     - contextPath: Stairwell.Utilities.CanonicalizedHostname
       type: Dictionary
-      description: Canonicalized hostname
+      description: Canonicalized hostname.
   - name: stairwell-utilities-compute-etld-plus-one
     arguments:
     - name: domain
       required: true
-      description: Domain to compute ETLD+1 for
-    description: Compute effective top-level domain plus one for a single domain
+      description: The domain to compute the effective top-level domain plus one for.
+    description: Computes the effective top-level domain plus one for a single domain.
     outputs:
     - contextPath: Stairwell.Utilities.ETLDPlusOne
       type: Dictionary
-      description: ETLD+1 result
+      description: eTLD+1 result.
   - name: stairwell-utilities-batch-canonicalize-urls
     arguments:
     - name: urls
       required: true
-      description: Comma-separated list of URLs to canonicalize
-    description: Canonicalize multiple URLs in bulk
+      description: A comma-separated list of URLs to canonicalize.
+    description: Canonicalizes multiple URLs in bulk.
     outputs:
     - contextPath: Stairwell.Utilities.CanonicalizedURLs
       type: Dictionary
-      description: Canonicalized URLs
+      description: Canonicalized URLs.
   - name: stairwell-utilities-canonicalize-url
     arguments:
     - name: url
       required: true
-      description: URL to canonicalize
-    description: Canonicalize a single URL
+      description: The URL to canonicalize.
+    description: Canonicalizes a single URL.
     outputs:
     - contextPath: Stairwell.Utilities.CanonicalizedURL
       type: Dictionary
-      description: Canonicalized URL
+      description: Canonicalized URL.
   - name: stairwell-yara-create-rule
     arguments:
     - name: environment
       required: true
-      description: Environment ID
-    - name: ruleDefinition
+      description: The ID of the environment.
+    - name: rule_definition
       required: true
-      description: YARA rule definition text
-    description: Create a new YARA rule
+      description: The YARA rule definition text.
+    description: Creates a new YARA rule in the specified environment.
     outputs:
     - contextPath: Stairwell.YaraRule
       type: Dictionary
-      description: Created YARA rule
+      description: Created YARA rule.
   - name: stairwell-yara-get-rule
     arguments:
     - name: environment
       required: true
-      description: Environment ID
-    - name: yaraRule
+      description: The ID of the environment.
+    - name: yara_rule
       required: true
-      description: YARA rule ID
-    - name: matchCountEnvs
+      description: The ID of the YARA rule.
+    - name: match_count_envs
       required: false
-      description: Comma-separated list of environment IDs for match counts
-    description: Get a specific YARA rule
+      description: A comma-separated list of environment IDs to include in match counts.
+    description: Gets a YARA rule by ID.
     outputs:
     - contextPath: Stairwell.YaraRule
       type: Dictionary
-      description: YARA rule details
+      description: YARA rule details.
   - name: stairwell-yara-query-matches
     arguments:
     - name: environment
       required: true
-      description: Environment ID
-    - name: yaraRule
+      description: The ID of the environment.
+    - name: yara_rule
       required: true
-      description: YARA rule ID
-    - name: includedEnvironments
+      description: The ID of the YARA rule.
+    - name: included_environments
       required: false
-      description: Comma-separated list of environments to search
-    - name: pageSize
+      description: A comma-separated list of environment IDs to search.
+    - name: page_size
       required: false
-      description: Maximum number of matches to return
-    - name: pageToken
+      description: The maximum number of matches to return.
+    - name: page_token
       required: false
-      description: Token for pagination
-    description: Query objects matching a YARA rule
+      description: The token for pagination.
+    description: Queries objects that match a YARA rule.
     outputs:
     - contextPath: Stairwell.YaraRuleMatches
       type: Dictionary
-      description: Objects matching the YARA rule
+      description: Objects matching the YARA rule.
   - name: stairwell-asset-list
     arguments:
     - name: environment
       required: true
-      description: Environment ID
-    - name: pageSize
+      description: The ID of the environment.
+    - name: page_size
       required: false
-      description: Maximum number of assets to return
-    - name: pageToken
+      description: The maximum number of assets to return.
+    - name: page_token
       required: false
-      description: Token for pagination
-    description: List all assets in an environment
+      description: The token for pagination.
+    description: Lists all assets in the specified environment.
     outputs:
     - contextPath: Stairwell.Assets
       type: Dictionary
-      description: List of assets
+      description: List of assets.
   - name: stairwell-asset-create
     arguments:
     - name: environment
       required: true
-      description: Environment ID
+      description: The ID of the environment.
     - name: label
       required: true
-      description: Human-readable identifier (typically hostname)
-    - name: idempotencyKey
+      description: The human-readable label for the asset, typically the hostname.
+    - name: idempotency_key
       required: false
-      description: Client-generated key for idempotent asset creation
+      description: The client-generated key for idempotent asset creation.
     - name: os
       required: false
-      description: Operating system (Windows, macOS, Linux)
-    - name: osVersion
+      description: The operating system of the asset. Can be Windows, macOS, or Linux.
+    - name: os_version
       required: false
-      description: OS version string
-    - name: forwarderVersion
+      description: The operating system version string.
+    - name: forwarder_version
       required: false
-      description: Forwarder version string
-    description: Create a new asset in an environment
+      description: The forwarder version string.
+    description: Creates a new asset in the specified environment.
     outputs:
     - contextPath: Stairwell.Asset
       type: Dictionary
-      description: Created asset with uploadToken
+      description: Created asset with upload token.
   - name: stairwell-asset-get
     arguments:
     - name: asset
       required: true
-      description: Asset ID
-    description: Get a specific asset by ID
+      description: The ID of the asset.
+    description: Gets a specific asset by ID.
     outputs:
     - contextPath: Stairwell.Asset
       type: Dictionary
-      description: Asset details including uploadToken
+      description: Asset details including upload token.
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.12.8.3296088
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)

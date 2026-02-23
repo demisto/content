@@ -1,28 +1,28 @@
 ## Stairwell
-Stairwell continuously collects, stores, and analyzes threat intelligence, malware and executable files, scripts, and artifacts in a private, out-of-band vault — making it possible to answer security questions faster.
-- Reanalyze files continuously as new intel drops.
-- Connect threat and signal intelligence with your files
-- Run every alert-to-ground — even months later.
-- Find variant families and connections others miss.
-- Answer definitively: Has this ever been in your environment? Is this absent from your enterprise?
+Stairwell continuously collects, stores, and analyzes threat intelligence and artifacts in a private vault to accelerate security investigations. The Stairwell integration enables you to:
+- Reanalyze files continuously as new threat intelligence is identified.
+- Correlate threat and signal intelligence with your existing artifacts.
+- Perform retrospective analysis to investigate alerts regardless of when they occurred.
+- Identify file variants and hidden relationships across your environment.
+- Gain definitive visibility into the presence or absence of specific files within your enterprise.
 
 Not a customer and interested in signing up? You can request access [here](https://stairwell.com/contact/).
 
 ### File Enrichment
-This command enables instant enrichment of a provided hash. This enrichment will leverage data from your organization, along with Stairwell's shared malware corpus.
+This command enables instant enrichment of a provided hash. This enrichment leverages data from your organization, along with Stairwell's shared malware corpus.
 The results will include:
 - Hash details
 - Seen asset(s)
-- Matching YARA 
+- Matching YARA
 - AV verdicts
 - Path/filename details
 
 ### Variant Discovery
-- This command enables rapid, DFIR-level hunts for variants of a provided hash. This hunt will leverage data from your organization, along with Stairwell's shared malware corpus.
-- The results will include any variant file hashes discovered, along with a `similarity` score.
+This command enables rapid, DFIR-level hunts for variants of a provided hash. This hunt leverages data from your organization, along with Stairwell's shared malware corpus.
+The results include any variant file hashes discovered, along with a similarity score.
 
 ### File Intake Upload
-Upload files to Stairwell for analysis with three flexible file source methods: XSOAR War Room entries (entryID), HTTP/HTTPS URLs, or direct file paths. Features automatic preflight checks, SHA256 calculation, retry logic, and temp file cleanup. Perfect for automated playbook workflows.
+Upload files to Stairwell for analysis with three flexible file source methods: Cortex XSOAR War Room entries (entryID), HTTP/HTTPS URLs, or direct file paths. Features automatic preflight checks, SHA256 calculation, retry logic, and temp file cleanup. Perfect for automated playbook workflows.
 
 ### AI Triage Summarize
 Get AI-generated summaries for files including comprehensive threat analysis, indicators of compromise (IOCs), risk assessment, and actionable guidance.
@@ -37,7 +37,7 @@ Trigger and retrieve detonation results for objects in Stairwell's sandbox envir
 Retrieve opinions and assessments for objects. Opinions provide additional context and analysis from Stairwell's threat intelligence.
 
 ### Run-To-Ground
-Generate comprehensive Run-To-Ground analysis for one or more objects. Helps trace files across your environment, identifying all instances and relationships between objects for complete threat visibility.
+Generate comprehensive run-to-ground analysis for one or more objects. Helps trace files across your environment, identifying all instances and relationships between objects for complete threat visibility.
 
 ### YARA Rule Management
 Create, retrieve, and query YARA rules for threat hunting. Create custom detection rules, get rule details, and query your environment for matching objects. Note: Multi-line YARA rules require backticks (`) for proper formatting.
