@@ -512,7 +512,7 @@ def alarm_to_incident(alarm: dict[str, Any], show_content: bool = True) -> dict[
 
     if alarm_text:
         details_parts.append("\n Alarm Description:")
-        details_parts.append(alarm_text[:1024])
+        details_parts.append(alarm_text[:2048])
 
     # FIX: Moved the try/except block for format_value INSIDE the if-guard.
     # Previously the try block was outside 'if show_content', meaning
