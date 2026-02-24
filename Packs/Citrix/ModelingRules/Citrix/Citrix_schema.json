@@ -44,11 +44,13 @@
         "type": "string",
         "is_array": false
       },
-      "Id": {
+      "actorType": {
         "type": "string",
         "is_array": false
-      },
-      "actorType": {
+      }
+    },
+    "citrix_daas_raw": {
+        "Id": {
         "type": "string",
         "is_array": false
       },
