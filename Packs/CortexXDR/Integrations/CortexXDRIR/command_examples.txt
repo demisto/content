@@ -73,3 +73,7 @@
 !xdr-correlation-rule-create name="CR test" severity=low alert_category=dropper execution_mode=scheduled mapping_strategy=auto xql_query="dataset = xdr_data | limit 1" dataset=alerts alert_name="Test" is_enabled=true drilldown_query_timeframe="ALERT" investigation_query_link="dataset = xdr_data | limit 1" schedule="10 minutes" schedule_linux="*/10 * * * *" search_window="1 hours" suppression_duration="1 hours" suppression_enabled=true suppression_fields="event_type" timezone="Asia/Jerusalem"
 !xdr-correlation-rule-update name="CR test" severity=low alert_category=dropper execution_mode=scheduled mapping_strategy=auto xql_query="dataset = xdr_data | limit 1" dataset=alerts alert_name="Test" is_enabled=true drilldown_query_timeframe="ALERT" investigation_query_link="dataset = xdr_data | limit 1" schedule="10 minutes" schedule_linux="*/10 * * * *" search_window="1 hours" suppression_duration="1 hours" suppression_enabled=true suppression_fields="event_type" timezone="Asia/Jerusalem"
 !xdr-correlation-rule-delete rule_id=14,15
+!xdr-vulnerability-details-get vulnerability_id=CVE-2021-28799
+!xdr-healthcheck-run
+!xdr-endpoint-triage-preset-list
+!xdr-endpoint-triage endpoint_id=endpoint_id1,endpoint_id2
