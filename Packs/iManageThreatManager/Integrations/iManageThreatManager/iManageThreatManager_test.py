@@ -1,3 +1,6 @@
+import base64
+import json
+
 import pytest
 from freezegun import freeze_time
 from iManageThreatManager import (
@@ -107,6 +110,46 @@ class TestValidateCredentialsForEventTypes:
             - Ensure no exception is raised
         """
         validate_credentials_for_event_types(client, [BEHAVIOR_ANALYTICS, ADDRESSABLE_ALERTS, DETECT_AND_PROTECT_ALERTS])
+
+    @pytest.mark.parametrize(
+        "client_kwargs, event_types, expected_errors",
+        [
+            pytest.param(
+                {"token": "token", "secret": "secret"},
+                [BEHAVIOR_ANALYTICS, ADDRESSABLE_ALERTS, DETECT_AND_PROTECT_ALERTS],
+                ["Addressable Alerts", "Detect And Protect Alerts"],
+                id="token_only-missing_user_password_for_two_types",
+            ),
+            pytest.param(
+                {"username": "user", "password": "pass"},
+                [BEHAVIOR_ANALYTICS, ADDRESSABLE_ALERTS],
+                ["Token and Secret"],
+                id="user_only-missing_token_secret",
+            ),
+            pytest.param(
+                {},
+                [BEHAVIOR_ANALYTICS, ADDRESSABLE_ALERTS],
+                ["Token and Secret", "Username and Password"],
+                id="no_credentials-all_missing",
+            ),
+        ],
+    )
+    def test_validate_credentials_mixed_partial(self, client_kwargs, event_types, expected_errors):
+        """
+        Given:
+            - Client with partial credentials
+            - Multiple event types where some require missing credentials
+        When:
+            - Calling validate_credentials_for_event_types
+        Then:
+            - Ensure DemistoException is raised listing all missing credentials
+        """
+        client = Client(base_url=BASE_URL, verify=True, proxy=False, **client_kwargs)
+        with pytest.raises(DemistoException) as exc_info:
+            validate_credentials_for_event_types(client, event_types)
+        error_msg = str(exc_info.value)
+        for expected in expected_errors:
+            assert expected in error_msg
 
 
 class TestDeduplicateEvents:
@@ -488,6 +531,35 @@ class TestFetchEventsWithPagination:
         event_ids = [e["id"] for e in events]
         assert len(event_ids) == len(set(event_ids))
 
+    def test_pagination_boundary_all_identical_alert_time_and_id(self, client, mocker):
+        """
+        Given:
+            - All events at page boundary have identical alert_time and id
+        When:
+            - Calling _fetch_events_with_pagination
+        Then:
+            - Ensure no duplicate events are created
+        """
+        # Page 1: all events at the boundary share the same alert_time
+        page1 = [{"id": f"1-{i}", "alert_time": 1000 - i} for i in range(85)]
+        page1.extend([{"id": f"boundary-{i}", "alert_time": 915} for i in range(5)])
+
+        # Page 2: starts with the same boundary events (duplicates) plus new events
+        page2 = [{"id": f"boundary-{i}", "alert_time": 915} for i in range(5)]
+        page2.extend([{"id": f"2-{i}", "alert_time": 914 - i} for i in range(30)])
+
+        mocker.patch.object(client, "_fetch_alerts", side_effect=[page1, page2])
+
+        events = _fetch_events_with_pagination(client, BEHAVIOR_ANALYTICS, 500, 1000, 200)
+
+        # Verify no duplicate IDs
+        event_ids = [e["id"] for e in events]
+        assert len(event_ids) == len(
+            set(event_ids)
+        ), f"Found duplicate IDs: {[eid for eid in event_ids if event_ids.count(eid) > 1]}"
+        # Should have 90 from page1 + 30 new from page2 = 120 (5 duplicates removed)
+        assert len(events) == 120
+
     def test_pagination_stops_when_limit_reached(self, client, mocker):
         """
         Given:
@@ -675,6 +747,179 @@ class TestClient:
             client._fetch_alerts(BEHAVIOR_ANALYTICS, 500, 1000, 10)
 
 
+class TestJwtExtraction:
+    """Tests for _extract_jwt_expiration edge cases"""
+
+    @pytest.mark.parametrize(
+        "jwt_token, expected_behavior",
+        [
+            pytest.param(
+                "only.two_parts",
+                "default",
+                id="malformed_jwt_wrong_number_of_parts",
+            ),
+            pytest.param(
+                "a.b.c.d",
+                "default",
+                id="malformed_jwt_too_many_parts",
+            ),
+            pytest.param(
+                "header.!!!invalid_base64!!!.signature",
+                "default",
+                id="invalid_base64_encoding",
+            ),
+        ],
+    )
+    @freeze_time("2021-01-10T00:00:00Z")
+    def test_extract_jwt_expiration_malformed(self, client, jwt_token, expected_behavior):
+        """
+        Given:
+            - A malformed JWT token (wrong parts count, invalid base64, or missing exp)
+        When:
+            - Calling _extract_jwt_expiration
+        Then:
+            - Ensure default 30-minute expiry is returned
+        """
+        result = client._extract_jwt_expiration(jwt_token)
+        # Default is current time + 1800 seconds (30 minutes)
+        # Frozen time: 2021-01-10T00:00:00Z = 1610236800
+        expected_default = 1610236800 + 1800
+        assert result == expected_default
+
+    @freeze_time("2021-01-10T00:00:00Z")
+    def test_extract_jwt_expiration_missing_exp_field(self, client):
+        """
+        Given:
+            - A valid JWT structure but payload missing 'exp' field
+        When:
+            - Calling _extract_jwt_expiration
+        Then:
+            - Ensure default 30-minute expiry is returned
+        """
+        # Create a valid JWT with no 'exp' field
+        payload = base64.urlsafe_b64encode(json.dumps({"sub": "user123"}).encode()).decode().rstrip("=")
+        jwt_token = f"header.{payload}.signature"
+        result = client._extract_jwt_expiration(jwt_token)
+        expected_default = 1610236800 + 1800
+        assert result == expected_default
+
+    def test_extract_jwt_expiration_valid(self, client):
+        """
+        Given:
+            - A valid JWT with 'exp' field
+        When:
+            - Calling _extract_jwt_expiration
+        Then:
+            - Ensure the correct expiration timestamp is returned
+        """
+        exp_time = 1610240400  # Some future timestamp
+        payload = base64.urlsafe_b64encode(json.dumps({"exp": exp_time}).encode()).decode().rstrip("=")
+        jwt_token = f"header.{payload}.signature"
+        result = client._extract_jwt_expiration(jwt_token)
+        assert result == exp_time
+
+
+class TestTokenCaching:
+    """Tests for _cache_token and _get_cached_token edge cases"""
+
+    @freeze_time("2021-01-10T00:00:00Z")
+    def test_get_cached_token_expired(self, client, mocker):
+        """
+        Given:
+            - A cached token that has already expired
+        When:
+            - Calling _get_cached_token
+        Then:
+            - Ensure None is returned (token is not used)
+        """
+        # Frozen time: 1610236800. Token expired at 1610236700 (in the past)
+        mocker.patch(
+            "demistomock.getIntegrationContext",
+            return_value={
+                "api_access_token": "expired_token",
+                "api_token_expiry": 1610236700,
+            },
+        )
+        result = client._get_cached_token("api_access_token", "api_token_expiry")
+        assert result is None
+
+    @freeze_time("2021-01-10T00:00:00Z")
+    def test_get_cached_token_expires_within_buffer(self, client, mocker):
+        """
+        Given:
+            - A cached token that expires within the 5-minute buffer (< 300 seconds from now)
+        When:
+            - Calling _get_cached_token
+        Then:
+            - Ensure None is returned (token is considered expired)
+        """
+        # Frozen time: 1610236800. Token expires at 1610237000 (200 seconds from now, within 300s buffer)
+        mocker.patch(
+            "demistomock.getIntegrationContext",
+            return_value={
+                "api_access_token": "almost_expired_token",
+                "api_token_expiry": 1610237000,
+            },
+        )
+        result = client._get_cached_token("api_access_token", "api_token_expiry")
+        assert result is None
+
+    @freeze_time("2021-01-10T00:00:00Z")
+    def test_get_cached_token_valid(self, client, mocker):
+        """
+        Given:
+            - A cached token that is still valid (expires well beyond the 5-minute buffer)
+        When:
+            - Calling _get_cached_token
+        Then:
+            - Ensure the cached token is returned
+        """
+        # Frozen time: 1610236800. Token expires at 1610238800 (2000 seconds from now, well beyond 300s buffer)
+        mocker.patch(
+            "demistomock.getIntegrationContext",
+            return_value={
+                "api_access_token": "valid_token",
+                "api_token_expiry": 1610238800,
+            },
+        )
+        result = client._get_cached_token("api_access_token", "api_token_expiry")
+        assert result == "valid_token"
+
+    @freeze_time("2021-01-10T00:00:00Z")
+    def test_get_cached_token_non_integer_expiry(self, client, mocker):
+        """
+        Given:
+            - A cached token with a non-integer expiry value in integration context
+        When:
+            - Calling _get_cached_token
+        Then:
+            - Ensure None is returned (invalid expiry treated as expired)
+        """
+        mocker.patch(
+            "demistomock.getIntegrationContext",
+            return_value={
+                "api_access_token": "some_token",
+                "api_token_expiry": "not_an_integer",
+            },
+        )
+        result = client._get_cached_token("api_access_token", "api_token_expiry")
+        assert result is None
+
+    def test_cache_token_empty_token(self, client, mocker):
+        """
+        Given:
+            - An empty token string
+        When:
+            - Calling _cache_token
+        Then:
+            - Ensure the token is not cached (setIntegrationContext is not called)
+        """
+        mock_set_context = mocker.patch("demistomock.setIntegrationContext")
+        mocker.patch("demistomock.getIntegrationContext", return_value={})
+        client._cache_token("", "api_access_token", "api_token_expiry")
+        mock_set_context.assert_not_called()
+
+
 class TestTestModuleCommand:
     """Tests for test_module_command function"""
 
@@ -817,7 +1062,7 @@ class TestFetchEventsCommand:
         )
 
         assert len(events) == 1
-        assert events[0]["_source_log_type"] == EVENT_TYPE_CONFIG[BEHAVIOR_ANALYTICS]["source_log_type"]
+        assert events[0]["_source_log_type"] == EVENT_TYPE_CONFIG[BEHAVIOR_ANALYTICS].source_log_type
         assert "last_fetch_BehaviorAnalytics" in next_run
         assert next_run["last_fetch_BehaviorAnalytics"] == 1610235000000
 
@@ -880,8 +1125,8 @@ class TestFetchEventsCommand:
         )
 
         assert len(events) == 2
-        assert events[0]["_source_log_type"] == EVENT_TYPE_CONFIG[BEHAVIOR_ANALYTICS]["source_log_type"]
-        assert events[1]["_source_log_type"] == EVENT_TYPE_CONFIG[ADDRESSABLE_ALERTS]["source_log_type"]
+        assert events[0]["_source_log_type"] == EVENT_TYPE_CONFIG[BEHAVIOR_ANALYTICS].source_log_type
+        assert events[1]["_source_log_type"] == EVENT_TYPE_CONFIG[ADDRESSABLE_ALERTS].source_log_type
 
     @freeze_time("2021-01-10T00:00:00Z")
     def test_fetch_events_no_new_events(self, client, requests_mock):

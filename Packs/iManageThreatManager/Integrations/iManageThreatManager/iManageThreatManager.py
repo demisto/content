@@ -1,9 +1,11 @@
 import demistomock as demisto
 from CommonServerPython import *
+from ContentClientApiModule import ContentClient
 import urllib3
 import base64
 import json
 import time
+from dataclasses import dataclass
 from datetime import UTC
 from typing import Any
 
@@ -25,25 +27,33 @@ SORT_ORDER = -1  # -1 for descending (newest first), 1 for ascending (oldest fir
 
 # Retry configuration for API throttling
 MAX_RETRIES = 3
-RETRY_DELAYS = [30, 60, 90]  # Delays in seconds: 30s, 1min, 1.5min
+RETRY_DELAYS_IN_SECONDS = [30, 60, 90]
+
+
+@dataclass(frozen=True)
+class EventConfig:
+    source_log_type: str
+    url_suffix: str
+    use_token_auth: bool
+
 
 # Event type configurations: maps event type names to their configuration
-EVENT_TYPE_CONFIG = {
-    "Behavior Analytics alerts": {
-        "source_log_type": "BehaviorAnalytics",
-        "url_suffix": "/tm-api/getAlertList",
-        "use_token_auth": True,
-    },
-    "Addressable Alerts": {
-        "source_log_type": "AddressableAlerts",
-        "url_suffix": "/tm-api/getAddressableAlerts",
-        "use_token_auth": False,
-    },
-    "Detect And Protect Alerts": {
-        "source_log_type": "DetectAndProtectAlerts",
-        "url_suffix": "/tm-api/getDetectAndProtectAlerts",
-        "use_token_auth": False,
-    },
+EVENT_TYPE_CONFIG: dict[str, EventConfig] = {
+    "Behavior Analytics alerts": EventConfig(
+        source_log_type="BehaviorAnalytics",
+        url_suffix="/tm-api/getAlertList",
+        use_token_auth=True,
+    ),
+    "Addressable Alerts": EventConfig(
+        source_log_type="AddressableAlerts",
+        url_suffix="/tm-api/getAddressableAlerts",
+        use_token_auth=False,
+    ),
+    "Detect And Protect Alerts": EventConfig(
+        source_log_type="DetectAndProtectAlerts",
+        url_suffix="/tm-api/getDetectAndProtectAlerts",
+        use_token_auth=False,
+    ),
 }
 
 # Event type constants - derived from EVENT_TYPE_CONFIG keys
@@ -52,7 +62,7 @@ BEHAVIOR_ANALYTICS, ADDRESSABLE_ALERTS, DETECT_AND_PROTECT_ALERTS = EVENT_TYPE_C
 """ CLIENT CLASS """
 
 
-class Client(BaseClient):
+class Client(ContentClient):
     """Client class to interact with the iManage Threat Manager API"""
 
     def __init__(
@@ -278,7 +288,7 @@ class Client(BaseClient):
         """
         # Get configuration for this event type
         config = EVENT_TYPE_CONFIG[event_type]
-        use_token_auth = config["use_token_auth"]
+        use_token_auth = config.use_token_auth
 
         demisto.debug(f"Fetching {event_type} from {start_date} to {end_date} with page size {page_size}.")
 
@@ -296,7 +306,7 @@ class Client(BaseClient):
 
                 response = self._http_request(
                     method="POST",
-                    url_suffix=config["url_suffix"],
+                    url_suffix=config.url_suffix,
                     headers={"X-Auth-Token": access_token},
                     json_data={
                         "timezone": DEFAULT_TIMEZONE,
@@ -334,7 +344,7 @@ class Client(BaseClient):
 
                 # Only retry if retries are enabled and this is a retryable error
                 if enable_retries and is_retryable and attempt < MAX_RETRIES:
-                    delay = RETRY_DELAYS[attempt]
+                    delay = RETRY_DELAYS_IN_SECONDS[attempt]
                     demisto.debug(
                         f"Retryable error on attempt {attempt + 1}/{MAX_RETRIES + 1}. "
                         f"Waiting {delay} seconds before regenerating token and retrying..."
@@ -411,14 +421,9 @@ def _deduplicate_events(events: List[Dict[str, Any]], last_run_ids: List[str], l
             continue
 
         if event_time and event_time > last_fetch_time:
-            # Event is newer than last_fetch_time, add it
-            deduplicated.append(event)
-
-            # Add all remaining events (from index i-1 down to 0) - they're all newer too
-            for j in range(i - 1, -1, -1):
-                remaining_event = events[j]
-                deduplicated.append(remaining_event)
-
+            # Event is newer than last_fetch_time, add all remaining events
+            # Use reverse slicing [i::-1] to get elements from index i down to 0 efficiently
+            deduplicated.extend(events[i::-1])
             demisto.debug(f"Found event newer than last_fetch_time at index {i}, added all {i + 1} newer events")
             break
 
@@ -777,7 +782,7 @@ def fetch_events_command(
 
         # Get source log type for this event type (used for state keys)
         config = EVENT_TYPE_CONFIG.get(event_type, EVENT_TYPE_CONFIG[BEHAVIOR_ANALYTICS])
-        source_log_type = str(config["source_log_type"])
+        source_log_type = config.source_log_type
 
         # Get last fetch time and IDs for this event type using source_log_type
         last_fetch_key = f"last_fetch_{source_log_type}"
@@ -888,7 +893,7 @@ def main() -> None:  # pragma: no cover
             if should_push_events:
                 # Determine source_log_type based on event_type
                 config = EVENT_TYPE_CONFIG.get(event_type, EVENT_TYPE_CONFIG[BEHAVIOR_ANALYTICS])
-                source_log_type_param = str(config["source_log_type"])
+                source_log_type_param = config.source_log_type
 
                 _add_fields_to_events(events, source_log_type_param)
                 demisto.debug(f"Sending {len(events)} events to XSIAM.")

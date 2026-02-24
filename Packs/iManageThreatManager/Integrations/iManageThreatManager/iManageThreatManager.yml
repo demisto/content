@@ -57,7 +57,7 @@ configuration:
   - display: Maximum number of events per type
     name: max_events_per_type
     defaultvalue: "900"
-    additionalinfo: Default and maximum is 900 events to fetch for each type.
+    additionalinfo: Default and maximum is 900 events to fetch for each event type.
     type: 0
     section: Collect
 description: iManage Threat Manager protects privileged information against internal and external threat actors using machine learning and user behavior analytics.
@@ -95,7 +95,7 @@ script:
           required: false
       description: Fetches events from iManage Threat Manager.
       name: imanage-threat-manager-get-events
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/fastapi:0.125.0.7178097
   isfetchevents: true
   runonce: false
   script: "-"
