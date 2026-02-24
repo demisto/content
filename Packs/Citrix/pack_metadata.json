@@ -16,10 +16,28 @@
         "Security"
     ],
     "defaultDataSource": "CitrixCloud",
-    "useCases": [],
-    "keywords": [],
+    "useCases": [
+        "Network Security"
+    ],
+    "keywords": [
+        "virtual",
+        "desktop",
+        "infrastructure",
+        "machine",
+        "vm",
+        "service",
+        "cloud"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }
