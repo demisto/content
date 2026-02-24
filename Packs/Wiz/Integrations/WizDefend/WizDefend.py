@@ -5,7 +5,7 @@ from CommonServerPython import *
 import demistomock as demisto
 from urllib import parse
 
-WIZ_VERSION = "1.0.0"
+WIZ_VERSION = "1.1.0"
 WIZ_DEFEND = "wiz_defend"
 WIZ_DEFEND_INCIDENT_TYPE = "WizDefend Detection"
 USER_AGENT_NAME = "xsoar_defend"

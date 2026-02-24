@@ -375,14 +375,9 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - OBJECT_DELETED
-      - ISSUE_FIXED
       - FALSE_POSITIVE
       - EXCEPTION
-      - CONTROL_DISABLED
-      - CONTROL_DELETED
       - WONT_FIX
-      - DETECTION_EXPIRED
     - name: reject_note
       description: rejection note.
       required: true
@@ -415,10 +410,7 @@ script:
       - ISSUE_FIXED
       - FALSE_POSITIVE
       - EXCEPTION
-      - CONTROL_DISABLED
-      - CONTROL_DELETED
       - WONT_FIX
-      - DETECTION_EXPIRED
     - name: resolution_note
       description: resolution note.
       required: true

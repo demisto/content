@@ -11,7 +11,7 @@ WIZ_API_LIMIT = 500  # limit number of returned records from the Wiz API
 MAX_NOTE_LENGTH = 1400  # Hard limit for issue note text length enforced by the Wiz API
 WIZ = "wiz"
 
-WIZ_VERSION = "1.4.0"
+WIZ_VERSION = "1.5.0"
 INTEGRATION_GUID = "8864e131-72db-4928-1293-e292f0ed699f"
 NOT_DEFINED = "Not Defined"
 
