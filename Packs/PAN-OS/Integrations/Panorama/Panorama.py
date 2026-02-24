@@ -9604,12 +9604,13 @@ class Topology:
         if self.panorama_objects:
             for value in self.panorama_devices():
                 yield value
-
+            demisto.debug("[top_level_devices] Panorama instaces returned")
             return
 
         if self.firewall_objects:
             for value in self.firewall_devices():
                 yield value
+            demisto.debug("[top_level_devices] Firewall instaces returned")
 
     def active_devices(self, filter_str: Optional[str] = None) -> Iterator[Union[Firewall, Panorama]]:
         """
@@ -9649,13 +9650,14 @@ class Topology:
         :param devices: The list of PanDevice instances to filter by the filter string
         :param filter_str: The filter string to filter the devices on
         """
-        # Exact match based on device serial number
         if not filter_str:
             return devices
 
+        # Exact match based on device serial number
         if filter_str in devices:
             return {filter_str: devices.get(filter_str)}
 
+        # Exact match based on hostname
         for serial, device in devices.items():
             if device.hostname == filter_str:
                 return {serial: device}
@@ -11677,16 +11679,25 @@ class PanoramaCommand:
         """
         result = []
         for device in topology.active_top_level_devices(device_filter_str):
+            demisto.debug(f"[get_device_groups] start running on Panorama intance {device.id=}, {device.hostname}.")
             if isinstance(device, Panorama):
                 response = run_op_command(device, PanoramaCommand.GET_DEVICEGROUPS_COMMAND)
-                for device_group_xml in response.findall("./result/devicegroups/entry"):
+                device_groups = response.findall("./result/devicegroups/entry")
+                demisto.debug(f"[get_device_groups] total device groups {len(device_groups)}.")
+
+                for device_group_xml in device_groups:
                     dg_name = get_element_attribute(device_group_xml, "name")
-                    for device_xml in device_group_xml.findall("./devices/entry"):
+                    devices_per_group = device_group_xml.findall("./devices/entry")
+                    demisto.debug(f"[get_device_groups] Total devices in group {dg_name}: {len(devices_per_group)}.")
+
+                    for device_xml in devices_per_group:
                         device_group_information: DeviceGroupInformation = dataclass_from_element(
                             device, DeviceGroupInformation, device_xml
                         )
                         device_group_information.name = dg_name
                         result.append(device_group_information)
+            else:
+                demisto.debug("[get_device_groups] The command must run from Panorama instance.")
 
         return result
 
