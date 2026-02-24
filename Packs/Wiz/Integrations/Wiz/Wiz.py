@@ -589,7 +589,6 @@ fragment CloudEventRuntimeDetails on CloudEventRuntimeDetails {
     }
   }
   rawDetails
-  runtimeExecutionDataId
   type
   context {
     ... on CloudEventRuntimeTypeFileContext {
