@@ -1542,6 +1542,10 @@ class WizInputParam:
     SEARCH = "search"
     SUBSCRIPTION_EXTERNAL_IDS = "subscription_external_ids"
     PROVIDER_UNIQUE_IDS = "provider_unique_ids"
+    PROJECT_IDS = "project_ids"
+    NATIVE_TYPES = "native_types"
+    UPDATED_AT_BEFORE = "updated_at_before"
+    UPDATED_AT_AFTER = "updated_at_after"
     STATUS = "status"
 
 
@@ -2136,7 +2140,8 @@ def get_filtered_issues(entity_type, resource_id, severity, issue_type, limit):
     return issues
 
 
-def get_resources(search, entity_type, subscription_external_ids, provider_unique_ids):
+def get_resources(search, entity_type, subscription_external_ids, provider_unique_ids,
+                   project_ids=None, native_types=None, updated_at_before=None, updated_at_after=None):
     """
     Retrieves Resources
     """
@@ -2144,15 +2149,22 @@ def get_resources(search, entity_type, subscription_external_ids, provider_uniqu
         f"Entity type is {entity_type}\n"
         f"Search is {search}\n"
         f"Subscription External IDs is {subscription_external_ids}\n"
-        f"Provider Unique IDs is {provider_unique_ids}"
+        f"Provider Unique IDs is {provider_unique_ids}\n"
+        f"Project IDs is {project_ids}\n"
+        f"Native Types is {native_types}\n"
+        f"Updated At Before is {updated_at_before}\n"
+        f"Updated At After is {updated_at_after}"
     )
     error_msg = ""
 
-    if not search and not entity_type and not subscription_external_ids and not provider_unique_ids:
+    if (not search and not entity_type and not subscription_external_ids and not provider_unique_ids
+            and not project_ids and not native_types and not updated_at_before and not updated_at_after):
         error_msg = (
             f"You should pass (at least) one of the following parameters:\n\t{WizInputParam.SEARCH}\n\t"
             f"{WizInputParam.ENTITY_TYPE}\n\t{WizInputParam.SUBSCRIPTION_EXTERNAL_IDS}\n\t"
-            f"{WizInputParam.PROVIDER_UNIQUE_IDS}\n"
+            f"{WizInputParam.PROVIDER_UNIQUE_IDS}\n\t{WizInputParam.PROJECT_IDS}\n\t"
+            f"{WizInputParam.NATIVE_TYPES}\n\t{WizInputParam.UPDATED_AT_BEFORE}\n\t"
+            f"{WizInputParam.UPDATED_AT_AFTER}\n"
         )
 
     if error_msg:
@@ -2171,6 +2183,19 @@ def get_resources(search, entity_type, subscription_external_ids, provider_uniqu
     if provider_unique_ids:
         provider_unique_ids_formatted = [str(x) for x in re.split(r"[,\s]+", provider_unique_ids.strip())]
         variables["filterBy"]["providerUniqueId"] = provider_unique_ids_formatted
+    if project_ids:
+        project_ids_formatted = [str(x) for x in re.split(r"[,\s]+", project_ids.strip())]
+        variables["filterBy"]["projectId"] = project_ids_formatted
+    if native_types:
+        native_types_formatted = [str(x) for x in re.split(r"[,\s]+", native_types.strip())]
+        variables["filterBy"]["nativeType"] = native_types_formatted
+    if updated_at_before or updated_at_after:
+        updated_at: Dict[str, str] = {}
+        if updated_at_before:
+            updated_at["before"] = updated_at_before
+        if updated_at_after:
+            updated_at["after"] = updated_at_after
+        variables["filterBy"]["updatedAt"] = updated_at
 
     try:
         response_json = checkAPIerrors(PULL_CLOUD_RESOURCES_NATIVE_QUERY, variables)
@@ -2661,11 +2686,19 @@ def main():
             resources_entity_type = demisto_args.get(WizInputParam.ENTITY_TYPE)
             resources_subscription_external_ids = demisto_args.get(WizInputParam.SUBSCRIPTION_EXTERNAL_IDS)
             resources_provider_unique_ids = demisto_args.get(WizInputParam.PROVIDER_UNIQUE_IDS)
+            resources_project_ids = demisto_args.get(WizInputParam.PROJECT_IDS)
+            resources_native_types = demisto_args.get(WizInputParam.NATIVE_TYPES)
+            resources_updated_at_before = demisto_args.get(WizInputParam.UPDATED_AT_BEFORE)
+            resources_updated_at_after = demisto_args.get(WizInputParam.UPDATED_AT_AFTER)
             resources = get_resources(
                 search=resources_search,
                 entity_type=resources_entity_type,
                 subscription_external_ids=resources_subscription_external_ids,
                 provider_unique_ids=resources_provider_unique_ids,
+                project_ids=resources_project_ids,
+                native_types=resources_native_types,
+                updated_at_before=resources_updated_at_before,
+                updated_at_after=resources_updated_at_after,
             )
             command_result = CommandResults(readable_output=resources, raw_response=resources)
             return_results(command_result)

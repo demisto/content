@@ -364,6 +364,18 @@ script:
           - WEB_SERVICE
           - DATA_WORKFLOW
         auto: PREDEFINED
+      - description: Filter by Wiz project IDs (comma-separated).
+        name: project_ids
+        required: false
+      - description: Filter by cloud-native resource types (comma-separated, e.g. aws_ec2_instance).
+        name: native_types
+        required: false
+      - description: Filter resources updated before this date (ISO 8601, e.g. 2024-01-01T00:00:00Z).
+        name: updated_at_before
+        required: false
+      - description: Filter resources updated after this date (ISO 8601, e.g. 2024-01-01T00:00:00Z).
+        name: updated_at_after
+        required: false
   - name: wiz-reject-issue
     description: Reject a Wiz Issue.
     arguments:
