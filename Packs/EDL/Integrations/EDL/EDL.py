@@ -18,7 +18,7 @@ import tldextract
 import urllib3
 from CommonServerPython import *  # noqa: F401
 from flask import Flask, Response, request, send_file
-from netaddr import IPNetwork, IPSet
+from netaddr import IPNetwork, IPRange, IPSet
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -581,25 +581,23 @@ def create_csv_out_format(headers_was_writen: bool, list_fields: List, ioc, requ
 
 
 @debug_function
-def ip_groups_to_cidrs(ip_range_groups: Iterable):
-    """Collapse ip groups list to CIDRs
+def ip_groups_to_cidrs(ip_range_groups: Iterable[IPNetwork]) -> set[str]:
+    """Collapse IP groups list to CIDRs
 
     Args:
-        ip_range_groups (Iterable): an Iterable of lists containing connected IPs
+        ip_range_groups (Iterable[IPNetwork]): An iterable of IPNetwork objects representing connected IPs.
 
     Returns:
-        Set. a set of CIDRs.
+        set[str]: A set of CIDR strings (e.g., {'192.168.1.0/24', '10.0.0.1'})
     """
-    ip_ranges = set()
+    ip_ranges: set[str] = set()
     for cidr in ip_range_groups:
-        # handle single ips
+        # handle single IPs
+        # Use .size property instead of len() to avoid IndexError for very large ranges
         try:
             cidr_size = cidr.size
-        except AttributeError:
-            # Fallback for objects without .size property
-            cidr_size = len(cidr)
-        except:
-            demisto.error(f"edl: Failed to collapse IP group {cidr} to CIDRs.")
+        except Exception as e:
+            demisto.error(f"edl: Failed to collapse IP group {cidr} to CIDRs. Got error: {e}.")
             raise
 
         if cidr_size == 1:
@@ -613,26 +611,23 @@ def ip_groups_to_cidrs(ip_range_groups: Iterable):
 
 
 @debug_function
-def ip_groups_to_ranges(ip_range_groups: Iterable):
-    """Collapse ip groups to ranges.
+def ip_groups_to_ranges(ip_range_groups: Iterable[IPRange]) -> set[str]:
+    """Collapse IP groups to ranges.
 
     Args:
-        ip_range_groups (Iterable): a list of lists containing connected IPs
+        ip_range_groups (Iterable[IPRange]): An iterable of IPRange objects representing connected IPs.
 
     Returns:
-        Set. a set of Ranges.
+        set[str]: A set of IP range strings (e.g., {'192.168.1.1-192.168.1.255', '10.0.0.1'})
     """
-    ip_ranges = set()
+    ip_ranges: set[str] = set()
     for group in ip_range_groups:
-        # handle single ips
+        # handle single IPs
         # Use .size property instead of len() to avoid IndexError for very large ranges
         try:
             group_size = group.size
-        except AttributeError:
-            # Fallback for objects without .size property
-            group_size = len(group)
-        except:
-            demisto.error(f"edl: Failed to collapse IP group {group} to range.")
+        except Exception as e:
+            demisto.error(f"edl: Failed to collapse IP group {group} to range. Got error: {e}.")
             raise
 
         if group_size == 1:
