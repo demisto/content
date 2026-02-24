@@ -192,6 +192,7 @@ class CoreClient(BaseClient):
         json_data=None,  # type: ignore[override]
         params=None,
         data=None,
+        files: dict | None = None,
         timeout=None,
         raise_on_status=False,
         ok_codes=None,
@@ -229,6 +230,10 @@ class CoreClient(BaseClient):
             :param data: The data to send in a 'POST' request.
 
 
+            :type files: ``dict``
+            :param files: The file data to send in a multipart/form-data 'POST' request.
+
+
             :type raise_on_status ``bool``
                 :param raise_on_status: Similar meaning to ``raise_on_redirect``:
                     whether we should raise an exception, or return a response,
@@ -252,6 +257,7 @@ class CoreClient(BaseClient):
                 json_data=json_data,
                 params=params,
                 data=data,
+                files=files,
                 timeout=timeout,
                 raise_on_status=raise_on_status,
                 ok_codes=ok_codes,

@@ -77,3 +77,9 @@
 !xdr-healthcheck-run
 !xdr-endpoint-triage-preset-list
 !xdr-endpoint-triage endpoint_id=endpoint_id1,endpoint_id2
+!xdr-automation-script-create entry_id=abcd1234
+!xdr-automation-script-get field=id value=script_id
+!xdr-automation-script-delete field=id value=script_id
+!xdr-automation-playbook-create entry_id=abcd1234
+!xdr-automation-playbook-get field=id value=playbook_id
+!xdr-automation-playbook-delete field=name value=playbook_name

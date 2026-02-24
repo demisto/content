@@ -4532,6 +4532,14 @@ Gets vulnerability details by ID.
 #### Base Command
 
 `xdr-vulnerability-details-get`
+### xdr-automation-playbook-create
+
+***
+Creates or updates an automation playbook.
+
+#### Base Command
+
+`xdr-automation-playbook-create`
 
 #### Input
 
@@ -4610,6 +4618,20 @@ Initiates a forensics triage on the specified endpoints. You must have Cortex XD
 #### Base Command
 
 `xdr-endpoint-triage`
+| entry_id | The entry ID of the file. The playbook should be a zipped YAML file. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### xdr-automation-playbook-get
+
+***
+Gets an automation playbook.
+
+#### Base Command
+
+`xdr-automation-playbook-get`
 
 #### Input
 
@@ -4625,3 +4647,88 @@ Initiates a forensics triage on the specified endpoints. You must have Cortex XD
 | PaloAltoNetworksXDR.EndpointTriage.TRIAGE_ID | String | The unique identifier assigned to the created triage action. |
 | PaloAltoNetworksXDR.EndpointTriage.SUCCESSFUL_AGENT_IDS | Array | A list of agent IDs where the triage action was successfully initiated. |
 | PaloAltoNetworksXDR.EndpointTriage.UNSUCCESSFUL_AGENT_IDS | Array | A list of agent IDs where the triage action failed to initiate. |
+| field | The field to search by. Possible values are: id, name. | Required |
+| value | The field value to search for. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### xdr-automation-playbook-delete
+
+***
+Deletes an automation playbook.
+
+#### Base Command
+
+`xdr-automation-playbook-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| field | The field to search by. Possible values are: id, name. | Required |
+| value | The field value to search for. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### xdr-automation-script-delete
+
+***
+Deletes an automation script.
+
+#### Base Command
+
+`xdr-automation-script-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| field | The field to search by. Possible values are: id, name. | Required |
+| value | The field value to search for. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### xdr-automation-script-get
+
+***
+Gets an automation script.
+
+#### Base Command
+
+`xdr-automation-script-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| field | The field to search by. Possible values are: id, name. | Required |
+| value | The field value to search for. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### xdr-automation-script-create
+
+***
+Creates or updates an automation script.
+
+#### Base Command
+
+`xdr-automation-script-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entry_id | The entry ID of the file. The script should be a zipped YAML file. | Required |
+
+#### Context Output
+
+There is no context output for this command.
