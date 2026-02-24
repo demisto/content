@@ -13157,3 +13157,533 @@ def test_modify_fleet_command_with_launch_template(mocker):
     call_kwargs = mock_client.modify_fleet.call_args[1]
     assert "LaunchTemplateConfigs" in call_kwargs
     assert call_kwargs["LaunchTemplateConfigs"][0]["LaunchTemplateSpecification"]["LaunchTemplateId"] == "lt-0newtemplate"
+
+
+# ── aws-ec2-vpc-delete ────────────────────────────────────────────────────────
+
+
+def test_delete_vpc_command_success(mocker):
+    """
+    Given: A mocked EC2 client and a valid vpc_id argument.
+    When: delete_vpc_command is called with a successful response.
+    Then: It should return CommandResults with a success message containing the VPC ID.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.delete_vpc.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "vpc_id": "vpc-0abc12345"}
+
+    result = EC2.delete_vpc_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "vpc-0abc12345" in result.readable_output
+    mock_client.delete_vpc.assert_called_once_with(VpcId="vpc-0abc12345")
+
+
+def test_delete_vpc_command_failure(mocker):
+    """
+    Given: A mocked EC2 client that returns a non-200 HTTP status.
+    When: delete_vpc_command is called.
+    Then: It should invoke AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.delete_vpc.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "vpc_id": "vpc-0abc12345"}
+
+    EC2.delete_vpc_command(mock_client, args)
+
+    mock_error_handler.assert_called_once()
+
+
+# ── aws-ec2-vpc-endpoint-create ───────────────────────────────────────────────
+
+
+def test_create_vpc_endpoint_command_success(mocker):
+    """
+    Given: A mocked EC2 client and valid arguments for a Gateway VPC endpoint.
+    When: create_vpc_endpoint_command is called with a successful response.
+    Then: It should return CommandResults with the VpcEndpointId in outputs and readable output.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_vpc_endpoint.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "VpcEndpoint": {
+            "VpcEndpointId": "vpce-0abc12345",
+            "State": "available",
+            "ServiceName": "com.amazonaws.us-east-1.s3",
+            "VpcId": "vpc-0abc12345",
+            "VpcEndpointType": "Gateway",
+        },
+    }
+    mocker.patch(
+        "AWS.serialize_response_with_datetime_encoding",
+        return_value={
+            "VpcEndpoint": {
+                "VpcEndpointId": "vpce-0abc12345",
+                "State": "available",
+                "ServiceName": "com.amazonaws.us-east-1.s3",
+                "VpcId": "vpc-0abc12345",
+                "VpcEndpointType": "Gateway",
+            }
+        },
+    )
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "vpc_id": "vpc-0abc12345",
+        "service_name": "com.amazonaws.us-east-1.s3",
+        "vpc_endpoint_type": "Gateway",
+    }
+
+    result = EC2.create_vpc_endpoint_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.VpcEndpoints"
+    assert result.outputs["VpcEndpointId"] == "vpce-0abc12345"
+    assert "vpce-0abc12345" in result.readable_output
+
+
+def test_create_vpc_endpoint_command_with_dns_options(mocker):
+    """
+    Given: A mocked EC2 client and arguments including DNS options.
+    When: create_vpc_endpoint_command is called.
+    Then: It should pass DnsOptions in the API call payload.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_vpc_endpoint.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "VpcEndpoint": {"VpcEndpointId": "vpce-dns001", "State": "pending"},
+    }
+    mocker.patch(
+        "AWS.serialize_response_with_datetime_encoding",
+        return_value={"VpcEndpoint": {"VpcEndpointId": "vpce-dns001", "State": "pending"}},
+    )
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "vpc_id": "vpc-0abc12345",
+        "service_name": "com.amazonaws.us-east-1.s3",
+        "dns_options_dns_record_ip_type": "ipv4",
+        "private_dns_enabled": "true",
+    }
+
+    result = EC2.create_vpc_endpoint_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.create_vpc_endpoint.call_args[1]
+    assert call_kwargs["DnsOptions"]["DnsRecordIpType"] == "ipv4"
+    assert call_kwargs["PrivateDnsEnabled"] is True
+
+
+def test_create_vpc_endpoint_command_failure(mocker):
+    """
+    Given: A mocked EC2 client that returns a non-200 HTTP status.
+    When: create_vpc_endpoint_command is called.
+    Then: It should invoke AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_vpc_endpoint.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "VpcEndpoint": {},
+    }
+    mocker.patch(
+        "AWS.serialize_response_with_datetime_encoding",
+        return_value={"VpcEndpoint": {}},
+    )
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "vpc_id": "vpc-0abc12345",
+        "service_name": "com.amazonaws.us-east-1.s3",
+    }
+
+    EC2.create_vpc_endpoint_command(mock_client, args)
+
+    mock_error_handler.assert_called_once()
+
+
+# ── aws-ec2-internet-gateway-describe ─────────────────────────────────────────
+
+
+def test_describe_internet_gateways_command_success(mocker):
+    """
+    Given: A mocked EC2 client returning one internet gateway with an attachment.
+    When: describe_internet_gateways_command is called.
+    Then: It should return CommandResults with the gateway ID in readable output and outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_internet_gateways.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "InternetGateways": [
+            {
+                "InternetGatewayId": "igw-0abc12345",
+                "OwnerId": "123456789012",
+                "Attachments": [{"State": "available", "VpcId": "vpc-0abc12345"}],
+                "Tags": [],
+            }
+        ],
+    }
+    mocker.patch(
+        "AWS.serialize_response_with_datetime_encoding",
+        return_value={
+            "InternetGateways": [
+                {
+                    "InternetGatewayId": "igw-0abc12345",
+                    "OwnerId": "123456789012",
+                    "Attachments": [{"State": "available", "VpcId": "vpc-0abc12345"}],
+                    "Tags": [],
+                }
+            ]
+        },
+    )
+
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    result = EC2.describe_internet_gateways_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "igw-0abc12345" in result.readable_output
+
+
+def test_describe_internet_gateways_command_no_results(mocker):
+    """
+    Given: A mocked EC2 client returning an empty InternetGateways list.
+    When: describe_internet_gateways_command is called.
+    Then: It should return CommandResults with a 'no gateways found' message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_internet_gateways.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "InternetGateways": [],
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value={"InternetGateways": []})
+
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    result = EC2.describe_internet_gateways_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "No internet gateways were found" in result.readable_output
+
+
+def test_describe_internet_gateways_command_with_filter(mocker):
+    """
+    Given: A mocked EC2 client and a filters argument.
+    When: describe_internet_gateways_command is called.
+    Then: It should pass Filters in the API call payload.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_internet_gateways.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "InternetGateways": [{"InternetGatewayId": "igw-filtered", "OwnerId": "123456789012", "Attachments": []}],
+    }
+    mocker.patch(
+        "AWS.serialize_response_with_datetime_encoding",
+        return_value={
+            "InternetGateways": [{"InternetGatewayId": "igw-filtered", "OwnerId": "123456789012", "Attachments": []}]
+        },
+    )
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "filters": "name=attachment.state,values=available",
+        "internet_gateway_ids": "igw-filtered",
+    }
+
+    result = EC2.describe_internet_gateways_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.describe_internet_gateways.call_args[1]
+    assert "Filters" in call_kwargs
+    assert call_kwargs["InternetGatewayIds"] == ["igw-filtered"]
+
+
+# ── aws-ec2-internet-gateway-detach ───────────────────────────────────────────
+
+
+def test_detach_internet_gateway_command_success(mocker):
+    """
+    Given: A mocked EC2 client and valid internet_gateway_id and vpc_id arguments.
+    When: detach_internet_gateway_command is called with a successful response.
+    Then: It should return CommandResults with a success message containing both IDs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.detach_internet_gateway.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "internet_gateway_id": "igw-0abc12345",
+        "vpc_id": "vpc-0abc12345",
+    }
+
+    result = EC2.detach_internet_gateway_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "igw-0abc12345" in result.readable_output
+    assert "vpc-0abc12345" in result.readable_output
+    mock_client.detach_internet_gateway.assert_called_once_with(
+        InternetGatewayId="igw-0abc12345", VpcId="vpc-0abc12345"
+    )
+
+
+def test_detach_internet_gateway_command_failure(mocker):
+    """
+    Given: A mocked EC2 client that returns a non-200 HTTP status.
+    When: detach_internet_gateway_command is called.
+    Then: It should invoke AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.detach_internet_gateway.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "internet_gateway_id": "igw-0abc12345",
+        "vpc_id": "vpc-0abc12345",
+    }
+
+    EC2.detach_internet_gateway_command(mock_client, args)
+
+    mock_error_handler.assert_called_once()
+
+
+# ── aws-ec2-internet-gateway-delete ───────────────────────────────────────────
+
+
+def test_delete_internet_gateway_command_success(mocker):
+    """
+    Given: A mocked EC2 client and a valid internet_gateway_id argument.
+    When: delete_internet_gateway_command is called with a successful response.
+    Then: It should return CommandResults with a success message containing the gateway ID.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.delete_internet_gateway.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "internet_gateway_id": "igw-0abc12345"}
+
+    result = EC2.delete_internet_gateway_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "igw-0abc12345" in result.readable_output
+    mock_client.delete_internet_gateway.assert_called_once_with(InternetGatewayId="igw-0abc12345")
+
+
+def test_delete_internet_gateway_command_failure(mocker):
+    """
+    Given: A mocked EC2 client that returns a non-200 HTTP status.
+    When: delete_internet_gateway_command is called.
+    Then: It should invoke AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.delete_internet_gateway.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "internet_gateway_id": "igw-0abc12345"}
+
+    EC2.delete_internet_gateway_command(mock_client, args)
+
+    mock_error_handler.assert_called_once()
+
+
+# ── aws-ec2-subnet-delete ─────────────────────────────────────────────────────
+
+
+def test_delete_subnet_command_success(mocker):
+    """
+    Given: A mocked EC2 client and a valid subnet_id argument.
+    When: delete_subnet_command is called with a successful response.
+    Then: It should return CommandResults with a success message containing the subnet ID.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.delete_subnet.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "subnet_id": "subnet-0abc12345"}
+
+    result = EC2.delete_subnet_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "subnet-0abc12345" in result.readable_output
+    mock_client.delete_subnet.assert_called_once_with(SubnetId="subnet-0abc12345")
+
+
+def test_delete_subnet_command_failure(mocker):
+    """
+    Given: A mocked EC2 client that returns a non-200 HTTP status.
+    When: delete_subnet_command is called.
+    Then: It should invoke AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.delete_subnet.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "subnet_id": "subnet-0abc12345"}
+
+    EC2.delete_subnet_command(mock_client, args)
+
+    mock_error_handler.assert_called_once()
+
+
+# ── aws-ec2-network-acl-entry-create ─────────────────────────────────────────
+
+
+def test_create_network_acl_entry_command_success(mocker):
+    """
+    Given: A mocked EC2 client and valid arguments for a TCP ingress rule.
+    When: create_network_acl_entry_command is called with a successful response.
+    Then: It should return CommandResults with a success message containing the network ACL ID.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_network_acl_entry.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "network_acl_id": "acl-0abc12345",
+        "rule_number": "100",
+        "protocol": "tcp",
+        "rule_action": "allow",
+        "egress": "false",
+        "cidr_block": "0.0.0.0/0",
+        "port_range_from": "80",
+        "port_range_to": "80",
+    }
+
+    result = EC2.create_network_acl_entry_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "acl-0abc12345" in result.readable_output
+    call_kwargs = mock_client.create_network_acl_entry.call_args[1]
+    assert call_kwargs["NetworkAclId"] == "acl-0abc12345"
+    assert call_kwargs["RuleNumber"] == 100
+    assert call_kwargs["Protocol"] == "tcp"
+    assert call_kwargs["RuleAction"] == "allow"
+    assert call_kwargs["Egress"] is False
+    assert call_kwargs["PortRange"] == {"From": 80, "To": 80}
+
+
+def test_create_network_acl_entry_command_with_icmp(mocker):
+    """
+    Given: A mocked EC2 client and arguments specifying ICMP protocol with type and code.
+    When: create_network_acl_entry_command is called.
+    Then: It should pass IcmpTypeCode in the API call payload.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_network_acl_entry.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "network_acl_id": "acl-0abc12345",
+        "rule_number": "200",
+        "protocol": "icmp",
+        "rule_action": "deny",
+        "egress": "true",
+        "cidr_block": "10.0.0.0/8",
+        "icmp_type_code_type": "8",
+        "icmp_type_code_code": "0",
+    }
+
+    result = EC2.create_network_acl_entry_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.create_network_acl_entry.call_args[1]
+    assert call_kwargs["IcmpTypeCode"] == {"Type": 8, "Code": 0}
+    assert call_kwargs["Egress"] is True
+
+
+def test_create_network_acl_entry_command_with_ipv6(mocker):
+    """
+    Given: A mocked EC2 client and arguments specifying an IPv6 CIDR block.
+    When: create_network_acl_entry_command is called.
+    Then: It should pass Ipv6CidrBlock in the API call payload.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_network_acl_entry.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "network_acl_id": "acl-0abc12345",
+        "rule_number": "300",
+        "protocol": "-1",
+        "rule_action": "allow",
+        "egress": "false",
+        "ipv6_cidr_block": "::/0",
+    }
+
+    result = EC2.create_network_acl_entry_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.create_network_acl_entry.call_args[1]
+    assert call_kwargs["Ipv6CidrBlock"] == "::/0"
+
+
+def test_create_network_acl_entry_command_failure(mocker):
+    """
+    Given: A mocked EC2 client that returns a non-200 HTTP status.
+    When: create_network_acl_entry_command is called.
+    Then: It should invoke AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_network_acl_entry.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "network_acl_id": "acl-0abc12345",
+        "rule_number": "100",
+        "protocol": "tcp",
+        "rule_action": "allow",
+        "egress": "false",
+        "cidr_block": "0.0.0.0/0",
+    }
+
+    EC2.create_network_acl_entry_command(mock_client, args)
+
+    mock_error_handler.assert_called_once()

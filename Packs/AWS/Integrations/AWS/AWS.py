@@ -5274,11 +5274,8 @@ class EC2:
         if internet_gateway_ids := args.get("internet_gateway_ids"):
             kwargs["InternetGatewayIds"] = argToList(internet_gateway_ids)
 
-        if max_results := arg_to_number(args.get("max_results")):
-            kwargs["MaxResults"] = max_results
-
-        if next_token := args.get("next_token"):
-            kwargs["NextToken"] = next_token
+        if not kwargs.get("InternetGatewayIds"):
+            kwargs.update(build_pagination_kwargs(args, minimum_limit=5))
 
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Describing internet gateways with parameters: {kwargs}")
@@ -5427,7 +5424,7 @@ class EC2:
             "RuleNumber": arg_to_number(args.get("rule_number")),
             "Protocol": args.get("protocol"),
             "RuleAction": args.get("rule_action"),
-            "Egress": argToBoolean(args.get("egress")),
+            "Egress": arg_to_bool_or_none(args.get("egress")),
             "CidrBlock": args.get("cidr_block"),
             "Ipv6CidrBlock": args.get("ipv6_cidr_block"),
         }
@@ -7962,7 +7959,7 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:DeleteLaunchTemplate",
     "ssm:SendCommand",
     "ssm:ListCommands",
-    "ec2:DeleteVpc",
+        "ec2:DeleteVpc",
     "ec2:CreateVpcEndpoint",
     "ec2:DescribeInternetGateways",
     "ec2:DetachInternetGateway",
