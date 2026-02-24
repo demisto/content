@@ -8,6 +8,7 @@ Covers all 20 functions in the integration:
 - SMS reply processing (process_sms_reply, send_feedback_sms)
 - AWS client creation (get_aws_client with 4 auth methods)
 """
+
 import copy
 import pytest
 import json
@@ -28,7 +29,7 @@ from AWSSNSSMSCommunication import (
     send_notification_command,
     list_entitlements_command,
     inject_reply_command,
-    test_module_command,
+    test_module_command as run_test_module,
     process_sms_reply,
     send_feedback_sms,
     get_aws_client,
@@ -50,6 +51,7 @@ SAMPLE_PHONE = "+12345678900"
 
 
 # ===== Shared fixtures =====
+
 
 @pytest.fixture(autouse=True)
 def mock_demisto(mocker):
@@ -151,6 +153,7 @@ def _make_entitlement(
 
 # ===== 1. TestHelperFunctions =====
 
+
 class TestHelperFunctions:
     """Tests for pure helper / parsing functions."""
 
@@ -223,6 +226,7 @@ class TestHelperFunctions:
 
 # ===== 2. TestCleanAskTaskMessage =====
 
+
 class TestCleanAskTaskMessage:
     """Tests for clean_ask_task_message_and_generate_codes()."""
 
@@ -235,7 +239,8 @@ class TestCleanAskTaskMessage:
         assert len(codes) == 2
         assert set(codes.values()) == {"Yes", "No"}
         for code in codes:
-            assert len(code) == 4 and code.isdigit()
+            assert len(code) == 4
+            assert code.isdigit()
 
     def test_three_options(self):
         """SMSAskUser format with 3 options."""
@@ -284,9 +289,7 @@ class TestCleanAskTaskMessage:
     def test_sequential_mode_two_options(self):
         """Sequential mode generates codes 1, 2 for first question."""
         msg = f"Approve? - Reply Yes or No: {SAMPLE_GUID}@123|45"
-        cleaned, codes = clean_ask_task_message_and_generate_codes(
-            msg, set(), reply_code_mode=REPLY_CODE_MODE_SEQUENTIAL
-        )
+        cleaned, codes = clean_ask_task_message_and_generate_codes(msg, set(), reply_code_mode=REPLY_CODE_MODE_SEQUENTIAL)
 
         assert len(codes) == 2
         assert set(codes.keys()) == {"1", "2"}
@@ -298,9 +301,7 @@ class TestCleanAskTaskMessage:
     def test_sequential_mode_skips_existing(self):
         """Sequential mode continues numbering past existing codes."""
         msg = f"Another question? - Reply Yes or No: {SAMPLE_GUID}@123|45"
-        cleaned, codes = clean_ask_task_message_and_generate_codes(
-            msg, {"1", "2"}, reply_code_mode=REPLY_CODE_MODE_SEQUENTIAL
-        )
+        cleaned, codes = clean_ask_task_message_and_generate_codes(msg, {"1", "2"}, reply_code_mode=REPLY_CODE_MODE_SEQUENTIAL)
 
         assert len(codes) == 2
         assert set(codes.keys()) == {"3", "4"}
@@ -310,15 +311,14 @@ class TestCleanAskTaskMessage:
     def test_sequential_mode_three_options(self):
         """Sequential mode with 3 options."""
         msg = f"Action? - Reply Approve or Deny or Escalate: {SAMPLE_GUID}@1|4"
-        cleaned, codes = clean_ask_task_message_and_generate_codes(
-            msg, set(), reply_code_mode=REPLY_CODE_MODE_SEQUENTIAL
-        )
+        cleaned, codes = clean_ask_task_message_and_generate_codes(msg, set(), reply_code_mode=REPLY_CODE_MODE_SEQUENTIAL)
 
         assert len(codes) == 3
         assert codes == {"1": "Approve", "2": "Deny", "3": "Escalate"}
 
 
 # ===== 3. TestEntitlementManagement =====
+
 
 class TestEntitlementManagement:
     """Tests for entitlement CRUD operations."""
@@ -440,6 +440,7 @@ class TestEntitlementManagement:
 
 # ===== 4. TestSendNotificationCommand =====
 
+
 class TestSendNotificationCommand:
     """Tests for the send-notification command."""
 
@@ -447,27 +448,19 @@ class TestSendNotificationCommand:
         """Plain SMS without entitlement just publishes and returns MessageId."""
         mocker.patch("AWSSNSSMSCommunication.get_aws_client", return_value=mock_sns_client)
 
-        result = send_notification_command(
-            {"to": SAMPLE_PHONE, "message": "Hello"}, mock_params
-        )
+        result = send_notification_command({"to": SAMPLE_PHONE, "message": "Hello"}, mock_params)
 
         assert result.outputs["MessageId"] == "msg-id-123"
         assert result.outputs["PhoneNumber"] == SAMPLE_PHONE
         assert "Entitlement" not in result.outputs
-        mock_sns_client.publish.assert_called_once_with(
-            PhoneNumber=SAMPLE_PHONE, Message="Hello"
-        )
+        mock_sns_client.publish.assert_called_once_with(PhoneNumber=SAMPLE_PHONE, Message="Hello")
 
-    def test_with_sms_ask_entitlement(
-        self, mocker, mock_sns_client, mock_params, integration_context
-    ):
+    def test_with_sms_ask_entitlement(self, mocker, mock_sns_client, mock_params, integration_context):
         """Full entitlement flow: extract, generate codes, save, send formatted."""
         mocker.patch("AWSSNSSMSCommunication.get_aws_client", return_value=mock_sns_client)
 
         msg = f"Approve? - Reply Yes or No: {SAMPLE_GUID}@123|45"
-        result = send_notification_command(
-            {"to": SAMPLE_PHONE, "message": msg}, mock_params
-        )
+        result = send_notification_command({"to": SAMPLE_PHONE, "message": msg}, mock_params)
 
         assert result.outputs["Entitlement"] == f"{SAMPLE_GUID}@123|45"
         assert isinstance(result.outputs["CodesToOptions"], dict)
@@ -483,17 +476,13 @@ class TestSendNotificationCommand:
         with pytest.raises(ValueError, match="Both 'to' and 'message'"):
             send_notification_command({"message": "hi"}, mock_params)
 
-    def test_with_sequential_mode(
-        self, mocker, mock_sns_client, mock_params, integration_context
-    ):
+    def test_with_sequential_mode(self, mocker, mock_sns_client, mock_params, integration_context):
         """Sequential mode generates simple 1, 2 codes instead of 4-digit random."""
         mocker.patch("AWSSNSSMSCommunication.get_aws_client", return_value=mock_sns_client)
         mock_params["replyCodeMode"] = "sequential"
 
         msg = f"Approve? - Reply Yes or No: {SAMPLE_GUID}@123|45"
-        result = send_notification_command(
-            {"to": SAMPLE_PHONE, "message": msg}, mock_params
-        )
+        result = send_notification_command({"to": SAMPLE_PHONE, "message": msg}, mock_params)
 
         codes = result.outputs["CodesToOptions"]
         assert codes == {"1": "Yes", "2": "No"}
@@ -502,22 +491,19 @@ class TestSendNotificationCommand:
         assert "Yes (1)" in sent_message
         assert "No (2)" in sent_message
 
-    def test_fallback_when_no_options(
-        self, mocker, mock_sns_client, mock_params, integration_context
-    ):
+    def test_fallback_when_no_options(self, mocker, mock_sns_client, mock_params, integration_context):
         """When entitlement found but no options parsed, falls back to DEFAULT_REPLY_CODE."""
         mocker.patch("AWSSNSSMSCommunication.get_aws_client", return_value=mock_sns_client)
 
         # Has entitlement but not in "Reply X or Y:" format
         msg = f"Some text {SAMPLE_GUID}@123|45 more text"
-        result = send_notification_command(
-            {"to": SAMPLE_PHONE, "message": msg}, mock_params
-        )
+        result = send_notification_command({"to": SAMPLE_PHONE, "message": msg}, mock_params)
 
         assert result.outputs["CodesToOptions"] == {DEFAULT_REPLY_CODE: "response"}
 
 
 # ===== 5. TestListEntitlementsCommand =====
+
 
 class TestListEntitlementsCommand:
     """Tests for aws-sns-sms-list-entitlements command."""
@@ -545,9 +531,7 @@ class TestListEntitlementsCommand:
             _make_entitlement(entitlement_id="ent2", phone="+19999999999"),
         ]
 
-        result = list_entitlements_command(
-            {"phone_number": SAMPLE_PHONE}, mock_params
-        )
+        result = list_entitlements_command({"phone_number": SAMPLE_PHONE}, mock_params)
 
         assert len(result.outputs) == 1
         assert result.outputs[0]["PhoneNumber"] == SAMPLE_PHONE
@@ -563,6 +547,7 @@ class TestListEntitlementsCommand:
 
 # ===== 6. TestInjectReplyCommand =====
 
+
 class TestInjectReplyCommand:
     """Tests for aws-sns-sms-inject-reply debug command."""
 
@@ -572,9 +557,7 @@ class TestInjectReplyCommand:
             _make_entitlement(codes_to_options={"1234": "Yes", "5678": "No"}),
         ]
 
-        result = inject_reply_command(
-            {"phone_number": SAMPLE_PHONE, "reply_code": "1234"}, mock_params
-        )
+        result = inject_reply_command({"phone_number": SAMPLE_PHONE, "reply_code": "1234"}, mock_params)
 
         assert result.outputs["Success"] is True
         assert result.outputs["ChosenOption"] == "Yes"
@@ -587,9 +570,7 @@ class TestInjectReplyCommand:
 
     def test_invalid_code_format(self, integration_context, mock_params):
         """Non-numeric code returns error output."""
-        result = inject_reply_command(
-            {"phone_number": SAMPLE_PHONE, "reply_code": "abc"}, mock_params
-        )
+        result = inject_reply_command({"phone_number": SAMPLE_PHONE, "reply_code": "abc"}, mock_params)
 
         assert result.outputs["Success"] is False
         assert "Invalid reply code format" in result.outputs["Error"]
@@ -600,9 +581,7 @@ class TestInjectReplyCommand:
             _make_entitlement(codes_to_options={"1": "Yes", "2": "No"}),
         ]
 
-        result = inject_reply_command(
-            {"phone_number": SAMPLE_PHONE, "reply_code": "1"}, mock_params
-        )
+        result = inject_reply_command({"phone_number": SAMPLE_PHONE, "reply_code": "1"}, mock_params)
 
         assert result.outputs["Success"] is True
         assert result.outputs["ChosenOption"] == "Yes"
@@ -613,9 +592,7 @@ class TestInjectReplyCommand:
             _make_entitlement(codes_to_options={"1234": "Yes"}),
         ]
 
-        result = inject_reply_command(
-            {"phone_number": SAMPLE_PHONE, "reply_code": "9999"}, mock_params
-        )
+        result = inject_reply_command({"phone_number": SAMPLE_PHONE, "reply_code": "9999"}, mock_params)
 
         assert result.outputs["Success"] is False
         assert "No matching entitlement" in result.outputs["Error"]
@@ -629,6 +606,7 @@ class TestInjectReplyCommand:
 
 # ===== 7. TestProcessSmsReply =====
 
+
 class TestProcessSmsReply:
     """Tests for process_sms_reply() - core SQS message processing."""
 
@@ -640,16 +618,16 @@ class TestProcessSmsReply:
         }
         return {
             "MessageId": "sqs-msg-1",
-            "Body": json.dumps({
-                "Type": "Notification",
-                "Message": json.dumps(sns_payload),
-            }),
+            "Body": json.dumps(
+                {
+                    "Type": "Notification",
+                    "Message": json.dumps(sns_payload),
+                }
+            ),
             "ReceiptHandle": "receipt-1",
         }
 
-    def test_valid_reply_success(
-        self, mocker, integration_context, mock_sns_client, mock_params
-    ):
+    def test_valid_reply_success(self, mocker, integration_context, mock_sns_client, mock_params):
         """Match code -> handleEntitlementForUser -> mark answered -> send success feedback."""
         mocker.patch("AWSSNSSMSCommunication.get_aws_client", return_value=mock_sns_client)
         integration_context["entitlements"] = [
@@ -669,9 +647,7 @@ class TestProcessSmsReply:
         call_kwargs = mock_sns_client.publish.call_args
         assert call_kwargs[1]["PhoneNumber"] == SAMPLE_PHONE
 
-    def test_valid_reply_no_match(
-        self, mocker, integration_context, mock_sns_client, mock_params
-    ):
+    def test_valid_reply_no_match(self, mocker, integration_context, mock_sns_client, mock_params):
         """Valid 4-digit code but no matching entitlement -> failure feedback."""
         mocker.patch("AWSSNSSMSCommunication.get_aws_client", return_value=mock_sns_client)
         integration_context["entitlements"] = [
@@ -685,9 +661,7 @@ class TestProcessSmsReply:
         AWSSNSSMSCommunication.demisto.handleEntitlementForUser.assert_not_called()
         mock_sns_client.publish.assert_called_once()
 
-    def test_invalid_code_format(
-        self, mocker, integration_context, mock_sns_client, mock_params
-    ):
+    def test_invalid_code_format(self, mocker, integration_context, mock_sns_client, mock_params):
         """Non-numeric text -> failure feedback when active entitlements exist."""
         mocker.patch("AWSSNSSMSCommunication.get_aws_client", return_value=mock_sns_client)
         integration_context["entitlements"] = [
@@ -701,9 +675,7 @@ class TestProcessSmsReply:
         AWSSNSSMSCommunication.demisto.handleEntitlementForUser.assert_not_called()
         mock_sns_client.publish.assert_called_once()
 
-    def test_sequential_code_reply(
-        self, mocker, integration_context, mock_sns_client, mock_params
-    ):
+    def test_sequential_code_reply(self, mocker, integration_context, mock_sns_client, mock_params):
         """Single-digit sequential codes are accepted and processed correctly."""
         mocker.patch("AWSSNSSMSCommunication.get_aws_client", return_value=mock_sns_client)
         integration_context["entitlements"] = [
@@ -719,9 +691,7 @@ class TestProcessSmsReply:
         )
         assert integration_context["entitlements"][0]["answered"] is True
 
-    def test_success_feedback_disabled(
-        self, mocker, integration_context, mock_sns_client, mock_params
-    ):
+    def test_success_feedback_disabled(self, mocker, integration_context, mock_sns_client, mock_params):
         """When successFeedbackEnabled=False, no success SMS sent."""
         mocker.patch("AWSSNSSMSCommunication.get_aws_client", return_value=mock_sns_client)
         mocker.patch(
@@ -740,9 +710,7 @@ class TestProcessSmsReply:
         AWSSNSSMSCommunication.demisto.handleEntitlementForUser.assert_called_once()
         mock_sns_client.publish.assert_not_called()
 
-    def test_failure_feedback_disabled(
-        self, mocker, integration_context, mock_sns_client, mock_params
-    ):
+    def test_failure_feedback_disabled(self, mocker, integration_context, mock_sns_client, mock_params):
         """When failureFeedbackEnabled=False, no failure SMS sent."""
         mocker.patch("AWSSNSSMSCommunication.get_aws_client", return_value=mock_sns_client)
         mocker.patch(
@@ -778,6 +746,7 @@ class TestProcessSmsReply:
 
 # ===== 8. TestTestModuleCommand =====
 
+
 class TestTestModuleCommand:
     """Tests for test-module command."""
 
@@ -785,7 +754,7 @@ class TestTestModuleCommand:
         """SQS get_queue_attributes returns 200 -> 'ok'."""
         mocker.patch("AWSSNSSMSCommunication.get_aws_client", return_value=mock_sqs_client)
 
-        result = test_module_command(mock_params)
+        result = run_test_module(mock_params)
 
         assert result == "ok"
         mock_sqs_client.get_queue_attributes.assert_called_once_with(
@@ -798,10 +767,11 @@ class TestTestModuleCommand:
         mock_params["sqsQueueUrl"] = ""
 
         with pytest.raises(Exception, match="SQS Queue URL is required"):
-            test_module_command(mock_params)
+            run_test_module(mock_params)
 
 
 # ===== 9. TestGetAwsClient =====
+
 
 class TestGetAwsClient:
     """Tests for get_aws_client() with different auth methods.
@@ -919,6 +889,7 @@ class TestGetAwsClient:
 
 # ===== 10. TestSendFeedbackSms =====
 
+
 class TestSendFeedbackSms:
     """Tests for send_feedback_sms helper."""
 
@@ -928,9 +899,7 @@ class TestSendFeedbackSms:
 
         send_feedback_sms(SAMPLE_PHONE, "Thank you!", mock_params)
 
-        mock_sns_client.publish.assert_called_once_with(
-            PhoneNumber=SAMPLE_PHONE, Message="Thank you!"
-        )
+        mock_sns_client.publish.assert_called_once_with(PhoneNumber=SAMPLE_PHONE, Message="Thank you!")
 
     def test_handles_publish_error(self, mocker, mock_sns_client, mock_params):
         """Logs error but does not raise on publish failure."""

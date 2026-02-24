@@ -67,8 +67,7 @@ INTEGRATION_VERSION = "1.0.38"
 # Default feedback messages
 DEFAULT_SUCCESS_MESSAGE = "{reply_code} - Thank you for your response!"
 DEFAULT_FAILURE_MESSAGE = (
-    "We couldn't process your response. Please respond with one of"
-    " the available reply codes: {available_codes}"
+    "We couldn't process your response. Please respond with one of the available reply codes: {available_codes}"
 )
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 DEFAULT_TTL_HOURS = 24
@@ -81,9 +80,7 @@ REPLY_CODE_MODE_SEQUENTIAL = "sequential"
 GUID_REGEX = r"(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}"
 
 # Integration context keys
-OBJECTS_TO_KEYS = {
-    "entitlements": "entitlement_id"
-}
+OBJECTS_TO_KEYS = {"entitlements": "entitlement_id"}
 
 
 # ===== HELPER FUNCTIONS =====
@@ -107,7 +104,7 @@ def set_integration_context_with_sync(context: dict):
 
 def generate_reply_code() -> str:
     """Generate a unique 4-digit reply code."""
-    return ''.join(random.choices(string.digits, k=4))
+    return "".join(random.choices(string.digits, k=4))
 
 
 def generate_sequential_codes(count: int, existing_codes: set) -> list:
@@ -120,7 +117,7 @@ def generate_sequential_codes(count: int, existing_codes: set) -> list:
     Returns:
         List of string codes, e.g. ["1", "2"] or ["3", "4"]
     """
-    codes = []
+    codes: list[str] = []
     candidate = 1
     while len(codes) < count:
         if str(candidate) not in existing_codes:
@@ -147,7 +144,7 @@ def extract_entitlement_from_message(message: str) -> tuple:
 
     # Find entitlement in SMSAskUser format: GUID@incident_id|task_id or GUID@incident_id
     # Pattern: GUID followed by @number and optionally |task_id
-    entitlement_pattern = r'([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})@(\d+)(?:\|([^\s]+))?'
+    entitlement_pattern = r"([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})@(\d+)(?:\|([^\s]+))?"
     match = re.search(entitlement_pattern, message, re.IGNORECASE)
 
     if match:
@@ -169,8 +166,8 @@ def extract_entitlement_from_message(message: str) -> tuple:
 
 
 def clean_ask_task_message_and_generate_codes(
-        message: str, existing_codes: set,
-        reply_code_mode: str = REPLY_CODE_MODE_RANDOM) -> tuple:
+    message: str, existing_codes: set, reply_code_mode: str = REPLY_CODE_MODE_RANDOM
+) -> tuple:
     """
     Clean SMSAskUser message and generate reply codes for each option.
 
@@ -196,7 +193,7 @@ def clean_ask_task_message_and_generate_codes(
     # SMSAskUser format: "Question - Reply option1 or option2 [or option3 [or option4]]: GUID@incident"
     # Pattern: anything - Reply <options separated by 'or'>: <entitlement>
     # Use DOTALL flag to allow newlines in question text
-    sms_ask_pattern = r'^(.+?)\s*-\s*Reply\s+(.+?)\s*:\s*[a-fA-F0-9\-@|]+$'
+    sms_ask_pattern = r"^(.+?)\s*-\s*Reply\s+(.+?)\s*:\s*[a-fA-F0-9\-@|]+$"
     sms_match = re.match(sms_ask_pattern, message, re.DOTALL)
 
     if not sms_match:
@@ -208,7 +205,7 @@ def clean_ask_task_message_and_generate_codes(
     options_string = sms_match.group(2).strip()
 
     # Split options by "or" - supports 2-4 options
-    options = [opt.strip() for opt in re.split(r'\s+or\s+', options_string) if opt.strip()]
+    options = [opt.strip() for opt in re.split(r"\s+or\s+", options_string) if opt.strip()]
 
     if len(options) < 2 or len(options) > 4:
         demisto.debug(f"Invalid number of options: {len(options)}. Must be 2-4. Returning original message.")
@@ -269,11 +266,7 @@ def parse_entitlement_string(entitlement: str) -> dict:
 
     demisto.debug(f"parse_entitlement_string: parsed guid={guid}, incident_id={incident_id}, task_id={task_id or 'None'}")
 
-    return {
-        "guid": guid,
-        "incident_id": incident_id,
-        "task_id": task_id
-    }
+    return {"guid": guid, "incident_id": incident_id, "task_id": task_id}
 
 
 def cleanup_expired_entitlements(ttl_hours: int = DEFAULT_TTL_HOURS):
@@ -391,7 +384,7 @@ def save_entitlement(entitlement_id: str, phone_number: str, codes_to_options: d
     if existing:
         # Reuse existing entitlement on retry
         demisto.info(f"Reusing existing entitlement with codes: {existing.get('codes_to_options')}")
-        return existing.get('codes_to_options', {})
+        return existing.get("codes_to_options", {})
 
     # Create new entitlement entry
     entitlement_entry = {
@@ -400,7 +393,7 @@ def save_entitlement(entitlement_id: str, phone_number: str, codes_to_options: d
         "codes_to_options": codes_to_options,  # Map of code -> option name
         "message": message,
         "created": datetime.utcnow().strftime(DATE_FORMAT),
-        "answered": False
+        "answered": False,
     }
 
     entitlements.append(entitlement_entry)
@@ -431,8 +424,7 @@ def mark_entitlement_answered(entitlement_id: str):
             ent["answered_at"] = datetime.utcnow().strftime(DATE_FORMAT)
             found = True
             demisto.debug(
-                f"mark_entitlement_answered: marked entitlement_id={entitlement_id}"
-                f" as answered at {ent['answered_at']}"
+                f"mark_entitlement_answered: marked entitlement_id={entitlement_id} as answered at {ent['answered_at']}"
             )
             break
 
@@ -454,10 +446,7 @@ def send_feedback_sms(phone_number: str, message: str, params: dict):
     """
     try:
         sns_client = get_aws_client(params, "sns")
-        response = sns_client.publish(
-            PhoneNumber=phone_number,
-            Message=message
-        )
+        response = sns_client.publish(PhoneNumber=phone_number, Message=message)
         demisto.debug(f"Sent feedback SMS to {phone_number}: {message[:50]}... MessageId: {response.get('MessageId')}")
     except Exception as e:
         demisto.error(f"Failed to send feedback SMS to {phone_number}: {str(e)}")
@@ -484,8 +473,7 @@ def get_available_codes_for_phone(phone_number: str) -> list:
             available_codes.append((code, option))
 
     demisto.debug(
-        f"get_available_codes_for_phone: found {len(available_codes)}"
-        f" available codes for phone={phone_number}: {available_codes}"
+        f"get_available_codes_for_phone: found {len(available_codes)} available codes for phone={phone_number}: {available_codes}"
     )
 
     return available_codes
@@ -531,15 +519,13 @@ def get_aws_client(params: dict, service_name: str):
     sts_regional_endpoint = params.get("sts_regional_endpoint", "legacy")
     if sts_regional_endpoint:
         import os
+
         os.environ["AWS_STS_REGIONAL_ENDPOINTS"] = sts_regional_endpoint.lower()
         demisto.debug(f"Sets the environment variable AWS_STS_REGIONAL_ENDPOINTS={sts_regional_endpoint}")
 
     # Configure boto3
     config = Config(
-        region_name=aws_region,
-        connect_timeout=10,
-        read_timeout=timeout,
-        retries={"max_attempts": retries, "mode": "standard"}
+        region_name=aws_region, connect_timeout=10, read_timeout=timeout, retries={"max_attempts": retries, "mode": "standard"}
     )
 
     # Authentication logic (matches AWS API Module pattern)
@@ -547,12 +533,7 @@ def get_aws_client(params: dict, service_name: str):
         # Method 1: Role ARN only (no access keys)
         if not aws_access_key_id:
             demisto.debug(f"Using Role ARN authentication: {role_arn}")
-            sts_client = boto3.client(
-                "sts",
-                config=config,
-                verify=verify_certificate,
-                region_name=aws_region
-            )
+            sts_client = boto3.client("sts", config=config, verify=verify_certificate, region_name=aws_region)
             kwargs = {
                 "RoleArn": role_arn,
                 "RoleSessionName": role_session_name,
@@ -571,7 +552,7 @@ def get_aws_client(params: dict, service_name: str):
                 aws_secret_access_key=sts_response["Credentials"]["SecretAccessKey"],
                 aws_session_token=sts_response["Credentials"]["SessionToken"],
                 verify=verify_certificate,
-                config=config
+                config=config,
             )
         # Method 2: Access Key + Role ARN (assume role with keys)
         else:
@@ -582,7 +563,7 @@ def get_aws_client(params: dict, service_name: str):
                 aws_secret_access_key=aws_secret_access_key,
                 config=config,
                 verify=verify_certificate,
-                region_name=aws_region
+                region_name=aws_region,
             )
             kwargs = {
                 "RoleArn": role_arn,
@@ -605,7 +586,7 @@ def get_aws_client(params: dict, service_name: str):
                 aws_secret_access_key=sts_response["Credentials"]["SecretAccessKey"],
                 aws_session_token=sts_response["Credentials"]["SessionToken"],
                 verify=verify_certificate,
-                config=config
+                config=config,
             )
     # Method 3: Access Key only
     elif aws_access_key_id and aws_secret_access_key:
@@ -616,17 +597,12 @@ def get_aws_client(params: dict, service_name: str):
             aws_secret_access_key=aws_secret_access_key,
             region_name=aws_region,
             config=config,
-            verify=verify_certificate
+            verify=verify_certificate,
         )
     # Method 4: Default credentials (EC2 instance role, etc.)
     else:
         demisto.debug("Using default AWS credentials")
-        client = boto3.client(
-            service_name,
-            region_name=aws_region,
-            config=config,
-            verify=verify_certificate
-        )
+        client = boto3.client(service_name, region_name=aws_region, config=config, verify=verify_certificate)
 
     demisto.debug(f"get_aws_client: created {service_name} client for region={aws_region}")
     return client
@@ -659,15 +635,12 @@ def send_notification_command(args: dict, params: dict) -> CommandResults:
     if not entitlement_full:
         # No entitlement, just send the message
         sns_client = get_aws_client(params, "sns")
-        response = sns_client.publish(
-            PhoneNumber=phone_number,
-            Message=message
-        )
+        response = sns_client.publish(PhoneNumber=phone_number, Message=message)
 
         return CommandResults(
             outputs_prefix="AWS.SNS.SMS",
             outputs={"MessageId": response.get("MessageId"), "PhoneNumber": phone_number},
-            readable_output=f"SMS sent successfully to {phone_number}\nMessageId: {response.get('MessageId')}"
+            readable_output=f"SMS sent successfully to {phone_number}\nMessageId: {response.get('MessageId')}",
         )
 
     demisto.debug(f"Using full entitlement string for storage: {entitlement_full}")
@@ -686,9 +659,7 @@ def send_notification_command(args: dict, params: dict) -> CommandResults:
     demisto.debug(f"Reply code mode: {reply_code_mode}")
 
     # Clean the message and generate reply codes for each option
-    formatted_message, codes_to_options = clean_ask_task_message_and_generate_codes(
-        message, existing_codes, reply_code_mode
-    )
+    formatted_message, codes_to_options = clean_ask_task_message_and_generate_codes(message, existing_codes, reply_code_mode)
 
     if not codes_to_options:
         # No options found in message (shouldn't happen with Ask tasks)
@@ -700,10 +671,7 @@ def send_notification_command(args: dict, params: dict) -> CommandResults:
 
     # Send SMS via SNS
     sns_client = get_aws_client(params, "sns")
-    response = sns_client.publish(
-        PhoneNumber=phone_number,
-        Message=formatted_message
-    )
+    response = sns_client.publish(PhoneNumber=phone_number, Message=formatted_message)
 
     # Format codes for display
     codes_display = ", ".join([f"{opt}={code}" for code, opt in codes_to_options.items()])
@@ -714,14 +682,14 @@ def send_notification_command(args: dict, params: dict) -> CommandResults:
             "MessageId": response.get("MessageId"),
             "PhoneNumber": phone_number,
             "Entitlement": entitlement_full,
-            "CodesToOptions": codes_to_options
+            "CodesToOptions": codes_to_options,
         },
         readable_output=(
             f"SMS sent successfully to {phone_number}\n"
             f"MessageId: {response.get('MessageId')}\n"
             f"Reply Codes: {codes_display}\n"
             f"Entitlement: {entitlement_full}"
-        )
+        ),
     )
 
 
@@ -782,7 +750,7 @@ def list_entitlements_command(args: dict, params: dict) -> CommandResults:
             "Created": ent.get("created"),
             "AgeHours": round(age_hours, 2),
             "Answered": ent.get("answered", False),
-            "AnsweredAt": ent.get("answered_at", "N/A")
+            "AnsweredAt": ent.get("answered_at", "N/A"),
         }
         output_data.append(entry)
 
@@ -792,10 +760,7 @@ def list_entitlements_command(args: dict, params: dict) -> CommandResults:
     else:
         headers = ["PhoneNumber", "ReplyCodes", "AgeHours", "Answered", "Created", "EntitlementID"]
         readable_output = tableToMarkdown(
-            f"Active Entitlements ({len(output_data)} found)",
-            output_data,
-            headers=headers,
-            removeNull=True
+            f"Active Entitlements ({len(output_data)} found)", output_data, headers=headers, removeNull=True
         )
 
     demisto.debug(f"Returning {len(output_data)} entitlements in command results")
@@ -804,7 +769,7 @@ def list_entitlements_command(args: dict, params: dict) -> CommandResults:
         outputs_prefix="AWS.SNS.SMS.Entitlement",
         outputs_key_field="EntitlementID",
         outputs=output_data,
-        readable_output=readable_output
+        readable_output=readable_output,
     )
 
 
@@ -839,8 +804,8 @@ def long_running_execution_command(params: dict):
     demisto.info(f"Configuration: sqs_queue_url={sqs_queue_url}")
     demisto.info(f"Configuration: poll_interval={poll_interval}s, ttl_hours={ttl_hours}h, session_duration={session_duration}s")
     demisto.info(f"Configuration: token_refresh_interval={token_refresh_interval}s ({token_refresh_interval / 60:.1f} minutes)")
-    success_fb = params.get('successFeedbackEnabled', True)
-    failure_fb = params.get('failureFeedbackEnabled', True)
+    success_fb = params.get("successFeedbackEnabled", True)
+    failure_fb = params.get("failureFeedbackEnabled", True)
     demisto.info(f"Configuration: success_feedback={success_fb}, failure_feedback={failure_fb}")
 
     # Create initial SQS client
@@ -874,7 +839,7 @@ def long_running_execution_command(params: dict):
                 MaxNumberOfMessages=10,
                 WaitTimeSeconds=5,  # Long polling
                 AttributeNames=["All"],
-                MessageAttributeNames=["All"]
+                MessageAttributeNames=["All"],
             )
 
             messages = response.get("Messages", [])
@@ -887,10 +852,7 @@ def long_running_execution_command(params: dict):
                     process_sms_reply(message, params)
 
                     # Delete message after successful processing
-                    sqs_client.delete_message(
-                        QueueUrl=sqs_queue_url,
-                        ReceiptHandle=message.get("ReceiptHandle")
-                    )
+                    sqs_client.delete_message(QueueUrl=sqs_queue_url, ReceiptHandle=message.get("ReceiptHandle"))
 
                 except Exception as e:
                     demisto.error(f"Error processing message: {str(e)}\n{traceback.format_exc()}")
@@ -977,10 +939,7 @@ def process_sms_reply(sqs_message: dict, params: dict):
         if failure_feedback_enabled and available_codes:
             codes_list = ", ".join([f"{opt} ({code})" for code, opt in available_codes])
             failure_message = failure_message_template.format(available_codes=codes_list, phone_number=phone_number)
-            demisto.debug(
-                f"Sending failure feedback SMS to {phone_number}"
-                f" (invalid format, {len(available_codes)} active codes)"
-            )
+            demisto.debug(f"Sending failure feedback SMS to {phone_number} (invalid format, {len(available_codes)} active codes)")
             send_feedback_sms(phone_number, failure_message, params)
         elif not failure_feedback_enabled:
             demisto.debug("Skipping failure feedback - failure_feedback_enabled=False")
@@ -997,10 +956,7 @@ def process_sms_reply(sqs_message: dict, params: dict):
         if failure_feedback_enabled and available_codes:
             codes_list = ", ".join([f"{opt} ({code})" for code, opt in available_codes])
             failure_message = failure_message_template.format(available_codes=codes_list, phone_number=phone_number)
-            demisto.debug(
-                f"Sending failure feedback SMS to {phone_number}"
-                f" (code not found, {len(available_codes)} active codes)"
-            )
+            demisto.debug(f"Sending failure feedback SMS to {phone_number} (code not found, {len(available_codes)} active codes)")
             send_feedback_sms(phone_number, failure_message, params)
         elif not failure_feedback_enabled:
             demisto.debug("Skipping failure feedback - failure_feedback_enabled=False")
@@ -1035,13 +991,10 @@ def process_sms_reply(sqs_message: dict, params: dict):
         # Send success feedback SMS if enabled
         if success_feedback_enabled:
             success_message = success_message_template.format(
-                reply_code=reply_code,
-                chosen_option=chosen_option,
-                phone_number=phone_number
+                reply_code=reply_code, chosen_option=chosen_option, phone_number=phone_number
             )
             demisto.debug(
-                f"Sending success feedback SMS to {phone_number}"
-                f" (reply_code={reply_code}, chosen_option={chosen_option})"
+                f"Sending success feedback SMS to {phone_number} (reply_code={reply_code}, chosen_option={chosen_option})"
             )
             send_feedback_sms(phone_number, success_message, params)
         else:
@@ -1075,10 +1028,7 @@ def test_module_command(params: dict) -> str:
             raise Exception("SQS Queue URL is required for this integration")
 
         sqs_client = get_aws_client(params, "sqs")
-        response = sqs_client.get_queue_attributes(
-            QueueUrl=sqs_queue_url,
-            AttributeNames=["QueueArn"]
-        )
+        response = sqs_client.get_queue_attributes(QueueUrl=sqs_queue_url, AttributeNames=["QueueArn"])
 
         # Verify response
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == 200:
@@ -1122,8 +1072,8 @@ def inject_reply_command(args: dict, params: dict) -> CommandResults:
                 "Success": False,
                 "Error": "Invalid reply code format - must be numeric",
                 "PhoneNumber": phone_number,
-                "ReplyCode": reply_code
-            }
+                "ReplyCode": reply_code,
+            },
         )
 
     # Find matching entitlement
@@ -1135,10 +1085,7 @@ def inject_reply_command(args: dict, params: dict) -> CommandResults:
         codes_info = []
         for ent in active_entitlements:
             codes = ent.get("codes_to_options", {})
-            codes_info.append({
-                "EntitlementID": ent.get("entitlement_id"),
-                "Codes": codes
-            })
+            codes_info.append({"EntitlementID": ent.get("entitlement_id"), "Codes": codes})
 
         return CommandResults(
             readable_output=(
@@ -1154,8 +1101,8 @@ def inject_reply_command(args: dict, params: dict) -> CommandResults:
                 "Error": "No matching entitlement found",
                 "PhoneNumber": phone_number,
                 "ReplyCode": reply_code,
-                "ActiveEntitlements": codes_info
-            }
+                "ActiveEntitlements": codes_info,
+            },
         )
 
     # Parse entitlement components
@@ -1170,8 +1117,8 @@ def inject_reply_command(args: dict, params: dict) -> CommandResults:
                 "Success": False,
                 "Error": f"Failed to parse entitlement: {entitlement_id}",
                 "PhoneNumber": phone_number,
-                "ReplyCode": reply_code
-            }
+                "ReplyCode": reply_code,
+            },
         )
 
     guid = parsed.get("guid")
@@ -1206,8 +1153,8 @@ def inject_reply_command(args: dict, params: dict) -> CommandResults:
                 "ChosenOption": chosen_option,
                 "EntitlementGUID": guid,
                 "IncidentID": incident_id,
-                "TaskID": task_id
-            }
+                "TaskID": task_id,
+            },
         )
 
     except Exception as e:
@@ -1216,12 +1163,7 @@ def inject_reply_command(args: dict, params: dict) -> CommandResults:
         return CommandResults(
             readable_output=error_msg,
             outputs_prefix="AWS.SNS.SMS.TestReply",
-            outputs={
-                "Success": False,
-                "Error": str(e),
-                "PhoneNumber": phone_number,
-                "ReplyCode": reply_code
-            }
+            outputs={"Success": False, "Error": str(e), "PhoneNumber": phone_number, "ReplyCode": reply_code},
         )
 
 

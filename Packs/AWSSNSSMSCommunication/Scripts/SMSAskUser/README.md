@@ -1,6 +1,7 @@
 Ask a user a question via SMS and expect a response.
 
 This automation script simplifies sending SMS questions with entitlements by:
+
 - Creating an entitlement automatically
 - Formatting the message with reply options
 - Sending the SMS via the send-notification command
@@ -44,6 +45,7 @@ Send an SMS asking for approval:
 ```
 
 This will send an SMS with the message:
+
 ```
 Approve incident #123? - Reply approve or deny: {entitlement}@{incident_id}|approval_task
 ```
