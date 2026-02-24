@@ -4777,78 +4777,97 @@ script:
     description: Gets vulnerability details by ID. For more information, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Vulnerabilities.
     name: xdr-vulnerability-details-get
     outputs:
-      - contextPath: PaloAltoNetworksXDR.Vulnerability.vulnerabilityID
-        description: The unique identifier (CVE ID).
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Vulnerability.description
-        description: Detailed description of the vulnerability.
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Vulnerability.publishedDate
-        description: The date the vulnerability was first published.
-        type: Number
-      - contextPath: PaloAltoNetworksXDR.Vulnerability.epss_score
-        description: The Probability of exploitability (0-1).
-        type: Number
-      - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitMaturity
-        description: Current state of exploit availability (e.g., weaponized).
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Vulnerability.weaponizedExploitFound
-        description: Indicates if a functional exploit exists in the wild.
-        type: Boolean
-      - contextPath: PaloAltoNetworksXDR.Vulnerability.reportedExploited
-        description: Indicates if the vulnerability has been actively exploited.
-        type: Boolean
-      - contextPath: PaloAltoNetworksXDR.Vulnerability.reportedExploitedByThreatActors
-        description: Indicates if known threat actors are using this.
-        type: Boolean
-      - contextPath: PaloAltoNetworksXDR.Vulnerability.reportedExploitedByRansomware
-        description: Specifically indicates use in ransomware campaigns.
-        type: Boolean
-      - contextPath: PaloAltoNetworksXDR.Vulnerability.reportedExploitedByBotnets
-        description: Indicates if it is being leveraged by botnet clusters.
-        type: Boolean
-      - contextPath: PaloAltoNetworksXDR.Vulnerability.firstReportedThreatActor
-        description: The timestamp of the first recorded threat actor activity.
-        type: Number
-      - contextPath: PaloAltoNetworksXDR.Vulnerability.mostRecentReportedThreatActor
-        description: The timestamp of the latest recorded threat actor activity.
-        type: Number
-      - contextPath: PaloAltoNetworksXDR.Vulnerability.cisaKevDateDue
-        description: The deadline set by CISA for federal agency remediation.
-        type: Number
-      - contextPath: PaloAltoNetworksXDR.Vulnerability.weaknesses.cweId
-        description: The Common Weakness Enumeration ID.
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Vulnerability.vulncheck-threat-actors
-        description: List of specific threat actor groups associated.
-        type: String
-  - arguments: []
-    description: Runs a system health check on the Cortex XDR environment. For more information, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/System-Health-Check.
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.vulnerabilityID
+      description: The unique identifier (CVE ID).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.description
+      description: Detailed description of the vulnerability.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.publishedDate
+      description: The date the vulnerability was first published.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.epss_score
+      description: The Probability of exploitability (0-1).
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.exploitMaturity
+      description: Current state of exploit availability (e.g., weaponized).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.weaponizedExploitFound
+      description: Indicates if a functional exploit exists in the wild.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.reportedExploited
+      description: Indicates if the vulnerability has been actively exploited.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.reportedExploitedByThreatActors
+      description: Indicates if known threat actors are using this.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.reportedExploitedByRansomware
+      description: Specifically indicates use in ransomware campaigns.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.reportedExploitedByBotnets
+      description: Indicates if it is being leveraged by botnet clusters.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.firstReportedThreatActor
+      description: The timestamp of the first recorded threat actor activity.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.mostRecentReportedThreatActor
+      description: The timestamp of the latest recorded threat actor activity.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.cisaKevDateDue
+      description: The deadline set by CISA for federal agency remediation.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.weaknesses.cweId
+      description: The Common Weakness Enumeration ID.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.vulncheck-threat-actors
+      description: List of specific threat actor groups associated.
+      type: String
+  - description: Runs a system health check on the Cortex XDR environment. For more information, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/System-Health-Check.
     name: xdr-healthcheck-run
     outputs:
     - contextPath: PaloAltoNetworksXDR.HealthStatus.status
       description: The health status of the Cortex XDR system.
       type: String
-  - arguments: []
-    description: Gets a list of available triage presets. For more information, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-triage-presets.
+  - description: Gets a list of available triage presets. For more information, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-triage-presets.
     name: xdr-endpoint-triage-preset-list
     outputs:
-    - contextPath: PaloAltoNetworksXDR.EndpointTriagePreset
-      description: The list of triage presets.
-      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.EndpointTriagePreset.created_by
+      description: The user or system entity that created the triage preset.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.EndpointTriagePreset.description
+      description: A brief explanation of the preset's purpose or contents.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.EndpointTriagePreset.name
+      description: The unique display name of the triage preset.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.EndpointTriagePreset.os
+      description: The operating system platform the preset targets (e.g., windows, linux, macos).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.EndpointTriagePreset.type
+      description: The category or classification of the preset (e.g., standard, custom).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.EndpointTriagePreset.uuid
+      description: The unique universal identifier (UUID) assigned to this specific preset.
+      type: String
   - arguments:
-    - description: A comma-separated list of agent IDs to initiate triage on.
+    - description: A comma-separated list of agent IDs to initiate triage on. You can find the agent ID under the "Inventory" section, under "All Endpoints".
       isArray: true
       name: agent_id
       required: true
     - description: The collector UUID to use for the triage.
       name: collector_uuid
-    description: Initiates a forensics triage on the specified endpoints. For more information, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Initiate-Forensics-Triage.
+    description: Initiates a forensics triage on the specified endpoints. You must have Cortex XDR with the Forensics add-on. The agent also must have the Forensics License enabled. For more information, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Initiate-Forensics-Triage.
     name: xdr-endpoint-triage
     outputs:
-    - contextPath: PaloAltoNetworksXDR.EndpointTriage
-      description: The triage response data.
-      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.EndpointTriage.TRIAGE_ID
+      description: The unique identifier assigned to the created triage action.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.EndpointTriage.SUCCESSFUL_AGENT_IDS
+      description: A list of agent IDs where the triage action was successfully initiated.
+      type: Array
+    - contextPath: PaloAltoNetworksXDR.EndpointTriage.UNSUCCESSFUL_AGENT_IDS
+      description: A list of agent IDs where the triage action failed to initiate.
+      type: Array
   dockerimage: demisto/python3:3.12.12.7019815
   isfetch: true
   isfetch:xpanse: false

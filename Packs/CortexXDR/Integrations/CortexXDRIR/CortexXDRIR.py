@@ -713,7 +713,7 @@ class Client(CoreClient):
             url_suffix="/get_triage_presets",
             json_data={"request_data": {}}  # required to be empty
         )
-        return res.get("triage_presets", [])
+        return res.get("reply", {}).get("triage_presets", [])
 
     def triage_endpoint(self, request_data: dict):
         """
@@ -2473,6 +2473,7 @@ def endpoint_triage_preset_list_command(client: Client) -> CommandResults:
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.EndpointTriagePreset",
         outputs=presets,
+        outputs_key_field="uuid",
         raw_response=presets,
     )
 
@@ -2490,7 +2491,7 @@ def endpoint_triage_command(client: Client, args: Dict) -> CommandResults:
     agent_ids = argToList(args.get("agent_id"))
     collector_uuid = args.get("collector_uuid")
 
-    request_data: Dict[str, Any] = {"agent_id": agent_ids}
+    request_data: Dict[str, Any] = {"agent_ids": agent_ids}
     if collector_uuid:
         request_data["collector_uuid"] = collector_uuid
 
@@ -2507,6 +2508,7 @@ def endpoint_triage_command(client: Client, args: Dict) -> CommandResults:
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.EndpointTriage",
         outputs=raw_response,
+        outputs_key_field="EndpointTriage",
         raw_response=raw_response,
     )
 
