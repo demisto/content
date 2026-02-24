@@ -4074,7 +4074,7 @@ ISSUE_FIELDS = {
     "action_registry_name": "action_registry_key_name",
     "action_registry_key_data": "action_registry_data",
     "rule_name": "fw_rule",
-    "rule_id": "fw_rule_id",
+    "matching_service_rule_id": "fw_rule_id",
     "causality_actor_process_image_command_line": "causality_actor_process_command_line",
     "causality_actor_process_image_sha256": "causality_actor_process_image_sha256",
     "action_process_image_sha256": "action_process_image_sha256",
@@ -4106,7 +4106,7 @@ def determine_issue_assignee_filter_field(assignee_list: list) -> str:
         str: The appropriate field to filter on based on the input.
     """
     if determine_email_or_name(assignee_list) == "email":
-        return ISSUE_FIELDS["assignee_email"]
+        return ISSUE_FIELDS["assignee_mail"]
     else:
         return ISSUE_FIELDS["assignee"]
 
