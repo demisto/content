@@ -27,7 +27,6 @@ MAX_GET_EXCEPTION_RULES_LIMIT = 100
 MALWARE_TYPE = "Malware"
 EXPLOIT_TYPE = "Exploit"
 WINDOWS_PLATFORM = "Windows"
-CALL_HOME_TYPE_HEARTBEAT = 6
 
 
 ASSET_FIELDS = {
@@ -3119,14 +3118,15 @@ def send_endpoint_heartbeat_command(client: Client, args: dict) -> CommandResult
     Returns:
         CommandResults: Object containing the formatted output.
     """
+    call_home_type_heartbeat = 6
     endpoint_id = args.get("endpoint_id")
     if not endpoint_id:
         raise ValueError("endpoint_id is required")
-
+    
     json_data = {
         "request_data": {
             "endpoint_id": endpoint_id,
-            "call_home_type": CALL_HOME_TYPE_HEARTBEAT,
+            "call_home_type": call_home_type_heartbeat,
         }
     }
 
