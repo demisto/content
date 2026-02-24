@@ -2114,7 +2114,11 @@ def main():  # pragma: no cover   # pylint: disable=W9018
             # Get snapshot_id for this fetch cycle
             # Fallback to generate_snapshot_id() if not in last_run - this handles edge cases
             # where the fetch cycle starts without a stored snapshot_id (e.g., first run or reset)
-            snapshot_id = assets_last_run.get("snapshot_id", generate_snapshot_id())
+            snapshot_id = assets_last_run.get("snapshot_id")
+            if not snapshot_id:
+                snapshot_id = generate_snapshot_id()
+                assets_last_run["snapshot_id"] = snapshot_id
+                demisto.setAssetsLastRun(assets_last_run)
 
             # Check if assets fetch is still in progress (has more asset chunks or asset export job pending)
             # Vulnerabilities are separate and don't affect the assets snapshot completion
