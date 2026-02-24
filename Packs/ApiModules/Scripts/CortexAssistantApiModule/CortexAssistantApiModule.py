@@ -216,23 +216,23 @@ class AssistantMessages:
     THINKING_INDICATOR = ":thought_balloon: Thinking..."
 
     # Context formatting
-    CONTEXT_START = "--- Previous conversation context ---"
+    CONTEXT_START = "--- Previous chat context ---"
     CONTEXT_END = "--- End of context ---"
     CURRENT_MESSAGE_HEADER = "**Current message**:"
 
     # Messages for when user action is awaited - specific to action type
-    AWAITING_AGENT_SELECTION = "Still waiting for you to select an agent from the dropdown above."
-    AWAITING_APPROVAL_RESPONSE = "Still waiting for you to approve or reject the sensitive action above."
+    AWAITING_AGENT_SELECTION = "Select an agent from the dropdown above."
+    AWAITING_APPROVAL_RESPONSE = "Approve or reject the sensitive action above."
 
     ONLY_LOCKED_USER_CAN_RESPOND = (
-        "You cannot mention {bot_tag} in this thread. Only {locked_user_tag} can interact with the AI here."
+        "This thread is currently locked to {locked_user_tag}. To chat, please start a new thread."
     )
 
     # Messages for when backend is processing
-    ALREADY_PROCESSING = "Already processing a previous message. Please wait."
+    ALREADY_PROCESSING = "Still working on your previous request. Please wait."
 
     # Messages for when plan is being sent
-    WAITING_FOR_COMPLETION = "Still waiting for the response to complete."
+    WAITING_FOR_COMPLETION = "Still generating a response for you."
 
     # Messages for action errors
     CANNOT_SELECT_AGENT = "You cannot make this selection. Only {locked_user_tag} can choose."
@@ -241,7 +241,7 @@ class AssistantMessages:
     # Configuration errors
     LLM_NOT_ENABLED = (
         f"❌ {BOT_DISPLAY_NAME} is not available. "
-        "The LLM feature must be enabled in your Cortex platform by your administrator to use this functionality."
+        "The LLM feature must be enabled in your Cortex platform by your administrator."
     )
 
     # Permission errors
@@ -252,9 +252,9 @@ class AssistantMessages:
     )
     THREAD_LOCKED_TO_ANOTHER_USER = (
         "This conversation is currently locked to another user. "
-        "You can start a new thread or run `{bot_tag} reset session` to release the lock and start fresh."
+        "You can start a new thread or run `{bot_tag} reset session` to release the lock and start a new chat."
     )
-    NOT_CONVERSATION_OWNER_FEEDBACK = "Only the conversation owner can provide feedback on this message."
+    NOT_CONVERSATION_OWNER_FEEDBACK = "Only the chat owner can provide feedback on this message."
 
     # Generic error messages
     SYSTEM_ERROR = "❌ A system error occurred. Please try again later or contact your administrator if the issue persists."
@@ -262,18 +262,18 @@ class AssistantMessages:
     # Reset session messages
     RESET_SESSION_SUCCESS = "✅ Session reset successfully."
     RESET_SESSION_FAILED = "❌ Failed to reset session."
-    RESET_SESSION_NO_ACTIVE_SESSION = "No active session to reset. You can start a new conversation by mentioning me."
+    RESET_SESSION_NO_ACTIVE_SESSION = "No active session to reset. You can start a new chat by mentioning {bot_tag}."
     RESET_SESSION_CANNOT_RESET_AWAITING_SELECTION = (
-        "Cannot reset - still waiting for agent selection. No conversation has started yet."
+        "Can't reset because an agent hasn't been selected. Please pick an agent to get started."
     )
     RESET_SESSION_CANNOT_RESET_PROCESSING = (
-        "Cannot reset session while processing a message. Please wait for the response to complete."
+        "Still working on your previous request. The response must complete before you reset the session."
     )
     RESET_SESSION_CANNOT_RESET_RESPONDING = "Cannot reset session while responding. Please wait for the response to complete."
 
     # Agent selection messages
-    NO_AGENTS_AVAILABLE = "❌ No agents are currently available for you. Please try again later or contact your administrator."
-    AGENT_SELECTION_FAILED = "❌ Failed to start conversation with selected agent. Please try again or select a different agent."
+    NO_AGENTS_AVAILABLE = "❌ No agents are currently available. Please try again later or contact your administrator."
+    AGENT_SELECTION_FAILED = "❌ Failed to start chat with selected agent. Please try again or select a different agent."
 
     # Agent selection UI texts
     AGENT_SELECTION_PROMPT = "Please select an agent:"
@@ -305,7 +305,7 @@ class AssistantMessages:
     FEEDBACK_MODAL_TITLE = "Send feedback"
     FEEDBACK_MODAL_SUBMIT = "Submit"
     FEEDBACK_MODAL_CANCEL = "Cancel"
-    FEEDBACK_MODAL_QUICK_LABEL = "Quick Feedback"
+    FEEDBACK_MODAL_QUICK_LABEL = "Quick feedback"
     FEEDBACK_MODAL_ADDITIONAL_LABEL = "Anything to add?"
     FEEDBACK_MODAL_ADDITIONAL_PLACEHOLDER = "Enter your feedback here..."
 
@@ -834,8 +834,11 @@ class AssistantMessagingHandler:
             )
         elif backend_response.error_type == BackendErrorType.CONVERSATION_NOT_FOUND:
             # Backend says no active session (conversation not found)
+            no_session_msg = AssistantMessages.RESET_SESSION_NO_ACTIVE_SESSION.format(
+                bot_tag=self.format_user_mention(bot_id)
+            )
             await self.send_message_async(
-                channel_id, AssistantMessages.RESET_SESSION_NO_ACTIVE_SESSION, thread_id=thread_id, ephemeral=True, user_id=user_id
+                channel_id, no_session_msg, thread_id=thread_id, ephemeral=True, user_id=user_id
             )
         elif backend_response.error_type == BackendErrorType.USER_NOT_FOUND:
             # 103102 - User not found in system
@@ -1246,7 +1249,7 @@ class AssistantMessagingHandler:
                         message_to_send = AssistantMessages.AWAITING_APPROVAL_RESPONSE
                 else:
                     message_to_send = AssistantMessages.ONLY_LOCKED_USER_CAN_RESPOND.format(
-                        bot_tag=self.format_user_mention(bot_id), locked_user_tag=self.format_user_mention(locked_user)
+                        locked_user_tag=self.format_user_mention(locked_user)
                     )
 
             elif status == AssistantStatus.AWAITING_BACKEND_RESPONSE.value:
@@ -1259,7 +1262,7 @@ class AssistantMessagingHandler:
                     message_to_send = AssistantMessages.WAITING_FOR_COMPLETION
                 else:
                     message_to_send = AssistantMessages.ONLY_LOCKED_USER_CAN_RESPOND.format(
-                        bot_tag=self.format_user_mention(bot_id), locked_user_tag=self.format_user_mention(locked_user)
+                        locked_user_tag=self.format_user_mention(locked_user)
                     )
 
             # Send message if needed
