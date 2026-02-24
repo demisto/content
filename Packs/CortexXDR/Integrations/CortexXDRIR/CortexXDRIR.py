@@ -2629,6 +2629,8 @@ def endpoint_triage_command(client: Client, args: Dict) -> CommandResults:
         outputs_key_field="EndpointTriage",
         raw_response=raw_response,
     )
+
+
 def automation_script_create_command(client: Client, args: Dict) -> CommandResults:
     """
     Creates or updates an automation script by uploading a file.
