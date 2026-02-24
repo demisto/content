@@ -4532,6 +4532,7 @@ Gets vulnerability details by ID.
 #### Base Command
 
 `xdr-vulnerability-details-get`
+
 ### xdr-automation-playbook-create
 
 ***

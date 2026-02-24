@@ -726,6 +726,7 @@ class Client(CoreClient):
             json_data=request_data,
         )
         return res.get("reply", {})
+
     def create_automation_script(self, files: dict):
         """
         Creates or updates an automation script by uploading a file.
