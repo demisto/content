@@ -1728,7 +1728,7 @@ def get_detections_entities(detections_ids: list):
 
     # Iterate through the detections_ids list in chunks of 1000 (According to API documentation).
     for i in range(0, len(detections_ids), MAX_FETCH_DETECTION_PER_API_CALL_ENTITY):
-        batch_ids = detections_ids[i : i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
+        batch_ids = detections_ids[i: i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
 
         ids_json = {"composite_ids": batch_ids}
         demisto.debug(f"Getting detections entities from {url} with {ids_json=} " f"with batch_ids len {len(batch_ids)}.")
@@ -1848,7 +1848,7 @@ def get_cases_details(ids: list[str]) -> list[dict[str, Any]]:
     full_cases = []
 
     for i in range(0, len(ids), MAX_FETCH_DETECTION_PER_API_CALL_ENTITY):
-        batch_ids = ids[i : i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
+        batch_ids = ids[i: i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
         batch_cases = get_cases_entities(batch_ids)
 
         if batch_cases:
@@ -1900,7 +1900,7 @@ def get_detection_entities(incidents_ids: list):
     url = "/alerts/entities/alerts/v2"
 
     for i in range(0, len(incidents_ids), MAX_FETCH_DETECTION_PER_API_CALL_ENTITY):
-        batch_ids = incidents_ids[i : i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
+        batch_ids = incidents_ids[i: i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
 
         ids_json = {"composite_ids": batch_ids}
         demisto.debug(f"In get_detection_entities: Getting detection entities from\
@@ -4986,7 +4986,7 @@ def get_status(device_ids):
     state_data = {}
     batch_size = 100
     for i in range(0, len(device_ids), batch_size):
-        batch = device_ids[i : i + batch_size]
+        batch = device_ids[i: i + batch_size]
         raw_res = http_request("GET", "/devices/entities/online-state/v1", params={"ids": batch})
         for res in raw_res.get("resources"):
             state = res.get("state", "")
@@ -6499,7 +6499,8 @@ def rtr_general_command_on_hosts(
     General function to run RTR commands depending on the given command.
     """
     batch_id = init_rtr_batch_session(host_ids, offline)
-    response = get_session_function(batch_id, command_type=command, full_command=full_command, host_ids=host_ids, timeout=timeout)  # type:ignore
+    response = get_session_function(batch_id, command_type=command, full_command=full_command,
+                                    host_ids=host_ids, timeout=timeout)  # type:ignore
     output, file, not_found_hosts = parse_rtr_stdout_response(host_ids, response, command)
 
     human_readable = tableToMarkdown(f"{INTEGRATION_NAME} {command} command on host {host_ids[0]}:", output, headers="Stdout")
@@ -7850,7 +7851,7 @@ def create_gql_client(url_suffix="identity-protection/combined/graphql/v1"):
     transport = RequestsHTTPTransport(**kwargs)  # type: ignore[arg-type]
     client = Client(
         transport=transport,
-        fetch_schema_from_transport=False,
+        fetch_schema_from_transport=True,
     )
     return client
 
