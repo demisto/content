@@ -84,9 +84,6 @@ script:
   runonce: false
   feed: false
   longRunning: false
-  dependson:
-    must:
-    - AtlassianApiModule
   commands:
   - description: 'Returns a list of audit records'
     name: jira-get-events

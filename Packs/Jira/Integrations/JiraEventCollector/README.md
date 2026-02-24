@@ -22,21 +22,25 @@ This is the default integration for this content pack when configured by the Dat
 ## Authentication Methods
 
 ### Basic Authentication
+
 1. Set **Authentication Method** to `Basic`
 2. Provide your **User name** (email address)
 3. Provide your **API token** (generate from Jira account settings)
 4. Set the **Server URL** to your Jira instance URL
 
 ### OAuth 2.0 Authentication (Recommended)
+
 OAuth 2.0 provides more secure authentication with limited scopes, avoiding the need for global administrator permissions.
 
 #### For Jira Cloud
 
 **Required OAuth Scopes**:
+
 - **Classic (Recommended)**: `manage:jira-configuration`
 - **Granular**: `read:audit-log:jira`, `read:user:jira`
 
 **Setup Steps**:
+
 1. **Create OAuth 2.0 App in Jira Cloud**:
    - Go to https://developer.atlassian.com/console/myapps/
    - Create a new OAuth 2.0 integration app
@@ -65,9 +69,11 @@ OAuth 2.0 provides more secure authentication with limited scopes, avoiding the 
 #### For Jira On-Prem/Data Center
 
 **Required OAuth Scopes**:
+
 - `WRITE` (provides read and write access)
 
 **Setup Steps**:
+
 1. **Create OAuth 2.0 App in Jira On-Prem**:
    - Go to Jira Administration → Applications → Application Links
    - Create an incoming application link
@@ -124,6 +130,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Authorization Instructions
+>
 >1. Click on the following link to authorize:
 >https://auth.atlassian.com/authorize?...
 >
@@ -158,7 +165,8 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->### Successfully authenticated!
+>### Successfully authenticated
+>
 >The access token and refresh token have been saved.
 >You can now use the integration to fetch events.
 

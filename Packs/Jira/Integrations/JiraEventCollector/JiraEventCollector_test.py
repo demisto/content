@@ -15,9 +15,9 @@ DEMISTO_PARAMS = {
         "password": "123456",
     },
 }
-URL = "https://your.domain.atlassian.net/rest/api/3/auditing/record"
-FIRST_REQUESTS_PARAMS = "from=2022-04-11T00:00:00.000000&limit=1000&offset=0"
-SECOND_REQUESTS_PARAMS = "from=2022-04-11T00:00:00.000000&limit=1000&offset=1000"
+URL = "https://your.domain.atlassian.net/rest/auditing/1.0/events"
+FIRST_REQUESTS_PARAMS = "from=2022-04-11T00%3A00%3A00.000Z&limit=1000&offset=0"
+SECOND_REQUESTS_PARAMS = "from=2022-04-11T00%3A00%3A00.000Z&limit=1000&offset=1000"
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 
 
@@ -27,8 +27,13 @@ def util_load_json(path):
 
 
 def calculate_next_run(time):
-    last_datetime = datetime.strptime(time.removesuffix("+0000"), DATETIME_FORMAT) + timedelta(milliseconds=1)
-    return datetime.strftime(last_datetime, DATETIME_FORMAT)
+    last_datetime_str = time.removesuffix("+0000").removesuffix("Z")
+    try:
+        last_datetime = datetime.strptime(last_datetime_str, "%Y-%m-%dT%H:%M:%S.%f")
+    except ValueError:
+        last_datetime = datetime.strptime(last_datetime_str, "%Y-%m-%dT%H:%M:%S")
+    last_datetime_with_delta = last_datetime + timedelta(seconds=1)
+    return datetime.strftime(last_datetime_with_delta, "%Y-%m-%dT%H:%M:%S")
 
 
 @freeze_time("2022-04-14T00:00:00Z")
@@ -51,8 +56,7 @@ def test_fetch_incidents_few_incidents(mocker):
     mocker.patch("JiraEventCollector.send_events_to_xsiam")
 
     with requests_mock.Mocker() as m:
-        m.get(f"{URL}?{FIRST_REQUESTS_PARAMS}", json=util_load_json("test_data/events.json"))
-        m.get(f"{URL}?{SECOND_REQUESTS_PARAMS}", json={})
+        m.get(URL, json=util_load_json("test_data/events.json"))
 
         from JiraEventCollector import main
 
@@ -85,7 +89,7 @@ def test_fetch_events_no_incidents(mocker):
     mocker.patch("JiraEventCollector.send_events_to_xsiam")
 
     with requests_mock.Mocker() as m:
-        m.get(f"{URL}?{FIRST_REQUESTS_PARAMS}", json={})
+        m.get(URL, json={})
 
         from JiraEventCollector import main
 
@@ -108,7 +112,7 @@ def test_fetch_events_max_fetch_set_to_one(mocker):
         - Verify last_run was set as expected.
     """
 
-    params = DEMISTO_PARAMS
+    params = DEMISTO_PARAMS.copy()
     params["max_fetch"] = 1
 
     mocker.patch.object(demisto, "params", return_value=params)
@@ -119,8 +123,7 @@ def test_fetch_events_max_fetch_set_to_one(mocker):
     mocker.patch("JiraEventCollector.send_events_to_xsiam")
 
     with requests_mock.Mocker() as m:
-        m.get(f"{URL}?{FIRST_REQUESTS_PARAMS}", json=util_load_json("test_data/events.json"))
-        m.get(f"{URL}?{SECOND_REQUESTS_PARAMS}", json={})
+        m.get(URL, json=util_load_json("test_data/events.json"))
 
         from JiraEventCollector import main
 
@@ -147,28 +150,20 @@ def test_oauth_start_command(mocker):
     oauth_params["auth_method"] = "OAuth 2.0"
     oauth_params["cloud_id"] = "test-cloud-id"
     oauth_params["callback_url"] = "https://localhost/callback"
-    oauth_params["client_credentials"] = {
-        "identifier": "test-client-id",
-        "password": "test-client-secret"
-    }
-    
+    oauth_params["client_credentials"] = {"identifier": "test-client-id", "password": "test-client-secret"}
+
     mocker.patch.object(demisto, "params", return_value=oauth_params)
     mocker.patch.object(demisto, "args", return_value={})
     mocker.patch.object(demisto, "command", return_value="jira-oauth-start")
     mocker.patch.object(demisto, "getLastRun", return_value={})
+    mocker.patch("AtlassianApiModule.get_integration_context", return_value={})
+    mocker.patch("AtlassianApiModule.set_integration_context")
     results = mocker.patch("JiraEventCollector.return_results")
-    
-    with requests_mock.Mocker() as m:
-        m.get(
-            "https://auth.atlassian.com/authorize",
-            status_code=302,
-            headers={"Location": "https://auth.atlassian.com/authorize?client_id=test"}
-        )
-        
-        from JiraEventCollector import main
-        
-        main()
-    
+
+    from JiraEventCollector import main
+
+    main()
+
     # Verify command results were returned
     assert results.called
     result = results.call_args[0][0]
@@ -190,19 +185,16 @@ def test_oauth_complete_command(mocker):
     oauth_params["auth_method"] = "OAuth 2.0"
     oauth_params["cloud_id"] = "test-cloud-id"
     oauth_params["callback_url"] = "https://localhost/callback"
-    oauth_params["client_credentials"] = {
-        "identifier": "test-client-id",
-        "password": "test-client-secret"
-    }
-    
+    oauth_params["client_credentials"] = {"identifier": "test-client-id", "password": "test-client-secret"}
+
     mocker.patch.object(demisto, "params", return_value=oauth_params)
     mocker.patch.object(demisto, "args", return_value={"code": "test-auth-code"})
     mocker.patch.object(demisto, "command", return_value="jira-oauth-complete")
     mocker.patch.object(demisto, "getLastRun", return_value={})
-    mocker.patch("JiraEventCollector.get_integration_context", return_value={})
-    set_context = mocker.patch("JiraEventCollector.set_integration_context")
+    mocker.patch("AtlassianApiModule.get_integration_context", return_value={})
+    set_context = mocker.patch("AtlassianApiModule.set_integration_context")
     results = mocker.patch("JiraEventCollector.return_results")
-    
+
     with requests_mock.Mocker() as m:
         m.post(
             "https://auth.atlassian.com/oauth/token",
@@ -210,20 +202,20 @@ def test_oauth_complete_command(mocker):
                 "access_token": "test-access-token",
                 "refresh_token": "test-refresh-token",
                 "expires_in": 3600,
-                "scope": "read:audit-log:jira"
-            }
+                "scope": "read:audit-log:jira",
+            },
         )
-        
+
         from JiraEventCollector import main
-        
+
         main()
-    
+
     # Verify tokens were saved
     assert set_context.called
     context = set_context.call_args[0][0]
     assert context["token"] == "test-access-token"
     assert context["refresh_token"] == "test-refresh-token"
-    
+
     # Verify success message
     assert results.called
     result = results.call_args[0][0]
@@ -245,26 +237,26 @@ def test_oauth_test_command(mocker):
     oauth_params["auth_method"] = "OAuth 2.0"
     oauth_params["cloud_id"] = "test-cloud-id"
     oauth_params["callback_url"] = "https://localhost/callback"
-    oauth_params["client_credentials"] = {
-        "identifier": "test-client-id",
-        "password": "test-client-secret"
-    }
-    
+    oauth_params["client_credentials"] = {"identifier": "test-client-id", "password": "test-client-secret"}
+
     mocker.patch.object(demisto, "params", return_value=oauth_params)
     mocker.patch.object(demisto, "args", return_value={})
     mocker.patch.object(demisto, "command", return_value="jira-oauth-test")
     mocker.patch.object(demisto, "getLastRun", return_value={})
-    mocker.patch("JiraEventCollector.get_integration_context", return_value={
-        "token": "valid-token",
-        "valid_until": 9999999999,  # Far future
-        "refresh_token": "refresh-token"
-    })
+    mocker.patch(
+        "AtlassianApiModule.get_integration_context",
+        return_value={
+            "token": "valid-token",
+            "valid_until": 9999999999,  # Far future
+            "refresh_token": "refresh-token",
+        },
+    )
     results = mocker.patch("JiraEventCollector.return_results")
-    
+
     from JiraEventCollector import main
-    
+
     main()
-    
+
     # Verify success message
     assert results.called
     result = results.call_args[0][0]
@@ -286,39 +278,31 @@ def test_fetch_events_with_oauth(mocker):
     oauth_params["auth_method"] = "OAuth 2.0"
     oauth_params["cloud_id"] = "test-cloud-id"
     oauth_params["callback_url"] = "https://localhost/callback"
-    oauth_params["client_credentials"] = {
-        "identifier": "test-client-id",
-        "password": "test-client-secret"
-    }
-    
+    oauth_params["client_credentials"] = {"identifier": "test-client-id", "password": "test-client-secret"}
+
     mocker.patch.object(demisto, "params", return_value=oauth_params)
     mocker.patch.object(demisto, "args", return_value={})
     mocker.patch.object(demisto, "command", return_value="fetch-events")
     mocker.patch.object(demisto, "getLastRun", return_value={})
-    mocker.patch("JiraEventCollector.get_integration_context", return_value={
-        "token": "valid-oauth-token",
-        "valid_until": 9999999999,
-        "refresh_token": "refresh-token"
-    })
+    mocker.patch(
+        "AtlassianApiModule.get_integration_context",
+        return_value={"token": "valid-oauth-token", "valid_until": 9999999999, "refresh_token": "refresh-token"},
+    )
     mocker.patch("JiraEventCollector.send_events_to_xsiam")
     set_last_run = mocker.patch.object(demisto, "setLastRun")
-    
+
     oauth_url = "https://api.atlassian.com/ex/jira/test-cloud-id/rest/api/3/auditing/record"
-    
+
     with requests_mock.Mocker() as m:
-        m.get(
-            f"{oauth_url}?{FIRST_REQUESTS_PARAMS}",
-            json=util_load_json("test_data/events.json")
-        )
-        m.get(f"{oauth_url}?{SECOND_REQUESTS_PARAMS}", json={})
-        
+        m.get(oauth_url, json=util_load_json("test_data/events.json"))
+
         from JiraEventCollector import main
-        
+
         main()
-    
+
     # Verify last run was set
     assert set_last_run.called
-    
+
     # Verify OAuth token was used (check request history)
     assert len(m.request_history) > 0
     first_request = m.request_history[0]
@@ -341,35 +325,32 @@ def test_oauth_start_command_onprem(mocker):
     oauth_params["url"] = "https://jira.company.com"
     oauth_params["cloud_id"] = ""  # Empty for on-prem
     oauth_params["callback_url"] = "https://localhost/callback"
-    oauth_params["client_credentials"] = {
-        "identifier": "test-client-id",
-        "password": "test-client-secret"
-    }
-    
+    oauth_params["client_credentials"] = {"identifier": "test-client-id", "password": "test-client-secret"}
+
     mocker.patch.object(demisto, "params", return_value=oauth_params)
     mocker.patch.object(demisto, "args", return_value={})
     mocker.patch.object(demisto, "command", return_value="jira-oauth-start")
     mocker.patch.object(demisto, "getLastRun", return_value={})
-    mocker.patch("JiraEventCollector.get_integration_context", return_value={})
-    set_context = mocker.patch("JiraEventCollector.set_integration_context")
+    mocker.patch("AtlassianApiModule.get_integration_context", return_value={})
+    set_context = mocker.patch("AtlassianApiModule.set_integration_context")
     results = mocker.patch("JiraEventCollector.return_results")
-    
+
     with requests_mock.Mocker() as m:
         m.get(
             "https://jira.company.com/rest/oauth2/latest/authorize",
             status_code=302,
-            headers={"Location": "https://jira.company.com/rest/oauth2/latest/authorize?client_id=test"}
+            headers={"Location": "https://jira.company.com/rest/oauth2/latest/authorize?client_id=test"},
         )
-        
+
         from JiraEventCollector import main
-        
+
         main()
-    
+
     # Verify code_verifier was stored for PKCE
     assert set_context.called
     context = set_context.call_args[0][0]
     assert "code_verifier" in context
-    
+
     # Verify command results were returned
     assert results.called
 
@@ -390,39 +371,31 @@ def test_fetch_events_with_oauth_onprem(mocker):
     oauth_params["url"] = "https://jira.company.com"
     oauth_params["cloud_id"] = ""  # Empty for on-prem
     oauth_params["callback_url"] = "https://localhost/callback"
-    oauth_params["client_credentials"] = {
-        "identifier": "test-client-id",
-        "password": "test-client-secret"
-    }
-    
+    oauth_params["client_credentials"] = {"identifier": "test-client-id", "password": "test-client-secret"}
+
     mocker.patch.object(demisto, "params", return_value=oauth_params)
     mocker.patch.object(demisto, "args", return_value={})
     mocker.patch.object(demisto, "command", return_value="fetch-events")
     mocker.patch.object(demisto, "getLastRun", return_value={})
-    mocker.patch("JiraEventCollector.get_integration_context", return_value={
-        "token": "valid-onprem-oauth-token",
-        "valid_until": 9999999999,
-        "refresh_token": "refresh-token"
-    })
+    mocker.patch(
+        "AtlassianApiModule.get_integration_context",
+        return_value={"token": "valid-onprem-oauth-token", "valid_until": 9999999999, "refresh_token": "refresh-token"},
+    )
     mocker.patch("JiraEventCollector.send_events_to_xsiam")
     set_last_run = mocker.patch.object(demisto, "setLastRun")
-    
-    onprem_url = "https://jira.company.com/rest/api/3/auditing/record"
-    
+
+    onprem_url = "https://jira.company.com/rest/auditing/1.0/events"
+
     with requests_mock.Mocker() as m:
-        m.get(
-            f"{onprem_url}?{FIRST_REQUESTS_PARAMS}",
-            json=util_load_json("test_data/events.json")
-        )
-        m.get(f"{onprem_url}?{SECOND_REQUESTS_PARAMS}", json={})
-        
+        m.get(onprem_url, json=util_load_json("test_data/events.json"))
+
         from JiraEventCollector import main
-        
+
         main()
-    
+
     # Verify last run was set
     assert set_last_run.called
-    
+
     # Verify OAuth token was used
     assert len(m.request_history) > 0
     first_request = m.request_history[0]

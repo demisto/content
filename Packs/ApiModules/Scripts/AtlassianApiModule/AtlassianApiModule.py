@@ -31,7 +31,7 @@ class AtlassianOAuthClient(ABC):
         proxy: bool = False,
     ):
         """
-        Initialize the Jira OAuth client.
+        Initialize the Atlassian OAuth client.
 
         Args:
             client_id: OAuth 2.0 Client ID
@@ -114,23 +114,37 @@ class AtlassianOAuthClient(ABC):
                 "No authorization code or refresh token provided"
             )
 
+        grant_type = "authorization_code" if code else "refresh_token"
         data = assign_params(
             client_id=self.client_id,
             client_secret=self.client_secret,
             code=code,
             redirect_uri=self.callback_url if code else "",
             refresh_token=refresh_token,
-            grant_type="authorization_code" if code else "refresh_token",
+            grant_type=grant_type,
         )
         
-        response = requests.post(
-            urljoin(ATLASSIAN_AUTH_URL, "oauth/token"),
-            data=data,
-            verify=self.verify,
-            proxies=handle_proxy() if self.proxy else None
-        )
-        response.raise_for_status()
+        token_url = urljoin(ATLASSIAN_AUTH_URL, "oauth/token")
+        demisto.debug(f"Requesting OAuth token from {token_url} with grant_type={grant_type}")
+        try:
+            response = requests.post(
+                token_url,
+                data=data,
+                verify=self.verify,
+                proxies=handle_proxy() if self.proxy else None
+            )
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            demisto.debug(f"OAuth token request failed with status {e.response.status_code}: {e.response.text}")
+            raise DemistoException(
+                f"Failed to retrieve OAuth token (HTTP {e.response.status_code}): {e.response.text}"
+            ) from e
+        except requests.exceptions.RequestException as e:
+            demisto.debug(f"OAuth token request failed: {e}")
+            raise DemistoException(f"Failed to connect to OAuth token endpoint: {e}") from e
+
         res_access_token = response.json()
+        demisto.debug("Successfully retrieved OAuth token")
         
         integration_context = get_integration_context()
         new_authorization_context = {
@@ -300,38 +314,47 @@ class JiraOnPremOAuthClient(AtlassianOAuthClient):
         Raises:
             DemistoException: If no URL is returned
         """
-        # Generate PKCE code verifier and challenge
-        code_verifier = base64.urlsafe_b64encode(os.urandom(40)).decode("utf-8")
-        code_verifier = re.sub("[^a-zA-Z0-9]+", "", code_verifier)
-        code_challenge = hashlib.sha256(code_verifier.encode("utf-8")).digest()
-        code_challenge = base64.urlsafe_b64encode(code_challenge).decode("utf-8")
-        code_challenge = code_challenge.replace("=", "")
-        
-        # Store code_verifier in integration context for later use
         integration_context = get_integration_context()
-        integration_context["code_verifier"] = code_verifier
-        set_integration_context(integration_context)
-        
-        params = assign_params(
-            client_id=self.client_id,
-            scope=" ".join(self.get_oauth_scopes()),
-            redirect_uri=self.callback_url,
-            code_challenge=code_challenge,
-            code_challenge_method="S256",
-            response_type="code",
-        )
-        
-        response = requests.get(
-            f"{self.server_url}/rest/oauth2/latest/authorize",
-            params=params,
-            verify=self.verify,
-            proxies=handle_proxy() if self.proxy else None,
-            allow_redirects=False
-        )
-        
-        if response.url:
-            return response.url
-        raise DemistoException("No authorization URL was returned")
+        try:
+            # Generate PKCE code verifier and challenge
+            code_verifier = base64.urlsafe_b64encode(os.urandom(40)).decode("utf-8")
+            code_verifier = re.sub("[^a-zA-Z0-9]+", "", code_verifier)
+            code_challenge = hashlib.sha256(code_verifier.encode("utf-8")).digest()
+            code_challenge = base64.urlsafe_b64encode(code_challenge).decode("utf-8")
+            code_challenge = code_challenge.replace("=", "")
+            
+            # Store code_verifier in integration context for later use
+            integration_context["code_verifier"] = code_verifier
+            set_integration_context(integration_context)
+            
+            params = assign_params(
+                client_id=self.client_id,
+                scope=" ".join(self.get_oauth_scopes()),
+                redirect_uri=self.callback_url,
+                code_challenge=code_challenge,
+                code_challenge_method="S256",
+                response_type="code",
+            )
+            
+            authorize_url = f"{self.server_url}/rest/oauth2/latest/authorize"
+            demisto.debug(f"Requesting On-Prem OAuth authorization from {authorize_url}")
+            response = requests.get(
+                authorize_url,
+                params=params,
+                verify=self.verify,
+                proxies=handle_proxy() if self.proxy else None,
+                allow_redirects=False
+            )
+            demisto.debug(f"On-Prem OAuth authorization response status: {response.status_code}")
+            
+            if response.url:
+                return response.url
+            raise DemistoException("No authorization URL was returned")
+        except Exception:
+            # Clean up code_verifier from integration context on failure
+            integration_context.pop("code_verifier", None)
+            set_integration_context(integration_context)
+            raise
 
     def oauth2_retrieve_access_token(self, code: str = "", refresh_token: str = "") -> None:
         """
@@ -357,6 +380,7 @@ class JiraOnPremOAuthClient(AtlassianOAuthClient):
         # Pop code_verifier as it's only needed during initial authorization
         code_verifier = integration_context.pop("code_verifier", "")
         
+        grant_type = "authorization_code" if code else "refresh_token"
         data = assign_params(
             client_id=self.client_id,
             client_secret=self.client_secret,
@@ -364,17 +388,30 @@ class JiraOnPremOAuthClient(AtlassianOAuthClient):
             code=code,
             redirect_uri=self.callback_url if code else "",
             refresh_token=refresh_token,
-            grant_type="authorization_code" if code else "refresh_token",
+            grant_type=grant_type,
         )
         
-        response = requests.post(
-            f"{self.server_url}/rest/oauth2/latest/token",
-            data=data,
-            verify=self.verify,
-            proxies=handle_proxy() if self.proxy else None
-        )
-        response.raise_for_status()
+        token_url = f"{self.server_url}/rest/oauth2/latest/token"
+        demisto.debug(f"Requesting On-Prem OAuth token from {token_url} with grant_type={grant_type}")
+        try:
+            response = requests.post(
+                token_url,
+                data=data,
+                verify=self.verify,
+                proxies=handle_proxy() if self.proxy else None
+            )
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            demisto.debug(f"On-Prem OAuth token request failed with status {e.response.status_code}: {e.response.text}")
+            raise DemistoException(
+                f"Failed to retrieve On-Prem OAuth token (HTTP {e.response.status_code}): {e.response.text}"
+            ) from e
+        except requests.exceptions.RequestException as e:
+            demisto.debug(f"On-Prem OAuth token request failed: {e}")
+            raise DemistoException(f"Failed to connect to On-Prem OAuth token endpoint: {e}") from e
+
         res_access_token = response.json()
+        demisto.debug("Successfully retrieved On-Prem OAuth token")
         
         new_authorization_context = {
             "token": res_access_token.get("access_token", ""),
