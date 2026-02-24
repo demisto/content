@@ -32,6 +32,54 @@ def test_parse_resource_ids_with_none():
         parse_resource_ids(None)
 
 
+def test_parse_date_valid_date():
+    """
+    Given: A valid date string in 'YYYY-MM-DD' format.
+    When: parse_date is called with the date string.
+    Then: It should return the date in ISO 8601 format.
+    """
+    from AWS import parse_date
+
+    result = parse_date("2024-01-15")
+    assert result == "2024-01-15T00:00:00"
+
+
+def test_parse_date_invalid_format():
+    """
+    Given: A date string with an invalid format (not 'YYYY-MM-DD').
+    When: parse_date is called with the malformed string.
+    Then: It should raise a DemistoException indicating the date could not be parsed.
+    """
+    from AWS import parse_date
+
+    with pytest.raises(DemistoException, match="Date could not be parsed"):
+        parse_date("15-01-2024")
+
+
+def test_parse_date_invalid_values():
+    """
+    Given: A date string with out-of-range values (e.g. month 13).
+    When: parse_date is called with the invalid date.
+    Then: It should raise a DemistoException indicating the date could not be parsed.
+    """
+    from AWS import parse_date
+
+    with pytest.raises(DemistoException, match="Date could not be parsed"):
+        parse_date("2024-13-01")
+
+
+def test_parse_date_leap_year():
+    """
+    Given: A valid leap year date string '2024-02-29'.
+    When: parse_date is called with the leap year date.
+    Then: It should return the correct ISO 8601 formatted string.
+    """
+    from AWS import parse_date
+
+    result = parse_date("2024-02-29")
+    assert result == "2024-02-29T00:00:00"
+
+
 def test_datetime_encoder_with_datetime():
     """
     Given: A DatetimeEncoder instance and a datetime object.
@@ -12105,7 +12153,7 @@ def test_ec2_create_launch_template_command_success(mocker):
     }
 
     mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_client.create_launch_template.return_value)
-    mocker.patch("AWS.parse_tag_field", return_value=[])
+    mocker.patch("AWS.parse_tag_field", return_value=[{"Key": "Name", "Value": "Test"}])
 
     args = {
         "account_id": "123456789012",
@@ -12136,6 +12184,8 @@ def test_ec2_create_launch_template_command_success(mocker):
     assert "AWS Launch Template" in result.readable_output
     assert call_args["LaunchTemplateData"]["Monitoring"]["Enabled"] is True
     assert call_args["LaunchTemplateData"]["EbsOptimized"] is True
+    assert call_args["TagSpecifications"][0]["ResourceType"] == "launch-template"
+    assert call_args["TagSpecifications"][0]["Tags"] == result.outputs["Tags"]
 
 
 def test_ec2_create_launch_template_command_with_network_interfaces(mocker):
@@ -12539,9 +12589,6 @@ def test_create_fleet_command_with_tags(mocker):
     assert tag_specs[0]["Tags"][0]["Key"] == "Env"
 
 
-# ── aws-ec2-fleet-delete ──────────────────────────────────────────────────────
-
-
 def test_delete_fleet_command_success(mocker):
     """
     Given: A mocked EC2 client and valid fleet IDs with terminate_instances=true.
@@ -12653,9 +12700,6 @@ def test_delete_fleet_command_no_deletions(mocker):
 
     assert isinstance(result, CommandResults)
     assert "No fleets were deleted" in result.readable_output
-
-
-# ── aws-ec2-fleets-describe ───────────────────────────────────────────────────
 
 
 def test_describe_fleets_command_success(mocker):
@@ -12776,9 +12820,6 @@ def test_describe_fleets_command_with_pagination(mocker):
     assert call_kwargs.get("MaxResults") == 5
     assert call_kwargs.get("NextToken") == "token-prev"
     assert result.outputs["AWS.EC2(true)"]["FleetNextToken"] == "token-abc"
-
-
-# ── aws-ec2-fleet-instances-describe ─────────────────────────────────────────
 
 
 def test_describe_fleet_instances_command_success(mocker):
@@ -12947,7 +12988,7 @@ def test_describe_fleet_instances_command_next_token_propagated(mocker):
         "account_id": "123456789012",
         "region": "us-east-1",
         "fleet_id": "fleet-page-001",
-        "limit": "1",
+        "limit": "2",
     }
 
     result = EC2.describe_fleet_instances_command(mock_client, args)
@@ -12955,7 +12996,7 @@ def test_describe_fleet_instances_command_next_token_propagated(mocker):
     assert isinstance(result, CommandResults)
     assert result.outputs["AWS.EC2(true)"]["FleetInstancesNextToken"] == "next-token-xyz"
     call_kwargs = mock_client.describe_fleet_instances.call_args[1]
-    assert call_kwargs.get("MaxResults") == 1
+    assert call_kwargs.get("MaxResults") == 2
 
 
 def test_describe_fleet_instances_command_readable_output_headers(mocker):
@@ -12997,8 +13038,6 @@ def test_describe_fleet_instances_command_readable_output_headers(mocker):
     # raw_response must be attached
     assert result.raw_response is not None
     assert result.raw_response.get("FleetId") == "fleet-hdr-001"
-
-
 
 
 def test_modify_fleet_command_success(mocker):

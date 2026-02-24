@@ -184,6 +184,26 @@ def build_pagination_kwargs(
     return kwargs
 
 
+def parse_date(dt):
+    """
+    Parses a date string in 'YYYY-MM-DD' format and returns an ISO 8601 formatted string.
+    Args:
+        dt (str): A date string in 'YYYY-MM-DD' format.
+    Returns:
+        str: The date in ISO 8601 format (e.g. '2024-01-15T00:00:00').
+    Raises:
+        DemistoException: If the date string cannot be parsed (invalid format or values).
+    """
+    if not dt:
+        return None
+    try:
+        arr = dt.split("-")
+        parsed_date = (datetime(int(arr[0]), int(arr[1]), int(arr[2]))).isoformat()
+    except ValueError as e:
+        raise DemistoException(f"Date could not be parsed. Please check the date again.\n{e}")
+    return parsed_date
+
+
 def parse_resource_ids(resource_id: str | None) -> list[str]:
     if resource_id is None:
         raise ValueError("Resource ID cannot be empty")
@@ -450,6 +470,18 @@ def prepare_create_function_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def aws_ec2_block_device_mapping_args_builder(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """
+    Builds the BlockDeviceMappings list for EC2 launch template and fleet commands.
+
+    Constructs a single block device mapping entry from the provided arguments,
+    including EBS volume configuration and device naming options.
+
+    Args:
+        args (Dict[str, Any]): The command arguments containing block device mapping fields.
+
+    Returns:
+        List[Dict[str, Any]]: A list containing a single block device mapping dictionary.
+    """
     return [
         {
             "DeviceName": args.get("device_name"),
@@ -470,6 +502,19 @@ def aws_ec2_block_device_mapping_args_builder(args: Dict[str, Any]) -> List[Dict
 
 
 def create_launch_template_kwargs_builder(args: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Builds the kwargs dictionary for EC2 launch template create and modify commands.
+
+    Constructs the full request payload including launch template metadata,
+    block device mappings, IAM instance profile, instance market options (Spot),
+    network interfaces, placement, security groups, monitoring, and tag specifications.
+
+    Args:
+        args (Dict[str, Any]): The command arguments containing launch template fields.
+
+    Returns:
+        Dict[str, Any]: A dictionary of kwargs.
+    """
     kwargs: Dict[str, Any] = {
         "LaunchTemplateName": args.get("launch_template_name"),
         "VersionDescription": args.get("version_description"),
@@ -607,13 +652,31 @@ def aws_ec2_fleet_command_launch_templates_config_args_builder(args: Dict[str, A
 
 
 def aws_ec2_fleet_create_args_builder(args: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Builds the full kwargs dictionary for the EC2 Fleet create command.
+
+    Constructs the complete request payload including fleet type, capacity termination
+    policies, validity window, launch template configurations, Spot options, On-Demand
+    options, target capacity specification, and tag specifications.
+
+    Args:
+        args (Dict[str, Any]): The command arguments containing fleet configuration fields
+            such as type, excess_capacity_termination_policy, replace_unhealthy_instances,
+            terminate_instances_with_expiration, valid_from, valid_until,
+            spot_allocation_strategy, on_demand_allocation_strategy,
+            total_target_capacity, default_target_capacity_type, and tags.
+
+    Returns:
+        Dict[str, Any]: A dictionary of kwargs ready to be passed to the AWS EC2
+            create_fleet API call.
+    """
     return {
         "ExcessCapacityTerminationPolicy": args.get("excess_capacity_termination_policy"),
         "ReplaceUnhealthyInstances": arg_to_bool_or_none(args.get("replace_unhealthy_instances")),
         "TerminateInstancesWithExpiration": arg_to_bool_or_none(args.get("terminate_instances_with_expiration")),
         "Type": args.get("type"),
-        "ValidFrom": datetime_to_string(args.get("valid_from")),
-        "ValidUntil": datetime_to_string(args.get("valid_until")),
+        "ValidFrom": parse_date(args.get("valid_from")),
+        "ValidUntil": parse_date(args.get("valid_until")),
         "LaunchTemplateConfigs": aws_ec2_fleet_command_launch_templates_config_args_builder(args),
         "SpotOptions": {
             "AllocationStrategy": args.get("spot_allocation_strategy"),
@@ -639,7 +702,7 @@ def aws_ec2_fleet_create_args_builder(args: Dict[str, Any]) -> Dict[str, Any]:
             "SpotTargetCapacity": arg_to_number(args.get("spot_target_capacity")),
             "TargetCapacityUnitType": args.get("target_capacity_unit"),
         },
-        "TagSpecifications": [{"ResourceType": "fleet", "Tags": parse_tag_field(args.get("tags"))}],
+        "TagSpecifications": [{"ResourceType": "fleet", "Tags": parse_tag_field(args.get("tags"))}] if args.get("tags") else None,
     }
 
 

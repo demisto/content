@@ -12038,7 +12038,6 @@ script:
 
   - name: aws-ec2-fleet-create
     description: Launches an EC2 Fleet.
-    execution: true
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -12897,9 +12896,9 @@ script:
       required: false
       auto: PREDEFINED
       predefined:
-        - vcpu
-        - memory-mib
-        - units
+      - vcpu
+      - memory-mib
+      - units
 
 
   isfetch: false
