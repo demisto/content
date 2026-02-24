@@ -479,9 +479,49 @@ def fetch_alerts_asc_mode(
     return alerts
 
 
+def check_events_ready(client: Client, search_job_uuid: str, max_checks: int = 3) -> tuple[bool, dict | None]:
+    """
+    Check if an event search job is ready (without sleep/polling).
+    Makes multiple rapid checks up to max_checks times.
+
+    Args:
+        client: The Sekoia client
+        search_job_uuid: The UUID of the search job
+        max_checks: Maximum number of status checks to perform (default 3)
+
+    Returns:
+        tuple: (is_ready: bool, events: dict | None)
+            - is_ready: True if job finished (status==2), False otherwise
+            - events: Events dict if ready, None if not ready
+    """
+    for attempt in range(max_checks):
+        try:
+            query_status = client.query_events_status(event_search_job_uuid=search_job_uuid)
+            finished_status = query_status["status"] == 2
+
+            if finished_status:
+                events = client.retrieve_events(event_search_job_uuid=search_job_uuid)
+                return True, events
+        except Exception as e:
+            demisto.debug(f"Error checking event status (attempt {attempt + 1}/{max_checks}): {e}")
+            if attempt == max_checks - 1:
+                raise
+
+    # Not finished after all checks
+    return False, None
+
+
 def handle_alert_events_query(
     client: Client, alert: dict, earliest_time: str, latest_time: str, events_term: str
-) -> dict[str, Any]:
+) -> tuple[dict[str, Any], bool]:
+    """
+    Handle event query for an alert with readiness check.
+    
+    Returns:
+        tuple: (alert, is_ready)
+            - alert: The alert dict with events (if ready) or job_uuid (if not ready)
+            - is_ready: True if events are available, False if job still pending
+    """
     buffered_earliest = apply_time_buffer(earliest_time, -1)
     buffered_latest = apply_time_buffer(latest_time, 1)
 
@@ -495,23 +535,22 @@ def handle_alert_events_query(
 
     # Get the search job uuid
     search_job_uuid = search["uuid"]
+    demisto.debug(f"Created event search job {search_job_uuid} for alert {alert.get('short_id')}")
 
-    # Check the state of the job
-    query_status = client.query_events_status(event_search_job_uuid=search_job_uuid)
-    finished_status = query_status["status"] == 2
+    # Check if events are ready (with multiple rapid checks)
+    is_ready, events = check_events_ready(client, search_job_uuid, max_checks=3)
 
-    # If it's not finished, add the job uuid to the alert
-    if not finished_status:
-        alert["job_uuid"] = search_job_uuid
-
-    else:
-        # If it's finished, get the events
-        # This case is rare but can happen if the fetch is too fast
-        events = client.retrieve_events(event_search_job_uuid=search_job_uuid)
+    if is_ready:
+        # Events are ready - add them to the alert
         undoted_events = undot(json_data=events)
         alert["events"] = undoted_events
+        demisto.debug(f"Events ready for alert {alert.get('short_id')}")
+    else:
+        # Events not ready yet - store job_uuid for later retry
+        alert["job_uuid"] = search_job_uuid
+        demisto.debug(f"Events not ready for alert {alert.get('short_id')}, stored job_uuid {search_job_uuid}")
 
-    return alert
+    return alert, is_ready
 
 
 def check_id_in_context(alert_id: str, cache: dict[str, Any] | None) -> tuple[dict[str, Any], int] | None:
@@ -727,12 +766,13 @@ def fetch_incidents(
                 demisto.debug(f"Error fetching kill chain information {kill_chain}: {e}")
 
         # Add events information to the alert, if fetch_mode is set to "Fetch With All Events"
+        events_ready = True
         if fetch_mode == "Fetch With All Events":
             earliest_time = alert["first_seen_at"]
             latest_time = alert["last_seen_at"]
             term = f"alert_short_ids:{alert['short_id']}"
 
-            alert = handle_alert_events_query(client, alert, earliest_time, latest_time, term)
+            alert, events_ready = handle_alert_events_query(client, alert, earliest_time, latest_time, term)
 
         # Start building the incident
         incident = {
@@ -746,18 +786,24 @@ def fetch_incidents(
             "Outgoing",
             "Incoming and Outgoing",
         ]
-        incident["rawJSON"] = json.dumps(alert)
         incident["dbotMirrorDirection"] = MIRROR_DIRECTION.get(str(mirror_direction))
         incident["dbotMirrorId"] = alert["short_id"]
 
-        # Add the alert to the incident
-        if not alert.get("job_uuid"):
+        # Add the alert to the incident only if events are ready (or events not requested)
+        if events_ready and not alert.get("job_uuid"):
+            # Events are ready or not requested - create incident immediately
             incident["rawJSON"] = json.dumps(alert)
             incidents.append(incident)
-        else:
-            # If the alert has a job uuid, we will not dumps it to a string to make it easy
+        elif alert.get("job_uuid"):
+            # Events still pending - cache the incident for next fetch cycle
+            # Keep rawJSON as dict (not dumped) for easier manipulation in cache
             incident["rawJSON"] = alert
             cached_incidents.append(incident)
+            demisto.debug(f"Alert {alert_id} cached pending event search {alert.get('job_uuid')}")
+        else:
+            # No job_uuid and not ready should not happen, but handle gracefully
+            incident["rawJSON"] = json.dumps(alert)
+            incidents.append(incident)
 
         # Update latest_created_time and track processed IDs
         # If timestamp is newer than last_fetch, reset the processed_ids list
