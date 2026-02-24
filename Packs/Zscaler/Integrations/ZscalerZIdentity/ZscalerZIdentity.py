@@ -52,7 +52,19 @@ handle_proxy()
 
 
 class Client(BaseClient):
-    """Client for Zscaler ZIA via ZIdentity OAuth 2.0."""
+    """Client for Zscaler ZIA via ZIdentity OAuth 2.0.
+
+    Authenticates using the OAuth 2.0 client credentials grant type against
+    the ZIdentity token endpoint and forwards Bearer tokens to the ZIA REST API.
+
+    Attributes:
+        domain: The ZIdentity domain (e.g. "acme" for acme.zslogin.net).
+        client_id: The OAuth 2.0 client ID.
+        client_secret: The OAuth 2.0 client secret.
+        reliability: Source reliability string for DBotScore.
+        auto_activate: Whether to auto-activate changes after write commands.
+        suspicious_categories: URL categories treated as suspicious for scoring.
+    """
 
     def __init__(
         self,
@@ -65,6 +77,18 @@ class Client(BaseClient):
         auto_activate: bool,
         suspicious_categories: list[str],
     ):
+        """Initializes the Client.
+
+        Args:
+            domain: The ZIdentity domain name (e.g. "acme").
+            client_id: The OAuth 2.0 client ID registered in ZIdentity.
+            client_secret: The OAuth 2.0 client secret.
+            verify: Whether to verify SSL certificates.
+            proxy: Whether to use system proxy settings.
+            reliability: Source reliability for DBotScore (e.g. "C - Fairly reliable").
+            auto_activate: If True, activate ZIA changes after each write command.
+            suspicious_categories: List of URL categories considered suspicious.
+        """
         super().__init__(base_url=BASE_API_URL, verify=verify, proxy=proxy)
         self.domain = domain
         self.client_id = client_id
@@ -75,8 +99,17 @@ class Client(BaseClient):
         self._access_token: str | None = None
 
     def _get_access_token(self) -> str:
-        """Obtain an OAuth 2.0 access token from ZIdentity using client credentials flow.
-        Caches the token in integration context to avoid redundant requests.
+        """Obtains an OAuth 2.0 access token from ZIdentity using client credentials flow.
+
+        Checks the integration context for a cached, non-expired token first.
+        If the cached token is missing or within 30 seconds of expiry, fetches
+        a new token from the ZIdentity token endpoint and caches it.
+
+        Returns:
+            A valid Bearer access token string.
+
+        Raises:
+            DemistoException: If ZIdentity does not return an access_token in the response.
         """
         ctx = get_integration_context() or {}
         token = ctx.get("access_token")
@@ -114,6 +147,11 @@ class Client(BaseClient):
         return token
 
     def _get_auth_headers(self) -> dict:
+        """Builds the Authorization headers for ZIA API requests.
+
+        Returns:
+            A dict containing the Bearer Authorization header and Content-Type.
+        """
         token = self._get_access_token()
         return {
             "Authorization": f"Bearer {token}",
@@ -121,6 +159,17 @@ class Client(BaseClient):
         }
 
     def _error_handler(self, res) -> None:
+        """Handles HTTP error responses from the ZIA API.
+
+        Raises a DemistoException with a descriptive message based on the
+        HTTP status code and response body.
+
+        Args:
+            res: The requests.Response object from the failed HTTP call.
+
+        Raises:
+            DemistoException: Always raised with an appropriate error message.
+        """
         if res.status_code in (401, 403):
             raise DemistoException(
                 f"Authentication/Authorization error ({res.status_code}): {res.text}. "
@@ -147,7 +196,22 @@ class Client(BaseClient):
         params: dict | None = None,
         resp_type: str = "json",
     ):
-        """Make an authenticated API request to the ZIA API."""
+        """Makes an authenticated API request to the ZIA API.
+
+        Automatically injects the Bearer token Authorization header and retries
+        on HTTP 429 (rate limit) responses up to 3 times.
+
+        Args:
+            method: HTTP method string (e.g. "GET", "POST", "PUT", "DELETE").
+            url_suffix: The API path suffix appended to BASE_API_URL.
+            data: Optional JSON-serializable body payload (dict or list).
+            params: Optional URL query parameters dict.
+            resp_type: Response parsing mode passed to _http_request
+                (e.g. "json", "response", "content").
+
+        Returns:
+            The parsed API response (type depends on resp_type).
+        """
         return self._http_request(
             method=method,
             url_suffix=url_suffix,
@@ -162,15 +226,34 @@ class Client(BaseClient):
         )
 
     def activate_changes(self) -> dict:
+        """Activates saved ZIA configuration changes.
+
+        Returns:
+            The API response dict containing the activation status.
+        """
         return self.api_request("POST", "/status/activate")
 
     # ---- Denylist ----
 
     def get_denylist(self) -> dict:
+        """Retrieves the current ZIA advanced security policy including the denylist.
+
+        Returns:
+            A dict with the full security/advanced policy, including 'blacklistUrls'.
+        """
         return self.api_request("GET", "/security/advanced")
 
     def update_denylist(self, urls: list[str], ips: list[str], action: str) -> None:
-        """Update the denylist. action: ADD_TO_LIST | REMOVE_FROM_LIST | OVERWRITE"""
+        """Updates the ZIA denylist with the given URLs and IPs.
+
+        For OVERWRITE, fetches the current policy and replaces blacklistUrls entirely
+        via PUT. For ADD_TO_LIST and REMOVE_FROM_LIST, uses the POST action endpoint.
+
+        Args:
+            urls: List of URL strings to add/remove/overwrite.
+            ips: List of IP address strings to add/remove/overwrite.
+            action: One of "ADD_TO_LIST", "REMOVE_FROM_LIST", or "OVERWRITE".
+        """
         items = urls + ips
         if action == "OVERWRITE":
             # OVERWRITE uses PUT on /security/advanced with blacklistUrls field
@@ -189,10 +272,24 @@ class Client(BaseClient):
     # ---- Allowlist ----
 
     def get_allowlist(self) -> dict:
+        """Retrieves the current ZIA security policy including the allowlist.
+
+        Returns:
+            A dict with the full security policy, including 'whitelistUrls'.
+        """
         return self.api_request("GET", "/security")
 
     def update_allowlist(self, urls: list[str], action: str) -> None:
-        """Update the allowlist. action: ADD_TO_LIST | REMOVE_FROM_LIST | OVERWRITE"""
+        """Updates the ZIA allowlist with the given URLs.
+
+        Since the ZIA API only supports PUT (full replacement), this method
+        fetches the current allowlist and merges the changes before sending.
+        Deduplicates entries when adding.
+
+        Args:
+            urls: List of URL strings to add/remove/overwrite.
+            action: One of "ADD_TO_LIST", "REMOVE_FROM_LIST", or "OVERWRITE".
+        """
         current = self.get_allowlist()
         existing = current.get("whitelistUrls", [])
         if action == "ADD_TO_LIST":
@@ -214,6 +311,19 @@ class Client(BaseClient):
         include_only_url_keyword_counts: bool = False,
         lite: bool = False,
     ) -> list | dict:
+        """Retrieves URL categories from ZIA.
+
+        Args:
+            category_id: If provided, fetches only the category with this ID.
+            custom_only: If True, returns only custom URL categories.
+            include_only_url_keyword_counts: If True, returns only URL and keyword
+                counts instead of full URL lists.
+            lite: If True, returns a lightweight list of category IDs and names only.
+                Cannot be combined with other parameters.
+
+        Returns:
+            A list of category dicts, or a single category dict if category_id is given.
+        """
         if category_id:
             return self.api_request("GET", f"/urlCategories/{category_id}")
         if lite:
@@ -237,6 +347,23 @@ class Client(BaseClient):
         keywords_retaining_parent_category: list[str] | None = None,
         ip_ranges_retaining_parent_category: list[str] | None = None,
     ) -> None:
+        """Updates a URL category by merging the given URLs and IPs with existing ones.
+
+        Fetches the current category state first, then applies the action
+        (ADD_TO_LIST, REMOVE_FROM_LIST, or OVERWRITE) to URLs and IP ranges,
+        and sends the merged payload via PUT.
+
+        Args:
+            category_id: The unique identifier of the URL category to update.
+            urls: List of URL strings to add/remove/overwrite.
+            ips: List of IP range strings to add/remove/overwrite.
+            action: One of "ADD_TO_LIST", "REMOVE_FROM_LIST", or "OVERWRITE".
+            keywords: Optional list of custom keywords to associate with the category.
+            description: Optional description string for the category.
+            db_categorized_urls: Optional URLs to retain under the parent category.
+            keywords_retaining_parent_category: Optional keywords retained from parent.
+            ip_ranges_retaining_parent_category: Optional IP ranges retained from parent.
+        """
         # Fetch current category to merge
         current = self.api_request("GET", f"/urlCategories/{category_id}")
         existing_urls = current.get("urls", [])
@@ -278,6 +405,11 @@ class Client(BaseClient):
     # ---- URL Quota ----
 
     def get_url_quota(self) -> dict:
+        """Retrieves the URL quota information for the organization.
+
+        Returns:
+            A dict containing 'uniqueUrlsProvisioned' and 'remainingUrlsQuota'.
+        """
         return self.api_request("GET", "/urlCategories/urlQuota")
 
     # ---- IP Destination Groups ----
@@ -290,6 +422,22 @@ class Client(BaseClient):
         category_type: list[str] | None = None,
         lite: bool = False,
     ) -> list | dict:
+        """Lists IP destination groups from ZIA.
+
+        If group_id is provided, returns only that specific group. Otherwise,
+        returns all IPv4 groups (and optionally IPv6 groups).
+
+        Args:
+            group_id: If provided, fetches only the group with this ID.
+            include_ipv6: If True, also fetches IPv6 destination groups.
+            exclude_type: Filter to exclude groups of this type
+                (e.g. "DSTN_IP", "DSTN_FQDN", "DSTN_DOMAIN", "DSTN_OTHER").
+            category_type: Filter by group type (only valid with lite=True).
+            lite: If True, returns lightweight name/ID-only results.
+
+        Returns:
+            A list of group dicts, or a single group dict if group_id is given.
+        """
         if group_id is not None:
             return self.api_request("GET", f"/ipDestinationGroups/{group_id}")
 
@@ -311,12 +459,35 @@ class Client(BaseClient):
         return results
 
     def update_ip_destination_group(self, group_id: int, payload: dict) -> dict:
+        """Updates an existing IP destination group.
+
+        Args:
+            group_id: The unique identifier of the group to update.
+            payload: A dict containing the full updated group definition.
+
+        Returns:
+            The updated group dict as returned by the API.
+        """
         return self.api_request("PUT", f"/ipDestinationGroups/{group_id}", data=payload)
 
     def add_ip_destination_group(self, payload: dict) -> dict:
+        """Creates a new IP destination group.
+
+        Args:
+            payload: A dict containing the new group definition (name, type,
+                addresses, description, ipCategories, countries, isNonEditable).
+
+        Returns:
+            The created group dict as returned by the API.
+        """
         return self.api_request("POST", "/ipDestinationGroups", data=payload)
 
     def delete_ip_destination_group(self, group_id: int) -> None:
+        """Deletes an IP destination group by ID.
+
+        Args:
+            group_id: The unique identifier of the group to delete.
+        """
         self.api_request("DELETE", f"/ipDestinationGroups/{group_id}", resp_type="response")
 
     # ---- Users ----
@@ -329,6 +500,21 @@ class Client(BaseClient):
         page: int = 1,
         page_size: int = 100,
     ) -> list | dict:
+        """Retrieves ZIA users.
+
+        If user_id is provided, returns only that specific user. Otherwise,
+        returns a paginated list of users with optional department/group filters.
+
+        Args:
+            user_id: If provided, fetches only the user with this ID.
+            dept: Filter users by department name.
+            group: Filter users by group name.
+            page: Page offset for pagination (1-based).
+            page_size: Number of results per page (max 10,000).
+
+        Returns:
+            A list of user dicts, or a single user dict if user_id is given.
+        """
         if user_id:
             return self.api_request("GET", f"/users/{user_id}")
         params: dict = {"page": page, "pageSize": page_size}
@@ -339,6 +525,15 @@ class Client(BaseClient):
         return self.api_request("GET", "/users", params=params)
 
     def update_user(self, user_id: str, payload: dict) -> dict:
+        """Updates a ZIA user by ID.
+
+        Args:
+            user_id: The unique identifier of the user to update.
+            payload: A dict containing the full updated user definition.
+
+        Returns:
+            The updated user dict as returned by the API.
+        """
         return self.api_request("PUT", f"/users/{user_id}", data=payload)
 
     # ---- Groups ----
@@ -352,6 +547,19 @@ class Client(BaseClient):
         page: int = 1,
         page_size: int = 100,
     ) -> list:
+        """Retrieves a paginated list of ZIA user groups.
+
+        Args:
+            search: Search string matched against group name or comments.
+            defined_by: Filter by the attribute that defines the group.
+            sort_by: Field to sort results by (e.g. "id", "name", "modTime").
+            sort_order: Sort direction, one of "asc", "desc", or "ruleExecution".
+            page: Page offset for pagination (1-based).
+            page_size: Number of results per page (max 10,000).
+
+        Returns:
+            A list of group dicts.
+        """
         params: dict = {"page": page, "pageSize": page_size, "sortBy": sort_by, "sortOrder": sort_order}
         if search:
             params["search"] = search
@@ -371,6 +579,24 @@ class Client(BaseClient):
         page: int = 1,
         page_size: int = 100,
     ) -> list | dict:
+        """Retrieves ZIA departments.
+
+        If department_id is provided, returns only that specific department.
+        Otherwise, returns a paginated list with optional search filters.
+
+        Args:
+            department_id: If provided, fetches only the department with this ID.
+            search: Search string matched against department name or comments.
+            limit_search: If True, restricts search to match only the department name.
+            sort_by: Field to sort results by (e.g. "id", "name", "rank").
+            sort_order: Sort direction, one of "asc", "desc", or "ruleExecution".
+            page: Page offset for pagination (1-based).
+            page_size: Number of results per page (max 10,000).
+
+        Returns:
+            A list of department dicts, or a single department dict if
+            department_id is given.
+        """
         if department_id:
             return self.api_request("GET", f"/departments/{department_id}")
         params: dict = {"page": page, "pageSize": page_size, "sortBy": sort_by, "sortOrder": sort_order}
@@ -383,12 +609,35 @@ class Client(BaseClient):
     # ---- Sandbox ----
 
     def get_sandbox_report(self, md5: str, report_type: str = "summary") -> dict:
+        """Retrieves a Sandbox analysis report for a file identified by MD5 hash.
+
+        Args:
+            md5: The MD5 hash of the file analyzed by Sandbox.
+            report_type: Type of report to retrieve, either "full" or "summary".
+                Defaults to "summary".
+
+        Returns:
+            A dict containing the sandbox report data.
+        """
         details = "full" if report_type.lower() == "full" else "summary"
         return self.api_request("GET", f"/sandbox/report/{md5}?details={details}")
 
     # ---- URL Lookup ----
 
     def url_lookup(self, ioc_list: list[str]) -> list:
+        """Looks up the classification for a list of URLs, IPs, or domains.
+
+        Strips http:// and https:// prefixes before sending to the ZIA API,
+        as Zscaler expects bare hostnames/URLs without protocol schemes.
+
+        Args:
+            ioc_list: A list of URL, IP, or domain strings to classify.
+                Maximum 100 items per request.
+
+        Returns:
+            A list of classification result dicts, each containing 'url',
+            'urlClassifications', and 'urlClassificationsWithSecurityAlert'.
+        """
         # Strip protocol prefixes as Zscaler expects bare URLs
         cleaned = [u.replace("https://", "").replace("http://", "") for u in ioc_list]
         return self.api_request("POST", "/urlLookup", data=cleaned)
@@ -398,7 +647,21 @@ class Client(BaseClient):
 
 
 def _filter_and_limit(items: list, filter_: str, query: str, limit: int, all_results: bool) -> list:
-    """Apply filter/query/limit to a list of URL/IP strings."""
+    """Applies filter, query, and limit to a list of URL/IP strings.
+
+    Filters items by type (url or ip) and/or by a regex query pattern,
+    then applies a count limit unless all_results is True.
+
+    Args:
+        items: The list of URL or IP strings to filter.
+        filter_: Type filter string, either "url" or "ip". Empty string means no filter.
+        query: Python regex pattern to match against each item. Empty string means no filter.
+        limit: Maximum number of items to return when all_results is False.
+        all_results: If True, returns all matching items ignoring limit.
+
+    Returns:
+        A filtered and optionally limited list of strings.
+    """
     if filter_ or query:
         filtered = []
         for entity in items:
@@ -420,7 +683,24 @@ def _filter_and_limit(items: list, filter_: str, query: str, limit: int, all_res
 def _dbot_score_for_url(
     url_classifications: str, url_classifications_with_security_alert: str, suspicious_list: list[str]
 ) -> int:
-    """Calculate DBotScore for a URL/IP/Domain based on Zscaler classifications."""
+    """Calculates the DBotScore for a URL, IP, or domain based on Zscaler classifications.
+
+    Scoring logic:
+        - MISCELLANEOUS_OR_UNKNOWN classification → DBotScore.NONE
+        - Security alert category in suspicious_list → DBotScore.SUSPICIOUS
+        - Any other security alert category → DBotScore.BAD
+        - No security alert → DBotScore.GOOD
+
+    Args:
+        url_classifications: The primary URL classification string from Zscaler.
+        url_classifications_with_security_alert: The security alert classification
+            string from Zscaler (empty string if none).
+        suspicious_list: List of category strings considered suspicious
+            (e.g. ["SUSPICIOUS_DESTINATION", "SPYWARE_OR_ADWARE"]).
+
+    Returns:
+        An integer DBotScore value (Common.DBotScore.NONE/GOOD/SUSPICIOUS/BAD).
+    """
     if url_classifications == "MISCELLANEOUS_OR_UNKNOWN":
         return Common.DBotScore.NONE
     if url_classifications_with_security_alert:
@@ -434,12 +714,35 @@ def _dbot_score_for_url(
 
 
 def test_module_command(client: Client) -> str:
-    """Test connectivity by fetching the ZIA status endpoint."""
+    """Tests connectivity to the ZIA API by fetching the status endpoint.
+
+    Args:
+        client: The authenticated ZIA Client instance.
+
+    Returns:
+        The string "ok" if the connection is successful.
+
+    Raises:
+        DemistoException: If the API request fails.
+    """
     client.api_request("GET", "/status")
     return "ok"
 
 
 def zia_denylist_list_command(client: Client, args: dict) -> CommandResults:
+    """Retrieves the ZIA denylist with optional filtering and limiting.
+
+    Args:
+        client: The authenticated ZIA Client instance.
+        args: Command arguments dict with optional keys:
+            - filter: "url" or "ip" to filter by type.
+            - query: Python regex to match against entries.
+            - limit: Maximum number of results (default 50).
+            - all_results: If "True", returns all results ignoring limit.
+
+    Returns:
+        A CommandResults object with the denylist entries.
+    """
     filter_ = args.get("filter", "")
     query = args.get("query", "")
     limit = arg_to_number(args.get("limit", 50)) or 50
@@ -461,6 +764,21 @@ def zia_denylist_list_command(client: Client, args: dict) -> CommandResults:
 
 
 def zia_denylist_update_command(client: Client, args: dict) -> CommandResults:
+    """Updates the ZIA denylist by adding, removing, or overwriting entries.
+
+    Args:
+        client: The authenticated ZIA Client instance.
+        args: Command arguments dict with keys:
+            - url: Comma-separated list of URLs to update.
+            - ip: Comma-separated list of IPs to update.
+            - action: One of "ADD_TO_LIST", "REMOVE_FROM_LIST", "OVERWRITE" (required).
+
+    Returns:
+        A CommandResults object with a success message.
+
+    Raises:
+        DemistoException: If neither url nor ip is provided, or action is missing.
+    """
     urls = argToList(args.get("url", ""))
     ips = argToList(args.get("ip", ""))
     action = args.get("action", "")
@@ -475,6 +793,19 @@ def zia_denylist_update_command(client: Client, args: dict) -> CommandResults:
 
 
 def zia_allowlist_list_command(client: Client, args: dict) -> CommandResults:
+    """Retrieves the ZIA allowlist with optional filtering and limiting.
+
+    Args:
+        client: The authenticated ZIA Client instance.
+        args: Command arguments dict with optional keys:
+            - filter: "url" or "ip" to filter by type.
+            - query: Python regex to match against entries.
+            - limit: Maximum number of results (default 50).
+            - all_results: If "True", returns all results ignoring limit.
+
+    Returns:
+        A CommandResults object with the allowlist entries.
+    """
     filter_ = args.get("filter", "")
     query = args.get("query", "")
     limit = arg_to_number(args.get("limit", 50)) or 50
@@ -496,6 +827,20 @@ def zia_allowlist_list_command(client: Client, args: dict) -> CommandResults:
 
 
 def zia_allowlist_update_command(client: Client, args: dict) -> CommandResults:
+    """Updates the ZIA allowlist by adding, removing, or overwriting entries.
+
+    Args:
+        client: The authenticated ZIA Client instance.
+        args: Command arguments dict with keys:
+            - url: Comma-separated list of URLs or IPs to update (required).
+            - action: One of "ADD_TO_LIST", "REMOVE_FROM_LIST", "OVERWRITE" (required).
+
+    Returns:
+        A CommandResults object with a success message.
+
+    Raises:
+        DemistoException: If url or action is missing.
+    """
     urls = argToList(args.get("url", ""))
     action = args.get("action", "")
 
@@ -509,6 +854,26 @@ def zia_allowlist_update_command(client: Client, args: dict) -> CommandResults:
 
 
 def zia_category_list_command(client: Client, args: dict) -> CommandResults:
+    """Retrieves ZIA URL categories with optional filtering and display options.
+
+    Args:
+        client: The authenticated ZIA Client instance.
+        args: Command arguments dict with optional keys:
+            - category_id: Fetch a specific category by ID.
+            - custom_only: If "true", returns only custom categories.
+            - include_only_url_keyword_counts: If "true", returns counts only.
+            - lite: If "true", returns lightweight name/ID list only.
+                Cannot be combined with other parameters.
+            - limit: Maximum number of results (default 50).
+            - all_results: If "True", returns all results ignoring limit.
+            - display_URL: If "true", includes URLs in the human-readable output.
+
+    Returns:
+        A CommandResults object with the URL category data.
+
+    Raises:
+        DemistoException: If lite is combined with incompatible parameters.
+    """
     category_id = args.get("category_id")
     custom_only = argToBoolean(args.get("custom_only", False))
     include_only_url_keyword_counts = argToBoolean(args.get("include_only_url_keyword_counts", False))
@@ -556,6 +921,28 @@ def zia_category_list_command(client: Client, args: dict) -> CommandResults:
 
 
 def zia_category_update_command(client: Client, args: dict) -> CommandResults:
+    """Updates a ZIA URL category with new URLs, IPs, keywords, or description.
+
+    Args:
+        client: The authenticated ZIA Client instance.
+        args: Command arguments dict with keys:
+            - category_id: The category ID to update (required).
+            - url: Comma-separated list of URLs to update.
+            - ip: Comma-separated list of IP ranges to update.
+            - action: One of "ADD_TO_LIST", "REMOVE_FROM_LIST", "OVERWRITE" (required).
+            - keywords: Comma-separated custom keywords.
+            - description: Category description string.
+            - db_categorized_urls: URLs to retain under the parent category.
+            - keywords_retaining_parent_category: Keywords retained from parent.
+            - ip_ranges_retaining_parent_category: IP ranges retained from parent.
+
+    Returns:
+        A CommandResults object with a success message.
+
+    Raises:
+        DemistoException: If category_id is missing, neither url nor ip is provided,
+            or action is missing.
+    """
     category_id = args.get("category_id", "")
     if not category_id:
         raise DemistoException("The 'category_id' argument is required.")
@@ -594,6 +981,16 @@ def zia_category_update_command(client: Client, args: dict) -> CommandResults:
 
 
 def zia_url_quota_get_command(client: Client, args: dict) -> CommandResults:
+    """Retrieves the URL quota information for the organization.
+
+    Args:
+        client: The authenticated ZIA Client instance.
+        args: Command arguments dict (no arguments required for this command).
+
+    Returns:
+        A CommandResults object with quota information including
+        uniqueUrlsProvisioned and remainingUrlsQuota.
+    """
     response = client.get_url_quota()
     hr = tableToMarkdown(
         "ZIA URL Quota",
@@ -611,6 +1008,25 @@ def zia_url_quota_get_command(client: Client, args: dict) -> CommandResults:
 
 
 def zia_ip_destination_group_list_command(client: Client, args: dict) -> CommandResults:
+    """Lists ZIA IP destination groups with optional filtering and limiting.
+
+    Args:
+        client: The authenticated ZIA Client instance.
+        args: Command arguments dict with optional keys:
+            - group_id: Fetch a specific group by ID.
+            - include_ipv6: If "True", also fetches IPv6 destination groups.
+            - exclude_type: Exclude groups of this type from results.
+            - category_type: Filter by group type (only valid with lite=True).
+            - lite: If "True", returns lightweight name/ID results only.
+            - limit: Maximum number of results (default 50).
+            - all_results: If "True", returns all results ignoring limit.
+
+    Returns:
+        A CommandResults object with the IP destination group data.
+
+    Raises:
+        DemistoException: If category_type is used without lite=True.
+    """
     group_id = arg_to_number(args.get("group_id"))
     include_ipv6 = argToBoolean(args.get("include_ipv6", False))
     exclude_type = args.get("exclude_type")
@@ -659,6 +1075,28 @@ def zia_ip_destination_group_list_command(client: Client, args: dict) -> Command
 
 
 def zia_ip_destination_group_update_command(client: Client, args: dict) -> CommandResults:
+    """Updates an existing ZIA IP destination group.
+
+    Fetches the current group state and merges provided arguments on top,
+    so only specified fields are changed.
+
+    Args:
+        client: The authenticated ZIA Client instance.
+        args: Command arguments dict with keys:
+            - group_id: The unique identifier of the group to update (required).
+            - group_name: New name for the group.
+            - group_type: New type (DSTN_IP, DSTN_FQDN, DSTN_DOMAIN, DSTN_OTHER).
+            - address: Comma-separated list of addresses.
+            - description: Group description.
+            - ip_category: Comma-separated list of IP categories.
+            - country: Comma-separated list of country codes.
+
+    Returns:
+        A CommandResults object with the updated group data.
+
+    Raises:
+        DemistoException: If group_id is not provided.
+    """
     group_id = arg_to_number(args.get("group_id"))
     if group_id is None:
         raise DemistoException("The 'group_id' argument is required.")
@@ -700,6 +1138,22 @@ def zia_ip_destination_group_update_command(client: Client, args: dict) -> Comma
 
 
 def zia_ip_destination_group_add_command(client: Client, args: dict) -> CommandResults:
+    """Creates a new ZIA IP destination group.
+
+    Args:
+        client: The authenticated ZIA Client instance.
+        args: Command arguments dict with optional keys:
+            - group_name: Name for the new group.
+            - group_type: Type (DSTN_IP, DSTN_FQDN, DSTN_DOMAIN, DSTN_OTHER).
+            - address: Comma-separated list of addresses.
+            - description: Group description.
+            - ip_category: Comma-separated list of IP categories.
+            - country: Comma-separated list of country codes.
+            - is_non_editable: If "true", marks the group as non-editable.
+
+    Returns:
+        A CommandResults object with the newly created group data.
+    """
     payload: dict = {
         "name": args.get("group_name", ""),
         "type": args.get("group_type", ""),
@@ -732,6 +1186,19 @@ def zia_ip_destination_group_add_command(client: Client, args: dict) -> CommandR
 
 
 def zia_ip_destination_group_delete_command(client: Client, args: dict) -> CommandResults:
+    """Deletes a ZIA IP destination group by ID.
+
+    Args:
+        client: The authenticated ZIA Client instance.
+        args: Command arguments dict with keys:
+            - group_id: The unique identifier of the group to delete (required).
+
+    Returns:
+        A CommandResults object with a success message.
+
+    Raises:
+        DemistoException: If group_id is not provided.
+    """
     group_id = arg_to_number(args.get("group_id"))
     if group_id is None:
         raise DemistoException("The 'group_id' argument is required.")
@@ -741,6 +1208,20 @@ def zia_ip_destination_group_delete_command(client: Client, args: dict) -> Comma
 
 
 def zia_user_list_command(client: Client, args: dict) -> CommandResults:
+    """Retrieves ZIA users with optional filtering by department or group.
+
+    Args:
+        client: The authenticated ZIA Client instance.
+        args: Command arguments dict with optional keys:
+            - user_id: Fetch a specific user by ID.
+            - dept: Filter by department name.
+            - group: Filter by group name.
+            - page: Page offset for pagination (default 1).
+            - page_size: Number of results per page (default 100, max 10,000).
+
+    Returns:
+        A CommandResults object with the user data.
+    """
     user_id = args.get("user_id")
     dept = args.get("dept")
     group = args.get("group")
@@ -775,6 +1256,29 @@ def zia_user_list_command(client: Client, args: dict) -> CommandResults:
 
 
 def zia_user_update_command(client: Client, args: dict) -> CommandResults:
+    """Updates a ZIA user's information.
+
+    Fetches the current user state and merges provided arguments on top.
+    If a full JSON user object is provided via the 'user' argument, it is used
+    as the base payload, with individual field arguments applied on top.
+
+    Args:
+        client: The authenticated ZIA Client instance.
+        args: Command arguments dict with keys:
+            - user_id: The unique identifier of the user to update (required).
+            - user: Full user object as a JSON string (optional base payload).
+            - user_name: New display name for the user.
+            - email: New email address.
+            - comments: Additional information about the user.
+            - temp_auth_email: Temporary authentication email.
+            - password: New password (Hosted DB auth only).
+
+    Returns:
+        A CommandResults object with the updated user data.
+
+    Raises:
+        DemistoException: If user_id is missing or the 'user' JSON is invalid.
+    """
     user_id = args.get("user_id", "")
     if not user_id:
         raise DemistoException("The 'user_id' argument is required.")
@@ -825,6 +1329,22 @@ def zia_user_update_command(client: Client, args: dict) -> CommandResults:
 
 
 def zia_groups_list_command(client: Client, args: dict) -> CommandResults:
+    """Retrieves a paginated list of ZIA user groups.
+
+    Args:
+        client: The authenticated ZIA Client instance.
+        args: Command arguments dict with optional keys:
+            - search: Search string matched against group name or comments.
+            - defined_by: Filter by the attribute that defines the group.
+            - sort_by: Field to sort by (default "id").
+            - sort_order: Sort direction "asc", "desc", or "ruleExecution" (default "asc").
+            - page: Page offset for pagination (default 1).
+            - page_size: Number of results per page (default 100, max 10,000).
+            - all_results: Accepted but not used; pagination is server-side.
+
+    Returns:
+        A CommandResults object with the group data.
+    """
     search = args.get("search")
     defined_by = args.get("defined_by")
     sort_by = args.get("sort_by", "id")
@@ -863,6 +1383,23 @@ def zia_groups_list_command(client: Client, args: dict) -> CommandResults:
 
 
 def zia_departments_list_command(client: Client, args: dict) -> CommandResults:
+    """Retrieves ZIA departments with optional filtering.
+
+    Args:
+        client: The authenticated ZIA Client instance.
+        args: Command arguments dict with optional keys:
+            - department_id: Fetch a specific department by ID.
+            - search: Search string matched against department name or comments.
+            - limit_search: If "true", restricts search to department name only.
+            - sort_by: Field to sort by (default "id").
+            - sort_order: Sort direction "asc", "desc", or "ruleExecution" (default "asc").
+            - page: Page offset for pagination (default 1).
+            - page_size: Number of results per page (default 100, max 10,000).
+            - all_results: Accepted but not used; pagination is server-side.
+
+    Returns:
+        A CommandResults object with the department data.
+    """
     department_id = args.get("department_id")
     search = args.get("search")
     limit_search = argToBoolean(args.get("limit_search", False))
@@ -908,6 +1445,27 @@ def zia_departments_list_command(client: Client, args: dict) -> CommandResults:
 
 
 def zia_sandbox_report_get_command(client: Client, args: dict) -> CommandResults:
+    """Retrieves a Sandbox analysis report for a file identified by MD5 hash.
+
+    Calculates a DBotScore based on the classification type:
+        - MALICIOUS → BAD
+        - SUSPICIOUS → SUSPICIOUS
+        - BENIGN → GOOD
+        - Other/unknown → NONE
+
+    Args:
+        client: The authenticated ZIA Client instance.
+        args: Command arguments dict with keys:
+            - md5: The MD5 hash of the file analyzed by Sandbox (required).
+            - report_type: "full" or "summary" (default "summary").
+
+    Returns:
+        A CommandResults object with the sandbox report, a File indicator,
+        and a DBotScore.
+
+    Raises:
+        DemistoException: If md5 is not provided.
+    """
     md5 = args.get("md5", "")
     if not md5:
         raise DemistoException("The 'md5' argument is required.")
@@ -969,6 +1527,15 @@ def zia_sandbox_report_get_command(client: Client, args: dict) -> CommandResults
 
 
 def zia_activate_changes_command(client: Client, args: dict) -> CommandResults:
+    """Activates saved ZIA configuration changes.
+
+    Args:
+        client: The authenticated ZIA Client instance.
+        args: Command arguments dict (no arguments required for this command).
+
+    Returns:
+        A CommandResults object with the activation status.
+    """
     response = client.activate_changes()
     hr = tableToMarkdown("ZIA Activation Status", {"Status": response.get("status")}, removeNull=True)
     return CommandResults(
@@ -980,6 +1547,22 @@ def zia_activate_changes_command(client: Client, args: dict) -> CommandResults:
 
 
 def url_command(client: Client, args: dict) -> list[CommandResults]:
+    """Looks up the classification for a list of URLs and creates URL indicators.
+
+    Restores the original URL with protocol prefix in the output if the protocol
+    was stripped before sending to the ZIA API.
+
+    Args:
+        client: The authenticated ZIA Client instance.
+        args: Command arguments dict with keys:
+            - url: Comma-separated list of URLs to classify (required).
+                Maximum 100 URLs per request.
+
+    Returns:
+        A list of CommandResults objects, one per URL, each containing a URL
+        indicator with DBotScore. Returns a single "No results found" result
+        if the API returns an empty response.
+    """
     url_arg = args.get("url", "")
     urls = argToList(url_arg)
     response = client.url_lookup(urls)
@@ -1033,6 +1616,19 @@ def url_command(client: Client, args: dict) -> list[CommandResults]:
 
 
 def ip_command(client: Client, args: dict) -> list[CommandResults]:
+    """Looks up the classification for a list of IP addresses and creates IP indicators.
+
+    Args:
+        client: The authenticated ZIA Client instance.
+        args: Command arguments dict with keys:
+            - ip: Comma-separated list of IP addresses to classify (required).
+                Maximum 100 IPs per request.
+
+    Returns:
+        A list of CommandResults objects, one per IP address, each containing
+        an IP indicator with DBotScore. Returns a single "No results found"
+        result if the API returns an empty response.
+    """
     ip_arg = args.get("ip", "")
     ips = argToList(ip_arg)
     response = client.url_lookup(ips)
@@ -1078,6 +1674,19 @@ def ip_command(client: Client, args: dict) -> list[CommandResults]:
 
 
 def domain_command(client: Client, args: dict) -> list[CommandResults]:
+    """Looks up the classification for a list of domains and creates Domain indicators.
+
+    Args:
+        client: The authenticated ZIA Client instance.
+        args: Command arguments dict with keys:
+            - domain: Comma-separated list of domains to classify (required).
+                Maximum 100 domains per request.
+
+    Returns:
+        A list of CommandResults objects, one per domain, each containing a
+        Domain indicator with DBotScore. Returns a single "No results found"
+        result if the API returns an empty response.
+    """
     domain_arg = args.get("domain", "")
     domains = argToList(domain_arg)
     response = client.url_lookup(domains)
@@ -1129,6 +1738,11 @@ def domain_command(client: Client, args: dict) -> list[CommandResults]:
 
 
 def main() -> None:  # pragma: no cover
+    """Entry point for the integration.
+
+    Reads instance parameters, constructs the Client, dispatches the command,
+    and handles auto-activation of ZIA changes after write commands.
+    """
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
@@ -1216,6 +1830,11 @@ def main() -> None:  # pragma: no cover
                 client.activate_changes()
             except Exception as err:
                 demisto.error(f"Failed to auto-activate changes: {err}")
+                return_warning(
+                    f"Auto-activation of changes failed: {err}\n"
+                    "Your changes were saved but are not yet active. "
+                    "Run the 'zia-activate-changes' command to apply them manually."
+                )
 
 
 if __name__ in ("__builtin__", "builtins", "__main__"):  # pragma: no cover
