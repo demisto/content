@@ -2150,6 +2150,26 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                 assets_last_run["total_assets"] = cumulative_total
                 demisto.setAssetsLastRun(assets_last_run)
 
+            elif not assets_fetch_in_progress:
+                # Edge case: asset fetch completed but returned an empty list of assets.
+                # We still need to seal the snapshot by sending an empty payload with the final items_count
+                # so XSIAM knows the snapshot is complete.
+                cumulative_total = assets_last_run.get("total_assets", 0)
+                if cumulative_total > 0:
+                    demisto.debug(
+                        f"Asset fetch completed with empty assets list. Sealing snapshot with "
+                        f"snapshot_id={snapshot_id}, items_count={cumulative_total}"
+                    )
+                    send_data_to_xsiam(
+                        data=[],
+                        vendor=VENDOR,
+                        product=f"{PRODUCT}_assets",
+                        data_type="assets",
+                        snapshot_id=snapshot_id,
+                        items_count=str(cumulative_total),
+                        should_update_health_module=False,
+                    )
+
             if vulnerabilities:
                 vulnerabilities = parse_vulnerabilities(vulnerabilities)
                 demisto.debug(f"sending {len(vulnerabilities)} vulnerabilities to XSIAM.")

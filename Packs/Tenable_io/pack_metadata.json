@@ -13,7 +13,8 @@
     "tags": [],
     "useCases": [],
     "keywords": [
-        "Asset Collection"
+        "Asset Collection",
+        "Tenable"
     ],
     "marketplaces": [
         "xsoar",
