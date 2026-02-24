@@ -1,0 +1,139 @@
+{
+  "data": {
+    "alerts": {
+      "totalCount": 1336,
+      "edges": [
+        {
+          "node": {
+            "id": "test_id",
+            "name": "Malicious Activity Detected",
+            "description": "Description of Alert",
+            "severity": "CRITICAL",
+            "status": "NEW",
+            "result": "UNMITIGATED",
+            "analystVerdict": "UNDEFINED",
+            "attackSurfaces": ["ENDPOINT"],
+            "classification": "RANSOMWARE",
+            "confidenceLevel": "MALICIOUS",
+            "externalId": "123456789",
+            "createdAt": "2025-12-23T12:24:03.059Z",
+            "updatedAt": "2025-12-23T12:24:03.056Z",
+            "firstSeenAt": "2025-12-23T12:24:03.000Z",
+            "lastSeenAt": "2025-12-23T12:24:03.056Z",
+            "detectedAt": "2025-12-23T12:24:03.000Z",
+            "noteExists": false,
+            "dataSources": [],
+            "storylineId": null,
+            "ticketId": null,
+            "fileName": "N/A",
+            "fileHash": "N/A",
+            "analytics": {
+              "uid": null,
+              "name": "name",
+              "type": "OTHER",
+              "typeValue": "STATIC",
+              "category": "On-Write"
+            },
+            "assignee": null,
+            "detectionSource": {
+              "product": "CWS",
+              "vendor": "SentinelOne",
+              "engine": null
+            },
+            "asset": {
+              "id": "test",
+              "name": "name",
+              "agentUuid": null,
+              "agentVersion": null,
+              "assetTypeClassifier": "Virtual Server",
+              "category": "Server",
+              "subcategory": "Virtual Machine",
+              "type": "UNKNOWN",
+              "connectivityToConsole": null,
+              "osType": "UNKNOWN",
+              "osVersion": "",
+              "pendingReboot": false,
+              "lastLoggedInUser": null,
+              "policy": null
+            },
+            "detectionTime": {
+              "asset": {
+                "agentVersion": null,
+                "consoleIpAddress": null,
+                "domain": null,
+                "ipV4": null,
+                "ipV6": null,
+                "lastLoggedInUser": null,
+                "osName": null,
+                "osRevision": null,
+                "osType": "UNKNOWN",
+                "policy": "PROTECT",
+                "subscriptionTime": null
+              },
+              "attacker": null,
+              "cloud": null,
+              "kubernetes": {
+                "clusterName": null,
+                "namespaceName": null,
+                "nodeName": null,
+                "podName": "",
+                "containerId": "",
+                "containerImageName": "",
+                "containerLabels": null,
+                "containerName": "",
+                "containerNetworkStatus": null,
+                "controllerName": null,
+                "controllerType": null,
+                "controllerLabels": null,
+                "namespaceLabels": null,
+                "nodeLabels": null,
+                "podLabels": null
+              },
+              "scope": {
+                "accountId": "1234",
+                "accountName": "Test",
+                "groupName": "Default Group",
+                "siteName": "Default site"
+              },
+              "targetUser": null
+            },
+            "process": {
+              "cmdLine": null,
+              "parentName": "test.exe",
+              "file": {
+                "certSubject": null,
+                "md5": "abc123",
+                "name": "test.exe",
+                "path": "C:\\path\\to\\file\\test.exe",
+                "sha1": "abc123",
+                "sha256": "abc123"
+              }
+            },
+            "realTime": {
+              "scope": {
+                "account": {
+                  "id": "12345",
+                  "name": "Test"
+                },
+                "group": {
+                  "id": "12345",
+                  "name": "Default Group"
+                },
+                "site": {
+                  "id": "12345",
+                  "name": "Default site"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "pageInfo": {
+        "hasNextPage": true,
+        "hasPreviousPage": false,
+        "startCursor": "start=",
+        "endCursor": "end="
+      }
+    }
+  }
+}

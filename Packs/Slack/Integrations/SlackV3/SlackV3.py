@@ -1577,7 +1577,8 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         data: dict = req.payload
         event: dict = data.get("event", {})
         text = event.get("text", "")
-        user_id = data.get("user", {}).get("id", "")
+        user_profile = data.get("user", {})
+        user_id = user_profile.get("id", "")
         if not user_id:
             user_id = event.get("user", "")
         channel = event.get("channel", "")
@@ -1609,7 +1610,10 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                 if actions[0].get("action_id") == "xsoar-button-submit":
                     demisto.debug("Handling a SlackBlockBuilder response.")
                     if state:
-                        state.update({"xsoar-button-submit": "Successful"})
+                        # Add user profile information to state object
+                        state.update(
+                            remove_empty_elements({"xsoar-button-submit": "Successful", "submitting_user": user_profile})
+                        )
                         action_text = json.dumps(state)
                 else:
                     demisto.debug("Not handling a SlackBlockBuilder response.")
@@ -2879,17 +2883,17 @@ def conversation_history() -> None:
         if "subtype" not in message:
             user_id = message.get("user")
             user_details_response = send_slack_request_sync(CLIENT, "users.info", http_verb="GET", body={"user": user_id})
-            user_details: dict = user_details_response.get("user", {})  # type: ignore[assignment]
+            user_details: dict = user_details_response.get("user", {})
             full_name = user_details.get("real_name", "N/A")
             name = user_details.get("name", "N/A")
             if "thread_ts" in message:
-                thread_ts = message.get("thread_ts", "N/A")
+                thread_ts = message.get("thread_ts")
                 has_replies = "Yes"
         elif "thread_ts" in message:
-            thread_ts = message.get("thread_ts", "N/A")
+            thread_ts = message.get("thread_ts")
             has_replies = "Yes"
-            full_name = message.get("username", "N/A")
-            name = message.get("username", "N/A")
+            full_name = message.get("username")
+            name = message.get("username")
 
         entry = {
             "Type": message.get("type"),
@@ -2908,7 +2912,6 @@ def conversation_history() -> None:
     results = [
         CommandResults(
             outputs_prefix="Slack.Messages",
-            outputs_key_field="TimeStamp",
             outputs=context,
             readable_output=readable_output,
             raw_response=messages,

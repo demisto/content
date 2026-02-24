@@ -570,11 +570,13 @@ class ExchangeOnlinePowershellV3Client
         [string]$recipient_address
     )
     {
+        $zipErrMsg = "Using this argument requires 'compress_output' argument to be set to true."
         $results = ""
         try {
             $cmd_params = @{ }
             if ($identities)
             {
+                $identities = $identities.Split(",").Trim()
                 $cmd_params.Identities = $identities
             }
             if ($identity)
@@ -583,7 +585,7 @@ class ExchangeOnlinePowershellV3Client
             }
             if ($compress_output)
             {
-                $cmd_params.CompressOutput = $null
+                $cmd_params.CompressOutput = $true
             }
             if ($entity_type)
             {
@@ -591,14 +593,20 @@ class ExchangeOnlinePowershellV3Client
             }
             if ($force_conversion_to_mime)
             {
-                $cmd_params.ForceConversionToMime = $null
+                $cmd_params.ForceConversionToMime = $true
             }
             if ($password)
             {
-                $cmd_params.Password = $password
+                if ($compress_output -eq $false) {
+                    throw $zipErrMsg
+                }
+                $cmd_params.PasswordV2 = $password
             }
             if ($reason_for_export)
             {
+                if ($compress_output -eq $false) {
+                    throw $zipErrMsg
+                }
                 $cmd_params.ReasonForExport = $reason_for_export
             }
             if ($recipient_address)
@@ -685,9 +693,10 @@ class ExchangeOnlinePowershellV3Client
                 $cmd_params.User = $user
             }
             if ($release_to_all) {
-                $cmd_params.ReleaseToAll = $release_to_all
+                $cmd_params.ReleaseToAll = $null
             }
             if ($identities) {
+                $identities = $identities.Split(",").Trim()
                 $cmd_params.Identities = $identities
             }
             if ($identity) {
@@ -2198,7 +2207,7 @@ function EXOGetQuarantineMessageCommand {
         EntityType = $kwargs.entity_type
         RecipientAddress = $kwargs.recipient_address
         SenderAddress = $kwargs.sender_address
-        TeamsConversationTypes = $kwargs.teams_conversation_types
+        TeamsConversationTypes = ArgToList $kwargs.teams_conversation_types
         Direction = $kwargs.direction
         Domain = $kwargs.domain
         EndExpiresDate = $kwargs.end_expires_date
@@ -2209,8 +2218,8 @@ function EXOGetQuarantineMessageCommand {
         Page = $kwargs.page
         PageSize = $kwargs.page_size
         PolicyName = $kwargs.policy_name
-        PolicyTypes = $kwargs.policy_types
-        QuarantineTypes = $kwargs.quarantine_types
+        PolicyTypes = ArgToList $kwargs.policy_types
+        QuarantineTypes = ArgToList $kwargs.quarantine_types
         RecipientTag = $kwargs.recipient_tag
         ReleaseStatus = $kwargs.release_status
         Reported = if ($kwargs.reported -eq "true") { $true } else { $false }
@@ -2662,7 +2671,6 @@ function Main
     $command = $demisto.GetCommand()
     $command_arguments = $demisto.Args()
     $integration_params = [Hashtable] $demisto.Params()
-
     if ($integration_params.password.password)
     {
         $password = ConvertTo-SecureString $integration_params.password.password -AsPlainText -Force

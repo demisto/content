@@ -47,7 +47,7 @@ args:
   - 'false'
   required: false
   defaultValue: 'false'
-comment: This script gathers CVE reputation data from multiple integrations and returns a "CVEEnrichment" object with consolidated information to the context output.
+comment: 'Enriches CVE indicators with reputation data from multiple integrations and outputs a consolidated CVEEnrichment object. This script exclusively supports indicators of type CVE and will automatically create the indicator in TIM if it is not already exists.'
 commonfields:
   id: cve-enrichment
   version: -1
@@ -119,7 +119,7 @@ timeout: '0'
 type: python
 subtype: python3
 dockerimage: demisto/python3:3.12.12.6204436
-fromversion: 6.10.0
+fromversion: 8.0.0
 marketplaces:
 - xsoar
 - marketplacev2

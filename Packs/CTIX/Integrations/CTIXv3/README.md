@@ -120,30 +120,31 @@ Get paginated list of tags
  "total": 10}
 ```
 
-### ctix-delete-tag
+### ctix-disable-or-enable-tags
 
 ***
-Delete a tag with given tag_name
+Disable or enable tags in the CTIX platform
 
 #### Base Command
 
-`ctix-delete-tag`
+`ctix-disable-or-enable-tags`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tag_name | Name of the tag. | Required |
+| tag_ids | ID of the tag(s) to disable or enable. Supports multiple IDs as a comma-separated list. | Required |
+| action | Action to be performed on the tag. Possible values are: enabled, disabled. Default is disabled. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CTIX.DeleteTag.result | string | Status |
+| CTIX.TagAction.result | string | Status of the tag action |
 
 #### Command Example
 
-```!ctix-delete-tag tag_name=xsoar_test_trial```
+```!ctix-disable-or-enable-tags tag_ids=47662c77-b419-419c-9bcf-420e05b01067 action=disabled```
 
 #### Context Example
 
@@ -232,14 +233,14 @@ get paginated list of allowed iocs
 #### Context Example
 
 ```json
-{"next": "allowed/?page=2&page_size=1", "page_size": 1, "previous": null, 
- "results": [{"created": 1652084983, "created_by": {"email": 
- "dumy.account@example.com", "first_name": "dumy", "id": 
- "40ab0f84-fb39-4444-95b2-cd155f574aa2", "last_name": "account"}, "follow": 
- true, "id": "2df4a0ad-b1dd-4a4c-bf71-dcdefce0dcf9", "include_emails": false, 
- "include_subdomains": false, "include_urls": false, "modified": 1652097309, 
- "modified_by": {"email": "dummt.acount@example.com", "first_name": "", "id": 
- "4a5f744c-800a-4fcd-be06-53f4b1b8f966", "last_name": ""}, "type": 
+{"next": "allowed/?page=2&page_size=1", "page_size": 1, "previous": null,
+ "results": [{"created": 1652084983, "created_by": {"email":
+ "dumy.account@example.com", "first_name": "dumy", "id":
+ "40ab0f84-fb39-4444-95b2-cd155f574aa2", "last_name": "account"}, "follow":
+ true, "id": "2df4a0ad-b1dd-4a4c-bf71-dcdefce0dcf9", "include_emails": false,
+ "include_subdomains": false, "include_urls": false, "modified": 1652097309,
+ "modified_by": {"email": "dummt.acount@example.com", "first_name": "", "id":
+ "4a5f744c-800a-4fcd-be06-53f4b1b8f966", "last_name": ""}, "type":
  "ipv4-addr", "value": "x.x.x.x"}], "total": 5}
 ```
 
@@ -439,7 +440,7 @@ Saved Search listing api with pagination
   "query": "type =indicator",
   "shared_type": "global",
   "shared_users": [
-    
+
   ],
   "type": "cql"
    }
@@ -488,7 +489,7 @@ Source Collection listing api with pagination
 {"next": "collection/?page=2&page_size=1", "previous": null, "page_size": 1,
  "total": 7, "results": [{"id": "83b5fd74-8ca0-4f28-a173-1d6863b2acb4",
  "name": "collection", "description": "with description", "is_active": true,
- "type": "DATA_FEED", "is_editable": true, "polling": false, "inbox": true, 
+ "type": "DATA_FEED", "is_editable": true, "polling": false, "inbox": true,
  "created": 1652080268, "has_subscribed": null}], "subscriber_name": ""}
 ```
 
@@ -546,7 +547,7 @@ Enrichment tools listing API
   "actioned_on": 1651646873,
   "app_name": "CTIX",
   "app_response": {
-    
+
   },
   "app_type": "ctix",
   "id": "e8fe8d27-6329-4c0b-a3c0-be104be4de55",
@@ -798,22 +799,22 @@ Saved Result Set
 #### Context Example
 
 ```json
-{"next": "threat-data/list/?page=2&page_size=1", "page_size": 1, "previous": 
- null, "results": [{"analyst_score": null, "analyst_tlp": null, 
- "confidence_score": null, "confidence_type": "ctix", "country": null, 
- "created": 1652111918, "ctix_created": 1652111957, "ctix_modified": 
- 1652111957, "first_seen": null, "id": 
- "670afacb-2f72-42fe-84cc-b2022ba6a7ed", "indicator_type": null, "ioc_type": 
- null, "is_actioned": false, "is_deprecated": false, "is_false_positive": 
- false, "is_reviewed": false, "is_revoked": false, "is_watchlist": false, 
- "is_whitelisted": false, "last_seen": null, "modified": 1652111949, "name": 
- "Test12344", "null": [], "primary_attribute": null, "published_collections": 
- [], "risk_severity": null, "source_collections": [{"id": 
- "32b98724-8625-4af2-ad83-43b4b5c50885", "name": "Test12344"}], 
- "source_confidence": "NONE", "sources": [{"id": 
- "5968d895-424f-4271-a1d3-2b01041a17bb", "name": "Test12344", "source_type": 
- "WEB_SCRAPPER"}], "sub_type": null, "subscriber_collections": [], 
- "subscribers": [], "tags": [], "tlp": "AMBER", "type": "report", 
+{"next": "threat-data/list/?page=2&page_size=1", "page_size": 1, "previous":
+ null, "results": [{"analyst_score": null, "analyst_tlp": null,
+ "confidence_score": null, "confidence_type": "ctix", "country": null,
+ "created": 1652111918, "ctix_created": 1652111957, "ctix_modified":
+ 1652111957, "first_seen": null, "id":
+ "670afacb-2f72-42fe-84cc-b2022ba6a7ed", "indicator_type": null, "ioc_type":
+ null, "is_actioned": false, "is_deprecated": false, "is_false_positive":
+ false, "is_reviewed": false, "is_revoked": false, "is_watchlist": false,
+ "is_whitelisted": false, "last_seen": null, "modified": 1652111949, "name":
+ "Test12344", "null": [], "primary_attribute": null, "published_collections":
+ [], "risk_severity": null, "source_collections": [{"id":
+ "32b98724-8625-4af2-ad83-43b4b5c50885", "name": "Test12344"}],
+ "source_confidence": "NONE", "sources": [{"id":
+ "5968d895-424f-4271-a1d3-2b01041a17bb", "name": "Test12344", "source_type":
+ "WEB_SCRAPPER"}], "sub_type": null, "subscriber_collections": [],
+ "subscribers": [], "tags": [], "tlp": "AMBER", "type": "report",
  "valid_from": null, "valid_until": null}], "total": 353243}
 ```
 
@@ -930,13 +931,13 @@ Search for tag
 #### Context Example
 
 ```json
-{"next": "tags/?page=2&page_size=1", "page_size": 1, "previous": null, 
- "results": [{"colour_code": null, "created": 1652113918, "created_by": 
- {"email": "dummy.account@example.com", "first_name": "dummy", "id": 
- "40ab0f84-fb39-4444-95b2-cd155f574aa2", "last_name": "account"}, "id": 
- "68981db8-6deb-41f0-9727-74ad81cf47b2", "modified": 1652113918, 
- "modified_by": {"email": "dummy.account@example.com", "first_name": 
- "dummy", "id": "40ab0f84-fb39-4444-95b2-cd155f574aa2", "last_name": 
+{"next": "tags/?page=2&page_size=1", "page_size": 1, "previous": null,
+ "results": [{"colour_code": null, "created": 1652113918, "created_by":
+ {"email": "dummy.account@example.com", "first_name": "dummy", "id":
+ "40ab0f84-fb39-4444-95b2-cd155f574aa2", "last_name": "account"}, "id":
+ "68981db8-6deb-41f0-9727-74ad81cf47b2", "modified": 1652113918,
+ "modified_by": {"email": "dummy.account@example.com", "first_name":
+ "dummy", "id": "40ab0f84-fb39-4444-95b2-cd155f574aa2", "last_name":
  "account"}, "name": "xsoar_test", "type": "manual"}], "total": 39893}
 ```
 
@@ -1004,19 +1005,19 @@ Get Indicator Details
 #### Context Example
 
 ```json
-{"aliases": null, "analyst_description": null, "analyst_score": null, 
- "analyst_tlp": null, "asn": null, "attribute_field": "value", 
- "attribute_value": "x.x.x.x", "base_type": "sdo", "confidence_score": 
- 18, "confidence_type": "CTIX", "country": "Netherlands", "created": 
- 1651648700, "ctix_created": 1651648700, "ctix_modified": 1652113922, 
- "ctix_score": 18, "ctix_tlp": null, "defang_analyst_description": null, 
- "description": null, "fang_analyst_description": null, "first_seen": null, 
- "last_seen": null, "modified": 1651648700, "name": "x.x.x.x", 
- "pattern": "[ipv4-addr:value = x.x.x.x]", "pattern_type": "stix", 
- "pattern_version": "2.1", "sources": [{"id": 
- "e941f6fb-387b-452c-b77d-b5b05c5e9df2", "name": "Dummy", 
- "source_type": "API_FEEDS"}], "sub_type": "ipv4-addr", "tld": "", "tlp": 
- "WHITE", "type": "indicator", "types": ["anomalous-activity"], "valid_from": 
+{"aliases": null, "analyst_description": null, "analyst_score": null,
+ "analyst_tlp": null, "asn": null, "attribute_field": "value",
+ "attribute_value": "x.x.x.x", "base_type": "sdo", "confidence_score":
+ 18, "confidence_type": "CTIX", "country": "Netherlands", "created":
+ 1651648700, "ctix_created": 1651648700, "ctix_modified": 1652113922,
+ "ctix_score": 18, "ctix_tlp": null, "defang_analyst_description": null,
+ "description": null, "fang_analyst_description": null, "first_seen": null,
+ "last_seen": null, "modified": 1651648700, "name": "x.x.x.x",
+ "pattern": "[ipv4-addr:value = x.x.x.x]", "pattern_type": "stix",
+ "pattern_version": "2.1", "sources": [{"id":
+ "e941f6fb-387b-452c-b77d-b5b05c5e9df2", "name": "Dummy",
+ "source_type": "API_FEEDS"}], "sub_type": "ipv4-addr", "tld": "", "tlp":
+ "WHITE", "type": "indicator", "types": ["anomalous-activity"], "valid_from":
  1644335851, "valid_until": null}
 ```
 
@@ -1091,14 +1092,14 @@ Get Indicator Tags
 }
 ```
 
-### ctix-get-indicator-relations
+### ctix-get-object-relations
 
 ***
-Get Indicator Relations
+Get Object Relations
 
 #### Base Command
 
-`ctix-get-indicator-relations`
+`ctix-get-object-relations`
 
 #### Input
 
@@ -1119,7 +1120,7 @@ Get Indicator Relations
 
 #### Command Example
 
-```!ctix-get-indicator-relations object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator```
+```!ctix-get-object-relations object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator```
 
 #### Context Example
 

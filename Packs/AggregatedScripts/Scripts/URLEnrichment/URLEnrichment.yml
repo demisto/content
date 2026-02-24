@@ -51,7 +51,7 @@ args:
   - 'false'
   required: false
   defaultValue: 'false'
-comment: This script gathers URL reputation data from multiple integrations and returns a "URLEnrichment" object with consolidated information in the context output.
+comment: 'Enriches URL indicators with reputation data from multiple integrations and outputs a consolidated URLEnrichment object. This script exclusively supports indicators of type URL and will automatically create the indicator in TIM if it is not already exists.'
 commonfields:
   id: url-enrichment
   version: -1
@@ -204,7 +204,7 @@ timeout: '0'
 type: python
 subtype: python3
 dockerimage: demisto/python3:3.12.12.6204436
-fromversion: 6.10.0
+fromversion: 8.0.0
 marketplaces:
 - xsoar
 - platform

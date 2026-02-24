@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The dataset name has changed from **decyfir_decyfir_raw** to **cyfirma_decyfir_raw**. Existing queries, dashboards, or automations that reference the old dataset name must be updated to reference the new name."
+}

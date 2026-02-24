@@ -22,10 +22,22 @@ UPSERT_PARAMS = {
     "managed_rules": "properties.managedRules",
 }
 
+FRONT_DOOR_UPSERT_PARAMS = {
+    "location": "location",
+    "custom_rules": "properties.customRules",
+    "tags": "tags",
+    "managed_rules": "properties.managedRules",
+    "policy_settings": "properties.policySettings",
+    "sku": "sku.name",
+    "etag": "etag",
+}
+
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 API_VERSION = "2020-05-01"
+FRONT_DOOR_API_VERSION = "2022-05-01"
 BASE_URL = "https://management.azure.com"
 POLICY_PATH = "providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
+FRONT_DOOR_POLICY_PATH = "providers/Microsoft.Network/FrontDoorWebApplicationFirewallPolicies"
 
 """ CLIENT CLASS """
 
@@ -220,6 +232,138 @@ class AzureWAFClient:
                 res.append({"properties": f"{subscription_id} threw Exception: {e!s}"})
         return res
 
+    # Front Door WAF Policy Methods
+    def get_front_door_policy_by_name(self, policy_name: str, subscription_id: str, resource_group_name_list: list) -> list[dict]:
+        """
+        Retrieve a Front Door WAF policy by name from specified resource groups.
+
+        Args:
+            policy_name (str): The name of the Front Door WAF policy to retrieve.
+            subscription_id (str): The Azure subscription ID.
+            resource_group_name_list (list): List of resource group names to search in.
+
+        Returns:
+            list[dict]: A list of policy dictionaries or error messages for each resource group.
+        """
+        base_url = f"{BASE_URL}/subscriptions/{subscription_id}"
+        res = []
+        for resource_group_name in resource_group_name_list:
+            try:
+                res.append(
+                    self.http_request(
+                        method="GET",
+                        full_url=f"{base_url}/resourceGroups/{resource_group_name}/{FRONT_DOOR_POLICY_PATH}/{policy_name}",
+                        params={"api-version": FRONT_DOOR_API_VERSION},
+                    )
+                )
+            except Exception as e:
+                res.append({"properties": f"{resource_group_name} threw Exception: {e!s}"})
+        return res
+
+    def get_front_door_policy_list_by_resource_group_name(
+        self, subscription_id: str, resource_group_name_list: list
+    ) -> list[dict]:
+        """
+        Retrieve all Front Door WAF policies from specified resource groups.
+
+        Args:
+            subscription_id (str): The Azure subscription ID.
+            resource_group_name_list (list): List of resource group names to retrieve policies from.
+
+        Returns:
+            list[dict]: A list of policy dictionaries or error messages for each resource group.
+        """
+        base_url = f"{BASE_URL}/subscriptions/{subscription_id}"
+        res = []
+        for resource_group_name in resource_group_name_list:
+            try:
+                res.append(
+                    self.http_request(
+                        method="GET",
+                        full_url=f"{base_url}/resourceGroups/{resource_group_name}/{FRONT_DOOR_POLICY_PATH}",
+                        params={"api-version": FRONT_DOOR_API_VERSION},
+                    )
+                )
+            except Exception as e:
+                res.append({"properties": f"{resource_group_name} threw Exception: {e!s}"})
+        return res
+
+    def get_front_door_policy_list_by_subscription_id(self, subscription_ids: list) -> list[dict]:
+        """
+        Retrieve all Front Door WAF policies from specified subscriptions.
+
+        Args:
+            subscription_ids (list): List of Azure subscription IDs to retrieve policies from.
+
+        Returns:
+            list[dict]: A list of policy dictionaries or error messages for each subscription.
+        """
+        res = []
+        for subscription_id in subscription_ids:
+            base_url = f"{BASE_URL}/subscriptions/{subscription_id}"
+            try:
+                res.append(
+                    self.http_request(
+                        method="GET",
+                        full_url=f"{base_url}/{FRONT_DOOR_POLICY_PATH}",
+                        params={"api-version": FRONT_DOOR_API_VERSION},
+                    )
+                )
+            except Exception as e:
+                res.append({"properties": f"Listing {subscription_id} threw Exception: {e!s}"})
+        return res
+
+    def update_front_door_policy_upsert(
+        self, policy_name: str, resource_group_names: list, subscription_id: str, data: dict
+    ) -> list[dict]:
+        """
+        Create or update a Front Door WAF policy in specified resource groups.
+
+        Args:
+            policy_name (str): The name of the Front Door WAF policy to create or update.
+            resource_group_names (list): List of resource group names to apply the policy to.
+            subscription_id (str): The Azure subscription ID.
+            data (dict): The policy configuration data.
+
+        Returns:
+            list[dict]: A list of updated policy dictionaries or error messages for each resource group.
+        """
+        base_url = f"{BASE_URL}/subscriptions/{subscription_id}"
+        res = []
+        for resource_group_name in resource_group_names:
+            try:
+                result = self.http_request(
+                    method="PUT",
+                    full_url=f"{base_url}/resourceGroups/{resource_group_name}/{FRONT_DOOR_POLICY_PATH}/{policy_name}",
+                    data=data,
+                    params={"api-version": FRONT_DOOR_API_VERSION},
+                )
+                res.append(result)
+            except Exception as e:
+                res.append({"properties": f"{resource_group_name} threw Exception: {e!s}"})
+        return res
+
+    def delete_front_door_policy(self, policy_name: str, resource_group_name: str, subscription_id: str) -> requests.Response:
+        """
+        Delete a Front Door WAF policy from a resource group.
+
+        Args:
+            policy_name (str): The name of the Front Door WAF policy to delete.
+            resource_group_name (str): The resource group name containing the policy.
+            subscription_id (str): The Azure subscription ID.
+
+        Returns:
+            requests.Response: The HTTP response from the delete operation.
+        """
+        base_url = f"{BASE_URL}/subscriptions/{subscription_id}"
+        return self.http_request(
+            method="DELETE",
+            return_empty_response=True,
+            resp_type="response",
+            full_url=f"{base_url}/resourceGroups/{resource_group_name}/{FRONT_DOOR_POLICY_PATH}/{policy_name}",
+            params={"api-version": FRONT_DOOR_API_VERSION},
+        )
+
 
 """ COMMAND FUNCTIONS """
 
@@ -252,8 +396,8 @@ def policies_get_command(client: AzureWAFClient, **args) -> CommandResults:
     policy_name: str = args.get("policy_name", "")
     subscription_id: str = args.get("subscription_id", client.subscription_id)
     resource_group_name_list: list = argToList(args.get("resource_group_name", client.resource_group_name))
-    verbose = args.get("verbose", "false") == "true"
-    limit = int(str(args.get("limit", "20")))
+    verbose = argToBoolean(args.get("verbose", "false"))
+    limit = arg_to_number(args.get("limit", "20"))
 
     policies: list[dict] = []
     try:
@@ -269,8 +413,8 @@ def policies_get_command(client: AzureWAFClient, **args) -> CommandResults:
     except Exception:
         raise
     return CommandResults(
-        readable_output=policies_to_markdown(policies, verbose, limit),
-        outputs=policies[: min(limit, policies_num)],
+        readable_output=policies_to_markdown(policies, verbose, limit),  # type: ignore
+        outputs=policies[: min(limit, policies_num)],  # type: ignore
         outputs_key_field="id",
         outputs_prefix="AzureWAF.Policy",
         raw_response=policies,
@@ -282,8 +426,8 @@ def policies_get_list_by_subscription_command(client: AzureWAFClient, **args) ->
     Retrieve all policies within the subscription id.
     """
     policies: list[dict] = []
-    verbose = args.get("verbose", "false") == "true"
-    limit = int(str(args.get("limit", "10")))
+    verbose = argToBoolean(args.get("verbose", "false"))
+    limit: int = arg_to_number(args.get("limit", "10"))  # type: ignore
     subscription_ids = argToList(args.get("subscription_id", client.subscription_id))
 
     try:
@@ -305,6 +449,16 @@ def policies_get_list_by_subscription_command(client: AzureWAFClient, **args) ->
     )
 
 
+def parse_nested_keys_to_dict(base_dict: dict, keys: list, value: str | dict) -> None:
+    """A recursive function to make a list of type [x,y,z] and value a to a dictionary of type {x:{y:{z:a}}}"""
+    if len(keys) == 1:
+        base_dict[keys[0]] = value
+    else:
+        if keys[0] not in base_dict:
+            base_dict[keys[0]] = {}
+        parse_nested_keys_to_dict(base_dict[keys[0]], keys[1:], value)
+
+
 def policy_upsert_command(client: AzureWAFClient, **args) -> CommandResults:
     """
     Gets a policy name, resource groups (or taking instance's default), location,
@@ -312,21 +466,12 @@ def policy_upsert_command(client: AzureWAFClient, **args) -> CommandResults:
     Updates the policy if exists, otherwise creates a new policy.
     """
 
-    def parse_nested_keys_to_dict(base_dict: dict, keys: list, value: str | dict) -> None:
-        """A recursive function to make a list of type [x,y,z] and value a to a dictionary of type {x:{y:{z:a}}}"""
-        if len(keys) == 1:
-            base_dict[keys[0]] = value
-        else:
-            if keys[0] not in base_dict:
-                base_dict[keys[0]] = {}
-            parse_nested_keys_to_dict(base_dict[keys[0]], keys[1:], value)
-
     policy_name = str(args.get("policy_name", ""))
     resource_group_names = argToList(args.get("resource_group_name", client.resource_group_name))
     subscription_id = args.get("subscription_id", client.subscription_id)
     managed_rules = args.get("managed_rules", {})
     location = args.get("location", "")  # location is not required by documentation but is required by the api itself.
-    verbose = args.get("verbose", "false") == "true"
+    verbose = argToBoolean(args.get("verbose", "false"))
 
     if not policy_name or not managed_rules or not location:
         raise Exception("In order to add/ update policy, please provide policy_name, location and managed_rules. ")
@@ -383,70 +528,251 @@ def policy_delete_command(client: AzureWAFClient, **args):
             md = f"Policy {policy_name} was deleted successfully."
 
         if status.status_code == 204:
-            md = f"Policy {policy_name} was not found."
+            md = f"Policy {policy_name} was deleted or not found."
+
+    return CommandResults(outputs=context, readable_output=md)
+
+
+# Front Door WAF Policy Commands
+def front_door_policies_list_command(client: AzureWAFClient, **args) -> CommandResults:
+    """
+    List Front Door WAF policies by name or retrieve all policies in resource groups.
+
+    Args:
+        client (AzureWAFClient): The Azure WAF client instance.
+        **args: Command arguments including:
+            - policy_name (str, optional): Specific policy name to retrieve.
+            - subscription_id (str, optional): Azure subscription ID (defaults to client's subscription).
+            - resource_group_name (str, optional): Resource group name(s) (defaults to client's resource group).
+            - verbose (bool, optional): Whether to include detailed information (default: False).
+            - limit (int, optional): Maximum number of policies to return (default: 10).
+
+    Returns:
+        CommandResults: Command results containing policy data and markdown output.
+    """
+
+    policy_name: str = args.get("policy_name", "")
+    subscription_id: str = args.get("subscription_id", client.subscription_id)
+    resource_group_name_list: list = argToList(args.get("resource_group_name", client.resource_group_name))
+    verbose = argToBoolean(args.get("verbose", "false"))
+    limit: int = arg_to_number(str(args.get("limit", "10")))  # type: ignore
+
+    policies: list[dict] = []
+    try:
+        if policy_name:
+            policies = client.get_front_door_policy_by_name(policy_name, subscription_id, resource_group_name_list)
+        else:
+            raw_policy_list = client.get_front_door_policy_list_by_resource_group_name(subscription_id, resource_group_name_list)
+            for policy in raw_policy_list:
+                policies.extend(policy.get("value", []))
+
+        # only showing number of policies until reaching the limit provided.
+        policies_num = len(policies)
+    except Exception:
+        raise
+    return CommandResults(
+        readable_output=policies_to_markdown(policies, verbose, limit),
+        outputs=policies[: min(limit, policies_num)],
+        outputs_key_field="id",
+        outputs_prefix="AzureWAF.FrontDoorPolicy",
+        raw_response=policies,
+    )
+
+
+def front_door_policies_list_all_in_subscription_command(client: AzureWAFClient, **args) -> CommandResults:
+    """
+    Retrieve all Front Door WAF policies within specified subscriptions.
+
+    Args:
+        client (AzureWAFClient): The Azure WAF client instance.
+        **args: Command arguments including:
+            - subscription_id (str, optional): Azure subscription ID(s) (defaults to client's subscription).
+            - verbose (bool, optional): Whether to include detailed information (default: False).
+            - limit (int, optional): Maximum number of policies to return (default: 10).
+
+    Returns:
+        CommandResults: Command results containing policy data and markdown output.
+    """
+    policies: list[dict] = []
+    verbose = argToBoolean(args.get("verbose", "false"))
+    limit: int = arg_to_number(str(args.get("limit", "10")))  # type: ignore
+    subscription_ids = argToList(args.get("subscription_id", client.subscription_id))
+
+    try:
+        results = client.get_front_door_policy_list_by_subscription_id(subscription_ids)
+        for res in results:
+            policies.extend(res.get("value", []))
+
+        # only showing number of policies until reaching the limit provided.
+        policies_num = len(policies)
+    except DemistoException:
+        raise
+
+    return CommandResults(
+        readable_output=policies_to_markdown(policies, verbose, limit),
+        outputs=policies[: min(limit, policies_num)],
+        outputs_key_field="id",
+        outputs_prefix="AzureWAF.FrontDoorPolicy",
+        raw_response=policies,
+    )
+
+
+def front_door_policy_upsert_command(client: AzureWAFClient, **args) -> CommandResults:
+    """
+    Create or update a Front Door WAF policy.
+
+    Args:
+        client (AzureWAFClient): The Azure WAF client instance.
+        **args: Command arguments including:
+            - policy_name (str, required): The name of the policy to create or update.
+            - resource_group_name (str, optional): Resource group name(s) (defaults to client's resource group).
+            - subscription_id (str, optional): Azure subscription ID (defaults to client's subscription).
+            - managed_rules (dict, required): Managed rules configuration.
+            - location (str, optional): Azure location (defaults to "Global").
+            - custom_rules (dict, optional): Custom rules configuration.
+            - policy_settings (dict, optional): Policy settings configuration.
+            - tags (dict, optional): Resource tags.
+            - sku (str, optional): SKU name (default: "Classic_AzureFrontDoor").
+            - etag (str, optional): Entity tag for concurrency control.
+            - verbose (bool, optional): Whether to include detailed information (default: False).
+
+    Returns:
+        CommandResults: Command results containing the created/updated policy data and markdown output.
+    """
+
+    policy_name = str(args.get("policy_name", ""))
+    resource_group_names = argToList(args.get("resource_group_name", client.resource_group_name))
+    subscription_id = args.get("subscription_id", client.subscription_id)
+    managed_rules = args.get("managed_rules", {})
+    sku = args.get("sku", "Classic_AzureFrontDoor")
+    verbose = argToBoolean(args.get("verbose", "false"))
+
+    if not policy_name or not managed_rules:
+        raise Exception("In order to add/update Front Door policy, please provide policy_name and managed_rules.")
+
+    body: dict[str, Any] = {}
+
+    # creating the body for the request, using pre-defined fields.
+    for param in FRONT_DOOR_UPSERT_PARAMS:
+        val = str(args.get(param, ""))
+        with contextlib.suppress(json.decoder.JSONDecodeError):
+            val = json.loads(val)
+        if val:
+            key_hierarchy = FRONT_DOOR_UPSERT_PARAMS[param].split(".")
+            parse_nested_keys_to_dict(base_dict=body, keys=key_hierarchy, value=val)
+    if "location" not in body:
+        body["location"] = "Global"
+    # Set SKU if not already set
+    if "sku" not in body:
+        body["sku"] = {"name": sku}
+
+    updated_policy = client.update_front_door_policy_upsert(
+        policy_name=policy_name, resource_group_names=resource_group_names, subscription_id=subscription_id, data=body
+    )
+    return CommandResults(
+        readable_output=policies_to_markdown(updated_policy, verbose),
+        outputs=updated_policy,
+        outputs_key_field="id",
+        outputs_prefix="AzureWAF.FrontDoorPolicy",
+        raw_response=updated_policy,
+    )
+
+
+def front_door_policy_delete_command(client: AzureWAFClient, **args):
+    """
+    Delete a Front Door WAF policy from resource groups.
+
+    Args:
+        client (AzureWAFClient): The Azure WAF client instance.
+        **args: Command arguments including:
+            - policy_name (str, required): The name of the policy to delete.
+            - subscription_id (str, optional): Azure subscription ID (defaults to client's subscription).
+            - resource_group_name (str, optional): Resource group name(s) (defaults to client's resource group).
+
+    Returns:
+        CommandResults: Command results with deletion status message.
+    """
+    policy_name = str(args.get("policy_name", ""))
+    subscription_id = args.get("subscription_id", client.subscription_id)
+    resource_group_names = argToList(args.get("resource_group_name", client.resource_group_name))
+
+    for resource_group_name in resource_group_names:
+        # policy_path is unique and used as unique id in the product.
+        policy_id = (
+            f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/{FRONT_DOOR_POLICY_PATH}/{policy_name}"
+        )
+        status = client.delete_front_door_policy(policy_name, resource_group_name, subscription_id)
+        md = ""
+        context: dict = {}
+        if status.status_code in [200, 202]:
+            if old_context := demisto.dt(demisto.context(), f'AzureWAF.FrontDoorPolicy(val.id === "{policy_id}")'):
+                if isinstance(old_context, list):
+                    old_context = old_context[0]
+                old_context["IsDeleted"] = True
+                context["AzureWAF.FrontDoorPolicy(val.id === obj.id)"] = old_context
+
+            md = f"Front Door Policy {policy_name} was deleted successfully."
+
+        if status.status_code == 204:
+            if old_context := demisto.dt(demisto.context(), f'AzureWAF.FrontDoorPolicy(val.id === "{policy_id}")'):
+                if isinstance(old_context, list):
+                    old_context = old_context[0]
+                old_context["IsDeleted"] = True
+                context["AzureWAF.FrontDoorPolicy(val.id === obj.id)"] = old_context
+            md = f"Front Door policy {policy_name} was deleted or not found."
 
     return CommandResults(outputs=context, readable_output=md)
 
 
 def policies_to_markdown(policies: list[dict], verbose: bool = False, limit: int = 10) -> str:
     """
-    Gets a list of json representing policies and create a markdown of relevant data in it.
+    Formats a list of policies as a single table with columns as fields and rows as different policies.
     """
-
-    def policy_to_full_markdown(policy_data: dict):
-        """
-        Creates a full markdown with all data field of the policy.
-        """
-        deep_policy_fields = {"customRules", "managedRules", "policySettings"}
-        try:
-            policy_data.update(policy_data.pop("properties", {}))
-            short_md = ""
-            policy_for_md = {}
-            for key in policy_data:
-                if key not in deep_policy_fields:
-                    policy_for_md[key] = policy_data[key]
-                else:
-                    short_md += tableToMarkdown(key, policy_data[key]) + "\n"
-
-            short_md = tableToMarkdown(f"Policy: {policy_data.get('name')}", policy_for_md) + short_md
-            return short_md
-
-        except KeyError:
-            demisto.debug("Policy has no 'properties' section")
-            raise Exception(
-                "Policy does not have 'properties' section, therefore has invalid structure, please contact a developer."
-            )
-
-    def policy_to_short_markdown(policy_data: dict):
-        """
-        Creates a short markdown containing only basic information on policy.
-        """
-        short_md = ""
-        try:
-            policy_data.pop("properties", {})
-            policy_for_md = {}
-            for key in policy_data:
-                policy_for_md[key] = policy_data[key]
-
-            short_md = tableToMarkdown(f"Policy: {policy_data.get('name')}", policy_for_md) + short_md
-
-        except KeyError:
-            demisto.debug("Policy has no 'properties' section")
-            raise Exception(
-                "Policy does not have 'properties' section, therefore has invalid structure, please contact a developer."
-            )
-        return short_md
-
-    md = ""
     if not policies:
         return "No policies were found."
 
     policies_num = len(policies)
     policies = policies[: min(limit, policies_num)]
-    for policy in policies:
-        md += policy_to_full_markdown(policy.copy()) if verbose else policy_to_short_markdown(policy.copy())
 
-    md += f"Showing {min(limit, len(policies))} policies out of {policies_num}"
+    # Prepare data for table
+    table_data: list[str | dict[str, Any]] = []
+    for policy in policies:
+        policy_copy = policy.copy()
+        properties = policy_copy.pop("properties", {})
+        if type(properties) is str:
+            table_data.append({"Name": properties})
+            continue
+
+        if verbose:
+            # Include detailed information
+            row = {
+                "Name": policy_copy.get("name", ""),
+                "Location": policy_copy.get("location", ""),
+                "SKU": policy_copy.get("sku", {}).get("name", ""),
+                "Provisioning State": properties.get("provisioningState", ""),
+                "Resource State": properties.get("resourceState", ""),
+                "Policy Mode": properties.get("policySettings", {}).get("mode", ""),
+                "Policy State": properties.get("policySettings", {}).get("state", ""),
+                "Custom Rules": len(properties.get("customRules", {})),
+                "Managed Rule Sets": properties.get("managedRules", {}).get("managedRuleSets", []),
+                "Type": policy_copy.get("type", ""),
+                "Etag": policy_copy.get("etag", ""),
+                "ID": policy_copy.get("id", ""),
+            }
+        else:
+            # Include basic information only
+            row = {
+                "Name": policy_copy.get("name", ""),
+                "Location": policy_copy.get("location", ""),
+                "SKU": policy_copy.get("sku", {}).get("name", ""),
+                "Provisioning State": properties.get("provisioningState", ""),
+                "Type": policy_copy.get("type", ""),
+                "ID": policy_copy.get("id", ""),
+            }
+
+        table_data.append(row)
+    md = tableToMarkdown("Policies", table_data)
+    md += f"\nShowing {len(policies)} policies out of {policies_num}"
     return md
 
 
@@ -585,6 +911,10 @@ def main() -> None:
         "azure-waf-policies-list-all-in-subscription": policies_get_list_by_subscription_command,
         "azure-waf-policy-update-or-create": policy_upsert_command,
         "azure-waf-policy-delete": policy_delete_command,
+        "azure-waf-front-door-policies-list": front_door_policies_list_command,
+        "azure-waf-front-door-policies-list-all-in-subscription": front_door_policies_list_all_in_subscription_command,
+        "azure-waf-front-door-policy-update-or-create": front_door_policy_upsert_command,
+        "azure-waf-front-door-policy-delete": front_door_policy_delete_command,
         "azure-waf-auth-start": start_auth,
         "azure-waf-auth-complete": complete_auth,
         "azure-waf-auth-test": test_connection,

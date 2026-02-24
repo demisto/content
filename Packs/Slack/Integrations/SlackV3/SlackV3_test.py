@@ -2,7 +2,6 @@ import json as js
 import threading
 from unittest.mock import MagicMock
 from datetime import datetime, UTC
-import aiohttp
 import pytest
 import slack_sdk
 from CommonServerPython import *
@@ -5089,7 +5088,6 @@ def test_conversation_history(mocker):
     # Verify the CommandResults structure
     command_result = results[0]
     assert command_result.outputs_prefix == "Slack.Messages"
-    assert command_result.outputs_key_field == "TimeStamp"
     assert len(command_result.outputs) == 2  # Two messages in MESSAGES
     assert command_result.raw_response == json.loads(MESSAGES)
 
@@ -5171,15 +5169,8 @@ def test_conversation_replies(mocker):
 SAMPLE_PAYLOAD = json.loads(load_test_data("./test_data/entitlement_response_payload.txt"))
 
 
-@pytest.fixture
-async def client_session():
-    session = aiohttp.ClientSession()
-    yield session
-    await session.close()
-
-
 @pytest.mark.asyncio
-async def test_listen(client_session):
+async def test_listen():
     """
     Unit test for the `listen` function in the `SlackV3` module. This test case verifies that the function handles
     Slack events correctly.
@@ -5203,7 +5194,8 @@ async def test_listen(client_session):
         '"selected_options": [{"text": {"type": "plain_text", "text": "*Option 3*", '
         '"emoji": true}, "value": "value-2"}]}}, "timepicker_1": {"timepicker1": '
         '{"type": "timepicker", "selected_time": "06:00"}}}, "xsoar-button-submit": '
-        '"Successful"}'
+        '"Successful", "submitting_user": {"id": "UAALZT5D2", "username": "andrew", '
+        '"name": "andrew", "team_id": "TABQMPKP0"}}'
     )
     req = SocketModeRequest(type="event", payload=SAMPLE_PAYLOAD, envelope_id=default_envelope_id)
     client = mock.MagicMock(spec=SocketModeClient)
@@ -5428,7 +5420,6 @@ def test_conversation_history_with_pagination(mocker):
     # Verify first CommandResult (messages)
     messages_result = results[0]
     assert messages_result.outputs_prefix == "Slack.Messages"
-    assert messages_result.outputs_key_field == "TimeStamp"
     assert len(messages_result.outputs) == 2
 
     # Verify second CommandResult (pagination token)
