@@ -2490,6 +2490,7 @@ script:
       - edr
     - name: core-send-endpoint-heartbeat
       description: Sends endpoint heartbeat.
+      hidden: true
       arguments:
         - name: endpoint_id
           description: The ID of the endpoint.
