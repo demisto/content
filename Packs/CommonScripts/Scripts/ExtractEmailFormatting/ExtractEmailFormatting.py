@@ -24,6 +24,9 @@ COMMON_FILE_EXT = (
     "msg",
 )
 
+# Regex pattern for extracting email addresses from URL queries
+EMAIL_IN_URL_PATTERN = r"([\w.!#$%&'*+^_`{|}~-]+@[\w.-]+\.[A-Za-z]{2,})"
+
 
 def extract_email(email_address: str) -> str:
     """
@@ -37,25 +40,20 @@ def extract_email(email_address: str) -> str:
     """
     email_address = email_address.lower()
 
-    if {"=", "?"}.issubset(set(email_address)):
+    if "?" in email_address:
         # If we find these chars in a string it means the regex caught it as part of a url query and needs pruning.
         email_address = extract_email_from_url_query(email_address)
 
     email_format = re.compile(
-        "[<(\[{\"'.]*"
-        "(?:(?:\\\\|\^{3})u[a-f\d]{4})?"
-        "([\w.!#$%&'*+/=?^_`{|}~-]{1,64}"
-        "\[?@]?[\w.-]{1,255}(?:\[?\.]?"
-        "[A-Za-z]{2,}){1,2})",
-        re.IGNORECASE,
+        r"[<(\[{\"'.]*"
+        r"(?:(?:\\|\^{3})u[a-f\d]{4})?"
+        r"([\w.!#$%&'*+/=?^_`{|}~-]{1,64}"
+        r"\[?@]?[\w.-]{1,255}(?:\[?\.]?"
+        r"[A-Za-z]{2,}){1,2})"
     )
 
-    email_address = re.match(email_format, email_address)
-
-    if email_address:
-        return email_address.group(1)
-    else:
-        return ""
+    match = email_format.match(email_address)
+    return match.group(1) if match else ""
 
 
 def check_tld(email_address: str) -> bool:
@@ -86,32 +84,19 @@ def refang_email(email_address: str) -> str:
 
 def extract_email_from_url_query(email_address: str) -> str:
     """
-    As most characters are valid in the content part of an email the regex can sometimes
-    catch a the email as part of a URL query. This function will extract only the email from it.
+    Extracts an email address from a URL query string.
 
     Args:
-        email_address (str): extracted raw email address (within a query)
+        email_address (str): The extracted raw email address (within a query).
 
     Returns:
-        str: an email address
+        str: An email address.
     """
 
-    # First, try the original reverse logic
-    # This handles cases like: https://example.com/url/?email=user@test.net&a=b (email as a query parameter `value`)
-    extracted_email = re.match("(.*?)=", email_address[::-1])
-
-    if extracted_email:
-        result = extracted_email.group(1)[::-1]
-        # Validate that the result looks like an email (contains @)
-        if "@" in result:
-            return result
-
-    # Fallback to search pattern for cases where reverse logic doesn't work
-    # This handles cases like: https://example.com/url/?user@test.net=email&a=b (email as a query parameter `key`)
-    extracted_email = re.search(r"([\w.!#$%&'*+^_`{|}~-]+@[\w.-]+\.[A-Za-z]{2,})=", email_address)
-
-    if extracted_email:
-        return extracted_email.group(1)
+    # Try to extract email as a query parameter value, key, or directly from the URL
+    match = re.search(r"([?&])?" + EMAIL_IN_URL_PATTERN, email_address)
+    if match:
+        return match.group(2)
 
     return ""
 

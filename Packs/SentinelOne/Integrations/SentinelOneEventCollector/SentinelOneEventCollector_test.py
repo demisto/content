@@ -151,3 +151,99 @@ def test_main(mocker):
     assert events.call_args[0][0][0].get("_time") == events.call_args[0][0][0].get("updatedAt")
     assert events.call_args[1].get("vendor") == VENDOR
     assert events.call_args[1].get("product") == PRODUCT
+
+
+def test_add_keys_to_events_with_external_url(mocker):
+    """
+    Tests add_keys_to_events function with _EXTERNAL_URL field construction.
+
+        Given:
+            - Events from SentinelOne (threats, alerts, and activities).
+            - An instance URL for the SentinelOne instance.
+
+        When:
+            - Calling the 'add_keys_to_events' function with instance_url parameter.
+
+        Then:
+            - Ensure _EXTERNAL_URL field is correctly constructed for each event type:
+              - Threats: {instance_url}/incidents/threats/{threat_id}/overview
+              - Alerts: {instance_url}/incidents/alerts/{alert_id}/overview
+              - Activities: {instance_url}/activity
+
+    """
+    from SentinelOneEventCollector import add_keys_to_events
+
+    mocker.patch.object(demisto, "debug")
+    instance_url = "https://example-instance.com"
+
+    # Test data
+    threat_event = {"threatInfo": {"threatId": "123456", "updatedAt": "2022-12-20T15:51:17.514437Z"}}
+
+    alert_event = {"alertInfo": {"alertId": "789012", "updatedAt": "2022-12-20T13:54:43.027000Z"}}
+
+    activity_event = {"updatedAt": "2022-09-06T20:37:55.912951Z"}
+
+    events = [threat_event, alert_event, activity_event]
+
+    add_keys_to_events(events, instance_url)
+
+    # Assertions for Threat
+    assert threat_event.get("eventType") == "Threat"
+    assert threat_event.get("_EXTERNAL_URL") == f"{instance_url}/incidents/threats/123456/overview"
+    assert threat_event.get("_time") == "2022-12-20T15:51:17.514437Z"
+
+    # Assertions for Alert
+    assert alert_event.get("eventType") == "Alert"
+    assert alert_event.get("_EXTERNAL_URL") == f"{instance_url}/incidents/alerts/789012/overview"
+    assert alert_event.get("_time") == "2022-12-20T13:54:43.027000Z"
+
+    # Assertions for Activity
+    assert activity_event.get("eventType") == "Activity"
+    assert activity_event.get("_EXTERNAL_URL") == f"{instance_url}/activity"
+    assert activity_event.get("_time") == "2022-09-06T20:37:55.912951Z"
+
+
+def test_add_keys_to_events_missing_ids(mocker):
+    """
+    Tests add_keys_to_events function when alert/threat IDs are missing.
+
+        Given:
+            - Events from SentinelOne with missing alertId or threatId.
+            - An instance URL for the SentinelOne instance.
+
+        When:
+            - Calling the 'add_keys_to_events' function.
+
+        Then:
+            - Ensure _EXTERNAL_URL field is NOT added when IDs are missing.
+            - Ensure debug messages are logged for missing IDs.
+            - Ensure other fields (_time, eventType) are still added correctly.
+
+    """
+    from SentinelOneEventCollector import add_keys_to_events
+
+    instance_url = "https://example-instance.com"
+    mock_debug = mocker.patch.object(demisto, "debug")
+
+    # Test data - threat without threatId
+    threat_event = {"threatInfo": {"updatedAt": "2022-12-20T15:51:17.514437Z"}}
+
+    # Test data - alert without alertId
+    alert_event = {"alertInfo": {"updatedAt": "2022-12-20T13:54:43.027000Z"}}
+
+    events = [threat_event, alert_event]
+
+    add_keys_to_events(events, instance_url)
+
+    # Assertions for Threat
+    assert threat_event.get("eventType") == "Threat"
+    assert threat_event.get("_time") == "2022-12-20T15:51:17.514437Z"
+    assert "_EXTERNAL_URL" not in threat_event
+
+    # Assertions for Alert
+    assert alert_event.get("eventType") == "Alert"
+    assert alert_event.get("_time") == "2022-12-20T13:54:43.027000Z"
+    assert "_EXTERNAL_URL" not in alert_event
+
+    # Verify debug messages were called (1 for the count log + 2 for missing IDs)
+    assert mock_debug.call_count == 3

@@ -771,6 +771,32 @@ def test_category_add_url(mocker):
     assert result["HumanReadable"].startswith("Added the following URL, retaining-parent-category-url addresses to category 1")
 
 
+def test_category_add_url_with_category_name(mocker):
+    """
+    Given:
+        - A category ID, URL, retaining parent category URL, and category name
+    When:
+        - category_add_url is called with category_name argument
+    Then:
+        - The URL should be added to the category with the category name passed through
+    """
+    from Zscaler import category_add
+
+    mocker.patch("Zscaler.get_category_by_id", return_value={"urls": [], "customCategory": True})
+    mocker.patch("Zscaler.argToList", side_effect=[["test1.com"], ["test2.com"]])
+    mock_add_or_remove = mocker.patch("Zscaler.add_or_remove_urls_from_category", return_value=None)
+
+    result = category_add("CUSTOM_01", "test1.com", "test2.com", "url", "My-Custom-Category")
+
+    assert result["HumanReadable"].startswith(
+        "Added the following URL, retaining-parent-category-url addresses to category CUSTOM_01"
+    )
+    # Verify category_name was passed to add_or_remove_urls_from_category
+    mock_add_or_remove.assert_called_once()
+    call_args = mock_add_or_remove.call_args
+    assert call_args[0][4] == "My-Custom-Category"  # category_name is the 5th positional argument
+
+
 def test_category_add_ip(mocker):
     """
     Given:
@@ -786,6 +812,112 @@ def test_category_add_ip(mocker):
     mocker.patch("Zscaler.add_or_remove_urls_from_category", return_value={})
     result = category_add(1, "1.1.1.1", "1.1.1.1", "ip")
     assert result["HumanReadable"].startswith("Added the following IP, retaining-parent-category-ip addresses to category 1")
+
+
+def test_add_or_remove_urls_from_category_with_configured_name(mocker, requests_mock):
+    """
+    Given:
+        - A custom category with configuredName and superCategory in category_data
+    When:
+        - add_or_remove_urls_from_category is called
+    Then:
+        - Both configuredName and superCategory should be included in the request body
+    """
+    import Zscaler
+
+    Zscaler.BASE_URL = "http://cloud/api/v1"
+
+    category_data = {
+        "id": "CUSTOM_01",
+        "customCategory": True,
+        "urls": [],
+        "configuredName": "My-Custom-Category",
+        "superCategory": "USER_DEFINED",
+    }
+
+    requests_mock.put("http://cloud/api/v1/urlCategories/CUSTOM_01?action=ADD_TO_LIST", json={})
+
+    Zscaler.add_or_remove_urls_from_category(Zscaler.ADD, ["test.com"], category_data)
+
+    assert requests_mock.called
+    request_body = requests_mock.last_request.json()
+    assert request_body.get("configuredName") == "My-Custom-Category"
+    assert request_body.get("superCategory") == "USER_DEFINED"
+
+
+def test_add_or_remove_urls_from_category_with_category_name_override(mocker, requests_mock):
+    """
+    Given:
+        - A custom category with configuredName and superCategory in category_data
+        - A category_name argument provided
+    When:
+        - add_or_remove_urls_from_category is called
+    Then:
+        - The provided category_name should override the one from category_data
+        - The superCategory should still be included
+    """
+    import Zscaler
+
+    Zscaler.BASE_URL = "http://cloud/api/v1"
+
+    category_data = {
+        "id": "CUSTOM_01",
+        "customCategory": True,
+        "urls": [],
+        "configuredName": "Old-Name",
+        "superCategory": "NEWS_AND_MEDIA",
+    }
+
+    requests_mock.put("http://cloud/api/v1/urlCategories/CUSTOM_01?action=ADD_TO_LIST", json={})
+
+    Zscaler.add_or_remove_urls_from_category(Zscaler.ADD, ["test.com"], category_data, category_name="New-Name")
+
+    assert requests_mock.called
+    request_body = requests_mock.last_request.json()
+    assert request_body.get("configuredName") == "New-Name"
+    assert request_body.get("superCategory") == "NEWS_AND_MEDIA"
+
+
+def test_add_or_remove_urls_from_category_custom_without_name_raises_error(mocker):
+    """
+    Given:
+        - A custom category without configuredName in category_data
+        - No category_name argument provided
+    When:
+        - add_or_remove_urls_from_category is called
+    Then:
+        - A DemistoException should be raised
+    """
+    import Zscaler
+    from CommonServerPython import DemistoException
+
+    category_data = {"id": "CUSTOM_01", "customCategory": True, "urls": []}
+
+    with pytest.raises(DemistoException) as exc_info:
+        Zscaler.add_or_remove_urls_from_category(Zscaler.ADD, ["test.com"], category_data)
+
+    assert "configuredName" in str(exc_info.value)
+    assert "category-name" in str(exc_info.value)
+
+
+def test_get_category_by_id_injects_category_name(mocker):
+    """
+    Given:
+        - A category without configuredName
+        - A category_name argument provided
+    When:
+        - get_category_by_id is called
+    Then:
+        - The category_name should be injected into the returned category data
+    """
+    import Zscaler
+
+    mocker.patch("Zscaler.get_categories", return_value=[{"id": "CUSTOM_01", "customCategory": True, "urls": []}])
+
+    result = Zscaler.get_category_by_id("CUSTOM_01", "My-Custom-Category")
+
+    assert result is not None
+    assert result.get("configuredName") == "My-Custom-Category"
 
 
 def test_return_error_is_called_on_error(mocker, requests_mock):

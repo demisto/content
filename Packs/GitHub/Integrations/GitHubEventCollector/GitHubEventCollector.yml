@@ -5,10 +5,10 @@ sectionorder:
 - Connect
 - Collect
 name: Github Event Collector
-display: Github Event Collector
+display: GitHub Event Collector
 category: Analytics & SIEM
 provider: Microsoft
-description: Github logs event collector integration for Cortex XSIAM.
+description: GitHub logs event collector integration for Cortex XSIAM.
 configuration:
 - display: Server URL (e.g. 'https://api.github.com/orgs/XXXXX/audit-log')
   name: url
@@ -17,26 +17,26 @@ configuration:
   required: true
   section: Connect
 - display: ""
-  displaypassword: API Key
+  displaypassword: API Token
   name: auth_credendtials
   type: 9
   required: true
   hiddenusername: true
   section: Connect
-- display: Number of incidents to fetch per fetch.
+- display: Maximum number of events per fetch
   name: limit
   type: 0
   defaultvalue: 1000
   section: Collect
   required: false
-- display: First fetch time interval
+- display: First fetch timestamp
   name: after
   type: 0
   defaultvalue: 1 minute
   section: Collect
   required: false
   hidden: true
-- display: The event types to include.
+- display: The event types to include
   additionalinfo: web - returns web (non-Git) events, git - returns Git events, all - returns both web and Git events.
   name: include
   defaultvalue: all
@@ -75,7 +75,7 @@ script:
       required: true
     description: Manual command to fetch events and display them.
     name: github-get-events
-  dockerimage: demisto/py3-tools:1.0.0.4027705
+  dockerimage: demisto/py3-tools:1.0.0.6308650
   isfetchevents: true
   subtype: python3
 marketplaces:

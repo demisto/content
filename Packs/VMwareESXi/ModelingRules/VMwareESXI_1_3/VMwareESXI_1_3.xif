@@ -1,5 +1,5 @@
 [MODEL: dataset="VMware_ESXi_raw"]
-alter 
+alter
     event_type = arrayindex( regextract(_raw_log ,"\d+-\d+-\d+T\d+:\d+:\d+\.*\d*Z[\s|\|]\s*([a-zA-Z0-9-_]+)"),0),
     username_1 = arrayindex(regextract(_raw_log ,"User\s\'([a-zA-Z]+)\'"),0),
     username_2 = arrayindex(regextract(_raw_log ,"for\s+(\S+)\s+from"),0),

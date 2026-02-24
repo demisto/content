@@ -107,7 +107,6 @@ supportedModules:
 - X5
 - ENT_PLUS
 - xsiam
-- agentix
 - cloud
 - cloud_posture
 - cloud_runtime_security

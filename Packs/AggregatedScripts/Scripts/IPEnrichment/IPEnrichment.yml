@@ -48,7 +48,7 @@ args:
   - 'false'
   required: false
   defaultValue: 'false'
-comment: 'This script gathers IP reputation data from multiple integrations and returns an IP entity with consolidated information in the context. Note: If enabled, get-endpoint-data is executed only for internal IP addresses.'
+comment: 'Enriches IP indicators with reputation data from multiple integrations and outputs a consolidated IPEnrichment object. This script exclusively supports indicators of type IP and will automatically create the indicator in TIM if it is not already exists. Note: If enabled, get-endpoint-data is executed only for internal IP addresses.'
 commonfields:
   id: ip-enrichment
   version: -1

@@ -1,0 +1,363 @@
+id: silent-Analyze URL - ThreatZone
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: silent-Analyze URL - ThreatZone
+description: |
+  Analyzes a URL using the ThreatZone integration.
+  Submits the URL for analysis, waits for completion, and pulls the resulting verdict and telemetry into the War Room.
+tags:
+- Malware
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 82894a77-4375-44f5-8c1e-3772f7f6d7e3
+    type: start
+    task:
+      id: 82894a77-4375-44f5-8c1e-3772f7f6d7e3
+      version: -1
+      name: ""
+      description: Analyze a URL using ThreatZone.
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 82e16b20-3550-4ccc-9f20-7dc76be92f17
+    type: regular
+    task:
+      id: 82e16b20-3550-4ccc-9f20-7dc76be92f17
+      version: -1
+      name: ThreatZone Submit URL for Analysis
+      description: Submits a URL to ThreatZone for analysis.
+      script: '|||tz-url-analysis'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      url:
+        complex:
+          root: inputs.URL
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 556881e0-5f53-4f9b-b60f-8baa9c98bb63
+    type: playbook
+    task:
+      id: 556881e0-5f53-4f9b-b60f-8baa9c98bb63
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      Ids:
+        complex:
+          root: ThreatZone.Submission.URL
+          accessor: UUID
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: uuid
+      PollingCommandName:
+        simple: tz-get-result
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: ThreatZone.Submission.Summary(val.REPORT.status!==5).REPORT
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 1ad7233a-8b71-4e76-8524-26e15428bf43
+    type: title
+    task:
+      id: 1ad7233a-8b71-4e76-8524-26e15428bf43
+      version: -1
+      name: Done
+      description: URL analysis completed.
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 8edff6b1-fd1f-4c42-8e6f-5fa91f231132
+    type: condition
+    task:
+      id: 8edff6b1-fd1f-4c42-8e6f-5fa91f231132
+      version: -1
+      name: Is there a URL to analyze?
+      description: Verify the URL input exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.URL
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: a7a2d3d3-8174-44f2-8d37-5688c51171b7
+    type: condition
+    task:
+      id: a7a2d3d3-8174-44f2-8d37-5688c51171b7
+      version: -1
+      name: Is ThreatZone enabled?
+      description: Check if the ThreatZone integration instance is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ThreatZone
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 615d9942-1d2f-4d5f-83e5-3d0c92d1f07b
+    type: regular
+    task:
+      id: 615d9942-1d2f-4d5f-83e5-3d0c92d1f07b
+      version: -1
+      name: ThreatZone Get Result
+      description: Retrieve the analysis result from ThreatZone.
+      script: '|||tz-get-result'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      uuid:
+        complex:
+          root: ThreatZone.Submission.URL
+          accessor: UUID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: URL
+  value:
+    complex:
+      root: URL
+      accessor: Data
+  required: false
+  description: URL to analyze. Provide via playbook input or ensure a URL exists in context.
+  playbookInputQuery:
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: Frequency (in minutes) between polling attempts.
+  playbookInputQuery:
+- key: Timeout
+  value:
+    simple: "15"
+  required: false
+  description: Maximum polling duration (in minutes) before the playbook resumes.
+  playbookInputQuery:
+outputs:
+- contextPath: ThreatZone.Submission.Summary.STATUS
+  description: The status of the submission scanning process.
+  type: String
+- contextPath: ThreatZone.Submission.Summary.LEVEL
+  description: Threat Level of the analyzed URL (malicious, suspicious, or informative).
+  type: String
+- contextPath: ThreatZone.Submission.Summary.INFO
+  description: Contains URL metadata and privacy status.
+  type: String
+- contextPath: ThreatZone.Submission.Summary.REPORT
+  description: The analysis report of the submission.
+  type: String
+- contextPath: ThreatZone.Submission.Summary.UUID
+  description: The UUID of the submission.
+  type: String
+tests:
+- No tests (auto formatted)
+fromversion: 8.9.0
+issilent: true

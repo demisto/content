@@ -89,9 +89,12 @@ To configure a Microsoft integration that uses this authorization flow with a se
 
 If you are using Device Code Flow or Authorization Code Flow, for testing your authentication and connectivity to the AzureWAF service run the ***!azure-waf-auth-test*** command.
 
-## Configure AzureWAF on Cortex XSOAR
+## Configure AzureWAF on Cortex XSOAR/XSIAM
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to one of the following:
+    - Cortex XSOAR 8: Settings & Info > Settings > Integrations > Instances
+    - Cortex XSOAR 6: Settings > Integrations > Servers & Services.
+    - Cortex XSIAM: Settings > Configurations > Automation & Feed Integrations
 2. Search for Azure Web Application Firewall.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -133,10 +136,10 @@ Retrieves protection policies within a resource group.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | policy_name | The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve all policies. | Optional |
-| resource_group_names | Comma-separated value list of the names of the resource groups. If not provided, the instance's default resource group name will be used. | Optional |
+| resource_group_name | Comma-separated value list of the names of the resource groups. If not provided, the instance's default resource group name will be used. | Optional |
 | subscription_id | The subscription ID. If not provided, the integration default subscription ID will be used. | Optional |
-| verbose | Whether to retrieve full details of the policy. Possible values are: "true" and "false". Default is "false". Possible values are: true, false. Default is false. | Optional |
-| limit | Maximum number of policies to fetch. Default is "10". Default is 10. | Optional |
+| verbose | Whether to retrieve full details of the policy. Possible values are: "true" and "false". Default is "false".| Optional |
+| limit | Maximum number of policies to fetch. Default is "10".| Optional |
 
 #### Context Output
 
@@ -244,7 +247,7 @@ Retrieves all the WAF policies in a subscription.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| verbose | Whether to retrieve the full details of the policy. Possible values are "true" and "false". Default is "false". Possible values are: true, false. Default is false. | Optional |
+| verbose | Whether to retrieve the full details of the policy. Possible values are "true" and "false". Default is "false". | Optional |
 | limit | Maximum number of policies to be shown. (This will only affect visualized data, not context.). Default is 10. | Optional |
 | subscription_id | Comma-separated list of subscription IDs. Will override the default subscription ID. | Optional |
 
@@ -355,7 +358,7 @@ Creates or updates a policy with a specified rule set name within a resource gro
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | policy_name | The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve all policies. | Required |
-| resource_group_names | Comma-separated list of the names of the resource groups. If not provided, the instance's default resource group name will be used. | Optional |
+| resource_group_name | Comma-separated list of the names of the resource groups. If not provided, the instance's default resource group name will be used. | Optional |
 | subscription_id | The subscription ID. If not provided, the integration default subscription ID will be used. | Optional |
 | managed_rules | Describes the managedRules structure. | Required |
 | resource_id | Resource ID. | Optional |
@@ -478,10 +481,142 @@ There is no context output for this command.
 
 >Policy example_policy was deleted successfully.
 
+### azure-waf-front-door-policies-list
+
+***
+Lists all of the Front Door protection policies within a resource group.
+
+#### Base Command
+
+`azure-waf-front-door-policies-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_name | The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve all policies. | Optional |
+| resource_group_name | Comma-separated value list of the names of the resource groups. If not provided, the instance's default resource group name will be used. | Optional |
+| subscription_id | The subscription ID. If not provided, the integration default subscription ID will be used. | Optional |
+| verbose | Whether to retrieve full details of the policy. Possible values are: "true" and "false". Default is "false". | Optional |
+| limit | Maximum number of policies to fetch. Default is "10". | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureWAF.FrontDoorPolicy.name | String | Resource name. |
+| AzureWAF.FrontDoorPolicy.id | String | Resource ID. |
+| AzureWAF.FrontDoorPolicy.type | String | Resource type. |
+| AzureWAF.FrontDoorPolicy.etag | String | A unique read-only string that changes whenever the resource is updated. |
+| AzureWAF.FrontDoorPolicy.location | String | Resource location. |
+
+#### Command Example
+
+```!azure-waf-front-door-policies-list limit=2```
+
+### azure-waf-front-door-policies-list-all-in-subscription
+
+***
+Lists all of the Front Door protection policies within a subscription.
+
+#### Base Command
+
+`azure-waf-front-door-policies-list-all-in-subscription`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| verbose | Whether to retrieve the full details of the policy. Possible values are "true" and "false". Default is "false". | Optional |
+| limit | Maximum number of policies to fetch. Default is "10". | Optional |
+| subscription_id | The subscription ID. If not provided, the integration default subscription ID will be used. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureWAF.FrontDoorPolicy.name | String | Resource name. |
+| AzureWAF.FrontDoorPolicy.id | String | Resource ID. |
+| AzureWAF.FrontDoorPolicy.type | String | Resource type. |
+| AzureWAF.FrontDoorPolicy.etag | String | A unique read-only string that changes whenever the resource is updated. |
+| AzureWAF.FrontDoorPolicy.location | String | Resource location. |
+
+#### Command Example
+
+```!azure-waf-front-door-policies-list-all-in-subscription limit=2```
+
+### azure-waf-front-door-policy-update-or-create
+
+***
+Creates or updates a Front Door policy with a specified rule set name within a resource group.
+
+#### Base Command
+
+`azure-waf-front-door-policy-update-or-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_name | The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. | Required |
+| resource_group_name | Comma-separated list of the names of the resource groups. If not provided, the instance's default resource group name will be used. | Optional |
+| subscription_id | The subscription ID. If not provided, the integration default subscription ID will be used. | Optional |
+| managed_rules | Describes the managedRules structure. | Required |
+| custom_rules | The custom rules inside the policy. | Optional |
+| policy_settings | Describes settings for the policy. | Optional |
+| location | Describes the resource location. | Optional |
+| sku | The pricing tier of web application firewall policy. Defaults to Classic_AzureFrontDoor if not specified. Possible values are: Classic_AzureFrontDoor, Standard_AzureFrontDoor, Premium_AzureFrontDoor. Default is Classic_AzureFrontDoor. | Optional |
+| etag | A unique read-only string that changes whenever the resource is updated. | Optional |
+| verbose | Whether to retrieve the full details of the policy. Possible values are: "true" and "false". Default is "false". | Optional |
+| tags | Resource tags. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureWAF.FrontDoorPolicy.name | String | Resource name. |
+| AzureWAF.FrontDoorPolicy.id | String | Resource ID. |
+| AzureWAF.FrontDoorPolicy.type | String | Resource type. |
+| AzureWAF.FrontDoorPolicy.etag | String | A unique read-only string that changes whenever the resource is updated. |
+| AzureWAF.FrontDoorPolicy.location | String | Resource location. |
+
+#### Command Example
+
+```!azure-waf-front-door-policy-update-or-create policy_name="example_policy" resource_group_name="demisto-sentinel2" location="WestUs" managed_rules="{ \"managedRuleSets\": [{\"ruleSetType\": \"OWASP\",\"ruleSetVersion\": \"3.0\"}]}"```
+
+### azure-waf-front-door-policy-delete
+
+***
+Deletes a Front Door policy.
+
+#### Base Command
+
+`azure-waf-front-door-policy-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_name | The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. | Required |
+| resource_group_name | Comma-separated list of the name of the resource group. If not provided, the instance's default resource group name will be used. | Optional |
+| subscription_id | The subscription ID. If not provided, the integration default subscription ID will be used. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```!azure-waf-front-door-policy-delete policy_name="example_policy"```
+
+#### Human Readable Output
+
+>Front Door Policy example_policy was deleted successfully.
+
 ### azure-waf-auth-start
 
 ***
-Run this command to start the authorization process and follow the instructions in the command results.
+Run this command to start the authorization process and follow the instructions provided in the command results.
 
 #### Base Command
 

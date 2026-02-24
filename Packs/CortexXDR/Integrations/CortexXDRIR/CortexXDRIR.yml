@@ -16,7 +16,7 @@ configuration:
 - display: Incident type
   name: incidentType
   type: 13
-  section: Connect
+  section: Collect
   required: false
   defaultvalue: 'Cortex XDR - Lite'
 - name: url
@@ -260,9 +260,10 @@ script:
       name: starred_incidents_fetch_window
       deprecated: true
     description: |-
-      Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
+      This command is deprecated please use xdr-case-list instead. Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
       If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported.
     name: xdr-get-incidents
+    deprecated: true
     outputs:
     - contextPath: PaloAltoNetworksXDR.Incident.incident_id
       description: Unique ID assigned to each returned incident.
@@ -683,8 +684,9 @@ script:
       - 'true'
       - 'false'
       defaultValue: 'false'
-    description: Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
+    description: This command is deprecated please use xdr-case-update instead. Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
     name: xdr-update-incident
+    deprecated: true
   - arguments:
     - description: Product name.
       name: product
@@ -3865,7 +3867,1143 @@ script:
       Update one or more alerts with the provided arguments.
       Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
     name: xdr-update-alert
-  dockerimage: demisto/python3:3.12.12.5490952
+  - arguments:
+    - description: A comma-separated list of API key IDs to retrieve.
+      isArray: true
+      name: api_id
+    - description: A comma-separated list of API key roles to retrieve.
+      isArray: true
+      name: role
+    - description: 'Filters API keys that expire before this date. For example: "1 year". Filters API keys that have an expiration date.'
+      name: expires_before
+    - description: 'Filters API keys that expire after this date. For example: "1 year". Filters API keys that have an expiration date.'
+      name: expires_after
+    description: Gets a list of existing API keys.
+    name: xdr-api-key-list
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.APIKeyData.id
+      description: The API key ID.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.APIKeyData.roles
+      description: The roles associated with the API key.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.APIKeyData.expiration
+      description: The expiration date of the API key.
+      type: Date
+  - arguments:
+    - description: A comma-separated list of API key IDs to delete.
+      isArray: true
+      name: api_id
+      required: true
+    description: Deletes the specified API keys.
+    name: xdr-api-key-delete
+  - arguments:
+    - description: 'A comma-separated list of asset IDs. For example: "1,2,3". When using this argument, the other filters will not be used.'
+      isArray: true
+      name: asset_id
+    - description: 'The field used to sort the results. For example: xdm.asset.first_observed. For additional sortable fields, see the documentation: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-all-or-filtered-assets.'
+      name: sort_field
+    - auto: PREDEFINED
+      description: The order in which to sort the results.
+      name: sort_order
+      predefined:
+      - asc
+      - desc
+    - description: 'The JSON to use for the "filter" field in the API. You can use xdr-asset-schema-get to retrieve the schema. For more details, see the documentation: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-all-or-filtered-assets.'
+      name: filter_json
+    - description: Maximum number of assets to return. Default is 50.
+      name: limit
+      defaultValue: '50'
+    - description: Page size for pagination.
+      name: page_size
+      defaultValue: '50'
+    - defaultValue: '0'
+      description: Page number for pagination.
+      name: page
+    description: Returns a list of assets.
+    name: xdr-asset-list
+    outputs:
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_id
+        description: The unique identifier of the asset.
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_name
+        description: The name of the asset (e.g., image SHA).
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_strong_id
+        description: The strong identifier (SHA256) of the asset.
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_provider
+        description: The provider of the asset.
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_external_provider_id
+        description: External provider ID (if applicable).
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_first_observed
+        description: Timestamp when the asset was first observed.
+        type: Date
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_last_observed
+        description: Timestamp when the asset was last observed.
+        type: Date
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_type_id
+        description: The ID of the asset type (e.g., CORE_IMAGE).
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_type_name
+        description: The name of the asset type.
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_type_category
+        description: The category of the asset (e.g., Container Image).
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_type_class
+        description: The class of the asset (e.g., Compute).
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_development_cycle_stages
+        description: The development cycle stages (e.g., RUNTIME).
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_architecture
+        description: The architecture of the image (e.g., amd64).
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_digest
+        description: The image digest hash.
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_identifier
+        description: The image identifier.
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_names
+        description: List of names/tags associated with the image.
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_os
+        description: The OS version of the image.
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_os_distribution
+        description: The OS distribution (e.g., UBUNTU).
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_os_family
+        description: The OS family (e.g., Linux).
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_os_release
+        description: The OS release name (e.g., noble).
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_labels
+        description: Labels associated with the image.
+        type: Unknown
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_layers
+        description: List of layers making up the image.
+        type: Unknown
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_layers_created_at
+        description: Timestamp of when the layer was created.
+        type: Number
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_layers_instruction
+        description: The instruction used to create the layer (e.g., RUN, ADD).
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_layers_size
+        description: The size of the layer in bytes.
+        type: Number
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_related_cases_cases_breakdown
+        description: Breakdown of related cases by severity.
+        type: Unknown
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_related_cases_critical_cases
+        description: Count of critical cases.
+        type: Number
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_related_issues_issues_breakdown
+        description: Breakdown of related issues by severity.
+        type: Unknown
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_relations
+        description: Relations to other assets.
+        type: Unknown
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_group_ids
+        description: Group IDs associated with the asset.
+        type: Number
+  - name: xdr-asset-schema-get
+    description: Gets the schema of the asset inventory.
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.AssetSchema.field_name
+      description: The name of the field.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AssetSchema.field_type
+      description: The type of the field.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AssetSchema.field_pretty_name
+      description: The pretty name of the field.
+      type: String
+  - arguments:
+    - description: "The name of the field to get options for. You can use xdr-asset-schema-get to retrieve the schema. The field must be of type ENUM, for example: xdm.asset.provider."
+      name: field_name
+      required: true
+    description: Gets the enum values of a specified field in the asset schema.
+    name: xdr-asset-schema-field-options-get
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.AssetSchema.field_name
+      description: The name of the field.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AssetSchema.options
+      description: The enum values of the field.
+      type: Unknown
+  - arguments:
+    - description: The name of the asset group.
+      name: group_name
+      required: true
+    - auto: PREDEFINED
+      description: The type of the asset group.
+      name: group_type
+      predefined:
+      - Static
+      - Dynamic
+      required: true
+    - description: The description of the asset group.
+      name: group_description
+    - description: 'Define the filter conditions for selecting which assets to be included in a dynamic Asset Group. For example: "{\"AND\":[{\"SEARCH_FIELD\":\"xdm.asset.type.class\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Other\"}]}". The SEARCH_FIELD needs to be in lower case. For more information, please refer to the documentation: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Create-an-Asset-Group.'
+      name: membership_predicate_json
+    description: Creates an asset group.
+    name: xdr-asset-group-create
+  - arguments:
+    - description: The ID of the asset group to delete.
+      name: group_id
+      required: true
+    description: Deletes an asset group.
+    name: xdr-asset-group-delete
+  - arguments:
+    - description: 'The field by which to sort the results. For example: XDM.ASSET_GROUP.NAME. Use the documentation for finding more fields https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-all-or-filtered-asset-groups.'
+      name: sort_field
+    - auto: PREDEFINED
+      description: The order in which to sort the results.
+      name: sort_order
+      predefined:
+      - asc
+      - desc
+    - description: 'The JSON to use for the "filter" field in the API. For example: "{\"AND\": [{\"SEARCH_FIELD\": \"XDM.ASSET_GROUP.TYPE\", \"SEARCH_TYPE\": \"EQ\", \"SEARCH_VALUE\": \"Dynamic\"}]}". For more information, please refer to the documentation: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-all-or-filtered-asset-groups.'
+      name: filter_json
+    - defaultValue: '50'
+      description: Maximum number of asset groups to return. Default is 50.
+      name: limit
+    - description: Page size for pagination.
+      name: page_size
+    - defaultValue: '0'
+      description: Page number for pagination. 0 is the first page.
+      name: page
+    description: Returns a list of asset groups.
+    name: xdr-asset-group-list
+    outputs:
+      - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_ID
+        description: The unique identifier of the asset group.
+        type: String
+      - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_NAME
+        description: The name of the asset group.
+        type: String
+      - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_TYPE
+        description: The type of the asset group (Static or Dynamic).
+        type: String
+      - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_FILTER
+        description: The filter query string used to define the members of the XDM asset group.
+        type: String
+      - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_DESCRIPTION
+        description: The description of the asset group.
+        type: String
+      - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_CREATION_TIME
+        description: The timestamp when the group was created (Epoch).
+        type: Date
+      - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_LAST_UPDATE_TIME
+        description: The timestamp when the group was last updated (Epoch).
+        type: Date
+      - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_CREATED_BY_PRETTY
+        description: The user or API key that created the group.
+        type: String
+      - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_MODIFIED_BY_PRETTY
+        description: The user or API key that last modified the group.
+        type: String
+      - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_MEMBERSHIP_PREDICATE
+        description: The JSON object defining the search criteria for dynamic groups.
+        type: Unknown
+      - contextPath: PaloAltoNetworksXDR.AssetGroup.IS_USED_BY_SBAC
+        description: Indicates whether this asset group is currently utilized to define Scope-Based Access Control (SBAC) rules.
+        type: Boolean
+  - arguments:
+    - description: The ID of the asset group to update.
+      name: group_id
+      required: true
+    - description: The name of the asset group.
+      name: group_name
+    - auto: PREDEFINED
+      description: The type of the asset group.
+      name: group_type
+      predefined:
+      - Static
+      - Dynamic
+    - description: The description of the asset group.
+      name: group_description
+    - description: 'Define the filter conditions for selecting which assets to be included in a dynamic Asset Group. For example: "{\"AND\":[{\"SEARCH_FIELD\":\"xdm.asset.type.class\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Other\"}]}". The SEARCH_FIELD needs to be in lower case. For more information, please refer to the documentation: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Update-an-Asset-Group.'
+      name: membership_predicate_json
+    description: Updates an asset group.
+    name: xdr-asset-group-update
+  - arguments:
+    - description: The entry ID of the file. The script should be a zipped YAML file.
+      name: entry_id
+      required: true
+    description: Creates or updates an automation script.
+    name: xdr-automation-script-create
+  - arguments:
+    - description: The field to search by.
+      name: field
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - id
+      - name
+    - description: The field value to search for.
+      name: value
+      required: true
+    description: Gets an automation script.
+    name: xdr-automation-script-get
+  - arguments:
+    - description: The field to search by.
+      name: field
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - id
+      - name
+    - description: The field value to search for.
+      name: value
+      required: true
+    description: Deletes an automation script.
+    name: xdr-automation-script-delete
+  - arguments:
+    - description: The entry ID of the file. The playbook should be a zipped YAML file.
+      name: entry_id
+      required: true
+    description: Creates or updates an automation playbook.
+    name: xdr-automation-playbook-create
+  - arguments:
+    - description: The field to search by.
+      name: field
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - id
+      - name
+    - description: The field value to search for.
+      name: value
+      required: true
+    description: Gets an automation playbook.
+    name: xdr-automation-playbook-get
+  - arguments:
+    - description: The field to search by.
+      name: field
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - id
+      - name
+    - description: The field value to search for.
+      name: value
+      required: true
+    description: Deletes an automation playbook.
+    name: xdr-automation-playbook-delete
+  - arguments:
+    - description: A comma-separated list of case IDs to filter by.
+      isArray: true
+      name: case_id
+    - description: A comma-separated list of case domains to filter by.
+      isArray: true
+      name: case_domain
+    - description: "A comma-separated list of severities to filter by."
+      isArray: true
+      name: severity
+    - description: Filters cases that were created before this date. Supports natural language expressions such as "one year".
+      name: created_before
+    - description: Filters cases that were created after this date. Supports natural language expressions such as "one year".
+      name: created_after
+    - description: A comma-separated list of statuses to filter by.
+      isArray: true
+      name: status
+    - auto: PREDEFINED
+      description: The field by which to sort the results.
+      name: sort_field
+      predefined:
+      - case_id
+      - severity
+      - creation_time
+    - auto: PREDEFINED
+      description: The order in which to sort the results.
+      name: sort_order
+      predefined:
+      - asc
+      - desc
+    - description: Maximum number of cases to return.
+      name: limit
+    - description: Page size for pagination.
+      name: page_size
+    - description: Page number for pagination.
+      name: page
+    description: Returns a list of cases based on the specified filters.
+    name: xdr-case-list
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.Case.case_id
+      description: The unique identifier of the case.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.case_name
+      description: The name of the case.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.severity
+      description: The severity of the case.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.creation_time
+      description: The creation time of the case.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.modification_time
+      description: The modification time of the case.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.status_progress
+      description: The progress status of the case (e.g., New, Under Investigation).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.description
+      description: A detailed description of the case and involved entities.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.low_severity_issue_count
+      description: The number of low severity issues associated with the case.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.med_severity_issue_count
+      description: The number of medium severity issues associated with the case.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.case_domain
+      description: The security domain of the case.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.xdr_url
+      description: The direct URL to the incident view in the XDR console.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.is_blocked
+      description: Indicates if the threat was blocked.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Case.aggregated_score
+      description: The overall risk score calculated for the case.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.host_count
+      description: The number of hosts involved in the case.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.user_count
+      description: The number of users involved in the case.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.wildfire_hits
+      description: The number of WildFire malware hits associated with the case.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.tags
+      description: A list of tags associated with the case.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.starred
+      description: Whether the case has been starred/flagged.
+      type: Boolean
+  - arguments:
+    - description: The ID of the case to update.
+      name: case_id
+      required: true
+    - auto: PREDEFINED
+      description: The status to set for the case. if the status is updated to "resolved", resolve_reason must be provided.
+      name: status
+      predefined:
+      - new
+      - under_investigation
+      - resolved
+    - auto: PREDEFINED
+      description: The reason for resolving the case.
+      name: resolve_reason
+      predefined:
+      - resolved_known_issue
+      - resolved_duplicate
+      - resolved_false_positive
+      - resolved_other
+    - description: A comment explaining the resolution.
+      name: resolve_comment
+    description: Updates an existing case with the specified details.
+    name: xdr-case-update
+  - arguments:
+    - description: The ID of the case for which to retrieve artifacts.
+      name: case_id
+      required: true
+    description: Retrieves a list of artifacts for a specific case.
+    name: xdr-case-artifact-list
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.CaseNetworkArtifact.case_id
+      description: The ID of the case associated with the network artifact.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CaseNetworkArtifact.network_remote_ip
+      description: The remote IP address associated with the artifact.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CaseNetworkArtifact.network_remote_port
+      description: The remote port used in the network connection.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.CaseNetworkArtifact.alert_count
+      description: Number of alerts associated with this network artifact.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.CaseNetworkArtifact.type
+      description: The type of network artifact (e.g., IP).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CaseNetworkArtifact.is_manual
+      description: Indicates if the artifact was added manually.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.case_id
+      description: The ID of the case associated with the file artifact.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.file_name
+      description: The name of the file.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.file_sha256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.file_wildfire_verdict
+      description: The verdict from WildFire (e.g., MALWARE, BENIGN).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.is_malicious
+      description: Whether the file has been identified as malicious.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.is_process
+      description: Indicates if the file was a running process.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.file_signature_vendor_name
+      description: The vendor name from the file signature.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.file_signature_status
+      description: The status of the digital signature (e.g., SIGNATURE_SIGNED).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.alert_count
+      description: Number of alerts associated with this file artifact.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.low_confidence
+      description: Indicates if the detection confidence is low.
+      type: Boolean
+  - arguments:
+    - description: The BIOC name to filter by. Can filter by only one name at a time.
+      name: name
+    - auto: PREDEFINED
+      description: 'The BIOC severity to filter by.'
+      name: severity
+      predefined:
+      - info
+      - low
+      - medium
+      - high
+      - critical
+    - auto: PREDEFINED
+      description: 'The BIOC type to filter by.'
+      name: type
+      predefined:
+      - other
+      - persistence
+      - evasion
+      - tampering
+      - file_type_obfuscation
+      - privilege_escalation
+      - credential_access
+      - lateral_movement
+      - execution
+      - collection
+      - exfiltration
+      - infiltration
+      - dropper
+      - file_privilege_manipulation
+      - reconnaissance
+      - discovery
+    - auto: PREDEFINED
+      description: 'Whether the BIOC is XQL.'
+      name: is_xql
+      predefined:
+      - 'true'
+      - 'false'
+    - description: 'The BIOC comment to filter by.'
+      name: comment
+    - auto: PREDEFINED
+      description: 'The BIOC status to filter by. Options are enabled or disabled.'
+      name: status
+      predefined:
+      - enabled
+      - disabled
+    - description: 'The BIOC indicator to filter by.'
+      name: indicator
+    - description: "The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']."
+      isArray: true
+      name: mitre_technique_id_and_name
+    - description: "The MITRE tactic ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']."
+      isArray: true
+      name: mitre_tactic_id_and_name
+    - auto: PREDEFINED
+      description: Whether to return extended data.
+      name: extra_data
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Maximum number of results to return.
+      name: limit
+    - description: Page size.
+      name: page_size
+    - description: Page number.
+      name: page
+    description: Returns a list of BIOCs.
+    name: xdr-bioc-list
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.BIOC.rule_id
+      description: BIOC rule ID.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.BIOC.name
+      description: BIOC name.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.BIOC.type
+      description: BIOC type.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.BIOC.severity
+      description: BIOC severity.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.BIOC.status
+      description: BIOC status.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.BIOC.is_xql
+      description: Whether the BIOC is XQL.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.BIOC.comment
+      description: The BIOC comment.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.BIOC.indicator
+      description: The BIOC indicator.
+      type: String
+  - arguments:
+    - description: The BIOC name.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      description: The BIOC severity.
+      name: severity
+      required: true
+      predefined:
+      - info
+      - low
+      - medium
+      - high
+      - critical
+    - auto: PREDEFINED
+      description: The BIOC type.
+      name: type
+      predefined:
+      - other
+      - persistence
+      - evasion
+      - tampering
+      - file_type_obfuscation
+      - privilege_escalation
+      - credential_access
+      - lateral_movement
+      - execution
+      - collection
+      - exfiltration
+      - infiltration
+      - dropper
+      - file_privilege_manipulation
+      - reconnaissance
+      - discovery
+    - auto: PREDEFINED
+      description: Whether the new BIOC is XQL.
+      name: is_xql
+      predefined:
+      - 'true'
+      - 'false'
+    - description: The BIOC comment.
+      name: comment
+    - auto: PREDEFINED
+      description: The BIOC status.
+      name: status
+      predefined:
+      - enabled
+      - disabled
+    - description: |-
+        The BIOC indicator,
+        for example: '{\"runOnCGO\":true,\"investigationType\":\"FILE_EVENT\",\"investigation\":{\"FILE_EVENT\":{\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"action_file_name\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"testfile.exe\"}]}}}}'.
+        For more information, refer to the documentation https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs.
+      isArray: true
+      name: indicator
+      required: true
+    - description: "The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']."
+      isArray: true
+      name: mitre_technique_id_and_name
+    - description: "The MITRE tactic ID and name. Must be in format 'ID - Name', for example: ['TA0001 - Initial Access']."
+      isArray: true
+      name: mitre_tactic_id_and_name
+    description: Creates a new BIOC.
+    name: xdr-bioc-create
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.BIOC.rule_id
+      description: BIOC ID.
+      type: String
+  - arguments:
+    - description: BIOC rule ID.
+      name: rule_id
+      required: true
+    - description: BIOC name.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      description: BIOC severity.
+      name: severity
+      required: true
+      predefined:
+      - info
+      - low
+      - medium
+      - high
+      - critical
+    - auto: PREDEFINED
+      description: BIOC type.
+      name: type
+      predefined:
+      - other
+      - persistence
+      - evasion
+      - tampering
+      - file_type_obfuscation
+      - privilege_escalation
+      - credential_access
+      - lateral_movement
+      - execution
+      - collection
+      - exfiltration
+      - infiltration
+      - dropper
+      - file_privilege_manipulation
+      - reconnaissance
+      - discovery
+    - auto: PREDEFINED
+      description: Whether the BIOC is XQL.
+      name: is_xql
+      predefined:
+      - 'true'
+      - 'false'
+    - description: BIOC comment.
+      name: comment
+    - auto: PREDEFINED
+      description: BIOC status.
+      name: status
+      predefined:
+      - enabled
+      - disabled
+    - description: |-
+        The BIOC indicator,
+        for example: '{\"runOnCGO\":true,\"investigationType\":\"FILE_EVENT\",\"investigation\":{\"FILE_EVENT\":{\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"action_file_name\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"testfile.exe\"}]}}}}'.
+        For more information, refer to the documentation https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs.
+      isArray: true
+      name: indicator
+      required: true
+    - description: "The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']."
+      isArray: true
+      name: mitre_technique_id_and_name
+    - description: "The MITRE tactic ID and name. Must be in format 'ID - Name', for example: ['TA0001 - Initial Access']."
+      isArray: true
+      name: mitre_tactic_id_and_name
+    description: Updates an existing BIOC.
+    name: xdr-bioc-update
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.BIOC.rule_id
+      description: BIOC ID.
+      type: String
+  - arguments:
+    - description: BIOC name.
+      name: name
+    - auto: PREDEFINED
+      description: BIOC severity.
+      name: severity
+      predefined:
+      - info
+      - low
+      - medium
+      - high
+      - critical
+    - auto: PREDEFINED
+      description: BIOC type.
+      name: type
+      predefined:
+      - other
+      - persistence
+      - evasion
+      - tampering
+      - file_type_obfuscation
+      - privilege_escalation
+      - credential_access
+      - lateral_movement
+      - execution
+      - collection
+      - exfiltration
+      - infiltration
+      - dropper
+      - file_privilege_manipulation
+      - reconnaissance
+      - discovery
+    - auto: PREDEFINED
+      description: Whether the BIOC is XQL.
+      name: is_xql
+      predefined:
+      - 'true'
+      - 'false'
+    - description: BIOC comment.
+      name: comment
+    - description: BIOC indicator.
+      isArray: true
+      name: indicator
+    - description: "The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']."
+      isArray: true
+      name: mitre_technique_id_and_name
+    - description: "The MITRE tactic ID and name. Must be in format 'ID - Name', for example: ['TA0001 - Initial Access']."
+      isArray: true
+      name: mitre_tactic_id_and_name
+    description: Deletes a BIOC.
+    name: xdr-bioc-delete
+  - arguments:
+    - description: Correlation rule name.
+      name: name
+    - auto: PREDEFINED
+      description: Correlation rule severity.
+      name: severity
+      predefined:
+      - info
+      - low
+      - medium
+      - high
+      - critical
+    - description: Correlation rule XQL query.
+      name: xql_query
+    - auto: PREDEFINED
+      description: Whether the correlation rule is XQL.
+      name: is_xql
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Correlation rule dataset.
+      name: dataset
+    - description: Alert name.
+      name: alert_name
+    - description: Alert category.
+      name: alert_category
+    - description: Alert fields. Can be a string or a dictionary.
+      name: alert_fields
+    - description: Alert domain.
+      name: alert_domain
+    - description: Filter JSON.
+      name: filter_json
+    - auto: PREDEFINED
+      description: Whether to return extended view.
+      name: extra_data
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Maximum number of results to return.
+      name: limit
+    - description: Page size.
+      name: page_size
+    - description: Page number.
+      name: page
+    description: Returns a list of correlation rules.
+    name: xdr-correlation-rule-list
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.suppression_duration
+      description: The duration for which alerts are suppressed.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.alert_category
+      description: The category of the alert (e.g., DROPPER).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.mitre_defs
+      description: MITRE ATT&CK definitions associated with the rule.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.simple_schedule
+      description: The frequency at which the rule runs in a human-readable format.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.mapping_strategy
+      description: The strategy used for field mapping.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.suppression_fields
+      description: Fields used to determine alert suppression.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.alert_domain
+      description: The security domain the alert belongs to.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.crontab
+      description: The cron expression for the rule execution schedule.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.search_window
+      description: The time window the query searches across.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.user_defined_severity
+      description: Custom severity level defined by the user.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.drilldown_query_timeframe
+      description: The timeframe used for drilldown queries.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.user_defined_category
+      description: Custom category defined by the user.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.lookup_mapping
+      description: Mapping details for lookups.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.execution_mode
+      description: "How the rule is executed, for example: SCHEDULED."
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.name
+      description: The name of the correlation rule.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.is_enabled
+      description: Whether the correlation rule is currently active.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.investigation_query_link
+      description: The query used for further investigation.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.alert_name
+      description: The specific name assigned to the generated alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.suppression_enabled
+      description: Whether suppression is enabled for this rule.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.action
+      description: "The action taken when the rule triggers, for example: ALERTS."
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.dataset
+      description: The dataset the rule queries.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.alert_description
+      description: Detailed description of the generated alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.timezone
+      description: The timezone used for the rule schedule.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.xql_query
+      description: The XQL query string executed by the rule.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.alert_fields
+      description: Specific fields included in the alert output.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.description
+      description: General description of the correlation rule.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.alert_type
+      description: The type of alert generated.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.severity
+      description: The severity level of the rule.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.rule_id
+      description: The unique identifier for the correlation rule.
+      type: Number
+  - arguments:
+    - description: The correlation rule name.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      description: 'The correlation rule severity. Example: severity=low.'
+      name: severity
+      required: true
+      predefined:
+      - info
+      - low
+      - medium
+      - high
+      - critical
+    - description: 'The correlation rule XQL query. Example: xql_query="dataset = xdr_data | limit 1".'
+      name: xql_query
+      required: true
+    - auto: PREDEFINED
+      description: 'Whether the rule is enabled. Example: is_enabled=true.'
+      name: is_enabled
+      required: true
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: 'The alert category. Example: alert_category=dropper.'
+      name: alert_category
+      required: true
+      predefined:
+      - other
+      - persistence
+      - evasion
+      - tampering
+      - file_type_obfuscation
+      - privilege_escalation
+      - credential_access
+      - lateral_movement
+      - execution
+      - collection
+      - exfiltration
+      - infiltration
+      - dropper
+      - file_privilege_manipulation
+      - reconnaissance
+      - discovery
+    - auto: PREDEFINED
+      description: 'The rule execution mode. Example: execution_mode=scheduled.'
+      name: execution_mode
+      required: true
+      predefined:
+      - scheduled
+      - real_time
+    - description: 'The correlation rule timezone. Example: timezone="Asia/Jerusalem".'
+      name: timezone
+      required: true
+    - auto: PREDEFINED
+      description: 'The rule mapping strategy. Example: mapping_strategy=auto.'
+      name: mapping_strategy
+      required: true
+      predefined:
+      - auto
+      - custom
+    - description: The correlation rule description.
+      name: description
+    - description: The alert name.
+      name: alert_name
+    - description: The alert description.
+      name: alert_description
+    - description: Alert fields (string or dictionary).
+      name: alert_fields
+    - description: 'The search window timeframe. Example: search_window="1 hours".'
+      name: search_window
+    - description: 'The correlation rule schedule. Example: schedule="10 minutes".'
+      name: schedule
+    - description: 'Linux scheduling for the rule. Example: schedule_linux="*/10 * * * *".'
+      name: schedule_linux
+    - auto: PREDEFINED
+      description: Whether suppression is enabled.
+      name: suppression_enabled
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Duration of correlation rule suppression.
+      name: suppression_duration
+    - description: Suppression fields.
+      name: suppression_fields
+    - description: 'The correlation rule dataset. Example: dataset=alerts.'
+      name: dataset
+      required: true
+    - description: User-defined severity.
+      name: user_defined_severity
+    - description: User-defined category.
+      name: user_defined_category
+    - description: "MITRE definitions. For example: '{\"TA0005 - Defense Evasion\": [\"T1014 - Rootkit\"]}'."
+      name: mitre_defs_json
+    - description: Investigation query link.
+      name: investigation_query_link
+    - description: 'The drilldown query timeframe. Example: drilldown_query_timeframe="ALERT".'
+      name: drilldown_query_timeframe
+    description: Creates a new correlation rule.
+    name: xdr-correlation-rule-create
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.rule_id
+      description: Correlation rule ID.
+      type: String
+  - arguments:
+    - description: Correlation rule ID.
+      name: rule_id
+      required: true
+    - description: The correlation rule name.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      description: 'The correlation rule severity. Example: severity=low.'
+      name: severity
+      required: true
+      predefined:
+      - info
+      - low
+      - medium
+      - high
+      - critical
+    - description: 'The correlation rule XQL query. Example: xql_query="dataset = xdr_data | limit 1".'
+      name: xql_query
+      required: true
+    - auto: PREDEFINED
+      description: 'Whether the rule is enabled. Example: is_enabled=true.'
+      name: is_enabled
+      required: true
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: 'The alert category. Example: alert_category=dropper.'
+      name: alert_category
+      required: true
+      predefined:
+      - other
+      - persistence
+      - evasion
+      - tampering
+      - file_type_obfuscation
+      - privilege_escalation
+      - credential_access
+      - lateral_movement
+      - execution
+      - collection
+      - exfiltration
+      - infiltration
+      - dropper
+      - file_privilege_manipulation
+      - reconnaissance
+      - discovery
+    - description: 'The rule execution mode. Example: execution_mode=scheduled.'
+      name: execution_mode
+      required: true
+      predefined:
+      - scheduled
+      - real_time
+    - description: 'The correlation rule timezone. Example: timezone="Asia/Jerusalem".'
+      name: timezone
+      required: true
+    - auto: PREDEFINED
+      description: 'The rule mapping strategy. Example: mapping_strategy=auto.'
+      name: mapping_strategy
+      required: true
+      predefined:
+      - auto
+      - custom
+    - description: The correlation rule description.
+      name: description
+    - description: The alert name.
+      name: alert_name
+    - description: The alert description.
+      name: alert_description
+    - description: Alert fields (string or dictionary).
+      name: alert_fields
+    - description: 'The search window timeframe. Example: search_window="1 hours".'
+      name: search_window
+    - description: 'The correlation rule schedule. Example: schedule="10 minutes".'
+      name: schedule
+    - description: 'Linux scheduling for the rule. Example: schedule_linux="*/10 * * * *".'
+      name: schedule_linux
+    - auto: PREDEFINED
+      description: Whether suppression is enabled.
+      name: suppression_enabled
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Duration of correlation rule suppression.
+      name: suppression_duration
+    - description: Suppression fields.
+      name: suppression_fields
+    - description: 'The correlation rule dataset. Example: dataset=alerts.'
+      name: dataset
+      required: true
+    - description: User-defined severity.
+      name: user_defined_severity
+    - description: User-defined category.
+      name: user_defined_category
+    - description: "MITRE definitions. For example: '{\"TA0005 - Defense Evasion\": [\"T1014 - Rootkit\"]}'."
+      name: mitre_defs_json
+    - description: Investigation query link.
+      name: investigation_query_link
+    - description: 'The drilldown query timeframe. Example: drilldown_query_timeframe="ALERT".'
+      name: drilldown_query_timeframe
+    description: Updates an existing correlation rule.
+    name: xdr-correlation-rule-update
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.rule_id
+      description: Correlation rule ID.
+      type: String
+  - arguments:
+    - description: Correlation rule ID.
+      isArray: true
+      name: rule_id
+      required: true
+    description: Deletes correlation rules.
+    name: xdr-correlation-rule-delete
+  dockerimage: demisto/python3:3.12.12.7019815
   isfetch: true
   isfetch:xpanse: false
   script: ''

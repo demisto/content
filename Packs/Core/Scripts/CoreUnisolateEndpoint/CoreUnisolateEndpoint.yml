@@ -35,5 +35,6 @@ tests:
 marketplaces:
 - platform
 supportedModules:
-- agentix_xsiam
 - xsiam
+- cloud_runtime_security
+- edr

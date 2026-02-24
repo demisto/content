@@ -38,10 +38,9 @@ HEADERS = {"Key": API_KEY, "Accept": "application/json"}
 
 PROXY = demisto.params().get("proxy")
 if not demisto.params().get("proxy", False):
-    del os.environ["HTTP_PROXY"]
-    del os.environ["HTTPS_PROXY"]
-    del os.environ["http_proxy"]
-    del os.environ["https_proxy"]
+    # Remove proxy environment variables if they exist
+    for proxy_var in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:
+        os.environ.pop(proxy_var, None)
 
 CATEGORIES_NAME = {
     1: "DNS_Compromise",

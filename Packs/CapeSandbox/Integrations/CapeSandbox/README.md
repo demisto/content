@@ -1,4 +1,4 @@
-# CAPEv2 Malware Sandbox
+## Overview
 
 CAPE Sandbox is an open-source software for automating the analysis of suspicious files and URLs. To learn more about CAPE Sandbox, visit the [official CAPE documentation](https://capev2.readthedocs.io/).
 
