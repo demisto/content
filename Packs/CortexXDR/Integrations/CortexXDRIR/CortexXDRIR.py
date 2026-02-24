@@ -2411,13 +2411,15 @@ def get_vulnerability_details_command(client: Client, args: Dict) -> CommandResu
     response = client.get_vulnerability_details(vulnerability_id)
 
     hr_data = {"Vulnerability ID": response.get("vulnerabilityID"),
-               "Description": response.get("description")
+               "Description": response.get("description"),
+               "Score": response.get("cvss", {}).get("score"),
+               "Publish Date": response.get("publishedDate")
                }
     demisto.debug(f"Got the response {response}")
     readable_output = tableToMarkdown(
         name="Vulnerability Details",
         t=hr_data,
-        headers=["Vulnerability ID", "Description"],
+        headers=["Vulnerability ID", "Description", "Score", "Publish Date"],
         removeNull=True,
     )
 
@@ -2465,6 +2467,7 @@ def endpoint_triage_preset_list_command(client: Client) -> CommandResults:
     readable_output = tableToMarkdown(
         name="Endpoint Triage Presets",
         t=presets,
+        headers=["name", "uuid", "os", "type", "created_by", "description"],
         headerTransform=string_to_table_header,
         removeNull=True,
     )
@@ -2488,7 +2491,7 @@ def endpoint_triage_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         CommandResults: The command results.
     """
-    agent_ids = argToList(args.get("agent_id"))
+    agent_ids = argToList(args.get("endpoint_id"))
     collector_uuid = args.get("collector_uuid")
 
     request_data: Dict[str, Any] = {"agent_ids": agent_ids}
@@ -2498,8 +2501,9 @@ def endpoint_triage_command(client: Client, args: Dict) -> CommandResults:
     raw_response = client.triage_endpoint({"request_data": request_data})
 
     readable_output = tableToMarkdown(
-        name="Endpoint Triage",
+        name="Initiated Endpoints Triage",
         t=raw_response,
+        headers=["TRIAGE_ID", "SUCCESSFUL_AGENT_IDS", "UNSUCCESSFUL_AGENT_IDS"],
         headerTransform=string_to_table_header,
         removeNull=True,
     )
