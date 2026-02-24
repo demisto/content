@@ -13000,7 +13000,10 @@ script:
       required: true
     - name: service_name
       description: The service name. For AWS services, the service name is usually in the form com.amazonaws.<region>.<service>.
-      required: true
+    - name: service_network_arn
+      description: The Amazon Resource Name (ARN) of a service network that will be associated with the VPC endpoint of type service-network.
+    - name: service_region
+      description: The region where the service is hosted. The default is the current region.
     - name: vpc_endpoint_type
       description: The type of endpoint.
       required: false
@@ -13009,6 +13012,8 @@ script:
       - Interface
       - Gateway
       - GatewayLoadBalancer
+      - Resource
+      - ServiceNetwork
     - name: policy_document
       description: A policy to attach to the endpoint that controls access to the service. The policy must be in valid JSON format.
       required: false
@@ -13048,6 +13053,12 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - name: dns_options_private_dns_preference
+      description: The preference for which private domains have a private hosted zone created for and associated with the specified VPC.
+      required: false
+    - name: dns_options_private_dns_specified_domains
+      description: Indicates which of the private domains to create private hosted zones for and associate with the specified VPC.
+      required: false
     - name: private_dns_enabled
       description: Whether to associate a private hosted zone with the specified VPC. Applicable for Interface endpoints only.
       required: false
@@ -13055,11 +13066,11 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - name: resource_configuration_arn
+      description: The Amazon Resource Name (ARN) of a resource configuration that will be associated with the VPC endpoint of type resource.
+      required: false
     - name: tag_specifications
       description: The tags to apply to the VPC endpoint. Format key=<key>,value=<value>;key=<key>,value=<value>.
-      required: false
-    - name: subnet_configurations
-      description: The subnet configurations for the endpoint. Format SubnetId=subnet-xxx,Ipv4=x.x.x.x;SubnetId=subnet-yyy.
       required: false
     outputs:
     - contextPath: AWS.EC2.VpcEndpoints.VpcEndpointId

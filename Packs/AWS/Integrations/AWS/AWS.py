@@ -5166,39 +5166,30 @@ class EC2:
         Returns:
             CommandResults: Results containing VPC endpoint information
         """
-        kwargs = {
+        kwargs = remove_empty_elements({
             "VpcId": args.get("vpc_id"),
             "ServiceName": args.get("service_name"),
+            "ServiceNetworkArn": args.get("service_network_arn"),
+            "ServiceRegion": args.get("service_region"),
             "VpcEndpointType": args.get("vpc_endpoint_type"),
             "PolicyDocument": args.get("policy_document"),
             "RouteTableIds": argToList(args.get("route_table_ids")),
             "SubnetIds": argToList(args.get("subnet_ids")),
             "SecurityGroupIds": argToList(args.get("security_group_ids")),
             "IpAddressType": args.get("ip_address_type"),
-            "ClientToken": args.get("client_token"),
             "PrivateDnsEnabled": arg_to_bool_or_none(args.get("private_dns_enabled")),
+            "ResourceConfigurationArn": args.get("resource_configuration_arn"),
             "DnsOptions": {
                 "DnsRecordIpType": args.get("dns_options_dns_record_ip_type"),
                 "PrivateDnsOnlyForInboundResolverEndpoint": arg_to_bool_or_none(
                     args.get("dns_options_private_dns_only_for_inbound_resolver_endpoint")
                 ),
+                "PrivateDnsPreference": args.get("dns_options_private_dns_preference"),
+                "PrivateDnsSpecifiedDomains": argToList(args.get("dns_options_private_dns_specified_domains")),
             },
-            "TagSpecifications": [{"ResourceType": "vpc-endpoint", "Tags": parse_tag_field(args.get("tags"))}],
-        }
-
-        # Handle subnet configurations (format: SubnetId=subnet-xxx,Ipv4=x.x.x.x;SubnetId=subnet-yyy)
-        if subnet_configurations := args.get("subnet_configurations"):
-            subnet_configs = []
-            for config in subnet_configurations.split(";"):
-                config_dict = {}
-                for param in config.split(","):
-                    if "=" in param:
-                        key, value = param.split("=", 1)
-                        config_dict[key.strip()] = value.strip()
-                if config_dict:
-                    subnet_configs.append(config_dict)
-            if subnet_configs:
-                kwargs["SubnetConfigurations"] = subnet_configs
+            "TagSpecifications": [{"ResourceType": "vpc-endpoint", "Tags": parse_tag_field(args.get("tags"))}] if args.get(
+                "tags") else None,
+        })
 
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Creating VPC endpoint with parameters: {kwargs}")
@@ -5210,19 +5201,17 @@ class EC2:
         response = serialize_response_with_datetime_encoding(response)
         vpc_endpoint = response.get("VpcEndpoint", {})
 
-        readable_output = tableToMarkdown(
-            "VPC Endpoint",
-            vpc_endpoint,
-            headers=["VpcEndpointId", "State", "ServiceName", "VpcId", "VpcEndpointType"],
-            removeNull=True,
-            headerTransform=pascalToSpace,
-        )
-
         return CommandResults(
             outputs_prefix="AWS.EC2.VpcEndpoints",
             outputs_key_field="VpcEndpointId",
             outputs=vpc_endpoint,
-            readable_output=readable_output,
+            readable_output=tableToMarkdown(
+                "VPC Endpoint",
+                vpc_endpoint,
+                headers=["VpcEndpointId", "State", "ServiceName", "VpcId", "VpcEndpointType"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
             raw_response=response,
         )
 
