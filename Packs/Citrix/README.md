@@ -86,7 +86,7 @@ There is no context output for this command.
 
 ---
 
-# Citrix DaaS Integration
+## Citrix DaaS Integration
 
 Citrix DaaS simplifies the delivery and management of Citrix technologies by enabling organizations to deliver secure virtual apps and desktops from the cloud while maintaining centralized control and configuration management.
 
