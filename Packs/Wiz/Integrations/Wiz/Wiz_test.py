@@ -664,6 +664,39 @@ def test_set_issue_note(checkAPIerrors):
     assert res == test_set_issue_note_response
 
 
+@patch("Wiz.checkAPIerrors", return_value=test_set_issue_note_response)
+def test_set_issue_note_truncates_long_note(checkAPIerrors):
+    from Wiz import set_issue_comment, MAX_NOTE_LENGTH
+
+    long_note = "a" * (MAX_NOTE_LENGTH + 1)
+    set_issue_comment("12345678-2222-3333-1111-ff5fa2ff7f78", long_note)
+
+    call_args = checkAPIerrors.call_args
+    sent_text = call_args[0][1]["input"]["text"]
+    assert len(sent_text) <= MAX_NOTE_LENGTH
+    assert sent_text.endswith("... [truncated]")
+
+
+def test_truncate_note():
+    from Wiz import truncate_note, MAX_NOTE_LENGTH
+
+    # Short notes are unchanged
+    assert truncate_note("short note") == "short note"
+    assert truncate_note("") == ""
+    assert truncate_note(None) is None
+
+    # Exactly at limit is unchanged
+    exact = "a" * MAX_NOTE_LENGTH
+    assert truncate_note(exact) == exact
+
+    # Over limit gets truncated
+    long_text = "a" * (MAX_NOTE_LENGTH + 1)
+    result = truncate_note(long_text)
+    assert len(result) <= MAX_NOTE_LENGTH
+    assert result.endswith("... [truncated]")
+    assert len(result) == MAX_NOTE_LENGTH
+
+
 test_set_issue_note_fail_response = {
     "errors": [
         {

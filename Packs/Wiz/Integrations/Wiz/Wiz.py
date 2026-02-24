@@ -8,6 +8,7 @@ DEMISTO_OCCURRED_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 WIZ_API_TIMEOUT = 300  # Increase timeout for Wiz API
 WIZ_HTTP_QUERIES_LIMIT = 500  # Request limit during run
 WIZ_API_LIMIT = 500  # limit number of returned records from the Wiz API
+MAX_NOTE_LENGTH = 1400  # Hard limit for issue note text length enforced by the Wiz API
 WIZ = "wiz"
 
 WIZ_VERSION = "1.4.0"
@@ -2261,7 +2262,7 @@ def reject_or_resolve_issue(issue_id, reject_or_resolve_reason, reject_or_resolv
 
     variables = {
         "issueId": issue_id,
-        "patch": {"status": status, "note": reject_or_resolve_comment, "resolutionReason": reject_or_resolve_reason},
+        "patch": {"status": status, "note": truncate_note(reject_or_resolve_comment), "resolutionReason": reject_or_resolve_reason},
     }
     query = UPDATE_ISSUE_QUERY
 
@@ -2336,6 +2337,18 @@ def _get_issue(issue_id, is_evidence=False):
     return issue_response
 
 
+def truncate_note(text):
+    """
+    Truncate a note to MAX_NOTE_LENGTH characters.
+    If truncated, appends '... [truncated]' within the limit.
+    """
+    if not text or len(text) <= MAX_NOTE_LENGTH:
+        return text
+
+    suffix = "... [truncated]"
+    return text[: MAX_NOTE_LENGTH - len(suffix)] + suffix
+
+
 def set_issue_comment(issue_id, comment):
     """
     Set a note on Wiz Issue
@@ -2345,6 +2358,7 @@ def set_issue_comment(issue_id, comment):
     if not is_valid_id:
         return message
 
+    comment = truncate_note(comment)
     issue_variables = {"input": {"issueId": issue_id, "text": comment}}
     issue_query = CREATE_COMMENT_QUERY
 
