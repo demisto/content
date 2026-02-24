@@ -13,9 +13,9 @@ def test_retrieve_data_from_xdr_sanity_check(mocker):
 
     # Mock return values
     initial_response = [
-        {"Contents": {"status": "PENDING"}, "Metadata": {"pollingArgs": {"query_id": "abc123", "query_name": "TEST"}}}
+        {"Type": 1, "Contents": {"status": "PENDING"}, "Metadata": {"pollingArgs": {"query_id": "abc123", "query_name": "TEST"}}}
     ]
-    completed_response = [{"Contents": {"status": "COMPLETED"}, "HumanReadable": "Query results here"}]
+    completed_response = [{"Type": 1, "Contents": {"status": "COMPLETED"}, "HumanReadable": "Query results here"}]
 
     # Patching dependencies
     mock_execute = mocker.patch(
@@ -57,7 +57,7 @@ def test_check_status(mocker):
     }
 
     # Mock return values
-    completed_response = [{"Contents": {"status": "COMPLETED", "results": []}}]
+    completed_response = [{"Type": 1, "Contents": {"status": "COMPLETED", "results": []}}]
 
     # Patching dependencies
     mock_execute = mocker.patch("SearchIndicatorInEvents.demisto.executeCommand", side_effect=[completed_response])
