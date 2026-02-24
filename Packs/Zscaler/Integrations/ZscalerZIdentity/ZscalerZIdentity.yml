@@ -19,6 +19,14 @@ configuration:
   required: true
   type: 9
   section: Connect
+- additionalinfo: If enabled, the integration will activate the command changes after each execution. If disabled, use the 'zia-activate-changes' command to activate Zscaler command changes.
+  defaultvalue: 'true'
+  display: Auto Activate Changes
+  name: auto_activate
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -34,15 +42,7 @@ configuration:
   - F - Reliability cannot be judged
   section: Collect
   advanced: true
-  required: false
-- additionalinfo: If enabled, the integration will activate the command changes after each execution. If disabled, use the 'zia-activate-changes' command to activate Zscaler command changes.
-  defaultvalue: 'true'
-  display: Auto Activate Changes
-  name: auto_activate
-  type: 8
-  section: Connect
-  advanced: true
-  required: false
+  required: true
 - additionalinfo: 'Suspicious URL categories for security alerts. Default: SUSPICIOUS_DESTINATION, SPYWARE_OR_ADWARE'
   defaultvalue: SUSPICIOUS_DESTINATION,SPYWARE_OR_ADWARE
   display: Suspicious URL categories
@@ -90,7 +90,7 @@ script:
       - 'False'
       defaultValue: 'False'
     outputs:
-    - contextPath: ZIA.DenyList.blacklistUrls
+    - contextPath: ZIA.DenyList
       description: The list of URLs and IPs on the denylist.
       type: String
   - name: zia-denylist-update
@@ -112,7 +112,7 @@ script:
       - REMOVE_FROM_LIST
       - OVERWRITE
   - name: zia-allowlist-list
-    description: Gets a list of URLs that are on the allowlist.
+    description: Gets a list of URLs and IPs that are on the allowlist.
     arguments:
     - name: filter
       description: Filter results by URL or IP objects.
@@ -133,7 +133,7 @@ script:
       - 'False'
       defaultValue: 'False'
     outputs:
-    - contextPath: ZIA.AllowList.whitelistUrls
+    - contextPath: ZIA.AllowList
       description: The list of URLs on the allowlist.
       type: String
   - name: zia-allowlist-update
@@ -141,9 +141,11 @@ script:
     execution: true
     arguments:
     - name: url
-      description: A comma-separated list of URLs or IPs to update the allowlist. For example, snapchat.com,facebook.com.
+      description: A comma-separated list of URLs to update the allowlist. For example, snapchat.com,facebook.com.
       isArray: true
-      required: true
+    - name: ip
+      description: A comma-separated list of IPs to update the allowlist. For example, 1.2.3.4,8.8.8.8.
+      isArray: true
     - name: action
       description: The action applied to the allowlist.
       required: true
@@ -156,9 +158,9 @@ script:
     description: Gets information about all or custom URL categories. By default, the response includes keywords. The lite option cannot be used in combination with other parameters.
     arguments:
     - name: category_id
-      description: Gets the URL category information for the specified ID.
+      description: Gets the URL category information for the specified ID. The category Id should be one of the possible values https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/url-categories/get-url-categories.
     - name: custom_only
-      description: If set to true, gets information on custom URL categories only.
+      description: "If set to true, gets information on custom URL categories only. Default value: false"
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -219,13 +221,13 @@ script:
     execution: true
     arguments:
     - name: category_id
-      description: The unique identifier for the URL category.
+      description: The unique identifier for the URL category. The category Id should be one of the possible values https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/url-categories/get-url-categories.
       required: true
     - name: url
       description: 'A comma-separated list of URLs to update the specified category. For example, pandora.com,spotify.com. Important: If any URL contains a comma (,), you must pass the url argument as a JSON list wrapped in backticks (`). Example: url=`["https://example.com/foo,bar"]`'
       isArray: true
     - name: ip
-      description: A comma-separated list of IP ranges to update the specified category.
+      description: A comma-separated list of IP ranges to update the specified category. For example, 1.2.3.4,8.8.8.8.
       isArray: true
     - name: action
       description: The action applied to the URL category.
@@ -239,15 +241,15 @@ script:
       description: Custom keywords associated with a URL category. Up to 2048 custom keywords can be added per organization across all categories.
       isArray: true
     - name: description
-      description: Description of the URL category.
+      description: Description of the URL category. Contains tag name and needs to be localized on client side in case of predefined category
     - name: db_categorized_urls
       description: URLs added to a custom URL category that are also retained under the original parent URL category.
       isArray: true
     - name: keywords_retaining_parent_category
-      description: Retained custom keywords from the parent URL category.
+      description: Retained custom keywords from the parent URL category. Up to 2048 retained parent keywords can be added per organization across all categories
       isArray: true
     - name: ip_ranges_retaining_parent_category
-      description: The retaining parent custom IP address ranges associated with a URL category.
+      description: The retaining parent custom IP address ranges associated with a URL category. Up to 2000 custom IP ranges and retaining parent custom IP address ranges can be added, per organization, across all categories.
       isArray: true
   - name: zia-url-quota-get
     description: Gets information on the number of unique URLs that are currently provisioned for your organization as well as how many URLs you can add before reaching that number.
@@ -265,14 +267,14 @@ script:
     - name: group_id
       description: The unique identifier for the IP destination group.
     - name: include_ipv6
-      description: Retrieve IPv6 destination groups.
+      description: "Retrieve IPv6 destination groups. Possible values are: True, False. The default is False."
       auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
       defaultValue: 'False'
     - name: exclude_type
-      description: Filter based on the IP destination group's type to exclude.
+      description: Filter based on the IP destination group's type.
       auto: PREDEFINED
       predefined:
       - DSTN_IP
@@ -280,7 +282,7 @@ script:
       - DSTN_DOMAIN
       - DSTN_OTHER
     - name: category_type
-      description: Filter based on the IP destination group's type. Only works with the 'lite' argument.
+      description: Filter based on the IP destination group's type.
       auto: PREDEFINED
       predefined:
       - DSTN_IP
@@ -344,15 +346,15 @@ script:
       - DSTN_DOMAIN
       - DSTN_OTHER
     - name: address
-      description: Destination IP addresses, FQDNs, or wildcard FQDNs.
+      description: Destination IP addresses.
       isArray: true
     - name: description
       description: Additional information about the destination IP group.
     - name: ip_category
-      description: Destination IP address URL categories.
+      description: Destination IP address URL categories. Possible values can be found here https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/firewall-policies/ip-destination-group-resource-edit-destination-ip-group.
       isArray: true
     - name: country
-      description: Destination IP address countries.
+      description: Destination IP address countries. Possible values can be found here https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/firewall-policies/ip-destination-group-resource-edit-destination-ip-group.
       isArray: true
     outputs:
     - contextPath: ZIA.IPDestinationGroup.id
@@ -391,15 +393,15 @@ script:
       - DSTN_DOMAIN
       - DSTN_OTHER
     - name: address
-      description: Destination IP addresses, FQDNs, or wildcard FQDNs.
+      description: Destination IP addresses.
       isArray: true
     - name: description
       description: Additional information about the destination IP group.
     - name: ip_category
-      description: Destination IP address URL categories.
+      description: Destination IP address URL categories. Possible values can be found here https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/firewall-policies/ip-destination-group-resource-edit-destination-ip-group.
       isArray: true
     - name: country
-      description: Destination IP address countries.
+      description: Destination IP address countries. Possible values can be found here https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/firewall-policies/ip-destination-group-resource-edit-destination-ip-group.
       isArray: true
     - name: is_non_editable
       description: If set to true, the destination IP address group is non-editable.
@@ -441,7 +443,7 @@ script:
     description: Gets a list of all users or the user information for the specified ID.
     arguments:
     - name: user_id
-      description: The unique identifier for the user.
+      description: Filters by the unique identifier for the user.
     - name: dept
       description: Filters by department name.
     - name: group
@@ -680,7 +682,6 @@ script:
       description: A comma-separated list of URLs for which to look up the classification. For example, abc.com,xyz.com. Up to 100 URLs can be looked up per request, and a URL cannot exceed 1,024 characters.
       isArray: true
       required: true
-      default: true
     outputs:
     - contextPath: ZIA.URL.Data
       description: The URL that was searched.
