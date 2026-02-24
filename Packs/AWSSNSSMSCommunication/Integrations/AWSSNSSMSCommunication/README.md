@@ -22,6 +22,7 @@ The AWS SNS SMS Communication integration enables interactive two-way SMS commun
 Built-in XSOAR Ask tasks work with this integration but provide a suboptimal user experience for SMS.
 
 **How it works:**
+
 - Ask tasks send SMS with clickable URLs: `"Approve? Yes (https://...) No (https://...)"`
 - User clicks the URL in the SMS
 - Phone browser opens with a web form
@@ -29,6 +30,7 @@ Built-in XSOAR Ask tasks work with this integration but provide a suboptimal use
 - Response is processed through XSOAR's web interface (not through SMS reply)
 
 **Limitations:**
+
 - User must leave SMS app and use browser
 - Requires internet connection and browser interaction
 - No native SMS reply experience
@@ -38,6 +40,7 @@ Built-in XSOAR Ask tasks work with this integration but provide a suboptimal use
 The **SMSAskUser** automation script (included in this pack) provides a native SMS experience with reply codes.
 
 **How it works:**
+
 1. SMSAskUser creates entitlement GUID before sending SMS
 2. Formats message as: `"Question - Reply option1 or option2: GUID@incident|task"`
 3. Integration extracts options and GUID, generates reply codes
@@ -47,6 +50,7 @@ The **SMSAskUser** automation script (included in this pack) provides a native S
 6. Integration maps code -> option -> entitlement -> task resumption
 
 **Advantages:**
+
 - Native SMS reply experience
 - No browser required
 - Works offline (user can reply anytime)
@@ -238,6 +242,7 @@ Bypasses AWS infrastructure to test the integration's reply handling logic.
 ```
 
 **Testing Workflow:**
+
 1. Send SMS using SMSAskUser script
 2. List entitlements to see generated codes: `!aws-sns-sms-list-entitlements`
 3. Simulate reply: `!aws-sns-sms-inject-reply phone_number="..." reply_code="1234"`
@@ -256,6 +261,7 @@ When a user's reply code is successfully matched and processed:
 - **Available variables**: `{reply_code}`, `{chosen_option}`, `{phone_number}`
 
 **Example custom messages:**
+
 - `"Response received: {chosen_option}"`
 - `"{reply_code} confirmed - you selected {chosen_option}"`
 
@@ -311,10 +317,12 @@ Q3: Did you do the last thing?
 #### Multiple Concurrent Questions
 
 Both modes support multiple active questions to the same phone number:
+
 - Each option across ALL questions gets a unique code
 - Integration tracks all code-to-option mappings in context
 
 **Reply Processing Flow:**
+
 1. User replies with code (e.g., "1234" or "1")
 2. Integration validates the code is numeric
 3. Finds matching entitlement and mapped option
@@ -392,9 +400,11 @@ This is expected behavior! The integration supports multiple concurrent question
 ## Version History
 
 ### 1.0.38 (2026-02-11)
+
 - Updated integration description and README documentation for Reply Code Mode feature
 
 ### 1.0.37 (2026-02-11)
+
 - Added **Reply Code Mode** configuration parameter:
   - **random** (default): 4-digit reply codes (existing behavior)
   - **sequential**: Simple incrementing numbers (1, 2, 3...) for simpler UX
@@ -402,6 +412,7 @@ This is expected behavior! The integration supports multiple concurrent question
 - Reply code validation now accepts any numeric code (supports both modes)
 
 ### 1.0.33 (2026-01-19)
+
 - Added **SMS Reply Feedback** feature for improved user experience:
   - Success feedback: Sends confirmation SMS when reply is processed
   - Failure feedback: Lists available reply codes for unrecognized replies
@@ -409,72 +420,91 @@ This is expected behavior! The integration supports multiple concurrent question
 - Customizable success message with variables: {reply_code}, {chosen_option}, {phone_number}
 
 ### 1.0.18 (2026-01-08)
+
 - Added comprehensive detailed description to integration YAML
 - Beautified SMSAskUser script with versioning, comments, and docstrings
 - Updated README with critical Ask task documentation
 
 ### 1.0.17 (2026-01-08)
+
 - Added `aws-sns-sms-inject-reply` test command for debugging without SQS
 
 ### 1.0.16 (2026-01-08)
+
 - **REMOVED non-functional URL decoding** for built-in Ask tasks
 - Clarified SMSAskUser is ONLY supported method for Ask-style SMS
 - Updated documentation to explain why built-in Ask tasks don't work
 
 ### 1.0.15 (2026-01-08)
+
 - DEPRECATED: Attempted URL decoding (does not work)
 
 ### 1.0.14 (2026-01-08)
+
 - Added SMSAskUser automation script format support
 - Parse "Question - Reply option1 or option2: GUID@incident|task" format
 
 ### 1.0.13 (2026-01-08)
+
 - **BREAKING CHANGE**: Redesigned reply code system
 - Each option now has unique 4-digit code (e.g., "Yes (1234) or No (5678)")
 - Enables multiple concurrent questions to same phone number
 - Updated entitlement storage to use codes_to_options mappings
 
 ### 1.0.12 (2026-01-08)
+
 - Fixed Ask task integration with URL cleaning
 
 ### 1.0.11 (2026-01-08)
+
 - Added `aws-sns-sms-list-entitlements` command
 - Comprehensive debug logging throughout integration
 
 ### 1.0.10 (2026-01-08)
+
 - Changed test-module to use SQS get_queue_attributes
 
 ### 1.0.9 (2026-01-08)
+
 - Fixed test-module by removing unsupported MaxItems parameter
 
 ### 1.0.8 (2026-01-06)
+
 - Added SMSAskUser automation script
 
 ### 1.0.7 (2026-01-06)
+
 - Updated Docker image to demisto/boto3py3:1.0.0.115129
 
 ### 1.0.6 (2026-01-06)
+
 - Added version tracking and changelog to integration Python code
 
 ### 1.0.5 (2026-01-06)
+
 - Added messaging/communication tags
 - Updated category to "Messaging and Conferencing"
 
 ### 1.0.4 (2026-01-06)
+
 - Renamed command to "send-notification" for Ask task compatibility
 
 ### 1.0.3 (2026-01-06)
+
 - Added Role ARN authentication
 - Added timeout/retries configuration
 - Added STS regional endpoints support
 
 ### 1.0.2 (2026-01-06)
+
 - Updated author and community support notice
 
 ### 1.0.1 (2026-01-06)
+
 - Added integration image
 
 ### 1.0.0 (2026-01-06)
+
 - Initial release
 - SNS SMS sending with entitlement support
 - SQS reply polling with long-running execution
