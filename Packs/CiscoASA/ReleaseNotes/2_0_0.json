@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Compatible with XSIAM 3.4 and Platform 1.4 or later.\nRefactor: Comprehensive update to Cisco ASA parsing and modeling logic."
+}
