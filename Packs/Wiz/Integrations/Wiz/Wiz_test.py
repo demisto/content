@@ -12,6 +12,12 @@ from Packs.Wiz.Integrations.Wiz.Wiz import (
     WizStatus,
     WizSeverity,
     WizIssueType,
+    WizMirrorDirection,
+    WizMirrorParam,
+    WizMirrorField,
+    XSOAR_MIRROR_MARKER,
+    WIZ_MIRRORED_FIELDS,
+    DEFAULT_RESOLUTION_REASON,
     get_fetch_issues_variables,
     PULL_ISSUES_DEFAULT_VARIABLES,
     DEFAULT_FETCH_ISSUE_STATUS,
@@ -1653,3 +1659,284 @@ def test_validation_response_to_dict():
     assert result["error_message"] is None
     assert result["value"] == ["test"]
     assert result["severity_list"] == ["CRITICAL"]
+
+
+# ===== MIRROR TESTS =====
+
+
+@pytest.fixture
+def mock_mirror_params():
+    """Common demisto mock setup for mirror tests requiring direction + instance."""
+    with patch.object(
+        demisto,
+        "params",
+        return_value={WizMirrorParam.DIRECTION: "Incoming", WizMirrorParam.COMMENT_TAG: "comments"},
+    ), patch.object(demisto, "integrationInstance", return_value="Wiz_instance_1"):
+        yield
+
+
+def test_get_mapping_fields_command():
+    """Test get_mapping_fields_command returns scheme with expected fields"""
+    from Wiz import get_mapping_fields_command
+
+    result = get_mapping_fields_command()
+    # GetMappingFieldsResponse has scheme_types_mappings attribute
+    assert result is not None
+    schemes = result.scheme_types_mappings
+    assert len(schemes) == 1
+    assert schemes[0].type_name == "Wiz Issue"
+    for field in WIZ_MIRRORED_FIELDS:
+        assert field in schemes[0].fields
+
+
+@patch("Wiz.checkAPIerrors")
+def test_get_modified_remote_data_command(mock_check_api):
+    """Test get_modified_remote_data_command extracts IDs correctly"""
+    from Wiz import get_modified_remote_data_command
+
+    mock_check_api.return_value = {
+        "data": {
+            "issues": {
+                "nodes": [
+                    {"id": "11111111-1111-1111-1111-111111111111", "status": "OPEN"},
+                    {"id": "22222222-2222-2222-2222-222222222222", "status": "RESOLVED"},
+                ],
+                "pageInfo": {"hasNextPage": False},
+            }
+        }
+    }
+
+    args = {"lastUpdate": "2025-01-01T00:00:00Z"}
+    with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "50"}):
+        result = get_modified_remote_data_command(args)
+
+    assert result.modified_incident_ids == [
+        "11111111-1111-1111-1111-111111111111",
+        "22222222-2222-2222-2222-222222222222",
+    ]
+
+
+@patch("Wiz.get_issue")
+def test_get_remote_data_command(mock_get_issue, mock_mirror_params):
+    """Test get_remote_data_command returns issue with mirror metadata and note entries"""
+    from Wiz import get_remote_data_command
+
+    mock_get_issue.return_value = [
+        {
+            "id": "11111111-1111-1111-1111-111111111111",
+            "status": "OPEN",
+            "severity": "HIGH",
+            "notes": [
+                {
+                    "text": "New finding from team",
+                    "createdAt": "2025-06-01T10:00:00Z",
+                    "updatedAt": "2025-06-01T10:00:00Z",
+                    "user": {"name": "Alice"},
+                    "serviceAccount": None,
+                }
+            ],
+        }
+    ]
+
+    args = {"id": "11111111-1111-1111-1111-111111111111", "lastUpdate": "2025-01-01T00:00:00Z"}
+    result = get_remote_data_command(args)
+
+    assert result.mirrored_object["id"] == "11111111-1111-1111-1111-111111111111"
+    assert result.mirrored_object[WizMirrorField.DIRECTION] == "In"
+    assert result.mirrored_object[WizMirrorField.INSTANCE] == "Wiz_instance_1"
+    assert len(result.entries) == 1
+    assert "Alice" in result.entries[0]["Contents"]
+
+
+@patch("Wiz.get_issue")
+def test_get_remote_data_command_issue_not_found(mock_get_issue):
+    """Test get_remote_data_command with empty response"""
+    from Wiz import get_remote_data_command
+
+    mock_get_issue.return_value = {}
+
+    args = {"id": "11111111-1111-1111-1111-111111111111", "lastUpdate": "2025-01-01T00:00:00Z"}
+    result = get_remote_data_command(args)
+
+    assert result.mirrored_object == {}
+    assert result.entries == []
+
+
+@patch("Wiz.get_issue")
+def test_get_remote_data_skips_xsoar_mirrored_notes(mock_get_issue, mock_mirror_params):
+    """Test that notes containing XSOAR_MIRROR_MARKER are skipped"""
+    from Wiz import get_remote_data_command
+
+    mock_get_issue.return_value = [
+        {
+            "id": "11111111-1111-1111-1111-111111111111",
+            "status": "OPEN",
+            "notes": [
+                {
+                    "text": f"(analyst): some note\n\n{XSOAR_MIRROR_MARKER}",
+                    "createdAt": "2025-06-01T10:00:00Z",
+                    "updatedAt": "2025-06-01T10:00:00Z",
+                    "user": {"name": "Bot"},
+                    "serviceAccount": None,
+                },
+                {
+                    "text": "Genuine Wiz note",
+                    "createdAt": "2025-06-01T11:00:00Z",
+                    "updatedAt": "2025-06-01T11:00:00Z",
+                    "user": {"name": "Bob"},
+                    "serviceAccount": None,
+                },
+            ],
+        }
+    ]
+
+    args = {"id": "11111111-1111-1111-1111-111111111111", "lastUpdate": "2025-01-01T00:00:00Z"}
+    result = get_remote_data_command(args)
+
+    assert len(result.entries) == 1
+    assert "Bob" in result.entries[0]["Contents"]
+
+
+@pytest.mark.parametrize(
+    "limit_input,expected_first",
+    [
+        ("0", 1),
+        ("1000", 500),
+        ("invalid", 50),
+    ],
+)
+@patch("Wiz.checkAPIerrors")
+def test_mirror_limit_validation(mock_check_api, limit_input, expected_first):
+    """Test that mirror_limit is clamped to 1-500 range and handles invalid input"""
+    from Wiz import get_modified_remote_data_command
+
+    mock_check_api.return_value = {"data": {"issues": {"nodes": [], "pageInfo": {"hasNextPage": False}}}}
+
+    args = {"lastUpdate": "2025-01-01T00:00:00Z"}
+    with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: limit_input}):
+        get_modified_remote_data_command(args)
+    call_variables = mock_check_api.call_args[0][1]
+    assert call_variables["first"] == expected_first
+
+
+@patch("Wiz.resolve_issue")
+def test_handle_field_changes_status_resolved(mock_resolve):
+    """Test _handle_field_changes with resolved status"""
+    from Wiz import _handle_field_changes
+
+    mock_resolve.return_value = {}
+    _handle_field_changes("11111111-1111-1111-1111-111111111111", {"status": "resolved", "resolutionReason": "ISSUE_FIXED"})
+
+    mock_resolve.assert_called_once_with(
+        issue_id="11111111-1111-1111-1111-111111111111", resolution_reason="ISSUE_FIXED", resolution_note=""
+    )
+
+
+@patch("Wiz.reopen_issue")
+def test_handle_field_changes_status_reopen(mock_reopen):
+    """Test _handle_field_changes with open status"""
+    from Wiz import _handle_field_changes
+
+    mock_reopen.return_value = {}
+    _handle_field_changes("11111111-1111-1111-1111-111111111111", {"status": "open"})
+
+    mock_reopen.assert_called_once_with(issue_id="11111111-1111-1111-1111-111111111111", reopen_note="")
+
+
+@patch("Wiz.set_issue_comment")
+def test_handle_outgoing_entries(mock_set_comment):
+    """Test _handle_outgoing_entries pushes notes with marker"""
+    from Wiz import _handle_outgoing_entries
+
+    mock_set_comment.return_value = {}
+    entries = [{"contents": "Investigation complete", "user": "analyst@corp.com"}]
+
+    _handle_outgoing_entries("11111111-1111-1111-1111-111111111111", entries)
+
+    mock_set_comment.assert_called_once()
+    call_args = mock_set_comment.call_args
+    assert XSOAR_MIRROR_MARKER in call_args[1]["comment"]
+    assert "analyst@corp.com" in call_args[1]["comment"]
+
+
+@patch("Wiz.set_issue_due_date")
+def test_handle_field_changes_due_date(mock_set_due):
+    """Test _handle_field_changes with due date change"""
+    from Wiz import _handle_field_changes
+
+    mock_set_due.return_value = {}
+    _handle_field_changes("11111111-1111-1111-1111-111111111111", {"dueAt": "2025-12-31"})
+
+    mock_set_due.assert_called_once_with(issue_id="11111111-1111-1111-1111-111111111111", due_at="2025-12-31")
+
+
+@patch("Wiz.resolve_issue")
+def test_handle_incident_closed(mock_resolve):
+    """Test _handle_incident_closed resolves issue in Wiz"""
+    from Wiz import _handle_incident_closed
+
+    mock_resolve.return_value = {}
+    _handle_incident_closed("11111111-1111-1111-1111-111111111111")
+
+    mock_resolve.assert_called_once_with(
+        issue_id="11111111-1111-1111-1111-111111111111",
+        resolution_reason=DEFAULT_RESOLUTION_REASON,
+        resolution_note="Resolved from XSOAR",
+    )
+
+
+def test_update_remote_system_no_remote_id():
+    """Test update_remote_system_command returns early with no remote_id"""
+    from Wiz import update_remote_system_command
+
+    result = update_remote_system_command({"remoteId": "", "data": {}, "entries": [], "incidentChanged": False})
+
+    assert result == ""
+
+
+@patch("Packs.Wiz.Integrations.Wiz.Wiz.demisto")
+def test_build_incidents_with_mirror_metadata(mock_demisto):
+    """Test build_incidents adds mirror metadata when mirroring enabled"""
+    mock_demisto.params.return_value = {
+        WizMirrorParam.DIRECTION: "Incoming And Outgoing",
+        WizMirrorParam.COMMENT_TAG: "comments",
+    }
+    mock_demisto.integrationInstance.return_value = "Wiz_instance_1"
+    mock_demisto.get = demisto.get
+
+    issue = {
+        "id": "11111111-1111-1111-1111-111111111111",
+        "severity": "HIGH",
+        "createdAt": "2025-01-01T00:00:00Z",
+        "sourceRule": {"name": "Test Rule"},
+    }
+
+    result = build_incidents(issue)
+
+    raw = json.loads(result["rawJSON"])
+    assert raw[WizMirrorField.DIRECTION] == "Both"
+    assert raw[WizMirrorField.INSTANCE] == "Wiz_instance_1"
+    assert raw[WizMirrorField.ID] == "11111111-1111-1111-1111-111111111111"
+    assert raw[WizMirrorField.TAGS] == ["comments"]
+
+
+@patch("Packs.Wiz.Integrations.Wiz.Wiz.demisto")
+def test_build_incidents_without_mirror_metadata(mock_demisto):
+    """Test build_incidents does NOT add mirror metadata when direction is None"""
+    mock_demisto.params.return_value = {WizMirrorParam.DIRECTION: "None"}
+    mock_demisto.integrationInstance.return_value = "Wiz_instance_1"
+    mock_demisto.get = demisto.get
+
+    issue = {
+        "id": "11111111-1111-1111-1111-111111111111",
+        "severity": "HIGH",
+        "createdAt": "2025-01-01T00:00:00Z",
+        "sourceRule": {"name": "Test Rule"},
+    }
+
+    result = build_incidents(issue)
+
+    raw = json.loads(result["rawJSON"])
+    assert WizMirrorField.DIRECTION not in raw
+    assert WizMirrorField.INSTANCE not in raw
+    assert WizMirrorField.ID not in raw
