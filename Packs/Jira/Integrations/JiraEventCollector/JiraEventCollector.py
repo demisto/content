@@ -330,8 +330,9 @@ def main():
     if is_oauth and oauth_client and hasattr(oauth_client, 'cloud_id') and oauth_client.cloud_id:
         # For OAuth with Cloud ID, use the cloud-specific URL
         # We force the base URL to be the Atlassian API gateway for Cloud OAuth
+        # Must use API v3 — the v2 audit endpoint does not support OAuth 2.0 (3LO) granular scopes
         base_url = "https://api.atlassian.com/ex/jira"
-        demisto_params["url"] = f"{base_url}/{oauth_client.cloud_id}/rest/api/2/auditing/record"
+        demisto_params["url"] = f"{base_url}/{oauth_client.cloud_id}/rest/api/3/auditing/record"
     else:
         # For Basic auth or On-Prem OAuth
         # Jira Server/Data Center uses API v2. Cloud supports both v2 and v3.

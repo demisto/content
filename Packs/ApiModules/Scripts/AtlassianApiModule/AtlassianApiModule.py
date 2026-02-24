@@ -146,6 +146,9 @@ class AtlassianOAuthClient(ABC):
         """
         Start OAuth flow and return authorization URL.
         
+        Constructs the Atlassian OAuth 2.0 (3LO) authorization URL with all required
+        parameters including the 'state' parameter (required by Atlassian).
+        
         Returns:
             Authorization URL for user to visit
             
@@ -154,26 +157,30 @@ class AtlassianOAuthClient(ABC):
         """
         scopes = self.get_oauth_scopes()
         
+        # Generate a random state parameter for CSRF protection (required by Atlassian)
+        state = base64.urlsafe_b64encode(os.urandom(24)).decode("utf-8")
+        
+        # Store state in integration context for validation on callback
+        integration_context = get_integration_context()
+        integration_context["oauth_state"] = state
+        set_integration_context(integration_context)
+        
         params = assign_params(
             audience="api.atlassian.com",
             client_id=self.client_id,
             scope=" ".join(scopes),
             redirect_uri=self.callback_url,
+            state=state,
             response_type="code",
             prompt="consent",
         )
         
-        response = requests.get(
-            urljoin(ATLASSIAN_AUTH_URL, "authorize"),
-            params=params,
-            verify=self.verify,
-            proxies=handle_proxy() if self.proxy else None,
-            allow_redirects=False
-        )
+        # Build the authorization URL directly instead of making a request
+        # Atlassian OAuth 2.0 (3LO) requires the user to visit the URL directly
+        from urllib.parse import urlencode
+        auth_url = f"{ATLASSIAN_AUTH_URL}/authorize?{urlencode(params)}"
         
-        if response.url:
-            return response.url
-        raise DemistoException("No authorization URL was returned")
+        return auth_url
 
     def oauth_complete(self, code: str) -> None:
         """
@@ -201,13 +208,20 @@ class JiraCloudOAuthClient(AtlassianOAuthClient):
         """
         Return the OAuth scopes required for Jira Cloud.
         
+        The audit log API requires both the classic 'manage:jira-configuration' scope
+        and the granular 'read:audit-log:jira' scope. The classic scope is needed because
+        the audit endpoint is an admin-level API. Both must also be configured in the
+        Atlassian Developer Console for the OAuth app.
+        
         Returns:
             List of required OAuth scopes
         """
         return [
-            "read:audit-log:jira",
-            "read:jira-user",
-            "offline_access",  # For refresh token
+            "read:audit-log:jira",       # Granular scope for audit log access
+            "manage:jira-configuration",  # Classic admin scope required by audit API
+            "read:jira-work",             # Required for API v3 access
+            "read:jira-user",             # User info access
+            "offline_access",             # For refresh token
         ]
 
 
