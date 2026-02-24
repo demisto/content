@@ -575,6 +575,7 @@ def test_has_next_page(mocker, capfd):
         valid_json_paging["data"]["issues"]["pageInfo"]["endCursor"] = "test"
         mocker.patch("Wiz.checkAPIerrors", side_effect=[valid_json_paging, VALID_RESPONSE_JSON])
         mocker.patch("CommonServerPython.tableToMarkdown", return_value=[])
+        mocker.patch.object(demisto, "getLastRun", return_value={"time": "2025-01-01T00:00:00Z"})
         fetch_issues(450)
 
 
