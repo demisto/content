@@ -12949,11 +12949,9 @@ script:
     - name: vpc_id
       description: The ID of the VPC.
       required: true
-    outputs: []
 
   - name: aws-ec2-vpc-endpoint-create
     description: Creates a VPC endpoint for a specified service. An endpoint enables you to create a private connection between your VPC and the service.
-    execution: true
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -13044,17 +13042,14 @@ script:
       - ipv6
       - service-defined
     - name: dns_options_private_dns_only_for_inbound_resolver_endpoint
-      description: Indicates whether to enable private DNS only for inbound endpoints.
+      description: Whether to enable private DNS only for inbound endpoints.
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - name: client_token
-      description: Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
-      required: false
     - name: private_dns_enabled
-      description: Indicates whether to associate a private hosted zone with the specified VPC. Applicable for Interface endpoints only.
+      description: Whether to associate a private hosted zone with the specified VPC. Applicable for Interface endpoints only.
       required: false
       auto: PREDEFINED
       predefined:
@@ -13273,7 +13268,6 @@ script:
     - name: vpc_id
       description: The ID of the VPC.
       required: true
-    outputs: []
 
   - name: aws-ec2-internet-gateway-delete
     description: Deletes the specified internet gateway. You must detach the internet gateway from the VPC before you can delete it.
@@ -13324,7 +13318,6 @@ script:
     - name: internet_gateway_id
       description: The ID of the internet gateway.
       required: true
-    outputs: []
 
   - name: aws-ec2-subnet-delete
     description: Deletes the specified subnet. You must terminate all running instances in the subnet before you can delete the subnet.
@@ -13375,7 +13368,6 @@ script:
     - name: subnet_id
       description: The ID of the subnet.
       required: true
-    outputs: []
 
   - name: aws-ec2-network-acl-entry-create
     description: Creates an entry (a rule) in a network ACL with the specified rule number.
@@ -13471,7 +13463,6 @@ script:
     - name: port_range_to
       description: The last port in the range. Required if specifying tcp or udp for the protocol parameter.
       required: false
-    outputs: []
 
   isfetch: false
   runonce: false

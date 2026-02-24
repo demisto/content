@@ -4549,3 +4549,202 @@ Modifies the specified EC2 Fleet.
 #### Context Output
 
 There is no context output for this command.
+### aws-ec2-vpc-delete
+
+***
+Deletes the specified VPC. You must detach or delete all gateways and resources that are associated with the VPC before you can delete it.
+
+#### Base Command
+
+`aws-ec2-vpc-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| vpc_id | The ID of the VPC. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### aws-ec2-vpc-endpoint-create
+
+***
+Creates a VPC endpoint for a specified service. An endpoint enables you to create a private connection between your VPC and the service.
+
+#### Base Command
+
+`aws-ec2-vpc-endpoint-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| vpc_id | The ID of the VPC in which the endpoint will be used. | Required | 
+| service_name | The service name. For AWS services, the service name is usually in the form com.amazonaws.&lt;region&gt;.&lt;service&gt;. | Required | 
+| vpc_endpoint_type | The type of endpoint. Possible values are: Interface, Gateway, GatewayLoadBalancer. | Optional | 
+| policy_document | A policy to attach to the endpoint that controls access to the service. The policy must be in valid JSON format. | Optional | 
+| route_table_ids | One or more route table IDs (comma-separated). Applicable for Gateway endpoints only. | Optional | 
+| subnet_ids | The ID of one or more subnets (comma-separated) in which to create an endpoint network interface. Applicable for Interface and GatewayLoadBalancer endpoints only. | Optional | 
+| security_group_ids | The ID of one or more security groups (comma-separated) to associate with the endpoint network interface. Applicable for Interface and GatewayLoadBalancer endpoints only. | Optional | 
+| ip_address_type | The IP address type for the endpoint. Possible values are: ipv4, dualstack, ipv6. | Optional | 
+| dns_options_dns_record_ip_type | The DNS records created for the endpoint. Possible values are: ipv4, dualstack, ipv6, service-defined. | Optional | 
+| dns_options_private_dns_only_for_inbound_resolver_endpoint | Whether to enable private DNS only for inbound endpoints. Possible values are: true, false. | Optional | 
+| private_dns_enabled | Whether to associate a private hosted zone with the specified VPC. Applicable for Interface endpoints only. Possible values are: true, false. | Optional | 
+| tag_specifications | The tags to apply to the VPC endpoint. Format key=&lt;key&gt;,value=&lt;value&gt;;key=&lt;key&gt;,value=&lt;value&gt;. | Optional | 
+| subnet_configurations | The subnet configurations for the endpoint. Format SubnetId=subnet-xxx,Ipv4=x.x.x.x;SubnetId=subnet-yyy. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.VpcEndpoints.VpcEndpointId | string | The ID of the VPC endpoint. | 
+| AWS.EC2.VpcEndpoints.VpcEndpointType | string | The type of endpoint. | 
+| AWS.EC2.VpcEndpoints.VpcId | string | The ID of the VPC to which the endpoint is associated. | 
+| AWS.EC2.VpcEndpoints.ServiceName | string | The name of the service to which the endpoint is associated. | 
+| AWS.EC2.VpcEndpoints.State | string | The state of the VPC endpoint. | 
+| AWS.EC2.VpcEndpoints.PolicyDocument | string | The policy document associated with the endpoint, if applicable. | 
+| AWS.EC2.VpcEndpoints.RouteTableIds | array | One or more route tables associated with the endpoint. | 
+| AWS.EC2.VpcEndpoints.SubnetIds | array | One or more subnets in which the endpoint is located. | 
+| AWS.EC2.VpcEndpoints.Groups.GroupId | string | The ID of the security group. | 
+| AWS.EC2.VpcEndpoints.Groups.GroupName | string | The name of the security group. | 
+| AWS.EC2.VpcEndpoints.IpAddressType | string | The IP address type for the endpoint. | 
+| AWS.EC2.VpcEndpoints.DnsOptions.DnsRecordIpType | string | The DNS records created for the endpoint. | 
+| AWS.EC2.VpcEndpoints.DnsOptions.PrivateDnsOnlyForInboundResolverEndpoint | boolean | Indicates whether to enable private DNS only for inbound endpoints. | 
+| AWS.EC2.VpcEndpoints.PrivateDnsEnabled | boolean | Indicates whether the VPC is associated with a private hosted zone. | 
+| AWS.EC2.VpcEndpoints.RequesterManaged | boolean | Indicates whether the VPC endpoint is being managed by its service. | 
+| AWS.EC2.VpcEndpoints.NetworkInterfaceIds | array | One or more network interfaces for the endpoint. | 
+| AWS.EC2.VpcEndpoints.DnsEntries.DnsName | string | The DNS name. | 
+| AWS.EC2.VpcEndpoints.DnsEntries.HostedZoneId | string | The ID of the private hosted zone. | 
+| AWS.EC2.VpcEndpoints.CreationTimestamp | date | The date and time that the VPC endpoint was created. | 
+| AWS.EC2.VpcEndpoints.Tags.Key | string | The key of the tag. | 
+| AWS.EC2.VpcEndpoints.Tags.Value | string | The value of the tag. | 
+| AWS.EC2.VpcEndpoints.OwnerId | string | The ID of the AWS account that owns the VPC endpoint. | 
+| AWS.EC2.VpcEndpoints.LastError.Message | string | The error message for the VPC endpoint error. | 
+| AWS.EC2.VpcEndpoints.LastError.Code | string | The error code for the VPC endpoint error. | 
+### aws-ec2-internet-gateway-describe
+
+***
+Describes one or more of your internet gateways.
+
+#### Base Command
+
+`aws-ec2-internet-gateway-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). See AWS documentation for details &amp; filter options. | Optional | 
+| internet_gateway_ids | One or more internet gateway IDs (comma-separated). | Optional | 
+| limit | The maximum number of results to return with a single call. Specify a value between 5 and 1000. | Optional | 
+| next_token | The token for the next page of results. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.InternetGateways.InternetGatewayId | string | The ID of the internet gateway. | 
+| AWS.EC2.InternetGateways.Attachments.State | string | The current state of the attachment. | 
+| AWS.EC2.InternetGateways.Attachments.VpcId | string | The ID of the VPC. | 
+| AWS.EC2.InternetGateways.Tags.Key | string | The key of the tag. | 
+| AWS.EC2.InternetGateways.Tags.Value | string | The value of the tag. | 
+| AWS.EC2.InternetGateways.OwnerId | string | The ID of the AWS account that owns the internet gateway. | 
+| AWS.EC2.InternetGatewaysNextToken | string | The token to use to retrieve the next page of results. | 
+### aws-ec2-internet-gateway-detach
+
+***
+Detaches an internet gateway from a VPC, disabling connectivity between the internet and the VPC.
+
+#### Base Command
+
+`aws-ec2-internet-gateway-detach`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| internet_gateway_id | The ID of the internet gateway. | Required | 
+| vpc_id | The ID of the VPC. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### aws-ec2-internet-gateway-delete
+
+***
+Deletes the specified internet gateway. You must detach the internet gateway from the VPC before you can delete it.
+
+#### Base Command
+
+`aws-ec2-internet-gateway-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| internet_gateway_id | The ID of the internet gateway. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### aws-ec2-subnet-delete
+
+***
+Deletes the specified subnet. You must terminate all running instances in the subnet before you can delete the subnet.
+
+#### Base Command
+
+`aws-ec2-subnet-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| subnet_id | The ID of the subnet. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### aws-ec2-network-acl-entry-create
+
+***
+Creates an entry (a rule) in a network ACL with the specified rule number.
+
+#### Base Command
+
+`aws-ec2-network-acl-entry-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| network_acl_id | The ID of the network ACL. | Required | 
+| rule_number | The rule number for the entry (for example, 100). ACL entries are processed in ascending order by rule number. | Required | 
+| protocol | The protocol number. A value of -1 or all means all protocols. If you specify all, -1, or a protocol number other than tcp, udp, or icmp, traffic on all ports is allowed, regardless of any ports or ICMP types or codes that you specify. Possible values are: tcp, udp, icmp, icmpv6, -1. | Required | 
+| rule_action | Indicates whether to allow or deny the traffic that matches the rule. Possible values are: allow, deny. | Required | 
+| egress | Indicates whether this is an egress rule (rule is applied to traffic leaving the subnet). Possible values are: true, false. | Required | 
+| cidr_block | The IPv4 network range to allow or deny, in CIDR notation (for example, 172.16.0.0/24). You must specify either cidr_block or ipv6_cidr_block. | Optional | 
+| ipv6_cidr_block | The IPv6 network range to allow or deny, in CIDR notation (for example, 2001:db8:1234:1a00::/64). You must specify either cidr_block or ipv6_cidr_block. | Optional | 
+| icmp_type_code_type | The ICMP type. A value of -1 means all types. Required if specifying icmp or icmpv6 for the protocol parameter. | Optional | 
+| icmp_type_code_code | The ICMP code. A value of -1 means all codes for the specified ICMP type. Required if specifying icmp or icmpv6 for the protocol parameter. | Optional | 
+| port_range_from | The first port in the range. Required if specifying tcp or udp for the protocol parameter. | Optional | 
+| port_range_to | The last port in the range. Required if specifying tcp or udp for the protocol parameter. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.

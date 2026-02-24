@@ -5163,21 +5163,7 @@ class EC2:
 
         Args:
             client (BotoClient): The boto3 client for EC2 service
-            args (Dict[str, Any]): Command arguments including:
-                - vpc_id (str): The ID of the VPC in which the endpoint will be used
-                - service_name (str): The service name
-                - vpc_endpoint_type (str, optional): The type of endpoint
-                - policy_document (str, optional): A policy to attach to the endpoint
-                - route_table_ids (array, optional): One or more route table IDs
-                - subnet_ids (array, optional): The ID of one or more subnets
-                - security_group_ids (array, optional): The ID of one or more security groups
-                - ip_address_type (str, optional): The IP address type for the endpoint
-                - dns_options_dns_record_ip_type (str, optional): The DNS records created for the endpoint
-                - dns_options_private_dns_only_for_inbound_resolver_endpoint (bool, optional): Enable private DNS only for inbound endpoints
-                - client_token (str, optional): Unique identifier for idempotency
-                - private_dns_enabled (bool, optional): Associate a private hosted zone with the VPC
-                - tag_specifications (str, optional): Tags to apply to the VPC endpoint
-                - subnet_configurations (str, optional): Subnet configurations for the endpoint
+            args (Dict[str, Any]): Command arguments including vpc configuration.
 
         Returns:
             CommandResults: Results containing VPC endpoint information
@@ -5193,22 +5179,14 @@ class EC2:
             "IpAddressType": args.get("ip_address_type"),
             "ClientToken": args.get("client_token"),
             "PrivateDnsEnabled": arg_to_bool_or_none(args.get("private_dns_enabled")),
+            "DnsOptions": {
+                "DnsRecordIpType": args.get("dns_options_dns_record_ip_type"),
+                "PrivateDnsOnlyForInboundResolverEndpoint": arg_to_bool_or_none(
+                    args.get("dns_options_private_dns_only_for_inbound_resolver_endpoint")
+                ),
+            },
+            "TagSpecifications": [{"ResourceType": "vpc-endpoint", "Tags": parse_tag_field(args.get("tags"))}],
         }
-
-        # Build DnsOptions if any DNS option is provided
-        dns_options = {
-            "DnsRecordIpType": args.get("dns_options_dns_record_ip_type"),
-            "PrivateDnsOnlyForInboundResolverEndpoint": arg_to_bool_or_none(
-                args.get("dns_options_private_dns_only_for_inbound_resolver_endpoint")
-            ),
-        }
-        remove_nulls_from_dictionary(dns_options)
-        if dns_options:
-            kwargs["DnsOptions"] = dns_options
-
-        # Handle tag specifications
-        if tag_specifications := args.get("tag_specifications"):
-            kwargs["TagSpecifications"] = [{"ResourceType": "vpc-endpoint", "Tags": parse_tag_field(tag_specifications)}]
 
         # Handle subnet configurations (format: SubnetId=subnet-xxx,Ipv4=x.x.x.x;SubnetId=subnet-yyy)
         if subnet_configurations := args.get("subnet_configurations"):
@@ -5257,12 +5235,7 @@ class EC2:
 
         Args:
             client (BotoClient): The boto3 client for EC2 service
-            args (Dict[str, Any]): Command arguments including:
-                - filters (str, optional): One or more filters separated by ';'
-                - internet_gateway_ids (array, optional): One or more internet gateway IDs
-                - max_results (number, optional): The maximum number of results to return
-                - next_token (str, optional): The token for the next page of results
-
+            args (Dict[str, Any]): Command arguments including internet gateway id and filters
         Returns:
             CommandResults: Results containing internet gateway information
         """
@@ -5330,9 +5303,7 @@ class EC2:
 
         Args:
             client (BotoClient): The boto3 client for EC2 service
-            args (Dict[str, Any]): Command arguments including:
-                - internet_gateway_id (str): The ID of the internet gateway
-                - vpc_id (str): The ID of the VPC
+            args (Dict[str, Any]): Command arguments including internet gateway id and vpc id
 
         Returns:
             CommandResults: Results with success message
@@ -5346,9 +5317,7 @@ class EC2:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        return CommandResults(
-            readable_output=f"Successfully detached internet gateway {internet_gateway_id} from VPC {vpc_id}"
-        )
+        return CommandResults(readable_output=f"Successfully detached internet gateway {internet_gateway_id} from VPC {vpc_id}")
 
     @staticmethod
     def delete_internet_gateway_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -5358,8 +5327,7 @@ class EC2:
 
         Args:
             client (BotoClient): The boto3 client for EC2 service
-            args (Dict[str, Any]): Command arguments including:
-                - internet_gateway_id (str): The ID of the internet gateway
+            args (Dict[str, Any]): Command arguments including internet gateway
 
         Returns:
             CommandResults: Results with success message
@@ -5381,8 +5349,7 @@ class EC2:
 
         Args:
             client (BotoClient): The boto3 client for EC2 service
-            args (Dict[str, Any]): Command arguments including:
-                - subnet_id (str): The ID of the subnet
+            args (Dict[str, Any]): Command arguments including subnet id
 
         Returns:
             CommandResults: Results with success message
@@ -5403,18 +5370,7 @@ class EC2:
 
         Args:
             client (BotoClient): The boto3 client for EC2 service
-            args (Dict[str, Any]): Command arguments including:
-                - network_acl_id (str): The ID of the network ACL
-                - rule_number (number): The rule number for the entry
-                - protocol (str): The protocol number. A value of -1 means all protocols
-                - rule_action (str): Indicates whether to allow or deny the traffic
-                - egress (boolean): Indicates whether this is an egress rule
-                - cidr_block (str, optional): The IPv4 network range to allow or deny
-                - ipv6_cidr_block (str, optional): The IPv6 network range to allow or deny
-                - icmp_type_code_type (number, optional): The ICMP type
-                - icmp_type_code_code (number, optional): The ICMP code
-                - port_range_from (number, optional): The first port in the range
-                - port_range_to (number, optional): The last port in the range
+            args (Dict[str, Any]): Command arguments including network configuration
 
         Returns:
             CommandResults: Results with success message
@@ -7959,7 +7915,7 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:DeleteLaunchTemplate",
     "ssm:SendCommand",
     "ssm:ListCommands",
-        "ec2:DeleteVpc",
+    "ec2:DeleteVpc",
     "ec2:CreateVpcEndpoint",
     "ec2:DescribeInternetGateways",
     "ec2:DetachInternetGateway",

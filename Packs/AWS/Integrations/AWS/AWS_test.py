@@ -13401,9 +13401,7 @@ def test_describe_internet_gateways_command_with_filter(mocker):
     }
     mocker.patch(
         "AWS.serialize_response_with_datetime_encoding",
-        return_value={
-            "InternetGateways": [{"InternetGatewayId": "igw-filtered", "OwnerId": "123456789012", "Attachments": []}]
-        },
+        return_value={"InternetGateways": [{"InternetGatewayId": "igw-filtered", "OwnerId": "123456789012", "Attachments": []}]},
     )
 
     args = {
@@ -13447,9 +13445,7 @@ def test_detach_internet_gateway_command_success(mocker):
     assert isinstance(result, CommandResults)
     assert "igw-0abc12345" in result.readable_output
     assert "vpc-0abc12345" in result.readable_output
-    mock_client.detach_internet_gateway.assert_called_once_with(
-        InternetGatewayId="igw-0abc12345", VpcId="vpc-0abc12345"
-    )
+    mock_client.detach_internet_gateway.assert_called_once_with(InternetGatewayId="igw-0abc12345", VpcId="vpc-0abc12345")
 
 
 def test_detach_internet_gateway_command_failure(mocker):
