@@ -190,8 +190,34 @@ def test_get_resources(checkAPIerrors):
         entity_type="ACCESS_ROLE",
         subscription_external_ids="123456789",
         provider_unique_ids="12345678-2222-3333-1111-ff5fa2ff7f78",
+        project_ids=None,
+        native_types=None,
+        updated_at_before=None,
+        updated_at_after=None,
     )
     assert res == test_get_resources_response
+
+
+@patch("Wiz.checkAPIerrors", return_value=test_get_resources_response)
+def test_get_resources_with_new_filters(checkAPIerrors):
+    from Wiz import get_resources
+
+    res = get_resources(
+        search=None,
+        entity_type=None,
+        subscription_external_ids=None,
+        provider_unique_ids=None,
+        project_ids="proj-1, proj-2",
+        native_types="aws_ec2_instance, aws_s3_bucket",
+        updated_at_before=None,
+        updated_at_after="2024-01-01T00:00:00Z",
+    )
+    assert res == test_get_resources_response
+    call_args = checkAPIerrors.call_args
+    variables = call_args[0][1]
+    assert variables["filterBy"]["projectId"] == ["proj-1", "proj-2"]
+    assert variables["filterBy"]["nativeType"] == ["aws_ec2_instance", "aws_s3_bucket"]
+    assert variables["filterBy"]["updatedAt"] == {"after": "2024-01-01T00:00:00Z"}
 
 
 def test_get_resources_wrong_input(capfd):
