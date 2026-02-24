@@ -660,15 +660,10 @@ def aws_ec2_fleet_create_args_builder(args: Dict[str, Any]) -> Dict[str, Any]:
     options, target capacity specification, and tag specifications.
 
     Args:
-        args (Dict[str, Any]): The command arguments containing fleet configuration fields
-            such as type, excess_capacity_termination_policy, replace_unhealthy_instances,
-            terminate_instances_with_expiration, valid_from, valid_until,
-            spot_allocation_strategy, on_demand_allocation_strategy,
-            total_target_capacity, default_target_capacity_type, and tags.
+        args (Dict[str, Any]): The command arguments containing fleet configuration.
 
     Returns:
-        Dict[str, Any]: A dictionary of kwargs ready to be passed to the AWS EC2
-            create_fleet API call.
+        Dict[str, Any]: A dictionary of kwargs.
     """
     return {
         "ExcessCapacityTerminationPolicy": args.get("excess_capacity_termination_policy"),
