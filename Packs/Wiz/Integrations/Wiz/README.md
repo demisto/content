@@ -207,7 +207,7 @@ Re-open an Issue.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | issue_id | Issue id | Required |
-| reject_reason | Note for re-opening Issue<br />Accepted values: `WONT_FIX`, `FALSE_POSITIVE` and `REJECTED`. | Required |
+| reject_reason | Rejection reason. Possible values are: FALSE_POSITIVE, EXCEPTION, WONT_FIX. | Required |
 | reject_note | Note for re-opening Issue | Required |
 
 <h4> Context Output </h4>
@@ -236,7 +236,7 @@ Resolve a Threat Detection Issue.
 | **Argument Name** | **Description**                                 | **Required** |
 |-------------------|-------------------------------------------------| --- |
 | issue_id          | Issue id                                        | Required |
-| resolution_reason | Issue resolution reason                         | Required |
+| resolution_reason | Issue resolution reason. Possible values are: OBJECT_DELETED, ISSUE_FIXED, FALSE_POSITIVE, EXCEPTION, WONT_FIX. | Required |
 | resolution_note   | Note to explain why the Issue has been resolved | Required |
 
 <h4> Context Output </h4>
