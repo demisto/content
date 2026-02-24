@@ -9905,7 +9905,7 @@ def test_send_endpoint_heartbeat_command_success(mocker):
         - The client's perform_endpoint_heartbeat method is called with the correct JSON data.
         - A CommandResults object is returned with a success message.
     """
-    from CortexPlatformCore import send_endpoint_heartbeat_command, Client, CALL_HOME_TYPE_HEARTBEAT
+    from CortexPlatformCore import send_endpoint_heartbeat_command, Client
 
     mock_client = mocker.Mock(spec=Client)
     args = {"endpoint_id": "endpoint-123"}
@@ -9915,7 +9915,7 @@ def test_send_endpoint_heartbeat_command_success(mocker):
     expected_json_data = {
         "request_data": {
             "endpoint_id": "endpoint-123",
-            "call_home_type": CALL_HOME_TYPE_HEARTBEAT,
+            "call_home_type": 6,
         }
     }
 
