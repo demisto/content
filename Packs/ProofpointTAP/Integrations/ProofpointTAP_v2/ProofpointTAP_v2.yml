@@ -1455,7 +1455,7 @@ proofpoint-get-events-clicks-permitted (context field Proofpoint.ClicksPermitted
       description: Proofpoint identified the threat at this time.
       type: String
     - contextPath: Proofpoint.ThreatSummary.name
-      description: The threat name
+      description: The threat name.
       type: String
     - contextPath: Proofpoint.ThreatSummary.type
       description: The threat type (attachment, url, or message text).
@@ -1464,10 +1464,10 @@ proofpoint-get-events-clicks-permitted (context field Proofpoint.ClicksPermitted
       description: The threat category (impostor, malware, phish, or spam).
       type: String
     - contextPath: Proofpoint.ThreatSummary.status
-      description: The threat status (active or cleared)
+      description: The threat status (active or cleared).
       type: String
     - contextPath: Proofpoint.ThreatSummary.detectionType
-      description: New field created called detectionType
+      description: New field created called detectionType.
       type: String
     - contextPath: Proofpoint.ThreatSummary.severity
       description: The threat severity score ranges from 0-1000.
@@ -1498,7 +1498,7 @@ proofpoint-get-events-clicks-permitted (context field Proofpoint.ClicksPermitted
       type: String
     - contextPath: Proofpoint.ThreatSummary.brands
       description: The id(s) and name(s) of the brands associated with the threat.
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.7090913
   isfetch: true
   runonce: false
   script: '-'
