@@ -724,6 +724,59 @@ def test_enrich_offense_with_events(
     assert enriched_offense == expected_offense
 
 
+def test_enrich_offense_with_events_initial_sleep_after_search_creation(mocker):
+    """
+    Given:
+     - An offense to enrich with events.
+     - create_search_with_retry returns a valid search ID (not an error).
+
+    When:
+     - enrich_offense_with_events is called.
+
+    Then:
+     - Ensure time.sleep(FETCH_INITIAL_SLEEP) is called AFTER create_search_with_retry
+       and BEFORE poll_offense_events_with_retry.
+    """
+
+    offense = {"id": 1, "start_time": 1000, "event_count": 5}
+    context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {}, MIRRORED_OFFENSES_FINISHED_CTX_KEY: {}}
+    set_integration_context(context_data)
+
+    # Use a shared call tracker to verify ordering across different mocks
+    call_order: list[str] = []
+
+    mock_create_search = mocker.patch.object(
+        QRadar_v3, "create_search_with_retry",
+        side_effect=lambda *args, **kwargs: (call_order.append("create_search_with_retry"), "some_search_id")[1],
+    )
+    mock_sleep = mocker.patch(
+        "QRadar_v3.time.sleep",
+        side_effect=lambda *args, **kwargs: call_order.append(f"time.sleep({args[0]})"),
+    )
+    mock_poll = mocker.patch.object(
+        QRadar_v3, "poll_offense_events_with_retry",
+        side_effect=lambda *args, **kwargs: (call_order.append("poll_offense_events_with_retry"), ([], ""))[1],
+    )
+    mocker.patch.object(QRadar_v3, "is_all_events_fetched", return_value=True)
+    mocker.patch.object(QRadar_v3, "update_events_mirror_message", return_value="")
+    mocker.patch("QRadar_v3.time.time", return_value=0)
+
+    enrich_offense_with_events(
+        client, offense, FetchMode.all_events.value, event_columns_default_value, events_limit=20
+    )
+
+    # Verify create_search was called
+    mock_create_search.assert_called_once()
+    # Verify sleep was called with FETCH_INITIAL_SLEEP (1)
+    mock_sleep.assert_any_call(QRadar_v3.FETCH_INITIAL_SLEEP)
+    # Verify poll was called
+    mock_poll.assert_called_once()
+
+    # Verify ordering: create_search -> sleep(FETCH_INITIAL_SLEEP) -> poll
+    assert call_order.index("create_search_with_retry") < call_order.index(f"time.sleep({QRadar_v3.FETCH_INITIAL_SLEEP})")
+    assert call_order.index(f"time.sleep({QRadar_v3.FETCH_INITIAL_SLEEP})") < call_order.index("poll_offense_events_with_retry")
+
+
 def test_create_incidents_from_offenses():
     """
     Given:
