@@ -3443,3 +3443,196 @@ def test_create_filters_for_bioc_and_correlation_rules_all_fields():
     assert {"field": "drilldown_query_timeframe", "operator": "EQ", "value": "1h"} in filters
     assert {"field": "mapping_strategy", "operator": "EQ", "value": "strategy"} in filters
     assert {"field": "alert_domain", "operator": "EQ", "value": "domain"} in filters
+
+
+@pytest.mark.parametrize(
+    "mock_response, args, expected_outputs_prefix, expected_hr_contains",
+    [
+        (
+            {
+                "vulnerabilityID": "CVE-2021-44228",
+                "description": "Apache Log4j2 RCE",
+                "cvss": {"score": 10.0},
+                "publishedDate": "2021-12-10",
+            },
+            {"vulnerability_id": "CVE-2021-44228"},
+            "PaloAltoNetworksXDR.Vulnerability",
+            "CVE-2021-44228",
+        ),
+        (
+            {
+                "vulnerabilityID": "CVE-2023-0001",
+                "description": "Test vulnerability",
+                "cvss": {},
+                "publishedDate": None,
+            },
+            {"vulnerability_id": "CVE-2023-0001"},
+            "PaloAltoNetworksXDR.Vulnerability",
+            "CVE-2023-0001",
+        ),
+    ],
+)
+def test_get_vulnerability_details_command(mocker, mock_response, args, expected_outputs_prefix, expected_hr_contains):
+    """
+    Given:
+        - A vulnerability ID to look up
+    When:
+        - Running get_vulnerability_details_command
+    Then:
+        - Verify the returned CommandResults contains the expected vulnerability data
+    """
+    from CortexXDRIR import Client, get_vulnerability_details_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mocker.patch.object(Client, "get_vulnerability_details", return_value=mock_response)
+
+    result = get_vulnerability_details_command(client, args)
+
+    assert result.outputs_prefix == expected_outputs_prefix
+    assert result.outputs_key_field == "vulnerabilityID"
+    assert result.outputs == mock_response
+    assert result.raw_response == mock_response
+    assert expected_hr_contains in result.readable_output
+    assert "Vulnerability Details" in result.readable_output
+
+
+def test_endpoint_triage_preset_list_command(mocker):
+    """
+    Given:
+        - An XDR client
+    When:
+        - Running endpoint_triage_preset_list_command
+    Then:
+        - Verify the returned CommandResults contains the expected presets
+    """
+    from CortexXDRIR import Client, endpoint_triage_preset_list_command
+
+    mock_presets = [
+        {
+            "name": "Full Triage",
+            "uuid": "uuid-1234",
+            "os": "windows",
+            "type": "full",
+            "created_by": "admin",
+            "description": "Full triage preset",
+        },
+        {
+            "name": "Quick Triage",
+            "uuid": "uuid-5678",
+            "os": "linux",
+            "type": "quick",
+            "created_by": "admin",
+            "description": "Quick triage preset",
+        },
+    ]
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mocker.patch.object(Client, "get_triage_presets", return_value=mock_presets)
+
+    result = endpoint_triage_preset_list_command(client)
+
+    assert result.outputs_prefix == "PaloAltoNetworksXDR.EndpointTriagePreset"
+    assert result.outputs_key_field == "uuid"
+    assert result.outputs == mock_presets
+    assert result.raw_response == mock_presets
+    assert len(result.outputs) == 2
+    assert "Endpoint Triage Presets" in result.readable_output
+    assert "Full Triage" in result.readable_output
+    assert "Quick Triage" in result.readable_output
+
+
+def test_endpoint_triage_preset_list_command_empty(mocker):
+    """
+    Given:
+        - An XDR client with no triage presets
+    When:
+        - Running endpoint_triage_preset_list_command
+    Then:
+        - Verify the returned CommandResults contains an empty list
+    """
+    from CortexXDRIR import Client, endpoint_triage_preset_list_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mocker.patch.object(Client, "get_triage_presets", return_value=[])
+
+    result = endpoint_triage_preset_list_command(client)
+
+    assert result.outputs == []
+    assert result.outputs_prefix == "PaloAltoNetworksXDR.EndpointTriagePreset"
+
+
+@pytest.mark.parametrize(
+    "mock_response, expected_status_text",
+    [
+        ({"status": "OK"}, "Cortex XDR health status: OK"),
+        ({"status": "ERROR"}, "Cortex XDR health status: ERROR"),
+        ({}, "Cortex XDR health status: unknown"),
+    ],
+)
+def test_healthcheck_run_command(mocker, mock_response, expected_status_text):
+    """
+    Given:
+        - An XDR client
+    When:
+        - Running healthcheck_run_command
+    Then:
+        - Verify the returned CommandResults contains the expected health status
+    """
+    from CortexXDRIR import Client, healthcheck_run_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mocker.patch.object(Client, "run_healthcheck", return_value=mock_response)
+
+    result = healthcheck_run_command(client)
+
+    assert result.outputs_prefix == "PaloAltoNetworksXDR.HealthStatus"
+    assert result.outputs == mock_response
+    assert result.raw_response == mock_response
+    assert expected_status_text in result.readable_output
+
+
+@pytest.mark.parametrize(
+    "args, expected_request_data",
+    [
+        (
+            {"endpoint_id": "agent1,agent2"},
+            {"request_data": {"agent_ids": ["agent1", "agent2"]}},
+        ),
+        (
+            {"endpoint_id": "agent1", "collector_uuid": "preset-uuid-123"},
+            {"request_data": {"agent_ids": ["agent1"], "collector_uuid": "preset-uuid-123"}},
+        ),
+        (
+            {"endpoint_id": "agent1"},
+            {"request_data": {"agent_ids": ["agent1"]}},
+        ),
+    ],
+)
+def test_endpoint_triage_command(mocker, args, expected_request_data):
+    """
+    Given:
+        - Endpoint IDs and optional collector_uuid
+    When:
+        - Running endpoint_triage_command
+    Then:
+        - Verify the client.triage_endpoint is called with correct request data
+        - Verify the returned CommandResults contains the expected outputs
+    """
+    from CortexXDRIR import Client, endpoint_triage_command
+
+    mock_reply = {
+        "TRIAGE_ID": "triage-123",
+        "SUCCESSFUL_AGENT_IDS": ["agent1"],
+        "UNSUCCESSFUL_AGENT_IDS": [],
+    }
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mock_triage = mocker.patch.object(Client, "triage_endpoint", return_value=mock_reply)
+
+    result = endpoint_triage_command(client, args)
+
+    mock_triage.assert_called_once_with(expected_request_data)
+    assert result.outputs_prefix == "PaloAltoNetworksXDR.EndpointTriage"
+    assert result.outputs == mock_reply
+    assert result.raw_response == mock_reply
+    assert "Initiated Endpoints Triage" in result.readable_output
