@@ -746,7 +746,8 @@ def test_enrich_offense_with_events_initial_sleep_after_search_creation(mocker):
     call_order: list[str] = []
 
     mock_create_search = mocker.patch.object(
-        QRadar_v3, "create_search_with_retry",
+        QRadar_v3,
+        "create_search_with_retry",
         side_effect=lambda *args, **kwargs: (call_order.append("create_search_with_retry"), "some_search_id")[1],
     )
     mock_sleep = mocker.patch(
@@ -754,16 +755,15 @@ def test_enrich_offense_with_events_initial_sleep_after_search_creation(mocker):
         side_effect=lambda *args, **kwargs: call_order.append(f"time.sleep({args[0]})"),
     )
     mock_poll = mocker.patch.object(
-        QRadar_v3, "poll_offense_events_with_retry",
+        QRadar_v3,
+        "poll_offense_events_with_retry",
         side_effect=lambda *args, **kwargs: (call_order.append("poll_offense_events_with_retry"), ([], ""))[1],
     )
     mocker.patch.object(QRadar_v3, "is_all_events_fetched", return_value=True)
     mocker.patch.object(QRadar_v3, "update_events_mirror_message", return_value="")
     mocker.patch("QRadar_v3.time.time", return_value=0)
 
-    enrich_offense_with_events(
-        client, offense, FetchMode.all_events.value, event_columns_default_value, events_limit=20
-    )
+    enrich_offense_with_events(client, offense, FetchMode.all_events.value, event_columns_default_value, events_limit=20)
 
     # Verify create_search was called
     mock_create_search.assert_called_once()
