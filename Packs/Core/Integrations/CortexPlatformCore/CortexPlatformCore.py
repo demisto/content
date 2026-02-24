@@ -4611,12 +4611,7 @@ def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandR
 
     command_results.append(
         CommandResults(
-            readable_output=tableToMarkdown(
-                "Findings",
-                findings,
-                headerTransform=string_to_table_header,
-            ),
-            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Findings",
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Finding",
             outputs_key_field="id",
             outputs=findings,
             raw_response=response,
