@@ -2,6 +2,7 @@ import pytest
 from CommonServerPython import *
 from ThreatVaultv2 import (
     Client,
+    atp_batch_report_command,
     cve_command,
     file_command,
     ip_command,
@@ -1017,3 +1018,151 @@ def test_parse_date(date, expected_result):
 )
 def test_reputation_type_to_hr(reputation_type, expected_results):
     assert reputation_type_to_hr(reputation_type) == expected_results
+
+
+@pytest.mark.parametrize(
+    "args, response, expected_results",
+    [
+        pytest.param(
+            {"report_id": "abc123def456"},
+            {
+                "success": True,
+                "data": {
+                    "reports": {
+                        "reports": [
+                            {
+                                "panos_info": {
+                                    "csp_id": "1234",
+                                    "fw_addr_v4": "10.0.0.1",
+                                    "fw_app_version": "1000-2000",
+                                    "fw_hostname": "test-firewall-01",
+                                    "fw_model": "PA-VM",
+                                    "fw_serial": "012345678901234",
+                                    "fw_sw_version": "11.0.0",
+                                },
+                                "report_id": "abc123def456",
+                                "session_info": {
+                                    "flow_info": {"daddr": "10.1.1.1", "dport": "443", "saddr": "10.2.2.2", "sport": "12345"},
+                                    "session_id": "1234567",
+                                    "session_timestamp": "2025-01-01T10:00:00Z",
+                                },
+                                "transaction_data": [
+                                    {
+                                        "detection_results": [
+                                            {
+                                                "details": {"payload_info": {}},
+                                                "detection_service": "MLExploit Command Injection",
+                                                "detection_ts": 1234567890123456789,
+                                            }
+                                        ],
+                                        "payload_sha256": "abcd1234efgh5678ijkl9012mnop3456qrst7890uvwx1234yzab5678cdef9012",
+                                        "transaction_id": 1,
+                                    }
+                                ],
+                            }
+                        ]
+                    }
+                },
+                "message": "Successful",
+            },
+            {
+                "outputs_prefix": "ThreatVault.ATP.Report",
+                "report_count": 1,
+                "report_id": "abc123def456",
+            },
+            id="Single ATP Report",
+        ),
+        pytest.param(
+            {"report_id": "report1,report2"},
+            {
+                "success": True,
+                "data": {
+                    "reports": {
+                        "reports": [
+                            {
+                                "panos_info": {
+                                    "csp_id": "1234",
+                                    "fw_addr_v4": "10.0.0.1",
+                                    "fw_hostname": "test-fw-01",
+                                    "fw_model": "PA-VM",
+                                    "fw_serial": "012345678901234",
+                                },
+                                "report_id": "report1",
+                                "session_info": {"session_id": "111111"},
+                            },
+                            {
+                                "panos_info": {
+                                    "csp_id": "5678",
+                                    "fw_addr_v4": "10.0.0.2",
+                                    "fw_hostname": "test-fw-02",
+                                    "fw_model": "PA-VM",
+                                    "fw_serial": "567890123456789",
+                                },
+                                "report_id": "report2",
+                                "session_info": {"session_id": "222222"},
+                            },
+                        ]
+                    }
+                },
+                "message": "Successful",
+            },
+            {
+                "outputs_prefix": "ThreatVault.ATP.Report",
+                "report_count": 2,
+                "report_id": ["report1", "report2"],
+            },
+            id="Multiple ATP Reports",
+        ),
+    ],
+)
+def test_atp_batch_report_command(mocker, args, response, expected_results):
+    """Test the atp_batch_report_command function with various scenarios."""
+    client = Client(
+        base_url="test",
+        api_key="test",
+        verify=False,
+        proxy=False,
+        reliability="E - Unreliable",
+    )
+
+    mocker.patch.object(client, "atp_batch_report_request", return_value=response)
+    results = atp_batch_report_command(client, args)
+
+    # Verify the number of results matches expected
+    assert len(results) == expected_results["report_count"]
+
+    # Verify outputs prefix
+    for result in results:
+        assert result.outputs_prefix == expected_results["outputs_prefix"]
+
+    # Verify report IDs
+    if expected_results["report_count"] == 1:
+        assert results[0].outputs.get("report_id") == expected_results["report_id"]
+    else:
+        for i, result in enumerate(results):
+            assert result.outputs.get("report_id") == expected_results["report_id"][i]
+
+
+def test_atp_batch_report_command_not_found(mocker):
+    """Test atp_batch_report_command when report is not found (404)."""
+    client = Client(
+        base_url="test",
+        api_key="test",
+        verify=False,
+        proxy=False,
+        reliability="E - Unreliable",
+    )
+
+    response = requests.Response()
+    response.status_code = 404
+
+    mocker.patch.object(
+        client,
+        "atp_batch_report_request",
+        side_effect=DemistoException(message="Not Found", res=response),
+    )
+
+    results = atp_batch_report_command(client, {"report_id": "nonexistent123"})
+
+    assert len(results) == 1
+    assert "There is no information about the ['nonexistent123']" in results[0].readable_output
