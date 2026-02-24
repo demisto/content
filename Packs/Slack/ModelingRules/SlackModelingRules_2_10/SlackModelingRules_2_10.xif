@@ -23,7 +23,7 @@ alter
     xdm.source.cloud.project_id = json_extract_scalar(context, "$['location']['id']"),
     xdm.session_context_id = json_extract_scalar(context, "$['session_id']"),
     xdm.event.original_event_type = action,
-        xdm.event.operation = if(
+    xdm.event.operation = if(
         action ~= "_created|_installed|_published|_added|_generated|_deployed|_started", XDM_CONST.OPERATION_TYPE_CREATE,
         action ~= "_deleted|_uninstalled|_archive|_revoked|_removed|_deactivated|_tombstoned", XDM_CONST.OPERATION_TYPE_DELETE,
         action ~= "pref\.|_updated|_renamed|_converted|_changed|_reset|_resumed|_upgraded|_downgraded|_expanded", XDM_CONST.OPERATION_TYPE_UPDATE,
