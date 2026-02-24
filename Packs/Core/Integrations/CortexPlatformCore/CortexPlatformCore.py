@@ -82,6 +82,83 @@ ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
 CASES_TABLE = "CASE_MANAGER_TABLE"
 SCRIPTS_TABLE = "SCRIPTS_TABLE"
+AI_MODEL_ACTIVITY_TABLE = "AISPM_MODEL_ACTIVITY"
+FINDINGS_TABLE = "FINDINGS"
+
+
+class Profile:
+    FIELDS = {
+        "examinePortableExecutables": "portable_executables_and_dll_examination",
+        "examineOfficeFiles": "office_files_with_macros_examination",
+        "examineJScriptFiles": "jscript_file_examination",
+        "aspFiles": "asp_aspx_files",
+        "powerShellScriptFiles": "powershell_script_files",
+        "scanEndpoints": "on_demand_file_examination",
+        "endUserInitiatedLocalScan": "end_user_initiated_local_scan",
+        "examineVBScriptFiles": "vb_scripts_examination",
+        "dynamicSecurityEngine": "global_behavioral_threat_protection_rules",
+        "passwordStealing": "credential_gathering_protection",
+        "webshellDroppers": "anti_webshell_protection",
+        "financialMalwareThreat": "financial_malware_threat_protection",
+        "cryptominers": "cryptominers_protection",
+        "inProcessShellcode": "in_process_shellcode_protection",
+        "maliciousDevice": "malicious_device_prevention",
+        "uacBypass": "uac_bypass_prevention",
+        "antiTampering": "anti_tampering_protection",
+        "iisProtection": "iis_protection",
+        "uefiProtection": "uefi_protection",
+        "ransomware": "ransomware_protection",
+        "legitimateProcesses": "malicious_child_process_protection",
+        "passwordTheftProtection": "password_theft_protection",
+        "maliciousCausalityChainsResponse": "respond_to_malicious_causality_chains",
+        "networkSignature": "network_packet_inspection_engine",
+        "dynamicKernelProtection": "dynamic_kernel_protection",
+        "dynamicDriverProtection": "dynamic_driver_protection",
+        "securityMeasuresBypass": "security_measures_bypass",
+        "basTools": "breach_attack_simulation_tools_settings",
+        "browserExploitKits": "browser_exploits_protection",
+        "logicalExploits": "logical_exploits_protection",
+        "vulnerableApps": "known_vulnerable_processes_protection",
+        "osKernelExploits": "operating_system_exploit_protection",
+        "additionalProcesses": "exploit_protection_for_additional_processes",
+        "manualScan": "end_user_initiated_local_scan",  # for update command
+    }
+
+    VALIDATION = {
+        "asp_aspx_files": ["block", "disabled", "report"],
+        "breach_attack_simulation_tools_settings": ["enabled", "disabled"],
+        "uac_bypass_prevention": ["block", "disabled", "report"],
+        "on_demand_file_examination": ["disabled", "enabled"],
+        "end_user_initiated_local_scan": ["disabled", "enabled"],
+        "ransomware_protection": ["block", "disabled", "report"],
+        "cryptominers_protection": ["block", "disabled", "report"],
+        "anti_tampering_protection": ["block", "disabled", "report"],
+        "iis_protection": ["block", "disabled", "report"],
+        "uefi_protection": ["block", "disabled", "report"],
+        "malicious_device_prevention": ["block", "disabled", "report"],
+        "network_packet_inspection_engine": ["terminateSession", "disabled", "report"],
+        "credential_gathering_protection": ["block", "disabled", "report"],
+        "anti_webshell_protection": ["block", "disabled", "report"],
+        "office_files_with_macros_examination": ["block", "disabled", "report"],
+        "in_process_shellcode_protection": ["block", "disabled", "report"],
+        "jscript_file_examination": ["block", "disabled", "report"],
+        "malicious_child_process_protection": ["block", "disabled", "report"],
+        "vb_scripts_examination": ["block", "disabled", "report"],
+        "global_behavioral_threat_protection_rules": ["block", "disabled", "report"],
+        "powershell_script_files": ["block", "disabled", "report"],
+        "financial_malware_threat_protection": ["block", "disabled", "report"],
+        "security_measures_bypass": ["block", "disabled", "report"],
+        "dynamic_driver_protection": ["block", "disabled", "report"],
+        "dynamic_kernel_protection": ["block", "disabled", "report"],
+        "password_theft_protection": ["disabled", "enabled"],
+        "portable_executables_and_dll_examination": ["block", "disabled", "report"],
+        "respond_to_malicious_causality_chains": ["disabled", "enabled"],
+        "browser_exploits_protection": ["block", "disabled", "report"],
+        "logical_exploits_protection": ["block", "disabled", "report"],
+        "known_vulnerable_processes_protection": ["block", "disabled", "report"],
+        "operating_system_exploit_protection": ["block", "disabled", "report"],
+        "exploit_protection_for_additional_processes": ["block", "disabled", "report"],
+    }
 
 
 class ScriptManagement:
@@ -5125,9 +5202,6 @@ def main():  # pragma: no cover
 
         elif command == "core-delete-profile":
             return_results(delete_profile_command(client, args))
-
-        elif command == "core-list-findings":
-            return_results(list_findings_command(client, args))
 
         elif command == "core-list-findings":
             return_results(list_findings_command(client, args))
