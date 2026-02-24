@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: add-agentix-test
+  CURRENT_BRANCH_NAME: check-agentix-test
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: add-agentix-test
+    ref: check-agentix-test
     project: "${CI_PROJECT_NAMESPACE}/infra"
