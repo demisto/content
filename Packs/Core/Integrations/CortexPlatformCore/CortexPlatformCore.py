@@ -3133,7 +3133,7 @@ def send_endpoint_heartbeat_command(client: Client, args: dict) -> CommandResult
     client.send_endpoint_heartbeat(json_data)
 
     return CommandResults(
-        readable_output=f"Heartbeat performed successfully for endpoint {endpoint_id}",
+        readable_output=f"Heartbeat sent successfully for endpoint {endpoint_id}",
     )
 
 

@@ -9895,22 +9895,22 @@ class TestProfileCommands:
         mock_client.delete_profile.assert_called_once_with(["12345", "67890"])
 
 
-def test_perform_endpoint_heartbeat_command_success(mocker):
+def test_send_endpoint_heartbeat_command_success(mocker):
     """
     Given:
         - A client and valid arguments with an endpoint ID.
     When:
-        - perform_endpoint_heartbeat_command is called.
+        - send_endpoint_heartbeat_command is called.
     Then:
         - The client's perform_endpoint_heartbeat method is called with the correct JSON data.
         - A CommandResults object is returned with a success message.
     """
-    from CortexPlatformCore import perform_endpoint_heartbeat_command, Client, CALL_HOME_TYPE_HEARTBEAT
+    from CortexPlatformCore import send_endpoint_heartbeat_command, Client, CALL_HOME_TYPE_HEARTBEAT
 
     mock_client = mocker.Mock(spec=Client)
     args = {"endpoint_id": "endpoint-123"}
 
-    result = perform_endpoint_heartbeat_command(mock_client, args)
+    result = send_endpoint_heartbeat_command(mock_client, args)
 
     expected_json_data = {
         "request_data": {
@@ -9919,23 +9919,23 @@ def test_perform_endpoint_heartbeat_command_success(mocker):
         }
     }
 
-    mock_client.perform_endpoint_heartbeat.assert_called_once_with(expected_json_data)
-    assert result.readable_output == "Heartbeat performed successfully for endpoint endpoint-123"
+    mock_client.send_endpoint_heartbeat.assert_called_once_with(expected_json_data)
+    assert result.readable_output == "Heartbeat sent successfully for endpoint endpoint-123"
 
 
-def test_perform_endpoint_heartbeat_command_missing_id(mocker):
+def test_send_endpoint_heartbeat_command_missing_id(mocker):
     """
     Given:
         - A client and arguments missing the endpoint ID.
     When:
-        - perform_endpoint_heartbeat_command is called.
+        - send_endpoint_heartbeat_command is called.
     Then:
         - A ValueError is raised indicating that endpoint_id is required.
     """
-    from CortexPlatformCore import perform_endpoint_heartbeat_command, Client
+    from CortexPlatformCore import send_endpoint_heartbeat_command, Client
 
     mock_client = mocker.Mock(spec=Client)
     args = {}
 
     with pytest.raises(ValueError, match="endpoint_id is required"):
-        perform_endpoint_heartbeat_command(mock_client, args)
+        send_endpoint_heartbeat_command(mock_client, args)
