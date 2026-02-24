@@ -687,8 +687,8 @@ class Client(CoreClient):
         """
         res = self._http_request(
             method="GET",
-            url_suffix=f"../uvem/v1/vulnerabilities",  # we want to remove the v1 from the endpoint so we use ..
-            params={"vulnerabilityId": vulnerability_id}
+            url_suffix="../uvem/v1/vulnerabilities",  # we want to remove the v1 from the endpoint so we use ..
+            params={"vulnerabilityId": vulnerability_id},
         )
         return res
 
@@ -711,7 +711,7 @@ class Client(CoreClient):
         res = self._http_request(
             method="POST",
             url_suffix="/get_triage_presets",
-            json_data={"request_data": {}}  # required to be empty
+            json_data={"request_data": {}},  # required to be empty
         )
         return res.get("reply", {}).get("triage_presets", [])
 
@@ -2427,14 +2427,15 @@ def get_vulnerability_details_command(client: Client, args: Dict) -> CommandResu
     Returns:
         CommandResults: The command results.
     """
-    vulnerability_id = args.get("vulnerability_id")
+    vulnerability_id = args.get("vulnerability_id", "")
     response = client.get_vulnerability_details(vulnerability_id)
 
-    hr_data = {"Vulnerability ID": response.get("vulnerabilityID"),
-               "Description": response.get("description"),
-               "Score": response.get("cvss", {}).get("score"),
-               "Publish Date": response.get("publishedDate")
-               }
+    hr_data = {
+        "Vulnerability ID": response.get("vulnerabilityID"),
+        "Description": response.get("description"),
+        "Score": response.get("cvss", {}).get("score"),
+        "Publish Date": response.get("publishedDate"),
+    }
     demisto.debug(f"Got the response {response}")
     readable_output = tableToMarkdown(
         name="Vulnerability Details",
