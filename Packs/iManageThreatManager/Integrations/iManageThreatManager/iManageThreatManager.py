@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-from ContentClientApiModule import ContentClient
+from ContentClientApiModule import *
 import urllib3
 import base64
 import json
