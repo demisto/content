@@ -2467,6 +2467,17 @@ def endpoint_triage_preset_list_command(client: Client) -> CommandResults:
         name="Endpoint Triage Presets",
         t=presets,
         headers=["name", "uuid", "os", "type", "created_by", "description"],
+        headerTransform=string_to_table_header,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.EndpointTriagePreset",
+        outputs=presets,
+        outputs_key_field="uuid",
+        raw_response=presets,
+    )
 
 
 def healthcheck_run_command(client: Client) -> CommandResults:
