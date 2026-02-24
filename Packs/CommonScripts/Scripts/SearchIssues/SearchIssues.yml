@@ -100,10 +100,10 @@ args:
       - DESC
       - ASC
   - defaultValue: "0"
-    description: The starting offset for pagination (integer only, e.g. 0, 50, 100). Do not pass placeholder values such as 'n/a' or any non-numeric string. Defaults to 0.
+    description: The starting offset for pagination (integer only, e.g. 0, 50, 100).
     name: offset
   - defaultValue: "50"
-    description: The maximum number of issues to return (integer only, e.g. 50, 100). Do not pass placeholder values such as 'n/a' or any non-numeric string. Defaults to 50.
+    description: The maximum number of issues to return (integer only, e.g. 50, 100).
     name: limit
   - description: Additional output fields.
     isArray: true
@@ -239,7 +239,7 @@ tags:
   - Utility
 timeout: "0"
 type: python
-dockerimage: demisto/python3:3.12.12.5490952
+dockerimage: demisto/python3:3.12.12.7090913
 fromversion: 5.0.0
 tests:
   - No tests (auto formatted)

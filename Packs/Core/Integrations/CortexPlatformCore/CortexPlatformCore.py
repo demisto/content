@@ -1900,10 +1900,9 @@ def get_cases_command(client, args):
 
     get_enriched_case_data = argToBoolean(args.get("get_enriched_case_data", "false"))
     # In case enriched case data was requested
-    if get_enriched_case_data and len(data) <= 10:
-        if isinstance(data, dict):
-            data = [data]
-
+    if isinstance(data, dict):
+        data = [data] if data else []
+    if get_enriched_case_data and 0 < len(data) <= 10:
         case_extra_data = add_cases_extra_data(client, data)
 
         command_results.append(
@@ -1928,7 +1927,6 @@ def get_cases_command(client, args):
                     "Returning standard case data instead. "
                     "Try using a more specific query, "
                     "for example specific case IDs you want to get enriched data for.",
-                    entry_type=1,
                 )
             )
 
