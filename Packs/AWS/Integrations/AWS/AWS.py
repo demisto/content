@@ -5135,13 +5135,11 @@ class EC2:
     @staticmethod
     def delete_vpc_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-        Deletes the specified VPC. You must detach or delete all gateways and resources that are associated
-        with the VPC before you can delete it.
+        Deletes the specified VPC.
 
         Args:
             client (BotoClient): The boto3 client for EC2 service
-            args (Dict[str, Any]): Command arguments including:
-                - vpc_id (str): The ID of the VPC
+            args (Dict[str, Any]): Command arguments including VPC ID
 
         Returns:
             CommandResults: Results with success message
@@ -5239,18 +5237,14 @@ class EC2:
         Returns:
             CommandResults: Results containing internet gateway information
         """
-        kwargs = {}
-
-        if filters := args.get("filters"):
-            kwargs["Filters"] = parse_filter_field(filters)
-
-        if internet_gateway_ids := args.get("internet_gateway_ids"):
-            kwargs["InternetGatewayIds"] = argToList(internet_gateway_ids)
+        kwargs = remove_empty_elements({
+            "InternetGatewayIds": argToList(args.get("internet_gateway_ids")),
+            "Filters": parse_filter_field(args.get("filters"))
+        })
 
         if not kwargs.get("InternetGatewayIds"):
             kwargs.update(build_pagination_kwargs(args, minimum_limit=5))
 
-        remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Describing internet gateways with parameters: {kwargs}")
         response = client.describe_internet_gateways(**kwargs)
 
@@ -5269,12 +5263,9 @@ class EC2:
             igw_data = {
                 "InternetGatewayId": igw.get("InternetGatewayId"),
                 "OwnerId": igw.get("OwnerId"),
+                "State": igw.get("Attachments")[0].get("State") if igw.get("Attachments") else None,
+                "VpcId": igw.get("Attachments")[0].get("VpcId") if igw.get("Attachments") else None,
             }
-            # Flatten attachments for readable output
-            attachments = igw.get("Attachments", [])
-            if attachments:
-                igw_data["State"] = attachments[0].get("State")
-                igw_data["VpcId"] = attachments[0].get("VpcId")
             readable_data.append(igw_data)
 
         readable_output = tableToMarkdown(
@@ -5322,8 +5313,7 @@ class EC2:
     @staticmethod
     def delete_internet_gateway_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-        Deletes the specified internet gateway. You must detach the internet gateway from the VPC
-        before you can delete it.
+        Deletes the specified internet gateway.
 
         Args:
             client (BotoClient): The boto3 client for EC2 service
@@ -5344,8 +5334,7 @@ class EC2:
     @staticmethod
     def delete_subnet_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-        Deletes the specified subnet. You must terminate all running instances in the subnet
-        before you can delete the subnet.
+        Deletes the specified subnet.
 
         Args:
             client (BotoClient): The boto3 client for EC2 service
@@ -5370,12 +5359,12 @@ class EC2:
 
         Args:
             client (BotoClient): The boto3 client for EC2 service
-            args (Dict[str, Any]): Command arguments including network configuration
+            args (Dict[str, Any]): Command arguments including network acl configuration
 
         Returns:
             CommandResults: Results with success message
         """
-        kwargs = {
+        kwargs = remove_empty_elements({
             "NetworkAclId": args.get("network_acl_id"),
             "RuleNumber": arg_to_number(args.get("rule_number")),
             "Protocol": args.get("protocol"),
@@ -5383,27 +5372,16 @@ class EC2:
             "Egress": arg_to_bool_or_none(args.get("egress")),
             "CidrBlock": args.get("cidr_block"),
             "Ipv6CidrBlock": args.get("ipv6_cidr_block"),
-        }
+            "IcmpTypeCode": {
+                "Type": arg_to_number(args.get("icmp_type_code_type")),
+                "Code": arg_to_number(args.get("icmp_type_code_code")),
+            },
+            "PortRange": {
+                "From": arg_to_number(args.get("port_range_from")),
+                "To": arg_to_number(args.get("port_range_to")),
+            }
+        })
 
-        # Build IcmpTypeCode if any ICMP parameter is provided
-        icmp_type_code = {
-            "Type": arg_to_number(args.get("icmp_type_code_type")),
-            "Code": arg_to_number(args.get("icmp_type_code_code")),
-        }
-        remove_nulls_from_dictionary(icmp_type_code)
-        if icmp_type_code:
-            kwargs["IcmpTypeCode"] = icmp_type_code
-
-        # Build PortRange if any port parameter is provided
-        port_range = {
-            "From": arg_to_number(args.get("port_range_from")),
-            "To": arg_to_number(args.get("port_range_to")),
-        }
-        remove_nulls_from_dictionary(port_range)
-        if port_range:
-            kwargs["PortRange"] = port_range
-
-        remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Creating network ACL entry with parameters: {kwargs}")
         response = client.create_network_acl_entry(**kwargs)
 

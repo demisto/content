@@ -13371,7 +13371,6 @@ script:
 
   - name: aws-ec2-network-acl-entry-create
     description: Creates an entry (a rule) in a network ACL with the specified rule number.
-    execution: true
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -13432,14 +13431,14 @@ script:
       - icmpv6
       - '-1'
     - name: rule_action
-      description: Indicates whether to allow or deny the traffic that matches the rule.
+      description: Whether to allow or deny the traffic that matches the rule.
       required: true
       auto: PREDEFINED
       predefined:
       - allow
       - deny
     - name: egress
-      description: Indicates whether this is an egress rule (rule is applied to traffic leaving the subnet).
+      description: Whether this is an egress rule (rule is applied to traffic leaving the subnet).
       required: true
       auto: PREDEFINED
       predefined:
