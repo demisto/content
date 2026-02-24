@@ -5166,32 +5166,34 @@ class EC2:
         Returns:
             CommandResults: Results containing VPC endpoint information
         """
-        kwargs = remove_empty_elements({
-            "VpcId": args.get("vpc_id"),
-            "ServiceName": args.get("service_name"),
-            "ServiceNetworkArn": args.get("service_network_arn"),
-            "ServiceRegion": args.get("service_region"),
-            "VpcEndpointType": args.get("vpc_endpoint_type"),
-            "PolicyDocument": args.get("policy_document"),
-            "RouteTableIds": argToList(args.get("route_table_ids")),
-            "SubnetIds": argToList(args.get("subnet_ids")),
-            "SecurityGroupIds": argToList(args.get("security_group_ids")),
-            "IpAddressType": args.get("ip_address_type"),
-            "PrivateDnsEnabled": arg_to_bool_or_none(args.get("private_dns_enabled")),
-            "ResourceConfigurationArn": args.get("resource_configuration_arn"),
-            "DnsOptions": {
-                "DnsRecordIpType": args.get("dns_options_dns_record_ip_type"),
-                "PrivateDnsOnlyForInboundResolverEndpoint": arg_to_bool_or_none(
-                    args.get("dns_options_private_dns_only_for_inbound_resolver_endpoint")
-                ),
-                "PrivateDnsPreference": args.get("dns_options_private_dns_preference"),
-                "PrivateDnsSpecifiedDomains": argToList(args.get("dns_options_private_dns_specified_domains")),
-            },
-            "TagSpecifications": [{"ResourceType": "vpc-endpoint", "Tags": parse_tag_field(args.get("tags"))}] if args.get(
-                "tags") else None,
-        })
+        kwargs = remove_empty_elements(
+            {
+                "VpcId": args.get("vpc_id"),
+                "ServiceName": args.get("service_name"),
+                "ServiceNetworkArn": args.get("service_network_arn"),
+                "ServiceRegion": args.get("service_region"),
+                "VpcEndpointType": args.get("vpc_endpoint_type"),
+                "PolicyDocument": args.get("policy_document"),
+                "RouteTableIds": argToList(args.get("route_table_ids")),
+                "SubnetIds": argToList(args.get("subnet_ids")),
+                "SecurityGroupIds": argToList(args.get("security_group_ids")),
+                "IpAddressType": args.get("ip_address_type"),
+                "PrivateDnsEnabled": arg_to_bool_or_none(args.get("private_dns_enabled")),
+                "ResourceConfigurationArn": args.get("resource_configuration_arn"),
+                "DnsOptions": {
+                    "DnsRecordIpType": args.get("dns_options_dns_record_ip_type"),
+                    "PrivateDnsOnlyForInboundResolverEndpoint": arg_to_bool_or_none(
+                        args.get("dns_options_private_dns_only_for_inbound_resolver_endpoint")
+                    ),
+                    "PrivateDnsPreference": args.get("dns_options_private_dns_preference"),
+                    "PrivateDnsSpecifiedDomains": argToList(args.get("dns_options_private_dns_specified_domains")),
+                },
+                "TagSpecifications": [{"ResourceType": "vpc-endpoint", "Tags": parse_tag_field(args.get("tags"))}]
+                if args.get("tags")
+                else None,
+            }
+        )
 
-        remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Creating VPC endpoint with parameters: {kwargs}")
         response = client.create_vpc_endpoint(**kwargs)
 
@@ -5226,10 +5228,12 @@ class EC2:
         Returns:
             CommandResults: Results containing internet gateway information
         """
-        kwargs = remove_empty_elements({
-            "InternetGatewayIds": argToList(args.get("internet_gateway_ids")),
-            "Filters": parse_filter_field(args.get("filters"))
-        })
+        kwargs = remove_empty_elements(
+            {
+                "InternetGatewayIds": argToList(args.get("internet_gateway_ids")),
+                "Filters": parse_filter_field(args.get("filters")),
+            }
+        )
 
         if not kwargs.get("InternetGatewayIds"):
             kwargs.update(build_pagination_kwargs(args, minimum_limit=5))
@@ -5266,7 +5270,8 @@ class EC2:
         )
 
         outputs = {
-            "AWS.EC2.InternetGateways(val.InternetGatewayId && val.InternetGatewayId == obj.InternetGatewayId)": internet_gateways,
+            "AWS.EC2.InternetGateways(val.InternetGatewayId && val.InternetGatewayId == obj.InternetGatewayId)":
+                internet_gateways,
             "AWS.EC2(true)": {"InternetGatewaysNextToken": response.get("NextToken")},
         }
 
@@ -5353,23 +5358,25 @@ class EC2:
         Returns:
             CommandResults: Results with success message
         """
-        kwargs = remove_empty_elements({
-            "NetworkAclId": args.get("network_acl_id"),
-            "RuleNumber": arg_to_number(args.get("rule_number")),
-            "Protocol": args.get("protocol"),
-            "RuleAction": args.get("rule_action"),
-            "Egress": arg_to_bool_or_none(args.get("egress")),
-            "CidrBlock": args.get("cidr_block"),
-            "Ipv6CidrBlock": args.get("ipv6_cidr_block"),
-            "IcmpTypeCode": {
-                "Type": arg_to_number(args.get("icmp_type_code_type")),
-                "Code": arg_to_number(args.get("icmp_type_code_code")),
-            },
-            "PortRange": {
-                "From": arg_to_number(args.get("port_range_from")),
-                "To": arg_to_number(args.get("port_range_to")),
+        kwargs = remove_empty_elements(
+            {
+                "NetworkAclId": args.get("network_acl_id"),
+                "RuleNumber": arg_to_number(args.get("rule_number")),
+                "Protocol": args.get("protocol"),
+                "RuleAction": args.get("rule_action"),
+                "Egress": arg_to_bool_or_none(args.get("egress")),
+                "CidrBlock": args.get("cidr_block"),
+                "Ipv6CidrBlock": args.get("ipv6_cidr_block"),
+                "IcmpTypeCode": {
+                    "Type": arg_to_number(args.get("icmp_type_code_type")),
+                    "Code": arg_to_number(args.get("icmp_type_code_code")),
+                },
+                "PortRange": {
+                    "From": arg_to_number(args.get("port_range_from")),
+                    "To": arg_to_number(args.get("port_range_to")),
+                },
             }
-        })
+        )
 
         print_debug_logs(client, f"Creating network ACL entry with parameters: {kwargs}")
         response = client.create_network_acl_entry(**kwargs)
