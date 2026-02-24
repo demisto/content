@@ -47,7 +47,7 @@
             "Worker_Descriptor": "John Alayan",
             "Worker_Data": {
               "Worker_ID": "123456",
-              "User_ID": "JDoe@paloaltonetworks.com",
+              "User_ID": "jdoe@example.com",
               "Personal_Data": {
                 "Name_Data": {
                   "Legal_Name_Data": {
@@ -417,7 +417,7 @@
                       "ID": "EMAIL_REFERENCE-3-14523"
                     },
                     {
-                      "Email_Address": "JDoe@paloaltonetworks.com",
+                      "Email_Address": "jdoe@example.com",
                       "Usage_Data": {
                         "@{urn:com.workday/bsvc}Public": "1",
                         "Type_Data": {

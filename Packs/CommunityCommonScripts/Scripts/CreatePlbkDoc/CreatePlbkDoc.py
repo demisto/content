@@ -12,7 +12,7 @@ from docx.shared import Inches
 #               (in case of Paragraph format).
 #               The definition of a section is path starting from a section header type of task, and ends
 #               when it hits another section header in that path pf traversal.
-# Author:       Mahmood Azmat
+# Author:       Max Testman
 # Input1:       Name of the playbook (Mandatory)
 # Input2:       Format type needed. Table or Paragraph. Paragraph is default.
 # Input3:       Name of the docx file that will be produced. Give the full name including the ".docx"

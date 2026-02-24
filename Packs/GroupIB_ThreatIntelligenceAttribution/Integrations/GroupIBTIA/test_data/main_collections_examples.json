@@ -3995,7 +3995,7 @@
                         "Kog Co., Ltd.",
                         "Konkuk University",
                         "LANXESS",
-                        "Lingnan University",
+                        "Test University",
                         "Lion Air",
                         "LivePlex Corp",
                         "MGAME Corp",
@@ -4384,7 +4384,7 @@
                             "datePublished": "2024-09-24",
                             "id": "2f580853070b70a12820e9b5e03f2e3823f5b318",
                             "name": {
-                                "en": "Publication of data allegedly related to Indonesia's Ministry of Education, Culture, Research, and Technology"
+                                "en": "Publication of data allegedly related to Indonesia's Ministry of Testing, Culture, Research, and Technology"
                             }
                         },
                         {
@@ -4392,7 +4392,7 @@
                             "datePublished": "2024-09-11",
                             "id": "07793f6779060b7df96ab0960c0b05ad6b9f94a0",
                             "name": {
-                                "en": "Publication of Capgemini data"
+                                "en": "Publication of TestGemini data"
                             }
                         },
                         {
@@ -4413,8 +4413,8 @@
                         "professional-services:consulting"
                     ],
                     "targetedCompany": [
-                        "Capgemini",
-                        "Ministry of Education, Culture, Research, and Technology (Indonesia)"
+                        "TestGemini",
+                        "Ministry of Testing, Culture, Research, and Technology (Indonesia)"
                     ],
                     "targetedPartnersAndClients": []
                 },

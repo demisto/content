@@ -2124,7 +2124,7 @@ List all mail flow rules (transport rules) in the organization.
 >
 >| Name | State | Priority | Comment | WhenChanged | CreatedBy |
 >| --- | --- | --- | --- | --- | --- |
->| demisto | Disabled | 1 | comment | 2019-10-14T07:25:04+00:00 | Edwin Becker |
+>| demisto | Disabled | 1 | comment | 2019-10-14T07:25:04+00:00 | Ed Testmaner |
 >| demisto-2 | Enabled | 2 | comment | 2019-11-15T010:21:45+00:00 | Kemp Kimmons |
 >| demisto-3 | Enabled | 3 | comment | 2019-11-16T016:26:46+00:00 | Barbara Wagner |
 
@@ -2173,7 +2173,7 @@ Get a mail flow rule (transport rules) in the organization.
 >
 >| Name | State | Priority | Comment | WhenChanged | CreatedBy |
 >| --- | --- | --- | --- | --- | --- |
->| demisto | Disabled | 1 | comment | 2019-10-14T07:25:04+00:00 | Edwin Becker |
+>| demisto | Disabled | 1 | comment | 2019-10-14T07:25:04+00:00 | Ed Testmaner |
 
 ### ews-mail-flow-rule-remove
 

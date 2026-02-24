@@ -11,7 +11,7 @@ response_incident = {
             "agent_load_flags": "0",
             "agent_local_time": "2020-05-06T23:36:34.594Z",
             "agent_version": "5.28.10902.0",
-            "bios_manufacturer": "Apple Inc.",
+            "bios_manufacturer": "Test Inc.",
             "bios_version": "1037.100.359.0.0 (iBridge: 17.16.14263.0.0,0)",
             "config_id_base": "65994753",
             "config_id_build": "10902",
@@ -29,7 +29,7 @@ response_incident = {
             "platform_name": "Mac",
             "product_type_desc": "Workstation",
             "status": "normal",
-            "system_manufacturer": "Apple Inc.",
+            "system_manufacturer": "Test Inc.",
             "system_product_name": "MacBookPro15,1",
             "modified_timestamp": "2020-05-17T16:59:56Z",
         }
