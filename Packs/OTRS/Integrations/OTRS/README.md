@@ -4,6 +4,7 @@ This integration was integrated and tested with OTRS versions 5, 6, and 7.
 ## Prerequisite
 
 Before configuring OTRS on Cortex XSOAR, you need to enable the webservices in your OTRS instance. It is recommended to use the provided [YAML webservice configuration template](https://gitlab.com/rhab/PyOTRS/raw/master/webservices_templates/GenericTicketConnectorREST.yml), which includes the Route: /TicketList endpoint required for PyOTRS but which is not included in the default OTRS webservice setup. If you use a different file than the template, make sure to name your file `GenericTicketConnectorREST.yml`.
+This integration uses an optional JSON routing table corresponding to the aforementioned webservice configuration template which defaults to [this JSON value in PyOTRS](https://gitlab.com/rhab/PyOTRS/-/blob/1.5.2/pyotrs/lib.py?ref_type=tags#L23). The parameter webservice_config_ticket may be used to supply a different JSON configuration if your instance implements other endpoints or expects other outputs (e.g. changing the Result of SessionGet to `AccessToken` in newer versions).
 
 ## Configure OTRS on Cortex XSOAR
 
@@ -23,6 +24,7 @@ Before configuring OTRS on Cortex XSOAR, you need to enable the webservices in y
 | fetch_priority | Fetch tickets in priority | False |
 | fetch_time | First fetch timestamp \(formatted as &lt;number&gt; &lt;time unit&gt;, for example 12 hours, 7 days, 3 months, 1 year\) | False |
 | look_back | Days to look back when fetching | False |
+| webservice_config_ticket | JSON representation of the webservice configuration for tickets as described in the Prerequisite section | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
