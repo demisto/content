@@ -7,6 +7,7 @@ commonfields:
   id: Wiz
   version: -1
 defaultmapperin: Wiz Mapper
+defaultmapperout: Wiz - Outgoing Mapper
 configuration:
 - name: incidentType
   display: Incident type
@@ -94,6 +95,34 @@ configuration:
   type: 16
   required: false
   section: Collect
+- name: mirror_direction
+  display: Incident Mirror Direction
+  defaultvalue: None
+  type: 15
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  section: Collect
+  additionalinfo: 'Choose the mirroring direction for Wiz issues. Default is None (no mirroring).'
+- name: mirror_limit
+  display: Maximum number of incidents to mirror each time
+  defaultvalue: '50'
+  type: 0
+  required: false
+  section: Collect
+  advanced: true
+  additionalinfo: 'Maximum number of issues to check for changes per mirror cycle (1-500).'
+- name: comment_tag
+  display: Tag for comment mirroring
+  defaultvalue: comments
+  type: 0
+  required: false
+  section: Collect
+  advanced: true
+  additionalinfo: 'Add this tag to XSOAR war room entries to mirror them as Wiz issue notes.'
 description: Agentless cloud security.
 display: Wiz
 name: Wiz
@@ -486,8 +515,41 @@ script:
     - name: resource_id
       description: ID of the resource to copy its Volumes. Can be Wiz ID or provider's ID.
       required: true
+  - name: get-remote-data
+    description: Get remote data for a single incident. Called by the mirroring engine, not for manual use.
+    arguments:
+    - name: id
+      description: The remote incident ID.
+    - name: lastUpdate
+      description: The UTC timestamp of the last update.
+    outputs: []
+  - name: get-modified-remote-data
+    description: Get the list of incidents modified since the last update. Called by the mirroring engine, not for manual use.
+    arguments:
+    - name: lastUpdate
+      description: The UTC timestamp of the last update.
+    outputs: []
+  - name: update-remote-system
+    description: Push local changes to Wiz. Called by the mirroring engine, not for manual use.
+    arguments:
+    - name: data
+      description: The incident data.
+    - name: entries
+      description: New entries to push.
+    - name: incidentChanged
+      description: Whether the incident changed.
+    - name: remoteId
+      description: The remote incident ID.
+    outputs: []
+  - name: get-mapping-fields
+    description: Returns the list of fields for an incident type. Called by the mirroring engine, not for manual use.
+    arguments: []
+    outputs: []
   dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   runonce: false
   script: '-'
   subtype: python3
