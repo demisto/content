@@ -1688,25 +1688,25 @@ def build_webapp_counts_request_data(
 ) -> dict:
     """
     Builds the request data for the generic /api/webapp/get_counts endpoint.
-    
+
     Args:
         table_name: The name of the table to query
         filter_dict: The filter dictionary to apply
         start_page: The starting index for pagination (default: 0)
         limit: The limit for pagination (default: 100)
         extra_data: Optional extra data to include in the request
-    
+
     Returns:
         dict: Request data formatted for the get_counts endpoint
     """
-    
+
     return {
         "type": "grid",
         "table_name": table_name,
         "extraData": extra_data,
-        "filter_data":  {
-        "filter": filter_dict,
-    }
+        "filter_data": {
+            "filter": filter_dict,
+        },
     }
 
 
