@@ -9604,13 +9604,13 @@ class Topology:
         if self.panorama_objects:
             for value in self.panorama_devices():
                 yield value
-            demisto.debug("[top_level_devices] Panorama instaces returned")
+            demisto.debug("[top_level_devices] Panorama instances returned")
             return
 
         if self.firewall_objects:
             for value in self.firewall_devices():
                 yield value
-            demisto.debug("[top_level_devices] Firewall instaces returned")
+            demisto.debug("[top_level_devices] Firewall instances returned")
 
     def active_devices(self, filter_str: Optional[str] = None) -> Iterator[Union[Firewall, Panorama]]:
         """
@@ -11679,7 +11679,7 @@ class PanoramaCommand:
         """
         result = []
         for device in topology.active_top_level_devices(device_filter_str):
-            demisto.debug(f"[get_device_groups] start running on Panorama intance {device.id=}, {device.hostname}.")
+            demisto.debug(f"[get_device_groups] start running on Panorama instance {device.id=}, {device.hostname=}.")
             if isinstance(device, Panorama):
                 response = run_op_command(device, PanoramaCommand.GET_DEVICEGROUPS_COMMAND)
                 device_groups = response.findall("./result/devicegroups/entry")
@@ -11697,7 +11697,7 @@ class PanoramaCommand:
                         device_group_information.name = dg_name
                         result.append(device_group_information)
             else:
-                demisto.debug("[get_device_groups] The command must run from Panorama instance.")
+                demisto.debug("[get_device_groups] Skipping running. The command must run from Panorama instance.")
 
         return result
 
