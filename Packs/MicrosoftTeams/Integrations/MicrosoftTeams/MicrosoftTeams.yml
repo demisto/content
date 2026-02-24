@@ -936,8 +936,6 @@ script:
         - User Principal Name (e.g., "john.doe@domain.onmicrosoft.com")
         - Display name (e.g., "John Doe")
         - User GUID (e.g., "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2")
-        
-        The command will automatically resolve the identifier to the user's ID using Microsoft Graph API.
       name: user_id
       required: true
     - description: The text message to send to the user.

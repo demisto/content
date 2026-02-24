@@ -1520,24 +1520,7 @@ Notes:
 ***
 Sends a proactive message to any Microsoft Teams user across the organization.
 
-This command enables direct communication with users without requiring them to be in a specific team or channel. It's particularly useful for security notifications, alerts, and automated responses to security events.
-
-**How it works:**
-
-1. **User Resolution**: Resolves the user identifier (email, User Principal Name, display name, or user ID) to the actual Microsoft Teams user ID using the Microsoft Graph API
-2. **Conversation Management**: Creates a new one-on-one conversation with the user or retrieves an existing cached conversation to avoid duplicate API calls
-3. **Message Delivery**: Sends the message or adaptive card to the user via the Bot Framework API
-
-**Use Case Example**:
-
-A user attempts to download a malicious file. An XSOAR playbook is triggered by a security event, and as part of the automated response, the playbook uses this command to send an Adaptive Card to the user. The card explains that the file has been quarantined, provides a brief security tip, and asks for confirmation that the user did not intentionally download the file.
-
-**Key Features:**
-
-- **Organization-wide reach**: Send messages to any user in your organization without requiring them to be in a specific team
-- **Conversation caching**: Automatically caches conversation IDs to optimize performance and reduce API calls
-- **Flexible user identification**: Accepts user ID (GUID), email address, User Principal Name, or display name
-- **Security validation**: Prevents sending to wrong users by validating unique matches
+This command enables direct communication with users without requiring them to be in a specific team or channel.
 
 ##### Base Command
 

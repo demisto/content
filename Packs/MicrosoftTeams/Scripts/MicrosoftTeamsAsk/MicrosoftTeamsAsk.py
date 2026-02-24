@@ -20,8 +20,10 @@ def main():
     using_instance: str = script_arguments.get("using", "")
     user_id: str = script_arguments.get("user_id", "")
 
+    if (team_member or channel or team) and user_id:
+        raise ValueError("Either provide a specific user ID or specify the team, team member, or channel.")
     if not (team_member or channel or user_id):
-        raise ValueError("Either team member or channel must be provided.")
+        raise ValueError("Either team member, channel or user id must be provided.")
 
     if team_member and channel:
         raise ValueError("Either team member or channel should be provided, not both.")

@@ -1040,8 +1040,6 @@ def send_proactive_message_to_conversation(conversation_id: str, message: str = 
     elif message:
         conversation_payload["text"] = message
         conversation_payload["entities"] = []
-    else:
-        raise ValueError("Either message or adaptive_card must be provided")
 
     url: str = f"{service_url}/v3/conversations/{conversation_id}/activities"
     demisto.debug(f"Sending proactive message to conversation {conversation_id}")
@@ -2840,8 +2838,6 @@ def send_proactive_message_command():
                 adaptive_card: dict = json.loads(adaptive_card_arg)
             except json.JSONDecodeError as e:
                 raise ValueError(f"Invalid adaptive card JSON format: {str(e)}")
-        else:
-            adaptive_card = adaptive_card_arg  # Already a dict
 
         # Check for TeamsAsk entitlement - SAME AS send-notification
         entitlement_match: Match[str] | None = re.search(ENTITLEMENT_REGEX, adaptive_card.get("entitlement", ""))
