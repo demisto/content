@@ -3865,4 +3865,4 @@ def test_endpoint_triage_command(mocker, args, expected_request_data):
     assert result.outputs_prefix == "PaloAltoNetworksXDR.EndpointTriage"
     assert result.outputs == mock_reply
     assert result.raw_response == mock_reply
-    assert "Initiated Endpoints Triage" in result.readable_output
+    assert "Triage Endpoint Results" in result.readable_output
