@@ -26,7 +26,8 @@
         "machine",
         "vm",
         "service",
-        "cloud"
+        "cloud",
+        "Citrix"
     ],
     "marketplaces": [
         "marketplacev2",
