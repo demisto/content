@@ -8,7 +8,7 @@ subtype: python3
 tags:
 - infra
 - server
-comment: Common Atlassian OAuth code for Jira and Confluence integrations
+comment: Common Atlassian OAuth code for Jira and Confluence integrations.
 system: true
 scripttarget: 0
 dependson: {}

@@ -4434,3 +4434,68 @@ Retrieves a piece of content (e.g., page, blogpost) from Confluence Cloud by its
   }
 }
 ```
+
+### confluence-cloud-oauth-start
+
+***
+Starts the OAuth 2.0 authentication flow. Returns an authorization URL that the user must visit to authorize the integration.
+
+#### Base Command
+
+`confluence-cloud-oauth-start`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!confluence-cloud-oauth-start```
+
+### confluence-cloud-oauth-complete
+
+***
+Completes the OAuth 2.0 authentication flow by exchanging the authorization code for access and refresh tokens.
+
+#### Base Command
+
+`confluence-cloud-oauth-complete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| code | The authorization code received from the OAuth callback URL after user authorization. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!confluence-cloud-oauth-complete code=<authorization_code>```
+
+### confluence-cloud-oauth-test
+
+***
+Tests the OAuth 2.0 authentication by verifying the current access token is valid.
+
+#### Base Command
+
+`confluence-cloud-oauth-test`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!confluence-cloud-oauth-test```

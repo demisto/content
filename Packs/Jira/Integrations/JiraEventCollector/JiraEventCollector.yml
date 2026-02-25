@@ -79,7 +79,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/py3-tools:1.0.0.4027705
+  dockerimage: demisto/py3-tools:1.0.0.7186534
   isfetchevents: true
   runonce: false
   feed: false
@@ -99,7 +99,7 @@ script:
   - description: 'Complete the OAuth 2.0 authorization process using the authorization code.'
     name: jira-oauth-complete
     arguments:
-    - description: The authorization code received from the OAuth callback
+    - description: The authorization code received from the OAuth callback.
       name: code
       required: true
   - description: 'Test the OAuth 2.0 authentication'

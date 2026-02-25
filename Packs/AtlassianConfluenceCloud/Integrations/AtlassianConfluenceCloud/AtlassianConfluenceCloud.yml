@@ -2148,7 +2148,7 @@ script:
   - arguments: []
     name: confluence-cloud-oauth-test
     description: Tests the OAuth 2.0 authentication by verifying the current access token is valid.
-  dockerimage: demisto/python3:3.12.11.4508456
+  dockerimage: demisto/python3:3.12.12.7090913
   isfetchevents: true
   isfetchevents:xsoar: false
   runonce: false
