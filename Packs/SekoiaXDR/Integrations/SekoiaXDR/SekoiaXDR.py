@@ -586,8 +586,10 @@ def apply_time_buffer(date_str: str, delta_minutes: int) -> str:
 
     # Handle None gracefully
     if date_str is None:
-        demisto.debug("date_str is None, returning None")
-        return None
+        raise ValueError(
+            "date_str cannot be None. Alert must have first_seen_at and last_seen_at. "
+            "This indicates a data quality issue with the alert from Sekoia API."
+        )
 
     try:
         clean_date_str = date_str.replace("Z", "+00:00") if date_str.endswith("Z") else date_str

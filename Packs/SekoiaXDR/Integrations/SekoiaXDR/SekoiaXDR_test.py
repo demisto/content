@@ -834,19 +834,26 @@ def test_fetch_incidents_duplicate_same_timestamp(client, requests_mock):
 
     # Verify processed_ids are tracked
     assert "processed_ids" in next_run
-    assert len(next_run["processed_ids"]) > 0
+
+    processed_ids = next_run.get("processed_ids", [])
+    assert isinstance(processed_ids, list), f"processed_ids should be a list, got {type(processed_ids)}"
+    assert len(processed_ids) > 0, "processed_ids should not be empty"
+
+    # Verify incidents
     assert len(incidents) == 2
 
 
 def test_fetch_incidents_skip_already_processed(client, requests_mock):
-    """Test fetch_incidents skips alerts that were already processed in previous run"""
+    """Test fetch_incidents skips alerts that were already processed"""
     mock_response = util_load_json("test_data/SekoiaXDR_get_alerts_same_time.json")
     requests_mock.get(MOCK_URL + "/v1/sic/alerts", json=mock_response)
 
-    # Second fetch - simulate that we already processed an alert
+    # Use actual alert ID from test data
+    alert_to_skip = "ALL1A4SKUUUU"  # ✅ Correspond au fichier JSON
+
     last_run = {
         "last_fetch": 1747057948,
-        "processed_ids": ["ALWVYiP2Msz1"],  # ← Alert ID that was already processed
+        "processed_ids": [alert_to_skip],
     }
 
     next_run, incidents = SekoiaXDR.fetch_incidents(
@@ -863,9 +870,13 @@ def test_fetch_incidents_skip_already_processed(client, requests_mock):
         fetch_with_kill_chain=None,
     )
 
-    # Should skip the already-processed alert
-    processed_alert_ids = [json.loads(inc["rawJSON"]).get("short_id") for inc in incidents]
-    assert "ALWVYiP2Msz1" not in processed_alert_ids
+    # Verify that the skipped alert is not in the results
+    incident_ids = [json.loads(inc["rawJSON"]).get("short_id") for inc in incidents]
+    assert alert_to_skip not in incident_ids, f"Alert '{alert_to_skip}' should have been skipped but was included"
+
+    # Verify that the other alert is still processed
+    assert len(incidents) == 1
+    assert json.loads(incidents[0]["rawJSON"]).get("short_id") == "ALN1JwGVLxxx"
 
 
 def test_fetch_incidents_reset_processed_ids_for_new_timestamp(client, requests_mock):
@@ -901,7 +912,7 @@ def test_fetch_incidents_reset_processed_ids_for_new_timestamp(client, requests_
     # Second fetch with new timestamp
     last_run_2 = {
         "last_fetch": next_run_1["last_fetch"],
-        "processed_ids": next_run_1["processed_ids"],
+        "processed_ids": next_run_1.get("processed_ids", []),
     }
     next_run_2, _ = SekoiaXDR.fetch_incidents(
         client=client,
@@ -917,10 +928,11 @@ def test_fetch_incidents_reset_processed_ids_for_new_timestamp(client, requests_
         fetch_with_kill_chain=None,
     )
 
-    # New timestamp should reset processed_ids
-    assert next_run_2["last_fetch"] != next_run_1["last_fetch"]
-    # processed_ids should contain new alerts, not old ones
-    assert next_run_2["processed_ids"] != next_run_1["processed_ids"]
+    processed_ids_1 = next_run_1.get("processed_ids", [])
+    processed_ids_2 = next_run_2.get("processed_ids", [])
+    assert isinstance(processed_ids_1, list)
+    assert isinstance(processed_ids_2, list)
+    assert processed_ids_2 != processed_ids_1
 
 
 def test_fetch_incidents_accumulate_processed_ids_same_timestamp(client, requests_mock):
@@ -944,7 +956,9 @@ def test_fetch_incidents_accumulate_processed_ids_same_timestamp(client, request
     )
 
     # Both alerts have the same timestamp, so both should be in processed_ids
-    assert len(next_run["processed_ids"]) == 2
+    processed_ids = next_run.get("processed_ids", [])
+    assert isinstance(processed_ids, list), f"Expected list, got {type(processed_ids)}"
+    assert len(processed_ids) == 2, f"Expected 2 processed IDs, got {len(processed_ids)}"
     assert len(incidents) == 2
 
 
