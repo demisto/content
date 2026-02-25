@@ -2000,7 +2000,7 @@ script:
     description: Deletes the IP destination group associated with the specified group ID.
   script: ''
   subtype: python3
-  dockerimage: demisto/python3:3.12.12.6796194
+  dockerimage: demisto/python3:3.12.12.7090913
   type: python
 fromversion: 5.0.0
 tests:
