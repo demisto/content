@@ -4641,6 +4641,7 @@ Creates or updates an automation script.
 #### Context Output
 
 There is no context output for this command.
+
 ### xdr-vulnerability-details-get
 
 ***
@@ -4654,27 +4655,28 @@ Gets vulnerability details by ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vulnerability_id | The vulnerability ID to retrieve details for. | Required | 
+| vulnerability_id | The vulnerability ID to retrieve details for. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.Vulnerability.vulnerabilityID | String | The unique identifier \(CVE ID\). | 
-| PaloAltoNetworksXDR.Vulnerability.description | String | Detailed description of the vulnerability. | 
-| PaloAltoNetworksXDR.Vulnerability.publishedDate | Number | The date the vulnerability was first published. | 
-| PaloAltoNetworksXDR.Vulnerability.epss_score | Number | The Probability of exploitability \(0-1\). | 
-| PaloAltoNetworksXDR.Vulnerability.exploitDetails.exploitMaturity | String | Current state of exploit availability \(e.g., weaponized\). | 
-| PaloAltoNetworksXDR.Vulnerability.exploitDetails.weaponizedExploitFound | Boolean | Whether a functional exploit exists in the wild. | 
-| PaloAltoNetworksXDR.Vulnerability.exploitDetails.reportedExploited | Boolean | Whether the vulnerability has been actively exploited. | 
-| PaloAltoNetworksXDR.Vulnerability.exploitDetails.reportedExploitedByThreatActors | Boolean | Whether known threat actors are exploiting this vulnerability. | 
-| PaloAltoNetworksXDR.Vulnerability.exploitDetails.reportedExploitedByRansomware | Boolean | Whether the vulnerability is used in ransomware campaigns. | 
-| PaloAltoNetworksXDR.Vulnerability.exploitDetails.reportedExploitedByBotnets | Boolean | Whether the vulnerability is being leveraged by botnet clusters. | 
-| PaloAltoNetworksXDR.Vulnerability.exploitDetails.firstReportedThreatActor | Number | The timestamp of the first recorded threat actor activity. | 
-| PaloAltoNetworksXDR.Vulnerability.exploitDetails.mostRecentReportedThreatActor | Number | The timestamp of the last recorded threat actor activity. | 
-| PaloAltoNetworksXDR.Vulnerability.cisaKevDateDue | Number | The deadline set by CISA for federal agency remediation. | 
-| PaloAltoNetworksXDR.Vulnerability.weaknesses.cweId | String | The Common Weakness Enumeration ID. | 
-| PaloAltoNetworksXDR.Vulnerability.vulncheck-threat-actors | String | A list of specific threat actor groups associated with the vulnerability. | 
+| PaloAltoNetworksXDR.Vulnerability.vulnerabilityID | String | The unique identifier \(CVE ID\). |
+| PaloAltoNetworksXDR.Vulnerability.description | String | Detailed description of the vulnerability. |
+| PaloAltoNetworksXDR.Vulnerability.publishedDate | Number | The date the vulnerability was first published. |
+| PaloAltoNetworksXDR.Vulnerability.epss_score | Number | The Probability of exploitability \(0-1\). |
+| PaloAltoNetworksXDR.Vulnerability.exploitDetails.exploitMaturity | String | Current state of exploit availability \(e.g., weaponized\). |
+| PaloAltoNetworksXDR.Vulnerability.exploitDetails.weaponizedExploitFound | Boolean | Whether a functional exploit exists in the wild. |
+| PaloAltoNetworksXDR.Vulnerability.exploitDetails.reportedExploited | Boolean | Whether the vulnerability has been actively exploited. |
+| PaloAltoNetworksXDR.Vulnerability.exploitDetails.reportedExploitedByThreatActors | Boolean | Whether known threat actors are exploiting this vulnerability. |
+| PaloAltoNetworksXDR.Vulnerability.exploitDetails.reportedExploitedByRansomware | Boolean | Whether the vulnerability is used in ransomware campaigns. |
+| PaloAltoNetworksXDR.Vulnerability.exploitDetails.reportedExploitedByBotnets | Boolean | Whether the vulnerability is being leveraged by botnet clusters. |
+| PaloAltoNetworksXDR.Vulnerability.exploitDetails.firstReportedThreatActor | Number | The timestamp of the first recorded threat actor activity. |
+| PaloAltoNetworksXDR.Vulnerability.exploitDetails.mostRecentReportedThreatActor | Number | The timestamp of the last recorded threat actor activity. |
+| PaloAltoNetworksXDR.Vulnerability.cisaKevDateDue | Number | The deadline set by CISA for federal agency remediation. |
+| PaloAltoNetworksXDR.Vulnerability.weaknesses.cweId | String | The Common Weakness Enumeration ID. |
+| PaloAltoNetworksXDR.Vulnerability.vulncheck-threat-actors | String | A list of specific threat actor groups associated with the vulnerability. |
+
 ### xdr-healthcheck-run
 
 ***
@@ -4692,7 +4694,8 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.HealthStatus.status | String | The health status of the Cortex XDR system. | 
+| PaloAltoNetworksXDR.HealthStatus.status | String | The health status of the Cortex XDR system. |
+
 ### xdr-endpoint-triage-preset-list
 
 ***
@@ -4710,12 +4713,13 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.EndpointTriagePreset.created_by | String | The user or system entity that created the triage preset. | 
-| PaloAltoNetworksXDR.EndpointTriagePreset.description | String | A brief explanation of the preset's purpose or contents. | 
-| PaloAltoNetworksXDR.EndpointTriagePreset.name | String | The unique display name of the triage preset. | 
-| PaloAltoNetworksXDR.EndpointTriagePreset.os | String | The operating system platform the preset targets \(e.g., windows, linux, macos\). | 
-| PaloAltoNetworksXDR.EndpointTriagePreset.type | String | The category or classification of the preset \(e.g., standard, custom\). | 
-| PaloAltoNetworksXDR.EndpointTriagePreset.uuid | String | The unique universal identifier \(UUID\) assigned to this specific preset. | 
+| PaloAltoNetworksXDR.EndpointTriagePreset.created_by | String | The user or system entity that created the triage preset. |
+| PaloAltoNetworksXDR.EndpointTriagePreset.description | String | A brief explanation of the preset's purpose or contents. |
+| PaloAltoNetworksXDR.EndpointTriagePreset.name | String | The unique display name of the triage preset. |
+| PaloAltoNetworksXDR.EndpointTriagePreset.os | String | The operating system platform the preset targets \(e.g., windows, linux, macos\). |
+| PaloAltoNetworksXDR.EndpointTriagePreset.type | String | The category or classification of the preset \(e.g., standard, custom\). |
+| PaloAltoNetworksXDR.EndpointTriagePreset.uuid | String | The unique universal identifier \(UUID\) assigned to this specific preset. |
+
 ### xdr-endpoint-triage
 
 ***
@@ -4729,13 +4733,13 @@ Initiates a forensics triage on the specified endpoints. You must have Cortex XD
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_id | A comma-separated list of endpoint IDs to initiate triage on. You can find the endpoint ID under the "Inventory" section, under "All Endpoints". | Required | 
-| collector_uuid | The collector UUID to use for the triage. | Optional | 
+| endpoint_id | A comma-separated list of endpoint IDs to initiate triage on. You can find the endpoint ID under the "Inventory" section, under "All Endpoints". | Required |
+| collector_uuid | The collector UUID to use for the triage. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.EndpointTriage.TRIAGE_ID | String | The unique identifier assigned to the created triage action. | 
-| PaloAltoNetworksXDR.EndpointTriage.SUCCESSFUL_AGENT_IDS | Array | A list of agent IDs where the triage action was successfully initiated. | 
-| PaloAltoNetworksXDR.EndpointTriage.UNSUCCESSFUL_AGENT_IDS | Array | A list of agent IDs where the triage action failed to initiate. | 
+| PaloAltoNetworksXDR.EndpointTriage.TRIAGE_ID | String | The unique identifier assigned to the created triage action. |
+| PaloAltoNetworksXDR.EndpointTriage.SUCCESSFUL_AGENT_IDS | Array | A list of agent IDs where the triage action was successfully initiated. |
+| PaloAltoNetworksXDR.EndpointTriage.UNSUCCESSFUL_AGENT_IDS | Array | A list of agent IDs where the triage action failed to initiate. |
