@@ -8119,6 +8119,7 @@ class TestFetchAssetsFlow:
         mock_send_data_to_xsiam = mocker.patch("CrowdStrikeFalcon.send_data_to_xsiam")
         mock_update_module_health = mocker.patch("CrowdStrikeFalcon.demisto.updateModuleHealth")
         mocker.patch.object(time, "time", return_value=123.123)
+        mocker.patch.object(demisto, "params", return_value={"fetch_assets_type": "CNAPP Alerts"})
 
         # --- First Call ---
         # Initial last_run for the first call
