@@ -178,6 +178,126 @@ Looks up the classification for each of the specified IP addresses.
 >|---|---|
 >| 8.8.8.8 | WEB_SEARCH |
 
+### domain
+
+***
+Looks up the classification for each of the specified domains.
+
+#### Base Command
+
+`domain`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | A comma-separated list of domains for which to look up the classification. For example, example.com,google.com. | Required |
+| multiple | Whether there are multiple domains in the 'domain' argument. If a domain contains commas, set this argument to 'false' and enter the single domain as the 'domain' argument. Possible values are: true, false. Default is true. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Domain.Name | string | The domain that was searched. |
+| Zscaler.Domain.domainClassifications | string | The classification of the domain. For example, MUSIC or WEB_SEARCH. |
+| Zscaler.Domain.domainClassificationsWithSecurityAlert | string | The classifications of the domains that have security alerts. |
+| Domain.Malicious.Vendor | string | For malicious domains, the vendor that tagged the domain as malicious. |
+| Domain.Malicious.Description | string | For malicious domains, the reason the vendor tagged the domain as malicious. |
+| DBotScore.Indicator | string | The indicator that was tested. |
+| DBotScore.Type | string | The indicator type. |
+| DBotScore.Vendor | string | The vendor used to calculate the score. |
+| DBotScore.Score | number | The actual score. |
+
+#### Command Example
+
+```!domain domain=example.com```
+
+#### Context Example
+
+```json
+{
+    "DBotScore": [
+        {
+            "Indicator": "example.com",
+            "Score": 1,
+            "Type": "domain",
+            "Vendor": "Zscaler"
+        }
+    ],
+    "Domain": {
+        "Name": "example.com"
+    },
+    "Zscaler": {
+        "Domain": {
+            "Name": "example.com",
+            "domainClassifications": "REFERENCE_SITES"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Zscaler Domain Lookup
+
+>|domain|domainClassifications|
+>|---|---|
+>| example.com | REFERENCE_SITES |
+
+#### Command Example with Multiple Domains
+
+```!domain domain=example.com,google.com multiple=true```
+
+#### Context Example
+
+```json
+{
+    "DBotScore": [
+        {
+            "Indicator": "example.com",
+            "Score": 1,
+            "Type": "domain",
+            "Vendor": "Zscaler"
+        },
+        {
+            "Indicator": "google.com",
+            "Score": 1,
+            "Type": "domain",
+            "Vendor": "Zscaler"
+        }
+    ],
+    "Domain": [
+        {
+            "Name": "example.com"
+        },
+        {
+            "Name": "google.com"
+        }
+    ],
+    "Zscaler": {
+        "Domain": [
+            {
+                "Name": "example.com",
+                "domainClassifications": "REFERENCE_SITES"
+            },
+            {
+                "Name": "google.com",
+                "domainClassifications": "WEB_SEARCH"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Zscaler Domain Lookup
+
+>|domain|domainClassifications|
+>|---|---|
+>| example.com | REFERENCE_SITES |
+>| google.com | WEB_SEARCH |
+
 ### zscaler-undo-blacklist-url
 
 ***
