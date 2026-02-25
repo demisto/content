@@ -18,6 +18,8 @@ SERVER = demisto.params().get("server")
 if not SERVER.endswith("/"):
     SERVER += "/"
 API_KEY = demisto.params().get("credentials", {}).get("password") or demisto.params().get("apikey")
+ABUSECH_API_KEY = demisto.params().get("hunting_credentials", {}).get("password")
+ABUSECH_URL = demisto.params().get("abusech_hunting_url")
 DISABLE_PRIVATE_IP_LOOKUP = argToBoolean(demisto.params().get("disable_private_ip_lookup", "False"))
 MAX_AGE = demisto.params().get("days")
 THRESHOLD = demisto.params().get("threshold")
@@ -114,6 +116,28 @@ def http_request(method, url_suffix, params=None, headers=HEADERS, threshold=THR
     except Exception as e:
         LOG(e)
         return_error(str(e))
+
+
+def abusech_hunting_http_request(headers, payload):
+    """
+    Dedicated request helper for Abuse.ch Hunting API.
+    Sends a POST request with a JSON body to the base URL.
+    """
+    if not ABUSECH_URL:
+        return_error("Hunting API URL was not provided in the params.")
+
+    demisto.debug(f"Sending a POST request to '{ABUSECH_URL}' with the following payload: {payload}")
+
+    try:
+        response = session.request(method="POST", url=ABUSECH_URL, headers=headers, json=payload, verify=not INSECURE)
+
+        if response.status_code != 200:
+            return_error(f"Abuse.ch API error: {response.status_code} - {response.text}")
+
+        return response
+
+    except Exception as e:
+        return_error(f"Failed to connect to Abuse.ch: {str(e)}")
 
 
 def format_privte_ips(private_ips):

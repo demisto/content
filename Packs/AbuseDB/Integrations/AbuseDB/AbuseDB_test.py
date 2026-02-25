@@ -109,3 +109,105 @@ def test_ip_command_when_api_quota_reached(mocker):
 
     check_ip_command(DBotScoreReliability.C, ["1.1.1.1"], days=7, verbose=False, threshold=10)
     assert return_error_mock.call_count == 0
+
+
+def test_abusech_hunting_http_request_success(mocker):
+    """
+    Given:
+        - Valid headers and payload.
+        - A successful 200 OK response from the API.
+    When:
+        - abusech_hunting_http_request is called.
+    Then:
+        - Verify the request is made with correct parameters.
+        - Verify the response object is returned.
+    """
+    from requests import Session
+    import AbuseDB
+    from AbuseDB import abusech_hunting_http_request
+
+    mock_response = mocker.Mock()
+    mock_response.status_code = 200
+    mock_response.text = "OK"
+
+    mocker.patch.object(AbuseDB, "ABUSECH_URL", "https://test-url")
+    mocker.patch.object(AbuseDB, "INSECURE", False)
+    request_mock = mocker.patch.object(Session, "request", return_value=mock_response)
+
+    headers = {"Auth-Key": "test"}
+    payload = {"query": "test"}
+
+    response = abusech_hunting_http_request(headers, payload)
+
+    assert response is not None
+    assert response.status_code == 200
+    request_mock.assert_called_once_with(method="POST", url="https://test-url", headers=headers, json=payload, verify=True)
+
+
+def test_abusech_hunting_http_request_api_error(mocker):
+    """
+    Given:
+        - A non-200 response from the API.
+    When:
+        - abusech_hunting_http_request is called.
+    Then:
+        - Verify return_error is called with the expected message.
+    """
+    from requests import Session
+    import AbuseDB
+    from AbuseDB import abusech_hunting_http_request
+
+    mock_response = mocker.Mock()
+    mock_response.status_code = 404
+    mock_response.text = "Not Found"
+
+    mocker.patch.object(AbuseDB, "ABUSECH_URL", "https://test-url")
+    mocker.patch.object(Session, "request", return_value=mock_response)
+    return_error_mock = mocker.patch.object(AbuseDB, "return_error")
+
+    abusech_hunting_http_request({}, {})
+
+    return_error_mock.assert_called_once_with("Abuse.ch API error: 404 - Not Found")
+
+
+def test_abusech_hunting_http_request_connection_error(mocker):
+    """
+    Given:
+        - A connection exception during the request.
+    When:
+        - abusech_hunting_http_request is called.
+    Then:
+        - Verify return_error is called with the connection error message.
+    """
+    from requests import Session
+    import AbuseDB
+    from AbuseDB import abusech_hunting_http_request
+
+    mocker.patch.object(AbuseDB, "ABUSECH_URL", "https://test-url")
+    mocker.patch.object(Session, "request", side_effect=Exception("Connection failed"))
+    return_error_mock = mocker.patch.object(AbuseDB, "return_error")
+
+    abusech_hunting_http_request({}, {})
+
+    return_error_mock.assert_called_once_with("Failed to connect to Abuse.ch: Connection failed")
+
+
+def test_abusech_hunting_http_request_missing_url(mocker):
+    """
+    Given:
+        - A missing ABUSECH_URL parameter.
+    When:
+        - abusech_hunting_http_request is called.
+    Then:
+        - Verify return_error is called with the missing URL message.
+    """
+    import AbuseDB
+    from AbuseDB import abusech_hunting_http_request
+
+    mocker.patch.object(AbuseDB, "ABUSECH_URL", None)
+    return_error_mock = mocker.patch.object(AbuseDB, "return_error", side_effect=Exception("return_error"))
+
+    with pytest.raises(Exception, match="return_error"):
+        abusech_hunting_http_request({}, {})
+
+    assert return_error_mock.call_args_list[0] == mocker.call("Hunting API URL was not provided in the params.")

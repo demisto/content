@@ -25,6 +25,18 @@ configuration:
   hidden: true
   section: Connect
   required: false
+- display: Abuse.ch Hunting API URL
+  name: abusech_hunting_url
+  type: 0
+  defaultvalue: https://hunting-api.abuse.ch/api/v1/
+  required: false
+  section: Connect
+- name: hunting_credentials
+  type: 9
+  displaypassword: Abuse.ch Hunting API Key
+  hiddenusername: true
+  section: Connect
+  required: false
 - defaultvalue: 'C - Fairly reliable'
   display: Source Reliability
   name: integrationReliability
