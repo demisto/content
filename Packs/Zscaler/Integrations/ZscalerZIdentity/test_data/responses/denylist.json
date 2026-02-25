@@ -1,0 +1,4 @@
+{
+    "blacklistUrls": ["malicious.com", "badsite.net", "1.2.3.4", "evil.org"],
+    "whitelistUrls": []
+}
