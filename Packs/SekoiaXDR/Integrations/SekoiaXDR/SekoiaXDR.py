@@ -6,7 +6,7 @@ import json
 import urllib3
 import dateparser  # type: ignore
 from typing import Any, cast
-from datetime import datetime
+from datetime import datetime, timedelta
 import re
 import pytz  # type: ignore
 
@@ -316,7 +316,7 @@ def timezone_format(epoch: int) -> str:
     return format_datetime.strftime("%Y-%m-%dT%H:%M:%S")
 
 
-def time_converter(time):
+def time_converter(time) -> str:
     """
     Converts a given time string to a datetime object.
 
@@ -516,7 +516,7 @@ def handle_alert_events_query(
 ) -> tuple[dict[str, Any], bool]:
     """
     Handle event query for an alert with readiness check.
-    
+
     Returns:
         tuple: (alert, is_ready)
             - alert: The alert dict with events (if ready) or job_uuid (if not ready)
@@ -540,7 +540,7 @@ def handle_alert_events_query(
     # Check if events are ready (with multiple rapid checks)
     is_ready, events = check_events_ready(client, search_job_uuid, max_checks=3)
 
-    if is_ready:
+    if is_ready and events:
         # Events are ready - add them to the alert
         undoted_events = undot(json_data=events)
         alert["events"] = undoted_events
@@ -573,8 +573,20 @@ def check_id_in_context(alert_id: str, cache: dict[str, Any] | None) -> tuple[di
 
 
 def apply_time_buffer(date_str: str, delta_minutes: int) -> str:
+    """
+    Apply a time buffer to a given ISO 8601 date string.
+
+    Args:
+        date_str (str): The date string in ISO 8601 format.
+        delta_minutes (int): The number of minutes to add (positive) or subtract (negative).
+
+    Returns:
+        str: The buffered date string in ISO 8601 format.
+    """
+
     # Handle None gracefully
     if date_str is None:
+        demisto.debug("date_str is None, returning None")
         return None
 
     try:
@@ -587,7 +599,8 @@ def apply_time_buffer(date_str: str, delta_minutes: int) -> str:
         # Normalize UTC offset to 'Z'.
         iso_str = iso_str.replace("+00:00", "Z")
         return iso_str
-    except ValueError:
+    except ValueError as e:
+        demisto.debug(f"Error applying time buffer: {e}")
         return date_str
 
 
@@ -670,7 +683,7 @@ def fetch_incidents(
                     latest_time = incident["rawJSON"]["last_seen_at"]
                     term = f"alert_short_ids:{incident['rawJSON']['short_id']}"
 
-                    alert = handle_alert_events_query(client, incident["rawJSON"], earliest_time, latest_time, term)
+                    alert, _ = handle_alert_events_query(client, incident["rawJSON"], earliest_time, latest_time, term)
                     incident["rawJSON"] = alert
                     # If the incident is not finished, we will keep it in the cache
                     not_finished_incident.append(incident)
@@ -766,13 +779,12 @@ def fetch_incidents(
                 demisto.debug(f"Error fetching kill chain information {kill_chain}: {e}")
 
         # Add events information to the alert, if fetch_mode is set to "Fetch With All Events"
-        events_ready = True
         if fetch_mode == "Fetch With All Events":
             earliest_time = alert["first_seen_at"]
             latest_time = alert["last_seen_at"]
             term = f"alert_short_ids:{alert['short_id']}"
 
-            alert, events_ready = handle_alert_events_query(client, alert, earliest_time, latest_time, term)
+            alert, _ = handle_alert_events_query(client, alert, earliest_time, latest_time, term)
 
         # Start building the incident
         incident = {
@@ -790,7 +802,7 @@ def fetch_incidents(
         incident["dbotMirrorId"] = alert["short_id"]
 
         # Add the alert to the incident only if events are ready (or events not requested)
-        if events_ready and not alert.get("job_uuid"):
+        if not alert.get("job_uuid"):
             # Events are ready or not requested - create incident immediately
             incident["rawJSON"] = json.dumps(alert)
             incidents.append(incident)
@@ -898,7 +910,7 @@ def get_remote_data_command(
             latest_time = alert["last_seen_at"]
             term = f"alert_short_ids:{alert['short_id']}"
 
-            alert = handle_alert_events_query(client, alert, earliest_time, latest_time, term)
+            alert, _ = handle_alert_events_query(client, alert, earliest_time, latest_time, term)
 
         # This adds all the information from the XSOAR incident.
         demisto.debug(f"Alert {alert_short_id} with status {alert_status} have this info updated: {alert}")
@@ -991,7 +1003,7 @@ def get_remote_data_command(
             latest_time = alert_object["alert"]["last_seen_at"]
             term = f"alert_short_ids:{alert_object['alert']['short_id']}"
 
-            alert = handle_alert_events_query(client, alert_object["alert"], earliest_time, latest_time, term)
+            alert, _ = handle_alert_events_query(client, alert_object["alert"], earliest_time, latest_time, term)
             alert_object["alert"] = alert
 
             # Update the cached alert in the context

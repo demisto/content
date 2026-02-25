@@ -189,8 +189,10 @@ def test_handle_alert_events_query_finished_status(client, requests_mock):
         "events_term": "sekoiaio.intake.uuid:834a2d7f-3623-4b26",
     }
 
-    result = SekoiaXDR.handle_alert_events_query(**args)
-    assert result["events"]
+    result_alert, is_ready = SekoiaXDR.handle_alert_events_query(**args)
+
+    assert "events" in result_alert
+    assert is_ready is True
 
 
 def test_handle_alert_events_query_in_progress_status(client, requests_mock):
@@ -202,6 +204,22 @@ def test_handle_alert_events_query_in_progress_status(client, requests_mock):
         MOCK_URL + "/v1/sic/conf/events/search/jobs/df904d2e-2c57-488f",
         json=mock_response_query_events_status,
     )
+
+    alert = util_load_json("test_data/SekoiaXDR_get_alert.json")
+    args = {
+        "client": client,
+        "alert": alert,
+        "earliest_time": "2024-04-25T10:00:23",
+        "latest_time": "2024-04-25T15:00:23",
+        "events_term": "sekoiaio.intake.uuid:834a2d7f-3623-4b26",
+    }
+
+    result_alert, is_ready = SekoiaXDR.handle_alert_events_query(**args)
+
+    assert is_ready is False
+    assert "job_uuid" in result_alert
+    assert result_alert["job_uuid"] == "df904d2e-2c57-488f"
+    assert "events" not in result_alert
 
 
 def test_check_id_in_context_without_mirroring(context_cache_without_mirroring):
@@ -709,8 +727,6 @@ def test_fetch_incidents_with_same_time(client, requests_mock):
     assert len(results[1]) == 2
 
 
-# ...existing imports...
-
 """ TEST BACKWARD COMPATIBILITY - url_sufix vs url_suffix """
 
 
@@ -801,7 +817,7 @@ def test_fetch_incidents_duplicate_same_timestamp(client, requests_mock):
     requests_mock.get(MOCK_URL + "/v1/sic/alerts", json=mock_response)
 
     # First fetch - should process all alerts with the same timestamp
-    last_run = {"last_fetch": 1714036855, "processed_ids": []}
+    last_run = {"last_fetch": 1747057948, "processed_ids": []}
     next_run, incidents = SekoiaXDR.fetch_incidents(
         client=client,
         max_results=100,
@@ -1002,7 +1018,7 @@ def test_handle_alert_events_query_with_buffer(client, requests_mock):
 
     alert = util_load_json("test_data/SekoiaXDR_get_alert.json")
 
-    result = SekoiaXDR.handle_alert_events_query(
+    result_alert, is_ready = SekoiaXDR.handle_alert_events_query(
         client=client,
         alert=alert,
         earliest_time="2024-04-25T10:00:00Z",
@@ -1011,7 +1027,8 @@ def test_handle_alert_events_query_with_buffer(client, requests_mock):
     )
 
     # Should have successfully retrieved events
-    assert "events" in result
+    assert "events" in result_alert
+    assert is_ready is True
 
 
 def test_handle_alert_events_query_pending_status(client, requests_mock):
@@ -1027,7 +1044,7 @@ def test_handle_alert_events_query_pending_status(client, requests_mock):
 
     alert = util_load_json("test_data/SekoiaXDR_get_alert.json")
 
-    result = SekoiaXDR.handle_alert_events_query(
+    result_alert, is_ready = SekoiaXDR.handle_alert_events_query(
         client=client,
         alert=alert,
         earliest_time="2024-04-25T10:00:00Z",
@@ -1035,10 +1052,10 @@ def test_handle_alert_events_query_pending_status(client, requests_mock):
         events_term="test_term",
     )
 
-    # Should have job_uuid set when not finished
-    assert "job_uuid" in result
-    assert result["job_uuid"] == "df904d2e-2c57-488f"
-    assert "events" not in result
+    assert "job_uuid" in result_alert
+    assert result_alert["job_uuid"] == "df904d2e-2c57-488f"
+    assert "events" not in result_alert
+    assert is_ready is False
 
 
 """ TEST MIRRORING WITH CACHE """
