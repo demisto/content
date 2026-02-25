@@ -13,6 +13,6 @@ This pack lets you:
 This content pack includes:
 
 - An integration with more than 10 commands for endpoint and incident management.
-- A classifier, as well as an incoming mapper to support incident data mirroring.
+- A classifier and an incoming mapper to support incident data mirroring.
 
 For more information about GravityZone Cloud, see the [GravityZone documentation](https://www.bitdefender.com/business/support/en/77209-79436-welcome-to-gravityzone.html).
