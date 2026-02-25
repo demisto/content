@@ -193,3 +193,7 @@ Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavo
 /Packs/MicrosoftIntune @Moish-Gilboa
 /Packs/AzureSecurityCenter @Moish-Gilboa
 
+
+# Labels
+/.github/github_workflow_scripts/check_if_component_test_packs_approved_label_exists.py @eepstain
+/.github/workflows/check-component-test-approved-label.yml @eepstain
