@@ -2528,7 +2528,8 @@ def get_vulnerability_details_command(client: Client, args: Dict) -> CommandResu
         "Vulnerability ID": response.get("vulnerabilityID"),
         "Description": response.get("description"),
         "Score": response.get("cvss", {}).get("score"),
-        "Publish Date": response.get("publishedDate"),
+        "Publish Date": arg_to_timestamp(response.get("publishedDate"),
+                                         "publishedDate") if response.get("publishedDate") else None,
     }
     demisto.debug(f"Got the response {response}")
     readable_output = tableToMarkdown(
