@@ -170,7 +170,10 @@ def main():
     folder_changed = any(file.split("/")[1].lower() in watched_folders for file in changed_files)
     # Validation logic
     if folder_changed and not component_test_approved:
-        print(f"❌ Missing {COMPONENT_TEST_APPROVED_LABEL} label: This pack has XSIAM content that is also supported in Component Test, please verify.")
+        print(
+            f"❌ Missing {COMPONENT_TEST_APPROVED_LABEL} label: This pack has XSIAM content that is also supported"
+            f" in Component Test, please verify."
+        )
         sys.exit(1)
 
     if not folder_changed and component_test_approved:
