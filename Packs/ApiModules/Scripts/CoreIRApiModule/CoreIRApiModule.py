@@ -4140,7 +4140,9 @@ def create_issues_filter(args) -> dict:
         argToList(args.get("causality_actor_process_image_command_line")),
     )
     filter_builder.add_field(
-        ISSUE_FIELDS["actor_process_image_command_line"], FilterType.CONTAINS, argToList(args.get("actor_process_image_command_line"))
+        ISSUE_FIELDS["actor_process_image_command_line"],
+        FilterType.CONTAINS,
+        argToList(args.get("actor_process_image_command_line")),
     )
     filter_builder.add_field(ISSUE_FIELDS["agent_id"], FilterType.EQ, argToList(args.get("agent_id")))
     filter_builder.add_field(ISSUE_FIELDS["Identity_type"], FilterType.EQ, argToList(args.get("Identity_type")))
@@ -4180,7 +4182,9 @@ def create_issues_filter(args) -> dict:
     )
     filter_builder.add_field(ISSUE_FIELDS["issue_category"], FilterType.EQ, argToList(args.get("issue_category")))
     if issue_domain := args.get("issue_domain"):
-        filter_builder.add_field(ISSUE_FIELDS["issue_domain"], FilterType.EQ, argToList(ALERT_DOMAIN.get(issue_domain, issue_domain)))
+        filter_builder.add_field(
+            ISSUE_FIELDS["issue_domain"], FilterType.EQ, argToList(ALERT_DOMAIN.get(issue_domain, issue_domain))
+        )
     filter_builder.add_field(ISSUE_FIELDS["issue_description"], FilterType.CONTAINS, argToList(args.get("issue_description")))
     filter_builder.add_field(
         ISSUE_FIELDS["os_actor_process_image_sha256"], FilterType.EQ, argToList(args.get("os_actor_process_image_sha256"))
