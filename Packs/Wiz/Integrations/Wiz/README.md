@@ -13,6 +13,9 @@ This integration was integrated and tested with Wiz
 | first_fetch | First fetch timestamp \(`<number>` `<time unit>`, e.g., 12 hours, 7 days\) | False |
 | Fetch incidents | Issue Streaming type.<br />Either `Fetch incidents` (to constantly pull Issues) or `Do not fetch` (to push live Issues)| False |
 | max_fetch | Max Issues to fetch | False |
+| mirror_direction | Incident Mirror Direction. Choose the mirroring direction for Wiz issues: None, Incoming, Outgoing, or Incoming And Outgoing. Default is None (no mirroring). | False |
+| mirror_limit | Maximum number of incidents to mirror each time (1-500). Default: 50. | False |
+| comment_tag | Tag for comment mirroring. Add this tag to XSOAR war room entries to mirror them as Wiz issue notes. Default: `comments`. | False |
 
 ## Commands
 
@@ -121,6 +124,10 @@ Get details of multiple resources based on various filters.
 | entity_type | Filter cloud resources by specific entity types. Possible values are: ACCESS_ROLE, ACCESS_ROLE_BINDING, ACCESS_ROLE_PERMISSION, API_GATEWAY, APPLICATION, AUTHENTICATION_CONFIGURATION, BACKUP_SERVICE, BUCKET, CDN, CERTIFICATE, CICD_SERVICE, CLOUD_LOG_CONFIGURATION, CLOUD_ORGANIZATION, COMPUTE_INSTANCE_GROUP, CONFIG_MAP, CONTAINER, CONTAINER_GROUP, CONTAINER_IMAGE, CONTAINER_REGISTRY, CONTAINER_SERVICE, DAEMON_SET, DATABASE, DATA_WORKLOAD, DB_SERVER, DEPLOYMENT, DNS_RECORD, DNS_ZONE, DOMAIN, EMAIL_SERVICE, ENCRYPTION_KEY, ENDPOINT, FILE_SYSTEM_SERVICE, FIREWALL, GATEWAY, GOVERNANCE_POLICY, GOVERNANCE_POLICY_GROUP, HOSTED_APPLICATION, IAM_BINDING, IP_RANGE, KUBERNETES_CLUSTER, KUBERNETES_CRON_JOB, KUBERNETES_INGRESS, KUBERNETES_INGRESS_CONTROLLER, KUBERNETES_JOB, KUBERNETES_NETWORK_POLICY, KUBERNETES_NODE, KUBERNETES_PERSISTENT_VOLUME, KUBERNETES_PERSISTENT_VOLUME_CLAIM, KUBERNETES_POD_SECURITY_POLICY, KUBERNETES_SERVICE, KUBERNETES_STORAGE_CLASS, KUBERNETES_VOLUME, LOAD_BALANCER, MANAGED_CERTIFICATE, MANAGEMENT_SERVICE, NETWORK_ADDRESS, NETWORK_INTERFACE, NETWORK_ROUTING_RULE, NETWORK_SECURITY_RULE, PEERING, POD, PORT_RANGE, PRIVATE_ENDPOINT, PROXY, PROXY_RULE, RAW_ACCESS_POLICY, REGISTERED_DOMAIN, REPLICA_SET, RESOURCE_GROUP, SEARCH_INDEX, SECRET, SECRET_CONTAINER, SERVERLESS, SERVERLESS_PACKAGE, SERVICE_ACCOUNT, STORAGE_ACCOUNT, SUBNET, SUBSCRIPTION, SWITCH, USER_ACCOUNT, VIRTUAL_DESKTOP, VIRTUAL_MACHINE, VIRTUAL_MACHINE_IMAGE, VIRTUAL_NETWORK, VOLUME, WEB_SERVICE, DATA_WORKFLOW. | Optional |
 | subscription_external_ids | Filter cloud resources according to these external subscription IDs (AWS Account, Azure Subscription, GCP Project, and OCI Compartment). You can provide multiple IDs separated by commas. | Optional |
 | provider_unique_ids | Filter cloud resources according to these cloud service provider unique IDs. You can provide multiple IDs separated by commas. | Optional |
+| project_ids | Filter by Wiz project IDs (comma-separated). | Optional |
+| native_types | Filter by cloud-native resource types (comma-separated, e.g. aws_ec2_instance). | Optional |
+| updated_at_before | Filter resources updated before this date (ISO 8601, e.g. 2024-01-01T00:00:00Z). | Optional |
+| updated_at_after | Filter resources updated after this date (ISO 8601, e.g. 2024-01-01T00:00:00Z). | Optional |
 
 *At least one parameter must be provided.*
 

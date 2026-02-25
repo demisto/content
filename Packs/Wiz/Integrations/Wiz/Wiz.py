@@ -1602,7 +1602,10 @@ class WizMirrorDirection:
     @classmethod
     def from_params(cls):
         """Get mirror direction from integration params."""
-        return cls.DIRECTION_MAP.get(demisto.params().get(WizMirrorParam.DIRECTION, "None"))
+        direction_str = demisto.params().get(WizMirrorParam.DIRECTION, "None")
+        if direction_str not in cls.DIRECTION_MAP:
+            demisto.debug(f"Invalid mirror_direction value: '{direction_str}', defaulting to None")
+        return cls.DIRECTION_MAP.get(direction_str)
 
 
 class WizMirrorParam:
