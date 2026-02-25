@@ -1080,7 +1080,7 @@ class AssistantMessagingHandler:
                     if bot_id:
                         help_hint = AssistantMessages.HELP_HINT.format(bot_tag=self.format_user_mention(bot_id))
                         await self.send_message_async(
-                            channel_id, help_hint, thread_id=thread_id, ephemeral=True, user_id=user_id
+                            channel_id, help_hint, thread_id=thread_id, user_id=user_id
                         )
 
                     # Send thinking indicator
@@ -1273,7 +1273,7 @@ class AssistantMessagingHandler:
                 bot_display_name=AssistantMessages.BOT_DISPLAY_NAME,
                 bot_tag=bot_mention,
             )
-            await self.send_message_async(channel_id, help_msg, thread_id=thread_id, ephemeral=True, user_id=user_id)
+            await self.send_message_async(channel_id, help_msg, thread_id=thread_id, user_id=user_id)
             return assistant
 
         # Check for "!reset" command
