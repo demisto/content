@@ -6684,3 +6684,72 @@ Deletes a tag from the specified case.
 #### Context Output
 
 There is no context output for this command.
+
+### cs-falcon-search-ngsiem-events
+
+***
+Search NGSIEM historical events. Requires NGSIEM scope with read and write permissions.
+
+#### Base Command
+
+`cs-falcon-search-ngsiem-events`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| repository | The repository to run the query against. Possible values are: search-all, third-party, falcon_for_it_view, forensics_view, investigate_view. Default is search-all. | Optional |
+| query | The CQL query to use for the search. Note: Double quotes and backslashes in the queryString must be escaped with a backslash to ensure they are properly interpreted. Example: query="#event_simpleName = \"Event_name\"", For more details see: https://library.humio.com/data-analysis/syntax.html. | Required |
+| start | The start of the search window, based on the event timestamp.<br/>Note: 'end' must be laetr than 'start'.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000). | Optional |
+| end | The end of the search window, based on the event timestamp.<br/>Note: 'end' must be laetr than 'start'.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000). | Optional |
+| around_event_id | The ID of the event to search around. Must be provided together with around_timestamp. | Optional |
+| around_number_events_before | Number of events to return before the target event. Requires around_event_id and around_timestamp. | Optional |
+| around_number_events_after | Number of events to return after the target event. Requires around_event_id and around_timestamp. | Optional |
+| around_timestamp | Timestamp for around search. Must be provided together with around_event_id. | Optional |
+| ingest_start | The start of the search window, based on the event ingesttimestamp.<br/>Note: 'ingest_end' must be laetr than 'ingest_start'.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000). | Optional |
+| ingest_end | The end of the search window, based on the event ingesttimestamp.<br/>Note: 'ingest_end' must be laetr than 'ingest_start'.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000). | Optional |
+| use_ingest_time | When true, the server uses ingest_start/ingest_end as the query window. When false (or not set), it uses start/end. If both windows are provided, results are constrained by BOTH (AND). Possible values are: true, false. | Optional |
+| limit | Maximum number of events to return. Ignored when around_number_events_before or around_number_events_after parameters are specified. Default is 50. | Optional |
+| interval_in_seconds | Interval between polling attempts in seconds. To prevent search timeouts, set this value within the 60–90 second range. Default is 60. | Optional |
+| timeout_in_seconds | Timeout for polling in seconds. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.NGSiemEvent | Array | The list of all events returned from the search. |
+| CrowdStrike.NGSiemEvent.timestamp | String | Event timestamp. |
+| CrowdStrike.NGSiemEvent.id | String | The event ID. |
+
+#### Command Example
+
+`!cs-falcon-search-ngsiem-events query="#event_simpleName = \"Event_name\"" repository="search-all" start="1d" end="now" limit=2 interval=60 timeout=120`
+
+`!cs-falcon-search-ngsiem-events query="*" repository="search-all" start="7d" end="now" around_event_id="aaa" around_number_events_before=1 around_number_events_after=1 around_timestamp=1700000000000 interval=60 timeout=120`
+
+`!cs-falcon-search-ngsiem-events query="id=aaaaa_anchor_event" repository="search-all" ingest_start=1700000000000 ingest_end=1700000002000 use_ingest_time=true limit=2 interval=60 timeout=120`
+
+#### Context Example
+
+```json
+{
+  "CrowdStrike": {
+    "NGSiemEvent": [
+      {
+        "@id": "aaaaa_event_1",
+        "@timestamp": 1700000000000,
+        "@ingesttimestamp": "1700000001000",
+        "id": "aaaaa_event_1",
+        "event_simpleName": "Event_APIActivityAuditEvent"
+      },
+      {
+        "@id": "aaaaa_event_2",
+        "@timestamp": 1700000002000,
+        "@ingesttimestamp": "1700000003000",
+        "id": "aaaaa_event_2",
+        "event_simpleName": "Event_APIActivityAuditEvent"
+      }
+    ]
+  }
+}
+```
