@@ -548,7 +548,7 @@ def domain_lookup(args):
         ioc_context = {"Name": res_domain}
         score = Common.DBotScore.GOOD
 
-        if len(data.get("urlClassifications", [])) == 0:
+        if not data.get("urlClassifications", []):
             data["domainClassifications"] = ""
             ioc_context["domainClassifications"] = ""
         else:
@@ -559,7 +559,7 @@ def domain_lookup(args):
 
         data.pop("urlClassifications", None)
 
-        if len(data.get("urlClassificationsWithSecurityAlert", [])) == 0:
+        if not data.get("urlClassificationsWithSecurityAlert", []):
             data["domainClassificationsWithSecurityAlert"] = ""
             ioc_context["domainClassificationsWithSecurityAlert"] = ""
         else:
