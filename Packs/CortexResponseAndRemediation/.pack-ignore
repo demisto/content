@@ -84,6 +84,10 @@ ignore=GR109
 [file:silent-playbook-Vulnerable_Certificate_Template_Loaded.yml]
 ignore=GR109
 
+#GR109 fails on playbooks with different supported modules than the pack
+[file:Packs/CortexResponseAndRemediation/Playbooks/silent-playbook-Suspicious_Powershell_Command_Execution.yml]
+ignore=GR109
+
 [known_words]
 xsiam
 coreirapimodule
