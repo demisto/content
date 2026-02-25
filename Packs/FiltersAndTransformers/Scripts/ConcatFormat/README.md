@@ -219,7 +219,7 @@ ${userid}@paloaltonetworks.com
 #### Output
 
 ```
-JDOE@paloaltonetworks.com
+jdoe@example.com
 ```
 
 ---
