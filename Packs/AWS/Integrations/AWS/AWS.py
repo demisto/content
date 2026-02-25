@@ -295,6 +295,36 @@ def parse_key_values_2_dict(parameters_str: str) -> dict:
     return parameters
 
 
+def parse_key_1_value_to_dict(key_value_str: str) -> dict:
+    """
+    Parses a list representation of key and value 'key=<key1>,value=<value>;key=<key2>,value=<value>.
+
+    Args:
+        key_value_str (str): The key and values list
+    Returns:
+        A dictionary containing the parameters
+        {"key1" : "value", "key2" : "value"}
+    """
+    if not key_value_str:
+        return {}
+
+    results = {}
+    list_variables = argToList(key_value_str, separator=";")
+    regex = re.compile(
+        r"^key=([a-zA-Z]([a-zA-Z0-9_])+),value=([ \w@,.*-\/:]+)",
+        flags=re.I,
+    )
+    for var in list_variables:
+        match_var = regex.match(var)
+        if match_var is None:
+            raise ValueError(
+                f"Could not parse the parameter: {var}. Please make sure you provided "
+                "like so: key=<key>,value=<value>;key=<key>,value=<value2>..."
+            )
+        results[match_var.group(1)] = match_var.group(2)
+    return results
+
+
 def parse_name_value_type_format_filter(filter_string: str | None):
     """
     Parses a list representation of name and values and type with the form of 'name=<name>,values=<values>,type=<type>'.
@@ -338,7 +368,7 @@ def parse_name_value_type_format_filter(filter_string: str | None):
     return filters
 
 
-def parse_tag_field(tags_string: str | None):
+def parse_tag_field(tags_string: str | None) -> list:
     """
     Parses a list representation of key and value with the form of 'key=<name>,value=<value>.
     You can specify up to 50 tags per resource.
@@ -6903,10 +6933,7 @@ class Lambda:
             CommandResults: Results of the operation with updated function configuration details.
         """
         function_name = args.get("function_name")
-        env_vars = None
-        if args.get("environment"):
-            parsed_env = parse_tag_field(args.get("environment"))
-            env_vars = {item["Key"]: item["Value"] for item in parsed_env}
+
         kwargs = {
             "FunctionName": function_name,
             "Role": args.get("role"),
@@ -6919,42 +6946,65 @@ class Lambda:
                 "SecurityGroupIds": argToList(args.get("security_group_ids")),
                 "Ipv6AllowedForDualStack": arg_to_bool_or_none(args.get("ipv6_allowed_for_dualstack"))
             },
-
+            "Environment": {
+                "Variables": parse_key_1_value_to_dict(args.get("environment", ""))
+            },
+            "Runtime": args["runtime"],
+            "DeadLetterConfig": {
+                "TargetArn": args.get("target_arn")
+            },
+            "KMSKeyArn": args.get("kms_key_arn"),
+            "TracingConfig": {
+                "Mode": args.get("tracing_config_mode"),
+            },
+            "RevisionId": args.get("revision_id"),
+            "Layers": argToList(args.get("layers")),
+            "ImageConfig": {
+                "EntryPoint": argToList(args.get("image_config_entry_point")),
+                "Command": argToList(args.get("image_config_command")),
+                "WorkingDirectory": args.get("image_config_working_directory")
+            },
+            "EphemeralStorage": {
+                "Size": args.get("ephemeral_storage_size")
+            },
+            "SnapStart": {
+                "ApplyOn": args.get("snap_start_apply_on")
+            },
+            "LoggingConfig": {
+                'LogFormat': args.get("log_format"),
+                'ApplicationLogLevel': args.get("application_log_level"),
+                'SystemLogLevel': args.get("system_log_level"),
+                'LogGroup': args.get("log_group")
+            },
+            "CapacityProviderConfig": {
+                "LambdaManagedInstancesCapacityProviderConfig": {
+                    'CapacityProviderArn': args.get("capacity_provider_arn"),
+                    'PerExecutionEnvironmentMaxConcurrency': args.get("per_execution_env_max_concurrency"),
+                    'ExecutionEnvironmentMemoryGiBPerVCpu': args.get("execution_env_memory_per_cpu")
+                }
+            },
+            "DurableConfig": {
+                'RetentionPeriodInDays': args.get("durable_retention_period"),
+                'ExecutionTimeout': args.get("durable_execution_timeout")
+            }
         }
 
-        if "environment" in args:
-            kwargs["Environment"] = json.loads(args["environment"])
-        if "runtime" in args:
-            kwargs["Runtime"] = args["runtime"]
-        if "dead_letter_config" in args:
-            kwargs["DeadLetterConfig"] = json.loads(args["dead_letter_config"])
-        if "kms_key_arn" in args:
-            kwargs["KMSKeyArn"] = args["kms_key_arn"]
-        if "tracing_config" in args:
-            kwargs["TracingConfig"] = json.loads(args["tracing_config"])
-        if "revision_id" in args:
-            kwargs["RevisionId"] = args["revision_id"]
-        if "layers" in args:
-            kwargs["Layers"] = argToList(args["layers"])
         if "file_system_configs" in args:
-            kwargs["FileSystemConfigs"] = json.loads(args["file_system_configs"])
-        if "image_config" in args:
-            kwargs["ImageConfig"] = json.loads(args["image_config"])
-        if "ephemeral_storage" in args:
-            kwargs["EphemeralStorage"] = json.loads(args["ephemeral_storage"])
-        if "snap_start" in args:
-            kwargs["SnapStart"] = json.loads(args["snap_start"])
-        if "logging_config" in args:
-            kwargs["LoggingConfig"] = json.loads(args["logging_config"])
+            key_value_list = parse_tag_field(args.get("file_system_configs"))
+            arn_local_mount_path_list = []
+            for key_value in key_value_list:
+                arn_local_mount_path_list.append({'Arn': key_value['Key'], "LocalMountPath": key_value["Value"]})
+            kwargs["FileSystemConfigs"] = arn_local_mount_path_list
 
         response = client.update_function_configuration(**kwargs)
 
-        if "ResponseMetadata" in response:
-            del response["ResponseMetadata"]
+        outputs = copy.deepcopy(response)
+        if outputs.get("ResponseMetadata", {}):
+            del outputs["ResponseMetadata"]
 
         human_readable = tableToMarkdown(
             f"Lambda Function Configuration Updated: {function_name}",
-            response,
+            outputs,
             headerTransform=pascalToSpace,
             removeNull=True,
         )

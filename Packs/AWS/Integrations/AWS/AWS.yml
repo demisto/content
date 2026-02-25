@@ -8765,7 +8765,7 @@ script:
       description: A comma-separated list of function layers ARNs.
       isArray: true
     - name: file_system_configs
-      description: An Arn-LocalMountPath pairs string for EFS file system configurations. Arn is the Amazon Resource Name (ARN) of the Amazon EFS access point that provides access to the file system. The LocalMountPath is the path where the function can access the file system, starting with /mnt/. Must be separated by a semicolon (;) and specified using the format "Arn=DB_HOST,LocalMountPath=localhost;Arn=DEBUG,LocalMountPath=true".
+      description: An key-value pairs string for EFS file system configurations where the key is the Arn and the value is LocalMountPath. Arn is the Amazon Resource Name (ARN) of the Amazon EFS access point that provides access to the file system. The LocalMountPath is the path where the function can access the file system, starting with /mnt/. Must be separated by a semicolon (;) and specified using the format "key=DB_HOST,value=localhost;key=DEBUG,value=true".
     - name: image_config_entry_point
       description: A comma-separated list that specifies the entry point to their application, which is typically the location of the runtime executable.
     - name: image_config_command
@@ -8805,6 +8805,16 @@ script:
         - WARN
     - name: log_group
       description: The name of the Amazon CloudWatch log group the function sends logs to.
+    - name: capacity_provider_arn
+      description: The Amazon Resource Name (ARN) of the capacity provider.
+    - name: per_execution_env_max_concurrency
+      description: The maximum number of concurrent execution environments that can run on each compute instance.
+    - name: execution_env_memory_per_cpu
+      description: The amount of memory in GiB allocated per vCPU for execution environments.
+    - name: durable_retention_period
+      description: The number of days to retain execution history after a durable execution completes. After this period, execution history is no longer available through the GetDurableExecutionHistory API.
+    - name: durable_execution_timeout
+      description: The maximum time (in seconds) that a durable execution can run before timing out. This timeout applies to the entire durable execution, not individual function invocations.
     outputs:
     - contextPath: AWS.Lambda.FunctionConfig.FunctionName
       description: The name of the function.
