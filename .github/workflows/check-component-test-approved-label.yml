@@ -8,7 +8,7 @@ permissions:
   contents: read
 
 jobs:
-  check_component-test_label_job:
+  check_component_test_label_job:
     runs-on: ubuntu-latest
     if: github.repository == 'demisto/content'
     steps:
