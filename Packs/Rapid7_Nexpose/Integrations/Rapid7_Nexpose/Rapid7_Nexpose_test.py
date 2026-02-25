@@ -3271,7 +3271,7 @@ async def test_xsiam_api_call_async_with_retries_cimultidictproxy_headers(mocker
     # Call the function under test — should NOT raise TypeError
     # It will return after the error handling path (num_of_attempts=1 means only 1 try)
     with capfd.disabled():
-        result = await xsiam_api_call_async_with_retries(
+        await xsiam_api_call_async_with_retries(
             xsiam_url="https://example.com",
             zipped_data=b"test-data",
             headers={"authorization": "test-token"},
