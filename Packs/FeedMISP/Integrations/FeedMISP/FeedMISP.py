@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 import urllib3
+import os
 import tempfile
 from CommonServerPython import *  # noqa: F401
 
@@ -14,8 +15,6 @@ class TempFile:
             temp_file.write(data)
 
     def __del__(self):
-        import os
-
         os.remove(self.path)
 
 
