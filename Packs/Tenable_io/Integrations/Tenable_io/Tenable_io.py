@@ -113,10 +113,9 @@ USE_SSL = not PARAMS["unsecure"]
 USE_PROXY = PARAMS.get("proxy", False)
 
 if not USE_PROXY:
-    del os.environ["HTTP_PROXY"]
-    del os.environ["HTTPS_PROXY"]
-    del os.environ["http_proxy"]
-    del os.environ["https_proxy"]
+    # Remove proxy environment variables if they exist
+    for proxy_var in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:
+        os.environ.pop(proxy_var, None)
 
 DATE_FORMAT = "%Y-%m-%d"
 VENDOR = "tenable"

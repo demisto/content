@@ -158,25 +158,25 @@ script:
     - description: The name of the Amazon S3 bucket.
       name: bucket
       required: true
-    - description: Weather Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket.
+    - description: Whether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket.
       name: block_public_acls
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - description: Weather Amazon S3 should ignore public ACLs for this bucket and objects in this bucket.
+    - description: Whether Amazon S3 should ignore public ACLs for this bucket and objects in this bucket.
       name: ignore_public_acls
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - description: Weather Amazon S3 should block public bucket policies for this bucket.
+    - description: Whether Amazon S3 should block public bucket policies for this bucket.
       name: block_public_policy
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - description: Weather Amazon S3 should restrict public bucket policies for this bucket.
+    - description: Whether Amazon S3 should restrict public bucket policies for this bucket.
       name: restrict_public_buckets
       auto: PREDEFINED
       predefined:
@@ -539,7 +539,7 @@ script:
     - description: The name of the bucket for which to set the logging parameters.
       name: bucket
       required: true
-    - description: Weather MFA delete is enabled in the bucket versioning configuration. This element is only returned if the bucket has been configured with MFA delete. If the bucket has never been so configured, this element is not returned.
+    - description: Whether MFA delete is enabled in the bucket versioning configuration. This element is only returned if the bucket has been configured with MFA delete. If the bucket has never been so configured, this element is not returned.
       name: mfa_delete
       required: false
     - auto: PREDEFINED
@@ -978,13 +978,13 @@ script:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: Weather IAM user passwords must contain at least one uppercase character from the ISO basic Latin alphabet (A to Z). Can be "True" or "False".
+      description: Whether IAM user passwords must contain at least one uppercase character from the ISO basic Latin alphabet (A to Z). Can be "True" or "False".
       name: require_uppercase_characters
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: Weather IAM user passwords must contain at least one lowercase character from the ISO basic Latin alphabet (a to z). Can be "True" or "False".
+      description: Whether IAM user passwords must contain at least one lowercase character from the ISO basic Latin alphabet (a to z). Can be "True" or "False".
       name: require_lowercase_characters
       predefined:
       - 'true'
@@ -1676,13 +1676,13 @@ script:
       description: 'The DB cluster identifier for the modified cluster. This parameter is not case sensitive and is valid for Aurora DB and Multi-AZ DB cluster types. It must match the identifier of an existing DB cluster.'
       required: true
     - name: deletion_protection
-      description: 'Weather the DB cluster has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled.'
+      description: 'Whether the DB cluster has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled.'
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: enable_iam_database_authentication
-      description: 'Weather to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
+      description: 'Whether to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -3904,7 +3904,7 @@ script:
         name: private_dns_hostname_type_on_launch
 
   - arguments:
-    - description: One or more filters Separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details & filter options.
+    - description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
       name: filters
     - description: A comma-separated list of VPC IDs.
       name: vpc_ids
@@ -4006,7 +4006,7 @@ script:
       type: string
 
   - arguments:
-    - description: One or more filters Separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details & filter options.
+    - description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
       name: filters
     - description: A comma-separated list of subnet IDs.
       name: subnet_ids
@@ -4107,7 +4107,7 @@ script:
   - arguments:
     - description: A comma-separated list of the IPAM resource discovery IDs.
       name: ipam_resource_discovery_ids
-    - description: One or more filters separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
+    - description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
       name: filters
     - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000. Default value is 50.
       name: limit
@@ -4177,7 +4177,7 @@ script:
   - arguments:
     - description: A comma-separated list of the resource discovery association IDs.
       name: ipam_resource_discovery_association_ids
-    - description: One or more filters separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
+    - description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
       name: filters
     - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000. Default value is 50.
       name: limit
@@ -4302,21 +4302,21 @@ script:
       description: The name of the Amazon SNS topic defined for notification of log file delivery.
       required: false
     - name: include_global_service_events
-      description: Weather the trail is publishing events from global services such as IAM to the log files.
+      description: Whether the trail is publishing events from global services such as IAM to the log files.
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: is_multi_region_trail
-      description: Weather the trail applies only to the current region or to all regions. The default is false. If the trail exists only in the current region and this value is set to true, shadow trails (replications of the trail) will be created in the other regions. If the trail exists in all regions and this value is set to false, the trail will remain in the region where it was created, and its shadow trails in other regions will be deleted.
+      description: Whether the trail applies only to the current region or to all regions. The default is false. If the trail exists only in the current region and this value is set to true, shadow trails (replications of the trail) will be created in the other regions. If the trail exists in all regions and this value is set to false, the trail will remain in the region where it was created, and its shadow trails in other regions will be deleted.
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: enable_log_file_validation
-      description: Weather log file validation is enabled. The default is false.
+      description: Whether log file validation is enabled. The default is false.
       required: false
       auto: PREDEFINED
       predefined:
@@ -4354,13 +4354,13 @@ script:
       description: Set to True to include AWS API calls from AWS global services such as IAM.
       type: boolean
     - contextPath: AWS.CloudTrail.Trail.IsMultiRegionTrail
-      description: Weather the trail exists only in one region or exists in all regions.
+      description: Whether the trail exists only in one region or exists in all regions.
       type: boolean
     - contextPath: AWS.CloudTrail.Trail.HomeRegion
       description: The region in which the trail was created.
       type: string
     - contextPath: AWS.CloudTrail.Trail.LogFileValidationEnabled
-      description: Weather log file validation is enabled.
+      description: Whether log file validation is enabled.
       type: boolean
     - contextPath: AWS.CloudTrail.Trail.CloudWatchLogsLogGroupArn
       description: Amazon Resource Name (ARN), a unique identifier that represents the log group to which CloudTrail logs will be delivered.
@@ -4375,7 +4375,7 @@ script:
       description: Specifies if the trail has custom event selectors.
       type: boolean
     - contextPath: AWS.CloudTrail.Trail.HasInsightSelectors
-      description: Weather a trail has insight selectors enabled.
+      description: Whether a trail has insight selectors enabled.
       type: boolean
     - contextPath: AWS.CloudTrail.Trail.IsOrganizationTrail
       description: Whether the trail is an organization trail.
@@ -4406,7 +4406,7 @@ script:
         prettypredefined:
           Name: ${asset.xdm.asset.name}
       - name: enable_log_file_validation
-        description: Weather log file validation is enabled.
+        description: Whether log file validation is enabled.
         defaultValue: 'true'
         hidden: true
     outputs:
@@ -6616,6 +6616,320 @@ script:
         required: false
         defaultValue: "40"
 
+  - name: aws-ec2-snapshots-describe
+    description: Describes the EBS snapshots available to you or all snapshots accessible in your environment.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: filters
+      description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
+    - name: limit
+      description: The maximum number of snapshots to return for this request. This value can be between 5 and 1000.
+    - name: next_token
+      description: The token returned from the previous paginated request. Use it to continue retrieving results from where the last request ended.
+    - name: owner_ids
+      description: A comma-separated list of possible owners IDs. Scopes the results to snapshots with the specified owners.
+      isArray: true
+    - name: restorable_by_user_ids
+      description: A comma-separated list of IDs of the AWS accounts that can create volumes from the snapshot.
+      isArray: true
+    - name: snapshot_ids
+      description: A comma-separated list of snapshot IDs.
+      isArray: true
+    outputs:
+    - contextPath: AWS.EC2.Snapshots.DataEncryptionKeyId
+      description: The data encryption key identifier for the snapshot.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.Description
+      description: The description for the snapshot.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.Encrypted
+      description: Indicates whether the snapshot is encrypted.
+      type: boolean
+    - contextPath: AWS.EC2.Snapshots.KmsKeyId
+      description: The Amazon Resource Name (ARN) of the AWS KMS key that was used to protect the volume encryption key for the parent volume.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.OwnerId
+      description: The ID of the AWS account that owns the EBS snapshot.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.Progress
+      description: The progress of the snapshot, as a percentage.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.SnapshotId
+      description: The ID of the snapshot. Each snapshot receives a unique identifier when it is created.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.StartTime
+      description: The time stamp when the snapshot was initiated.
+      type: date
+    - contextPath: AWS.EC2.Snapshots.State
+      description: The snapshot state.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.StateMessage
+      description: Encrypted Amazon EBS snapshots are copied asynchronously. If a snapshot copy operation fails, this field displays error state details to help you diagnose why the error occurred.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.VolumeId
+      description: The ID of the volume that was used to create the snapshot.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.VolumeSize
+      description: The size of the volume, in GiB.
+      type: number
+    - contextPath: AWS.EC2.Snapshots.OwnerAlias
+      description: The AWS owner alias, from an Amazon-maintained list (amazon). This is not the user-configured AWS account alias set using the IAM console.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.OutpostArn
+      description: The ARN of the Outpost on which the snapshot is stored.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.Tags.Value
+      description: The value of the tag.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.StorageTier
+      description: The storage tier in which the snapshot is stored.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.RestoreExpiryTime
+      description: Only for archived snapshots that are temporarily restored. Indicates the date and time when a temporarily restored snapshot will be automatically re-archived.
+      type: date
+    - contextPath: AWS.EC2.Snapshots.SseType
+      description: Reserved for future use.
+      type: string
+    - contextPath: AWS.EC2.SnapshotsNextPageToken
+      description: Next page token for pagination.
+      type: string
+
+  - name: aws-ec2-snapshot-delete
+    description: Deletes the specified snapshot.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: snapshot_id
+      description: The ID of the EBS snapshot.
+      required: true
+
+  - name: aws-ec2-snapshot-copy
+    description: Copies a point-in-time snapshot of an EBS volume and stores it in Amazon S3. You can copy a snapshot within the same Region, from one Region to another, or from a Region to an Outpost.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: source_snapshot_id
+      description: The ID of the EBS snapshot to copy.
+      required: true
+    - name: source_region
+      description: The ID of the Region that contains the snapshot to be copied.
+      required: true
+    - name: description
+      description: A description for the EBS snapshot.
+    - name: destination_outpost_arn
+      description: The Amazon Resource Name (ARN) of the Outpost where the snapshot will be copied.
+    - name: encrypted
+      description: Use this parameter to encrypt a copy of an unencrypted snapshot when encryption-by-default is not enabled. Otherwise, omit it.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: kms_key_id
+      description: The identifier of the AWS KMS key to use for Amazon EBS encryption. If this parameter is not specified, your AWS managed key for Amazon EBS is used.
+    - name: presigned_url
+      description: When you copy an encrypted source snapshot using the Amazon EC2 Query API, you must supply a pre-signed URL.
+    - name: tag_specifications
+      description: The tags to apply to the new snapshot. The tags must be separated by a semicolon (;) and specified using the format "key=key,values=val".
+      isArray: true
+    outputs:
+    - contextPath: AWS.EC2.Snapshots.SnapshotId
+      description: The ID of the new snapshot.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.Tags.Value
+      description: The value of the tag.
+      type: string
+
+  - name: aws-ec2-snapshot-completed-waiter
+    description: A waiter function that waits until the snapshot is complete.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: filters
+      description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
+    - name: owner_ids
+      description: A comma-separated list of possible owners IDs. Scopes the results to snapshots with the specified owners.
+      isArray: true
+    - name: restorable_by_user_ids
+      description: A comma-separated list of IDs of the AWS accounts that can create volumes from the snapshot.
+      isArray: true
+    - name: snapshot_ids
+      description: A comma-separated list of snapshot IDs.
+      isArray: true
+    - name: waiter_delay
+      description: The amount of time in seconds to wait between attempts. Default 15.
+      defaultValue: "15"
+    - name: waiter_max_attempts
+      description: The maximum number of attempts to be made. Default 40.
+      defaultValue: "40"
+
   - name: aws-s3-bucket-encryption-get
     description: Retrieves the default encryption configuration for an Amazon S3 bucket. Shows the server-side encryption settings that are applied to new objects stored in the bucket.
     arguments:
@@ -7341,6 +7655,1038 @@ script:
     - contextPath: AWS.Lambda.FunctionURLConfig.InvokeMode
       description: BUFFERED or RESPONSE_STREAM.
       type: String
+# aws-lambda-function-get
+  - name: aws-lambda-function-get
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: function_name
+      required: true
+      description: The name of the Lambda function, version, or alias.
+    - name: qualifier
+      description: Specify a version or alias to get details about a published version of the function.
+    description: Returns information about the function or the specified version, including a link to download the deployment package (valid for 10 minutes). If a version is specified, only version-specific details are returned.
+    outputs:
+    - contextPath: AWS.Lambda.Functions.Configuration.FunctionName
+      description: The name of the function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.FunctionArn
+      description: The function's Amazon Resource Name (ARN).
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Runtime
+      description: The identifier of the function's runtime.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Role
+      description: The function's execution role.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Handler
+      description: The function that Lambda calls to begin running your function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.CodeSize
+      description: The size of the function's deployment package, in bytes.
+      type: number
+    - contextPath: AWS.Lambda.Functions.Configuration.Description
+      description: The function's description.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Timeout
+      description: The amount of time in seconds that Lambda allows a function to run before stopping it.
+      type: number
+    - contextPath: AWS.Lambda.Functions.Configuration.MemorySize
+      description: The amount of memory available to the function at runtime.
+      type: number
+    - contextPath: AWS.Lambda.Functions.Configuration.LastModified
+      description: The date and time that the function was last updated, in ISO-8601 format.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.CodeSha256
+      description: The SHA256 hash of the function's deployment package.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Version
+      description: The version of the Lambda function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.VpcConfig.SubnetIds
+      description: A list of VPC subnet IDs.
+      type: array
+    - contextPath: AWS.Lambda.Functions.Configuration.VpcConfig.SecurityGroupIds
+      description: A list of VPC security group IDs.
+      type: array
+    - contextPath: AWS.Lambda.Functions.Configuration.VpcConfig.VpcId
+      description: The ID of the VPC.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Code.RepositoryType
+      description: The repository from which you can download the function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Code.Location
+      description: The presigned URL you can use to download the function's .zip file.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Tags
+      description: The function's tags.
+      type: object
+    - contextPath: AWS.Lambda.Functions.Concurrency.ReservedConcurrentExecutions
+      description: The number of concurrent executions that are reserved for this function.
+      type: number
+    - contextPath: AWS.Lambda.Functions.Region
+      description: The AWS Region.
+      type: string
+
+  - name: aws-lambda-functions-list
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: limit
+      description: "Maximum number of functions to return in a single request. Valid range is 1-50."
+      defaultValue: "50"
+      required: false
+    - name: next_token
+      description: "Token for pagination. Use the value from AWS.Lambda.FunctionsNextToken to retrieve the next page of results."
+      required: false
+    description: Returns a list of your Lambda functions. For each function, the response includes the function configuration information.
+    outputs:
+    - contextPath: AWS.Lambda.Functions.FunctionName
+      description: The name of the function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.FunctionArn
+      description: The function's Amazon Resource Name.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Runtime
+      description: The runtime environment for the Lambda function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Role
+      description: The function's execution role.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Handler
+      description: The function Lambda calls to begin executing your function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.CodeSize
+      description: The size of the function's deployment package in bytes.
+      type: number
+    - contextPath: AWS.Lambda.Functions.Description
+      description: The function's description.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Timeout
+      description: The amount of time that Lambda allows a function to run before terminating it.
+      type: number
+    - contextPath: AWS.Lambda.Functions.MemorySize
+      description: The memory allocated to the function.
+      type: number
+    - contextPath: AWS.Lambda.Functions.LastModified
+      description: The date and time that the function was last updated, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
+      type: date
+    - contextPath: AWS.Lambda.Functions.CodeSha256
+      description: The SHA256 hash of the function's deployment package.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Version
+      description: The version of the Lambda function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.VpcConfig.SubnetIds
+      description: A list of VPC subnet IDs.
+      type: string
+    - contextPath: AWS.Lambda.Functions.VpcConfig.SecurityGroupIds
+      description: A list of VPC security groups IDs.
+      type: string
+    - contextPath: AWS.Lambda.Functions.VpcConfig.VpcId
+      description: The ID of the VPC.
+      type: string
+    - contextPath: AWS.Lambda.Functions.DeadLetterConfig.TargetArn
+      description: The Amazon Resource Name (ARN) of an Amazon SQS queue or Amazon SNS topic.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Environment.Variables
+      description: Environment variable key-value pairs.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Environment.Error.ErrorCode
+      description: The error code for environment variables that could not be applied.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Environment.Error.Message
+      description: The error message for environment variables that could not be applied.
+      type: string
+    - contextPath: AWS.Lambda.Functions.KMSKeyArn
+      description: The KMS key used to encrypt the function's environment variables. Only returned if you've configured a customer managed CMK.
+      type: string
+    - contextPath: AWS.Lambda.Functions.TracingConfig.Mode
+      description: The function's AWS X-Ray tracing configuration mode.
+      type: string
+    - contextPath: AWS.Lambda.Functions.MasterArn
+      description: The ARN of the master function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.RevisionId
+      description: Represents the latest updated revision of the function or alias.
+      type: string
+    - contextPath: AWS.Lambda.Functions.LayerVersions.Arn
+      description: The Amazon Resource Name (ARN) of the function layer.
+      type: string
+    - contextPath: AWS.Lambda.Functions.LayerVersions.CodeSize
+      description: The size of the layer archive in bytes.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Region
+      description: The AWS Region.
+      type: string
+    - contextPath: AWS.Lambda.FunctionsNextToken
+      description: Token to use for pagination in subsequent requests.
+      type: string
+
+  - name: aws-lambda-aliases-list
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - description: The name of the Lambda function.
+      name: function_name
+      required: true
+    - description: Specify a function version to only list aliases that invoke that version.
+      name: function_version
+    - description: The maximum number of aliases to return (default is 50, maximum is 10000).
+      name: limit
+      defaultValue: "50"
+    - description: Specify the pagination token that was returned by a previous request to retrieve the next page of results.
+      name: next_token
+    description: Returns a list of aliases created for a Lambda function.
+    outputs:
+    - contextPath: AWS.Lambda.Aliases.AliasArn
+      description: Lambda function ARN that is qualified using the alias name as the suffix.
+      type: string
+    - contextPath: AWS.Lambda.Aliases.Name
+      description: Alias name.
+      type: string
+    - contextPath: AWS.Lambda.Aliases.FunctionVersion
+      description: Function version to which the alias points.
+      type: string
+    - contextPath: AWS.Lambda.Aliases.Description
+      description: Alias description.
+      type: string
+    - contextPath: AWS.Lambda.Aliases.RoutingConfig.AdditionalVersionWeights
+      description: The name of the second alias, and the percentage of traffic that is routed to it.
+      type: string
+    - contextPath: AWS.Lambda.Aliases.RevisionId
+      description: Represents the latest updated revision of the function or alias.
+      type: string
+    - contextPath: AWS.Lambda.AliasesNextToken
+      description: The pagination token for the next set of aliases.
+
+  - name: aws-lambda-account-settings-get
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    description: Retrieves details about the account's limits and usage in an AWS Region.
+    outputs:
+    - contextPath: AWS.Lambda.AccountSettings.AccountLimit.TotalCodeSize
+      description: The amount of storage space that you can use for all deployment packages and layer archives.
+      type: number
+    - contextPath: AWS.Lambda.AccountSettings.AccountLimit.CodeSizeUnzipped
+      description: The maximum size of your function's code and layers when they're extracted.
+      type: number
+    - contextPath: AWS.Lambda.AccountSettings.AccountLimit.CodeSizeZipped
+      description: The maximum size of a deployment package when it's uploaded directly to AWS Lambda. Use Amazon S3 for larger files.
+      type: number
+    - contextPath: AWS.Lambda.AccountSettings.AccountLimit.ConcurrentExecutions
+      description: The maximum number of simultaneous function executions.
+      type: number
+    - contextPath: AWS.Lambda.AccountSettings.AccountLimit.UnreservedConcurrentExecutions
+      description: The maximum number of simultaneous function executions, minus the capacity that's reserved for individual functions with PutFunctionConcurrency.
+      type: number
+    - contextPath: AWS.Lambda.AccountSettings.AccountUsage.TotalCodeSize
+      description: The amount of storage space, in bytes, that's being used by deployment packages and layer archives.
+      type: number
+    - contextPath: AWS.Lambda.AccountSettings.AccountUsage.FunctionCount
+      description: The number of Lambda functions.
+      type: number
+    - contextPath: AWS.Lambda.AccountSettings.Region
+      description: The AWS Region.
+      type: string
+    - contextPath: AWS.Lambda.AccountSettings.AccountId
+      description: The AWS account ID.
+      type: string
+
+  - name: aws-lambda-function-versions-list
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - description: The name of the Lambda function.
+      name: function_name
+      required: true
+    - description: Specify the pagination token that's returned by a previous request to retrieve the next page of results.
+      name: next_token
+    - description: The maximum number of versions to return. Note that the maximum limit is 50 items in each response.
+      name: limit
+      defaultValue: "50"
+    description: Returns a list of versions, with the version-specific configuration of each.
+    outputs:
+    - contextPath: AWS.Lambda.Functions.FunctionVersionsNextToken
+      description: The pagination token that's included if more results are available.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionArn
+      description: The function's Amazon Resource Name (ARN).
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.FunctionArn
+      description: The function's Amazon Resource Name (ARN).
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.Runtime
+      description: The identifier of the function's runtime. Runtime is required if the deployment package is a .zip file archive.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.Role
+      description: The function's execution role.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.Handler
+      description: The function that Lambda calls to begin running your function.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.CodeSize
+      description: The size of the function's deployment package, in bytes.
+      type: Number
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.Description
+      description: The function's description.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.Timeout
+      description: The amount of time in seconds that Lambda allows a function to run before stopping it.
+      type: Number
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.MemorySize
+      description: The amount of memory available to the function at runtime.
+      type: Number
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.LastModified
+      description: The date and time that the function was last updated, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.CodeSha256
+      description: The SHA256 hash of the function's deployment package.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.Version
+      description: The version of the Lambda function.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.VpcConfig.SubnetIds
+      description: A list of VPC subnet IDs.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.VpcConfig.SecurityGroupIds
+      description: A list of VPC security group IDs.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.VpcConfig.VpcId
+      description: The ID of the VPC.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.DeadLetterConfig.TargetArn
+      description: The Amazon Resource Name (ARN) of an Amazon SQS queue or Amazon SNS topic.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.Environment.Variables
+      description: Environment variable key-value pairs. Omitted from CloudTrail logs.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.Environment.Error.ErrorCode
+      description: The error code for environment variables that couldn't be applied.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.Environment.Error.Message
+      description: The error message for environment variables that couldn't be applied.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.KMSKeyArn
+      description: The ARN of the KMS key used to encrypt the function's environment variables.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.TracingConfig.Mode
+      description: The tracing mode for the Lambda function.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.MasterArn
+      description: The ARN of the main function for Lambda@Edge functions.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.State
+      description: The current state of the function. When the state is Inactive, you can reactivate the function by invoking it.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.StateReason
+      description: The reason for the function's current state.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.StateReasonCode
+      description: The reason code for the current state of the function.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.LastUpdateStatus
+      description: The status of the last update that was performed on the function. This is first set to Successful after function creation completes.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.LastUpdateStatusReason
+      description: The reason for the last update that was performed on the function.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.LastUpdateStatusReasonCode
+      description: The reason code for the last update operation status.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.PackageType
+      description: The type of deployment package. Set to Image for container image and set Zip for .zip file archive.
+      type: String
+
+  - name: aws-lambda-function-url-config-delete
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - description: The name of the Lambda function.
+      name: function_name
+      required: true
+    - description: The alias name or version number.
+      name: qualifier
+    description: Deletes a Lambda function URL. When you delete a function URL, you can't recover it. Creating a new function URL results in a different URL address.
+    execution: true
+
+  - name: aws-lambda-function-create
+    description: Creates a Lambda function. To create a function, you need a deployment package and an execution role.
+    execution: true
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: function_name
+      description: The name of the Lambda function.
+      required: true
+    - name: runtime
+      description: The runtime environment for the function.
+      required: true
+    - name: handler
+      description: "The name of the method within your code that Lambda calls to execute your function. Example: lambda_function.lambda_handler."
+      required: true
+    - name: role
+      description: The Amazon Resource Name (ARN) of the function's execution role.
+      required: true
+    - name: code
+      description: Entry ID of the uploaded base64-encoded contents of the deployment package.
+    - name: s3_bucket
+      description: An Amazon S3 bucket in the same Amazon Web Services Region as your function. The bucket can be in a different Amazon Web Services account.
+    - name: description
+      description: A description of the function.
+    - name: function_timeout
+      description: The amount of time (in seconds) that Lambda allows a function to run before stopping it.
+      defaultValue: "3"
+    - name: memory_size
+      description: The amount of memory (in MB) available to the function at runtime.
+      defaultValue: "128"
+    - name: publish
+      description: Set to true to publish the first version of the function during creation.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - name: subnet_ids
+      description: A comma-separated list of VPC subnet IDs.
+      isArray: true
+    - name: security_group_ids
+      description: A comma-separated list of VPC security group IDs.
+      isArray: true
+    - name: ipv6_allowed_for_dual_stack
+      description: Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - name: package_type
+      description: The type of deployment package.
+      auto: PREDEFINED
+      predefined:
+      - "Image"
+      - "Zip"
+    - name: environment
+      description: The environment variables for the function. Must be separated by a semicolon (;) and specified using the format "key=DB_HOST,value=localhost;key=DEBUG,value=true".
+    - name: tracing_config
+      description: The tracing configuration for the function. Set to Active to sample and trace a subset of incoming requests with X-Ray.
+      defaultValue: "Active"
+      auto: PREDEFINED
+      predefined:
+      - "Active"
+      - "PassThrough"
+    - name: tags
+      description: The list of tags to apply to the function. Must be separated by a semicolon (;) and specified using the format "key=abc,value=123;key=fed,value=456".
+    - name: layers
+      description: A list of function layers to add to the function's execution environment.
+      isArray: true
+    outputs:
+    - contextPath: AWS.Lambda.Functions.FunctionName
+      description: The name of the function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.FunctionArn
+      description: The function's Amazon Resource Name (ARN).
+      type: string
+    - contextPath: AWS.Lambda.Functions.Runtime
+      description: The identifier of the function's runtime.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Role
+      description: The function's execution role.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Handler
+      description: The function that Lambda calls to begin running your function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.CodeSize
+      description: The size of the function's deployment package, in bytes.
+      type: number
+    - contextPath: AWS.Lambda.Functions.Description
+      description: The function's description.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Timeout
+      description: The amount of time in seconds that Lambda allows a function to run before stopping it.
+      type: number
+    - contextPath: AWS.Lambda.Functions.MemorySize
+      description: The amount of memory available to the function at runtime.
+      type: number
+    - contextPath: AWS.Lambda.Functions.Version
+      description: The version of the Lambda function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.VpcConfig.SubnetIds
+      description: A list of VPC subnet IDs.
+      type: array
+    - contextPath: AWS.Lambda.Functions.VpcConfig.SecurityGroupIds
+      description: A list of VPC security group IDs.
+      type: array
+    - contextPath: AWS.Lambda.Functions.VpcConfig.VpcId
+      description: The ID of the VPC.
+      type: string
+    - contextPath: AWS.Lambda.Functions.VpcConfig.Ipv6AllowedForDualStack
+      description: Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets.
+      type: boolean
+    - contextPath: AWS.Lambda.Functions.PackageType
+      description: The type of deployment package. Set to Image for container image and set Zip for .zip file archive.
+      type: string
+    - contextPath: AWS.Lambda.Functions.LastModified
+      description: The date and time that the function was last updated, in ISO-8601 format.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Region
+      description: The AWS Region.
+      type: string
+
+  - name: aws-lambda-layer-version-list
+    description: Lists the versions of an Lambda layer.
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: layer_name
+      description: The name or Amazon Resource Name (ARN) of the layer.
+      required: true
+    - name: compatible_runtime
+      description: A runtime identifier. For example, java21.
+    - name: next_token
+      description: A pagination token returned by a previous call.
+    - name: limit
+      description: The maximum number of versions to return. Note that the maximum limit is 50 items in each response.
+      defaultValue: 50
+    - name: compatible_architecture
+      description: The compatible instruction set architecture.
+    outputs:
+    - contextPath: AWS.Lambda.LayerVersions.VersionsNextToken
+      description: A pagination token returned when the response doesn't contain all versions.
+      type: string
+    - contextPath: AWS.Lambda.LayerVersions.LayerVersionArn
+      description: The ARN of the layer version.
+      type: string
+    - contextPath: AWS.Lambda.LayerVersions.Version
+      description: The version number.
+      type: number
+    - contextPath: AWS.Lambda.LayerVersions.Description
+      description: The description of the version.
+      type: string
+    - contextPath: AWS.Lambda.LayerVersions.CreatedDate
+      description: The date that the version was created, in ISO 8601 format.
+      type: string
+    - contextPath: AWS.Lambda.LayerVersions.CompatibleRuntimes
+      description: The layer's compatible runtimes.
+      type: array
+    - contextPath: AWS.Lambda.LayerVersions.LicenseInfo
+      description: The layer's open-source license.
+      type: string
+    - contextPath: AWS.Lambda.LayerVersions.CompatibleArchitectures
+      description: A list of compatible instruction set architectures.
+      type: array
+
+  - name: aws-lambda-function-delete
+    description: Deletes a Lambda function.
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: function_name
+      description: The name of the Lambda function or version.
+      required: true
+    - name: qualifier
+      description: Specify a version to delete. You can't delete a version that an alias references.
+
+  - name: aws-lambda-layer-version-delete
+    description: Deletes a version of a Lambda layer.
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: layer_name
+      description: The name or Amazon Resource Name (ARN) of the layer.
+      required: true
+    - name: version_number
+      description: The version number to delete.
+      required: true
+
+  - name: aws-lambda-layer-version-publish
+    description: Creates a Lambda layer from a ZIP archive.
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: layer_name
+      description: The name of the layer.
+      required: true
+    - name: description
+      description: The description of the version.
+    - name: zip_file
+      description: The entry ID of the uploaded ZIP file containing the layer code.
+    - name: s3_bucket
+      description: The Amazon S3 bucket of the layer archive.
+    - name: s3_key
+      description: The Amazon S3 key of the layer archive.
+    - name: s3_object_version
+      description: For versioned objects, the version of the layer archive object to use.
+    - name: compatible_runtimes
+      description: A list of compatible function runtimes.
+      isArray: true
+    - name: compatible_architectures
+      description: A list of compatible instruction set architectures.
+      isArray: true
+    outputs:
+    - contextPath: AWS.Lambda.LayerVersions.LayerVersionArn
+      description: The ARN of the layer version.
+      type: string
+    - contextPath: AWS.Lambda.LayerVersions.LayerArn
+      description: The ARN of the layer.
+      type: string
+    - contextPath: AWS.Lambda.LayerVersions.Description
+      description: The description of the version.
+      type: string
+    - contextPath: AWS.Lambda.LayerVersions.CreatedDate
+      description: The date that the layer version was created, in ISO 8601 format.
+      type: string
+    - contextPath: AWS.Lambda.LayerVersions.Version
+      description: The version number.
+      type: number
+    - contextPath: AWS.Lambda.LayerVersions.CompatibleRuntimes
+      description: The layer's compatible runtimes.
+      type: array
+    - contextPath: AWS.Lambda.LayerVersions.CompatibleArchitectures
+      description: A list of compatible instruction set architectures.
+      type: array
+    - contextPath: AWS.Lambda.LayerVersions.Region
+      description: The AWS Region.
+      type: string
 
   - name: aws-lambda-function-configuration-update
     description: Updates the configuration for a Lambda function.
@@ -8493,6 +9839,701 @@ script:
       - ENABLED
       - DISABLED
     outputs: []
+  - name: aws-ec2-network-interface-attribute-modify
+    description: Modifies the specified network interface attribute. You can specify only one attribute at a time. You can use this action to attach and detach security groups from an existing EC2 instance.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: network_interface_id
+        description: The ID of the network interface.
+        required: true
+      - name: ena_srd_enabled
+        description: Indicates whether ENA Express is enabled for the network interface.
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: ena_srd_udp_enabled
+        description: Indicates whether UDP traffic to and from the instance uses ENA Express. To specify this setting, you must first enable ENA Express.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: enable_primary_ipv6
+        description: If you're modifying a network interface in a dual-stack or IPv6-only subnet, you have the option to assign a primary IPv6 IP address.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: tcp_established_timeout
+        description: Timeout (in seconds) for idle TCP connections in an established state. Min is 60 seconds. Max is 432000 seconds.
+        required: false
+      - name: udp_stream_timeout
+        description: Timeout (in seconds) for idle UDP flows classified as streams which have seen more than one request-response transaction. Min is 60 seconds. Max is 180 seconds.
+        required: false
+      - name: udp_timeout
+        description: Timeout (in seconds) for idle UDP flows that have seen traffic only in a single direction or a single request-response transaction. Min is 30 seconds. Max is 60 seconds.
+        required: false
+      - name: associate_public_ip_address
+        description: Indicates whether to assign a public IPv4 address to a network interface. This option can be enabled for any network interface but will only apply to the primary network interface (eth0).
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: associated_subnet_ids
+        description: A list of comma-separated subnet IDs to associate with the network interface.
+        required: false
+      - name: description
+        description: A description for the network interface.
+        required: false
+      - name: source_dest_check
+        description: Enable or disable source/destination checks, which ensure that the instance is either the source or the destination of any traffic that it receives. If the value is true, source/destination checks are enabled; otherwise, they are disabled. The default value is true. You must disable source/destination checks if the instance runs services such as network address translation, routing, or firewalls.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: groups
+        description: A comma-separated list of security groups IDs. Changes the security groups for the network interface. The new set of groups you specify replaces the current set.
+        required: false
+      - name: default_ena_queue_count
+        description: Whether to use the default number of the ENA queues.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: ena_queue_count
+        description: The number of ENA queues to be created with the instance.
+        required: false
+      - name: attachment_id
+        description: The ID of the network interface attachment. If modifying the delete on termination attribute, you must specify the ID of the interface attachment.
+        required: false
+      - name: delete_on_termination
+        description: Indicates whether the network interface is deleted when the instance is terminated. If modified, you must specify the ID of the interface attachment.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+    outputs:
+      - contextPath: AWS.EC2.NetworkInterfaces.Attribute.ModifyResponseMetadata
+        description: The response metadata.
+        type: Object
+      - contextPath: AWS.EC2.NetworkInterfaces.NetworkInterfaceId
+        description: The ID of the network interface.
+        type: String
+  - name: aws-ec2-regions-describe
+    description: Describes the Regions that are enabled for your account, or all Regions.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: region_names
+        description: The names of the Regions. You can specify any Regions, whether they are enabled and disabled for your account.
+        required: false
+      - name: all_regions
+        description: Indicates whether to display all Regions, including Regions that are disabled for your account.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). A filter name and value pair that is used to return a more specific list of results from a describe operation. Filters can be used to match a set of resources by specific criteria, such as tags, attributes, or IDs. Possible filters are endpoint, opt-in-status, region-name.
+        name: filters
+    outputs:
+      - contextPath: AWS.EC2.Regions.Endpoint
+        description: The region service endpoint.
+        type: string
+      - contextPath: AWS.EC2.Regions.RegionName
+        description: The name of the region.
+        type: string
+      - contextPath: AWS.EC2.Regions.OptInStatus
+        description: The Region opt-in status. The possible values are opt-in-not-required, opted-in, and not-opted-in.
+        type: string
+  - name: aws-s3-bucket-create
+    description: Creates a new S3 bucket.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: bucket_name
+        description: The name of the bucket to create. For more information about bucket naming rules see https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html.
+        required: true
+      - name: acl
+        description: The canned ACL to apply to the bucket.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - private
+          - public-read
+          - public-read-write
+          - authenticated-read
+      - name: location_constraint
+        description: Specifies the Region where the bucket will be created. You might choose a Region to optimize latency, minimize costs, or address regulatory requirements. The default is the account region.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: grant_full_control
+        description: Allows grantee the read, write, read ACP, and write ACP permissions on the bucket.
+        required: false
+      - name: grant_read
+        description: Allows grantee to list the objects in the bucket.
+        required: false
+      - name: grant_read_acp
+        description: Allows grantee to read the bucket ACL.
+        required: false
+      - name: grant_write
+        description: Allows grantee to create new objects in the bucket.
+        required: false
+      - name: grant_write_acp
+        description: Allows grantee to write the ACL for the applicable bucket.
+        required: false
+    outputs:
+      - contextPath: AWS.S3.Buckets.BucketName
+        description: The name of the bucket that was created.
+        type: string
+      - contextPath: AWS.S3.Buckets.Location
+        description: The AWS Region the bucket was created.
+        type: string
+      - contextPath: AWS.S3.Buckets.BucketArn
+        description: The Amazon Resource Name (ARN) of the S3 bucket.
+        type: string
+  - name: aws-s3-buckets-list
+    description: Returns a list of all buckets owned by the authenticated sender of the request.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: limit
+        description: Maximum number of buckets to be returned in response. The maximum value is 10000.
+        defaultValue: 50
+        required: false
+      - name: next_token
+        description: The token for the next set of items to return. Use value from AWS.S3.BucketsNextPageToken.
+        required: false
+      - name: prefix
+        description: Limits the response to bucket names that begin with the specified bucket name prefix.
+        required: false
+      - name: filter_by_region
+        description: A comma-separated list of regions that limits the response to buckets that are located in the specified Amazon Web Services Region.
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+    outputs:
+      - contextPath: AWS.S3.Buckets.BucketName
+        description: The name of the bucket.
+        type: string
+      - contextPath: AWS.S3.Buckets.CreationDate
+        description: Date the bucket was created. This date can change when making changes to your bucket, such as editing its bucket policy.
+        type: string
+      - contextPath: AWS.S3.Buckets.BucketRegion
+        description: BucketRegion indicates the Amazon Web Services region where the bucket is located.
+        type: string
+      - contextPath: AWS.S3.Buckets.BucketArn
+        description: The Amazon Resource Name (ARN) of the S3 bucket.
+        type: string
+      - contextPath: AWS.S3.BucketsOwner.DisplayName
+        description: Container for the display name of the owner.
+        type: string
+      - contextPath: AWS.S3.BucketsOwner.ID
+        description: Container for the ID of the owner.
+        type: string
+      - contextPath: AWS.S3.BucketsNextPageToken
+        description: BucketsNextPageToken is included in the response when there are more buckets that can be listed with pagination. The next ListBuckets request to Amazon S3 can be continued with this BucketsNextPageToken.
+        type: string
+      - contextPath: AWS.S3.BucketsPrefix
+        description: If Prefix was sent with the request, it is included in the response.
+        type: string
+  - name: aws-ssm-inventory-entries-list
+    description: Returns a list of inventory items.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: instance_id
+        description: The managed node ID for which you want inventory information.
+        required: true
+      - name: type_name
+        description: The type of inventory item for which you want information.
+        required: true
+      - name: limit
+        description: The maximum number of items to return for this call. The maximum value is 50.
+        defaultValue: 50
+        required: false
+      - description: "One or more filters separated by ';' (for example, key=<key>,values=<values>,type=<type>;key=<key>,values=<values>,type=<type>). Use a filter to return a more specific list of results. The value of type can be from the following closed list: Equal, NotEqual, BeginWith, LessThan, GreaterThan, Exists."
+        name: filters
+        required: false
+      - name: next_token
+        description: The token for the next set of items to return. Use AWS.SSM.Inventory.EntriesNextPageToken.
+        required: false
+    outputs:
+      - contextPath: AWS.SSM.Inventory.TypeName
+        description: The type of inventory item returned by the request.
+        type: string
+      - contextPath: AWS.SSM.Inventory.InstanceId
+        description: The managed node ID targeted by the request to query inventory information.
+        type: string
+      - contextPath: AWS.SSM.Inventory.SchemaVersion
+        description: The inventory schema version used by the managed nodes.
+        type: string
+      - contextPath: AWS.SSM.Inventory.CaptureTime
+        description: The time that inventory information was collected for the managed nodes.
+        type: string
+      - contextPath: AWS.SSM.Inventory.Entries
+        description: A list of inventory items on the managed nodes.
+        type: object
+      - contextPath: AWS.SSM.Inventory.EntriesNextPageToken
+        description: The token to use when requesting the next set of items.
+        type: object
+  - name: aws-ssm-command-run
+    description: Runs commands on one or more managed nodes.
+    polling: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: instance_ids
+        description: A comma-separated list of IDs of the managed nodes where the command should run. Maximum of 50 IDs.
+      - name: targets
+        description: "One or more targets separated by ';' (for example, key=<key1>,values=<value1>,<value2>;key=<key2>,values=<value3>,<value4>). An array of search criteria used to target managed nodes, where each criterion consists of a Key and a Value that you specify."
+      - name: document_name
+        description: The name of the Amazon Web Services Systems Manager document (SSM document) to run. This can be a public document or a custom document. To run a shared document belonging to another account, specify the document Amazon Resource Name (ARN).
+        required: true
+      - name: document_version
+        description: The SSM document version to use in the request. You can specify $DEFAULT, $LATEST, or a specific version number.
+        required: false
+      - name: document_hash
+        description: The Sha256 hash created by the system when the document was created.
+        required: false
+      - name: command_timeout
+        description: If this time (in seconds) is reached and the command hasn’t already started running, it won’t run. Minimum value of 30. Maximum value of 2592000.
+        required: false
+      - name: comment
+        description: User-specified information about the command, such as a brief description of what the command should do.
+        required: false
+      - name: parameters
+        description: "The required and optional parameters specified in the document being run. The template is 'key=<key1>,values=<value>,<value>;key=<key2>,values=<value>,<value>'."
+        required: false
+      - name: output_s3_bucket_name
+        description: The name of the S3 bucket where command execution responses should be stored.
+        required: false
+      - name: output_s3_key_prefix
+        description: The directory structure within the S3 bucket where the responses should be stored.
+        required: false
+      - name: max_concurrency
+        description: The maximum number of managed nodes that are allowed to run the command at the same time. You can specify a number such as 10 or a percentage such as 10%.
+        required: false
+        defaultValue: "50"
+      - name: max_errors
+        description: The maximum number of errors allowed without the command failing. When the command fails one more time beyond the value of MaxErrors, the systems stops sending the command to additional targets. You can specify a number like 10 or a percentage like 10%.
+        defaultValue: "0"
+        required: false
+      - description: A unique identifier for this command. This is for the polling to work, not for the user.
+        name: command_id
+        hidden: true
+      - description: The timeout in seconds until polling ends.
+        name: polling_timeout
+        defaultValue: '600'
+      - description: Hide the polling message and only print the final status at the end. This argument is for the dev, not for the user.
+        name: hide_polling_output
+        hidden: true
+    outputs:
+      - contextPath: AWS.SSM.Command.CommandId
+        description: A unique identifier for this command.
+        type: String
+      - contextPath: AWS.SSM.Command.DocumentName
+        description: The name of the document requested for execution.
+        type: String
+      - contextPath: AWS.SSM.Command.DocumentVersion
+        description: The Systems Manager document (SSM document) version.
+        type: String
+      - contextPath: AWS.SSM.Command.Comment
+        description: User-specified information about the command, such as a brief description of what the command should do.
+        type: String
+      - contextPath: AWS.SSM.Command.ExpiresAfter
+        description: If a command expires, it changes status to DeliveryTimedOut for all invocations that have the status InProgress, Pending, or Delayed. ExpiresAfter is calculated based on the total timeout for the overall command.
+        type: String
+      - contextPath: AWS.SSM.Command.Parameters
+        description: The parameter values to be inserted in the document when running the command.
+        type: Object
+      - contextPath: AWS.SSM.Command.InstanceIds
+        description: The managed node IDs against which this command was requested.
+        type: Object
+      - contextPath: AWS.SSM.Command.Targets
+        description: An array of search criteria used to target managed nodes, where each criterion consists of a Key and a Value that you specify.
+        type: Object
+      - contextPath: AWS.SSM.Command.RequestedDateTime
+        description: The date and time the command was requested.
+        type: String
+      - contextPath: AWS.SSM.Command.Status
+        description: The status of the command.
+        type: String
+      - contextPath: AWS.SSM.Command.StatusDetails
+        description: A detailed status of the command execution. StatusDetails includes more information than Status because it includes states resulting from error and concurrency control parameters.
+        type: String
+      - contextPath: AWS.SSM.Command.OutputS3BucketName
+        description: The name of the S3 bucket where command execution responses should be stored.
+        type: String
+      - contextPath: AWS.SSM.Command.OutputS3KeyPrefix
+        description: The directory structure within the S3 bucket where the responses should be stored.
+        type: String
+      - contextPath: AWS.SSM.Command.MaxConcurrency
+        description: The maximum number of managed nodes that are allowed to run the command at the same time.
+        type: String
+      - contextPath: AWS.SSM.Command.MaxErrors
+        description: The maximum number of errors allowed before the system stops sending the command to additional targets.
+        type: String
+      - contextPath: AWS.SSM.Command.TargetCount
+        description: The number of targets for the command.
+        type: Number
+      - contextPath: AWS.SSM.Command.CompletedCount
+        description: 'The number of targets for which the command invocation reached a terminal state. Terminal states include the following: Success, Failed, Execution Timed Out, Delivery Timed Out, Cancelled, Terminated, or Undeliverable.'
+        type: Number
+      - contextPath: AWS.SSM.Command.ErrorCount
+        description: The number of targets for which the status is Failed or Execution Timed Out.
+        type: Number
+      - contextPath: AWS.SSM.Command.DeliveryTimedOutCount
+        description: The number of targets for which the status is Delivery Timed Out.
+        type: Number
+      - contextPath: AWS.SSM.Command.ServiceRole
+        description: The Identity and Access Management (IAM) service role that Run Command, a tool in Amazon Web Services Systems Manager, uses to act on your behalf when sending notifications about command status changes.
+        type: String
+      - contextPath: AWS.SSM.Command.NotificationConfig.NotificationArn
+        description: An Amazon Resource Name (ARN) for an Amazon Simple Notification Service (Amazon SNS) topic. Run Command pushes notifications about command status changes to this topic.
+        type: String
+      - contextPath: AWS.SSM.Command.NotificationConfig.NotificationEvents
+        description: The different events for which you can receive notifications.
+        type: Object
+      - contextPath: AWS.SSM.Command.NotificationConfig.NotificationType
+        description: The type of notification.
+        type: String
+      - contextPath: AWS.SSM.Command.CloudWatchOutputConfig.CloudWatchLogGroupName
+        description: The name of the CloudWatch Logs log group where you want to send command output.
+        type: String
+      - contextPath: AWS.SSM.Command.CloudWatchOutputConfig.CloudWatchOutputEnabled
+        description: Enables Systems Manager to send command output to CloudWatch Logs.
+        type: Boolean
+      - contextPath: AWS.SSM.Command.TimeoutSeconds
+        description: The TimeoutSeconds value specified for a command.
+        type: Number
+      - contextPath: AWS.SSM.Command.AlarmConfiguration.IgnorePollAlarmFailure
+        description: When this value is true, your automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value.
+        type: String
+      - contextPath: AWS.SSM.Command.AlarmConfiguration.Alarms.Name
+        description: The name of your CloudWatch alarm.
+        type: String
+      - contextPath: AWS.SSM.Command.TriggeredAlarms.Name
+        description: The name of your CloudWatch alarm.
+        type: String
+      - contextPath: AWS.SSM.Command.TriggeredAlarms.State
+        description: The state of your CloudWatch alarm.
+        type: String
 
   - name: aws-ec2-security-group-create
     execution: true
@@ -9728,6 +11769,1102 @@ script:
     - contextPath: AWS.EC2.ReservedInstances.Tags.Value
       description: The value of the tag.
       type: String
+  - name: aws-ec2-volumes-describe
+    description: Describes the specified EBS volumes or all of your EBS volumes.
+    arguments:
+      - name: account_id
+        description: The AWS account ID. This is used when running commands across multiple accounts.
+        required: true
+      - name: region
+        description: The AWS Region. If not specified, the default region will be used.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: filters
+        description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
+        required: false
+      - name: volume_ids
+        description: A comma-separated list of volume IDs.
+        required: false
+        isArray: true
+      - name: limit
+        description: The maximum number of records to return. The valid range is 5-1000.
+      - name: next_token
+        description: The token returned from a previous paginated request. Pagination continues from the end of the items returned by the previous request.
+    outputs:
+      - contextPath: AWS.EC2.Volumes.Attachments.AttachTime
+        description: The timestamp when the attachment was initiated.
+        type: date
+      - contextPath: AWS.EC2.Volumes.Attachments.Device
+        description: The device name.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.InstanceId
+        description: The ID of the instance.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.State
+        description: The attachment state of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.VolumeId
+        description: The ID of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.DeleteOnTermination
+        description: Indicates whether the EBS volume is deleted on instance termination.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.AvailabilityZone
+        description: The Availability Zone for the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.CreateTime
+        description: The time stamp when volume creation was initiated.
+        type: date
+      - contextPath: AWS.EC2.Volumes.Encrypted
+        description: Indicates whether the volume is encrypted.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.KmsKeyId
+        description: The Amazon Resource Name (ARN) of the AWS Key Management Service (AWS KMS) customer master key (CMK) that was used to protect the volume encryption key for the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.OutpostArn
+        description: The Amazon Resource Name (ARN) of the Outpost.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Size
+        description: The size of the volume, in GiBs.
+        type: number
+      - contextPath: AWS.EC2.Volumes.SnapshotId
+        description: The snapshot from which the volume was created, if applicable.
+        type: string
+      - contextPath: AWS.EC2.Volumes.State
+        description: The volume state.
+        type: string
+      - contextPath: AWS.EC2.Volumes.VolumeId
+        description: The ID of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Iops
+        description: The number of I/O operations per second (IOPS).
+        type: number
+      - contextPath: AWS.EC2.Volumes.Tags.Key
+        description: The key of the tag.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Tags.Value
+        description: The value of the tag.
+        type: string
+      - contextPath: AWS.EC2.Volumes.VolumeType
+        description: The volume type.
+        type: string
+      - contextPath: AWS.EC2.Volumes.FastRestored
+        description: Indicates whether the volume was created using fast snapshot restore.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.MultiAttachEnabled
+        description: Indicates whether Amazon EBS Multi-Attach is enabled.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.Throughput
+        description: The throughput that the volume supports, in MiB/s.
+        type: number
+      - contextPath: AWS.EC2.Volumes.SseType
+        description: Reserved for future use.
+        type: string
+      - contextPath: AWS.EC2.VolumesNextToken
+        description: Token to use for pagination in subsequent requests.
+        type: String
+
+  - name: aws-ec2-volume-modify
+    description: You can modify several parameters of an existing EBS volume, including volume size, volume type, and IOPS capacity.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID. This is used when running commands across multiple accounts.
+        required: true
+      - name: region
+        description: The AWS Region. If not specified, the default region will be used.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: volume_id
+        description: The ID of the volume.
+        required: true
+      - name: size
+        description: Target size in GiB of the volume to be modified.
+        required: false
+      - name: volume_type
+        description: Target EBS volume type of the volume to be modified. The API does not support modifications for volume type standard.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - gp2
+          - gp3
+          - io1
+          - io2
+          - sc1
+          - st1
+      - name: iops
+        description: Target IOPS rate of the volume to be modified.
+        required: false
+      - name: throughput
+        description: Target throughput of the volume to be modified, in MiB/s. Valid only for gp3 volumes.
+        required: false
+      - name: multi_attach_enabled
+        description: Specifies whether to enable Amazon EBS Multi-Attach. Valid only for io1 and io2 volumes.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+    outputs:
+      - contextPath: AWS.EC2.Volumes.VolumeId
+        description: The ID of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Modification.ModificationState
+        description: The current modification state.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Modification.StatusMessage
+        description: A status message about the modification progress or failure.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Size
+        description: The target size of the volume, in GiB.
+        type: number
+      - contextPath: AWS.EC2.Volumes.Iops
+        description: The target IOPS rate of the volume.
+        type: number
+      - contextPath: AWS.EC2.Volumes.VolumeType
+        description: The target EBS volume type of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Throughput
+        description: The target throughput of the volume, in MiB/s.
+        type: number
+      - contextPath: AWS.EC2.Volumes.MultiAttachEnabled
+        description: The target setting for Amazon EBS Multi-Attach.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.Modification.OriginalSize
+        description: The original size of the volume, in GiB.
+        type: number
+      - contextPath: AWS.EC2.Volumes.Modification.OriginalIops
+        description: The original IOPS rate of the volume.
+        type: number
+      - contextPath: AWS.EC2.Volumes.Modification.OriginalVolumeType
+        description: The original EBS volume type of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Modification.OriginalThroughput
+        description: The original throughput of the volume, in MiB/s.
+        type: number
+      - contextPath: AWS.EC2.Volumes.Modification.OriginalMultiAttachEnabled
+        description: The original setting for Amazon EBS Multi-Attach.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.Modification.Progress
+        description: The modification progress, from 0 to 100 percent complete.
+        type: number
+      - contextPath: AWS.EC2.Volumes.Modification.StartTime
+        description: The modification start time.
+        type: date
+      - contextPath: AWS.EC2.Volumes.Modification.EndTime
+        description: The modification completion or failure time.
+        type: date
+
+  - name: aws-ec2-volume-create
+    description: Creates an EBS volume that can be attached to an instance in the same Availability Zone.
+    arguments:
+      - name: account_id
+        description: The AWS account ID. This is used when running commands across multiple accounts.
+        required: true
+      - name: region
+        description: The AWS Region. If not specified, the default region will be used.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: availability_zone
+        description: The Availability Zone in which to create the volume.
+        required: true
+      - name: encrypted
+        description: Specifies whether the volume should be encrypted.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: iops
+        description: The number of I/O operations per second (IOPS). For gp3, io1, and io2 volumes, this represents the number of IOPS that are provisioned for the volume.
+        required: false
+      - name: kms_key_id
+        description: The identifier of the AWS KMS key to use for Amazon EBS encryption. If this parameter is not specified, your AWS managed key for Amazon EBS is used.
+        required: false
+      - name: outpost_arn
+        description: The Amazon Resource Name (ARN) of the Outpost.
+        required: false
+      - name: size
+        description: The size of the volume, in GiBs. You must specify either a snapshot ID or a volume size.
+        required: false
+      - name: snapshot_id
+        description: The snapshot from which to create the volume. You must specify either a snapshot ID or a volume size.
+        required: false
+      - name: volume_type
+        description: The volume type.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - standard
+          - io1
+          - io2
+          - gp2
+          - gp3
+          - sc1
+          - st1
+      - name: throughput
+        description: The throughput to provision for a volume, with a maximum of 1,000 MiB/s. This parameter is valid only for gp3 volumes.
+        required: false
+      - name: multi_attach_enabled
+        description: Indicates whether to enable Amazon EBS Multi-Attach. If you enable Multi-Attach, you can attach the volume to up to 16 Nitro-based instances in the same Availability Zone. This parameter is supported with io1 and io2 volumes only.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: tags
+        description: One or more tags. Example key=Name,value=test;key=Owner,value=Bob.
+        required: false
+      - name: client_token
+        description: Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
+        required: false
+    outputs:
+      - contextPath: AWS.EC2.Volumes.Attachments.AttachTime
+        description: The timestamp when the attachment was initiated.
+        type: date
+      - contextPath: AWS.EC2.Volumes.Attachments.Device
+        description: The device name.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.InstanceId
+        description: The ID of the instance.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.State
+        description: The attachment state of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.VolumeId
+        description: The ID of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.DeleteOnTermination
+        description: Indicates whether the EBS volume is deleted on instance termination.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.AvailabilityZone
+        description: The Availability Zone for the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.CreateTime
+        description: The time stamp when volume creation was initiated.
+        type: date
+      - contextPath: AWS.EC2.Volumes.Encrypted
+        description: Indicates whether the volume is encrypted.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.KmsKeyId
+        description: The Amazon Resource Name (ARN) of the AWS Key Management Service (AWS KMS) customer master key (CMK) that was used to protect the volume encryption key for the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.OutpostArn
+        description: The Amazon Resource Name (ARN) of the Outpost.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Size
+        description: The size of the volume, in GiBs.
+        type: number
+      - contextPath: AWS.EC2.Volumes.SnapshotId
+        description: The snapshot from which the volume was created, if applicable.
+        type: string
+      - contextPath: AWS.EC2.Volumes.State
+        description: The volume state.
+        type: string
+      - contextPath: AWS.EC2.Volumes.VolumeId
+        description: The ID of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Iops
+        description: The number of I/O operations per second (IOPS).
+        type: number
+      - contextPath: AWS.EC2.Volumes.Tags.Key
+        description: The key of the tag.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Tags.Value
+        description: The value of the tag.
+        type: string
+      - contextPath: AWS.EC2.Volumes.VolumeType
+        description: The volume type.
+        type: string
+      - contextPath: AWS.EC2.Volumes.FastRestored
+        description: Indicates whether the volume was created using fast snapshot restore.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.MultiAttachEnabled
+        description: Indicates whether Amazon EBS Multi-Attach is enabled.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.Throughput
+        description: The throughput that the volume supports, in MiB/s.
+        type: number
+      - contextPath: AWS.EC2.Volumes.SseType
+        description: Reserved for future use.
+        type: string
+
+  - name: aws-ec2-volume-attach
+    description: Attaches an EBS volume to a running or stopped instance and exposes it to the instance with the specified device name.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID. This is used when running commands across multiple accounts.
+        required: true
+      - name: region
+        description: The AWS Region. If not specified, the default region will be used.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: device
+        description: The device name (for example, /dev/sdh or xvdh).
+        required: true
+      - name: instance_id
+        description: The ID of the instance.
+        required: true
+      - name: volume_id
+        description: The ID of the EBS volume. The volume and instance must be within the same Availability Zone.
+        required: true
+    outputs:
+      - contextPath: AWS.EC2.Volumes.VolumeId
+        description: The ID of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.AttachTime
+        description: The timestamp when the attachment was initiated.
+        type: date
+      - contextPath: AWS.EC2.Volumes.Attachments.Device
+        description: The device name.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.InstanceId
+        description: The ID of the instance.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.State
+        description: The attachment state of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.VolumeId
+        description: The ID of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.DeleteOnTermination
+        description: Indicates whether the EBS volume is deleted on instance termination.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.Attachments.AssociatedResource
+        description: The ARN of the Amazon ECS or Fargate task to which the volume is attached.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.InstanceOwningService
+        description: The service principal of Amazon Web Services service that owns the underlying instance to which the volume is attached.
+        type: string
+
+  - name: aws-ec2-volume-detach
+    description: Detaches an EBS volume from an instance.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID. This is used when running commands across multiple accounts.
+        required: true
+      - name: region
+        description: The AWS Region. If not specified, the default region will be used.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: volume_id
+        description: The ID of the volume.
+        required: true
+      - name: force
+        description: Forces detachment if the previous detachment attempt did not occur cleanly. This option can lead to data loss or a corrupted file system. Use this option only as a last resort to detach a volume from a failed instance.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: device
+        description: The device name (for example, /dev/sdh or xvdh).
+        required: false
+      - name: instance_id
+        description: The ID of the instance. If you are detaching a Multi-Attach enabled volume, you must specify an instance ID.
+        required: false
+    outputs:
+      - contextPath: AWS.EC2.Volumes.VolumeId
+        description: The ID of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.AttachTime
+        description: The timestamp when the attachment was initiated.
+        type: date
+      - contextPath: AWS.EC2.Volumes.Attachments.Device
+        description: The device name.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.InstanceId
+        description: The ID of the instance.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.State
+        description: The attachment state of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.VolumeId
+        description: The ID of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.DeleteOnTermination
+        description: Indicates whether the EBS volume is deleted on instance termination.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.Attachments.AssociatedResource
+        description: The ARN of the Amazon ECS or Fargate task to which the volume is attached.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.InstanceOwningService
+        description: The AWS service principal that owns the instance to which the volume is attached.
+        type: string
+
+  - name: aws-ec2-volume-delete
+    description: Deletes the specified EBS volume. The volume must be in the available state (not attached to an instance).
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID. This is used when running commands across multiple accounts.
+        required: true
+      - name: region
+        description: The AWS Region. If not specified, the default region will be used.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: volume_id
+        description: The ID of the volume.
+        required: true
+    outputs: [ ]
+
+  - name: aws-ec2-launch-templates-describe
+    description: Describes one or more launch templates.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS Region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: filters
+        description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
+        required: false
+      - name: launch_template_ids
+        description: A comma-separated list of launch template IDs.
+        required: false
+        isArray: true
+      - name: launch_template_names
+        description: A comma-separated list of launch template names.
+        required: false
+        isArray: true
+      - name: limit
+        description: The maximum number of results to return in a single call. Maximum value of 200.
+        required: false
+      - name: next_token
+        description: The token for the next set of results.
+        required: false
+    outputs:
+      - contextPath: AWS.EC2.LaunchTemplatesNextToken
+        description: Token to use for pagination in subsequent requests.
+        type: String
+      - contextPath: AWS.EC2.LaunchTemplates.LaunchTemplateId
+        description: The ID of the launch template.
+        type: string
+      - contextPath: AWS.EC2.LaunchTemplates.LaunchTemplateName
+        description: The name of the launch template.
+        type: string
+      - contextPath: AWS.EC2.LaunchTemplates.CreateTime
+        description: The time launch template was created.
+        type: date
+      - contextPath: AWS.EC2.LaunchTemplates.CreatedBy
+        description: The principal that created the launch template.
+        type: string
+      - contextPath: AWS.EC2.LaunchTemplates.DefaultVersionNumber
+        description: The default version number of the launch template.
+        type: number
+      - contextPath: AWS.EC2.LaunchTemplates.LatestVersionNumber
+        description: The latest version number of the launch template.
+        type: number
+      - contextPath: AWS.EC2.LaunchTemplates.Tags.Key
+        description: The key of the tag.
+        type: string
+      - contextPath: AWS.EC2.LaunchTemplates.Tags.Value
+        description: The value of the tag.
+        type: string
+
+  - name: aws-ec2-launch-template-create
+    description: Creates a launch template. A launch template contains the parameters to launch an instance.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS Region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: launch_template_name
+        description: A name for the launch template.
+        required: true
+      - name: version_description
+        description: A description for the first version of the launch template.
+        required: false
+      - name: kernel_id
+        description: The ID of the kernel.
+        required: false
+      - name: ebs_optimized
+        description: Whether the instance is optimized for Amazon EBS I/O.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: iam_instance_profile_arn
+        description: The Amazon Resource Name (ARN) of the instance profile.
+        required: false
+      - name: iam_instance_profile_name
+        description: The name of the instance profile.
+        required: false
+      - name: image_id
+        description: The ID of the AMI.
+        required: false
+      - name: instance_type
+        description: The instance type.
+        required: false
+      - name: key_name
+        description: The name of the key pair.
+        required: false
+      - name: monitoring
+        description: Set to true to enable detailed monitoring. Set to false to enable basic monitoring.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: disable_api_termination
+        description: If set to true, you can't terminate the instance using the Amazon EC2 console, CLI, or API.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: instance_initiated_shutdown_behavior
+        description: Whether an instance stops or terminates when you initiate shutdown from the instance.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - stop
+          - terminate
+      - name: user_data
+        description: The Base64-encoded user data to make available to the instance.
+        required: false
+      - name: security_group_ids
+        description: A comma-separated list of security group IDs.
+        required: false
+        isArray: true
+      - name: security_groups
+        description: A comma-separated list of security group names.
+        required: false
+        isArray: true
+      - name: device_name
+        description: The device name (for example, /dev/sdh or xvdh).
+        required: false
+      - name: ebs_encrypted
+        description: Indicates whether the EBS volume is encrypted.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: ebs_delete_on_termination
+        description: Indicates whether the EBS volume is deleted on instance termination.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: ebs_iops
+        description: The number of I/O operations per second (IOPS) that the volume supports.
+        required: false
+      - name: ebs_kms_key_id
+        description: The ARN of the AWS Key Management Service (AWS KMS) CMK used for encryption.
+        required: false
+      - name: ebs_snapshot_id
+        description: The ID of the snapshot.
+        required: false
+      - name: ebs_volume_size
+        description: The size of the volume, in GiB.
+        required: false
+      - name: ebs_volume_type
+        description: The volume type.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - standard
+          - io1
+          - io2
+          - gp2
+          - gp3
+          - sc1
+          - st1
+      - name: ebs_card_index
+        description: The index of the EBS card. Some instance types support multiple EBS cards. The default EBS card index is 0.
+        required: false
+      - name: ebs_throughput
+        description: The throughput to provision for a gp3 volume, with a maximum of 2,000 MiB/s. The minimum value of 125, and maximum value of 2,000.
+        required: false
+      - name: ebs_initialization_rate
+        description: Specifies the Amazon EBS Provisioned Rate for Volume Initialization (volume initialization rate), in MiB/s, at which to download the snapshot blocks from Amazon S3 to the volume.
+        required: false
+      - name: block_device_mappings_no_device
+        description: To omit the device from the block device mapping, specify an empty string.
+        required: false
+      - name: block_device_mappings_virtual_name
+        description: The virtual device name (ephemeralN).
+        required: false
+      - name: network_interfaces_associate_public_ip_address
+        description: Associates a public IPv4 address with eth0 for a new network interface.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: network_interfaces_delete_on_termination
+        description: Whether the network interface is deleted when the instance is terminated.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: network_interfaces_description
+        description: A description for the network interface.
+        required: false
+      - name: network_interfaces_device_index
+        description: The device index for the network interface attachment.
+        required: false
+      - name: network_interface_groups
+        description: A comma-separated list of security group IDs.
+        required: false
+        isArray: true
+      - name: subnet_id
+        description: The ID of the subnet for the network interface.
+        required: false
+      - name: private_ip_address
+        description: The primary private IPv4 address of the network interface.
+        required: false
+      - name: ipv6_address_count
+        description: The number of IPv6 addresses to assign to a network interface.
+        required: false
+      - name: ipv6_addresses
+        description: One or more specific IPv6 addresses from the IPv6 CIDR block range of your subnet.
+        required: false
+      - name: network_interface_id
+        description: The ID of the network interface.
+        required: false
+      - name: availability_zone
+        description: The Availability Zone for the instance.
+        required: false
+      - name: placement_tenancy
+        description: The tenancy of the instance.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - default
+          - dedicated
+          - host
+      - name: ram_disk_id
+        description: The ID of the RAM disk.
+        required: false
+      - name: tags
+        description: "The tags to assign to the Elastic IP address. Format: key=<key>,value=<value>;key=<key>,value=<value>."
+        required: false
+      - name: market_type
+        description: The market type.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - spot
+          - capacity-block
+          - interruptible-capacity-reservation
+      - name: spot_options_instance_type
+        description: The Spot Instance request type.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - one-time
+          - persistent
+      - name: spot_options_max_price
+        description: The maximum hourly price you're willing to pay for the Spot Instances.
+        required: false
+      - name: spot_options_instance_interruption_behavior
+        description: The behavior when a Spot Instance is interrupted.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - hibernate
+          - stop
+          - terminate
+    outputs:
+      - contextPath: AWS.EC2.LaunchTemplates.LaunchTemplateId
+        description: The ID of the launch template.
+        type: string
+      - contextPath: AWS.EC2.LaunchTemplates.LaunchTemplateName
+        description: The name of the launch template.
+        type: string
+      - contextPath: AWS.EC2.LaunchTemplates.CreateTime
+        description: The time launch template was created.
+        type: date
+      - contextPath: AWS.EC2.LaunchTemplates.CreatedBy
+        description: The principal that created the launch template.
+        type: string
+      - contextPath: AWS.EC2.LaunchTemplates.DefaultVersionNumber
+        description: The default version number of the launch template.
+        type: number
+      - contextPath: AWS.EC2.LaunchTemplates.LatestVersionNumber
+        description: The latest version number of the launch template.
+        type: number
+      - contextPath: AWS.EC2.LaunchTemplates.Tags.Key
+        description: The key of the tag.
+        type: string
+      - contextPath: AWS.EC2.LaunchTemplates.Tags.Value
+        description: The value of the tag.
+        type: string
+
+  - name: aws-ec2-launch-template-delete
+    description: Deletes a launch template. Deleting a launch template deletes all of its versions.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: launch_template_id
+        description: The ID of the launch template. You must specify either the launch template ID or launch template name, but not both.
+        required: false
+      - name: launch_template_name
+        description: The name of the launch template. You must specify either the launch template ID or launch template name, but not both.
+        required: false
+    outputs:
+      - contextPath: AWS.EC2.DeletedLaunchTemplates.LaunchTemplateId
+        description: The ID of the launch template.
+        type: string
+      - contextPath: AWS.EC2.DeletedLaunchTemplates.LaunchTemplateName
+        description: The name of the launch template.
+        type: string
+      - contextPath: AWS.EC2.DeletedLaunchTemplates.CreateTime
+        description: The time launch template was created.
+        type: date
+      - contextPath: AWS.EC2.DeletedLaunchTemplates.CreatedBy
+        description: The principal that created the launch template.
+        type: string
+      - contextPath: AWS.EC2.DeletedLaunchTemplates.DefaultVersionNumber
+        description: The default version number of the launch template.
+        type: number
+      - contextPath: AWS.EC2.DeletedLaunchTemplates.LatestVersionNumber
+        description: The latest version number of the launch template.
+        type: number
+      - contextPath: AWS.EC2.DeletedLaunchTemplates.Operator
+        description: The entity that manages the launch template.
+        type: Object
+      - contextPath: AWS.EC2.DeletedLaunchTemplates.Tags.Key
+        description: The key of the tag.
+        type: string
+      - contextPath: AWS.EC2.DeletedLaunchTemplates.Tags.Value
+        description: The value of the tag.
+        type: string
+
 
   isfetch: false
   runonce: false
