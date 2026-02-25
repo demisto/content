@@ -23,11 +23,3 @@ For more information about creating an OAuth app click [here](https://marketplac
 ### Rate Limits
 The API requests in the integration are heavy rate limits. 
 Rate limits are applied based on the account plan: Free, Pro, and Business+. For more information, see: [Rate limits by account type](https://developers.zoom.us/docs/api/rest/rate-limits/#rate-limits-by-account-type).
-
-### Troubleshooting
-
-
-## receiving 429 error code
-
-This may be due to not querying for enough events per interval / request.
-The proposed solution in that case is to set the parameter **first_fetch** to "1 hour"
