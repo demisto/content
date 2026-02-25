@@ -2915,6 +2915,19 @@ def create_policy_build_triggers(args: dict) -> dict:
     return triggers
 
 
+# Mapping from human-readable issue type names to table names.
+# Accepts both human-readable names and raw table names.
+ISSUE_TYPE_TABLE_MAPPING: dict[str, str] = {
+    "vulnerabilities": "ISSUES_CVES",
+    "secrets": "ISSUES_SECRETS",
+    "iac": "ISSUES_IAC",
+    "weaknesses": "ISSUES_WEAKNESSES",
+    "operational_risk": "ISSUES_OPERATIONAL_RISK",
+    "licenses": "ISSUES_LICENSES",
+    "cicd": "ISSUES_CI_CD",
+}
+
+
 def create_appsec_issues_filter_and_tables(args: dict) -> dict[str, FilterBuilder]:
     """
     Generate a filter and determine applicable tables for fetching AppSec issues based on input filter arguments.
@@ -2931,9 +2944,24 @@ def create_appsec_issues_filter_and_tables(args: dict) -> dict[str, FilterBuilde
     tables_filters = {}
     filter_builder = FilterBuilder()
 
-    for issue_type in AppsecIssues.ISSUE_TYPES:
-        if special_filter_args.issubset(issue_type.filters):
-            tables_filters[issue_type.table_name] = filter_builder
+    # If issue_category is specified, restrict to those specific tables
+    requested_types = argToList(args.get("issue_category"))
+    if requested_types:
+        valid_table_names = {it.table_name for it in AppsecIssues.ISSUE_TYPES}
+        for rt in requested_types:
+            rt_lower = rt.lower().strip()
+            table_name = ISSUE_TYPE_TABLE_MAPPING.get(rt_lower) or rt.upper().strip()
+            if table_name in valid_table_names:
+                tables_filters[table_name] = filter_builder
+            else:
+                raise DemistoException(
+                    f"Unknown issue type '{rt}'. "
+                    f"Supported values: {', '.join(ISSUE_TYPE_TABLE_MAPPING.keys())}."
+                )
+    else:
+        for issue_type in AppsecIssues.ISSUE_TYPES:
+            if special_filter_args.issubset(issue_type.filters):
+                tables_filters[issue_type.table_name] = filter_builder
 
     if not tables_filters:
         raise DemistoException(f"No matching issue type found for the given filter combination: {special_filter_args}")
@@ -3044,6 +3072,7 @@ def normalize_and_filter_appsec_issue(issue: dict) -> dict:
         "file_path": {"path": ["cas_issues_normalized_fields", "xdm.file.path"]},
         "collaborator": {"path": ["cas_issues_normalized_fields", "xdm.code.git.commit.author.name"]},
         "is_deployed": {"path": ["cas_issues_extended_fields", "urgency", "metric", "is_deployed"]},
+        "repository_is_public": {"path": ["cas_issues_extended_fields", "repository_is_public"]},
         "backlog_status": {"path": ["backlog_status"]},
     }
     appsec_issue = {}

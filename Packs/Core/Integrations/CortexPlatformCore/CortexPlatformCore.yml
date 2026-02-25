@@ -2310,6 +2310,9 @@ script:
     - name: core-get-appsec-issues
       description: "Retrieves application security issues based on specified filters."
       arguments:
+        - name: issue_category
+          description: "Filter by specific issue categories. Accepts a comma-separated list. Supported values: vulnerabilities, secrets, iac, weaknesses, operational_risk, licenses, cicd. If not specified, all applicable issue categories are queried based on the provided filters."
+          isArray: true
         - name: limit
           description: "The maximum number of issues to return."
           defaultValue: "50"
@@ -2495,6 +2498,9 @@ script:
         - contextPath: Core.AppsecIssue.backlog_status
           description: The backlog status of the issue.
           type: String
+        - contextPath: Core.AppsecIssue.repository_is_public
+          description: Whether the repository associated with the issue is public.
+          type: Boolean
     - name: core-get-endpoint-support-file
       description: "Retrieves endpoint support files based on specified endpoint IDs."
       hidden: true
