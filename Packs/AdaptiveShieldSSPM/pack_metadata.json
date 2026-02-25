@@ -17,7 +17,6 @@
         "Event Collector"
     ],
     "marketplaces": [
-        "marketplacev2",
-        "platform"
+        "xsoar"
     ]
 }
