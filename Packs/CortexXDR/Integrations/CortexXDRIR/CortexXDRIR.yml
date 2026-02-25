@@ -5030,25 +5030,25 @@ script:
       description: Current state of exploit availability (e.g., weaponized).
       type: String
     - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.weaponizedExploitFound
-      description: Indicates if a functional exploit exists in the wild.
+      description: Whether a functional exploit exists in the wild.
       type: Boolean
     - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.reportedExploited
-      description: Indicates if the vulnerability has been actively exploited.
+      description: Whether the vulnerability has been actively exploited.
       type: Boolean
     - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.reportedExploitedByThreatActors
-      description: Indicates if known threat actors are using this.
+      description: Whether known threat actors are exploiting this vulnerability.
       type: Boolean
     - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.reportedExploitedByRansomware
-      description: Specifically indicates use in ransomware campaigns.
+      description: Whether the vulnerability is used in ransomware campaigns.
       type: Boolean
     - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.reportedExploitedByBotnets
-      description: Indicates if it is being leveraged by botnet clusters.
+      description: Whether the vulnerability is being leveraged by botnet clusters.
       type: Boolean
     - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.firstReportedThreatActor
       description: The timestamp of the first recorded threat actor activity.
       type: Number
     - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.mostRecentReportedThreatActor
-      description: The timestamp of the latest recorded threat actor activity.
+      description: The timestamp of the last recorded threat actor activity.
       type: Number
     - contextPath: PaloAltoNetworksXDR.Vulnerability.cisaKevDateDue
       description: The deadline set by CISA for federal agency remediation.
@@ -5057,7 +5057,7 @@ script:
       description: The Common Weakness Enumeration ID.
       type: String
     - contextPath: PaloAltoNetworksXDR.Vulnerability.vulncheck-threat-actors
-      description: List of specific threat actor groups associated.
+      description: A list of specific threat actor groups associated with the vulnerability.
       type: String
   - description: Runs a system health check on the Cortex XDR environment.
     name: xdr-healthcheck-run
