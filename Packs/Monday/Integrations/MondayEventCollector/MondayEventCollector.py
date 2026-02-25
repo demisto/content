@@ -21,6 +21,11 @@ ACTIVITY_LOGS_TYPE = "Activity Logs"
 REDIRECT_URI = "https://localhost"
 AUTH_URL = "https://auth.monday.com/oauth2/token"
 
+# Monday.com API version - required to ensure compatibility with the activity_logs query.
+# The activity_logs field on boards was deprecated in newer API versions (2025-01+).
+# Pinning to 2024-10 ensures the activity_logs query continues to work.
+MONDAY_API_VERSION = "2024-10"
+
 # API limitations
 MAX_AUDIT_LOGS_PER_PAGE = 1000
 MAX_ACTIVITY_LOGS_PER_PAGE = 10000
@@ -106,7 +111,11 @@ class ActivityLogsClient(BaseClient):
         """
         demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}Requesting activity logs\nQuery: {query}")
 
-        headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+            "API-Version": MONDAY_API_VERSION,
+        }
 
         response = self._http_request(
             method="POST",

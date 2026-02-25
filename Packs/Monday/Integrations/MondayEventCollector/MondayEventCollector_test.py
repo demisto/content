@@ -8,6 +8,8 @@ from MondayEventCollector import (
     fetch_audit_logs,
     fetch_activity_logs,
     test_connection as monday_test_connection,
+    MONDAY_API_VERSION,
+    ActivityLogsClient,
 )
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
@@ -796,3 +798,40 @@ class TestConnectionAndUtilities:
         timestamp = "2024-06-03T14:00:00.000Z"
         result = subtract_epsilon_from_timestamp(timestamp)
         assert result == "2024-06-03T13:59:59.999000Z"
+
+    def test_activity_logs_request_includes_api_version_header(self, mocker):
+        """
+        Test that the ActivityLogsClient includes the API-Version header in GraphQL requests.
+
+        Given:
+            - An ActivityLogsClient instance
+            - A GraphQL query and access token
+
+        When:
+            get_activity_logs_request is called
+
+        Then:
+            The request headers should include the API-Version header set to MONDAY_API_VERSION.
+        """
+        mocker.patch.object(demisto, "debug")
+
+        mock_http_request = mocker.patch("MondayEventCollector.BaseClient._http_request")
+        mock_http_request.return_value = {"data": {"boards": [{"activity_logs": []}]}}
+
+        client = ActivityLogsClient(
+            client_id="test_id",
+            client_secret="test_secret",
+            auth_code="test_code",
+            activity_logs_url="https://api.monday.com",
+        )
+
+        query = '{ boards (ids: [123]) { activity_logs { id event created_at data } } }'
+        client.get_activity_logs_request(query, "test_access_token")
+
+        # Verify the API-Version header was included in the request
+        call_kwargs = mock_http_request.call_args
+        headers = call_kwargs.kwargs.get("headers") or call_kwargs[1].get("headers")
+        assert "API-Version" in headers, "API-Version header is missing from the request"
+        assert headers["API-Version"] == MONDAY_API_VERSION, (
+            f"Expected API-Version '{MONDAY_API_VERSION}', got '{headers['API-Version']}'"
+        )
