@@ -1,9 +1,23 @@
 import demistomock as demisto  # noqa: F401
 import urllib3
+import tempfile
 from CommonServerPython import *  # noqa: F401
 
 # disable insecure warnings
 urllib3.disable_warnings()
+
+
+class TempFile:
+    def __init__(self, data):
+        _, self.path = tempfile.mkstemp()
+        with open(self.path, "w") as temp_file:
+            temp_file.write(data)
+
+    def __del__(self):
+        import os
+
+        os.remove(self.path)
+
 
 INDICATOR_TO_GALAXY_RELATION_DICT: Dict[str, Any] = {
     ThreatIntel.ObjectsNames.ATTACK_PATTERN: {
@@ -125,9 +139,11 @@ class Client(BaseClient):
         proxy: bool,
         performance: bool,
         max_indicator_to_fetch: Optional[int],
+        client_cert: Optional[tuple] = None,
     ):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.timeout = timeout
+        self.client_cert = client_cert
 
         self._headers = {
             "Authorization": authorization,
@@ -150,6 +166,7 @@ class Client(BaseClient):
             resp_type="json",
             data=json.dumps(body),
             timeout=self.timeout,
+            cert=self.client_cert,
         )
 
 
@@ -639,6 +656,14 @@ def main():  # pragma: no cover
     args = demisto.args()
     if params.get("feedExpirationPolicy") == "suddenDeath":
         raise DemistoException("The feed is incremental, so a sudden-death policy is not applicable.")
+
+    # Handle client certificate
+    certificate = replace_spaces_in_credential(params.get("certificate", {}).get("identifier"))
+    private_key = replace_spaces_in_credential(params.get("certificate", {}).get("password"))
+    cert = TempFile(certificate) if certificate else None
+    key = TempFile(private_key) if private_key else None
+    client_cert = (cert.path, key.path) if cert and key else None
+
     demisto.debug(f"Command being called is {command}")
     try:
         client = Client(
@@ -649,6 +674,7 @@ def main():  # pragma: no cover
             timeout=timeout,
             performance=performance,
             max_indicator_to_fetch=max_indicator_to_fetch,
+            client_cert=client_cert,
         )
 
         if command == "test-module":
