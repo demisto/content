@@ -55,6 +55,9 @@ class MockMessagingHandler(AssistantMessagingHandler):
     def prepare_message_blocks(self, message: str, message_type: str, is_update: bool = False) -> tuple:
         return ([], [])
 
+    def prepare_merged_step_blocks(self, step_contents: list[str]) -> tuple[list, list]:
+        return ([{"type": "merged_steps", "contents": step_contents}], [])
+
     def create_agent_selection_ui(self, agents: list) -> list:
         return [{"type": "section"}] if agents else []
 
@@ -519,31 +522,30 @@ async def test_handle_reset_session_processing(mocker: MockerFixture):
 def test_send_agent_response_invalid_message_type(mocker: MockerFixture):
     """
     Given:
-        Invalid message type.
+        Invalid response_type in messages list.
     When:
         Sending agent response.
     Then:
         Raises ValueError.
     """
     handler = MockMessagingHandler()
-    
+
     with pytest.raises(ValueError) as exc_info:
         handler.send_agent_response(
             channel_id="channel123",
             thread_id="thread123",
-            message="Test",
-            message_type="invalid_type",
+            messages=[{"content": "Test", "response_type": "invalid_type", "is_final": False}],
             assistant_context={},
-            assistant_id_key="conv1"
+            assistant_id_key="conv1",
         )
-    
-    assert "Invalid message_type" in str(exc_info.value)
+
+    assert "Invalid response_type" in str(exc_info.value)
 
 
 def test_send_agent_response_model_completed(mocker: MockerFixture):
     """
     Given:
-        Model message with completed=True.
+        Model message with is_final=True.
     When:
         Sending agent response.
     Then:
@@ -553,17 +555,15 @@ def test_send_agent_response_model_completed(mocker: MockerFixture):
     mocker.patch.object(demisto, "results")
     handler = MockMessagingHandler()
     assistant = {"conv1": {"status": "awaiting_backend_response"}}
-    
+
     result = handler.send_agent_response(
         channel_id="channel123",
         thread_id="thread123",
-        message="Answer",
-        message_type=AssistantMessageType.MODEL.value,
-        completed=True,
+        messages=[{"content": "Answer", "response_type": AssistantMessageType.MODEL.value, "is_final": True}],
         assistant_context=assistant,
-        assistant_id_key="conv1"
+        assistant_id_key="conv1",
     )
-    
+
     assert "conv1" not in result
 
 
@@ -580,16 +580,15 @@ def test_send_agent_response_approval_type(mocker: MockerFixture):
     mocker.patch.object(demisto, "results")
     handler = MockMessagingHandler()
     assistant = {"conv1": {}}
-    
+
     result = handler.send_agent_response(
         channel_id="channel123",
         thread_id="thread123",
-        message="Approve?",
-        message_type=AssistantMessageType.APPROVAL.value,
+        messages=[{"content": "Approve?", "response_type": AssistantMessageType.APPROVAL.value, "is_final": False}],
         assistant_context=assistant,
-        assistant_id_key="conv1"
+        assistant_id_key="conv1",
     )
-    
+
     assert result["conv1"]["status"] == AssistantStatus.AWAITING_SENSITIVE_ACTION_APPROVAL.value
 
 
@@ -606,16 +605,15 @@ def test_send_agent_response_error_releases_lock(mocker: MockerFixture):
     mocker.patch.object(demisto, "results")
     handler = MockMessagingHandler()
     assistant = {"conv1": {"status": "awaiting_backend_response"}}
-    
+
     result = handler.send_agent_response(
         channel_id="channel123",
         thread_id="thread123",
-        message="Error occurred",
-        message_type=AssistantMessageType.ERROR.value,
+        messages=[{"content": "Error occurred", "response_type": AssistantMessageType.ERROR.value, "is_final": True}],
         assistant_context=assistant,
-        assistant_id_key="conv1"
+        assistant_id_key="conv1",
     )
-    
+
     assert "conv1" not in result
 
 
@@ -632,17 +630,15 @@ def test_send_agent_response_deletes_thinking_indicator(mocker: MockerFixture):
     mocker.patch.object(demisto, "results")
     handler = MockMessagingHandler()
     assistant = {"conv1": {"thinking_message_ts": "1234567890.123456"}}
-    
+
     handler.send_agent_response(
         channel_id="channel123",
         thread_id="thread123",
-        message="Response",
-        message_type=AssistantMessageType.MODEL.value,
-        completed=True,
+        messages=[{"content": "Response", "response_type": AssistantMessageType.MODEL.value, "is_final": True}],
         assistant_context=assistant,
-        assistant_id_key="conv1"
+        assistant_id_key="conv1",
     )
-    
+
     assert len(handler.deleted_messages) == 1
     assert handler.deleted_messages[0]["message_ts"] == "1234567890.123456"
 
@@ -664,9 +660,7 @@ def test_send_agent_response_model_adds_user_mention(mocker: MockerFixture):
     handler.send_agent_response(
         channel_id="channel123",
         thread_id="thread123",
-        message="Answer",
-        message_type=AssistantMessageType.MODEL.value,
-        completed=True,
+        messages=[{"content": "Answer", "response_type": AssistantMessageType.MODEL.value, "is_final": True}],
         assistant_context=assistant,
         assistant_id_key="conv1",
         user_id="U123",
@@ -695,16 +689,131 @@ def test_send_agent_response_step_no_user_mention(mocker: MockerFixture):
     handler.send_agent_response(
         channel_id="channel123",
         thread_id="thread123",
-        message="Step 1",
-        message_type=AssistantMessageType.STEP.value,
+        messages=[{"content": "Step 1", "response_type": AssistantMessageType.STEP.value, "is_final": False}],
         assistant_context=assistant,
         assistant_id_key="conv1",
         user_id="U123",
     )
 
-    # Step types should not have user mention blocks
+    # Step types use prepare_merged_step_blocks, not prepare_message_blocks
+    # The merged_steps block should not contain user mention
     for block in handler.last_posted_blocks:
         assert block.get("text", {}).get("text") != "<@U123>"
+
+
+def test_group_messages_by_type_consecutive_steps_merged():
+    """
+    Given:
+        Messages list with consecutive step-type messages.
+    When:
+        Grouping messages by type.
+    Then:
+        Consecutive step messages are grouped together.
+    """
+    messages = [
+        {"content": "Step 1", "response_type": "step", "is_final": False},
+        {"content": "Step 2", "response_type": "thought", "is_final": False},
+        {"content": "Final answer", "response_type": "model", "is_final": True},
+    ]
+
+    groups = AssistantMessagingHandler._group_messages_by_type(messages)
+
+    assert len(groups) == 2
+    assert len(groups[0]) == 2  # step + thought merged
+    assert groups[0][0]["response_type"] == "step"
+    assert groups[0][1]["response_type"] == "thought"
+    assert len(groups[1]) == 1  # model separate
+    assert groups[1][0]["response_type"] == "model"
+
+
+def test_group_messages_by_type_mixed_types_separate():
+    """
+    Given:
+        Messages list with alternating step and non-step types.
+    When:
+        Grouping messages by type.
+    Then:
+        Non-step types are kept as individual groups.
+    """
+    messages = [
+        {"content": "Step 1", "response_type": "step", "is_final": False},
+        {"content": "Approval needed", "response_type": "approval", "is_final": False},
+        {"content": "Step 2", "response_type": "step", "is_final": False},
+    ]
+
+    groups = AssistantMessagingHandler._group_messages_by_type(messages)
+
+    assert len(groups) == 3
+    assert len(groups[0]) == 1
+    assert len(groups[1]) == 1
+    assert len(groups[2]) == 1
+
+
+def test_send_agent_response_merges_consecutive_steps(mocker: MockerFixture):
+    """
+    Given:
+        Messages list with two consecutive step messages followed by a model message.
+    When:
+        Sending agent response.
+    Then:
+        Step messages are merged into one post, model is sent separately.
+    """
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "results")
+    handler = MockMessagingHandler()
+    handler.posted_calls = []
+    original_post = handler.post_agent_response_sync
+
+    def tracking_post(*args, **kwargs):
+        result = original_post(*args, **kwargs)
+        handler.posted_calls.append({"blocks": args[2] if len(args) > 2 else kwargs.get("blocks", [])})
+        return result
+
+    handler.post_agent_response_sync = tracking_post
+    assistant = {"conv1": {"status": "awaiting_backend_response"}}
+
+    handler.send_agent_response(
+        channel_id="channel123",
+        thread_id="thread123",
+        messages=[
+            {"content": "Retrieving cases", "response_type": "step", "is_final": False},
+            {"content": "Processing data", "response_type": "step", "is_final": False},
+            {"content": "Here are the results", "response_type": "model", "is_final": True, "message_id": "msg1"},
+        ],
+        assistant_context=assistant,
+        assistant_id_key="conv1",
+    )
+
+    # Should have 2 posts: one merged step, one model
+    assert len(handler.posted_calls) == 2
+
+
+def test_send_agent_response_completed_derived_from_is_final(mocker: MockerFixture):
+    """
+    Given:
+        Messages list where last message has is_final=True.
+    When:
+        Sending agent response.
+    Then:
+        Completed is derived from last message's is_final and lock is released.
+    """
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "results")
+    handler = MockMessagingHandler()
+    assistant = {"conv1": {"status": "awaiting_backend_response"}}
+
+    result = handler.send_agent_response(
+        channel_id="channel123",
+        thread_id="thread123",
+        messages=[
+            {"content": "Step 1", "response_type": "step", "is_final": False},
+            {"content": "Done", "response_type": "model", "is_final": True},
+        ],
+        assistant_context=assistant,
+        assistant_id_key="conv1",
+    )
+
+    assert "conv1" not in result
 
 
 def test_backend_response_includes_error_code(mocker):

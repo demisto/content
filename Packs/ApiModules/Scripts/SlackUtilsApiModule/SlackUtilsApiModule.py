@@ -164,49 +164,23 @@ def parse_to_rich_text_elements(text: str) -> list[dict]:
 
 def create_rich_cell(text: str) -> dict:
     """
-    Creates a Slack table cell with rich text formatting support.
+    Creates a Slack table cell as raw_text.
 
-    Determines whether to use raw_text (for plain text) or rich_text_section
-    (for formatted text with bold, italic, etc.).
-
-    Note: Slack table cells do NOT support link elements inside rich_text_section.
-    If a cell contains a link, we fall back to raw_text to avoid invalid_blocks errors.
+    Note: Slack table cells do NOT support rich_text_section elements
+    (links, bold, italic, code, etc. all cause invalid_blocks errors).
+    We always use raw_text format for table cells.
 
     Args:
-        text: Cell content (may contain markdown formatting)
+        text: Cell content (plain text)
 
     Returns:
-        Slack table cell dictionary:
-        - {"type": "raw_text", "text": "..."} for plain text or text with links
-        - {"type": "rich_text_section", "elements": [...]} for formatted text (bold, italic, etc.)
+        Slack table cell dictionary: {"type": "raw_text", "text": "..."}
 
     Example:
         >>> create_rich_cell("Plain text")
         {"type": "raw_text", "text": "Plain text"}
-
-        >>> create_rich_cell("**Bold** text")
-        {"type": "rich_text_section", "elements": [...]}
-
-        >>> create_rich_cell("https://example.com")
-        {"type": "raw_text", "text": "https://example.com"}
     """
-    elements = parse_to_rich_text_elements(text)
-
-    # Check if any element is a link - Slack table cells don't support link elements
-    has_links = any(e.get("type") == "link" for e in elements)
-    if has_links:
-        # Fall back to raw_text for cells with links (Slack limitation)
-        return {"type": "raw_text", "text": text if text else " "}
-
-    # Check if any element has styling (bold, italic, code, etc.)
-    has_rich_features = any(e.get("style") for e in elements)
-
-    if not has_rich_features:
-        # Use raw_text for better performance with plain text
-        return {"type": "raw_text", "text": text if text else " "}
-
-    # Use rich_text_section for formatted content (no links)
-    return RichTextSectionElement(elements=elements).to_dict()
+    return {"type": "raw_text", "text": text if text else " "}
 
 
 def parse_md_table_to_slack_table(md_text: str) -> dict | None:
@@ -564,6 +538,61 @@ def prepare_slack_message(message: str, message_type: str) -> tuple[list, list]:
 
     # Model/Final responses: return blocks directly (no attachment)
     return blocks, attachments
+
+
+def prepare_slack_merged_step_messages(step_contents: list[str]) -> tuple[list, list]:
+    """
+    Merges multiple step-type message contents into a single Slack attachment
+    with divider blocks separating each step.
+
+    Each step's content is processed through process_text_part() for full
+    markdown support (headers, lists, code blocks, etc.), and a DividerBlock
+    is inserted between consecutive steps.
+
+    Args:
+        step_contents: List of step message content strings to merge.
+
+    Returns:
+        Tuple of (blocks, attachments):
+        - blocks: Always empty (step messages use attachments)
+        - attachments: Single attachment with merged step blocks and dividers
+
+    Example:
+        >>> prepare_slack_merged_step_messages(["Step 1 content", "Step 2 content"])
+        ([], [{"color": "#D1D2D3", "blocks": [
+            <Plan header>,
+            <Step 1 blocks>,
+            <divider>,
+            <Step 2 blocks>
+        ]}])
+    """
+    if not step_contents:
+        return [], []
+
+    # Start with the Plan header
+    merged_blocks: list[dict] = [
+        ContextBlock(
+            elements=[MarkdownTextObject(text=f"{SlackAssistantMessages.PLAN_ICON} {SlackAssistantMessages.PLAN_LABEL}")]
+        ).to_dict()
+    ]
+
+    for i, content in enumerate(step_contents):
+        # Add divider between steps (not before the first one)
+        if i > 0:
+            merged_blocks.append(DividerBlock().to_dict())
+
+        # Process each step's content through the full markdown pipeline
+        step_blocks = process_text_part(content)
+        merged_blocks.extend(step_blocks)
+
+    attachments = [
+        {
+            "color": "#D1D2D3",  # Light gray border (same as single step)
+            "blocks": merged_blocks,
+        }
+    ]
+
+    return [], attachments
 
 
 def create_agent_selection_blocks(agents: list[dict]) -> list:

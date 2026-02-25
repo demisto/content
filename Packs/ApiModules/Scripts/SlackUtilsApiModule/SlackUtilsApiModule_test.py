@@ -208,11 +208,11 @@ def test_create_rich_cell_formatted_text():
     When:
         Creating rich cell.
     Then:
-        Returns rich_text_section type cell.
+        Returns raw_text type cell (Slack table cells don't support rich formatting).
     """
     result = create_rich_cell("**Bold text**")
-    assert result["type"] == "rich_text_section"
-    assert "elements" in result
+    assert result["type"] == "raw_text"
+    assert result["text"] == "**Bold text**"
 
 
 def test_create_rich_cell_with_url_falls_back_to_raw_text():

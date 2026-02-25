@@ -5425,7 +5425,7 @@ class TestToUnixSecondsStr:
 def test_send_agent_response(mocker: MockerFixture):
     """
     Given:
-        Valid arguments for send-agent-response command.
+        Valid arguments for send-agent-response command with messages list.
     When:
         Calling send_agent_response function.
     Then:
@@ -5434,15 +5434,16 @@ def test_send_agent_response(mocker: MockerFixture):
     import SlackV3
     from SlackV3 import send_agent_response
 
+    messages = [
+        {"content": "Test response", "response_type": "model", "is_final": True, "message_id": "msg1"},
+    ]
     mocker.patch.object(
         demisto,
         "args",
         return_value={
             "channel_id": "C123",
             "thread_id": "1234567890.123456",
-            "message": "Test response",
-            "message_type": "model",
-            "completed": "true",
+            "messages": messages,
         },
     )
     mocker.patch.object(demisto, "getIntegrationContext", return_value={})
@@ -5454,9 +5455,7 @@ def test_send_agent_response(mocker: MockerFixture):
     call_args = SlackV3.slack_assistant_handler.send_agent_response.call_args[1]
     assert call_args["channel_id"] == "C123"
     assert call_args["thread_id"] == "1234567890.123456"
-    assert call_args["message"] == "Test response"
-    assert call_args["message_type"] == "model"
-    assert call_args["completed"] is True
+    assert call_args["messages"] == messages
 
 
 def test_send_agent_response_with_agent_name(mocker: MockerFixture):
@@ -5472,14 +5471,14 @@ def test_send_agent_response_with_agent_name(mocker: MockerFixture):
     from SlackV3 import send_agent_response
     from CortexAssistantApiModule import AssistantMessages
 
+    messages = [{"content": "Test", "response_type": "model", "is_final": True}]
     mocker.patch.object(
         demisto,
         "args",
         return_value={
             "channel_id": "C123",
             "thread_id": "1234567890.123456",
-            "message": "Test",
-            "message_type": "model",
+            "messages": messages,
             "agent_name": "Security Analyst",
         },
     )
@@ -5715,24 +5714,23 @@ async def test_post_agent_response_sync_with_invalid_blocks_fallback(mocker):
 def test_send_agent_response_adds_user_mention_for_model_type(mocker):
     """
     Given:
-        Model type message with user_id in assistant context.
+        Model type messages list with user_id in assistant context.
     When:
         Calling send_agent_response command.
     Then:
-        Adds user mention at beginning of blocks.
+        Passes user_id from assistant context to handler.
     """
     import SlackV3
     from SlackV3 import send_agent_response
 
+    messages = [{"content": "Test response", "response_type": "model", "is_final": True}]
     mocker.patch.object(
         demisto,
         "args",
         return_value={
             "channel_id": "C123",
             "thread_id": "1234567890.123456",
-            "message": "Test response",
-            "message_type": "model",
-            "completed": "true",
+            "messages": messages,
         },
     )
     mocker.patch.object(

@@ -258,6 +258,19 @@ class SlackAssistantHandler(AssistantMessagingHandler):
         """
         return prepare_slack_message(message, message_type)
 
+    def prepare_merged_step_blocks(self, step_contents: list[str]) -> tuple[list, list]:
+        """
+        Prepare Slack blocks for multiple merged step messages.
+        Uses DividerBlock between steps for visual separation.
+
+        Args:
+            step_contents: List of step message content strings to merge
+
+        Returns:
+            Tuple of (blocks, attachments) for the merged step message
+        """
+        return prepare_slack_merged_step_messages(step_contents)
+
     def create_agent_selection_ui(self, agents: list) -> list:
         """
         Create Slack agent selection UI.
@@ -446,6 +459,13 @@ def send_agent_response():
     """
     Wrapper function for the send-agent-response command.
     Delegates to SlackAssistantHandler.send_agent_response()
+
+    Expects 'messages' arg as a list of message dicts, each containing:
+    - content (str): The message text
+    - response_type (str): The message type (from AssistantMessageType)
+    - is_final (bool): Whether this is the final message
+    - message_id (str): Optional message ID for feedback tracking
+    - metadata (dict): Optional metadata
     """
     args = demisto.args()
 
@@ -466,14 +486,16 @@ def send_agent_response():
     # Get user_id from assistant context if available
     user_id = assistant_context.get(assistant_id_key, {}).get("user", "")
 
+    # Parse messages list from args
+    raw_messages = args.get("messages", [])
+    if isinstance(raw_messages, str):
+        raw_messages = json.loads(raw_messages)
+
     # Call the handler's send_agent_response method
     slack_assistant_handler.send_agent_response(
         channel_id=channel_id,
         thread_id=thread_id,
-        message=args["message"],
-        message_type=args["message_type"],
-        message_id=args.get("message_id", ""),
-        completed=argToBoolean(args.get("completed", False)),
+        messages=raw_messages,
         assistant_context=assistant_context,
         assistant_id_key=assistant_id_key,
         agent_name=bot_name,

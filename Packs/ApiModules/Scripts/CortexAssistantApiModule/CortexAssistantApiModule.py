@@ -471,6 +471,22 @@ class AssistantMessagingHandler:
         """
         raise NotImplementedError("Subclass must implement prepare_message_blocks()")
 
+    def prepare_merged_step_blocks(self, step_contents: list[str]) -> tuple[list, list]:
+        """
+        Prepare platform-specific blocks for multiple merged step messages.
+        Must be implemented by subclass.
+
+        Consecutive step-type messages are merged into a single visual message
+        with dividers between them.
+
+        Args:
+            step_contents: List of step message content strings to merge
+
+        Returns:
+            Tuple of (blocks, attachments) for the merged step message
+        """
+        raise NotImplementedError("Subclass must implement prepare_merged_step_blocks()")
+
     def create_agent_selection_ui(self, agents: list) -> list:
         """
         Create agent selection UI.
@@ -1405,100 +1421,117 @@ class AssistantMessagingHandler:
 
         return assistant
 
+    @staticmethod
+    def _unescape_content(text: str) -> str:
+        """Replace common escaped characters with their actual characters."""
+        return text.replace("\\n", "\n").replace('\\"', '"').replace("\\'", "'")
+
+    @staticmethod
+    def _group_messages_by_type(messages: list[dict]) -> list[list[dict]]:
+        """
+        Groups consecutive messages by their response_type category.
+        Step-type messages (step, thought) are grouped together and will be
+        merged into a single visual message with dividers. All other types
+        are kept as individual groups (one message per group).
+
+        Args:
+            messages: List of message dicts with 'content', 'response_type',
+                      'is_final', 'message_id', and 'metadata' keys.
+
+        Returns:
+            List of groups, where each group is a list of message dicts.
+        """
+        groups: list[list[dict]] = []
+        current_group: list[dict] = []
+
+        for msg in messages:
+            response_type = msg.get("response_type", "")
+            is_step = AssistantMessageType.is_step_type(response_type)
+
+            if not current_group:
+                current_group.append(msg)
+            elif is_step and AssistantMessageType.is_step_type(current_group[0].get("response_type", "")):
+                # Both are step types — keep grouping
+                current_group.append(msg)
+            else:
+                # Different category — flush current group and start new one
+                groups.append(current_group)
+                current_group = [msg]
+
+        if current_group:
+            groups.append(current_group)
+
+        return groups
+
     def send_agent_response(
         self,
         channel_id: str,
         thread_id: str,
-        message: str,
-        message_type: str,
-        message_id: str = "",
-        completed: bool = False,
+        messages: list[dict],
         assistant_context: dict | None = None,
         assistant_id_key: str = "",
         agent_name: str = "",
         user_id: str = "",
     ) -> dict:
         """
-        Sends an agent response and updates the Assistant status accordingly.
+        Sends agent response(s) and updates the Assistant status accordingly.
         This is platform-agnostic logic that uses platform-specific methods.
+
+        Messages are grouped by response_type category:
+        - Consecutive step-type messages (step/thought) are merged into a single
+          visual message with platform-specific dividers between them.
+        - All other types are sent as individual messages.
+
+        Completion is determined by the last message's is_final field.
 
         Args:
             channel_id: The channel ID
             thread_id: The thread ID
-            message: The message text
-            message_type: The message type (from AssistantMessageType)
-            message_id: Optional message ID for feedback tracking
-            completed: Whether this is the final response
+            messages: List of message dicts, each containing:
+                - content (str): The message text
+                - response_type (str): The message type (from AssistantMessageType)
+                - is_final (bool): Whether this is the final message
+                - message_id (str): Optional message ID for feedback tracking
+                - metadata (dict): Optional metadata
             assistant_context: The assistant context dictionary
             assistant_id_key: The unique key for this conversation
-            agent_name: Optional agent name to display in message (e.g., "Security Analyst")
+            agent_name: Optional agent name to display in message
             user_id: Optional user ID to mention in model responses
 
         Returns:
             Updated assistant dictionary
 
         Raises:
-            ValueError: If message_type is not valid
+            ValueError: If any message's response_type is not valid
         """
-        # Validate message_type
-        try:
-            AssistantMessageType(message_type)
-        except ValueError:
-            error_msg = (
-                f"Invalid message_type: '{message_type}'. "
-                f"Must be one of: {', '.join([t.value for t in AssistantMessageType])}"
-            )
-            demisto.error(error_msg)
-            raise ValueError(error_msg)
-
         if not assistant_context:
             assistant_context = {}
 
-        demisto.debug(f"Sending agent response: type={message_type}, completed={completed}, conversation={assistant_id_key}, agent={agent_name}")
+        if not messages:
+            demisto.debug("No messages to send")
+            demisto.results("Agent response sent successfully.")
+            return assistant_context
 
-        # Replace escaped characters with actual characters
-        message = message.replace("\\n", "\n")
-        message = message.replace('\\"', '"')
-        message = message.replace("\\'", "'")
+        # Derive completed from the last message's is_final field
+        completed = messages[-1].get("is_final", False)
 
-        # Prepare blocks and attachments using platform-specific method
-        blocks, attachments = self.prepare_message_blocks(message, message_type)
-        if not blocks:
-            blocks = []
+        # Validate all message types
+        for msg in messages:
+            response_type = msg.get("response_type", "")
+            try:
+                AssistantMessageType(response_type)
+            except ValueError:
+                error_msg = (
+                    f"Invalid response_type: '{response_type}'. "
+                    f"Must be one of: {', '.join([t.value for t in AssistantMessageType])}"
+                )
+                demisto.error(error_msg)
+                raise ValueError(error_msg)
 
-        # Variables for status update
-        new_status = None
-        should_release_lock = False
-
-        # Handle different message types
-        if AssistantMessageType.is_model_type(message_type):
-            # MODEL TYPES - Final responses
-            should_release_lock = completed
-
-            # Add user mention at the beginning of the message so the user gets notified
-            if user_id:
-                user_mention_block = {
-                    "type": "section",
-                    "text": {"type": "mrkdwn", "text": self.format_user_mention(user_id)},
-                }
-                blocks.insert(0, user_mention_block)
-
-            if AssistantMessageType.is_approval_type(message_type):
-                # APPROVAL - Sensitive action requiring approval
-                should_release_lock = False
-                blocks.extend(self.create_approval_ui())
-                new_status = AssistantStatus.AWAITING_SENSITIVE_ACTION_APPROVAL.value
-
-            if message_id:
-                blocks.append(self.create_feedback_ui(message_id))
-
-        elif AssistantMessageType.is_step_type(message_type):
-            # STEP TYPES - Plan steps
-            new_status = AssistantStatus.RESPONDING_WITH_PLAN.value
-
-        elif AssistantMessageType.is_error_type(message_type):
-            # ERROR - release lock immediately
-            should_release_lock = True
+        demisto.debug(
+            f"Sending agent response: {len(messages)} messages, completed={completed}, "
+            f"conversation={assistant_id_key}, agent={agent_name}"
+        )
 
         # Delete thinking indicator if it exists (before sending first response)
         if assistant_id_key in assistant_context:
@@ -1508,22 +1541,64 @@ class AssistantMessagingHandler:
                     self.delete_message_sync(channel_id, thinking_ts)
                 except Exception as e:
                     demisto.error(f"Failed to delete thinking indicator: {e}")
-                # Remove thinking_message_ts from context
                 assistant_context[assistant_id_key].pop("thinking_message_ts", None)
 
-        # Send message using platform-specific method
-        self.post_agent_response_sync(
-            channel_id, thread_id, blocks, attachments, agent_name, fallback_text=message
-        )
+        # Group messages by type category
+        grouped = self._group_messages_by_type(messages)
 
-        # Update context based on message type
+        # Track the final status/lock state across all groups
+        new_status = None
+        should_release_lock = False
+
+        for group in grouped:
+            first_msg = group[0]
+            message_type = first_msg.get("response_type", "")
+
+            if AssistantMessageType.is_step_type(message_type):
+                # Step-type group: merge contents using platform-specific dividers
+                step_contents = [self._unescape_content(msg.get("content", "")) for msg in group]
+                blocks, attachments = self.prepare_merged_step_blocks(step_contents)
+
+                self.post_agent_response_sync(
+                    channel_id, thread_id, blocks, attachments, agent_name,
+                    fallback_text=" | ".join(step_contents),
+                )
+                new_status = AssistantStatus.RESPONDING_WITH_PLAN.value
+            else:
+                # Non-step types: send each message individually
+                for msg in group:
+                    msg_content = self._unescape_content(msg.get("content", ""))
+                    msg_type = msg.get("response_type", "")
+                    msg_id = msg.get("message_id", "")
+                    msg_is_final = msg.get("is_final", False)
+
+                    self._send_single_response(
+                        channel_id=channel_id,
+                        thread_id=thread_id,
+                        message=msg_content,
+                        message_type=msg_type,
+                        message_id=msg_id,
+                        agent_name=agent_name,
+                        user_id=user_id,
+                        completed=msg_is_final,
+                    )
+
+                    # Determine status from the last message in the group
+                    if AssistantMessageType.is_model_type(msg_type):
+                        if AssistantMessageType.is_approval_type(msg_type):
+                            new_status = AssistantStatus.AWAITING_SENSITIVE_ACTION_APPROVAL.value
+                            should_release_lock = False
+                        elif msg_is_final:
+                            should_release_lock = True
+                    elif AssistantMessageType.is_error_type(msg_type):
+                        should_release_lock = True
+
+        # Update context based on final state
         if assistant_id_key in assistant_context:
             if should_release_lock:
-                # Release the lock
                 del assistant_context[assistant_id_key]
                 self.update_context({self.CONTEXT_KEY: assistant_context})
             elif new_status:
-                # Update status
                 from datetime import UTC, datetime
 
                 assistant_context[assistant_id_key]["status"] = new_status
@@ -1532,3 +1607,53 @@ class AssistantMessagingHandler:
 
         demisto.results("Agent response sent successfully.")
         return assistant_context
+
+    def _send_single_response(
+        self,
+        channel_id: str,
+        thread_id: str,
+        message: str,
+        message_type: str,
+        message_id: str,
+        agent_name: str,
+        user_id: str,
+        completed: bool,
+    ):
+        """
+        Sends a single agent response message to the platform.
+
+        Args:
+            channel_id: The channel ID
+            thread_id: The thread ID
+            message: The message text (already unescaped)
+            message_type: The message type (from AssistantMessageType)
+            message_id: Optional message ID for feedback tracking
+            agent_name: Optional agent name to display
+            user_id: Optional user ID to mention in model responses
+            completed: Whether this is the final response
+        """
+        # Prepare blocks and attachments using platform-specific method
+        blocks, attachments = self.prepare_message_blocks(message, message_type)
+        if not blocks:
+            blocks = []
+
+        # Handle different message types
+        if AssistantMessageType.is_model_type(message_type):
+            # Add user mention at the beginning so the user gets notified
+            if user_id:
+                user_mention_block = {
+                    "type": "section",
+                    "text": {"type": "mrkdwn", "text": self.format_user_mention(user_id)},
+                }
+                blocks.insert(0, user_mention_block)
+
+            if AssistantMessageType.is_approval_type(message_type):
+                blocks.extend(self.create_approval_ui())
+
+            if message_id:
+                blocks.append(self.create_feedback_ui(message_id))
+
+        # Send message using platform-specific method
+        self.post_agent_response_sync(
+            channel_id, thread_id, blocks, attachments, agent_name, fallback_text=message
+        )
