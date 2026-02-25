@@ -58,32 +58,40 @@ class Client(Zoom_Client):
 
         demisto.debug(f"Starting to get logs from: {start_date} to: {end_date} for {log_type}")
 
+        while start_date <= end_date:
+            first_page = True
+            params = {
+                "page_size": limit if limit else MAX_RECORDS_PER_PAGE,
+                "from": start_date.strftime(REQUEST_DATE_FORMAT),
+                "to": get_next_month(start_date).strftime(REQUEST_DATE_FORMAT)
+                if start_date.month != end_date.month
+                else end_date.strftime(REQUEST_DATE_FORMAT),
+            }
+            if next_page_token:
+                params["next_page_token"] = next_page_token
+                first_page = False
+            demisto.debug(f"Sending HTTP request to /report/{log_type} with params: {params}")
+            response = self.error_handled_http_request(
+                method="GET",
+                url_suffix=f"report/{log_type}",
+                headers={"authorization": f"Bearer {self.access_token}"},
+                params=params,
+            )
 
-        params = {
-            "page_size": limit if limit else MAX_RECORDS_PER_PAGE,
-            "from": start_date.strftime(REQUEST_DATE_FORMAT),
-            "to": get_next_month(start_date).strftime(REQUEST_DATE_FORMAT)
-            if start_date.month != end_date.month
-            else end_date.strftime(REQUEST_DATE_FORMAT),
-        }
-
-        demisto.debug(f"Sending HTTP request to /report/{log_type} with params: {params}")
-        response = self.error_handled_http_request(
-            method="GET",
-            url_suffix=f"report/{log_type}",
-            headers={"authorization": f"Bearer {self.access_token}"},
-            params=params,
-        )
-
-        logs = response.get(LOG_TYPES.get(log_type))
-        for i, log in enumerate(logs):
-            log_time = log.get("time")
-            if not i:
-                next_last_time = log_time  # save the latest time
-            if last_time and last_time == log_time:  # no more results
-                limit = True
+            logs = response.get(LOG_TYPES.get(log_type))
+            for i, log in enumerate(logs):
+                log_time = log.get("time")
+                if not i and first_page:
+                    next_last_time = log_time  # save the latest time
+                if last_time and last_time == log_time:  # no more results
+                    limit = True
+                    break
+                results.append(log)
+            if limit:
                 break
-            results.append(log)
+
+            if not (next_page_token := response.get("next_page_token")):
+                start_date = get_next_month(start_date) + timedelta(days=1)
 
         demisto.debug(f"Last run after the fetch run: {next_last_time} for {log_type}")
         return next_last_time, results
@@ -118,6 +126,39 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
+def get_events(
+    client: Client, first_fetch_time: datetime, limit: int = MAX_RECORDS_PER_PAGE
+) -> tuple[list[dict[str, Any]], CommandResults]:
+    """
+    Gets all the events from the Zoom API for each log type.
+    Args:
+        client (Client): Zoom client to use.
+        limit: int, the limit of the results to return per log_type.
+        first_fetch_time(datetime): If last_run is None (first time we are fetching), it contains the timestamp in
+            milliseconds on when to start fetching events.
+    Returns:
+        list: A list containing the events
+        CommandResults: A CommandResults object that contains the events in a table format.
+    """
+
+    events: list[dict] = []
+
+    if limit > MAX_RECORDS_PER_PAGE:
+        raise DemistoException(
+            f"The requested limit ({limit}) exceeds the maximum number of records per page ({MAX_RECORDS_PER_PAGE})."
+            f" Please reduce the limit and try again."
+        )
+    hr = ""
+    for log_type in LOG_TYPES:
+        _, log_events = client.search_events(log_type=log_type, limit=limit, first_fetch_time=first_fetch_time)
+        if log_events:
+            hr += tableToMarkdown(name=f"{log_type} Events", t=log_events)
+            events.extend(log_events)
+        else:
+            hr += f"No events found for {log_type}.\n"
+    return events, CommandResults(readable_output=hr)
+
+
 def fetch_events(
     client: Client, last_run: dict[str, str], first_fetch_time: datetime
 ) -> tuple[dict[str, str], list[dict[str, Any]]]:
@@ -136,8 +177,7 @@ def fetch_events(
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
         list: List of events that will be created in XSIAM.
     """
-    params = demisto.params()
-    args = demisto.args()
+
     next_run: dict[str, str] = {}
     events = []
 
@@ -227,6 +267,17 @@ def main() -> None:
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
+
+        elif command == "zoom-get-events":
+            events, results = get_events(
+                client=client,
+                limit=arg_to_number(args.get("limit")) or MAX_RECORDS_PER_PAGE,
+                first_fetch_time=first_fetch_datetime.replace(tzinfo=UTC),
+            )
+            return_results(results)
+
+            if argToBoolean(args.pop("should_push_events")):
+                call_send_events_to_xsiam(events)
 
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
