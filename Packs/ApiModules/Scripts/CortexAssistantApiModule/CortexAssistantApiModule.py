@@ -318,11 +318,11 @@ class AssistantMessages:
     FEEDBACK_OPTION_UNHELPFUL = "Unhelpful"
 
     # Help hint (sent after agent selection)
-    HELP_HINT = "💡 For help and usage info, type `{bot_tag} !help`"
+    HELP_HINT = "💡 For help, type `{bot_tag} !help`"
 
     # Help message (sent on !help command)
     HELP_MESSAGE = (
-        "📖 *{bot_display_name} - Help & Usage*\n\n"
+        "📖 *{bot_display_name} - Help*\n\n"
         "• Each thread is *locked to the user who started the chat*. "
         "Other users can start their own chat in a different thread.\n"
         "• Every message must *mention the bot* (e.g. `{bot_tag} <your question>`).\n"
