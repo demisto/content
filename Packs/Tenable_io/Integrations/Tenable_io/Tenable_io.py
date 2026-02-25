@@ -2172,7 +2172,12 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                         snapshot_id=snapshot_id,
                         items_count=str(cumulative_total),
                         should_update_health_module=False,
-                    )
+ else:
+        # First fetch returned empty - log this scenario
+        demisto.debug(
+            f"Asset fetch completed with empty assets list and cumulative_total=0. "
+            f"No snapshot sealing needed for snapshot_id={snapshot_id}"
+        )
 
             if vulnerabilities:
                 vulnerabilities = parse_vulnerabilities(vulnerabilities)
