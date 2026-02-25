@@ -29,13 +29,13 @@ def update_args(args):
         "json_similarity_fields": "similarJsonField",
         "discrete_match_fields": "similarCategoricalField",
         "fields_to_display": "fieldsToDisplay",
-        "use_all_fields": "useAllFields",
         "from_date": "fromDate",
         "to_date": "toDate",
         "aggregate_issues_different_date": "aggreagateIncidentsDifferentDate",
         "include_indicators_similarity": "includeIndicatorsSimilarity",
         "min_number_of_indicators": "minNumberOfIndicators",
         "indicators_types": "indicatorsTypes",
+        "show_current_issue": "showCurrentIncident",
     }
 
     # Rename keys if found in mapping, otherwise keep them as-is
@@ -181,28 +181,28 @@ def load_current_issue(issue_id: str | None, from_date: str | None, to_date: str
     return issue, issue_id
 
 
-def get_similar_issues_by_indicators(args: dict):
-    """
-    Use DBotFindSimilarIncidentsByIndicators automation and return similar issues from the automation
-    :param args: argument for DBotFindSimilarIncidentsByIndicators automation
-    :return:  return similar issues from the automation
-    """
-    demisto.debug("Executing DBotFindSimilarIncidentsByIndicators")
-    # Note: The underlying script might still be named DBotFindSimilarIncidentsByIndicators
-    res = demisto.executeCommand("DBotFindSimilarIncidentsByIndicators", args)
-    if is_error(res):
-        return_error(get_error(res))
-    res = get_data_from_indicators_automation(res, TAG_SCRIPT_INDICATORS)
-    return res
+# def get_similar_issues_by_indicators(args: dict):
+#     """
+#     Use DBotFindSimilarIncidentsByIndicators automation and return similar issues from the automation
+#     :param args: argument for DBotFindSimilarIncidentsByIndicators automation
+#     :return:  return similar issues from the automation
+#     """
+#     demisto.debug("Executing DBotFindSimilarIncidentsByIndicators")
+#     # Note: The underlying script might still be named DBotFindSimilarIncidentsByIndicators
+#     res = demisto.executeCommand("DBotFindSimilarIncidentsByIndicators", args)
+#     if is_error(res):
+#         return_error(get_error(res))
+#     res = get_data_from_indicators_automation(res, TAG_SCRIPT_INDICATORS)
+#     return res
 
 
-def get_data_from_indicators_automation(res, tag_value):
-    if res:
-        for entry in res:
-            tags = entry.get("Tags") or []
-            if tag_value in tags:
-                return entry.get("Contents")
-    return None
+# def get_data_from_indicators_automation(res, tag_value):
+#     if res:
+#         for entry in res:
+#             tags = entry.get("Tags") or []
+#             if tag_value in tags:
+#                 return entry.get("Contents")
+#     return None
 
 
 def return_outputs_summary(
@@ -242,38 +242,34 @@ def return_outputs_similar_issues(
     :param tag: tag for the entry
     :return: None
     """
-    display_df = similar_issues.copy()
+    colums_to_display = similar_issues.columns.tolist()
+    colums_to_display = [x for x in FIRST_COLUMNS_INCIDENTS_DISPLAY if x in similar_issues.columns] + [
+        x for x in colums_to_display if (x not in FIRST_COLUMNS_INCIDENTS_DISPLAY and x not in REMOVE_COLUMNS_INCIDENTS_DISPLAY)
+    ]
 
-    rename_map = {
-        SIMILARITY_COLUNM_NAME: "Similarity Issue",
-        "internal_id": "Issue ID",
-        "issue_description": "Issue Description",
-        "issue_name": "Name",
-        "issue_type": "Issue Type"
-    }
+    first_col = [x for x in colums_to_display if x in current_issue.columns]
+    col_current_issue_to_display = first_col + [
+        x for x in current_issue.columns if (x not in first_col and x not in REMOVE_COLUMNS_INCIDENTS_DISPLAY)
+    ]
 
-    colums_to_display = display_df.columns.tolist()
-    colums_to_display = [x for x in colums_to_display if x not in REMOVE_COLUMNS_INCIDENTS_DISPLAY]
+    rename_map = {"internal_id": "issue_id"}
+    similar_issues = similar_issues.rename(columns=rename_map)
+    current_issue = current_issue.rename(columns=rename_map)
 
-    display_df = display_df.rename(columns=rename_map)
-    colums_to_display = [rename_map.get(x, x) for x in colums_to_display if rename_map.get(x, x)]
+    colums_to_display = [rename_map.get(x, x) for x in colums_to_display]
+    col_current_issue_to_display = [rename_map.get(x, x) for x in col_current_issue_to_display]
 
-    display_df = display_df.rename(str.title, axis="columns")
-    colums_to_display = [str(x).title() for x in colums_to_display]
+    similar_issues = similar_issues.rename(lambda x: str(x).replace("_", " ").title(), axis="columns")
+    current_issue = current_issue.rename(lambda x: str(x).replace("_", " ").title(), axis="columns")
 
-    current_issue_display = current_issue.copy()
-    current_issue_display = current_issue_display.rename(columns=rename_map)
-    current_issue_display = current_issue_display.rename(str.title, axis="columns")
+    colums_to_display = [str(x).replace("_", " ").title() for x in colums_to_display]
+    col_current_issue_to_display = [str(x).replace("_", " ").title() for x in col_current_issue_to_display]
 
-    col_current_issue_to_display = current_issue_display.columns.tolist()
-    col_current_issue_to_display = [x for x in col_current_issue_to_display if x not in REMOVE_COLUMNS_INCIDENTS_DISPLAY]
-    col_current_issue_to_display = [str(x).title() for x in col_current_issue_to_display]
+    similar_issues = similar_issues.replace(np.nan, "", regex=True)
+    current_issue = current_issue.replace(np.nan, "", regex=True)
 
-    display_df = display_df.replace(np.nan, "", regex=True)
-    current_issue_display = current_issue_display.replace(np.nan, "", regex=True)
-
-    similar_issues_json = display_df.to_dict(orient="records")
-    issue_json = current_issue_display.to_dict(orient="records")
+    similar_issues_json = similar_issues.to_dict(orient="records")
+    issue_json = current_issue.to_dict(orient="records")
 
     if str(show_actual_issue) == "True":
         return_outputs(
@@ -281,9 +277,7 @@ def return_outputs_similar_issues(
                 f"Current {INCIDENT_ALIAS.capitalize()}", issue_json, col_current_issue_to_display
             )
         )
-
     readable_output = tableToMarkdown(f"Similar {INCIDENT_ALIAS.capitalize()}s", similar_issues_json, colums_to_display)
-
     return_entry = {
         "Type": entryTypes["note"],
         "HumanReadable": readable_output,
@@ -319,24 +313,24 @@ def return_outputs_similar_issues_empty():
     )
 
 
-def enriched_with_indicators_similarity(full_args_indicators_script: dict, similar_issues: pd.DataFrame):
-    """
-    Take DataFrame of similar_issues and args for indicators script and add information about indicators
-    to similar_issues
-    :param full_args_indicators_script: args for indicators script
-    :param similar_issues: DataFrame of issues
-    :return: similar_issues enriched with indicators data
-    """
-    indicators_similarity_json = get_similar_issues_by_indicators(full_args_indicators_script)
-    indicators_similarity_df = pd.DataFrame(indicators_similarity_json)
-    if indicators_similarity_df.empty:
-        indicators_similarity_df = pd.DataFrame(columns=[SIMILARITY_COLUNM_NAME_INDICATOR, "Identical indicators", "id"])
-    keep_columns = [x for x in KEEP_COLUMNS_INDICATORS if x not in similar_issues]
-    indicators_similarity_df.index = indicators_similarity_df.id
-    similar_issues.loc[:, keep_columns] = indicators_similarity_df[keep_columns]
-    values = {SIMILARITY_COLUNM_NAME_INDICATOR: 0, "Identical indicators": ""}
-    similar_issues = similar_issues.fillna(value=values)
-    return similar_issues
+# def enriched_with_indicators_similarity(full_args_indicators_script: dict, similar_issues: pd.DataFrame):
+#     """
+#     Take DataFrame of similar_issues and args for indicators script and add information about indicators
+#     to similar_issues
+#     :param full_args_indicators_script: args for indicators script
+#     :param similar_issues: DataFrame of issues
+#     :return: similar_issues enriched with indicators data
+#     """
+#     indicators_similarity_json = get_similar_issues_by_indicators(full_args_indicators_script)
+#     indicators_similarity_df = pd.DataFrame(indicators_similarity_json)
+#     if indicators_similarity_df.empty:
+#         indicators_similarity_df = pd.DataFrame(columns=[SIMILARITY_COLUNM_NAME_INDICATOR, "Identical indicators", "id"])
+#     keep_columns = [x for x in KEEP_COLUMNS_INDICATORS if x not in similar_issues]
+#     indicators_similarity_df.index = indicators_similarity_df.id
+#     similar_issues.loc[:, keep_columns] = indicators_similarity_df[keep_columns]
+#     values = {SIMILARITY_COLUNM_NAME_INDICATOR: 0, "Identical indicators": ""}
+#     similar_issues = similar_issues.fillna(value=values)
+#     return similar_issues
 
 
 def create_context_for_issues(similar_issues=pd.DataFrame()):
@@ -378,7 +372,13 @@ def main():
     args = replace_fields(args, replacements)
     args = update_args(args)
 
-    exact_match_fields, similar_text_field, similar_categorical_field, similar_json_field = get_field_args(args)
+    exact_match_fields = argToList(args.get("fieldExactMatch"))
+    similar_text_field = argToList(args.get("similarTextField"))
+    similar_categorical_field = argToList(args.get("similarCategoricalField"))
+    similar_json_field = argToList(args.get("similarJsonField"))
+
+    # remove it - using the use_all_fields that is relevant only for CustomerFields.
+    # exact_match_fields, similar_text_field, similar_categorical_field, similar_json_field = get_field_args(args)
 
     display_fields = list(set(["internal_id", "issue_name", "issue_description"] + argToList(args.get("fieldsToDisplay"))))
 
@@ -453,11 +453,11 @@ def main():
         return_outputs_similar_issues_empty()
         return None, global_msg
 
-    # Get similarity based on indicators
-    if include_indicators_similarity == "True":
-        args_defined_by_user = {key: args.get(key) for key in KEYS_ARGS_INDICATORS}
-        full_args_indicators_script = {**CONST_PARAMETERS_INDICATORS_SCRIPT, **args_defined_by_user}
-        similar_issues = enriched_with_indicators_similarity(full_args_indicators_script, similar_issues)
+    # # Get similarity based on indicators
+    # if include_indicators_similarity == "True":
+    #     args_defined_by_user = {key: args.get(key) for key in KEYS_ARGS_INDICATORS}
+    #     full_args_indicators_script = {**CONST_PARAMETERS_INDICATORS_SCRIPT, **args_defined_by_user}
+    #     similar_issues = enriched_with_indicators_similarity(full_args_indicators_script, similar_issues)
 
     if isinstance(similar_issues, pd.Series):
         similar_issues = similar_issues.to_frame().T

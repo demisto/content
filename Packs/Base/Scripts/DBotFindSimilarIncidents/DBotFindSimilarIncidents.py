@@ -280,6 +280,7 @@ def main():
     incidents, msg = get_all_incidents_for_time_window_and_exact_match(
         exact_match_fields, populate_high_level_fields, incident, from_date, to_date, query, limit
     )
+    print(incidents)
     global_msg += f"{msg} \n"
 
     if incidents:
