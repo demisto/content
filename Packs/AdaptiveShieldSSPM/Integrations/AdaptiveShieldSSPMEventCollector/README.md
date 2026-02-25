@@ -25,27 +25,3 @@ An API key is required for every request sent to Adaptive Shield's API.
 3. Click "Generate a new key"
 4. Set a key name, and click "Create"
 
-## Commands
-
-You can execute these commands from the CLI, as part of an automation, or in a playbook.
-After you successfully execute a command, a DBot message appears in the War Room with the command details.
-
-### adaptive-shield-sspm-get-events
-
-***
-Fetches security check events from Adaptive Shield. Use with caution during development or debugging. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
-
-#### Base Command
-
-`adaptive-shield-sspm-get-events`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| should_push_events | Set to True to create events; otherwise, the command only displays the events. Possible values are: true, false. Default is false. | Required |
-| limit | The maximum number of security checks to return. Default is 10. | Optional |
-
-#### Context Output
-
-There is no context output for this command.
