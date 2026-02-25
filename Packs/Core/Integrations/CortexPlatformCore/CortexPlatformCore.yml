@@ -649,7 +649,8 @@ script:
         - description: The category of the issue. Accepts a comma-separated list.
           isArray: true
           name: issue_category
-        - description: The domain of the issue. Accepts a comma-separated list.
+        - auto: PREDEFINED
+          description: The domain of the issue. Accepts a comma-separated list.
           isArray: true
           name: issue_domain
           predefined:

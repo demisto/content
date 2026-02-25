@@ -4068,13 +4068,13 @@ ISSUE_FIELDS = {
     "Identity_type": "identity_type",
     "action_external_hostname": "action_external_hostname",
     "host_ip": "agent_ip_addresses",
-    "actor_process_command_line": "actor_process_command_line",
+    "actor_process_image_command_line": "actor_process_command_line",
     "action_process_image_command_line": "action_process_image_command_line",
     "action_file_image_sha256": "action_file_sha256",
     "action_registry_name": "action_registry_key_name",
     "action_registry_key_data": "action_registry_data",
     "rule_name": "fw_rule",
-    "matching_service_rule_id": "fw_rule_id",
+    "rule_id": "matching_service_rule_id",
     "causality_actor_process_image_command_line": "causality_actor_process_command_line",
     "causality_actor_process_image_sha256": "causality_actor_process_image_sha256",
     "action_process_image_sha256": "action_process_image_sha256",
@@ -4121,7 +4121,8 @@ def create_issues_filter(args) -> dict:
     filter_builder.add_time_range_field(
         ISSUE_FIELDS["start_time"], start_time=args.get("start_time"), end_time=args.get("end_time")
     )
-    filter_builder.add_field(ISSUE_FIELDS["starred"], FilterType.EQ, args.get("starred"))
+    if (starred_arg := args.get("starred")) is not None:
+        filter_builder.add_field(ISSUE_FIELDS["starred"], FilterType.EQ, argToBoolean(starred_arg))
     filter_builder.add_field(ISSUE_FIELDS["issue_id"], FilterType.WILDCARD, argToList(args.get("issue_id")))
     filter_builder.add_field(
         ISSUE_FIELDS["action_external_hostname"], FilterType.CONTAINS, argToList(args.get("action_external_hostname"))
@@ -4139,7 +4140,7 @@ def create_issues_filter(args) -> dict:
         argToList(args.get("causality_actor_process_image_command_line")),
     )
     filter_builder.add_field(
-        ISSUE_FIELDS["actor_process_command_line"], FilterType.CONTAINS, argToList(args.get("actor_process_image_command_line"))
+        ISSUE_FIELDS["actor_process_image_command_line"], FilterType.CONTAINS, argToList(args.get("actor_process_image_command_line"))
     )
     filter_builder.add_field(ISSUE_FIELDS["agent_id"], FilterType.EQ, argToList(args.get("agent_id")))
     filter_builder.add_field(ISSUE_FIELDS["Identity_type"], FilterType.EQ, argToList(args.get("Identity_type")))
@@ -4178,7 +4179,8 @@ def create_issues_filter(args) -> dict:
         ISSUE_FIELDS["mitre_technique_id_and_name"], FilterType.CONTAINS, argToList(args.get("mitre_technique_id_and_name"))
     )
     filter_builder.add_field(ISSUE_FIELDS["issue_category"], FilterType.EQ, argToList(args.get("issue_category")))
-    filter_builder.add_field(ISSUE_FIELDS["issue_domain"], FilterType.EQ, argToList(args.get("issue_domain")))
+    if issue_domain := args.get("issue_domain"):
+        filter_builder.add_field(ISSUE_FIELDS["issue_domain"], FilterType.EQ, argToList(ALERT_DOMAIN.get(issue_domain, issue_domain)))
     filter_builder.add_field(ISSUE_FIELDS["issue_description"], FilterType.CONTAINS, argToList(args.get("issue_description")))
     filter_builder.add_field(
         ISSUE_FIELDS["os_actor_process_image_sha256"], FilterType.EQ, argToList(args.get("os_actor_process_image_sha256"))
@@ -4239,7 +4241,7 @@ def get_issues_by_filter_command(client: CoreClient, args: Dict):
         "alert_action_status",
         "agent_ip_addresses",
         "agent_hostname",
-        "identity_type",
+        "Identity_type",
     ]
     filter_dict = create_issues_filter(args)
     custom_filter = {}
