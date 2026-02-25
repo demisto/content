@@ -330,9 +330,58 @@ def get_blacklist_command(limit, days, confidence, saveToContext):
     return analysis if type(analysis) is str else blacklist_to_entry(analysis.get("data"), saveToContext)
 
 
+def get_fplist_command(format, limit, all_results):
+    """
+    Retrieves the False Positive List (FPL) from abuse.ch.
+    """
+    demisto.debug("Retrieving the false positive list from hunting abuse api.")
+
+    limit_int = arg_to_number(limit)
+    all_results_bool = argToBoolean(all_results)
+
+    headers = {"Auth-Key": ABUSECH_API_KEY, "Content-Type": "application/json"}
+    payload = {"query": "get_fplist", "format": format}
+
+    response = abusech_hunting_http_request(headers, payload)
+
+    if format == "json":
+        res_json = response.json()
+
+        demisto.debug("Flattening json response.")
+        data = []
+        for entry_id, details in res_json.items():
+            details["id"] = entry_id
+            data.append(details)
+
+        if not data:
+            return CommandResults(readable_output="No data found in the False Positive List.")
+
+        if not all_results_bool:
+            demisto.debug(f"Trimming data to first {limit_int} entries.")
+            data = data[:limit_int]
+
+        readable_output = tableToMarkdown(
+            "Abuse.ch False Positive List",
+            data,
+            headers=["id", "time_stamp", "platform", "entry_type", "entry_value", "removed_by", "removal_notes"],
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_prefix="AbuseIPDB.FPL", outputs_key_field="id", outputs=data, readable_output=readable_output
+        )
+
+    else:  # format == 'csv'
+        return fileResult("abusech_fplist.csv", response.content)
+
+
 def test_module(reliability):
     try:
         check_ip_command(ip=TEST_IP, disable_private_ip_lookup=False, verbose=False, reliability=reliability)
+
+        if ABUSECH_API_KEY:
+            get_fplist_command("json", 1, False)
+
     except Exception as e:
         LOG(e)
         return_error(str(e))
@@ -375,6 +424,8 @@ try:
         demisto.results(get_blacklist_command(**demisto.args()))
     elif demisto.command() == "abuseipdb-get-categories":
         demisto.results(get_categories_command(**demisto.args()))  # type:ignore
+    elif demisto.command() == "abuseipdb-get-fplist":
+        return_results(get_fplist_command(**demisto.args()))
 
 except Exception as e:
     LOG.print_log()

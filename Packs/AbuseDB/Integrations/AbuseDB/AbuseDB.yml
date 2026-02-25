@@ -349,6 +349,44 @@ script:
     - contextPath: AbuseIPDB.Categories
       description: The list of AbuseIPDB categories.
       type: string
+  - arguments:
+    - defaultValue: json
+      description: The format of the output (json, csv).
+      name: format
+      auto: PREDEFINED
+      predefined:
+      - json
+      - csv
+    - defaultValue: '50'
+      description: The maximum number of results to return.
+      name: limit
+    - defaultValue: false
+      description: Whether to return all results.
+      name: all_results
+    description: Returns the False Positive List (FPL) from abuse.ch, containing indicators (IPs and domains) that have been removed from their blocklists.
+    name: abuseipdb-get-fplist
+    outputs:
+    - contextPath: AbuseIPDB.FPL.id
+      description: The unique identifier for the False Positive List entry.
+      type: String
+    - contextPath: AbuseIPDB.FPL.time_stamp
+      description: The date and time (UTC) when the entry was added to the False Positive List.
+      type: String
+    - contextPath: AbuseIPDB.FPL.platform
+      description: The platform or service associated with the entry.
+      type: String
+    - contextPath: AbuseIPDB.FPL.entry_type
+      description: The type of the indicator (e.g., IPv4, domain).
+      type: String
+    - contextPath: AbuseIPDB.FPL.entry_value
+      description: The actual indicator value (IP address or domain) that was marked as a false positive.
+      type: String
+    - contextPath: AbuseIPDB.FPL.removed_by
+      description: The entity or user who requested the removal of the indicator from the blocklist.
+      type: String
+    - contextPath: AbuseIPDB.FPL.removal_notes
+      description: Additional context or justification for why the indicator was removed.
+      type: String
   script: ''
   subtype: python3
   type: python

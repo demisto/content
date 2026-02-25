@@ -111,6 +111,125 @@ def test_ip_command_when_api_quota_reached(mocker):
     assert return_error_mock.call_count == 0
 
 
+def test_get_fplist_command_json(mocker):
+    """
+    Given:
+        - A JSON response from Abuse.ch Hunting API for get_fplist.
+    When:
+        - get_fplist_command is called with format='json'.
+    Then:
+        - Verify the flattening logic (ID injection).
+        - Verify CommandResults output.
+    """
+    mocker.patch.object(demisto, "command", return_value="abuseipdb-get-fplist")
+    from AbuseDB import get_fplist_command
+    import AbuseDB
+
+    mock_response = {
+        "1001": {
+            "time_stamp": "2024-01-01 12:00:00 UTC",
+            "platform": "TestPlatform",
+            "entry_type": "ip",
+            "entry_value": "8.8.8.8",
+            "removed_by": "user1",
+            "removal_notes": "test note",
+        },
+        "1002": {
+            "time_stamp": "2024-01-01 13:00:00 UTC",
+            "platform": "TestPlatform",
+            "entry_type": "domain",
+            "entry_value": "test.com",
+            "removed_by": "user2",
+            "removal_notes": "another note",
+        },
+    }
+
+    class MockResponse:
+        def __init__(self, json_data):
+            self.json_data = json_data
+            self.status_code = 200
+
+        def json(self):
+            return self.json_data
+
+    mocker.patch.object(AbuseDB, "abusech_hunting_http_request", return_value=MockResponse(mock_response))
+
+    results = get_fplist_command(format="json", limit=1, all_results=False)
+
+    assert isinstance(results, CommandResults)
+    assert isinstance(results.outputs, list)
+    assert len(results.outputs) == 1
+    assert results.outputs[0]["id"] == "1001"
+    assert results.outputs[0]["entry_value"] == "8.8.8.8"
+    assert "Abuse.ch False Positive List" in results.readable_output
+
+
+def test_get_fplist_command_csv(mocker):
+    """
+    Given:
+        - A CSV response from Abuse.ch Hunting API for get_fplist.
+    When:
+        - get_fplist_command is called with format='csv'.
+    Then:
+        - Verify fileResult is returned with correct content.
+    """
+    mocker.patch.object(demisto, "command", return_value="abuseipdb-get-fplist")
+    from AbuseDB import get_fplist_command
+    import AbuseDB
+
+    # Mock demisto.uniqueFile and demisto.investigation to prevent physical file creation
+    # while still allowing fileResult to execute its internal logic.
+    mocker.patch.object(demisto, "uniqueFile", return_value="test_file")
+    mocker.patch.object(demisto, "investigation", return_value={"id": "test_inv"})
+
+    # Mock the built-in open to prevent writing to the file system
+    mocked_open = mocker.patch("builtins.open", mocker.mock_open())
+
+    csv_content = b'"time_stamp","removal_id","platform","entry_type","entry_value","removed_by","removal_notes"'
+
+    class MockResponse:
+        def __init__(self, content):
+            self.content = content
+            self.status_code = 200
+
+    mocker.patch.object(AbuseDB, "abusech_hunting_http_request", return_value=MockResponse(csv_content))
+
+    results = get_fplist_command(format="csv", limit=10, all_results=True)
+
+    assert results["Type"] == EntryType.FILE
+    assert results["File"] == "abusech_fplist.csv"
+    assert results["ContentsFormat"] == "text"
+
+    # Verify that open was called with the expected filename and mode
+    mocked_open.assert_called_once_with("test_inv_test_file", "wb")
+    # Verify that the correct content was written
+    mocked_open().write.assert_called_once_with(csv_content)
+
+
+def test_get_fplist_command_error(mocker):
+    """
+    Given:
+        - An API error from Abuse.ch Hunting API.
+    When:
+        - get_fplist_command is called.
+    Then:
+        - Verify return_error is called.
+    """
+    mocker.patch.object(demisto, "command", return_value="abuseipdb-get-fplist")
+    import AbuseDB
+    from AbuseDB import get_fplist_command
+    from requests import Session
+
+    mocker.patch.object(Session, "request", side_effect=Exception("API Error"))
+    mocker.patch.object(AbuseDB, "return_error", side_effect=Exception("return_error call"))
+
+    with pytest.raises(Exception):
+        get_fplist_command(format="json", limit=10, all_results=True)
+        pytest.fail("return_error should have occurred")
+
+    AbuseDB.return_error.assert_called_once()
+
+
 def test_abusech_hunting_http_request_success(mocker):
     """
     Given:
