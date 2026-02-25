@@ -84,6 +84,10 @@ ignore=GR109
 [file:silent-playbook-Excessive_User_Account_Lockouts_Test.yml]
 ignore=GR109
 
+#GR109 fails on playbooks with different supported modules than the pack
+[file:silent-playbook-Vulnerable_Certificate_Template_Loaded.yml]
+ignore=GR109
+
 [known_words]
 xsiam
 coreirapimodule
