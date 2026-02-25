@@ -1687,6 +1687,123 @@ script:
       predefined:
       - 'true'
       - 'false'
+  - name: aws-redshift-cluster-modify
+    description: "Modifies the settings of a cluster."
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - description: "The unique identifier of the cluster to be modified."
+        name: cluster_identifier
+        required: true
+      - description: "The new cluster type."
+        name: cluster_type
+      - description: "The new node type for the nodes you are adding. If not specified, the cluster's current node type is used."
+        name: node_type
+      - description: "The number of nodes to be in the cluster after the resize. If not specified, the cluster's current number of nodes is used."
+        name: number_of_nodes
+      - description: "A comma-separated list of security groups to be associated with the cluster."
+        name: cluster_security_groups
+        isArray: true
+      - description: "A comma-separated list of VPC security groups to be associated with the cluster."
+        name: vpc_security_group_ids
+        isArray: true
+      - description: "The new master user password for the cluster."
+        name: master_user_password
+      - description: "The name of the cluster parameter group to apply to the cluster. This change is applied only after the cluster is rebooted."
+        name: cluster_parameter_group_name
+      - description: "The number of days that automated snapshots are retained. If the value is 0, automated snapshots are disabled."
+        name: automated_snapshot_retention_period
+      - description: "The weekly time range (in UTC) during which automated cluster maintenance can occur."
+        name: preferred_maintenance_window
+      - description: "The new version number of the Amazon Redshift engine to upgrade to."
+        name: cluster_version
+      - description: "If true, major version upgrades will be applied automatically to the cluster during the maintenance window."
+        name: allow_version_upgrade
+        auto: PREDEFINED
+        predefined:
+        - 'true'
+        - 'false'
+      - description: "The new weekly time range (in UTC) during which automated snapshots of your cluster are created."
+        name: automated_snapshot_schedule
+      - description: "The new identifier for the cluster."
+        name: new_cluster_identifier
+      - description: "If true, the cluster can be accessed from a public network."
+        name: publicly_accessible
+        auto: PREDEFINED
+        predefined:
+        - 'true'
+        - 'false'
+      - description: "The Elastic IP (EIP) address for the cluster."
+        name: elastic_ip
+      - description: "An option that specifies whether to create the cluster with enhanced VPC routing enabled."
+        name: enhanced_vpc_routing
+        auto: PREDEFINED
+        predefined:
+        - 'true'
+        - 'false'
+      - description: "The name of the maintenance track for the cluster."
+        name: maintenance_track_name
+      - description: "The default AWS Key Management Service (KMS) key for the cluster."
+        name: kms_key_id
+    outputs:
+    - contextPath: AWS.Redshift.Cluster.ClusterIdentifier
+      description: The unique identifier of the cluster.
+      type: String
+    - contextPath: AWS.Redshift.Cluster.NodeType
+      description: The node type for the nodes in the cluster.
+      type: String
+    - contextPath: AWS.Redshift.Cluster.ClusterStatus
+      description: The current state of the cluster.
+      type: String
+    - contextPath: AWS.Redshift.Cluster.PubliclyAccessible
+      description: A boolean value that indicates whether the cluster can be accessed from a public network.
+      type: Boolean
+    - contextPath: AWS.Redshift.Cluster.Encrypted
+      description: A boolean value that indicates whether the cluster is encrypted.
+      type: Boolean
+    - contextPath: AWS.Redshift.Cluster.NumberOfNodes
+      description: The number of compute nodes in the cluster.
+      type: Number
 
   - name: aws-rds-db-cluster-enable-iam-auth-quick-action
     description: This action enables 'iam database authentication' for the RDS cluster.
@@ -2166,6 +2283,503 @@ script:
         description: 'Whether the modifications in this request and any pending modifications are applied asynchronously as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance or on the next failure reboot.'
         defaultValue: 'true'
         hidden: true
+
+  - name: aws-rds-db-instances-describe
+    description: Returns information about provisioned RDS instances.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: db_instance_identifier
+      description: The user-supplied instance identifier or the Amazon Resource Name (ARN) of the DB instance. If this parameter is specified, information from only the specific DB instance is returned. This parameter isn't case-sensitive.
+      required: false
+    - name: filters
+      description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
+      required: false
+    - name: limit
+      description: The maximum number of records to include in the response. If more records exist than the specified limit value, a pagination token is included in the response so that the remaining results can be retrieved. The minimum value is 20, the maximum is 100.
+      required: false
+    - name: next_token
+      description: An optional pagination token provided by a previous request. If this parameter is specified, the response includes only records beyond the token, up to the value specified by limit.
+      required: false
+    outputs:
+      - contextPath: AWS.RDS.DBInstancesNextToken
+        description: An optional pagination token provided by a previous request.
+        type: unknown
+      - contextPath: AWS.RDS.DBInstancesDBInstanceIdentifier
+        description: The user-supplied database identifier. This identifier is the unique key that identifies a DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstancesDBInstanceClass
+        description: The name of the compute and memory capacity class of the DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstancesEngine
+        description: The database engine used for this DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstancestatus
+        description: The current state of this database.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.MasterUsername
+        description: The master username for the DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.DBName
+        description: The initial database name that you provided (if required) when you created the DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.Endpoint.Address
+        description: Specifies the DNS address of the DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.Endpoint.Port
+        description: Specifies the port that the database engine is listening on.
+        type: Number
+      - contextPath: AWS.RDS.DBInstances.Endpoint.HostedZoneId
+        description: Specifies the ID that Amazon Route 53 assigns when you create a hosted zone.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.AllocatedStorage
+        description: The amount of storage in gibibytes (GiB) allocated for the DB instance.
+        type: Number
+      - contextPath: AWS.RDS.DBInstances.InstanceCreateTime
+        description: The date and time when the DB instance was created.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.PreferredBackupWindow
+        description: The daily time range during which automated backups are created if automated backups are enabled, as determined by the BackupRetentionPeriod.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.BackupRetentionPeriod
+        description: The number of days for which automatic DB snapshots are retained.
+        type: Number
+      - contextPath: AWS.RDS.DBInstances.DBSecurityGroups.DBSecurityGroupName
+        description: The name of the DB security group.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.DBSecurityGroups.Status
+        description: The status of the DB security group.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.VpcSecurityGroups.VpcSecurityGroupId
+        description: The name of the VPC security group.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.VpcSecurityGroups.Status
+        description: The membership status of the VPC security group.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.DBParameterGroups.DBParameterGroupName
+        description: The name of the DB parameter group.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.DBParameterGroups.ParameterApplyStatus
+        description: The status of parameter updates.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.AvailabilityZone
+        description: The name of the Availability Zone where the DB instance is located.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.DBSubnetGroup.DBSubnetGroupName
+        description: The name of the DB subnet group.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.DBSubnetGroup.DBSubnetGroupDescription
+        description: Provides the description of the DB subnet group.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.DBSubnetGroup.VpcId
+        description: Provides the VpcId of the DB subnet group.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.DBSubnetGroup.SubnetGroupStatus
+        description: Provides the status of the DB subnet group.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.DBSubnetGroup.Subnets
+        description: Contains a list of Subnet elements.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.DBSubnetGroup.DBSubnetGroupArn
+        description: The Amazon Resource Name (ARN) for the DB subnet group.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.DBSubnetGroup.SupportedNetworkTypes
+        description: The network type of the DB subnet group.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.PreferredMaintenanceWindow
+        description: The weekly time range during which system maintenance can occur, in Universal Coordinated Time (UTC).
+        type: String
+      - contextPath: AWS.RDS.DBInstances.UpgradeRolloutOrder
+        description: This data type represents the order in which the instances are upgraded.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.DBInstanceClass
+        description: The name of the compute and memory capacity class for the DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.AllocatedStorage
+        description: The allocated storage size for the DB instance specified in gibibytes (GiB).
+        type: Number
+      - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.MasterUserPassword
+        description: The master credentials for the DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.Port
+        description: The port for the DB instance.
+        type: Number
+      - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.BackupRetentionPeriod
+        description: The number of days for which automated backups are retained.
+        type: Number
+      - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.MultiAZ
+        description: Indicates whether the Single-AZ DB instance will change to a Multi-AZ deployment.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.EngineVersion
+        description: The database engine version.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.LicenseModel
+        description: The license model for the DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.Iops
+        description: The Provisioned IOPS value for the DB instance.
+        type: Number
+      - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.StorageThroughput
+        description: The storage throughput of the DB instance.
+        type: Number
+      - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.DBInstanceIdentifier
+        description: The database identifier for the DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.StorageType
+        description: The storage type of the DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.CACertificateIdentifier
+        description: The identifier of the CA certificate for the DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.DBSubnetGroupName
+        description: The DB subnet group for the DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.PendingCloudwatchLogsExports
+        description: A list of the log types whose configuration is still pending. In other words, these log types are in the process of being activated or deactivated.
+        type: Object
+      - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.ProcessorFeatures
+        description: The number of CPU cores and the number of threads per core for the DB instance class of the DB instance.
+        type: Obkect
+      - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.AutomationMode
+        description: 'The automation mode of the RDS Custom DB instance: full or all-paused.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.ResumeFullAutomationModeTime
+        description: The number of minutes to pause the automation.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.MultiTenant
+        description: Indicates whether the DB instance will change to the multi-tenant configuration (TRUE) or the single-tenant configuration (FALSE).
+        type: String
+      - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.IAMDatabaseAuthenticationEnabled
+        description: Indicates whether mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts is enabled.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.DedicatedLogVolume
+        description: Indicates whether the DB instance has a dedicated log volume (DLV) enabled.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.Engine
+        description: The database engine of the DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.AdditionalStorageVolumes
+        description: The additional storage volume modifications that are pending for the DB instance.
+        type: Object
+      - contextPath: AWS.RDS.DBInstances.LatestRestorableTime
+        description: The latest time to which a database in this DB instance can be restored with point-in-time restore.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.MultiAZ
+        description: Indicates whether the DB instance is a Multi-AZ deployment. This setting doesn’t apply to RDS Custom DB instances.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.EngineVersion
+        description: The version of the database engine.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.AutoMinorVersionUpgrade
+        description: Indicates whether minor version patches are applied automatically.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.ReadReplicaSourceDBInstanceIdentifier
+        description: The identifier of the source DB instance if this DB instance is a read replica.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.ReadReplicaDBInstanceIdentifiers
+        description: The identifiers of the read replicas associated with this DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.ReadReplicaDBClusterIdentifiers
+        description: The identifiers of Aurora DB clusters to which the RDS DB instance is replicated as a read replica.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.ReplicaMode
+        description: The open mode of a Db2 or an Oracle read replica.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.LicenseModel
+        description: The license model information for this DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.Iops
+        description: The Provisioned IOPS (I/O operations per second) value for the DB instance.
+        type: Number
+      - contextPath: AWS.RDS.DBInstances.StorageThroughput
+        description: The storage throughput for the DB instance.
+        type: Number
+      - contextPath: AWS.RDS.DBInstances.OptionGroupMemberships.OptionGroupName
+        description: The name of the option group that the instance belongs to.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.OptionGroupMemberships.Status
+        description: The status of the DB instance’s option group membership.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.CharacterSetName
+        description: If present, specifies the name of the character set that this instance is associated with.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.NcharCharacterSetName
+        description: The name of the NCHAR character set for the Oracle DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.SecondaryAvailabilityZone
+        description: If present, specifies the name of the secondary Availability Zone for a DB instance with multi-AZ support.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.PubliclyAccessible
+        description: Indicates whether the DB instance is publicly accessible.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.StatusInfos
+        description: The status of a read replica.
+        type: Object
+      - contextPath: AWS.RDS.DBInstances.StorageType
+        description: The storage type associated with the DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.StorageEncryptionType
+        description: The type of encryption used to protect data at rest in the DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.TdeCredentialArn
+        description: The ARN from the key store with which the instance is associated for TDE encryption.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.DbInstancePort
+        description: The port that the DB instance listens on.
+        type: Number
+      - contextPath: AWS.RDS.DBInstances.DBClusterIdentifier
+        description: If the DB instance is a member of a DB cluster, indicates the name of the DB cluster that the DB instance is a member of.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.StorageEncrypted
+        description: Indicates whether the DB instance is encrypted.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.KmsKeyId
+        description: If StorageEncrypted is enabled, the Amazon Web Services KMS key identifier for the encrypted DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.DbiResourceId
+        description: The Amazon Web Services Region-unique, immutable identifier for the DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.CACertificateIdentifier
+        description: The identifier of the CA certificate for this DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.DomainMemberships.Domain
+        description: The identifier of the Active Directory Domain.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.DomainMemberships.Status
+        description: The status of the Active Directory Domain membership for the DB instance or cluster.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.DomainMemberships.FQDN
+        description: The fully qualified domain name (FQDN) of the Active Directory Domain.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.DomainMemberships.IAMRoleName
+        description: The name of the IAM role used when making API calls to the Directory Service.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.DomainMemberships.OU
+        description: The Active Directory organizational unit for the DB instance or cluster.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.DomainMemberships.AuthSecretArn
+        description: The ARN for the Secrets Manager secret with the credentials for the user that’s a member of the domain.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.DomainMemberships.DnsIps
+        description: The IPv4 DNS IP addresses of the primary and secondary Active Directory domain controllers.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.CopyTagsToSnapshot
+        description: Indicates whether tags are copied from the DB instance to snapshots of the DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.MonitoringInterval
+        description: The interval, in seconds, between points when Enhanced Monitoring metrics are collected for the DB instance.
+        type: Number
+      - contextPath: AWS.RDS.DBInstances.EnhancedMonitoringResourceArn
+        description: The Amazon Resource Name (ARN) of the Amazon CloudWatch Logs log stream that receives the Enhanced Monitoring metrics data for the DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.MonitoringRoleArn
+        description: The ARN for the IAM role that permits RDS to send Enhanced Monitoring metrics to Amazon CloudWatch Logs.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.PromotionTier
+        description: The order of priority in which an Aurora Replica is promoted to the primary instance after a failure of the existing primary instance.
+        type: Number
+      - contextPath: AWS.RDS.DBInstances.DBInstanceArn
+        description: The Amazon Resource Name (ARN) for the DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.Timezone
+        description: The time zone of the DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.IAMDatabaseAuthenticationEnabled
+        description: Indicates whether mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts is enabled for the DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.DatabaseInsightsMode
+        description: The mode of Database Insights that is enabled for the instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.PerformanceInsightsEnabled
+        description: ndicates whether Performance Insights is enabled for the DB instance.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.PerformanceInsightsKMSKeyId
+        description: The Amazon Web Services KMS key identifier for encryption of Performance Insights data.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.PerformanceInsightsRetentionPeriod
+        description: The number of days to retain Performance Insights data.
+        type: Number
+      - contextPath: AWS.RDS.DBInstances.EnabledCloudwatchLogsExports
+        description: A list of log types that this DB instance is configured to export to CloudWatch Logs.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.ProcessorFeatures
+        description: The number of CPU cores and the number of threads per core for the DB instance class of the DB instance.
+        type: Object
+      - contextPath: AWS.RDS.DBInstances.DeletionProtection
+        description: Indicates whether the DB instance has deletion protection enabled.
+        type: String
+      - contextPath: AWS.RDS.DBInstances.AssociatedRoles.RoleArn
+        description: 'The Amazon Resource Name (ARN) of the role.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.AssociatedRoles.FeatureName
+        description: 'The name of the feature for the IAM role.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.AssociatedRoles.Status
+        description: 'The status of the IAM role association.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.ListenerEndpoint.Address
+        description: 'The DNS address of the DB instance listener endpoint.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.ListenerEndpoint.Port
+        description: 'The port that the database engine is listening on for the listener endpoint.'
+        type: Number
+      - contextPath: AWS.RDS.DBInstances.ListenerEndpoint.HostedZoneId
+        description: 'The ID of the Amazon Route 53 hosted zone that contains the listener endpoint.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.MaxAllocatedStorage
+        description: 'The upper limit to which Amazon RDS can automatically scale the storage of the DB instance.'
+        type: Number
+      - contextPath: AWS.RDS.DBInstances.TagList.Key
+        description: 'The key of a tag.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.TagList.Value
+        description: 'The value of a tag.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.AutomationMode
+        description: 'The automation mode of the DB instance.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.ResumeFullAutomationModeTime
+        description: 'The time when the DB instance will resume full automation mode.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.CustomerOwnedIpEnabled
+        description: 'A value that indicates whether the DB instance has a customer-owned IP address.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.NetworkType
+        description: 'The network type of the DB instance.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.ActivityStreamStatus
+        description: 'The status of the activity stream.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.ActivityStreamKmsKeyId
+        description: 'The AWS KMS key identifier for encryption of the activity stream.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.ActivityStreamKinesisStreamName
+        description: 'The name of the Amazon Kinesis data stream used for the activity stream.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.ActivityStreamMode
+        description: 'The mode of the activity stream.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.ActivityStreamEngineNativeAuditFieldsIncluded
+        description: 'A value that indicates whether the native audit fields are included in the activity stream.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.AwsBackupRecoveryPointArn
+        description: 'The Amazon Resource Name (ARN) of the recovery point in AWS Backup.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.DBInstanceAutomatedBackupsReplications.DBInstanceAutomatedBackupsArn
+        description: 'The Amazon Resource Name (ARN) of the replicated automated backups.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.BackupTarget
+        description: 'The backup target of the DB instance.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.AutomaticRestartTime
+        description: 'The time when the DB instance is scheduled for automatic restart.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.CustomIamInstanceProfile
+        description: 'The instance profile associated with the DB instance.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.ActivityStreamPolicyStatus
+        description: 'The status of the policy used for the activity stream.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.CertificateDetails.CAIdentifier
+        description: 'The CA identifier of the certificate.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.CertificateDetails.ValidTill
+        description: 'The expiration date of the certificate.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.DBSystemId
+        description: 'The DB system identifier of the DB instance.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.MasterUserSecret.SecretArn
+        description: 'The Amazon Resource Name (ARN) of the secret.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.MasterUserSecret.SecretStatus
+        description: 'The status of the secret.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.MasterUserSecret.KmsKeyId
+        description: 'The AWS KMS key identifier that is used to encrypt the secret.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.ReadReplicaSourceDBClusterIdentifier
+        description: 'The identifier of the source DB cluster if this DB instance is a read replica.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.PercentProgress
+        description: 'The percentage of the estimated data that has been transferred.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.MultiTenant
+        description: 'Indicates whether the DB instance is a multi-tenant instance.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.DedicatedLogVolume
+        description: 'Indicates whether the DB instance has a dedicated log volume.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.IsStorageConfigUpgradeAvailable
+        description: 'Indicates whether a storage configuration upgrade is available for the DB instance.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.EngineLifecycleSupport
+        description: 'The life cycle of the DB instance engine.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.AdditionalStorageVolumes.VolumeName
+        description: 'The name of the storage volume.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.AdditionalStorageVolumes.StorageVolumeStatus
+        description: 'The status of the storage volume.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.AdditionalStorageVolumes.AllocatedStorage
+        description: 'The allocated storage for the storage volume.'
+        type: Number
+      - contextPath: AWS.RDS.DBInstances.AdditionalStorageVolumes.IOPS
+        description: 'The IOPS for the storage volume.'
+        type: Number
+      - contextPath: AWS.RDS.DBInstances.AdditionalStorageVolumes.MaxAllocatedStorage
+        description: 'The maximum allocated storage for the storage volume.'
+        type: Number
+      - contextPath: AWS.RDS.DBInstances.AdditionalStorageVolumes.StorageThroughput
+        description: 'The storage throughput for the storage volume.'
+        type: Number
+      - contextPath: AWS.RDS.DBInstances.AdditionalStorageVolumes.StorageType
+        description: 'The storage type for the storage volume.'
+        type: String
+      - contextPath: AWS.RDS.DBInstances.StorageVolumeStatus
+        description: The detailed status information for storage volumes associated with the DB instance.
+        type: String
 
   - name: aws-rds-db-snapshot-attribute-modify
     description: 'Adds or removes permission for the specified AWS account ID to restore the specified DB snapshot.'
@@ -6727,6 +7341,221 @@ script:
     - contextPath: AWS.Lambda.FunctionURLConfig.InvokeMode
       description: BUFFERED or RESPONSE_STREAM.
       type: String
+
+  - name: aws-lambda-function-configuration-update
+    description: Updates the configuration for a Lambda function.
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-northeast-1
+      - ca-central-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-north-1
+      - me-south-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: function_name
+      required: true
+      description: Name of the Lambda function.
+    - name: role
+      description: The Amazon Resource Name (ARN) of the function's execution role.
+    - name: handler
+      description: The name of the method within your code that Lambda calls to execute your function.
+    - name: description
+      description: A description of the function.
+    - name: timeout
+      description: The amount of time that Lambda allows a function to run before stopping it.
+    - name: memory_size
+      description: The amount of memory that your function has access to.
+    - name: subnet_ids
+      description: A comma-separated list of VPC subnet IDs.
+    - name: security_group_ids
+      description: A comma-separated list of VPC security group IDs.
+    - name: ipv6_allowed_for_dualstack
+      description: Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets.
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+    - name: environment
+      description: Environment variable key-value pairs. Must be separated by a semicolon (;) and specified using the format "key=DB_HOST,value=localhost;key=DEBUG,value=true".
+    - name: runtime
+      description: The identifier of the function's runtime.
+    - name: target_arn
+      description: The Amazon Resource Name (ARN) of an Amazon SQS queue or Amazon SNS topic for the dead-letter queue configuration.
+    - name: kms_key_arn
+      description: The ARN of the AWS Key Management Service (KMS) key to use for encryption.
+    - name: tracing_config_mode
+      description: The tracing mode. Set Mode to Active to sample and trace a subset of incoming requests with X-Ray.
+      auto: PREDEFINED
+      predefined:
+        - Active
+        - PassThrough
+    - name: revision_id
+      description: A revision ID to update the function only if it matches.
+    - name: layers
+      description: A comma-separated list of function layers ARNs.
+      isArray: true
+    - name: file_system_configs
+      description: An Arn-LocalMountPath pairs string for EFS file system configurations. Arn is the Amazon Resource Name (ARN) of the Amazon EFS access point that provides access to the file system. The LocalMountPath is the path where the function can access the file system, starting with /mnt/. Must be separated by a semicolon (;) and specified using the format "Arn=DB_HOST,LocalMountPath=localhost;Arn=DEBUG,LocalMountPath=true".
+    - name: image_config_entry_point
+      description: A comma-separated list that specifies the entry point to their application, which is typically the location of the runtime executable.
+    - name: image_config_command
+      description: Specifies parameters that you want to pass in with ENTRYPOINT.
+    - name: image_config_working_directory
+      description: Specifies the working directory.
+    - name: ephemeral_storage_size
+      description: The size of the function’s /tmp directory.
+    - name: snap_start_apply_on
+      description: Set to PublishedVersions to create a snapshot of the initialized execution environment when you publish a function version.
+      auto: PREDEFINED
+      predefined:
+        - PublishedVersions
+        - None
+    - name: log_format
+      description: The format in which Lambda sends your function’s application and system logs to CloudWatch.
+      auto: PREDEFINED
+      predefined:
+        - JSON
+        - Text
+    - name: application_log_level
+      description: Set this property to filter the application logs for your function that Lambda sends to CloudWatch.
+      auto: PREDEFINED
+      predefined:
+        - TRACE
+        - DEBUG
+        - INFO
+        - WARN
+        - ERROR
+        - FATAL
+    - name: system_log_level
+      description: Set this property to filter the system logs for your function that Lambda sends to CloudWatch.
+      auto: PREDEFINED
+      predefined:
+        - DEBUG
+        - INFO
+        - WARN
+    - name: log_group
+      description: The name of the Amazon CloudWatch log group the function sends logs to.
+    outputs:
+    - contextPath: AWS.Lambda.FunctionConfig.FunctionName
+      description: The name of the function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.FunctionArn
+      description: The function's Amazon Resource Name (ARN).
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Runtime
+      description: The identifier of the function's runtime.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Role
+      description: The function's execution role.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Handler
+      description: The function that Lambda calls to begin running your function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.CodeSize
+      description: The size of the function's deployment package, in bytes.
+      type: Number
+    - contextPath: AWS.Lambda.FunctionConfig.Description
+      description: The function's description.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Timeout
+      description: The amount of time in seconds that Lambda allows a function to run before stopping it.
+      type: Number
+    - contextPath: AWS.Lambda.FunctionConfig.MemorySize
+      description: The amount of memory available to the function at runtime.
+      type: Number
+    - contextPath: AWS.Lambda.FunctionConfig.LastModified
+      description: The date and time that the function was last updated.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.CodeSha256
+      description: The SHA256 hash of the function's deployment package.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Version
+      description: The version of the Lambda function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.VpcConfig
+      description: The function's networking configuration.
+    - contextPath: AWS.Lambda.FunctionConfig.DeadLetterConfig
+      description: The function's dead-letter queue.
+    - contextPath: AWS.Lambda.FunctionConfig.Environment
+      description: The function's environment variables.
+    - contextPath: AWS.Lambda.FunctionConfig.KMSKeyArn
+      description: The KMS key that's used to encrypt the function's environment variables.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.TracingConfig
+      description: The function's X-Ray tracing configuration.
+    - contextPath: AWS.Lambda.FunctionConfig.MasterArn
+      description: For Lambda@Edge functions, the ARN of the main function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.RevisionId
+      description: The latest updated revision of the function or alias.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Layers
+      description: The function's layers.
+    - contextPath: AWS.Lambda.FunctionConfig.State
+      description: The current state of the function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.StateReason
+      description: The reason for the function's current state.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.StateReasonCode
+      description: The reason code for the function's current state.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.LastUpdateStatus
+      description: The status of the last update that was performed on the function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.LastUpdateStatusReason
+      description: The reason for the last update that was performed on the function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.LastUpdateStatusReasonCode
+      description: The reason code for the last update that was performed on the function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.FileSystemConfigs
+      description: The function's Amazon EFS file system configurations.
+    - contextPath: AWS.Lambda.FunctionConfig.PackageType
+      description: The type of deployment package.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.ImageConfigResponse
+      description: The function's image configuration values.
+    - contextPath: AWS.Lambda.FunctionConfig.SigningProfileVersionArn
+      description: The ARN of the signing profile version.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.SigningJobArn
+      description: The ARN of the signing job.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Architectures
+      description: The instruction set architecture that the function supports.
+    - contextPath: AWS.Lambda.FunctionConfig.EphemeralStorage
+      description: The size of the function's /tmp directory.
+    - contextPath: AWS.Lambda.FunctionConfig.SnapStart
+      description: The function's SnapStart setting.
+    - contextPath: AWS.Lambda.FunctionConfig.RuntimeVersionConfig
+      description: The ARN of the runtime and any errors that occurred.
+    - contextPath: AWS.Lambda.FunctionConfig.LoggingConfig
+      description: The function's logging configuration.
 
   - arguments:
     - description: The AWS account ID.

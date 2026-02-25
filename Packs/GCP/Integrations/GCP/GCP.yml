@@ -1876,6 +1876,58 @@ script:
       description: Role to remove (e.g., roles/viewer).
       required: true
     outputs: []
+  - name: gcp-bq-dataset-policy-update
+    description: Updates information in an existing dataset. The method supports patch semantics.
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: dataset_id
+      required: true
+      description: Dataset ID.
+    - name: user_email
+      description: Email address of the user to remove from the dataset access list.
+      required: false
+    - name: group_email
+      description: Email address of the group to remove from the dataset access list.
+      required: false
+    - name: role
+      description: An IAM role ID that should be granted to the user.
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - OWNER
+        - WRITER
+        - READER
+    - name: add_or_remove
+      description: Whether to add or remove a user from the Dataset policy.
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - add
+        - remove
+    outputs:
+    - contextPath: GCP.BigQuery.Dataset.id
+      description: The unique identifier for the dataset.
+      type: string
+    - contextPath: GCP.BigQuery.Dataset.datasetReference.datasetId
+      description: The dataset ID.
+      type: string
+    - contextPath: GCP.BigQuery.Dataset.datasetReference.projectId
+      description: The project ID.
+      type: string
+    - contextPath: GCP.BigQuery.Dataset.friendlyName
+      description: A user-friendly name for the dataset.
+      type: string
+    - contextPath: GCP.BigQuery.Dataset.description
+      description: A descriptive name for the dataset.
+      type: string
+    - contextPath: GCP.BigQuery.Dataset.location
+      description: The geographic location where the dataset should reside.
+      type: string
+    - contextPath: GCP.BigQuery.Dataset.lastModifiedTime
+      description: The date when this dataset or any of its tables was last modified, in milliseconds since the POSIX epoch.
+      type: number
 
 # The command is currently unsupported.
 #  - name: gcp-iam-project-deny-policy-create

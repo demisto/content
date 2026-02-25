@@ -2452,6 +2452,54 @@ def test_nsg_security_groups_list_command(mocker):
         assert group["name"] in result.readable_output
 
 
+def test_nsg_security_group_create_command(mocker):
+    """
+    Given: An Azure client mock and arguments for creating a network security group.
+    When: nsg_security_group_create_command is called.
+    Then:
+        1. It should call create_network_security_group with correct parameters.
+        2. The returned CommandResults should include the created group data.
+        3. The etag should be cleaned up.
+        4. Readable output should be generated.
+    """
+    from Azure import nsg_security_group_create_command
+
+    mock_response = {
+        "name": "testnsg",
+        "id": "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/testnsg",
+        "etag": 'W/"12345"',
+        "location": "eastus",
+        "type": "Microsoft.Network/networkSecurityGroups"
+    }
+
+    mock_client = mocker.Mock()
+    mock_client.create_network_security_group.return_value = mock_response
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {
+        "security_group_name": "testnsg",
+        "location": "eastus",
+        "tags": '{"tag1": "value1"}'
+    }
+
+    result: CommandResults = nsg_security_group_create_command(mock_client, params, args)
+
+    mock_client.create_network_security_group.assert_called_once_with(
+        subscription_id="subid",
+        resource_group_name="rg1",
+        security_group_name="testnsg",
+        location="eastus",
+        tags={"tag1": "value1"}
+    )
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.NSGSecurityGroup"
+    assert result.outputs_key_field == "id"
+    assert result.outputs["name"] == "testnsg"
+    assert result.outputs["etag"] == "12345"
+    assert "The network security group testnsg was created successfully" in result.readable_output
+
+
 def test_nsg_security_rule_delete_command(mocker):
     """
     Given: An Azure client mock and various scenarios.

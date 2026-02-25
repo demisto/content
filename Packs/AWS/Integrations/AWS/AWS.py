@@ -412,6 +412,7 @@ class AWSServices(str, Enum):
     ELB = "elb"
     CostExplorer = "ce"
     BUDGETS = "budgets"
+    Redshift = "redshift"
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -4104,6 +4105,125 @@ class RDS:
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
 
+    @staticmethod
+    def describe_db_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes provisioned RDS instances.
+
+        Args:
+            client (BotoClient): The boto3 client for RDS service
+            args (Dict[str, Any]): Command arguments including DB instance identifier, filters, and pagination
+
+        Returns:
+            CommandResults: Results of the operation with DB instance information
+        """
+        kwargs = {
+            "DBInstanceIdentifier": args.get("db_instance_identifier"),
+            "Filters": parse_filter_field(args.get("filters")),
+        }
+
+        if not args.get("db_instance_identifier"):
+            pagination_kwargs = build_pagination_kwargs(args, minimum_limit=20, max_limit=100, limit_name="MaxRecords", next_token_name="Marker")
+            kwargs.update(pagination_kwargs)
+
+        remove_nulls_from_dictionary(kwargs)
+        demisto.debug(f"calling describe_db_instances_command with {kwargs=}")
+        response = client.describe_db_instances(**kwargs)
+        response = serialize_response_with_datetime_encoding(response)
+        demisto.debug(f"The response of describe_db_instances {response}")
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        db_instances = response.get("DBInstances", [])
+        if not db_instances:
+            return CommandResults(readable_output="No DB instances found.")
+
+        outputs = {
+            "AWS.RDS.DBInstances(val.DBInstanceIdentifier && val.DBInstanceIdentifier == obj.DBInstanceIdentifier)": db_instances,
+            "AWS.RDS(true)": {"DBInstancesNextToken": response.get("Marker")}
+        }
+
+        readable_output = tableToMarkdown(
+            "AWS RDS DB Instances",
+            db_instances,
+            headers=[
+                "DBInstanceIdentifier",
+                "DBInstanceClass",
+                "Engine",
+                "DBInstanceStatus",
+            ],
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        )
+        demisto.debug(f"The {readable_output=}")
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+
+class Redshift:
+    service = AWSServices.Redshift
+
+    @staticmethod
+    def modify_cluster_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modifies the settings of a cluster.
+
+        Args:
+            client (BotoClient): The boto3 client for Redshift service
+            args (Dict[str, Any]): Command arguments including cluster identifier and modification parameters
+
+        Returns:
+            CommandResults: Results of the operation with cluster modification details
+        """
+        kwargs = {
+            "ClusterIdentifier": args.get("cluster_identifier"),
+            "ClusterType": args.get("cluster_type"),
+            "NodeType": args.get("node_type"),
+            "NumberOfNodes": arg_to_number(args.get("number_of_nodes")),
+            "ClusterSecurityGroups": argToList(args.get("cluster_security_groups")),
+            "VpcSecurityGroupIds": argToList(args.get("vpc_security_group_ids")),
+            "MasterUserPassword": args.get("master_user_password"),
+            "ClusterParameterGroupName": args.get("cluster_parameter_group_name"),
+            "AutomatedSnapshotRetentionPeriod": arg_to_number(args.get("automated_snapshot_retention_period")),
+            "PreferredMaintenanceWindow": args.get("preferred_maintenance_window"),
+            "ClusterVersion": args.get("cluster_version"),
+            "AllowVersionUpgrade": arg_to_bool_or_none(args.get("allow_version_upgrade")),
+            "AutomatedSnapshotSchedule": args.get("automated_snapshot_schedule"),
+            "NewClusterIdentifier": args.get("new_cluster_identifier"),
+            "PubliclyAccessible": arg_to_bool_or_none(args.get("publicly_accessible")),
+            "ElasticIp": args.get("elastic_ip"),
+            "EnhancedVpcRouting": arg_to_bool_or_none(args.get("enhanced_vpc_routing")),
+            "MaintenanceTrackName": args.get("maintenance_track_name"),
+            "KmsKeyId": args.get("kms_key_id"),
+        }
+        remove_nulls_from_dictionary(kwargs)
+
+        response = client.modify_cluster(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        cluster_data = response.get("Cluster", {})
+        readable_output = tableToMarkdown(
+            f"Successfully modified Redshift cluster: {cluster_data.get('ClusterIdentifier')}",
+            cluster_data,
+            headers=["ClusterIdentifier", "NodeType", "ClusterStatus", "PubliclyAccessible", "Encrypted", "NumberOfNodes"],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.Redshift.Cluster",
+            outputs_key_field="ClusterIdentifier",
+            outputs=cluster_data,
+            readable_output=readable_output,
+            raw_response=response,
+        )
 
 class CostExplorer:
     service = AWSServices.CostExplorer
@@ -5078,6 +5198,84 @@ class Lambda:
             raw_response=response,
         )
 
+    @staticmethod
+    def update_function_configuration_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Updates the configuration of a Lambda function.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service.
+            args (Dict[str, Any]): Command arguments including function name and configuration settings.
+
+        Returns:
+            CommandResults: Results of the operation with updated function configuration details.
+        """
+        function_name = args.get("function_name")
+        env_vars = None
+        if args.get("environment"):
+            parsed_env = parse_tag_field(args.get("environment"))
+            env_vars = {item["Key"]: item["Value"] for item in parsed_env}
+        kwargs = {
+            "FunctionName": function_name,
+            "Role": args.get("role"),
+            "Handler": args.get("handler"),
+            "Description": args.get("description"),
+            "Timeout": args.get("timeout"),
+            "MemorySize": args.get("memory_size"),
+            "VpcConfig": {
+                "SubnetIds": argToList(args.get("subnet_ids")),
+                "SecurityGroupIds": argToList(args.get("security_group_ids")),
+                "Ipv6AllowedForDualStack": arg_to_bool_or_none(args.get("ipv6_allowed_for_dualstack"))
+            },
+
+        }
+
+
+        if "environment" in args:
+            kwargs["Environment"] = json.loads(args["environment"])
+        if "runtime" in args:
+            kwargs["Runtime"] = args["runtime"]
+        if "dead_letter_config" in args:
+            kwargs["DeadLetterConfig"] = json.loads(args["dead_letter_config"])
+        if "kms_key_arn" in args:
+            kwargs["KMSKeyArn"] = args["kms_key_arn"]
+        if "tracing_config" in args:
+            kwargs["TracingConfig"] = json.loads(args["tracing_config"])
+        if "revision_id" in args:
+            kwargs["RevisionId"] = args["revision_id"]
+        if "layers" in args:
+            kwargs["Layers"] = argToList(args["layers"])
+        if "file_system_configs" in args:
+            kwargs["FileSystemConfigs"] = json.loads(args["file_system_configs"])
+        if "image_config" in args:
+            kwargs["ImageConfig"] = json.loads(args["image_config"])
+        if "ephemeral_storage" in args:
+            kwargs["EphemeralStorage"] = json.loads(args["ephemeral_storage"])
+        if "snap_start" in args:
+            kwargs["SnapStart"] = json.loads(args["snap_start"])
+        if "logging_config" in args:
+            kwargs["LoggingConfig"] = json.loads(args["logging_config"])
+
+        response = client.update_function_configuration(**kwargs)
+
+        if "ResponseMetadata" in response:
+            del response["ResponseMetadata"]
+
+        human_readable = tableToMarkdown(
+            f"Lambda Function Configuration Updated: {function_name}",
+            response,
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.Lambda.FunctionConfig",
+            outputs_key_field="FunctionArn",
+            outputs=response,
+            readable_output=human_readable,
+            raw_response=response,
+        )
+
 
 class ACM:
     service = AWSServices.ACM
@@ -5212,6 +5410,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,
     "aws-rds-event-subscription-modify": RDS.modify_event_subscription_command,
     "aws-rds-db-snapshot-attribute-set-snapshot-to-private-quick-action": RDS.modify_db_snapshot_attribute_command,
+    "aws-rds-db-instances-describe": RDS.describe_db_instances_command,
     "aws-cloudtrail-logging-start": CloudTrail.start_logging_command,
     "aws-cloudtrail-logging-start-enable-logging-quick-action": CloudTrail.start_logging_command,
     "aws-cloudtrail-trail-update": CloudTrail.update_trail_command,
@@ -5234,6 +5433,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-lambda-policy-get": Lambda.get_policy_command,
     "aws-lambda-invoke": Lambda.invoke_command,
     "aws-lambda-function-url-config-update": Lambda.update_function_url_configuration_command,
+    "aws-lambda-function-configuration-update": Lambda.update_function_configuration_command,
     "aws-kms-key-rotation-enable": KMS.enable_key_rotation_command,
     "aws-elb-load-balancer-attributes-modify": ELB.modify_load_balancer_attributes_command,
     "aws-ec2-addresses-describe": EC2.describe_addresses_command,
@@ -5241,6 +5441,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-address-associate": EC2.associate_address_command,
     "aws-ec2-address-disassociate": EC2.disassociate_address_command,
     "aws-ec2-address-release": EC2.release_address_command,
+    "aws-redshift-cluster-modify": Redshift.modify_cluster_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -5255,6 +5456,8 @@ REQUIRED_ACTIONS: list[str] = [
     "rds:AddTagsToResource",
     "rds:CreateTenantDatabase",
     "rds:ModifyDBCluster",
+    "rds:DescribeDBInstances",
+    "redshift:ModifyCluster",
     "rds:ModifyDBClusterSnapshotAttribute",
     "rds:ModifyDBInstance",
     "rds:ModifyDBSnapshotAttribute",
@@ -5334,6 +5537,7 @@ REQUIRED_ACTIONS: list[str] = [
     "lambda:GetPolicy",
     "lambda:InvokeFunction",
     "lambda:UpdateFunctionUrlConfig",
+    "lambda:UpdateFunctionConfiguration",
     "elasticloadbalancing:ModifyLoadBalancerAttributes",
     "ce:GetCostAndUsage",
     "ce:GetCostForecast",

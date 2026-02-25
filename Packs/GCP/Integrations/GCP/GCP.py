@@ -30,6 +30,7 @@ class GCPServices(Enum):
     CONTAINER = ("container", "v1", "container.googleapis.com")
     RESOURCE_MANAGER = ("cloudresourcemanager", "v3", "cloudresourcemanager.googleapis.com")
     SERVICE_USAGE = ("serviceusage", "v1", "serviceusage.googleapis.com")
+    BIGQUERY = ("bigquery", "v2", "bigquery.googleapis.com")
 
     # The following services are currently unsupported:
     # IAM_V1 = ("iam", "v1", "iam.googleapis.com")
@@ -240,6 +241,10 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-container-cluster-security-update": (
         GCPServices.CONTAINER,
         ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
+    ),
+    "gcp-bq-dataset-patch": (
+        GCPServices.BIGQUERY,
+        ["bigquery.datasets.update", "bigquery.datasets.get", "bigquery.datasets.getIamPolicy", "bigquery.datasets.setIamPolicy"],
     ),
     "gcp-iam-project-policy-binding-remove": (
         GCPServices.RESOURCE_MANAGER,
@@ -2242,6 +2247,89 @@ def gcp_compute_instance_label_set_command(creds: Credentials, args: dict[str, A
     )
 
 
+def bq_dataset_policy_update_command(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Updates information in an existing dataset. The method supports patch semantics.
+    If 'email' is provided, it retrieves the current access list and removes entries matching the email.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id' and 'dataset_id'.
+
+    Returns:
+        CommandResults: Result of the dataset patch operation.
+    """
+    project_id = args.get("project_id")
+    dataset_id = args.get("dataset_id")
+    user_email = args.get("user_email")
+    group_email = args.get("group_email")
+    role = args.get("role")
+    add_or_remove = args.get("add_or_remove")
+    body: dict[str, Any] = {}
+
+    if (user_email and group_email) or (not user_email and not group_email):
+        raise DemistoException("Enter exactly one of user_email and group_email.")
+
+    bigquery = GCPServices.BIGQUERY.build(creds)
+
+    # First, get the current dataset to retrieve the access list
+    current_dataset = bigquery.datasets().get(projectId=project_id, datasetId=dataset_id).execute()
+    demisto.debug(f"[GCP] {current_dataset=}")
+    current_access = current_dataset.get("access", [])
+
+    if add_or_remove == "remove":
+        # Filter out access entries matching the email
+        # Access entries can have 'userByEmail', 'groupByEmail', or 'domain'
+        new_access = [
+            entry for entry in current_access
+            if entry.get("userByEmail") != user_email or entry.get("groupByEmail") != group_email
+        ]
+
+        if len(new_access) == len(current_access):
+            demisto.debug(f"[GCP] Email not found in access list for dataset {dataset_id}")
+        else:
+            body["access"] = new_access
+            demisto.debug(f"[GCP] Removed emails from access list for dataset {dataset_id}, {new_access=}")
+    else:
+        demisto.debug(f"[GCP] Adding emails to access list for dataset {dataset_id}")
+        if not role:
+            raise DemistoException("If you wish to add a new user to the policy, choose the role it should have.")
+        new_role = {
+            "role": role,
+            "userByEmail": user_email,
+            "groupByEmail": group_email,
+        }
+        remove_nulls_from_dictionary(new_role)
+        demisto.debug(f"[GCP] {new_role=} {current_access=}")
+        current_access.append(new_role)
+        body["access"] = current_access
+
+    if not body:
+        return CommandResults(readable_output=f"No changes to apply for dataset {dataset_id}")
+
+    demisto.debug(f"BigQuery dataset policy update body for {dataset_id} in project {project_id}: {body}")
+    response = (
+        bigquery.datasets()  # pylint: disable=E1101
+        .patch(projectId=project_id, datasetId=dataset_id, body=body)
+        .execute()
+    )
+
+    hr = tableToMarkdown(
+        f"BigQuery Dataset {dataset_id} Updated Successfully",
+        response,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+        headers=["id", "datasetReference", "friendlyName", "description", "location", "lastModifiedTime"],
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.BigQuery.Datasets",
+        outputs=response,
+        outputs_key_field="id",
+        raw_response=response,
+    )
+
+
 def _get_commands_for_requirement(requirement: str, req_type: str) -> list[str]:
     """
     Find which commands require a specific API or permission.
@@ -2923,6 +3011,8 @@ def main():  # pragma: no cover
             "gcp-container-cluster-security-update": container_cluster_security_update,
             # IAM commands
             "gcp-iam-project-policy-binding-remove": iam_project_policy_binding_remove,
+            # BigQuery commands
+            "gcp-bq-dataset-policy-update": bq_dataset_policy_update_command,
             # Quick Actions - Firewall
             "gcp-compute-firewall-patch-disable-gcp-default-firewall-rule-quick-action": compute_firewall_patch,
             # Quick Actions - Storage Bucket Policy

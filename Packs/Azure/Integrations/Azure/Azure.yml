@@ -2192,6 +2192,126 @@ script:
         description: "The resource group name."
         type: String
         required: true
+  - name: azure-nsg-security-group-create
+    description: Create or update a network security group.
+    arguments:
+      - name: subscription_id
+        description: The subscription ID.
+        required: true
+      - name: resource_group_name
+        description: The resource group name.
+        required: true
+      - name: security_group_name
+        description: The name of the network security group.
+        required: true
+      - name: location
+        description: The location of the network security group.
+        required: true
+        auto: PREDEFINED
+        predefined:
+        - australiacentral
+        - australiacentral2
+        - australiaeast
+        - australiasoutheast
+        - brazilsouth
+        - brazilsoutheast
+        - brazilus
+        - canadacentral
+        - canadaeast
+        - centralindia
+        - centralus
+        - centraluseuap
+        - eastasia
+        - eastus
+        - eastus2
+        - eastus2euap
+        - francecentral
+        - francesouth
+        - germanynorth
+        - germanywestcentral
+        - israelcentral
+        - italynorth
+        - japaneast
+        - japanwest
+        - jioindiacentral
+        - jioindiawest
+        - koreacentral
+        - koreasouth
+        - malaysiasouth
+        - mexicocentral
+        - newzealandnorth
+        - northcentralus
+        - northeurope
+        - norwayeast
+        - norwaywest
+        - polandcentral
+        - qatarcentral
+        - southafricanorth
+        - southafricawest
+        - southcentralus
+        - southeastasia
+        - southindia
+        - spaincentral
+        - swedencentral
+        - swedensouth
+        - switzerlandnorth
+        - switzerlandwest
+        - uaecentral
+        - uaenorth
+        - uksouth
+        - ukwest
+        - westcentralus
+        - westeurope
+        - westindia
+        - westus
+        - westus2
+        - westus3
+        - australiaeastfoundational
+        - austriaeast
+        - chilecentral
+        - eastusslv
+        - indonesiacentral
+        - israelnorthwest
+        - malaysiawest
+        - southcentralus2
+        - southeastus
+        - southeastus3
+        - southwestus
+        - usgovarizona
+        - usgovtexas
+        - usgovvirginia
+    outputs:
+      - contextPath: Azure.NSGSecurityGroup.name
+        description: The security group's name.
+        type: String
+      - contextPath: Azure.NSGSecurityGroup.id
+        description: The security group's ID.
+        type: String
+      - contextPath: Azure.NSGSecurityGroup.etag
+        description: The security group's ETag.
+        type: String
+      - contextPath: Azure.NSGSecurityGroup.type
+        description: Resource type.
+        type: String
+      - contextPath: Azure.NSGSecurityGroup.location
+        description: Resource location.
+        type: String
+      - contextPath: Azure.NSGSecurityGroup.properties.provisioningState
+        description: The provisioning state of the network security group resource.
+        type: String
+      - contextPath: Azure.NSGSecurityGroup.properties.resourceGuid
+        description: The resource GUID property of the network security group resource.
+        type: String
+      - contextPath: Azure.NSGSecurityGroup.properties.flushConnection
+        description: When enabled, flows created from Network Security Group connections will be re-evaluated when rules are updates. Initial enablement will trigger re-evaluation.
+        type: Boolean
+      - contextPath: Azure.NSGSecurityGroup.properties.securityRules
+        description: A collection of security rules of the network security group.
+        type: Unknown
+      - contextPath: Azure.NSGSecurityGroup.properties.defaultSecurityRules
+        description: A collection of the default security rules of the network security group.
+        type: String
+      
   - name: azure-nsg-security-rule-get
     description: Get a specific rule.
     outputs:
@@ -2759,6 +2879,196 @@ script:
       type: String
     - contextPath: Azure.Network.Interfaces.properties.enableIPForwarding
       description: Indicates whether IP forwarding is enabled for the network interface.
+      type: String
+  - name: azure-vn-network-interface-update
+    description: Updates a network interface.
+    arguments:
+    - description: The subscription ID.
+      name: subscription_id
+      required: true
+      type: String
+    - description: The resource group to which the network interface belongs.
+      name: resource_group_name
+      required: true
+      type: String
+    - description: The name of the network interface to update.
+      name: network_interface_name
+      required: true
+      type: String
+    - name: location
+      description: The location of the network security group.
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - australiacentral
+        - australiacentral2
+        - australiaeast
+        - australiasoutheast
+        - brazilsouth
+        - brazilsoutheast
+        - brazilus
+        - canadacentral
+        - canadaeast
+        - centralindia
+        - centralus
+        - centraluseuap
+        - eastasia
+        - eastus
+        - eastus2
+        - eastus2euap
+        - francecentral
+        - francesouth
+        - germanynorth
+        - germanywestcentral
+        - israelcentral
+        - italynorth
+        - japaneast
+        - japanwest
+        - jioindiacentral
+        - jioindiawest
+        - koreacentral
+        - koreasouth
+        - malaysiasouth
+        - mexicocentral
+        - newzealandnorth
+        - northcentralus
+        - northeurope
+        - norwayeast
+        - norwaywest
+        - polandcentral
+        - qatarcentral
+        - southafricanorth
+        - southafricawest
+        - southcentralus
+        - southeastasia
+        - southindia
+        - spaincentral
+        - swedencentral
+        - swedensouth
+        - switzerlandnorth
+        - switzerlandwest
+        - uaecentral
+        - uaenorth
+        - uksouth
+        - ukwest
+        - westcentralus
+        - westeurope
+        - westindia
+        - westus
+        - westus2
+        - westus3
+        - australiaeastfoundational
+        - austriaeast
+        - chilecentral
+        - eastusslv
+        - indonesiacentral
+        - israelnorthwest
+        - malaysiawest
+        - southcentralus2
+        - southeastus
+        - southeastus3
+        - southwestus
+        - usgovarizona
+        - usgovtexas
+        - usgovvirginia
+    - description: Whether to enable IP forwarding for the network interface.
+      name: enable_ip_forwarding
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      type: String
+    - description: If the network interface is configured for accelerated networking.
+      name: accelerate_networking
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      type: String
+    - description: Auxiliary mode of Network Interface resource.
+      name: auxiliary_mode
+      auto: PREDEFINED
+      predefined:
+        - MaxConnections
+        - Floating
+        - AcceleratedConnections
+      type: String
+    - description: Auxiliary sku of Network Interface resource.
+      name: auxiliary_sku
+      auto: PREDEFINED
+      predefined:
+        - A1
+        - A2
+        - A4
+        - A8
+      type: String
+    - description: A comma-separated list of DNS server IP addresses for the network interface.
+      name: dns_servers
+      isArray: true
+    - description: The internal DNS name label for the network interface.
+      name: internal_dns_name_label
+      type: String
+    - description: The name of the network security group.
+      name: network_security_group_name
+      type: String
+    - description: Whether to remove the property networkSecurityGroup from the network interface. Choose yes for removing the networkSecurityGroup.
+      name: remove_network_security_group
+      auto: PREDEFINED
+      predefined:
+        - yes
+        - no
+      defaultValue: no
+    - description: Type of Network Interface resource.
+      name: nic_type
+      auto: PREDEFINED
+      predefined:
+        - Standard
+        - Elastic
+    outputs:
+    - contextPath: Azure.Network.Interfaces.id
+      description: The network interface ID.
+      type: String
+    - contextPath: Azure.Network.Interfaces.name
+      description: The network interface name.
+      type: String
+    - contextPath: Azure.Network.Interfaces.location
+      description: The Azure region where the network interface is deployed.
+      type: String
+    - contextPath: Azure.Network.Interfaces.etag
+      description: A unique read-only string that changes whenever the network interface resource is updated.
+      type: String
+    - contextPath: Azure.Network.Interfaces.properties.provisioningState
+      description: The current provisioning state of the network interface (e.g., Succeeded, Updating, Failed).
+      type: String
+    - contextPath: Azure.Network.Interfaces.properties.ipConfigurations
+      description: The list of IP configurations for the network interface.
+      type: Unknown
+    - contextPath: Azure.Network.Interfaces.properties.dnsSettings
+      description: The DNS configuration of the network interface, including DNS servers and domain name.
+      type: Unknown
+    - contextPath: Azure.Network.Interfaces.properties.macAddress
+      description: The MAC address of the network interface.
+      type: String
+    - contextPath: Azure.Network.Interfaces.properties.enableIPForwarding
+      description: Indicates whether IP forwarding is enabled for the network interface.
+      type: Boolean
+    - contextPath: Azure.Network.Interfaces.properties.enableAcceleratedNetworking
+      description: Indicates whether accelerated networking is enabled for the network interface.
+      type: Boolean
+    - contextPath: Azure.Network.Interfaces.properties.networkSecurityGroup
+      description: The network security group associated with the network interface.
+      type: Unknown
+    - contextPath: Azure.Network.Interfaces.properties.primary
+      description: Indicates whether this is a primary network interface on a virtual machine.
+      type: Boolean
+    - contextPath: Azure.Network.Interfaces.properties.virtualMachine
+      description: The reference to a virtual machine.
+      type: Unknown
+    - contextPath: Azure.Network.Interfaces.properties.nicType
+      description: The type of network interface (Standard or Elastic).
+      type: String
+    - contextPath: Azure.Network.Interfaces.type
+      description: The resource type.
       type: String
   - name: azure-vm-public-ip-details-get
     description: Gets the properties of a given public IP address.
@@ -6085,6 +6395,88 @@ script:
     hidden: true
     quickaction: true
     prettyname: Enable SSL on Postgres Server
+  - name: azure-compute-vm-list
+    description: "Lists all the virtual machines in the specified subscription. Use the next_link argument to view the next page of results."
+    arguments:
+    - name: subscription_id
+      description: "The subscription ID."
+    - name: resource_group_name
+      description: "The name of the resource group."
+    - name: status_only
+      description: "The statusOnly query parameter can be used to fetch only the power state of the virtual machines."
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: next_link
+      description: "The URI to fetch the next page of results."
+    outputs:
+    - contextPath: Azure.VM.id
+      description: "The virtual machine ID."
+      type: String
+    - contextPath: Azure.VM.name
+      description: "The virtual machine name."
+      type: String
+    - contextPath: Azure.VM.type
+      description: "The virtual machine type."
+      type: String
+    - contextPath: Azure.VM.location
+      description: "The virtual machine location."
+      type: String
+    - contextPath: Azure.VM.properties.vmId
+      description: "The virtual machine unique ID."
+      type: String
+    - contextPath: Azure.VM.properties.hardwareProfile.vmSize
+      description: "The virtual machine size."
+      type: String
+    - contextPath: Azure.VM.properties.storageProfile.imageReference.publisher
+      description: "The image publisher."
+      type: String
+    - contextPath: Azure.VM.properties.storageProfile.imageReference.offer
+      description: "The image offer."
+      type: String
+    - contextPath: Azure.VM.properties.storageProfile.imageReference.sku
+      description: "The image SKU."
+      type: String
+    - contextPath: Azure.VM.properties.storageProfile.imageReference.version
+      description: "The image version."
+      type: String
+    - contextPath: Azure.VM.properties.storageProfile.osDisk.osType
+      description: "The OS type."
+      type: String
+    - contextPath: Azure.VM.properties.storageProfile.osDisk.name
+      description: "The OS disk name."
+      type: String
+    - contextPath: Azure.VM.properties.storageProfile.osDisk.caching
+      description: "The OS disk caching type."
+      type: String
+    - contextPath: Azure.VM.properties.storageProfile.osDisk.createOption
+      description: "The create option."
+      type: String
+    - contextPath: Azure.VM.properties.storageProfile.osDisk.managedDisk.id
+      description: "The managed disk ID."
+      type: String
+    - contextPath: Azure.VM.properties.osProfile.computerName
+      description: "The computer name."
+      type: String
+    - contextPath: Azure.VM.properties.osProfile.adminUsername
+      description: "The admin username."
+      type: String
+    - contextPath: Azure.VM.properties.networkProfile.networkInterfaces.id
+      description: "The network interface ID."
+      type: String
+    - contextPath: Azure.VM.properties.provisioningState
+      description: "The provisioning state, which only appears in the response."
+      type: String
+    - contextPath: Azure.VM.properties.instanceView.powerState.code
+      description: "The power state of the virtual machine."
+      type: String
+    - contextPath: Azure.VM.properties.instanceView.powerState.displayStatus
+      description: "The display status of the power state."
+      type: String
+    - contextPath: Azure.VM.nextLink
+      description: "The URI to fetch the next page of results."
+      type: String
   isfetch: false
   runonce: false
   script: '-'
