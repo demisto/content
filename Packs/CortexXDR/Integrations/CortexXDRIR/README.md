@@ -4557,6 +4557,7 @@ Gets vulnerability details by ID.
 | PaloAltoNetworksXDR.Vulnerability.cisaKevDateDue | Number | The deadline set by CISA for federal agency remediation. | 
 | PaloAltoNetworksXDR.Vulnerability.weaknesses.cweId | String | The Common Weakness Enumeration ID. | 
 | PaloAltoNetworksXDR.Vulnerability.vulncheck-threat-actors | String | A list of specific threat actor groups associated with the vulnerability. | 
+
 ### xdr-healthcheck-run
 
 ***
@@ -4575,6 +4576,7 @@ There are no input arguments for this command.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXDR.HealthStatus.status | String | The health status of the Cortex XDR system. | 
+
 ### xdr-endpoint-triage-preset-list
 
 ***
@@ -4598,6 +4600,7 @@ There are no input arguments for this command.
 | PaloAltoNetworksXDR.EndpointTriagePreset.os | String | The operating system platform the preset targets \(e.g., windows, linux, macos\). | 
 | PaloAltoNetworksXDR.EndpointTriagePreset.type | String | The category or classification of the preset \(e.g., standard, custom\). | 
 | PaloAltoNetworksXDR.EndpointTriagePreset.uuid | String | The unique universal identifier \(UUID\) assigned to this specific preset. | 
+
 ### xdr-endpoint-triage
 
 ***
