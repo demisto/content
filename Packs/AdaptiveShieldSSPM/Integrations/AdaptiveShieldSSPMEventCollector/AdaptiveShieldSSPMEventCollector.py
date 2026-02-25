@@ -1,12 +1,9 @@
 import demistomock as demisto
 import traceback
 import urllib3
-import requests
 from datetime import datetime, timedelta, UTC
 from urllib.parse import urlparse, parse_qs
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from ContentClientApiModule import *  # noqa # pylint: disable=unused-wildcard-import
-from pydantic import BaseModel, SecretStr  # pylint: disable=no-name-in-module
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -20,111 +17,37 @@ API_PAGE_LIMIT = 500
 TIME_FIELD = "creation_date"
 
 
-""" BASE CLASSES """
-
-
-class ContentBaseModel(BaseModel):
-    """Base Pydantic model for content models with flexible field population."""
-
-    class Config:
-        arbitrary_types_allowed = True
-        populate_by_name = True
-
-
-class BaseParams(ContentBaseModel):
-    """Base parameters model with common integration configuration fields."""
-
-    proxy: bool = False
-    insecure: bool = False
-
-    @property
-    def verify(self) -> bool:
-        return not self.insecure
-
-
-class BaseExecutionConfig:
-    """Centralized entrypoint for integration execution.
-
-    Holds the currently-executed command, configuration parameters,
-    command arguments, and fetch last run state.
-    """
-
-    def __init__(self):
-        self._raw_command: str = demisto.command()
-        self._raw_params: dict = demisto.params()
-        self._raw_args: dict = demisto.args()
-        self._raw_last_run: dict = demisto.getLastRun()
-
-    @property
-    def command(self) -> str:
-        return self._raw_command
-
-    @property
-    def args(self) -> dict:
-        return self._raw_args
-
-
-""" PARAMETER & CREDENTIAL MODELS """
-
-
-class Credentials(ContentBaseModel):
-    """Credentials model for API authentication."""
-
-    # username field omitted because `hiddenusername: true` in YML
-    password: SecretStr
-
-
-class AdaptiveShieldSSPMParams(BaseParams):
-    """Validated integration parameters for Adaptive Shield SSPM Event Collector.
-
-    Attributes:
-        url: The Adaptive Shield API base URL.
-        account_id: The Adaptive Shield account ID.
-        credentials: API key credentials.
-        max_fetch: Maximum number of events to fetch per run.
-    """
-
-    url: str = "https://api.adaptive-shield.com"
-    account_id: str = ""
-    credentials: Credentials
-    max_fetch: int = DEFAULT_MAX_FETCH
-
-    @property
-    def api_key(self) -> str:
-        return self.credentials.password.get_secret_value()
-
-
 """ CLIENT CLASS """
 
 
-class Client(ContentClient):
+class Client(BaseClient):
     """Client for Adaptive Shield SSPM API.
 
-    Uses ContentClient from ContentClientApiModule for HTTP requests
-    with built-in retry, rate limiting, and structured logging.
+    Uses BaseClient from CommonServerPython for HTTP requests.
 
     Args:
-        params: Validated integration parameters.
+        base_url: The Adaptive Shield API base URL.
+        account_id: The Adaptive Shield account ID.
+        api_key: The API key for authentication.
+        verify: Whether to verify SSL certificates.
+        proxy: Whether to use proxy settings.
     """
 
-    def __init__(self, params: AdaptiveShieldSSPMParams):
-        self.account_id = params.account_id
-        self.api_key = params.api_key
-        self.args = demisto.args()
-        self.params = demisto.params()
+    def __init__(self, base_url: str, account_id: str, api_key: str, verify: bool, proxy: bool):
+        self.account_id = account_id
+        self.api_key = api_key
         super().__init__(
-            base_url=params.url,
-            verify=params.verify,
-            proxy=params.proxy,
+            base_url=base_url,
+            verify=verify,
+            proxy=proxy,
             headers={"Authorization": f"Token {self.api_key}", "Accept": "application/json"},
-            client_name="AdaptiveShieldSSPM",
         )
 
     def get_security_checks(self, limit: int = API_PAGE_LIMIT, offset: int = 0) -> dict:
         """Fetch security checks from the Adaptive Shield API.
 
         Args:
-            limit: Maximum number of results per page (default 100).
+            limit: Maximum number of results per page (default 500).
             offset: Offset for pagination.
 
         Returns:
@@ -306,62 +229,46 @@ def module_test_command(client: Client) -> str:
     return "ok"
 
 
-""" EXECUTION CONFIGURATION """
-
-
-class AdaptiveShieldSSPMExecutionConfig(BaseExecutionConfig):
-    """Extends BaseExecutionConfig for the Adaptive Shield SSPM Event Collector.
-
-    Provides validated access to integration parameters and command arguments.
-    """
-
-    @property
-    def params(self) -> AdaptiveShieldSSPMParams:
-        """Get validated integration parameters.
-
-        Returns:
-            AdaptiveShieldSSPMParams: Validated integration parameters.
-        """
-        return AdaptiveShieldSSPMParams(**self._raw_params)
-
-
 """ MAIN FUNCTION """
 
 
 def main():
-    execution = AdaptiveShieldSSPMExecutionConfig()
-    command = execution.command
+    command = demisto.command()
+    params = demisto.params()
 
     demisto.debug(f"Command being called is {command}")
 
     try:
-        params = execution.params
+        client = Client(
+            base_url=params.get("url", "https://api.adaptive-shield.com"),
+            account_id=params.get("account_id", ""),
+            api_key=params.get("credentials", {}).get("password", ""),
+            verify=not params.get("insecure", False),
+            proxy=params.get("proxy", False),
+        )
 
-        client = Client(params=params)
+        if command == "test-module":
+            result = module_test_command(client)
+            return_results(result)
 
-        match execution.command:
-            case "test-module":
-                result = module_test_command(client)
-                return_results(result)
+        elif command == "fetch-events":
+            max_fetch = int(params.get("max_fetch", DEFAULT_MAX_FETCH))
+            last_run = demisto.getLastRun()
+            demisto.debug(f"Last run is: {last_run}")
 
-            case "fetch-events":
-                max_fetch = params.max_fetch
-                last_run = execution._raw_last_run
-                demisto.debug(f"Last run is: {last_run}")
+            events, last_run = fetch_events_command(client, max_fetch, last_run)
 
-                events, last_run = fetch_events_command(client, max_fetch, last_run)
+            if not events:
+                demisto.info("No events found")
+            else:
+                demisto.debug(f"Sending {len(events)} events to XSIAM")
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
-                if not events:
-                    demisto.info("No events found")
-                else:
-                    demisto.debug(f"Sending {len(events)} events to XSIAM")
-                    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            demisto.setLastRun(last_run)
+            demisto.debug(f"Last run set to: {last_run}")
 
-                demisto.setLastRun(last_run)
-                demisto.debug(f"Last run set to: {last_run}")
-
-            case _:
-                raise NotImplementedError(f"Command {command} is not implemented")
+        else:
+            raise NotImplementedError(f"Command {command} is not implemented")
 
     except Exception as e:
         demisto.error(f"{type(e).__name__} in {command}: {str(e)}")
