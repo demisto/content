@@ -7271,9 +7271,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-lambda-policy-get": Lambda.get_policy_command,
     "aws-lambda-invoke": Lambda.invoke_command,
     "aws-lambda-function-url-config-update": Lambda.update_function_url_configuration_command,
-<<<<<<< HEAD
     "aws-lambda-function-configuration-update": Lambda.update_function_configuration_command,
-=======
     "aws-lambda-function-get": Lambda.get_function_command,
     "aws-lambda-functions-list": Lambda.list_functions_command,
     "aws-lambda-aliases-list": Lambda.list_aliases_command,
@@ -7285,7 +7283,6 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-lambda-function-delete": Lambda.delete_function_command,
     "aws-lambda-layer-version-delete": Lambda.delete_layer_version_command,
     "aws-lambda-layer-version-publish": Lambda.publish_layer_version_command,
->>>>>>> 23dc99a5cf1bf2f07148818a4ee331f04f2955ae
     "aws-kms-key-rotation-enable": KMS.enable_key_rotation_command,
     "aws-elb-load-balancer-attributes-modify": ELB.modify_load_balancer_attributes_command,
     "aws-ec2-addresses-describe": EC2.describe_addresses_command,
@@ -7293,9 +7290,6 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-ec2-address-associate": EC2.associate_address_command,
     "aws-ec2-address-disassociate": EC2.disassociate_address_command,
     "aws-ec2-address-release": EC2.release_address_command,
-<<<<<<< HEAD
-    "aws-redshift-cluster-modify": Redshift.modify_cluster_command,
-=======
     "aws-ec2-volumes-describe": EC2.describe_volumes_command,
     "aws-ec2-volume-modify": EC2.modify_volume_command,
     "aws-ec2-volume-create": EC2.create_volume_command,
@@ -7307,7 +7301,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-ec2-launch-template-delete": EC2.delete_launch_template_command,
     "aws-ssm-inventory-entries-list": SSM.inventory_entries_list_command,
     "aws-ssm-command-run": SSM.command_run_command,
->>>>>>> 23dc99a5cf1bf2f07148818a4ee331f04f2955ae
+    "aws-redshift-cluster-modify": Redshift.modify_cluster_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -7409,9 +7403,7 @@ REQUIRED_ACTIONS: list[str] = [
     "lambda:GetPolicy",
     "lambda:InvokeFunction",
     "lambda:UpdateFunctionUrlConfig",
-<<<<<<< HEAD
     "lambda:UpdateFunctionConfiguration",
-=======
     "lambda:GetFunction",
     "lambda:ListFunctions",
     "lambda:ListAliases",
@@ -7423,7 +7415,6 @@ REQUIRED_ACTIONS: list[str] = [
     "lambda:DeleteFunction",
     "lambda:DeleteLayerVersion",
     "lambda:PublishLayerVersion",
->>>>>>> 23dc99a5cf1bf2f07148818a4ee331f04f2955ae
     "elasticloadbalancing:ModifyLoadBalancerAttributes",
     "ce:GetCostAndUsage",
     "ce:GetCostForecast",
