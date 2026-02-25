@@ -4695,12 +4695,26 @@ def get_case_resolution_statuses(client, args):
     case_ids = argToList(args.get("case_id"))
     raw_responses = []
     outputs = []
+    headers = ["category", "itemType", "id", "name", "description", "taskName"]
     for case_id in case_ids:
         response = client.get_case_resolution_statuses(case_id)
         raw_responses.append(response)
         outputs.append(postprocess_case_resolution_statuses(client, response))
+
+    readable_parts = []
+    for case_id, case_output in zip(case_ids, outputs):
+        readable_parts.append(
+            tableToMarkdown(
+                f"Case {case_id} Resolution Statuses",
+                case_output,
+                headers=headers,
+                headerTransform=pascalToSpace,
+            )
+        )
+    readable_output = "\n".join(readable_parts)
+
     return CommandResults(
-        readable_output=tableToMarkdown("Case Resolution Statuses", outputs, headerTransform=string_to_table_header),
+        readable_output=readable_output,
         outputs_prefix="Core.CaseResolutionStatus",
         outputs=outputs,
         raw_response=raw_responses,
