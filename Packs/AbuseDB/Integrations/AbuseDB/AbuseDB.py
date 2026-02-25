@@ -403,30 +403,35 @@ def get_categories_command():
     return entry
 
 
-try:
-    reliability = demisto.params().get("integrationReliability", "C - Fairly reliable")
+def main():
+    try:
+        reliability = demisto.params().get("integrationReliability", "C - Fairly reliable")
 
-    if DBotScoreReliability.is_valid_type(reliability):
-        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
-    else:
-        raise Exception("Please provide a valid value for the Source Reliability parameter.")
+        if DBotScoreReliability.is_valid_type(reliability):
+            reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+        else:
+            raise Exception("Please provide a valid value for the Source Reliability parameter.")
 
-    if demisto.command() == "test-module":
-        # Tests connectivity and credentails on login
-        test_module(reliability)
-    elif demisto.command() == "ip":
-        demisto.results(check_ip_command(reliability, **demisto.args()))
-    elif demisto.command() == "abuseipdb-check-cidr-block":
-        demisto.results(check_block_command(reliability, **demisto.args()))
-    elif demisto.command() == "abuseipdb-report-ip":
-        demisto.results(report_ip_command(**demisto.args()))
-    elif demisto.command() == "abuseipdb-get-blacklist":
-        demisto.results(get_blacklist_command(**demisto.args()))
-    elif demisto.command() == "abuseipdb-get-categories":
-        demisto.results(get_categories_command(**demisto.args()))  # type:ignore
-    elif demisto.command() == "abuseipdb-get-fplist":
-        return_results(get_fplist_command(**demisto.args()))
+        if demisto.command() == "test-module":
+            # Tests connectivity and credentails on login
+            test_module(reliability)
+        elif demisto.command() == "ip":
+            demisto.results(check_ip_command(reliability, **demisto.args()))
+        elif demisto.command() == "abuseipdb-check-cidr-block":
+            demisto.results(check_block_command(reliability, **demisto.args()))
+        elif demisto.command() == "abuseipdb-report-ip":
+            demisto.results(report_ip_command(**demisto.args()))
+        elif demisto.command() == "abuseipdb-get-blacklist":
+            demisto.results(get_blacklist_command(**demisto.args()))
+        elif demisto.command() == "abuseipdb-get-categories":
+            demisto.results(get_categories_command(**demisto.args()))  # type:ignore
+        elif demisto.command() == "abuseipdb-get-fplist":
+            return_results(get_fplist_command(**demisto.args()))
 
-except Exception as e:
-    LOG.print_log()
-    return_error(str(e))
+    except Exception as e:
+        LOG.print_log()
+        return_error(str(e))
+
+
+if __name__ in ("__main__", "__builtin__", "builtins"):
+    main()
