@@ -3910,63 +3910,6 @@ def get_cnapp_assets():
     return new_last_run, cnapp_alerts, items_count, snapshot_id
 
 
-def create_spotlight_client(context_store: ContentClientContextStore) -> ContentClient:
-    """
-    Create and configure ContentClient for Spotlight API with OAuth2 authentication.
-
-    Args:
-        context_store: Context store for token and state persistence
-
-    Returns:
-        Configured ContentClient instance
-    """
-    return ContentClient(
-        base_url=SERVER,
-        verify=USE_SSL,
-        proxy=PROXY,
-        # OAuth2 authentication with token persistence
-        auth_handler=OAuth2ClientCredentialsHandler(
-            token_url=f"{SERVER}/oauth2/token", client_id=CLIENT_ID, client_secret=SECRET, context_store=context_store
-        ),
-        # Enable diagnostics
-        diagnostic_mode=True,
-        client_name="FalconSpotlightAssetCollector",
-    )
-
-
-def load_spotlight_state(context_store: ContentClientContextStore) -> tuple[ContentClientState, str, int, set, set]:
-    """
-    Load Spotlight state from integration context.
-
-    Args:
-        context_store: Context store for reading integration context
-
-    Returns:
-        Tuple of (state_object, integration_context, snapshot_id, total_fetched, unique_aids, processed_aids)
-    """
-    # Read entire integration context (preserves all existing keys)
-    integration_context = context_store.read()
-    log_falcon_assets(f"Loaded integration context with keys: {list(integration_context.keys())}")
-
-    # Get Spotlight-specific state
-    spotlight_state_dict = integration_context.get("spotlight_assets", {})
-    spotlight_state = ContentClientState.from_dict(spotlight_state_dict)
-
-    # Extract state variables
-    snapshot_id = spotlight_state.metadata.get("snapshot_id") or str(round(time.time() * 1000))
-    total_fetched = spotlight_state.metadata.get("total_fetched_until_now", 0)
-    unique_aids = set(spotlight_state.metadata.get("unique_aids", []))
-    processed_aids = set(spotlight_state.metadata.get("processed_aids", []))
-
-    log_falcon_assets(
-        f"Loaded Spotlight state: {snapshot_id=}, {total_fetched=}, "
-        f"unique_aids_count={len(unique_aids)}, processed_aids_count={len(processed_aids)}, "
-        f"after_token={spotlight_state.cursor}"
-    )
-
-    return spotlight_state, snapshot_id, total_fetched, unique_aids, processed_aids
-
-
 def save_spotlight_state(context_store: ContentClientContextStore, spotlight_state: ContentClientState) -> None:
     """
     Save Spotlight state to integration context without breaking other keys.
@@ -3980,59 +3923,6 @@ def save_spotlight_state(context_store: ContentClientContextStore, spotlight_sta
     integration_context["spotlight_assets"] = spotlight_state.to_dict()
     context_store.write(integration_context)
     log_falcon_assets(f"Saved Spotlight state to integration context {integration_context=}")
-
-
-async def fetch_spotlight_vulnerabilities_batch(client: ContentClient, after_token: str | None) -> tuple[list, dict]:
-    """
-    Fetch a single batch of Spotlight vulnerabilities.
-
-    Args:
-        client: ContentClient instance
-        after_token: Pagination token (None for first request)
-
-    Returns:
-        Tuple of (vulnerabilities_list, response_data)
-    """
-    # Build request parameters
-    params = {"limit": MAX_FETCH_SPOTLIGHT_ASSETS, "filter": "status:['open','reopen']", "facet": ["host_info", "cve"]}
-
-    # Add pagination token if provided
-    if after_token:
-        params["after"] = after_token
-
-    log_falcon_assets(
-        f"Fetching Spotlight batch with limit={MAX_FETCH_SPOTLIGHT_ASSETS}, after_token={'present' if after_token else 'none'}"
-    )
-
-    # Make ASYNC API request
-    response = await client._request(method="GET", url_suffix="/spotlight/combined/vulnerabilities/v1", params=params)
-
-    # Parse JSON response
-    response_data = response.json()
-    vulnerabilities = response_data.get("resources", [])
-
-    log_falcon_assets(f"Fetched {len(vulnerabilities)} vulnerabilities in this batch")
-
-    return vulnerabilities, response_data
-
-
-def extract_unique_aids(vulnerabilities: list, existing_unique_aids: set) -> None:
-    """
-    Extract unique AIDs (Host IDs) from vulnerabilities and merge with existing set.
-    Equivalent to JavaScript: const u_aid = [...new Set(aids)]
-    Update the set of unique AIDs in place.
-
-    Args:
-        vulnerabilities: List of vulnerability objects
-        existing_unique_aids: Existing set of unique AIDs
-    """
-    # Extract AIDs from this batch
-    batch_aids = {vuln.get("aid") for vuln in vulnerabilities if vuln.get("aid")}
-
-    # Merge with existing
-    existing_unique_aids.update(batch_aids)
-
-    log_falcon_assets(f"Batch AIDs: {len(batch_aids)}, Total unique AIDs: {len(existing_unique_aids)}")
 
 
 class AssetsDeviceHandler:
@@ -4479,6 +4369,133 @@ async def send_batch_to_xsiam_and_save_context(
         raise
 
 
+def create_task_send_batch_to_xsiam_and_save_context(
+    data,
+    product,
+    snapshot_id,
+    items_count,
+    batch_number,
+    last_saved_batch_number,
+    context_store,
+    state,
+    save_state_callback,
+    data_type,
+):
+    """
+    Create an async task to send vulnerability batch to XSIAM and save context.
+    Parameters now match the order and names of the internal async function.
+
+    Args:
+        data: List of data items to send
+        product: The product name
+        snapshot_id: Snapshot ID for tracking
+        items_count: Total items count - use final count when complete, 1 when in-progress
+        batch_number: Current batch number being processed
+        last_saved_batch_number: Highest batch number that has successfully saved context
+        context_store: ContentClientContextStore instance for thread-safe context operations
+        state: ContentClientState object containing cursor and metadata
+        save_state_callback: Callback function to save state with signature:
+                            (ContentClientContextStore, dict, ContentClientState) -> None
+                            Example: save_spotlight_state, save_cnapp_state, etc.
+        data_type: Type of data being sent for XSIAM collector-type header. Defaults to "assets"
+    Returns:
+        asyncio.Task: The created async task
+    """
+    # items_count = items_count if batch
+    task = asyncio.create_task(
+        send_batch_to_xsiam_and_save_context(
+            data=data,
+            vendor=VENDOR,
+            product=product,
+            snapshot_id=snapshot_id,
+            items_count=items_count,
+            batch_number=batch_number,
+            last_saved_batch_number=last_saved_batch_number,
+            context_store=context_store,
+            state=state,
+            save_state_callback=save_state_callback,
+            data_type=data_type,
+        )
+    )
+    return task
+
+
+def create_spotlight_client(context_store: ContentClientContextStore) -> ContentClient:
+    """
+    Create and configure ContentClient for Spotlight API with OAuth2 authentication.
+
+    Args:
+        context_store: Context store for token and state persistence
+
+    Returns:
+        Configured ContentClient instance
+    """
+    return ContentClient(
+        base_url=SERVER,
+        verify=USE_SSL,
+        proxy=PROXY,
+        # OAuth2 authentication with token persistence
+        auth_handler=OAuth2ClientCredentialsHandler(
+            token_url=f"{SERVER}/oauth2/token", client_id=CLIENT_ID, client_secret=SECRET, context_store=context_store
+        ),
+        # Enable diagnostics
+        diagnostic_mode=True,
+        client_name="FalconSpotlightAssetCollector",
+    )
+
+
+def extract_unique_aids(vulnerabilities: list, existing_unique_aids: set) -> None:
+    """
+    Extract unique AIDs (Host IDs) from vulnerabilities and merge with existing set.
+    Equivalent to JavaScript: const u_aid = [...new Set(aids)]
+    Update the set of unique AIDs in place.
+
+    Args:
+        vulnerabilities: List of vulnerability objects
+        existing_unique_aids: Existing set of unique AIDs
+    """
+    # Extract AIDs from this batch
+    batch_aids = {vuln.get("aid") for vuln in vulnerabilities if vuln.get("aid")}
+
+    # Merge with existing
+    existing_unique_aids.update(batch_aids)
+
+    log_falcon_assets(f"Batch AIDs: {len(batch_aids)}, Total unique AIDs: {len(existing_unique_aids)}")
+
+
+def load_spotlight_state(context_store: ContentClientContextStore) -> tuple[ContentClientState, str, int, set, set]:
+    """
+    Load Spotlight state from integration context.
+
+    Args:
+        context_store: Context store for reading integration context
+
+    Returns:
+        Tuple of (state_object, integration_context, snapshot_id, total_fetched, unique_aids, processed_aids)
+    """
+    # Read entire integration context (preserves all existing keys)
+    integration_context = context_store.read()
+    log_falcon_assets(f"Loaded integration context with keys: {list(integration_context.keys())}")
+
+    # Get Spotlight-specific state
+    spotlight_state_dict = integration_context.get("spotlight_assets", {})
+    spotlight_state = ContentClientState.from_dict(spotlight_state_dict)
+
+    # Extract state variables
+    snapshot_id = spotlight_state.metadata.get("snapshot_id") or str(round(time.time() * 1000))
+    total_fetched = spotlight_state.metadata.get("total_fetched_until_now", 0)
+    unique_aids = set(spotlight_state.metadata.get("unique_aids", []))
+    processed_aids = set(spotlight_state.metadata.get("processed_aids", []))
+
+    log_falcon_assets(
+        f"Loaded Spotlight state: {snapshot_id=}, {total_fetched=}, "
+        f"unique_aids_count={len(unique_aids)}, processed_aids_count={len(processed_aids)}, "
+        f"after_token={spotlight_state.cursor}"
+    )
+
+    return spotlight_state, snapshot_id, total_fetched, unique_aids, processed_aids
+
+
 def update_spotlight_state_and_metadata(
     spotlight_state: ContentClientState,
     cursor: str | None,
@@ -4557,55 +4574,38 @@ def handle_spotlight_fetch_error(
     raise error
 
 
-def create_task_send_batch_to_xsiam_and_save_context(
-    data,
-    product,
-    snapshot_id,
-    items_count,
-    batch_number,
-    last_saved_batch_number,
-    context_store,
-    state,
-    save_state_callback,
-    data_type,
-):
+async def fetch_spotlight_vulnerabilities_batch(client: ContentClient, after_token: str | None) -> tuple[list, dict]:
     """
-    Create an async task to send vulnerability batch to XSIAM and save context.
-    Parameters now match the order and names of the internal async function.
+    Fetch a single batch of Spotlight vulnerabilities.
 
     Args:
-        data: List of data items to send
-        product: The product name
-        snapshot_id: Snapshot ID for tracking
-        items_count: Total items count - use final count when complete, 1 when in-progress
-        batch_number: Current batch number being processed
-        last_saved_batch_number: Highest batch number that has successfully saved context
-        context_store: ContentClientContextStore instance for thread-safe context operations
-        state: ContentClientState object containing cursor and metadata
-        save_state_callback: Callback function to save state with signature:
-                            (ContentClientContextStore, dict, ContentClientState) -> None
-                            Example: save_spotlight_state, save_cnapp_state, etc.
-        data_type: Type of data being sent for XSIAM collector-type header. Defaults to "assets"
+        client: ContentClient instance
+        after_token: Pagination token (None for first request)
+
     Returns:
-        asyncio.Task: The created async task
+        Tuple of (vulnerabilities_list, response_data)
     """
-    # items_count = items_count if batch
-    task = asyncio.create_task(
-        send_batch_to_xsiam_and_save_context(
-            data=data,
-            vendor=VENDOR,
-            product=product,
-            snapshot_id=snapshot_id,
-            items_count=items_count,
-            batch_number=batch_number,
-            last_saved_batch_number=last_saved_batch_number,
-            context_store=context_store,
-            state=state,
-            save_state_callback=save_state_callback,
-            data_type=data_type,
-        )
+    # Build request parameters
+    params = {"limit": MAX_FETCH_SPOTLIGHT_ASSETS, "filter": "status:['open','reopen']", "facet": ["host_info", "cve"]}
+
+    # Add pagination token if provided
+    if after_token:
+        params["after"] = after_token
+
+    log_falcon_assets(
+        f"Fetching Spotlight batch with limit={MAX_FETCH_SPOTLIGHT_ASSETS}, after_token={'present' if after_token else 'none'}"
     )
-    return task
+
+    # Make ASYNC API request
+    response = await client._request(method="GET", url_suffix="/spotlight/combined/vulnerabilities/v1", params=params)
+
+    # Parse JSON response
+    response_data = response.json()
+    vulnerabilities = response_data.get("resources", [])
+
+    log_falcon_assets(f"Fetched {len(vulnerabilities)} vulnerabilities in this batch")
+
+    return vulnerabilities, response_data
 
 
 async def process_vulnerability_batches(
@@ -4741,7 +4741,6 @@ async def finalize_spotlight_fetch(
     asset_handler: AssetsDeviceHandler,
     context_store: ContentClientContextStore,
     spotlight_state: ContentClientState,
-    snapshot_id: str,
     total_fetched: int,
     unique_aids: set,
 ) -> None:
@@ -4751,7 +4750,6 @@ async def finalize_spotlight_fetch(
         asset_handler: AssetsDeviceHandler managing AID enrichment.
         context_store: Context store for state persistence.
         spotlight_state: Current Spotlight state object.
-        snapshot_id: Snapshot ID for asset collection tracking.
         total_fetched: Total number of vulnerabilities fetched.
         unique_aids: Set of unique AIDs discovered during the fetch.
     """
@@ -4822,7 +4820,6 @@ async def fetch_spotlight_assets():
             asset_handler=asset_handler,
             context_store=context_store,
             spotlight_state=spotlight_state,
-            snapshot_id=snapshot_id,
             total_fetched=total_fetched,
             unique_aids=unique_aids,
         )
@@ -4830,7 +4827,7 @@ async def fetch_spotlight_assets():
     except (ContentClientError, Exception) as e:
         # Read latest values from spotlight_state which is updated in-place by
         # even if the function raised before returning.
-        metadata = getattr(spotlight_state, "metadata", None)
+        metadata = spotlight_state.metadata
         if isinstance(metadata, dict):
             total_fetched = metadata.get("total_fetched_until_now", total_fetched)
             unique_aids = set(metadata.get("unique_aids", unique_aids))
