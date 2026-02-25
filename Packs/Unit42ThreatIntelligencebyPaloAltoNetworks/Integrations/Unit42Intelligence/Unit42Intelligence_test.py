@@ -1953,6 +1953,63 @@ def test_parse_url_list_custom_scheme():
     assert result[2] == "http://normal.com"
 
 
+def test_parse_url_list_quoted_scheme_less_urls():
+    """
+    Given:
+        - Two scheme-less URLs each wrapped in double-quote characters,
+          comma-separated (e.g. from email security tools or JSON extraction)
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns both URLs as separate entries
+        - Leading and trailing double-quote characters are stripped from each URL
+    """
+    url_input = '"share.google/abc","example.com/url?a=https://share.google/abc"'
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 2
+    assert result[0] == "share.google/abc"
+    assert result[1] == "example.com/url?a=https://share.google/abc"
+
+
+def test_parse_url_list_quoted_urls_with_commas_in_query():
+    """
+    Given:
+        - Quoted URLs where the second URL contains commas in its query string
+    When:
+        - parse_url_list is called
+    Then:
+        - Splits on the quote-comma-quote boundary between the two URLs
+        - Preserves commas that are inside a URL's query string
+        - Strips surrounding quotes from each URL
+    """
+    url_input = '"share.google/a","example.com/url?a=https://share.google/a&c=e,1,abc"'
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 2
+    assert result[0] == "share.google/a"
+    assert result[1] == "example.com/url?a=https://share.google/a&c=e,1,abc"
+
+
+def test_parse_url_list_single_quoted_url():
+    """
+    Given:
+        - A single URL wrapped in double-quote characters
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with one URL, with quotes stripped
+    """
+    url_input = '"example.com/path/to/page"'
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 1
+    assert result[0] == "example.com/path/to/page"
+
+
 def test_encode_url_indicator_with_special_characters():
     """
     Given:

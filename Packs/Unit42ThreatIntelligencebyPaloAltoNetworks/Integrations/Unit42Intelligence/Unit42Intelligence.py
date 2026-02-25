@@ -70,6 +70,8 @@ def parse_url_list(url_input: str | list | None) -> list[str]:
     This function intelligently splits URLs by detecting URL patterns to avoid
     incorrectly splitting URLs that contain commas in their parameters.
     Supports list inputs (from playbooks), None inputs, and newline separators.
+    Also handles URLs wrapped in double-quote characters (e.g. from email security
+    tools or JSON extraction): "url1","url2" is split and quotes are stripped.
 
     Args:
         url_input: String, list, or None containing one or more URLs
@@ -90,25 +92,35 @@ def parse_url_list(url_input: str | list | None) -> list[str]:
         []
         >>> parse_url_list("ftp://example.com,http://test.com")
         ['ftp://example.com', 'http://test.com']
+        >>> parse_url_list('"share.google/a","example.com/url?a=https://share.google/a"')
+        ['share.google/a', 'example.com/url?a=https://share.google/a']
     """
     if url_input is None:
         return []
 
     # Handle list input from playbooks
     if isinstance(url_input, list):
-        return [url.strip() for url in argToList(url_input) if url and str(url).strip()]
+        return [url.strip().strip('"') for url in argToList(url_input) if url and str(url).strip()]
 
     # Handle string input - split by newlines, then intelligently by commas
     url_input = str(url_input).strip()
     if not url_input:
         return []
 
-    # Split by comma only if followed by a URL scheme (supports all schemes, not just http/https)
-    # This preserves commas within URL parameters
     all_urls: list[str] = []
     for line in url_input.split("\n"):
-        if line := line.strip():
-            all_urls.extend(url.strip() for url in re.split(r",\s*(?=[a-zA-Z][a-zA-Z0-9+.-]*://)", line) if url.strip())
+        if not (line := line.strip()):
+            continue
+
+        # Split on: comma between quoted URLs ("url1","url2"), or comma followed by a URL scheme.
+        # The quoted-URL pattern must be checked first so that commas inside a quoted URL's
+        # query string (which don't precede a closing quote + comma + opening quote) are preserved.
+        segments = re.split(r'"\s*,\s*"|,\s*(?=[a-zA-Z][a-zA-Z0-9+.-]*://)', line)
+        for segment in segments:
+            # Strip surrounding whitespace and stray quote characters left by the split
+            url = segment.strip().strip('"')
+            if url:
+                all_urls.append(url)
 
     return all_urls
 
