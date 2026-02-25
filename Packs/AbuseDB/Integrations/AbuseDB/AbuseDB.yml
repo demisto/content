@@ -358,10 +358,10 @@ script:
       - json
       - csv
     - defaultValue: '50'
-      description: The maximum number of results to return.
+      description: The maximum number of results to return. Ignored when all_results is set to true or when format is set to csv.
       name: limit
     - defaultValue: false
-      description: Whether to return all results.
+      description: Whether to return all results. Ignored when format is set to csv.
       name: all_results
     description: Returns the False Positive List (FPL) from abuse.ch, containing indicators (IPs and domains) that have been removed from their blocklists.
     name: abuseipdb-get-fplist
