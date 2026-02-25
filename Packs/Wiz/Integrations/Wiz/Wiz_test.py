@@ -1870,6 +1870,17 @@ def test_handle_field_changes_due_date(mock_set_due):
     mock_set_due.assert_called_once_with(issue_id="11111111-1111-1111-1111-111111111111", due_at="2025-12-31")
 
 
+@patch("Wiz.clear_issue_due_date")
+def test_handle_field_changes_clear_due_date(mock_clear_due):
+    """Test _handle_field_changes clears due date when dueAt is empty string"""
+    from Wiz import _handle_field_changes
+
+    mock_clear_due.return_value = {}
+    _handle_field_changes("11111111-1111-1111-1111-111111111111", {"dueAt": ""})
+
+    mock_clear_due.assert_called_once_with(issue_id="11111111-1111-1111-1111-111111111111")
+
+
 @patch("Wiz.resolve_issue")
 def test_handle_incident_closed(mock_resolve):
     """Test _handle_incident_closed resolves issue in Wiz"""

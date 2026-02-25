@@ -2775,7 +2775,12 @@ def _handle_field_changes(remote_id, delta, skip_status=False):
     if new_status and not skip_status:
         _mirror_status_to_wiz(remote_id, new_status, delta)
 
-    new_due_date = delta.get("dueAt") or delta.get("wizissueduedate")
+    if "dueAt" in delta:
+        new_due_date = delta.get("dueAt")
+    elif "wizissueduedate" in delta:
+        new_due_date = delta.get("wizissueduedate")
+    else:
+        new_due_date = None
     if new_due_date is not None:
         if new_due_date:
             set_issue_due_date(issue_id=remote_id, due_at=new_due_date)
