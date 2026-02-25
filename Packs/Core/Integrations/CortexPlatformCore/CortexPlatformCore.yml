@@ -3926,7 +3926,6 @@ script:
       outputs: []
     - name: core-fill-support-ticket
       description: Returns fields for the completion of the support ticket
-      hidden: true
       arguments:
         - name: description
           description: A detailed description of the issue. Include error messages/codes or other identifying details. Limited to 25-32000 chars.
@@ -4021,7 +4020,6 @@ script:
     - name: core-get-support-ticket-taxonomy
       description: Retrieves the complete support ticket taxonomy in a single call. Fetches all SME areas and sub-groups, then iterates over every combination to retrieve the full questionnaire catalog including questions and log upload fields.
       arguments: []
-      hidden: true
       outputs:
         - contextPath: Core.SupportTicketTaxonomy.issue_category
           description: The issue category (SME area). Maps to the issue_category argument of core-fill-support-ticket.

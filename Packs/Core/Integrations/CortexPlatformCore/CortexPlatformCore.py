@@ -4666,6 +4666,108 @@ def core_fill_support_ticket_command(args: dict[str, Any]) -> CommandResults:
         raw_response=data,
     )
 
+SUPPORT_TICKET_TAXONOMY_DATA = [
+    {
+        "issue_category": "Agent",
+        "problem_concentrations": [
+            "Communication", "Device Control", "Install/Upgrade/Uninstall",
+            "Performance", "non-persistent VDI"
+        ]
+    },
+    {
+        "issue_category": "Attack Surface Management",
+        "problem_concentrations": [
+            "Asset Inventory", "Attack Surface Issues", "Policies and Configuration"
+        ]
+    },
+    {
+        "issue_category": "Cases and Issues",
+        "problem_concentrations": [
+            "Breach Assessment", "Custom Domain", "Health Domain", "Hunting Domain",
+            "IT Domain", "Posture Domain", "Security Domain", "Threat Coverage Analysis"
+        ]
+    },
+    {
+        "issue_category": "Cloud Onboarding",
+        "problem_concentrations": [
+            "CI/CD Security", "Cloud Scan", "Kubernetes Connectors",
+            "Option not available", "Registry Configuration", "Scan with Outpost"
+        ]
+    },
+    {
+        "issue_category": "Data Collection, Integrations, and Marketplace",
+        "problem_concentrations": [
+            "Broker VM", "Cloud Identitiy Engine", "Data Collection Configuration",
+            "Data Management", "Engines", "Integrations Configuration",
+            "Marketplace", "Public API"
+        ]
+    },
+    {
+        "issue_category": "Detection, Investigation and Inventory",
+        "problem_concentrations": [
+            "Cases and Issues Configuration", "Dashboard and Reports",
+            "Host Insights/Host Inventory", "Inventory - Assets",
+            "Inventory - Endpoints", "Investigation and Response", "Threat Management"
+        ]
+    },
+    {
+        "issue_category": "Modules",
+        "problem_concentrations": [
+            "AI Security", "Application Security", "Attack Surface Management",
+            "Data Classification", "Data Security", "Identity Security"
+        ]
+    },
+    {
+        "issue_category": "Posture Management",
+        "problem_concentrations": ["Management", "Policies", "Rules"]
+    },
+    {
+        "issue_category": "Security Incidents",
+        "problem_concentrations": [
+            "Breach Assessment", "Coverage Assessment",
+            "Other Alert Source", "Security Incidents"
+        ]
+    },
+    {
+        "issue_category": "Server",
+        "problem_concentrations": [
+            "Automation", "Broker VM", "Dashboard and Reports", "Data Ingestion",
+            "Endpoint Management", "Marketplace", "Others",
+            "TIM (Threat Intelligence Management)", "Tenant Performance"
+        ]
+    },
+    {
+        "issue_category": "Tenant Administration and Access Control",
+        "problem_concentrations": [
+            "Access Management", "Add-ons", "Audit Logs and Health Issues",
+            "Copilot", "Cortex Gateway", "Licensing, Onboarding and Access",
+            "Support Case Creation", "Tenant Availability", "Tenant Configuration",
+            "Tenant Migration"
+        ]
+    },
+    {
+        "issue_category": "Vulnerability and Compliance Management",
+        "problem_concentrations": [
+            "Compliance Management", "Option not available", "Vulnerability Management"
+        ]
+    },
+    {
+        "issue_category": "Web Application and API Security",
+        "problem_concentrations": [
+            "API Discovery", "API Gateway Configuration", "API Specifications", "In-Line Security"
+        ]
+    },
+    {
+        "issue_category": "XDR Agent",
+        "problem_concentrations": [
+            "XDR Agent for Cloud - App-embedded", "XDR Agent for Cloud - Container",
+            "XDR Agent for Cloud - Host", "XDR Agent for Cloud - Kubernetes",
+            "XDR Agent for Cloud - Serverless", "XDR Agent for Enterprise - Android",
+            "XDR Agent for Enterprise - Linux", "XDR Agent for Enterprise - Windows",
+            "XDR Agent for Enterprise - iOS", "XDR Agent for Enterprise - macOS"
+        ]
+    }
+]
 
 def get_support_ticket_taxonomy_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
@@ -4689,45 +4791,33 @@ def get_support_ticket_taxonomy_command(client: Client, args: dict[str, Any]) ->
     areas_reply = areas_response.get("reply", areas_response)
     areas = areas_reply if isinstance(areas_reply, list) else []
 
-    taxonomy: list[dict] = []
+    if areas:
+        taxonomy: list[dict] = []
+        for area in areas:
+            area_value = area.get("value", "")
+            suggested_values = area.get("suggestedValues", [])
 
-    for area in areas:
-        area_value = area.get("value", "")
-        suggested_values = area.get("suggestedValues", [])
+            # Extract only the 'value' string from each suggestedValue object
+            problem_concentrations = [
+                sg.get("value") for sg in suggested_values if sg.get("value")
+            ]
 
-        category_entry: dict[str, Any] = {
-            "issue_category": area_value,
-            "problem_concentrations": [],
-        }
-
-        for sg in suggested_values:
-            sg_value = sg.get("value", "")
-            if not sg_value:
-                continue
-
-            concentration_entry: dict[str, Any] = {
-                "problem_concentration": sg_value,
-                "questions": [],
+            # Build the final structure minus the questions key
+            category_entry = {
+                "issue_category": area_value,
+                "problem_concentrations": problem_concentrations,
             }
 
-            try:
-                response = client.get_questionnaire_by_sme(area_value, sg_value)
-                reply = response.get("reply", response)
-                questions = reply if isinstance(reply, list) else []
-                concentration_entry["questions"] = questions
-            except Exception as e:
-                demisto.debug(f"Failed to fetch questionnaire for {area_value}/{sg_value}: {e}")
+            taxonomy.append(category_entry)
 
-            category_entry["problem_concentrations"].append(concentration_entry)
-
-        taxonomy.append(category_entry)
+    else:
+        taxonomy = SUPPORT_TICKET_TAXONOMY_DATA
 
     return CommandResults(
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.SupportTicketTaxonomy",
         outputs=taxonomy,
         raw_response=taxonomy,
     )
-
 
 def init_client(api_type: str) -> Client:
     """
