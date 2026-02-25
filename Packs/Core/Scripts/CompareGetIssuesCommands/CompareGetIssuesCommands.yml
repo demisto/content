@@ -1,0 +1,37 @@
+commonfields:
+  id: CompareGetIssuesCommands
+  version: -1
+name: CompareGetIssuesCommands
+script: ''
+type: python
+tags:
+- Utilities
+comment: |-
+  Compares the outputs of core-get-issues and core-get-issues-private using hardcoded argument values
+  derived from a real API response. Executes both commands with identical arguments, then compares
+  the Raw JSON and Entry Context outputs to verify consistency between the public and private versions.
+  Results are displayed as a comparison table in the War Room. No arguments required — runs as-is.
+enabled: true
+args: []
+outputs:
+- contextPath: CompareGetIssues.args_tested
+  description: The list of argument names that were passed to both commands.
+  type: List
+- contextPath: CompareGetIssues.raw_json_status
+  description: Whether the Raw JSON outputs matched between core-get-issues and core-get-issues-private.
+  type: String
+- contextPath: CompareGetIssues.entry_context_status
+  description: Whether the Entry Context outputs matched between core-get-issues and core-get-issues-private.
+  type: String
+- contextPath: CompareGetIssues.overall
+  description: Overall comparison result - FULL MATCH or MISMATCH DETECTED.
+  type: String
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.11.4819260
+fromversion: 6.2.0
+isInternal: false
+tests:
+- No tests (auto formatted)
+marketplaces:
+- platform

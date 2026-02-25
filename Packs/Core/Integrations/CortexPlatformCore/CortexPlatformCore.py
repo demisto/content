@@ -66,7 +66,7 @@ WEBAPP_COMMANDS = [
     "core-list-scripts",
     "core-run-script-agentix",
     "core-list-endpoints",
-    "core-get-issues",
+    "core-get-issues-private",
     "core-list-exception-rules",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
@@ -3714,7 +3714,7 @@ def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def get_issues_command(client: Client, args: dict) -> list[CommandResults]:
+def get_issues_private_command(client: Client, args: dict) -> list[CommandResults]:
     response: list[CommandResults] = get_issues_by_filter_command(client, args)
     output_keys = argToList(args.pop("output_keys", []))
     if isinstance(response[0].outputs, list) and response[0].outputs:
@@ -5009,8 +5009,35 @@ def main():  # pragma: no cover
         elif command == "core-search-asset-groups":
             return_results(search_asset_groups_command(client, args))
 
+        elif command == "core-get-issues-private":
+            return_results(get_issues_private_command(client, args))
+            
         elif command == "core-get-issues":
-            return_results(get_issues_command(client, args))
+            # replace all dict keys that contain issue with alert
+            args = issue_to_alert(args)
+            # Extract output_keys before calling get_alerts_by_filter_command
+            output_keys = argToList(args.pop("output_keys", []))
+            assignees = argToList(args.get("assignee", "").lower())
+            if "assigned" in assignees or "unassigned" in assignees:
+                if len(assignees) > 1:
+                    raise DemistoException(
+                        f"The assigned/unassigned options can not be used with additional assignees. Received: {assignees}"
+                    )
+
+                # Swap assignee arg with the requested special operation
+                assignee_filter_option = args.pop("assignee", "")
+                args[assignee_filter_option] = True
+
+            issues_command_results: CommandResults = get_alerts_by_filter_command(client, args)
+            # Convert alert keys to issue keys
+            if issues_command_results.outputs:
+                issues_command_results.outputs = [alert_to_issue(output) for output in issues_command_results.outputs]  # type: ignore[attr-defined,arg-type]
+
+            # Apply output_keys filtering if specified
+            if output_keys and issues_command_results.outputs:
+                issues_command_results.outputs = filter_context_fields(output_keys, issues_command_results.outputs)  # type: ignore[attr-defined,arg-type]
+
+            return_results(issues_command_results)
 
         elif command == "core-get-cases":
             return_results(get_cases_command(client, args))
