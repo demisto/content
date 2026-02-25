@@ -182,6 +182,8 @@ class Client(ContentClient):
             response = self.get_security_checks(limit=page_limit, offset=offset)
             items = response.get("data", [])
 
+            demisto.debug(f"Fetched {len(items)} security checks.")
+
             if not items:
                 demisto.debug("No more items returned from API")
                 break
@@ -235,43 +237,6 @@ class Client(ContentClient):
 
 
 """ COMMAND FUNCTIONS """
-
-
-def get_events_command(client: Client, args: dict) -> CommandResults:
-    """Manual command to fetch and optionally push security check events.
-
-    Args:
-        client: The Adaptive Shield API client.
-        args: Command arguments including 'should_push_events' and 'limit'.
-
-    Returns:
-        CommandResults with the fetched events.
-    """
-    limit = arg_to_number(args.get("limit", "10")) or 10
-    should_push_events = argToBoolean(args.get("should_push_events", False))
-
-    demisto.debug(f"Running adaptive-shield-sspm-get-events with {should_push_events=}, {limit=}")
-
-    events, _ = client.get_security_checks_with_pagination(max_fetch=limit)
-
-    results = CommandResults(
-        outputs_prefix="AdaptiveShieldSSPM.SecurityCheck",
-        outputs_key_field="id",
-        outputs=events,
-        readable_output=tableToMarkdown(
-            "Adaptive Shield Security Check Events",
-            events,
-            headers=["id", "name", "status", "impact", "saas_name", "security_domain", "creation_date"],
-            removeNull=True,
-        ),
-        raw_response=events,
-    )
-
-    if should_push_events:
-        demisto.debug(f"Sending {len(events)} events to XSIAM")
-        send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-
-    return results
 
 
 def fetch_events_command(client: Client, max_fetch: int, last_run: dict) -> tuple[list[dict], dict]:
@@ -335,6 +300,9 @@ def module_test_command(client: Client) -> str:
     Returns:
         'ok' if the connection is successful.
     """
+    response = client.get_security_checks(limit=1)
+    items = response.get("data", [])
+    send_events_to_xsiam(items, vendor=VENDOR, product=PRODUCT)
     return "ok"
 
 

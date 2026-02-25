@@ -28,11 +28,6 @@ configuration:
   required: true
   type: 9
   section: Connect
-- display: Fetch events
-  name: isFetchEvents
-  type: 8
-  section: Collect
-  required: false
 - display: The maximum number of Security Checks per fetch
   additionalinfo: 'The maximum number of Security Checks per fetch. The default is 5000.'
   defaultvalue: '5000'
