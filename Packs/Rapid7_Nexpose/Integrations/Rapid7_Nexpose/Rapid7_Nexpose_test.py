@@ -1,3 +1,4 @@
+import asyncio
 import json
 from pathlib import Path
 
@@ -3200,3 +3201,95 @@ async def test_stream_report_error_handling(mocker):
 
     # Verify the response was still released despite the error
     mock_response.release.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_xsiam_api_call_async_with_retries_cimultidictproxy_headers(mocker, capfd):
+    """
+    Given:
+      - An aiohttp.ClientResponseError whose `.headers` attribute is a
+        CIMultiDictProxy (the real type returned by aiohttp), which is
+        NOT natively JSON-serializable.
+
+    When:
+      - xsiam_api_call_async_with_retries handles a non-retryable HTTP error
+        and tries to log the response headers via json.dumps.
+
+    Then:
+      - Ensure the headers are converted to a plain dict before serialization
+        so that no "Object of type CIMultiDictProxy is not JSON serializable"
+        TypeError is raised.
+      - Ensure demisto.error is called with the formatted API call info
+        (confirming the error-handling path executed successfully).
+    """
+    from multidict import CIMultiDict, CIMultiDictProxy
+    from yarl import URL
+
+    # Build a realistic CIMultiDictProxy (the type aiohttp uses for response headers)
+    raw_headers = CIMultiDict({"Content-Type": "application/json", "X-Request-Id": "abc123"})
+    ci_headers = CIMultiDictProxy(raw_headers)
+
+    # Construct a realistic ClientResponseError with CIMultiDictProxy headers
+    request_info = aiohttp.RequestInfo(
+        url=URL("https://example.com/logs/v1/xsiam"),
+        method="POST",
+        headers=CIMultiDictProxy(CIMultiDict()),
+        real_url=URL("https://example.com/logs/v1/xsiam"),
+    )
+
+    error = aiohttp.ClientResponseError(
+        request_info=request_info,
+        history=(),
+        status=403,
+        message="Forbidden",
+        headers=ci_headers,
+    )
+
+    # Mock the aiohttp.ClientSession context manager and its post method
+    mock_response = mocker.AsyncMock()
+    mock_response.status = 403
+    mock_response.raise_for_status = mocker.MagicMock(side_effect=error)
+
+    mock_post_cm = mocker.AsyncMock()
+    mock_post_cm.__aenter__ = mocker.AsyncMock(return_value=mock_response)
+    mock_post_cm.__aexit__ = mocker.AsyncMock(return_value=False)
+
+    mock_session = mocker.AsyncMock()
+    mock_session.post = mocker.MagicMock(return_value=mock_post_cm)
+
+    mock_session_cm = mocker.AsyncMock()
+    mock_session_cm.__aenter__ = mocker.AsyncMock(return_value=mock_session)
+    mock_session_cm.__aexit__ = mocker.AsyncMock(return_value=False)
+
+    mocker.patch("aiohttp.ClientSession", return_value=mock_session_cm)
+
+    # Mock demisto functions to capture calls
+    mock_demisto_error = mocker.patch("Rapid7_Nexpose.demisto.error")
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+    mocker.patch("Rapid7_Nexpose.demisto.updateModuleHealth")
+
+    # Call the function under test — should NOT raise TypeError
+    # It will return after the error handling path (num_of_attempts=1 means only 1 try)
+    with capfd.disabled():
+        result = await xsiam_api_call_async_with_retries(
+            xsiam_url="https://example.com",
+            zipped_data=b"test-data",
+            headers={"authorization": "test-token"},
+            num_of_attempts=1,
+            data_type="assets",
+        )
+
+    # Verify demisto.error was called (meaning the error-handling path completed
+    # without crashing on json.dumps of CIMultiDictProxy headers)
+    assert mock_demisto_error.called, (
+        "demisto.error should have been called with the API call info, "
+        "but it was not — the CIMultiDictProxy headers likely caused a "
+        "TypeError during json.dumps serialization."
+    )
+
+    # Verify the error message contains the serialized headers
+    error_call_args = mock_demisto_error.call_args[0][0]
+    assert "Content-Type" in error_call_args
+    assert "application/json" in error_call_args
+    assert "X-Request-Id" in error_call_args
+    assert "abc123" in error_call_args
