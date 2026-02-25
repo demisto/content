@@ -2616,7 +2616,7 @@ def endpoint_triage_command(client: Client, args: Dict) -> CommandResults:
     raw_response = client.triage_endpoint({"request_data": request_data})
 
     readable_output = tableToMarkdown(
-        name="Initiated Endpoints Triage",
+        name="Endpoint Triage Results",
         t=raw_response,
         headers=["TRIAGE_ID", "SUCCESSFUL_AGENT_IDS", "UNSUCCESSFUL_AGENT_IDS"],
         headerTransform=string_to_table_header,
