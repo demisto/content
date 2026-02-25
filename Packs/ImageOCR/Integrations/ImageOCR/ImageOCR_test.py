@@ -31,7 +31,7 @@ def test_list_languages_command():
 @pytest.mark.parametrize(
     "image,expected_text,langs",
     [
-        ("irs.png", "Test Revenue Service", None),
+        ("irs.png", "Internal Revenue Service", None),
         ("bomb.jpg", "You must transfer bitcoins", None),
         ("noisy1.jpg", "Tesseract OCR", None),
         ("noisy.png", "Tesseract Will", None),
@@ -97,8 +97,8 @@ def test_extract_text_command(mocker):
     # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0][0]
     assert results["Type"] == EntryType.NOTE
-    assert "Test Revenue Service" in results["HumanReadable"]
-    assert "Test Revenue Service" in results["EntryContext"]["File(val.EntryID && val.EntryID == obj.EntryID)"]["Text"]
+    assert "Internal Revenue Service" in results["HumanReadable"]
+    assert "Internal Revenue Service" in results["EntryContext"]["File(val.EntryID && val.EntryID == obj.EntryID)"]["Text"]
 
 
 def test_extract_text_command_bad(mocker):
