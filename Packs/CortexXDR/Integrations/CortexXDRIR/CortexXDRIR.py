@@ -2532,7 +2532,7 @@ def get_vulnerability_details_command(client: Client, args: Dict) -> CommandResu
         if response.get("publishedDate")
         else None,
     }
-    demisto.debug(f"Got the response {response}")
+
     readable_output = tableToMarkdown(
         name="Vulnerability Details",
         t=hr_data,
@@ -2559,7 +2559,6 @@ def endpoint_triage_preset_list_command(client: Client) -> CommandResults:
         CommandResults: The command results.
     """
     presets: list = client.get_triage_presets()
-    demisto.debug(f"Got the presets {presets}")
     readable_output = tableToMarkdown(
         name="Endpoint Triage Presets",
         t=presets,
@@ -2587,7 +2586,6 @@ def healthcheck_run_command(client: Client) -> CommandResults:
         CommandResults: The command results.
     """
     response = client.run_healthcheck()
-    demisto.debug(f"Response for health check {response}")
     status = response.get("status", "unknown")
 
     return CommandResults(
