@@ -688,7 +688,7 @@ script:
           isArray: true
           name: asset_ids
         - description: |
-            The assignee of the issue. Accepts a comma-separated list.
+            The assignee of the issue. Accepts a comma-separated list of either assignee emails or names, not both.
             Use "unassigned" for unassigned issues or "assigned" for all assigned issues.
           isArray: true
           name: assignee

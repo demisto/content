@@ -112,7 +112,7 @@ Multiple filter arguments will be concatenated using the AND operator, while arg
 | user_name | The name assigned to the user_id during agent runtime. Accepts a comma-separated list. | Optional |
 | actor_process_image_name | The file name of the binary file. Accepts a comma-separated list. | Optional |
 | causality_actor_process_image_command_line | SHA256 Causality Graph Object command line. Accepts a comma-separated list. | Optional |
-| actor_process_image_command_line | Command line used by the process image initiated by the causality actor. | Optional |
+| actor_process_image_command_line | Command line used by the process image initiated by the causality actor. Accepts a comma-separated list.| Optional |
 | action_process_image_command_line | SHA256 The command line of the process created. Accepts a comma-separated list. | Optional |
 | actor_process_image_sha256 | SHA256 hash of the binary file. Accepts a comma-separated list. | Optional |
 | causality_actor_process_image_sha256 | SHA256 hash of the binary file. Accepts a comma-separated list. | Optional |

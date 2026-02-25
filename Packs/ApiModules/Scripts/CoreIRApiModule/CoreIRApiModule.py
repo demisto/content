@@ -4112,7 +4112,7 @@ def determine_issue_assignee_filter_field(assignee_list: list) -> str:
 
 
 def create_issues_filter(args) -> dict:
-    """Build filter dictionary for alerts based on provided arguments."""
+    """Build filter dictionary for issues based on provided arguments."""
     filter_builder = FilterBuilder()
     if args.get("time_frame") and args.get("time_frame") != "custom":
         filter_builder.add_time_range_field(
