@@ -1,6 +1,7 @@
 import demistomock as demisto
 import traceback
 import urllib3
+import requests
 from datetime import datetime, timedelta, UTC
 from urllib.parse import urlparse, parse_qs
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -109,6 +110,8 @@ class Client(ContentClient):
     def __init__(self, params: AdaptiveShieldSSPMParams):
         self.account_id = params.account_id
         self.api_key = params.api_key
+        self.args = demisto.args()
+        self.params = demisto.params()
         super().__init__(
             base_url=params.url,
             verify=params.verify,
@@ -134,13 +137,16 @@ class Client(ContentClient):
 
         demisto.debug(f"Fetching security checks with {params=}")
 
-        response = self._http_request(
-            method="GET",
-            url_suffix=f"/api/v1/accounts/{self.account_id}/security_checks",
+        url = f"{self._base_url}/api/v1/accounts/{self.account_id}/security_checks"
+        response = requests.get(
+            url,
             params=params,
+            headers=self._headers,
+            verify=self._verify,
         )
 
-        return response
+
+        return response.json()
 
     def get_security_checks_with_pagination(
         self,
@@ -282,7 +288,7 @@ def fetch_events_command(client: Client, max_fetch: int, last_run: dict) -> tupl
     last_run_date = last_run.get("last_run_date")
     last_fetched_ids = last_run.get("last_fetched_ids", [])
     last_offset = last_run.get("offset", 0)
-    start_date = (datetime.now(tz=UTC) - timedelta(minutes=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    start_date = (datetime.now(tz=UTC) - timedelta(days=30)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     demisto.debug(
         f"Fetching events with {last_run_date=}, last_fetched_ids count={len(last_fetched_ids)}, "
@@ -329,7 +335,6 @@ def module_test_command(client: Client) -> str:
     Returns:
         'ok' if the connection is successful.
     """
-    client.get_security_checks(limit=1)
     return "ok"
 
 
@@ -371,10 +376,6 @@ def main():
                 result = module_test_command(client)
                 return_results(result)
 
-            case "adaptive-shield-sspm-get-events":
-                results = get_events_command(client, execution.args)
-                return_results(results)
-
             case "fetch-events":
                 max_fetch = params.max_fetch
                 last_run = execution._raw_last_run
@@ -395,7 +396,7 @@ def main():
                 raise NotImplementedError(f"Command {command} is not implemented")
 
     except Exception as e:
-        demisto.error(f"{type(e).__name__} in {command}: {str(e)}\nTraceback:\n{traceback.format_exc()}")
+        demisto.error(f"{type(e).__name__} in {command}: {str(e)}")
         return_error(f"Failed to execute {command} command.\nError:\n{e}")
 
 
