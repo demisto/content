@@ -469,7 +469,7 @@ async def test_handle_reset_session_agent_selection(mocker: MockerFixture):
     }
     
     is_reset, result_assistant = await handler.handle_reset_session(
-        text="<@BOT123> reset session",
+        text="<@BOT123> !reset",
         user_id="user123",
         channel_id="channel123",
         thread_id="thread123",
@@ -504,7 +504,7 @@ async def test_handle_reset_session_processing(mocker: MockerFixture):
     }
     
     is_reset, result_assistant = await handler.handle_reset_session(
-        text="<@BOT123> reset session",
+        text="<@BOT123> !reset",
         user_id="user123",
         channel_id="channel123",
         thread_id="thread123",

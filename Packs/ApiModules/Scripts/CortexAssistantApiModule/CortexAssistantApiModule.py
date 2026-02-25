@@ -200,14 +200,15 @@ class AssistantMessages:
     """
 
     # Bot display name (used when replacing bot mentions in messages sent to backend)
-    BOT_DISPLAY_NAME = "Cortex Assistant"
+    BOT_DISPLAY_NAME = "Cortex Agentic Assistant"
     
     # Bot name format for agent responses (used in Slack username field)
     # {0} will be replaced with agent name (e.g., "Security Analyst")
     AGENT_BOT_NAME_FORMAT = "Cortex {0} Agent"
 
     # Commands
-    RESET_SESSION_COMMAND = "reset session"
+    RESET_SESSION_COMMAND = "!reset"
+    HELP_COMMAND = "!help"
 
     # Default message when only bot is mentioned
     DEFAULT_BOT_MENTION_MESSAGE = "Hello"
@@ -252,7 +253,7 @@ class AssistantMessages:
     )
     THREAD_LOCKED_TO_ANOTHER_USER = (
         "This conversation is currently locked to another user. "
-        "You can start a new thread or run `{bot_tag} reset session` to release the lock and start a new chat."
+        "You can start a new thread or run `{bot_tag} !reset` to release the lock and start a new chat."
     )
     NOT_CONVERSATION_OWNER_FEEDBACK = "Only the chat owner can provide feedback on this message."
 
@@ -315,6 +316,18 @@ class AssistantMessages:
     FEEDBACK_OPTION_ANSWERED_ANOTHER = "Answered another question"
     FEEDBACK_OPTION_PARTIALLY_HELPFUL = "Partially helpful"
     FEEDBACK_OPTION_UNHELPFUL = "Unhelpful"
+
+    # Help hint (sent after agent selection)
+    HELP_HINT = "💡 For help and usage info, type `{bot_tag} !help`"
+
+    # Help message (sent on !help command)
+    HELP_MESSAGE = (
+        "📖 *{bot_display_name} - Help & Usage*\n\n"
+        "• Each thread is *locked to the user who started the chat*. "
+        "Other users can start their own chat in a different thread.\n"
+        "• Every message must *mention the bot* (e.g. `{bot_tag} <your question>`).\n"
+        "• To *start a new chat*, open a new thread or type `{bot_tag} !reset` to release the current session.\n"
+    )
 
     # Decision indicators
     DECISION_APPROVED = "✅ *Approved*"
@@ -764,7 +777,7 @@ class AssistantMessagingHandler:
     ) -> tuple[bool, dict]:
         """
         Handles reset session command.
-        Checks if the message is exactly "@BotName reset session" (case-insensitive).
+        Checks if the message is exactly "@BotName !reset" (case-insensitive).
 
         Args:
             text: The message text
@@ -779,10 +792,10 @@ class AssistantMessagingHandler:
         Returns:
             Tuple of (is_reset_command, updated_assistant)
         """
-        # Check for exact "reset session" command
-        # Format: @BotName reset session (with optional whitespace)
+        # Check for exact "!reset" command
+        # Format: @BotName !reset (with optional whitespace)
         bot_mention = self.format_user_mention(bot_id)
-        # Remove the bot mention and check if remaining text is exactly "reset session"
+        # Remove the bot mention and check if remaining text is exactly "!reset"
         text_without_mention = text.replace(bot_mention, "").strip()
 
         if text_without_mention.lower() != AssistantMessages.RESET_SESSION_COMMAND:
@@ -939,6 +952,7 @@ class AssistantMessagingHandler:
         assistant: dict,
         assistant_id_key: str,
         trigger_id: str,
+        bot_id: str = "",
     ) -> dict:
         """
         Handles interactive actions (agent selection, approval, feedback).
@@ -954,6 +968,7 @@ class AssistantMessagingHandler:
             assistant: The assistant context dictionary
             assistant_id_key: The unique key for this conversation
             trigger_id: The trigger ID for modals
+            bot_id: The bot user ID (used for help hint after agent selection)
 
         Returns:
             Updated assistant dictionary
@@ -1060,6 +1075,13 @@ class AssistantMessagingHandler:
                 if backend_response.success:
                     # Update the original message to show selection
                     await self.update_message(channel_id, message_ts, text=f"Selected agent: {selected_agent_name}", blocks=[])
+
+                    # Send help hint as ephemeral message to the user
+                    if bot_id:
+                        help_hint = AssistantMessages.HELP_HINT.format(bot_tag=self.format_user_mention(bot_id))
+                        await self.send_message_async(
+                            channel_id, help_hint, thread_id=thread_id, ephemeral=True, user_id=user_id
+                        )
 
                     # Send thinking indicator
                     thinking_response = await self.send_message_async(
@@ -1242,7 +1264,19 @@ class AssistantMessagingHandler:
             Updated assistant dictionary - to be saved by caller
         """
 
-        # Check for "reset session" command first
+        # Check for "!help" command first
+        bot_mention = self.format_user_mention(bot_id)
+        text_without_mention = text.replace(bot_mention, "").strip()
+
+        if text_without_mention.lower() == AssistantMessages.HELP_COMMAND:
+            help_msg = AssistantMessages.HELP_MESSAGE.format(
+                bot_display_name=AssistantMessages.BOT_DISPLAY_NAME,
+                bot_tag=bot_mention,
+            )
+            await self.send_message_async(channel_id, help_msg, thread_id=thread_id, ephemeral=True, user_id=user_id)
+            return assistant
+
+        # Check for "!reset" command
         is_reset, assistant = await self.handle_reset_session(text, user_id, channel_id, thread_id, assistant, assistant_id_key, bot_id, user_email)
         if is_reset:
             return assistant

@@ -2087,7 +2087,16 @@ async def handle_assistant_interactions(
             trigger_id = data.get("trigger_id", "")
             message = data.get("message", {})
             assistant_context = await slack_assistant_handler.handle_action(
-                actions, user_id, user_email, channel_id, thread_ts, message, assistant_context, assistant_id_key, trigger_id
+                actions,
+                user_id,
+                user_email,
+                channel_id,
+                thread_ts,
+                message,
+                assistant_context,
+                assistant_id_key,
+                trigger_id,
+                bot_id=bot_id,
             )
 
         elif is_modal_submission:
