@@ -255,7 +255,8 @@ def test_detection_to_incident_with_severity_override(incident, expected):
                 "name": "Azure AD: test-id-123 unknownRiskType someDetail",
                 "occurred": "2022-06-06Z",
                 "severity": 2,
-                "rawJSON": '{"riskEventType": "unknownRiskType", "riskDetail": "someDetail", "riskLevel": "medium", "id": "test-id-123", "userPrincipalName": null}',
+                "rawJSON": '{"riskEventType": "unknownRiskType", "riskDetail": "someDetail", "riskLevel": "medium", '
+                '"id": "test-id-123", "userPrincipalName": null}',
                 "details": "",
             },
         ),
@@ -271,7 +272,8 @@ def test_detection_to_incident_with_severity_override(incident, expected):
                 "name": "Azure AD: test-id-456 anomalousToken someDetail",
                 "occurred": "2022-06-06Z",
                 "severity": 3,
-                "rawJSON": '{"riskEventType": "anomalousToken", "riskDetail": "someDetail", "riskLevel": "high", "id": "test-id-456"}',
+                "rawJSON": '{"riskEventType": "anomalousToken", "riskDetail": "someDetail", '
+                '"riskLevel": "high", "id": "test-id-456"}',
                 "details": (
                     "Sign-in detected with abnormal characteristics in the token, such as an unusual lifetime "
                     "or a token played from an unfamiliar location, for user . "
@@ -295,7 +297,8 @@ def test_detection_to_incident_with_severity_override(incident, expected):
                 "name": "Azure AD: test-id-789 leakedCredentials userPerformedSecuredPasswordChange",
                 "occurred": "2022-06-06Z",
                 "severity": 3,
-                "rawJSON": '{"riskEventType": "leakedCredentials", "riskDetail": "userPerformedSecuredPasswordChange", "riskLevel": "high", "id": "test-id-789", "userPrincipalName": null}',
+                "rawJSON": '{"riskEventType": "leakedCredentials", "riskDetail": "userPerformedSecuredPasswordChange", '
+                '"riskLevel": "high", "id": "test-id-789", "userPrincipalName": null}',
                 "details": "Credentials for user  found in known data breaches.",
             },
         ),
