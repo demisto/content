@@ -46,7 +46,7 @@ configuration:
   required: false
   section: Collect
 
-- additionalinfo: Maximum number of incidents per fetch. The default value is 50.
+- additionalinfo: The maximum number of incidents per fetch. Default is 50.
   defaultvalue: '50'
   display: Maximum incidents to fetch.
   name: max_fetch
@@ -60,10 +60,10 @@ configuration:
   required: false
   defaultvalue: 3 days
   section: Collect
-  additionalinfo: The time period from which the first fetch will start.
+  additionalinfo: The time period from which the first fetch starts. Default is three days.
 
 - name: mirror_direction
-  additionalinfo: The mirroring direction in which to mirror the incident. You can mirror "Incoming" (from GravityZone to Cortex XSOAR), "Outgoing" (from Cortex XSOAR to GravityZone), or in both directions.
+  additionalinfo: The incident mirroring direction. You can mirror "Incoming" (from GravityZone to Cortex XSOAR), "Outgoing" (from Cortex XSOAR to GravityZone), or in both directions.
   display: Mirroring Direction
   type: 15
   options:
@@ -149,7 +149,7 @@ script:
       description: The endpoint vendor.
       type: String
     - contextPath: GravityZone.Endpoint.LastLoggedUsers
-      description: The last users who logged on the endpoint.
+      description: The last users who logged in to the endpoint.
       type: String
     - contextPath: Endpoint.ID
       description: The endpoint ID.
@@ -444,7 +444,7 @@ script:
       type: String
 
   - name: gz-run-command-on-endpoint
-    description: Runs a command on the endpoint. The applied policy must have Remote Shell enabled for this action to work.
+    description: Runs a command on the endpoint. The applied policy must have remote shell enabled for this action to work.
     execution: true
     polling: true
     arguments:
@@ -498,7 +498,7 @@ script:
       default: false
     - name: entry_id
       isArray: false
-      description: The entry ID of the file to upload. This file needs to exist in Cortex XSOAR.
+      description: The entry ID of the file to upload. This file must exist in Cortex XSOAR.
       required: true
       secret: false
       default: false
@@ -544,12 +544,12 @@ script:
       type: String
 
   - name: gz-get-endpoints-running-process-hash
-    description: Retrieves endpoints that are running processes with a specified hash. The API key and the applied policy must allow Live Search. Endpoints must be online. The command waits up to five minutes for responses before timing out.
+    description: Retrieves endpoints that are running processes with a specified hash. The API key and the applied policy must allow Live Search and endpoints must be online. The command waits up to five minutes for responses before timing out.
     polling: true
     arguments:
     - name: process_hash
       isArray: false
-      description: Hash of the process.
+      description: The process hash.
       required: true
       secret: false
       default: false
@@ -565,7 +565,7 @@ script:
       type: String
 
   - name: gz-get-process-tree-for-hash-on-endpoint
-    description: Retrieves the process tree on an endpoint for a specified process hash. The applied policy must allow Live Search, and the endpoint must be online.
+    description: Retrieves the process tree on an endpoint for a specified process hash. The applied policy must allow Live Search and the endpoint must be online.
     polling: true
     arguments:
     - name: id
@@ -576,7 +576,7 @@ script:
       default: false
     - name: process_hash
       isArray: false
-      description: The hash of the process to search for.
+      description: The process hash to search for.
       required: true
       secret: false
       default: false
@@ -602,7 +602,7 @@ script:
     arguments:
     - name: id
       isArray: false
-      description: The ID of the incident to fetch.
+      description: The incident ID to fetch.
       required: true
       secret: false
       default: false
@@ -629,19 +629,19 @@ script:
       description: The incident status.
       type: Number
     - contextPath: GravityZone.Incident.ActionTaken
-      description: The action taken by the detecting technology ('reported' / 'blocked' / 'partially_blocked').
+      description: The action taken by the detection logic ('reported' / 'blocked' / 'partially_blocked').
       type: String
     - contextPath: GravityZone.Incident.Created
-      description: The date when the incident was detected on the endpoint / sensor.
+      description: The date the incident was detected on the endpoint / sensor.
       type: Date
     - contextPath: GravityZone.Incident.LastUpdated
-      description: The date when the incident was last updated in GravityZone or by the endpoint / sensor.
+      description: The date the incident was last updated in GravityZone or by the endpoint / sensor.
       type: Date
     - contextPath: GravityZone.Incident.LastProcessed
-      description: The date when the incident was last processed by GravityZone services.
+      description: The date the incident was last processed by GravityZone services.
       type: Date
     - contextPath: GravityZone.Incident.Permalink
-      description: The incident URL in the GravityZone Console.
+      description: The incident URL in the GravityZone console.
       type: String
     - contextPath: GravityZone.Incident.AssignedPriority
       description: The priority assigned to the incident ('unknown' / 'low' / 'medium' / 'high' / 'critical').
@@ -659,7 +659,7 @@ script:
       description: The alert name.
       type: String
     - contextPath: GravityZone.Incident.Alerts.Date
-      description: The date of when the alert was generated.
+      description: The date the alert was generated.
       type: Date
     - contextPath: GravityZone.Incident.Alerts.Sensors
       description: The list of sensors that generated the alert. Available only for 'extendedIncident'-type incidents.
@@ -668,24 +668,24 @@ script:
       description: The list of sensors that generated the alert. Available only for 'extendedIncident'-type incidents.
       type: String
     - contextPath: GravityZone.Incident.Alerts.Resources
-      description: The list of resources involved in the 'incident'-type incidents.
+      description: A comma-separated list of resources involved in the 'incident'-type incidents.
       type: Array
     - contextPath: GravityZone.Incident.RawJSON
       description: The raw JSON response from the GravityZone API.
       type: JSON
 
   - name: gz-list-incidents
-    description: Retrieves incidents within the last three days from all endpoints or a specific endpoint.
+    description: Retrieves incidents from the last three days for all endpoints or for a specific endpoint.
     arguments:
     - name: from_date
       isArray: false
-      description: The start date to retrieve incidents from. The default value is the current date minus three days.
+      description: The start date to retrieve incidents from. Default is three days ago.
       required: false
       secret: false
       default: false
     - name: to_date
       isArray: false
-      description: The end date to retrieve incidents until. The default value is the current date and time.
+      description: The end date to retrieve incidents until. Default is the current date and time.
       required: false
       secret: false
       default: false
@@ -724,10 +724,10 @@ script:
       description: The action taken by the detecting technology ('reported' / 'blocked' / 'partially_blocked').
       type: String
     - contextPath: GravityZone.SummarizedIncidents.Created
-      description: The date when the incident was detected on the endpoint / sensor.
+      description: The date the incident was detected on the endpoint / sensor.
       type: Date
     - contextPath: GravityZone.SummarizedIncidents.LastUpdated
-      description: The date when the incident was last updated in GravityZone or by the endpoint / sensor.
+      description: The date the incident was last updated in GravityZone or by the endpoint / sensor.
       type: Date
     - contextPath: GravityZone.SummarizedIncidents.LastProcessed
       description: The incident last processed date by GravityZone services.
@@ -750,7 +750,7 @@ script:
     arguments:
     - name: id
       isArray: true
-      description: The IDs of the incidents to add a note to. Supports comma separated values.
+      description: A comma-separated list of incident IDs to add a note to.
       required: true
       secret: false
       default: false
@@ -776,7 +776,7 @@ script:
     arguments:
     - name: id
       isArray: true
-      description: The IDs of the incidents to update. Supports comma separated values.
+      description: A comma-separated list of incident IDs to update.
       required: true
       secret: false
       default: false
@@ -821,7 +821,7 @@ script:
       default: false
     - name: output_file
       isArray: false
-      description: The path of the output file.
+      description: The output file path.
       required: false
       secret: false
       default: false
@@ -857,7 +857,7 @@ script:
       default: false
     outputs: []
   - name: gz-poll-task-status
-    description: Checks the status of a task. This command is not intended for direct use.
+    description: Checks the task status. This command is not intended for direct use.
     polling: true
     arguments:
     - name: task_id
@@ -878,7 +878,7 @@ script:
     arguments:
     - name: lastUpdate
       isArray: false
-      description: The time when the incident was last updated.
+      description: The time the incident was last updated.
       required: true
       secret: false
       default: false
@@ -895,7 +895,7 @@ script:
       default: false
     - name: lastUpdate
       isArray: false
-      description: The time when the incident was last updated.
+      description: The time the incident was last updated.
       required: true
       secret: false
       default: false
