@@ -167,7 +167,7 @@ def build_pagination_kwargs(
         raise ValueError(f"Invalid limit parameter: {limit_arg}. Must be a valid number.") from e
 
     # Validate limit lower constraints
-    if limit is not None and limit <= minimum_limit:
+    if limit is not None and limit < minimum_limit:
         raise ValueError(f"Limit must be greater than {minimum_limit}")
 
     # AWS API upper constraints
@@ -5208,7 +5208,7 @@ class EC2:
             outputs_key_field="VpcEndpointId",
             outputs=vpc_endpoint,
             readable_output=tableToMarkdown(
-                "VPC Endpoint",
+                "Successfully created VPC Endpoint",
                 vpc_endpoint,
                 headers=["VpcEndpointId", "State", "ServiceName", "VpcId", "VpcEndpointType"],
                 removeNull=True,

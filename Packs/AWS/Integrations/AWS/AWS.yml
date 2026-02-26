@@ -13000,6 +13000,7 @@ script:
       required: true
     - name: service_name
       description: The service name. For AWS services, the service name is usually in the form com.amazonaws.<region>.<service>.
+      required: true
     - name: service_network_arn
       description: The Amazon Resource Name (ARN) of a service network that will be associated with the VPC endpoint of type service-network.
     - name: service_region
@@ -13429,7 +13430,7 @@ script:
       description: The ID of the network ACL.
       required: true
     - name: rule_number
-      description: The rule number for the entry (for example, 100). ACL entries are processed in ascending order by rule number.
+      description: The rule number for the entry (Positive integer from 1 to 32766. The range 32767 to 65535 is reserved for internal use.). ACL entries are processed in ascending order by rule number.
       required: true
     - name: protocol
       description: The protocol number. A value of -1 or all means all protocols. If you specify all, -1, or a protocol number other than tcp, udp, or icmp, traffic on all ports is allowed, regardless of any ports or ICMP types or codes that you specify.
