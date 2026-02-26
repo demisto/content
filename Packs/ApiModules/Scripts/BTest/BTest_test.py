@@ -13,7 +13,7 @@ import respx
 from httpx import Response
 
 
-from ContentClientApiModule import (
+from Packs.ApiModules.Scripts.BTest.BTest import (
     ContentClient,
     AuthHandler,
     APIKeyAuthHandler,
@@ -971,7 +971,7 @@ def test_content_client_logger_format_with_non_serializable():
 
 def test_content_client_logger_trace_error():
     """Test ContentClientLogger trace_error method."""
-    from ContentClientApiModule import RequestTrace
+    from Packs.ApiModules.Scripts.BTest.BTest import RequestTrace
 
     logger = ContentClientLogger("TestClient", diagnostic_mode=True)
 
