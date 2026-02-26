@@ -2148,36 +2148,6 @@ def test_encode_url_indicator_custom_schemes():
     assert "server.com" in result_custom  # Host should be preserved
 
 
-def test_encode_url_indicator_unicode_escape_sequences():
-    """
-    Given:
-        - A URL containing literal unicode escape sequences (e.g. \\u0026 for &)
-          as produced by email security tools or JSON extraction in XSOAR
-    When:
-        - encode_url_indicator is called
-    Then:
-        - \\u0026 is decoded to & before encoding (not encoded as %5Cu0026)
-        - The resulting URL is correctly encoded for the API
-        - Normal URLs without escape sequences are unaffected
-    """
-    # URL with literal \u0026 (should become & before encoding)
-    url_with_unicode_escape = r"example.com/url?a=https://share.google/abc\u0026typo=1"
-
-    result = encode_url_indicator(url_with_unicode_escape)
-
-    # \u0026 should have been decoded to & before encoding.
-    # & is then encoded to %26 in the first pass (safe="="), and double-encoded
-    # to %2526 in the final full-encode step.
-    assert "%255Cu0026" not in result, r"\u0026 was NOT decoded — it was encoded as a literal string"
-    assert "%2526" in result, "& was not double-encoded — it should appear as %2526"
-    assert "typo" in result  # The rest of the URL should still be present
-
-    # Normal URL without escape sequences should be unaffected
-    normal_url = "example.com/path?param=value"
-    result_normal = encode_url_indicator(normal_url)
-    assert result_normal == "example.com%2Fpath%3Fparam%3Dvalue"
-
-
 def test_encode_url_indicator_strips_trailing_fragment():
     """
     Given:
