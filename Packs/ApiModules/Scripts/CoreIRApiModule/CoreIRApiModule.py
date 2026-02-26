@@ -4114,13 +4114,14 @@ def determine_issue_assignee_filter_field(assignee_list: list) -> str:
 def create_issues_filter(args) -> dict:
     """Build filter dictionary for issues based on provided arguments."""
     filter_builder = FilterBuilder()
+    # To maintain backward compatibility for time_frame 
+    filter_builder.add_time_range_field(
+        ISSUE_FIELDS["start_time"], start_time=args.get("start_time"), end_time=args.get("end_time")
+    )
     if args.get("time_frame") and args.get("time_frame") != "custom":
         filter_builder.add_time_range_field(
             ISSUE_FIELDS["start_time"], start_time=args.get("time_frame"), end_time=args.get("end_time")
         )
-    filter_builder.add_time_range_field(
-        ISSUE_FIELDS["start_time"], start_time=args.get("start_time"), end_time=args.get("end_time")
-    )
     if (starred_arg := args.get("starred")) is not None:
         filter_builder.add_field(ISSUE_FIELDS["starred"], FilterType.EQ, argToBoolean(starred_arg))
     filter_builder.add_field(ISSUE_FIELDS["issue_id"], FilterType.WILDCARD, argToList(args.get("issue_id")))
