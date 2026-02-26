@@ -497,10 +497,6 @@ ignore=GR109
 ignore=GR109
 
 # GR109 fails on playbooks that use modules that the pack does not support. This ignore entry should be removed once GR109 can be ignored at the pack level / no longer poses an issue (new repo or pack).
-[file:silent-playbook-Suspicious_Conditional_Access_operation_for_an_identity.yml]
-ignore=GR109
-
-# GR109 fails on playbooks that use modules that the pack does not support. This ignore entry should be removed once GR109 can be ignored at the pack level / no longer poses an issue (new repo or pack).
 [file:silent-playbook-Suspicious_Hidden_User_Created_Test.yml]
 ignore=GR109
 
