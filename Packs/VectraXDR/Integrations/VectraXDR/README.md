@@ -1300,7 +1300,7 @@ Add a note to the detection.
 | Vectra.Detection.Notes.detection_id | String | ID of the detection associated with the note. |
 | Vectra.Detection.Notes.note_id | Number | ID of the note. |
 | Vectra.Detection.Notes.id | Number | ID of the note. |
-| Vectra.Detection.Notes.date_created | Date | Date when the note was created. |
+| Vectra.Detection.Notes.date_created | Date | Date when the note was created  (ISO8601). |
 | Vectra.Detection.Notes.created_by | String | User who created the note. |
 | Vectra.Detection.Notes.note | String | Content of the note. |
 
@@ -1407,8 +1407,8 @@ Update a note in the detection.
 | Vectra.Detection.Notes.detection_id | String | ID of the detection associated with the note. |
 | Vectra.Detection.Notes.note_id | Number | ID of the note. |
 | Vectra.Detection.Notes.id | Number | ID of the note. |
-| Vectra.Detection.Notes.date_created | Date | Date when the note was created. |
-| Vectra.Detection.Notes.date_modified | Date | Date when the note was last modified. |
+| Vectra.Detection.Notes.date_created | Date | Date when the note was created (ISO8601). |
+| Vectra.Detection.Notes.date_modified | Date | Date when the note was last modified (ISO8601). |
 | Vectra.Detection.Notes.created_by | String | User who created the note. |
 | Vectra.Detection.Notes.modified_by | String | User who last modified the note. |
 | Vectra.Detection.Notes.note | String | Content of the note. |
@@ -3097,8 +3097,8 @@ Returns a list of notes for a specified detection.
 | --- | --- | --- |
 | Vectra.Detection.Notes.note_id | Number | ID of the note. |
 | Vectra.Detection.Notes.id | Number | ID of the note. |
-| Vectra.Detection.Notes.date_created | Date | Date when the note was created. |
-| Vectra.Detection.Notes.date_modified | Date | Date when the note was last modified. |
+| Vectra.Detection.Notes.date_created | Date | Date when the note was created  (ISO8601). |
+| Vectra.Detection.Notes.date_modified | Date | Date when the note was last modified  (ISO8601). |
 | Vectra.Detection.Notes.created_by | String | User who created the note. |
 | Vectra.Detection.Notes.modified_by | String | User who last modified the note. |
 | Vectra.Detection.Notes.note | String | Content of the note. |
