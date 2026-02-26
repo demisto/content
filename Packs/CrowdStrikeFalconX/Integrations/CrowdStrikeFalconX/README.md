@@ -50,13 +50,19 @@ Notice that the file identifier (SHA) can be changed as shown in the example bel
 | extended_data | If set to true, the report will return extended data which includes mitre attacks and signature information. Possible values are: true, false. Default is false. | Optional |
 | interval_in_seconds | Interval in seconds between each poll. Default is 600. | Optional |
 | submit_file | Whether to submit the given file to the sandbox. Can be "yes" or "no". Default is "no". Possible values are: no, yes. Default is no. | Optional |
+| environment_id | Sandbox environment used for analysis. Relevant if the submit_file parameter is set to true. Possible values are: 400: MacOS Catalina 10.15, 310: Linux Ubuntu 20 (64-bit), 200: Android (static analysis), 160: Windows 10 (64-bit), 140: Windows 11 (64-bit), 110: Windows 7 (64-bit), 100: Windows 7 (32-bit). Default is 160: Windows 10 (64-bit). | Optional |
+| action_script | Runtime script for sandbox analysis. Relevant if the submit_file parameter is set to true. Possible values are: default, default_maxantievasion, default_randomfiles, default_randomtheme, default_openie. | Optional |
+| command_line | Command line script passed to the submitted file at runtime. Max length: 2048 characters. Relevant if the submit_file parameter is set to true. | Optional |
+| document_password | Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters. Relevant if the submit_file parameter is set to true. | Optional |
+| submit_name | Name of the malware sample that is used for file type detection and analysis. Relevant if the submit_file parameter is set to true. | Optional |
+| system_date | Set a custom date for the sandbox environment in the format yyyy-MM-dd. Relevant if the submit_file parameter is set to true. | Optional |
+| system_time | Sets a custom time for the sandbox environment in the format HH:mm. Relevant if the submit_file parameter is set to true. | Optional |
+| network_settings | Specifies the sandbox network configuration used for analysis.<br/>Possible values are:<br/>- default: Fully operating network (default behavior if not specified).<br/>- tor: Route network traffic via TOR.<br/>- simulated: Simulate network traffic.<br/>- offline: Disable all network traffic.<br/>. Possible values are: default, tor, simulated, offline. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| csfalconx.resource.sha256 | String | SHA256 hash of the uploaded file. |
-| csfalconx.resource.file_name | String | Name of the uploaded file.  |
 | csfalconx.resource.tags | String | Analysis tags. |
 | csfalconx.resource.sandbox.http_requests.header | String | The header of the http request. |
 | csfalconx.resource.sandbox.http_requests.Accept | String | The accept of the http request. |
@@ -106,23 +112,24 @@ Notice that the file identifier (SHA) can be changed as shown in the example bel
 | csfalconx.resource.sandbox.contacted_hosts.associated_runtime.name | String | The sandbox contacted hosts associated runtime name. |
 | csfalconx.resource.sandbox.contacted_hosts.associated_runtime.pid | String | The sandbox contacted hosts associated runtime pid. |
 | csfalconx.resource.sandbox.incidents | String | The sandbox incidents. |
-| csfalconx.resource.sandbox.mitre_attacks.tactic | String | The sndbox MITRE tactic name. |
-| csfalconx.resource.sandbox.mitre_attacks.technique | String | The sndbox MITRE technique name. |
-| csfalconx.resource.sandbox.mitre_attacks.attack_id | String | The sndbox MITRE technique ID. |
-| csfalconx.resource.sandbox.mitre_attacks.malicious_identifiers | String | The sndbox MITRE malicious identifiers. |
-| csfalconx.resource.sandbox.mitre_attacks.parent.technique | String | The sndbox MITRE parent technique name. |
-| csfalconx.resource.sandbox.mitre_attacks.parent.attack_id | String | The sndbox MITRE parent technique ID. |
-| csfalconx.resource.sandbox.mitre_attacks.parent.attack_id_wiki | String | The sndbox MITRE parent technique wiki URL link. |
-| csfalconx.resource.sandbox.signatures.threat_level_human | String | The sndbox signatures threat level. |
-| csfalconx.resource.sandbox.signatures.category | String | The sndbox signatures category. |
-| csfalconx.resource.sandbox.signatures.identifier | String | The sndbox signatures identifier. |
-| csfalconx.resource.sandbox.signatures.type | Number | The sndbox signatures type. |
-| csfalconx.resource.sandbox.signatures.relevance | Number | The sndbox signatures relevance. |
-| csfalconx.resource.sandbox.signatures.name | String | The sndbox signatures name. |
-| csfalconx.resource.sandbox.signatures.description | String | The sndbox signatures description. |
-| csfalconx.resource.sandbox.signatures.origin | String | The sndbox signatures origin. |
+| csfalconx.resource.sandbox.mitre_attacks.tactic | String | The sandbox MITRE tactic name. |
+| csfalconx.resource.sandbox.mitre_attacks.technique | String | The sandbox MITRE technique name. |
+| csfalconx.resource.sandbox.mitre_attacks.attack_id | String | The sandbox MITRE technique ID. |
+| csfalconx.resource.sandbox.mitre_attacks.malicious_identifiers | String | The sandbox MITRE malicious identifiers. |
+| csfalconx.resource.sandbox.mitre_attacks.parent.technique | String | The sandbox MITRE parent technique name. |
+| csfalconx.resource.sandbox.mitre_attacks.parent.attack_id | String | The sandbox MITRE parent technique ID. |
+| csfalconx.resource.sandbox.mitre_attacks.parent.attack_id_wiki | String | The sandbox MITRE parent technique wiki URL link. |
+| csfalconx.resource.sandbox.signatures.threat_level_human | String | The sandbox signatures threat level. |
+| csfalconx.resource.sandbox.signatures.category | String | The sandbox signatures category. |
+| csfalconx.resource.sandbox.signatures.identifier | String | The sandbox signatures identifier. |
+| csfalconx.resource.sandbox.signatures.type | Number | The sandbox signatures type. |
+| csfalconx.resource.sandbox.signatures.relevance | Number | The sandbox signatures relevance. |
+| csfalconx.resource.sandbox.signatures.name | String | The sandbox signatures name. |
+| csfalconx.resource.sandbox.signatures.description | String | The sandbox signatures description. |
+| csfalconx.resource.sandbox.signatures.origin | String | The sandbox signatures origin. |
 | csfalconx.resource.intel.malware_families | Unknown | The malware families of the resource. |
 | csfalconx.resource.sha256 | String | SHA256 hash of the uploaded file. |
+| csfalconx.resource.file_name | String | Name of the uploaded file.  |
 
 #### Command Example
 
@@ -164,11 +171,10 @@ Notice that the file identifiers, SHA and ID are not the same.
 | **Argument Name** | **Description**                                                                                                                                                                                    | **Required** |
 | --- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
 | sha256 | SHA256 ID of the sample, which is a SHA256 hash value. Find the sample ID from the response when uploading a malware sample or search with the cs-fx-upload-file command.                          | Optional |
-| environment_id | Sandbox environment used for analysis. Possible values are: 310: Linux Ubuntu 20, 64-bit, 200: Android (static analysis), 160: Windows 10, 64-bit, 110: Windows 7, 64-bit, 100: Windows 7, 32-bit. | Optional |
+| environment_id | Sandbox environment used for analysis. Possible values are: '400: MacOS Catalina 10.15', '310: Linux Ubuntu 20, 64-bit', '200: Android (static analysis)', '160: Windows 10, 64-bit', '140: Windows 11, 64-bit', '110: Windows 7, 64-bit', '100: Windows 7, 32-bit'. | Optional |
 | action_script | Runtime script for sandbox analysis. Possible values are: default, default_maxantievasion, default_randomfiles, default_randomtheme, default_openie.                                               | Optional |
 | command_line | Command line script passed to the submitted file at runtime. Max length: 2048 characters.                                                                                                          | Optional |
 | document_password | Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters.                                                                                                       | Optional |
-| enable_tor | Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR. Possible values are: true, false.                 | Optional |
 | submit_name | Name of the malware sample that’s used for file type detection. and analysis.                                                                                                                      | Optional |
 | system_date | Set a custom date for the sandbox environment in the format yyyy-MM-dd.                                                                                                                            | Optional |
 | polling | Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready, Note - This command counts against the submission quota. Possible values are: true, false.                  | Optional |
@@ -176,6 +182,7 @@ Notice that the file identifiers, SHA and ID are not the same.
 | ids | This ia an internal argument used for the polling process, not to be used by the user.                                                                                                             | Optional |
 | interval_in_seconds | Interval in seconds between each poll. Default is 600.                                                                                                                                             | Optional |
 | system_time | Sets a custom time for the sandbox environment in the format HH:mm.                                                                                                                                | Optional |
+| network_settings | Specifies the sandbox network configuration used for analysis.<br/>Possible values are:<br/>- default: Fully operating network (default behavior if not specified).<br/>- tor: Route network traffic via TOR.<br/>- simulated: Simulate network traffic.<br/>- offline: Disable all network traffic.<br/>. | Optional |
 
 #### Context Output
 
@@ -267,7 +274,7 @@ Notice that the file identifiers, SHA and ID are not the same.
 
 #### Command Example
 
-```!cs-fx-submit-uploaded-file sha256="d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee" environment_id="160: Windows 10" action_script="default" command_line="command" document_password="password" enable_tor="false" submit_name="malware_test" system_date="2020-08-10" system_time="12:48"```
+```!cs-fx-submit-uploaded-file sha256="d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee" environment_id="160: Windows 10 (64-bit)" action_script="default" command_line="command" document_password="password" submit_name="malware_test" system_date="2020-08-10" system_time="12:48"```
 
 #### Context Example
 
@@ -1908,11 +1915,10 @@ Notice: Submitting indicators using this command might make the indicator data p
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | url | A web page or file URL. It can be HTTP(S) or FTP.<br/>For example: “https://url.com”,“ftp://ftp.com”. | Optional |
-| environment_id | Sandbox environment used for analysis. Possible values are: 310: Linux Ubuntu 20, 64-bit, 200: Android (static analysis), 160: Windows 10, 64-bit, 110: Windows 7, 64-bit, 100: Windows 7, 32-bit. | Optional |
+| environment_id | Sandbox environment used for analysis. Possible values are: '400: MacOS Catalina 10.15', '310: Linux Ubuntu 20, 64-bit', '200: Android (static analysis)', '160: Windows 10, 64-bit', '140: Windows 11, 64-bit', '110: Windows 7, 64-bit', '100: Windows 7, 32-bit'. | Optional |
 | action_script | Runtime script for sandbox analysis. Values:<br/>default<br/>default_maxantievasion<br/>default_randomfiles<br/>default_randomtheme<br/>default_openie. | Optional |
 | command_line | Command line script passed to the submitted file at runtime. Max length: 2048 characters. | Optional |
 | document_password | Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters. | Optional |
-| enable_tor | Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR. Default is false. Possible values are: false,  true. Default is false. | Optional |
 | submit_name | Name of the malware sample that’s used for file type detection and analysis. | Optional |
 | system_date | Sets a custom date for the sandbox environment in the format yyyy-MM-dd. | Optional |
 | polling | Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready, Note - This command counts against the submission quota. Possible values are: true, false. | Optional |
@@ -1920,6 +1926,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 | extended_data | If set to true, the report will return extended data which includes mitre attacks and signature information. Possible values are: true, false. Default is false. | Optional |
 | ids | This ia an internal argument used for the polling process, not to be used by the user. | Optional |
 | system_time | Sets a custom time for the sandbox environment in the format HH:mm. | Optional |
+| network_settings | Specifies the sandbox network configuration used for analysis.<br/>Possible values are:<br/>- default: Fully operating network (default behavior if not specified).<br/>- tor: Route network traffic via TOR.<br/>- simulated: Simulate network traffic.<br/>- offline: Disable all network traffic.<br/>. | Optional |
 
 #### Context Output
 
@@ -2000,7 +2007,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 #### Command Example
 
-```!cs-fx-submit-url url="https://www.google.com" environment_id="160: Windows 10" action_script="default" document_password="password" enable_tor="false" submit_name="malware_test" system_date="2020-08-10" system_time="12:48"```
+```!cs-fx-submit-url url="https://www.google.com" environment_id="160: Windows 10 (64-bit)" action_script="default" document_password="password" submit_name="malware_test" system_date="2020-08-10" system_time="12:48"```
 
 #### Context Example
 

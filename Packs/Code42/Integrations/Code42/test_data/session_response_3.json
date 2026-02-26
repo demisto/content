@@ -37,6 +37,7 @@
   "states": [
     {
       "state": "OPEN",
+      "stateV2": "OPEN",
       "sourceTimestamp": 1726083300017,
       "userId": null
     }

@@ -178,6 +178,51 @@ script:
       type: number
   - arguments:
     - default: true
+      description: A comma-separated list of Domains for which to look up the classification. For example, abc.com,xyz.com.
+      isArray: true
+      name: domain
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Whether there are multiple Domains in the 'domain' argument. If a Domain contains commas, set this argument to 'false' and enter the single Domain as the 'domain' argument.
+      name: multiple
+      predefined:
+      - 'true'
+      - 'false'
+    description: Looks up the classification for each of the specified Domains.
+    name: domain
+    compliantpolicies:
+    - User Soft Remediation
+    outputs:
+    - contextPath: Domain.Name
+      description: The Domain that was searched.
+      type: string
+    - contextPath: Zscaler.Domain.domainClassifications
+      description: The classification of the Domain. For example, MUSIC or WEB_SEARCH.
+      type: string
+    - contextPath: Zscaler.Domain.domainClassificationsWithSecurityAlert
+      description: The classifications of the Domains that have security alerts.
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious Domains, the vendor that tagged the Domain as malicious.
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious Domains, the reason the vendor tagged the Domain as malicious.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+  - arguments:
+    - default: true
       description: A comma-separated list of URLs to remove from the block list. For example, snapchat.com,facebook.com.
       isArray: true
       name: url
@@ -254,6 +299,9 @@ script:
       isArray: true
       name: retaining-parent-category-url
       required: false
+    - description: The name of the custom category. Required for custom categories (e.g., Popular Media). You can retrieve the category name by running the 'zscaler-get-categories' command.
+      name: category-name
+      required: false
     description: Adds URLs to the specified category.
     name: zscaler-category-add-url
     outputs:
@@ -280,6 +328,9 @@ script:
     - description: A comma-separated list of IP address to add to the retaining parent category section inside the specified category. For example, 1.2.3.4,8.8.8.8.
       isArray: true
       name: retaining-parent-category-ip
+      required: false
+    - description: The name of the custom category. Required for custom categories (e.g., Popular Media). You can retrieve the category name by running the 'zscaler-get-categories' command.
+      name: category-name
       required: false
     description: Adds IP address to the specified category.
     name: zscaler-category-add-ip
@@ -308,6 +359,9 @@ script:
       isArray: true
       name: retaining-parent-category-url
       required: false
+    - description: The name of the custom category. Required for custom categories (e.g., Popular Media). You can retrieve the category name by running the 'zscaler-get-categories' command.
+      name: category-name
+      required: false
     description: Removes URLs from the specified category.
     name: zscaler-category-remove-url
     outputs:
@@ -334,6 +388,9 @@ script:
     - description: A comma-separated list of IP address to remove from the retaining parent category section inside the specified category. For example, 1.2.3.4,8.8.8.8.
       isArray: true
       name: retaining-parent-category-ip
+      required: false
+    - description: The name of the custom category. Required for custom categories (e.g., Popular Media). You can retrieve the category name by running the 'zscaler-get-categories' command.
+      name: category-name
       required: false
     description: Removes IP address from the specified category.
     name: zscaler-category-remove-ip
@@ -1943,7 +2000,7 @@ script:
     description: Deletes the IP destination group associated with the specified group ID.
   script: ''
   subtype: python3
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.12.7090913
   type: python
 fromversion: 5.0.0
 tests:

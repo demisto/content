@@ -110,6 +110,9 @@ outputs:
 - contextPath: FileEnrichment.Results.Score
   description: The score of the indicator.
   type: Number
+- contextPath: FileEnrichment.Results.Size
+  description: The size of the file, expressed in bytes.
+  type: Number
 - contextPath: FileEnrichment.Results.Verdict
   description: The verdict of the indicator.
   type: String
