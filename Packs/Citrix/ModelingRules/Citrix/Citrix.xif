@@ -29,7 +29,6 @@ alter
     tmp_user_display_name_trimmed = rtrim(tmp_user_display_name, " ")
 | alter
     xdm.event.id = Id,
-    xdm.event.operation = OperationType,
     xdm.event.operation_sub_type = Text,
     xdm.event.original_event_type = OperationType,
     xdm.event.outcome = if(lowercase(to_string(IsSuccessful)) = "true", XDM_CONST.OUTCOME_SUCCESS, lowercase(to_string(IsSuccessful)) = "false", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_UNKNOWN),
