@@ -584,8 +584,6 @@ ignore=GR109
 [file:silent-playbook_Intense_SSO_failures_with_suspicious_characteristics.yml]
 ignore=GR109
 
-
-
 [known_words]
 xsiam
 coreirapimodule
