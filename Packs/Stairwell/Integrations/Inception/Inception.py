@@ -88,7 +88,8 @@ def _hash_sha256(file_path: str) -> Tuple[Optional[str], Optional[str]]:
         return None, f"Failed computing sha256 for {file_path}: {e}"
 
 
-def _create_session_with_retries(max_retries: int = RETRY_COUNT, backoff_factor: float = RETRY_BACKOFF_FACTOR) -> requests.Session:
+def _create_session_with_retries(max_retries: int = RETRY_COUNT,
+                                 backoff_factor: float = RETRY_BACKOFF_FACTOR) -> requests.Session:
     """
     Create a requests Session with retry logic for 5xx and 429 status codes.
     Uses urllib3's Retry mechanism instead of sleep to comply with XSOAR best practices.
@@ -183,7 +184,7 @@ def _resolve_file_source(entry_id: Optional[str] = None,
                 response = session.get(url, verify=verify, proxies=proxies, stream=True, timeout=HTTP_TIMEOUT)
                 response.raise_for_status()
             except requests.exceptions.Timeout:
-                return None, None, f"Timeout downloading file from URL {url} after {HTTP_TIMEOUT} seconds. Check network connectivity or try again later."
+                return None, None, f"Timeout downloading from {url} after {HTTP_TIMEOUT}s. Check connectivity."
             except requests.exceptions.ConnectionError as e:
                 return None, None, f"Connection error downloading from URL {url}: {e}. Check URL and network connectivity."
             except requests.exceptions.RequestException as e:
@@ -319,7 +320,8 @@ class Client(BaseClient):
             timeout=HTTP_TIMEOUT
         )
 
-    def get_hostname_resolutions(self, hostname: str, start_time: Optional[str] = None, end_time: Optional[str] = None) -> Dict[str, Any]:
+    def get_hostname_resolutions(self, hostname: str, start_time: Optional[str] = None,
+                                 end_time: Optional[str] = None) -> Dict[str, Any]:
         """Get all addresses resolved to by a hostname over a time range."""
         params: Dict[str, Any] = {}
         if start_time:
@@ -333,8 +335,11 @@ class Client(BaseClient):
             timeout=HTTP_TIMEOUT
         )
 
-    def batch_get_hostname_resolutions(self, hostnames: List[str], start_time: Optional[str] = None, end_time: Optional[str] = None,
-                                      record_types: Optional[List[str]] = None, include_errors: Optional[bool] = None) -> Dict[str, Any]:
+    def batch_get_hostname_resolutions(self, hostnames: List[str],
+                                       start_time: Optional[str] = None,
+                                       end_time: Optional[str] = None,
+                                       record_types: Optional[List[str]] = None,
+                                       include_errors: Optional[bool] = None) -> Dict[str, Any]:
         """Get resolution summaries for multiple hostnames."""
         json_data: Dict[str, Any] = {"hostnames": hostnames}
 
@@ -379,7 +384,8 @@ class Client(BaseClient):
             timeout=HTTP_TIMEOUT
         )
 
-    def get_hostnames_resolving_to_ip(self, ip_address: str, start_time: Optional[str] = None, end_time: Optional[str] = None) -> Dict[str, Any]:
+    def get_hostnames_resolving_to_ip(self, ip_address: str, start_time: Optional[str] = None,
+                                      end_time: Optional[str] = None) -> Dict[str, Any]:
         """Get all hostnames resolved to by an IP over a time interval."""
         params: Dict[str, Any] = {}
         if start_time:
@@ -475,7 +481,8 @@ class Client(BaseClient):
         )
 
     # YARA Rules API Methods
-    def list_yara_rules(self, environment: str, page_size: Optional[int] = None, page_token: Optional[str] = None) -> Dict[str, Any]:
+    def list_yara_rules(self, environment: str, page_size: Optional[int] = None,
+                        page_token: Optional[str] = None) -> Dict[str, Any]:
         """List all YARA rules in an environment."""
         params: Dict[str, Any] = {}
         if page_size:
@@ -489,7 +496,8 @@ class Client(BaseClient):
             timeout=HTTP_TIMEOUT
         )
 
-    def create_yara_rule(self, environment: str, rule_definition: str, metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def create_yara_rule(self, environment: str, rule_definition: str,
+                         metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Create a new YARA rule."""
         json_data: Dict[str, Any] = {"definition": rule_definition}
         if metadata:
@@ -681,7 +689,7 @@ def file_enrichment_command(client: Client, file_hash: str) -> CommandResults:
             md += "### AV Scanning Results\n"
             md += "Engine Name|Result\n"
             md += "---|---\n"
-            for key, res in last_analysis_results.items():
+            for res in last_analysis_results.values():
                 engine_name = res.get("engine_name")
                 result = res.get("result")
                 if engine_name and result:  # skip empty
@@ -972,7 +980,7 @@ def object_detonation_trigger_command(client: Client, object_id: str) -> Command
         if "404" in str(err):
             return CommandResults(readable_output=f"Object not found: {object_id}")
         elif "403" in str(err):
-            return CommandResults(readable_output=f"Permission denied to trigger detonation for object: {object_id}. Check API key permissions.")
+            return CommandResults(readable_output=f"Permission denied for detonation: {object_id}. Check API key permissions.")
         else:
             raise err
 
@@ -1113,7 +1121,9 @@ def hostname_get_command(client: Client, hostname: str, record_type: Optional[st
             raise err
 
 
-def hostname_get_resolutions_command(client: Client, hostname: str, start_time: Optional[str] = None, end_time: Optional[str] = None) -> CommandResults:
+def hostname_get_resolutions_command(client: Client, hostname: str,
+                                     start_time: Optional[str] = None,
+                                     end_time: Optional[str] = None) -> CommandResults:
     """Get all addresses resolved to by a hostname."""
     missing = _require_args({"hostname": hostname})
     if missing:
@@ -1127,7 +1137,11 @@ def hostname_get_resolutions_command(client: Client, hostname: str, start_time: 
         if isinstance(response, dict):
             response["hostname"] = hostname
 
-        readable = tableToMarkdown(f"Resolutions for {hostname}", resolutions) if resolutions else f"No resolutions found for {hostname}"
+        readable = (
+            tableToMarkdown(f"Resolutions for {hostname}", resolutions)
+            if resolutions
+            else f"No resolutions found for {hostname}"
+        )
         return CommandResults(
             readable_output=readable,
             outputs_prefix="Stairwell.Hostname.Resolutions",
@@ -1141,8 +1155,11 @@ def hostname_get_resolutions_command(client: Client, hostname: str, start_time: 
             raise err
 
 
-def hostname_batch_get_resolutions_command(client: Client, hostnames: str, start_time: Optional[str] = None, end_time: Optional[str] = None,
-                                          record_types: Optional[str] = None, include_errors: Optional[str] = None) -> CommandResults:
+def hostname_batch_get_resolutions_command(client: Client, hostnames: str,
+                                           start_time: Optional[str] = None,
+                                           end_time: Optional[str] = None,
+                                           record_types: Optional[str] = None,
+                                           include_errors: Optional[str] = None) -> CommandResults:
     """Get resolution summaries for multiple hostnames."""
     missing = _require_args({"hostnames": hostnames})
     if missing:
@@ -1161,7 +1178,8 @@ def hostname_batch_get_resolutions_command(client: Client, hostnames: str, start
         if include_errors:
             include_errors_bool = argToBoolean(include_errors)
 
-        response = client.batch_get_hostname_resolutions(hostname_list, start_time, end_time, record_types_list, include_errors_bool)
+        response = client.batch_get_hostname_resolutions(
+            hostname_list, start_time, end_time, record_types_list, include_errors_bool)
 
         # Extract resolutions for display
         resolutions_data = []
@@ -1176,7 +1194,11 @@ def hostname_batch_get_resolutions_command(client: Client, hostnames: str, start
                             resolution_with_hostname.update(resolution)
                             resolutions_data.append(resolution_with_hostname)
 
-        readable = tableToMarkdown("Batch Hostname Resolutions", resolutions_data) if resolutions_data else "No resolutions found."
+        readable = (
+            tableToMarkdown("Batch Hostname Resolutions", resolutions_data)
+            if resolutions_data
+            else "No resolutions found."
+        )
         return CommandResults(
             readable_output=readable,
             outputs_prefix="Stairwell.Hostname.BatchResolutions",
@@ -1227,7 +1249,11 @@ def ipaddress_lookup_cloud_provider_command(client: Client, ip_address: str) -> 
         if isinstance(response, dict):
             response["ip"] = ip_address
 
-        readable = tableToMarkdown(f"Cloud Provider Lookup for {ip_address}", response) if isinstance(response, dict) else str(response)
+        readable = (
+            tableToMarkdown(f"Cloud Provider Lookup for {ip_address}", response)
+            if isinstance(response, dict)
+            else str(response)
+        )
         return CommandResults(
             readable_output=readable,
             outputs_prefix="Stairwell.IPAddress.CloudProvider",
@@ -1241,7 +1267,9 @@ def ipaddress_lookup_cloud_provider_command(client: Client, ip_address: str) -> 
             raise err
 
 
-def ipaddress_get_hostnames_resolving_to_ip_command(client: Client, ip_address: str, start_time: Optional[str] = None, end_time: Optional[str] = None) -> CommandResults:
+def ipaddress_get_hostnames_resolving_to_ip_command(client: Client, ip_address: str,
+                                                    start_time: Optional[str] = None,
+                                                    end_time: Optional[str] = None) -> CommandResults:
     """Get all hostnames resolved to by an IP address."""
     missing = _require_args({"ip_address": ip_address})
     if missing:
@@ -1255,7 +1283,11 @@ def ipaddress_get_hostnames_resolving_to_ip_command(client: Client, ip_address: 
         if isinstance(response, dict):
             response["ip"] = ip_address
 
-        readable = tableToMarkdown(f"Hostnames Resolving to {ip_address}", hostnames) if hostnames else f"No hostnames found resolving to {ip_address}"
+        readable = (
+            tableToMarkdown(f"Hostnames Resolving to {ip_address}", hostnames)
+            if hostnames
+            else f"No hostnames found resolving to {ip_address}"
+        )
         return CommandResults(
             readable_output=readable,
             outputs_prefix="Stairwell.IPAddress.Hostnames",
@@ -1282,7 +1314,11 @@ def ipaddress_get_whois_command(client: Client, ip_address: str) -> CommandResul
         if isinstance(response, dict):
             response["ip"] = ip_address
 
-        readable = tableToMarkdown(f"IP Address {ip_address} WHOIS Information", response) if isinstance(response, dict) else str(response)
+        readable = (
+            tableToMarkdown(f"IP Address {ip_address} WHOIS Information", response)
+            if isinstance(response, dict)
+            else str(response)
+        )
         return CommandResults(
             readable_output=readable,
             outputs_prefix="Stairwell.IPAddress.WHOIS",
@@ -1313,14 +1349,19 @@ def utilities_get_cloud_ip_ranges_command(client: Client, provider: Optional[str
     except DemistoException as err:
         if "400" in str(err):
             return CommandResults(
-                readable_output=f"Invalid provider parameter: '{provider}'. Check valid cloud provider names." if provider else "Bad request to cloud IP ranges API. Check parameters."
+                readable_output=(
+                    f"Invalid provider parameter: '{provider}'. Check valid cloud provider names."
+                    if provider
+                    else "Bad request to cloud IP ranges API. Check parameters."
+                )
             )
         elif "404" in str(err):
             return CommandResults(
                 readable_output=f"Cloud provider not found: '{provider}'" if provider else "Cloud IP ranges endpoint not found."
             )
         else:
-            raise DemistoException(f"Failed to retrieve cloud IP ranges{f' for provider {provider}' if provider else ''}: {err}") from err
+            provider_info = f" for provider {provider}" if provider else ""
+            raise DemistoException(f"Failed to retrieve cloud IP ranges{provider_info}: {err}") from err
 
 
 def utilities_batch_canonicalize_hostnames_command(client: Client, hostnames: str) -> CommandResults:
@@ -1387,7 +1428,11 @@ def utilities_canonicalize_hostname_command(client: Client, hostname: str) -> Co
 
     try:
         response = client.canonicalize_hostname(hostname)
-        readable = tableToMarkdown(f"Canonicalized Hostname: {hostname}", response) if isinstance(response, dict) else str(response)
+        readable = (
+            tableToMarkdown(f"Canonicalized Hostname: {hostname}", response)
+            if isinstance(response, dict)
+            else str(response)
+        )
         return CommandResults(
             readable_output=readable,
             outputs_prefix="Stairwell.Utilities.CanonicalizedHostname",
@@ -1493,6 +1538,9 @@ def intake_preflight_and_upload(client: Optional[Any] = None,
     if missing:
         return missing
 
+    if not any([entry_id, url, file_path]):
+        return CommandResults(readable_output="Missing required arguments: file_path")
+
     temp_file_path = None  # Track temp file for cleanup
 
     try:
@@ -1569,7 +1617,7 @@ def intake_preflight_and_upload(client: Optional[Any] = None,
                 preflight = resp.json() if resp.content else {}
         except requests.exceptions.Timeout:
             return CommandResults(
-                readable_output=f"Intake preflight request timed out after {HTTP_TIMEOUT} seconds. The Stairwell API may be experiencing high load. Please try again later.",
+                readable_output=f"Intake preflight timed out after {HTTP_TIMEOUT}s. Try again later.",
                 outputs_prefix="Stairwell.Intake",
                 outputs={"error": "timeout", "timeout_seconds": HTTP_TIMEOUT}
             )
@@ -1645,7 +1693,7 @@ def intake_preflight_and_upload(client: Optional[Any] = None,
                     )
             except requests.exceptions.Timeout:
                 return CommandResults(
-                    readable_output=f"File upload timed out after {UPLOAD_TIMEOUT} seconds. Large files may require more time. Contact your Stairwell administrator if this persists.",
+                    readable_output=f"File upload timed out after {UPLOAD_TIMEOUT}s. Contact Stairwell admin if this persists.",
                     outputs_prefix="Stairwell.Intake",
                     outputs={"preflight": preflight, "error": "upload_timeout", "timeout_seconds": UPLOAD_TIMEOUT}
                 )
@@ -1766,7 +1814,11 @@ def yara_query_matches_command(client: Client, environment: str, yara_rule: str,
         page_size_int = _parse_int_arg(page_size, "pageSize")
         response = client.query_yara_matches(environment, yara_rule, included_envs_list, page_size_int, page_token)
         matches = response.get("objects", []) if isinstance(response, dict) else []
-        readable = tableToMarkdown(f"YARA Rule Matches: {yara_rule}", matches) if matches else f"No matches found for YARA rule: {yara_rule}"
+        readable = (
+            tableToMarkdown(f"YARA Rule Matches: {yara_rule}", matches)
+            if matches
+            else f"No matches found for YARA rule: {yara_rule}"
+        )
         return CommandResults(
             readable_output=readable,
             outputs_prefix="Stairwell.YaraRuleMatches",

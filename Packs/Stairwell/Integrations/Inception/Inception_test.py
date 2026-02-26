@@ -33,6 +33,9 @@ from Inception import (
 )
 import json
 import io
+import os
+import tempfile
+from unittest.mock import patch
 
 API_KEY = "FAKEAPIKEY"
 TEST_FILE_HASH = "e7762f90024c5366807c7c145d3456f0ac3be086c0ec3557427d3c2c10a2052d"
@@ -133,11 +136,13 @@ def test_intake_preflight_and_upload_missing_args():
 def test_intake_preflight_and_upload_already_exists(requests_mock):
     """Test intake_preflight_and_upload when file already exists"""
     mock_response = util_load_json('test_data/intake_preflight_already_exists.json')
-    
+
     requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", json=mock_response)
-    
-    results = intake_preflight_and_upload(asset_id="test-asset", file_path="/path/to/test/file.exe")
-    
+
+    with patch("Inception.os.path.exists", return_value=True), \
+         patch("Inception._hash_sha256", return_value=("abc123fakehash", None)):
+        results = intake_preflight_and_upload(asset_id="test-asset", file_path="/path/to/test/file.exe")
+
     assert results
     assert "already exists in Stairwell" in results.readable_output
     assert results.outputs.get("result") == "already_exists"
@@ -147,15 +152,23 @@ def test_intake_preflight_and_upload_already_exists(requests_mock):
 def test_intake_preflight_and_upload_success(requests_mock):
     """Test intake_preflight_and_upload with successful upload"""
     mock_preflight = util_load_json('test_data/intake_preflight_upload.json')
-    
+
     # Mock the preflight request
     requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", json=mock_preflight)
-    
+
     # Mock the upload request
     requests_mock.post("https://storage.googleapis.com/upload-url", status_code=200)
-    
-    results = intake_preflight_and_upload(asset_id="test-asset", file_path="/path/to/test/file.exe")
-    
+
+    with tempfile.NamedTemporaryFile(suffix=".exe", delete=False) as tmp:
+        tmp.write(b"fake content")
+        tmp_path = tmp.name
+
+    try:
+        with patch("Inception._hash_sha256", return_value=("abc123fakehash", None)):
+            results = intake_preflight_and_upload(asset_id="test-asset", file_path=tmp_path)
+    finally:
+        os.unlink(tmp_path)
+
     assert results
     assert "Upload completed successfully" in results.readable_output
     assert results.outputs.get("upload_status") == 200
@@ -164,15 +177,23 @@ def test_intake_preflight_and_upload_success(requests_mock):
 def test_intake_preflight_and_upload_upload_failure(requests_mock):
     """Test intake_preflight_and_upload when upload fails"""
     mock_preflight = util_load_json('test_data/intake_preflight_upload.json')
-    
+
     # Mock the preflight request
     requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", json=mock_preflight)
-    
+
     # Mock the upload request to fail
     requests_mock.post("https://storage.googleapis.com/upload-url", status_code=500, text="Upload failed")
-    
-    results = intake_preflight_and_upload(asset_id="test-asset", file_path="/path/to/test/file.exe")
-    
+
+    with tempfile.NamedTemporaryFile(suffix=".exe", delete=False) as tmp:
+        tmp.write(b"fake content")
+        tmp_path = tmp.name
+
+    try:
+        with patch("Inception._hash_sha256", return_value=("abc123fakehash", None)):
+            results = intake_preflight_and_upload(asset_id="test-asset", file_path=tmp_path)
+    finally:
+        os.unlink(tmp_path)
+
     assert results
     assert "Upload failed with status 500" in results.readable_output
     assert results.outputs.get("upload_status") == 500
@@ -181,11 +202,13 @@ def test_intake_preflight_and_upload_upload_failure(requests_mock):
 def test_intake_preflight_and_upload_missing_upload_info(requests_mock):
     """Test intake_preflight_and_upload when preflight requests upload but missing upload info"""
     mock_response = util_load_json('test_data/intake_preflight_missing_upload_info.json')
-    
+
     requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", json=mock_response)
-    
-    results = intake_preflight_and_upload(asset_id="test-asset", file_path="/path/to/test/file.exe")
-    
+
+    with patch("Inception.os.path.exists", return_value=True), \
+         patch("Inception._hash_sha256", return_value=("abc123fakehash", None)):
+        results = intake_preflight_and_upload(asset_id="test-asset", file_path="/path/to/test/file.exe")
+
     assert results
     assert "missing uploadUrl/fields" in results.readable_output
     assert results.outputs.get("error") == "missing_upload_instructions"
@@ -194,11 +217,13 @@ def test_intake_preflight_and_upload_missing_upload_info(requests_mock):
 def test_intake_preflight_and_upload_unknown_action(requests_mock):
     """Test intake_preflight_and_upload with unknown action"""
     mock_response = util_load_json('test_data/intake_preflight_unknown_action.json')
-    
+
     requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", json=mock_response)
-    
-    results = intake_preflight_and_upload(asset_id="test-asset", file_path="/path/to/test/file.exe")
-    
+
+    with patch("Inception.os.path.exists", return_value=True), \
+         patch("Inception._hash_sha256", return_value=("abc123fakehash", None)):
+        results = intake_preflight_and_upload(asset_id="test-asset", file_path="/path/to/test/file.exe")
+
     assert results
     assert "Unrecognized action" in results.readable_output
 
@@ -206,9 +231,11 @@ def test_intake_preflight_and_upload_unknown_action(requests_mock):
 def test_intake_preflight_and_upload_http_error(requests_mock):
     """Test intake_preflight_and_upload with HTTP error"""
     requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", status_code=500)
-    
-    results = intake_preflight_and_upload(asset_id="test-asset", file_path="/path/to/test/file.exe")
-    
+
+    with patch("Inception.os.path.exists", return_value=True), \
+         patch("Inception._hash_sha256", return_value=("abc123fakehash", None)):
+        results = intake_preflight_and_upload(asset_id="test-asset", file_path="/path/to/test/file.exe")
+
     assert results
     assert "HTTP error during Intake preflight/upload" in results.readable_output
     assert "error" in results.outputs
@@ -217,15 +244,16 @@ def test_intake_preflight_and_upload_http_error(requests_mock):
 def test_intake_preflight_and_upload_with_sha256(requests_mock):
     """Test intake_preflight_and_upload with provided SHA256"""
     mock_response = util_load_json('test_data/intake_preflight_already_exists.json')
-    
+
     requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", json=mock_response)
-    
-    results = intake_preflight_and_upload(
-        asset_id="test-asset", 
-        file_path="/path/to/test/file.exe",
-        sha256="e7762f90024c5366807c7c145d3456f0ac3be086c0ec3557427d3c2c10a2052d"
-    )
-    
+
+    with patch("Inception.os.path.exists", return_value=True):
+        results = intake_preflight_and_upload(
+            asset_id="test-asset",
+            file_path="/path/to/test/file.exe",
+            sha256="e7762f90024c5366807c7c145d3456f0ac3be086c0ec3557427d3c2c10a2052d"
+        )
+
     assert results
     assert "already exists in Stairwell" in results.readable_output
 
@@ -233,18 +261,20 @@ def test_intake_preflight_and_upload_with_sha256(requests_mock):
 def test_intake_preflight_and_upload_with_web_origin(requests_mock):
     """Test intake_preflight_and_upload with web origin type"""
     mock_response = util_load_json('test_data/intake_preflight_already_exists.json')
-    
+
     requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", json=mock_response)
-    
-    results = intake_preflight_and_upload(
-        asset_id="test-asset", 
-        file_path="/path/to/test/file.exe",
-        origin_type="web",
-        origin_referrer_url="https://example.com/referrer",
-        origin_host_url="https://example.com",
-        origin_zone_id=123
-    )
-    
+
+    with patch("Inception.os.path.exists", return_value=True), \
+         patch("Inception._hash_sha256", return_value=("abc123fakehash", None)):
+        results = intake_preflight_and_upload(
+            asset_id="test-asset",
+            file_path="/path/to/test/file.exe",
+            origin_type="web",
+            origin_referrer_url="https://example.com/referrer",
+            origin_host_url="https://example.com",
+            origin_zone_id=123
+        )
+
     assert results
     assert "already exists in Stairwell" in results.readable_output
 
@@ -252,15 +282,17 @@ def test_intake_preflight_and_upload_with_web_origin(requests_mock):
 def test_intake_preflight_and_upload_with_detonation_plan(requests_mock):
     """Test intake_preflight_and_upload with detonation plan"""
     mock_response = util_load_json('test_data/intake_preflight_already_exists.json')
-    
+
     requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", json=mock_response)
-    
-    results = intake_preflight_and_upload(
-        asset_id="test-asset", 
-        file_path="/path/to/test/file.exe",
-        detonation_plan="test-plan"
-    )
-    
+
+    with patch("Inception.os.path.exists", return_value=True), \
+         patch("Inception._hash_sha256", return_value=("abc123fakehash", None)):
+        results = intake_preflight_and_upload(
+            asset_id="test-asset",
+            file_path="/path/to/test/file.exe",
+            detonation_plan="test-plan"
+        )
+
     assert results
     assert "already exists in Stairwell" in results.readable_output
 
