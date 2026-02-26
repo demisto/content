@@ -722,6 +722,53 @@ Fetches a conversation's history of messages and events
 | Slack.Messages.ThreadTimeStamp    | string   | The thread timestamp of the message.                 |
 | SlackConversationHistory.NextPageToken   | string   | Token to retrieve the next page of results.          |
 
+#### Command Example
+
+```!slack-get-conversation-history conversation_name="general" limit="2"```
+
+#### Context Example
+
+```json
+{
+    "Slack": {
+        "Messages": [
+            {
+                "Type": "message",
+                "Text": "Hello team, please review the latest security report.",
+                "UserId": "U0XXXXXXXX",
+                "Name": "exampleUser1",
+                "FullName": "exampleUser2",
+                "TimeStamp": "1727448123.000100",
+                "HasReplies": "false",
+                "ThreadTimeStamp": "1727448123.000100"
+            },
+            {
+                "Type": "message",
+                "Text": "Incident #1234 has been resolved.",
+                "UserId": "U0YYYYYYYY",
+                "Name": "exampleUser2",
+                "FullName": "exampleUser2",
+                "TimeStamp": "1727448000.000200",
+                "HasReplies": "true",
+                "ThreadTimeStamp": "1727448000.000200"
+            }
+        ]
+    },
+    "SlackConversationHistory": {
+        "NextPageToken": "exampleToken"
+    }
+}
+```
+
+#### Human Readable Output
+
+> ### Conversation History for general
+>
+>|Type|Text|UserId|Name|FullName|TimeStamp|HasReplies|ThreadTimeStamp|
+>|---|---|---|---|---|---|---|---|
+>| message | Hello team, please review the latest security report. | U0XXXXXXXX | exampleUser1 | exampleUser1 | 1727448123.000100 | false | 1727448123.000100 |
+>| message | Incident #1234 has been resolved. | U0YYYYYYYY | exampleUser2 | exampleUser2 | 1727448000.000200 | true | 1727448000.000200 |
+
 ### slack-get-conversation-replies
 
 ***

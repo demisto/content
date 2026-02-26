@@ -2862,7 +2862,7 @@ def conversation_history() -> None:
         )
 
     messages: Any = raw_response.get("messages", [])
-    response_metadata: dict = raw_response.get("response_metadata", {})  # type: ignore[assignment]
+    response_metadata: dict = raw_response.get("response_metadata", {}) or {}
     cursor: str = response_metadata.get("next_cursor", "")
 
     # Normalize messages to list
@@ -2883,7 +2883,7 @@ def conversation_history() -> None:
         if "subtype" not in message:
             user_id = message.get("user")
             user_details_response = send_slack_request_sync(CLIENT, "users.info", http_verb="GET", body={"user": user_id})
-            user_details: dict = user_details_response.get("user", {})
+            user_details: dict = user_details_response.get("user", {}) or {}
             full_name = user_details.get("real_name", "N/A")
             name = user_details.get("name", "N/A")
             if "thread_ts" in message:
