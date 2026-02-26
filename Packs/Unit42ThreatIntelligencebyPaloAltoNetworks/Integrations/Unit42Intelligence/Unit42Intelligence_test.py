@@ -2010,6 +2010,65 @@ def test_parse_url_list_single_quoted_url():
     assert result[0] == "example.com/path/to/page"
 
 
+def test_parse_url_list_single_quoted_multiple_urls():
+    """
+    Given:
+        - Two URLs each wrapped in single-quote characters, comma-separated
+          (e.g. 'url1','url2' — the new single-quote support added in this branch)
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns both URLs as separate entries
+        - Leading and trailing single-quote characters are stripped from each URL
+    """
+    url_input = "'https://example.com','https://test.com'"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 2
+    assert result[0] == "https://example.com"
+    assert result[1] == "https://test.com"
+
+
+def test_parse_url_list_single_quoted_scheme_less_urls():
+    """
+    Given:
+        - Two scheme-less URLs each wrapped in single-quote characters, comma-separated
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns both URLs as separate entries
+        - Leading and trailing single-quote characters are stripped from each URL
+    """
+    url_input = "'share.google/abc','example.com/url?a=https://share.google/abc'"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 2
+    assert result[0] == "share.google/abc"
+    assert result[1] == "example.com/url?a=https://share.google/abc"
+
+
+def test_parse_url_list_single_quoted_urls_with_commas_in_query():
+    """
+    Given:
+        - Single-quoted URLs where the second URL contains commas in its query string
+    When:
+        - parse_url_list is called
+    Then:
+        - Splits on the single-quote-comma-single-quote boundary between the two URLs
+        - Preserves commas that are inside a URL's query string
+        - Strips surrounding single-quotes from each URL
+    """
+    url_input = "'share.google/a','example.com/url?a=https://share.google/a&c=e,1,abc'"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 2
+    assert result[0] == "share.google/a"
+    assert result[1] == "example.com/url?a=https://share.google/a&c=e,1,abc"
+
+
 def test_encode_url_indicator_with_special_characters():
     """
     Given:
@@ -2087,3 +2146,119 @@ def test_encode_url_indicator_custom_schemes():
     result_custom = encode_url_indicator(custom_url)
     assert "custom%3A%2F%2F" in result_custom  # custom:// should be encoded
     assert "server.com" in result_custom  # Host should be preserved
+
+
+def test_encode_url_indicator_unicode_escape_sequences():
+    """
+    Given:
+        - A URL containing literal unicode escape sequences (e.g. \\u0026 for &)
+          as produced by email security tools or JSON extraction in XSOAR
+    When:
+        - encode_url_indicator is called
+    Then:
+        - \\u0026 is decoded to & before encoding (not encoded as %5Cu0026)
+        - The resulting URL is correctly encoded for the API
+        - Normal URLs without escape sequences are unaffected
+    """
+    # URL with literal \u0026 (should become & before encoding)
+    url_with_unicode_escape = r"example.com/url?a=https://share.google/abc\u0026typo=1"
+
+    result = encode_url_indicator(url_with_unicode_escape)
+
+    # \u0026 should have been decoded to & before encoding.
+    # & is then encoded to %26 in the first pass (safe="="), and double-encoded
+    # to %2526 in the final full-encode step.
+    assert "%255Cu0026" not in result, r"\u0026 was NOT decoded — it was encoded as a literal string"
+    assert "%2526" in result, "& was not double-encoded — it should appear as %2526"
+    assert "typo" in result  # The rest of the URL should still be present
+
+    # Normal URL without escape sequences should be unaffected
+    normal_url = "example.com/path?param=value"
+    result_normal = encode_url_indicator(normal_url)
+    assert result_normal == "example.com%2Fpath%3Fparam%3Dvalue"
+
+
+def test_encode_url_indicator_strips_trailing_fragment():
+    """
+    Given:
+        - A URL with a trailing '#' (empty fragment), e.g. linkprotect.cudasvc.com/url#utm=a#
+          as seen in url (23).log — the API returns HTTP 400 TAS-0002 for such URLs
+    When:
+        - encode_url_indicator is called
+    Then:
+        - The trailing '#' (and everything after the first '#') is stripped before encoding
+        - The encoded result does NOT contain '%23' (encoded '#')
+        - The result is identical to encoding the same URL without the trailing '#'
+    """
+    # URL with trailing '#' — mirrors the failing case in url (23).log
+    url_with_trailing_hash = "linkprotect.cudasvc.com/url#utm=a#"
+    result = encode_url_indicator(url_with_trailing_hash)
+
+    # Fragment must be stripped: no encoded '#' (%23) should appear in the result
+    assert "%23" not in result, "Fragment was not stripped — encoded '#' found in result"
+
+    # Result must equal encoding the same URL without any fragment
+    url_without_fragment = "linkprotect.cudasvc.com/url"
+    expected = encode_url_indicator(url_without_fragment)
+    assert result == expected
+
+
+def test_encode_url_indicator_strips_mid_url_fragment():
+    """
+    Given:
+        - A URL with a fragment that contains another '#', e.g. linkprotect.cudasvc.com/url#utm=a#b
+          as seen in url (25).log — the API returns HTTP 400 TAS-0002 for such URLs
+    When:
+        - encode_url_indicator is called
+    Then:
+        - Everything from the first '#' onwards is stripped before encoding
+        - The encoded result does NOT contain '%23'
+        - The result is identical to encoding the base URL without any fragment
+    """
+    # URL with '#utm=a#b' fragment — mirrors the failing case in url (25).log
+    url_with_double_hash = "linkprotect.cudasvc.com/url#utm=a#b"
+    result = encode_url_indicator(url_with_double_hash)
+
+    assert "%23" not in result, "Fragment was not stripped — encoded '#' found in result"
+
+    url_without_fragment = "linkprotect.cudasvc.com/url"
+    expected = encode_url_indicator(url_without_fragment)
+    assert result == expected
+
+
+def test_encode_url_indicator_strips_fragment_with_scheme():
+    """
+    Given:
+        - A URL with a scheme and a fragment, e.g. https://example.com/page#section
+    When:
+        - encode_url_indicator is called
+    Then:
+        - The fragment is stripped and the scheme + path are encoded correctly
+        - No '%23' appears in the result
+    """
+    url_with_fragment = "https://example.com/page#section"
+    result = encode_url_indicator(url_with_fragment)
+
+    assert "%23" not in result, "Fragment was not stripped — encoded '#' found in result"
+
+    url_without_fragment = "https://example.com/page"
+    expected = encode_url_indicator(url_without_fragment)
+    assert result == expected
+
+
+def test_encode_url_indicator_no_fragment_unchanged():
+    """
+    Given:
+        - A URL with no fragment (no '#' character)
+    When:
+        - encode_url_indicator is called
+    Then:
+        - The result is identical to the pre-fix behaviour (fragment stripping is a no-op)
+        - The URL is still correctly double-encoded
+    """
+    url = "linkprotect.cudasvc.com/url?param=value"
+    result = encode_url_indicator(url)
+
+    # No fragment to strip — result should be the standard double-encoded form
+    assert "%23" not in result
+    assert result == "linkprotect.cudasvc.com%2Furl%3Fparam%3Dvalue"
