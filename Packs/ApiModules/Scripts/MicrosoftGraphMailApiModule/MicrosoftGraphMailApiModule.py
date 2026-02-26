@@ -65,18 +65,31 @@ class MsGraphMailBaseClient(MicrosoftClient):
         file_attachments_result = []
         for attachment in inline_from_layout_attachments:
             data = attachment.get("data")
-            demisto.debug(f"send-mail: Inline attachment '{attachment.get('name')}' ({len(data)} bytes) will use draft-based flow.")
-            file_attachments_result.append(
-                {
+            file_size = len(data)
+            if file_size < cls.MAX_ATTACHMENT_SIZE:
+                demisto.debug(f"send-mail: Inline attachment '{attachment.get('name')}' ({file_size} bytes) "
+                              f"using direct contentBytes in draft (under 3MB threshold).")
+                file_attachments_result.append({
+                    "@odata.type": cls.FILE_ATTACHMENT,
+                    "contentBytes": base64.b64encode(data).decode("utf-8"),
+                    "contentType": f"{attachment.get('maintype')}/{attachment.get('subtype')}",
+                    "isInline": True,
+                    "name": attachment.get("name"),
+                    "contentId": attachment.get("cid"),
+                    "size": file_size,
+                })
+            else:
+                demisto.debug(f"send-mail: Inline attachment '{attachment.get('name')}' ({file_size} bytes) "
+                              f"requires upload session (over 3MB threshold).")
+                file_attachments_result.append({
                     "data": data,
                     "isInline": True,
                     "name": attachment.get("name"),
                     "contentId": attachment.get("cid"),
                     "requires_upload": True,
-                    "size": len(data),
+                    "size": file_size,
                     "contentType": f"{attachment.get('maintype')}/{attachment.get('subtype')}",
-                }
-            )
+                })
         return file_attachments_result
 
     @classmethod
@@ -661,9 +674,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
 
     def add_attachments_via_upload_session(self, email: str, draft_id: str, attachments: list[dict]):
         """
-        Add attachments to a draft message. For attachments smaller than 3MB, attach directly to the draft
-        using the regular attachments endpoint. For larger attachments, use an upload session to divide the
-        file bytes into chunks and send each chunk.
+        Add attachments using an upload session by dividing the file bytes into chunks and sent each chunk each time.
         more info here - https://docs.microsoft.com/en-us/graph/outlook-large-attachments?tabs=http
         Args:
             email (str): email to create the upload session.
@@ -672,36 +683,14 @@ class MsGraphMailBaseClient(MicrosoftClient):
         """
         email = email or self._mailbox_to_fetch
         for attachment in attachments:
-            attachment_size = attachment.get("size", len(attachment.get("data", b"")))
-            if attachment_size < self.MAX_ATTACHMENT_SIZE:
-                demisto.debug(
-                    f"Upload session: Attaching '{attachment['name']}' ({attachment_size} bytes) "
-                    f"directly to draft (under 3MB, no upload session needed)."
-                )
-                attachment_payload: dict = {
-                    "@odata.type": "#microsoft.graph.fileAttachment",
-                    "contentBytes": base64.b64encode(attachment["data"]).decode("utf-8"),
-                    "contentType": attachment.get("contentType", "application/octet-stream"),
-                    "isInline": attachment.get("isInline", False),
-                    "name": attachment["name"],
-                }
-                if attachment.get("contentId"):
-                    attachment_payload["contentId"] = attachment["contentId"]
-
-                self.http_request(
-                    "POST",
-                    f"/users/{email}/messages/{draft_id}/attachments",
-                    json_data=attachment_payload,
-                )
-            else:
-                self.add_attachment_with_upload_session(
-                    email=email,
-                    draft_id=draft_id,
-                    attachment_data=attachment.get("data", ""),
-                    attachment_name=attachment.get("name", ""),
-                    is_inline=attachment.get("isInline", False),
-                    content_id=attachment.get("contentId", None),
-                )
+            self.add_attachment_with_upload_session(
+                email=email,
+                draft_id=draft_id,
+                attachment_data=attachment.get("data", ""),
+                attachment_name=attachment.get("name", ""),
+                is_inline=attachment.get("isInline", False),
+                content_id=attachment.get("contentId", None),
+            )
 
     def get_upload_session(
         self, email: str, draft_id: str, attachment_name: str, attachment_size: int, is_inline: bool, content_id=None
@@ -739,6 +728,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
         """
 
         attachment_size = len(attachment_data)
+        demisto.debug(f"Upload session: Starting upload for '{attachment_name}' ({attachment_size} bytes).")
 
         upload_url = ""
         for i in range(UPLOAD_SESSION_RETRIES):
@@ -762,12 +752,17 @@ class MsGraphMailBaseClient(MicrosoftClient):
             except Exception as e:
                 raise e
 
+        demisto.debug(f"Upload session: Obtained upload URL for '{attachment_name}'.")
         start_idx = 0
+        chunk_num = 0
 
         while start_idx < attachment_size:
+            chunk_num += 1
             end_idx = min(start_idx + self.MAX_ATTACHMENT_SIZE, attachment_size)
             chunk = attachment_data[start_idx:end_idx]
 
+            demisto.debug(f"Upload session: Uploading chunk {chunk_num} for '{attachment_name}' - "
+                          f"range {start_idx}-{end_idx - 1}/{attachment_size}, attempt 1")
             # attempt #1
             resp = self.upload_attachment(
                 upload_url=upload_url,
@@ -779,7 +774,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
 
             # 404 -> single retry for this chunk
             if resp.status_code == 404:
-                demisto.debug(f"Chunk upload got 404 for '{attachment_name}' at range {start_idx}-{end_idx}. Retrying once...")
+                demisto.debug(f"Upload session: Chunk {chunk_num} got 404 for '{attachment_name}', retrying (attempt 2).")
                 resp = self.upload_attachment(
                     upload_url=upload_url,
                     start_chunk_idx=start_idx,
@@ -798,9 +793,11 @@ class MsGraphMailBaseClient(MicrosoftClient):
                     )
 
             if resp.status_code == 201:
+                demisto.debug(f"Upload session: Upload complete for '{attachment_name}' (status 201).")
                 break
 
             if resp.status_code == 200:
+                demisto.debug(f"Upload session: Chunk {chunk_num} uploaded successfully for '{attachment_name}' (status 200).")
                 start_idx = end_idx
                 continue
 
@@ -829,9 +826,12 @@ class MsGraphMailBaseClient(MicrosoftClient):
         email = email or self._mailbox_to_fetch
         created_draft = self.create_draft(from_email=email, json_data=json_data, reply_message_id=reply_message_id)
         draft_id = created_draft.get("id", "")
+        demisto.debug(f"Upload session: Created draft with ID '{draft_id}'. "
+                      f"Uploading {len(attachments_more_than_3mb)} large attachment(s).")
         self.add_attachments_via_upload_session(  # add attachments via upload session.
             email=email, draft_id=draft_id, attachments=attachments_more_than_3mb
         )
+        demisto.debug(f"Upload session: All attachments uploaded. Sending draft '{draft_id}'.")
         self.send_draft(email=email, draft_id=draft_id)  # send the draft email
 
     def _fetch_last_emails(self, folder_id, last_fetch, exclude_ids):
@@ -1217,7 +1217,7 @@ class GraphMailUtils:
                     "subtype": subtype,
                     "data": b64_decode(m.group(3)),
                     "name": name,
-                    "cid": f"{name}@{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}",
+                    "cid": f"image{i}",
                 }
                 attachments.append(att)
                 cleanBody += htmlBody[lastIndex : m.start(1)] + "cid:" + att["cid"]
@@ -1300,6 +1300,8 @@ class GraphMailUtils:
                 more_than_3mb_attachments.append(attachment)
             else:
                 less_than_3mb_attachments.append(attachment)
+        demisto.debug(f"send-mail: Attachment division complete. Direct: {len(less_than_3mb_attachments)}, "
+                      f"Upload session: {len(more_than_3mb_attachments)}")
         return less_than_3mb_attachments, more_than_3mb_attachments
 
     @staticmethod
@@ -2157,11 +2159,15 @@ def send_email_command(client: MsGraphMailBaseClient, args):
     )
 
     if more_than_3mb_attachments:  # go through process 1 (in docstring)
+        demisto.debug(f"send-mail: Using upload session flow. Direct attachments: {len(less_than_3mb_attachments)}, "
+                      f"Upload session attachments: {len(more_than_3mb_attachments)}")
         message_content["attachments"] = less_than_3mb_attachments
         client.send_mail_with_upload_session_flow(
             email=email, json_data=message_content, attachments_more_than_3mb=more_than_3mb_attachments
         )
     else:  # go through process 2 (in docstring)
+        demisto.debug(f"send-mail: Using direct send (no upload session needed). "
+                      f"Total attachments: {len(message_content.get('attachments', []))}")
         client.send_mail(email=email, json_data=message_content)
 
     message_content.pop("attachments", None)
