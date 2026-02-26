@@ -1373,7 +1373,7 @@ def tc_update_indicator_command(
     response = client.make_request(Method.PUT, url, payload=json.dumps(payload))
 
     if return_raw:
-        return (response.get("data"),)
+        return response.get("data")
     ec, human_readable = create_context([response.get("data")])
 
     return_results(
