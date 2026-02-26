@@ -80,27 +80,35 @@ class MsGraphMailBaseClient(MicrosoftClient):
             data = attachment.get("data")
             file_size = len(data)
             if file_size < cls.MAX_ATTACHMENT_SIZE:
-                demisto.debug(f"send-mail: Inline attachment '{attachment.get('name')}' ({file_size} bytes) "
-                              f"using direct contentBytes in draft (under 3MB threshold).")
-                file_attachments_result.append({
-                    "@odata.type": cls.FILE_ATTACHMENT,
-                    "contentBytes": base64.b64encode(data).decode("utf-8"),
-                    "isInline": True,
-                    "name": attachment.get("name"),
-                    "contentId": attachment.get("cid"),
-                    "size": file_size,
-                })
+                demisto.debug(
+                    f"send-mail: Inline attachment '{attachment.get('name')}' ({file_size} bytes) "
+                    f"using direct contentBytes in draft (under 3MB threshold)."
+                )
+                file_attachments_result.append(
+                    {
+                        "@odata.type": cls.FILE_ATTACHMENT,
+                        "contentBytes": base64.b64encode(data).decode("utf-8"),
+                        "isInline": True,
+                        "name": attachment.get("name"),
+                        "contentId": attachment.get("cid"),
+                        "size": file_size,
+                    }
+                )
             else:
-                demisto.debug(f"send-mail: Inline attachment '{attachment.get('name')}' ({file_size} bytes) "
-                              f"requires upload session (over 3MB threshold).")
-                file_attachments_result.append({
-                    "data": data,
-                    "isInline": True,
-                    "name": attachment.get("name"),
-                    "contentId": attachment.get("cid"),
-                    "requires_upload": True,
-                    "size": file_size,
-                })
+                demisto.debug(
+                    f"send-mail: Inline attachment '{attachment.get('name')}' ({file_size} bytes) "
+                    f"requires upload session (over 3MB threshold)."
+                )
+                file_attachments_result.append(
+                    {
+                        "data": data,
+                        "isInline": True,
+                        "name": attachment.get("name"),
+                        "contentId": attachment.get("cid"),
+                        "requires_upload": True,
+                        "size": file_size,
+                    }
+                )
         return file_attachments_result
 
     @classmethod
@@ -772,8 +780,10 @@ class MsGraphMailBaseClient(MicrosoftClient):
             end_idx = min(start_idx + self.MAX_ATTACHMENT_SIZE, attachment_size)
             chunk = attachment_data[start_idx:end_idx]
 
-            demisto.debug(f"Upload session: Uploading chunk {chunk_num} for '{attachment_name}' - "
-                          f"range {start_idx}-{end_idx - 1}/{attachment_size}, attempt 1")
+            demisto.debug(
+                f"Upload session: Uploading chunk {chunk_num} for '{attachment_name}' - "
+                f"range {start_idx}-{end_idx - 1}/{attachment_size}, attempt 1"
+            )
             # attempt #1
             resp = self.upload_attachment(
                 upload_url=upload_url,
@@ -837,8 +847,10 @@ class MsGraphMailBaseClient(MicrosoftClient):
         email = email or self._mailbox_to_fetch
         created_draft = self.create_draft(from_email=email, json_data=json_data, reply_message_id=reply_message_id)
         draft_id = created_draft.get("id", "")
-        demisto.debug(f"Upload session: Created draft with ID '{draft_id}'. "
-                      f"Uploading {len(attachments_more_than_3mb)} large attachment(s).")
+        demisto.debug(
+            f"Upload session: Created draft with ID '{draft_id}'. "
+            f"Uploading {len(attachments_more_than_3mb)} large attachment(s)."
+        )
         self.add_attachments_via_upload_session(  # add attachments via upload session.
             email=email, draft_id=draft_id, attachments=attachments_more_than_3mb
         )
@@ -1311,8 +1323,10 @@ class GraphMailUtils:
                 more_than_3mb_attachments.append(attachment)
             else:
                 less_than_3mb_attachments.append(attachment)
-        demisto.debug(f"send-mail: Attachment division complete. Direct: {len(less_than_3mb_attachments)}, "
-                      f"Upload session: {len(more_than_3mb_attachments)}")
+        demisto.debug(
+            f"send-mail: Attachment division complete. Direct: {len(less_than_3mb_attachments)}, "
+            f"Upload session: {len(more_than_3mb_attachments)}"
+        )
         return less_than_3mb_attachments, more_than_3mb_attachments
 
     @staticmethod
@@ -2170,15 +2184,19 @@ def send_email_command(client: MsGraphMailBaseClient, args):
     )
 
     if more_than_3mb_attachments:  # go through process 1 (in docstring)
-        demisto.debug(f"send-mail: Using upload session flow. Direct attachments: {len(less_than_3mb_attachments)}, "
-                      f"Upload session attachments: {len(more_than_3mb_attachments)}")
+        demisto.debug(
+            f"send-mail: Using upload session flow. Direct attachments: {len(less_than_3mb_attachments)}, "
+            f"Upload session attachments: {len(more_than_3mb_attachments)}"
+        )
         message_content["attachments"] = less_than_3mb_attachments
         client.send_mail_with_upload_session_flow(
             email=email, json_data=message_content, attachments_more_than_3mb=more_than_3mb_attachments
         )
     else:  # go through process 2 (in docstring)
-        demisto.debug(f"send-mail: Using direct send (no upload session needed). "
-                      f"Total attachments: {len(message_content.get('attachments', []))}")
+        demisto.debug(
+            f"send-mail: Using direct send (no upload session needed). "
+            f"Total attachments: {len(message_content.get('attachments', []))}"
+        )
         client.send_mail(email=email, json_data=message_content)
 
     message_content.pop("attachments", None)
