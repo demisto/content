@@ -1,0 +1,148 @@
+{
+    "trigger_id": "3f0edcf35c1740384572f80214da7473",
+    "playbook_id": "Cortex EM - GCP VM Exposure Remediation",
+    "suggestion_reason": "Recommended for remediation of Cortex Exposure Management issues on VM instances in GCP.",
+    "description": "This automation rule is responsible for handling remediation of Cortex Exposure Management issues for Virtual Machines in GCP",
+    "trigger_name": "Cortex Exposure Management GCP Virtual Machine Remediation",
+    "alerts_filter": {
+        "filter": {
+            "AND": [
+                {
+                    "SEARCH_FIELD": "alert_source",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "XPANSE"
+                },
+                {
+                    "SEARCH_FIELD": "alert_domain",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "DOMAIN_POSTURE"
+                },
+                {
+                    "SEARCH_FIELD": "alert_category",
+                    "SEARCH_TYPE": "CONTAINS",
+                    "SEARCH_VALUE": "CONFIGURATION"
+                },
+                {
+                    "OR": [
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "CONTAINS",
+                            "SEARCH_VALUE": "SshServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "CONTAINS",
+                            "SEARCH_VALUE": "RdpServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "CONTAINS",
+                            "SEARCH_VALUE": "InsecureOpenSSH"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "CONTAINS",
+                            "SEARCH_VALUE": "KubernetesControlPlaneComponent"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "CONTAINS",
+                            "SEARCH_VALUE": "LDAPServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "CONTAINS",
+                            "SEARCH_VALUE": "NetBiosNameServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "CONTAINS",
+                            "SEARCH_VALUE": "NfsRpcBindServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "CONTAINS",
+                            "SEARCH_VALUE": "OpenSSH"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "CONTAINS",
+                            "SEARCH_VALUE": "RpcBindServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "CONTAINS",
+                            "SEARCH_VALUE": "SmbServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "CONTAINS",
+                            "SEARCH_VALUE": "SSHTerrapinAttack"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "CONTAINS",
+                            "SEARCH_VALUE": "SnmpServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "CONTAINS",
+                            "SEARCH_VALUE": "TelnetServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "CONTAINS",
+                            "SEARCH_VALUE": "UnencryptedFtpServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "CONTAINS",
+                            "SEARCH_VALUE": "MysqlServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "CONTAINS",
+                            "SEARCH_VALUE": "MongoServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "CONTAINS",
+                            "SEARCH_VALUE": "PostgresServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "CONTAINS",
+                            "SEARCH_VALUE": "ElasticsearchServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "CONTAINS",
+                            "SEARCH_VALUE": "TftpServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "CONTAINS",
+                            "SEARCH_VALUE": "Libssh"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "CONTAINS",
+                            "SEARCH_VALUE": "InsecureBitviseSSHServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "CONTAINS",
+                            "SEARCH_VALUE": "InsecureSFTPGo"
+                        }
+                    ]
+                },
+                {
+                    "SEARCH_FIELD": "asset_providers",
+                    "SEARCH_TYPE": "CONTAINS_IN_LIST",
+                    "SEARCH_VALUE": "GCP"
+                }
+            ]
+        }
+    },
+    "fromVersion": "6.10.0"
+}
