@@ -2489,7 +2489,6 @@ script:
       - xsiam
       - edr
     - name: core-update-case
-      hidden: true
       description: Updates the properties of a case.
       arguments:
         - name: case_id
