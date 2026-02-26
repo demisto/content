@@ -3122,7 +3122,7 @@ def send_endpoint_heartbeat_command(client: Client, args: dict) -> CommandResult
     endpoint_id = args.get("endpoint_id")
     if not endpoint_id:
         raise ValueError("endpoint_id is required")
-    
+
     json_data = {
         "request_data": {
             "endpoint_id": endpoint_id,
