@@ -1495,7 +1495,7 @@ There is no context output for this command.
 
 #### Command Example
 
-```!vectra-detection-note-remove note_id=1```
+```!vectra-detection-note-remove detection_id=1 note_id=1```
 
 #### Context Example
 

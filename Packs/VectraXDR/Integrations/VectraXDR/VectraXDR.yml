@@ -1187,10 +1187,10 @@ script:
       description: ID of the note.
       type: Number
     - contextPath: Vectra.Detection.Notes.date_created
-      description: Date when the note was created.
+      description: Date when the note was created (ISO8601).
       type: Date
     - contextPath: Vectra.Detection.Notes.date_modified
-      description: Date when the note was last modified.
+      description: Date when the note was last modified (ISO8601).
       type: Date
     - contextPath: Vectra.Detection.Notes.created_by
       description: User who created the note.
@@ -1990,10 +1990,10 @@ script:
       description: ID of the note.
       type: Number
     - contextPath: Vectra.Entity.Notes.date_created
-      description: Date when the note was created.
+      description: Date when the note was created (ISO8601).
       type: Date
     - contextPath: Vectra.Entity.Notes.date_modified
-      description: Date when the note was last modified.
+      description: Date when the note was last modified (ISO8601).
       type: Unknown
     - contextPath: Vectra.Entity.Notes.created_by
       description: User who created the note.
@@ -2029,10 +2029,10 @@ script:
       description: ID of the note.
       type: Number
     - contextPath: Vectra.Detection.Notes.date_created
-      description: Date when the note was created.
+      description: Date when the note was created (ISO8601).
       type: Date
     - contextPath: Vectra.Detection.Notes.date_modified
-      description: Date when the note was last modified.
+      description: Date when the note was last modified (ISO8601).
       type: Date
     - contextPath: Vectra.Detection.Notes.created_by
       description: User who created the note.
