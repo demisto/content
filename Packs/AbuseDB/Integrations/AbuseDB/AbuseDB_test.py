@@ -213,21 +213,16 @@ def test_get_fplist_command_error(mocker):
     When:
         - get_fplist_command is called.
     Then:
-        - Verify return_error is called.
+        - Verify Exception is raised with the expected message.
     """
-    mocker.patch.object(demisto, "command", return_value="abuseipdb-get-fplist")
     import AbuseDB
     from AbuseDB import get_fplist_command
-    from requests import Session
 
-    mocker.patch.object(Session, "request", side_effect=Exception("API Error"))
-    mocker.patch.object(AbuseDB, "return_error", side_effect=Exception("return_error call"))
+    mocker.patch.object(AbuseDB, "ABUSECH_API_KEY", "test-key")
+    mocker.patch.object(AbuseDB, "abusech_hunting_http_request", side_effect=Exception("API Error"))
 
-    with pytest.raises(Exception):
+    with pytest.raises(Exception, match="API Error"):
         get_fplist_command(format="json", limit=10, all_results=True)
-        pytest.fail("return_error should have occurred")
-
-    AbuseDB.return_error.assert_called_once()
 
 
 def test_abusech_hunting_http_request_success(mocker):
@@ -247,9 +242,10 @@ def test_abusech_hunting_http_request_success(mocker):
 
     mock_response = mocker.Mock()
     mock_response.status_code = 200
-    mock_response.text = "OK"
+    mock_response.json.return_value = {"query_status": None}  # No error wrapped in JSON
 
     mocker.patch.object(AbuseDB, "ABUSECH_URL", "https://test-url")
+    mocker.patch.object(AbuseDB, "ABUSECH_API_KEY", "test-key")
     mocker.patch.object(AbuseDB, "INSECURE", False)
     request_mock = mocker.patch.object(Session, "request", return_value=mock_response)
 
@@ -270,23 +266,24 @@ def test_abusech_hunting_http_request_api_error(mocker):
     When:
         - abusech_hunting_http_request is called.
     Then:
-        - Verify return_error is called with the expected message.
+        - Verify Exception is raised with the expected message.
     """
     from requests import Session
+    import requests
     import AbuseDB
     from AbuseDB import abusech_hunting_http_request
 
     mock_response = mocker.Mock()
     mock_response.status_code = 404
-    mock_response.text = "Not Found"
+    # raise_for_status raises HTTPError
+    mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError("404 Client Error: Not Found")
 
     mocker.patch.object(AbuseDB, "ABUSECH_URL", "https://test-url")
+    mocker.patch.object(AbuseDB, "ABUSECH_API_KEY", "test-key")
     mocker.patch.object(Session, "request", return_value=mock_response)
-    return_error_mock = mocker.patch.object(AbuseDB, "return_error")
 
-    abusech_hunting_http_request({}, {})
-
-    return_error_mock.assert_called_once_with("Abuse.ch API error: 404 - Not Found")
+    with pytest.raises(Exception, match="Failed to connect to Abuse.ch: 404 Client Error: Not Found"):
+        abusech_hunting_http_request({}, {})
 
 
 def test_abusech_hunting_http_request_connection_error(mocker):
@@ -296,19 +293,24 @@ def test_abusech_hunting_http_request_connection_error(mocker):
     When:
         - abusech_hunting_http_request is called.
     Then:
-        - Verify return_error is called with the connection error message.
+        - Verify Exception is raised with the connection error message.
     """
     from requests import Session
+    import requests
     import AbuseDB
     from AbuseDB import abusech_hunting_http_request
 
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"abusech_hunting_url": "https://test-url", "hunting_credentials": {"password": "test-key"}},
+    )
     mocker.patch.object(AbuseDB, "ABUSECH_URL", "https://test-url")
-    mocker.patch.object(Session, "request", side_effect=Exception("Connection failed"))
-    return_error_mock = mocker.patch.object(AbuseDB, "return_error")
+    mocker.patch.object(AbuseDB, "ABUSECH_API_KEY", "test-key")
+    mocker.patch.object(Session, "request", side_effect=requests.exceptions.RequestException("Connection failed"))
 
-    abusech_hunting_http_request({}, {})
-
-    return_error_mock.assert_called_once_with("Failed to connect to Abuse.ch: Connection failed")
+    with pytest.raises(Exception, match="Failed to connect to Abuse.ch: Connection failed"):
+        abusech_hunting_http_request({}, {})
 
 
 def test_abusech_hunting_http_request_missing_url(mocker):
@@ -318,15 +320,14 @@ def test_abusech_hunting_http_request_missing_url(mocker):
     When:
         - abusech_hunting_http_request is called.
     Then:
-        - Verify return_error is called with the missing URL message.
+        - Verify Exception is raised with the missing URL message.
     """
     import AbuseDB
     from AbuseDB import abusech_hunting_http_request
 
+    # Patch the global variable directly to simulate missing parameter
     mocker.patch.object(AbuseDB, "ABUSECH_URL", None)
-    return_error_mock = mocker.patch.object(AbuseDB, "return_error", side_effect=Exception("return_error"))
+    mocker.patch.object(AbuseDB, "ABUSECH_API_KEY", "test-key")
 
-    with pytest.raises(Exception, match="return_error"):
+    with pytest.raises(Exception, match="Hunting API URL was not provided"):
         abusech_hunting_http_request({}, {})
-
-    assert return_error_mock.call_args_list[0] == mocker.call("Hunting API URL was not provided in the params.")

@@ -124,20 +124,30 @@ def abusech_hunting_http_request(headers, payload):
     Sends a POST request with a JSON body to the base URL.
     """
     if not ABUSECH_URL:
-        return_error("Hunting API URL was not provided in the params.")
+        raise Exception("Hunting API URL was not provided in the integration parameters.")
+
+    if not ABUSECH_API_KEY:
+        raise Exception("Hunting API Key was not provided in the integration parameters.")
 
     demisto.debug(f"Sending a POST request to '{ABUSECH_URL}' with the following payload: {payload}")
 
     try:
         response = session.request(method="POST", url=ABUSECH_URL, headers=headers, json=payload, verify=not INSECURE)
 
-        if response.status_code != 200:
-            return_error(f"Abuse.ch API error: {response.status_code} - {response.text}")
+        response.raise_for_status()
+
+        try:  # this API wraps errors with a status=200 response, check if 'query_status' is present
+            res_json = response.json()
+            if res_json.get("query_status"):
+                error_message = res_json.get("data", "Hunting API response error.")
+                raise Exception(error_message)
+        except ValueError:  # there is no 'query_status', which means the response doesn't wrap an error
+            pass
 
         return response
 
     except Exception as e:
-        return_error(f"Failed to connect to Abuse.ch: {str(e)}")
+        raise Exception(f"Failed to connect to Abuse.ch: {str(e)}")
 
 
 def format_privte_ips(private_ips):
@@ -347,13 +357,20 @@ def get_fplist_command(format, limit, all_results):
     if format == "json":
         res_json = response.json()
 
+        if not isinstance(res_json, dict):
+            raise Exception(f"Unexpected response format from Abuse.ch: {res_json}")
+
         demisto.debug("Flattening json response.")
         data = []
         for entry_id, details in res_json.items():
-            details["id"] = entry_id
-            data.append(details)
+            if isinstance(details, dict):
+                details["id"] = entry_id
+                data.append(details)
+            else:
+                demisto.debug(f"Skipping non-dictionary entry in FPL response: {entry_id}={details}")
 
         if not data:
+            demisto.debug("Response had no valid data within it.")
             return CommandResults(readable_output="No data found in the False Positive List.")
 
         if not all_results_bool:
@@ -378,13 +395,15 @@ def get_fplist_command(format, limit, all_results):
 def test_module(reliability):
     try:
         check_ip_command(ip=TEST_IP, disable_private_ip_lookup=False, verbose=False, reliability=reliability)
-
-        if ABUSECH_API_KEY:
-            get_fplist_command("json", 1, False)
-
     except Exception as e:
-        LOG(e)
-        return_error(str(e))
+        return_error(f"AbuseIPDB connection failed: {str(e)}")
+
+    if ABUSECH_API_KEY:
+        try:
+            get_fplist_command("json", 1, False)
+        except Exception as e:
+            return_error(f"Abuse.ch Hunting API connection failed: {str(e)}")
+
     demisto.results("ok")
 
 
