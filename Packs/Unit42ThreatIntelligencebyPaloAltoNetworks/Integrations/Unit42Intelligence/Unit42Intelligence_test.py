@@ -27,6 +27,7 @@ from Unit42Intelligence import (
     get_threat_object_score,
     unit42_error_handler,
     parse_url_list,
+    encode_url_indicator,
     INTEGRATION_NAME,
 )
 from CommonServerPython import *
@@ -1950,3 +1951,82 @@ def test_parse_url_list_custom_scheme():
     assert result[0] == "custom://example.com"
     assert result[1] == "myscheme://test.com"
     assert result[2] == "http://normal.com"
+
+
+def test_encode_url_indicator_with_special_characters():
+    """
+    Given:
+        - URLs with special characters (^, |, <, >) in the path
+        - URLs with and without schemes
+    When:
+        - encode_url_indicator is called
+    Then:
+        - Returns properly encoded URLs
+        - Special characters in path are double-encoded
+        - URLs without schemes have the scheme removed after encoding
+        - URLs with schemes keep the scheme and it gets encoded
+    """
+    # Test URL without scheme and with special characters (^ and |) - from XSUP-63627
+    url_without_scheme = "example.com/path/ab^cd|ef"
+    result = encode_url_indicator(url_without_scheme)
+    # Should NOT include http:// in the final result (scheme is removed)
+    # Special characters should be double-encoded: ^ -> %5E -> %255E, | -> %7C -> %257C
+    assert result == "example.com%2Fpath%2Fab%255Ecd%257Cef"
+    assert "%255E" in result  # ^ encoded twice
+    assert "%257C" in result  # | encoded twice
+    assert "http" not in result  # Scheme should be removed
+
+    # Test URL with scheme and special characters
+    url_with_scheme = "http://example.com/path/ab^cd|ef"
+    result_with_scheme = encode_url_indicator(url_with_scheme)
+    # Should preserve and encode http://
+    assert "http%3A%2F%2Fexample.com%2Fpath%2Fab%255Ecd%257Cef" in result_with_scheme
+    assert "%255E" in result_with_scheme  # ^ encoded twice
+    assert "%257C" in result_with_scheme  # | encoded twice
+
+    # Test URL with < and > characters
+    url_with_brackets = "https://example.com/search?query=<test>"
+    result_brackets = encode_url_indicator(url_with_brackets)
+    assert result_brackets == "https%3A%2F%2Fexample.com%2Fsearch%3Fquery%3D%253Ctest%253E"
+
+    # Test normal URL without special characters
+    normal_url = "https://example.com/path?param=value"
+    result_normal = encode_url_indicator(normal_url)
+    assert result_normal == "https%3A%2F%2Fexample.com%2Fpath%3Fparam%3Dvalue"
+
+    # Test URL with commas in query parameters
+    url_with_commas = "https://fonts.googleapis.com/css?family=Roboto:100,100italic,200"
+    result_commas = encode_url_indicator(url_with_commas)
+    assert result_commas == "https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%253A100%252C100italic%252C200"
+
+
+def test_encode_url_indicator_custom_schemes():
+    """
+    Given:
+        - URLs with custom or unlisted schemes (sftp://, ldap://, etc.)
+    When:
+        - encode_url_indicator is called
+    Then:
+        - Custom schemes are preserved and properly encoded
+        - The scheme is not treated as the host
+        - The colon is not lost during reconstruction
+    """
+    # Test SFTP scheme - should preserve sftp:// and not treat it as schemeless
+    sftp_url = "sftp://example.com/path/file.txt"
+    result_sftp = encode_url_indicator(sftp_url)
+    # Should preserve and encode sftp://
+    assert result_sftp == "sftp%3A%2F%2Fexample.com%2Fpath%2Ffile.txt"
+    assert "sftp%3A%2F%2F" in result_sftp  # sftp:// should be encoded
+    assert result_sftp != "sftp%2F%2Fexample.com%2Fpath%2Ffile.txt"  # Should NOT lose the colon
+
+    # Test LDAP scheme
+    ldap_url = "ldap://ldap.example.com:389/dc=example,dc=com"
+    result_ldap = encode_url_indicator(ldap_url)
+    assert "ldap%3A%2F%2F" in result_ldap  # ldap:// should be encoded
+    assert "ldap.example.com" in result_ldap  # Host should be preserved
+
+    # Test custom scheme with path and query
+    custom_url = "custom://server.com/resource?param=value"
+    result_custom = encode_url_indicator(custom_url)
+    assert "custom%3A%2F%2F" in result_custom  # custom:// should be encoded
+    assert "server.com" in result_custom  # Host should be preserved
