@@ -62,17 +62,19 @@ class MsGraphMailBaseClient(MicrosoftClient):
 
     @classmethod
     def _build_inline_layout_attachments_input(cls, inline_from_layout_attachments):
-        # Added requires_upload for handling the attachment in upload session
         file_attachments_result = []
         for attachment in inline_from_layout_attachments:
+            data = attachment.get("data")
+            demisto.debug(f"send-mail: Inline attachment '{attachment.get('name')}' ({len(data)} bytes) will use draft-based flow.")
             file_attachments_result.append(
                 {
-                    "data": attachment.get("data"),
+                    "data": data,
                     "isInline": True,
                     "name": attachment.get("name"),
                     "contentId": attachment.get("cid"),
                     "requires_upload": True,
-                    "size": len(attachment.get("data")),
+                    "size": len(data),
+                    "contentType": f"{attachment.get('maintype')}/{attachment.get('subtype')}",
                 }
             )
         return file_attachments_result
@@ -659,7 +661,9 @@ class MsGraphMailBaseClient(MicrosoftClient):
 
     def add_attachments_via_upload_session(self, email: str, draft_id: str, attachments: list[dict]):
         """
-        Add attachments using an upload session by dividing the file bytes into chunks and sent each chunk each time.
+        Add attachments to a draft message. For attachments smaller than 3MB, attach directly to the draft
+        using the regular attachments endpoint. For larger attachments, use an upload session to divide the
+        file bytes into chunks and send each chunk.
         more info here - https://docs.microsoft.com/en-us/graph/outlook-large-attachments?tabs=http
         Args:
             email (str): email to create the upload session.
@@ -668,14 +672,36 @@ class MsGraphMailBaseClient(MicrosoftClient):
         """
         email = email or self._mailbox_to_fetch
         for attachment in attachments:
-            self.add_attachment_with_upload_session(
-                email=email,
-                draft_id=draft_id,
-                attachment_data=attachment.get("data", ""),
-                attachment_name=attachment.get("name", ""),
-                is_inline=attachment.get("isInline", False),
-                content_id=attachment.get("contentId", None),
-            )
+            attachment_size = attachment.get("size", len(attachment.get("data", b"")))
+            if attachment_size < self.MAX_ATTACHMENT_SIZE:
+                demisto.debug(
+                    f"Upload session: Attaching '{attachment['name']}' ({attachment_size} bytes) "
+                    f"directly to draft (under 3MB, no upload session needed)."
+                )
+                attachment_payload: dict = {
+                    "@odata.type": "#microsoft.graph.fileAttachment",
+                    "contentBytes": base64.b64encode(attachment["data"]).decode("utf-8"),
+                    "contentType": attachment.get("contentType", "application/octet-stream"),
+                    "isInline": attachment.get("isInline", False),
+                    "name": attachment["name"],
+                }
+                if attachment.get("contentId"):
+                    attachment_payload["contentId"] = attachment["contentId"]
+
+                self.http_request(
+                    "POST",
+                    f"/users/{email}/messages/{draft_id}/attachments",
+                    json_data=attachment_payload,
+                )
+            else:
+                self.add_attachment_with_upload_session(
+                    email=email,
+                    draft_id=draft_id,
+                    attachment_data=attachment.get("data", ""),
+                    attachment_name=attachment.get("name", ""),
+                    is_inline=attachment.get("isInline", False),
+                    content_id=attachment.get("contentId", None),
+                )
 
     def get_upload_session(
         self, email: str, draft_id: str, attachment_name: str, attachment_size: int, is_inline: bool, content_id=None
