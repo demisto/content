@@ -491,7 +491,7 @@
 <tbody>
 <tr>
 <td style="width: 169px;">format</td>
-<td style="width: 481px;">The format of the output (json, csv).</td>
+<td style="width: 481px;">The format of the output (json, csv). Set to 'csv' to download the response as a file. The 'json' format inserts the response into the incident context.</td>
 <td style="width: 90px;">Optional</td>
 </tr>
 <tr>
