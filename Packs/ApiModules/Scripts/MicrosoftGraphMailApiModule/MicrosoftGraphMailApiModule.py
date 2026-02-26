@@ -72,7 +72,6 @@ class MsGraphMailBaseClient(MicrosoftClient):
                 file_attachments_result.append({
                     "@odata.type": cls.FILE_ATTACHMENT,
                     "contentBytes": base64.b64encode(data).decode("utf-8"),
-                    "contentType": f"{attachment.get('maintype')}/{attachment.get('subtype')}",
                     "isInline": True,
                     "name": attachment.get("name"),
                     "contentId": attachment.get("cid"),
@@ -88,7 +87,6 @@ class MsGraphMailBaseClient(MicrosoftClient):
                     "contentId": attachment.get("cid"),
                     "requires_upload": True,
                     "size": file_size,
-                    "contentType": f"{attachment.get('maintype')}/{attachment.get('subtype')}",
                 })
         return file_attachments_result
 
@@ -1217,7 +1215,7 @@ class GraphMailUtils:
                     "subtype": subtype,
                     "data": b64_decode(m.group(3)),
                     "name": name,
-                    "cid": f"image{i}",
+                    "cid": f"{name}@{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}",
                 }
                 attachments.append(att)
                 cleanBody += htmlBody[lastIndex : m.start(1)] + "cid:" + att["cid"]
