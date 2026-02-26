@@ -1,6 +1,6 @@
 Purpose:      This automation will produce docx file detailing the tasks in the given playbook. It can produce a table or paragraph format of the report.
 
-Author:       Max Testman
+Author:       Mahmood Azmat
 
 Input1:       Name of the playbook (Mandatory)
 Input2:       Format type needed. Table or Paragraph. Paragraph is default.
