@@ -6493,7 +6493,7 @@ class Lambda:
             return CommandResults(
                 readable_output=f"Successfully deleted function URL configuration for {args.get('function_name')}"
             )
-        return None
+        return AWSErrorHandler.handle_response_error(response)
 
     @staticmethod
     def create_function_command(client: BotoClient, args: Dict[str, Any]):
@@ -6655,7 +6655,7 @@ class Lambda:
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
             return CommandResults(readable_output=f"Successfully deleted Lambda function: {args.get('function_name')}")
-        return None
+        return AWSErrorHandler.handle_response_error(response)
 
     @staticmethod
     def delete_layer_version_command(client: BotoClient, args: Dict[str, Any]):
@@ -6682,7 +6682,7 @@ class Lambda:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
             msg = f"Successfully deleted version {kwargs.get('VersionNumber')} of layer {kwargs.get('LayerName')}"
             return CommandResults(readable_output=msg)
-        return None
+        return AWSErrorHandler.handle_response_error(response)
 
     @staticmethod
     def publish_layer_version_command(client: BotoClient, args: Dict[str, Any]):
