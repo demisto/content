@@ -62,6 +62,19 @@ class MsGraphMailBaseClient(MicrosoftClient):
 
     @classmethod
     def _build_inline_layout_attachments_input(cls, inline_from_layout_attachments):
+        """Build attachment dicts for inline images extracted from the HTML body by ``handle_html()``.
+
+        Files smaller than ``MAX_ATTACHMENT_SIZE`` (3 MB) are encoded as base64 ``contentBytes``
+        and included directly in the ``sendMail`` API payload.  Files that exceed the threshold
+        are returned with ``requires_upload=True`` so the caller can create an upload session.
+
+        Args:
+            inline_from_layout_attachments (list[dict]): List of dicts produced by ``handle_html()``.
+                Each dict contains the keys ``data``, ``maintype``, ``subtype``, ``name``, and ``cid``.
+
+        Returns:
+            list[dict]: Attachment dicts ready for inclusion in the message payload.
+        """
         file_attachments_result = []
         for attachment in inline_from_layout_attachments:
             data = attachment.get("data")

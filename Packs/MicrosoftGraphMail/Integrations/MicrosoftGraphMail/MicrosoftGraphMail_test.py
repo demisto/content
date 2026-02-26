@@ -1763,7 +1763,6 @@ def test_build_inline_layout_attachments_small_file(mocker):
       - The result dict contains @odata.type, contentBytes (base64), isInline, name, contentId, size.
       - The result dict does NOT contain requires_upload or data keys.
     """
-    mocker.patch.object(demisto, "debug", lambda *a, **k: None)
     small_data = b"x" * 100
     attachment_input = {
         "data": small_data,
@@ -1799,7 +1798,6 @@ def test_build_inline_layout_attachments_large_file(mocker):
       - The result dict contains data (raw bytes), isInline, name, contentId, requires_upload, size.
       - The result dict does NOT contain @odata.type or contentBytes keys.
     """
-    mocker.patch.object(demisto, "debug", lambda *a, **k: None)
     large_data = b"x" * (3 * 1024 * 1024 + 1)
     attachment_input = {
         "data": large_data,
@@ -1836,7 +1834,6 @@ def test_build_inline_layout_attachments_mixed_sizes(mocker):
       - The small attachment uses the contentBytes format (no requires_upload).
       - The large attachment uses the requires_upload format (no contentBytes).
     """
-    mocker.patch.object(demisto, "debug", lambda *a, **k: None)
     small_data = b"x" * 100
     large_data = b"x" * (3 * 1024 * 1024 + 1)
     attachments_input = [
@@ -1892,8 +1889,6 @@ def test_send_mail_with_small_inline_uses_direct_send(mocker):
     Then:
       - The code uses the direct send_mail() path, NOT send_mail_with_upload_session_flow().
     """
-    mocker.patch.object(demisto, "debug", lambda *a, **k: None)
-
     client = self_deployed_client()
 
     # Build a small base64 image (100 bytes of data, well under 3MB)
@@ -1915,3 +1910,123 @@ def test_send_mail_with_small_inline_uses_direct_send(mocker):
 
     send_mail_mock.assert_called_once()
     upload_flow_mock.assert_not_called()
+
+
+def test_send_mail_with_small_attachment_uses_direct_send(mocker):
+    """
+    Given:
+      - send_email_command is called with a small file attachment (under 3MB) via attachIDs.
+
+    When:
+      - The command processes the attachment through build_message.
+
+    Then:
+      - The code uses the direct send_mail() path, NOT send_mail_with_upload_session_flow().
+    """
+    client = self_deployed_client()
+
+    small_file_data = b"x" * 100
+    mocker.patch.object(
+        GraphMailUtils,
+        "read_file",
+        return_value=(small_file_data, len(small_file_data), "small_file.txt"),
+    )
+
+    args = {
+        "to": ["recipient@example.com"],
+        "body": "test body",
+        "subject": "test small attachment",
+        "from": "sender@example.com",
+        "attachIDs": "attach1",
+    }
+
+    send_mail_mock = mocker.patch.object(client, "send_mail", return_value=None)
+    upload_flow_mock = mocker.patch.object(client, "send_mail_with_upload_session_flow", return_value=None)
+
+    send_email_command(client, args)
+
+    send_mail_mock.assert_called_once()
+    upload_flow_mock.assert_not_called()
+
+
+def test_send_mail_with_large_attachment_uses_upload_session(mocker):
+    """
+    Given:
+      - send_email_command is called with a large file attachment (>= 3MB) via attachIDs.
+
+    When:
+      - The command processes the attachment through build_message.
+
+    Then:
+      - The code uses send_mail_with_upload_session_flow(), NOT the direct send_mail().
+    """
+    client = self_deployed_client()
+
+    large_file_data = b"x" * (3 * 1024 * 1024 + 1)
+    mocker.patch.object(
+        GraphMailUtils,
+        "read_file",
+        return_value=(large_file_data, len(large_file_data), "large_file.bin"),
+    )
+
+    args = {
+        "to": ["recipient@example.com"],
+        "body": "test body",
+        "subject": "test large attachment",
+        "from": "sender@example.com",
+        "attachIDs": "attach1",
+    }
+
+    send_mail_mock = mocker.patch.object(client, "send_mail", return_value=None)
+    upload_flow_mock = mocker.patch.object(client, "send_mail_with_upload_session_flow", return_value=None)
+
+    send_email_command(client, args)
+
+    send_mail_mock.assert_not_called()
+    upload_flow_mock.assert_called_once()
+
+
+def test_send_mail_with_large_inline_image_uses_upload_session(mocker):
+    """
+    Given:
+      - send_email_command is called with an htmlBody containing a large embedded base64 image (>= 3MB).
+
+    When:
+      - The command processes the inline attachment through handle_html and build_message.
+
+    Then:
+      - The code uses send_mail_with_upload_session_flow(), NOT the direct send_mail().
+    """
+    client = self_deployed_client()
+
+    # Mock handle_html to return a large inline attachment (> 3MB) without needing a huge base64 string
+    large_data = b"x" * (3 * 1024 * 1024 + 1)
+    fake_inline_attachments = [
+        {
+            "maintype": "image",
+            "subtype": "png",
+            "data": large_data,
+            "name": "image0.png",
+            "cid": "image0.png@abc_def",
+        }
+    ]
+    mocker.patch.object(
+        GraphMailUtils,
+        "handle_html",
+        return_value=("<html><body><img src='cid:image0.png@abc_def'></body></html>", fake_inline_attachments),
+    )
+
+    args = {
+        "to": ["recipient@example.com"],
+        "htmlBody": "<html><body><img src='data:image/png;base64,AAAA'></body></html>",
+        "subject": "test large inline image",
+        "from": "sender@example.com",
+    }
+
+    send_mail_mock = mocker.patch.object(client, "send_mail", return_value=None)
+    upload_flow_mock = mocker.patch.object(client, "send_mail_with_upload_session_flow", return_value=None)
+
+    send_email_command(client, args)
+
+    send_mail_mock.assert_not_called()
+    upload_flow_mock.assert_called_once()
