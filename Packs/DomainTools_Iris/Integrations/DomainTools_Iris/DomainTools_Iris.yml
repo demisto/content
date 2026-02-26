@@ -2483,7 +2483,7 @@ script:
     outputs:
     - contextPath: Domain.Name
       description: Name of the domain returned by the query.
-  dockerimage: demisto/vendors-sdk:1.0.0.5505539
+  dockerimage: demisto/vendors-sdk:1.0.0.6383083
   runonce: false
   script: '-'
   type: python
