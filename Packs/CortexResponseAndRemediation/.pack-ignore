@@ -11,7 +11,7 @@ ignore=GR103
 ignore=GR103
 
 [file:playbook-A_mail_forwarding_rule_was_configured_in_Google_Workspace.yml]
-ignore=PB106
+ignore=PB106,GR109
 
 [file:silent-playbook-A_mail_forwarding_rule_was_configured_in_Google_Workspace_Test.yml]
 ignore=PB106
@@ -94,10 +94,6 @@ ignore=GR109
 
 # GR109 fails on playbooks that use modules that the pack does not support. This ignore entry should be removed once GR109 can be ignored at the pack level / no longer poses an issue (new repo or pack).
 [file:playbook-A_Successful_login_from_TOR.yml]
-ignore=GR109
-
-# GR109 fails on playbooks that use modules that the pack does not support. This ignore entry should be removed once GR109 can be ignored at the pack level / no longer poses an issue (new repo or pack).
-[file:playbook-A_mail_forwarding_rule_was_configured_in_Google_Workspace.yml]
 ignore=GR109
 
 # GR109 fails on playbooks that use modules that the pack does not support. This ignore entry should be removed once GR109 can be ignored at the pack level / no longer poses an issue (new repo or pack).
