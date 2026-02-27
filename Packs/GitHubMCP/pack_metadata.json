@@ -2,7 +2,7 @@
     "name": "GitHub MCP",
     "description": "Integrate with GitHub via the Model Context Protocol (MCP) server to automate GitHub operations.",
     "support": "xsoar",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.2",
     "serverMinVersion": "8.13.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",

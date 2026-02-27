@@ -1,5 +1,8 @@
 category: Analytics & SIEM
 provider: Fortinet
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: FortiSIEMV2
   version: -1
@@ -8,20 +11,24 @@ configuration:
   display: Server URL
   name: url
   required: true
+  section: Connect
   type: 0
 - display: Username
   name: credentials
   required: true
+  section: Connect
   type: 9
 - additionalinfo: Default is 20. Maximum is 200. Setting a value greater than 20 may harm performance, if used with 'Fetch With Events' mode.
   defaultvalue: '20'
   display: Maximum incidents per fetch.
   name: max_fetch
+  section: Collect
   type: 0
   required: false
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
   name: first_fetch
+  section: Collect
   type: 0
   required: false
 - defaultvalue: All
@@ -33,6 +40,7 @@ configuration:
   - Auto Cleared
   - Manually Cleared
   - System Cleared
+  section: Collect
   type: 16
   required: false
 - additionalinfo: Fetch With Events mode is currently available only for FortiSiem version 6.6 and earlier. Note that using Fetch With Events mode may affect performance.
@@ -42,28 +50,34 @@ configuration:
   options:
   - Fetch With Events
   - Fetch Without Events
+  section: Collect
   type: 15
   required: false
 - additionalinfo: Default is 20. Maximum is 50.
   defaultvalue: '20'
   display: Maximum events to fetch per incident.
   name: max_events_fetch
+  section: Collect
   type: 0
   required: false
 - display: Use system proxy settings
   name: proxy
+  section: Connect
   type: 8
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
+  section: Connect
   type: 8
   required: false
 - display: Incident type
   name: incidentType
+  section: Collect
   type: 13
   required: false
 - display: Fetch incidents
   name: isFetch
+  section: Collect
   type: 8
   required: false
 description: Use FortiSIEM v2 to fetch and update incidents, search events and manage watchlists of FortiSIEM.
@@ -702,7 +716,7 @@ script:
     - contextPath: FortiSIEM.WatchlistEntry.ageOut
       description: Expiration date of the entry.
       type: String
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.7090913
   isfetch: true
   runonce: false
   script: '-'
