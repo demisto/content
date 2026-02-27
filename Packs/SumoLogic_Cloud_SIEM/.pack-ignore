@@ -3,7 +3,6 @@ ignore=IM111
 
 [known_words]
 sumourl
-configurable
 lookback
 
 # GR103 is temporary, see CIAC-11656

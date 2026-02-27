@@ -450,95 +450,96 @@ def test_fetch_incidents(requests_mock):
     latest_created_time = datetime.strptime(incidents[1].get("occurred"), "%Y-%m-%dT%H:%M:%S.%fZ")
     assert next_run.get("last_fetch") == int(latest_created_time.replace(tzinfo=UTC).timestamp())
 
-def test_fetch_incidents_backward_compatibility(requests_mock):
-    """Tests that the new lookback functionality maintains backward compatibility."""
+def test_fetch_incidents_lookback_window(requests_mock):
+    """
+    Test that an insight created within the lookback window is captured.
+
+    Scenario:
+    - Run 1: Fetch initial insight at 00:10:00
+    - Run 2: With lookback (queries from 00:05:00), catches insight at 00:07:00
+    """
     from SumoLogicCloudSIEM import DEFAULT_HEADERS, Client, fetch_incidents
 
-    mock_response1 = util_load_json("test_data/insight_list_page1.json")
+    # First run: Establish baseline
+    mock_response_initial = {
+        "data": {
+            "objects": [
+                {
+                    "id": "INSIGHT-INITIAL",
+                    "readableId": "INSIGHT-INITIAL",
+                    "name": "Initial Insight",
+                    "created": "2026-02-11T00:10:00.000000",
+                    "description": "Initial insight.",
+                    "severity": "MEDIUM",
+                    "signals": [],
+                }
+            ],
+            "total": 1,
+            "hasNextPage": False,
+        },
+        "errors": [],
+    }
+
     requests_mock.get(
-        f"{MOCK_URL}/sec/v1/insights?q=created%3A%3E%3D2021-05-18T00%3A00%3A00Z+status%3Ain%28%22new%22%2C+%22inprogress%22%29"
-        "&limit=20&recordSummaryFields=action%2Cdescription%2Cdevice_hostname%2Cdevice_ip%2CdstDevice_hostname"
-        "%2CdstDevice_ip%2Cemail_sender%2Cfile_basename%2Cfile_hash_md5%2Cfile_hash_sha1%2Cfile_hash_sha256"
-        "%2CsrcDevice_hostname%2CsrcDevice_ip%2Cthreat_name%2Cthreat_category%2Cthreat_identifier%2Cuser_username"
-        "%2Cthreat_url%2ClistMatches&offset=0",
-        json=mock_response1,
-    )
-    mock_response2 = util_load_json("test_data/insight_list_page2.json")
-    requests_mock.get(
-        f"{MOCK_URL}/sec/v1/insights?q=created%3A%3E%3D2021-05-18T00%3A00%3A00Z+status%3Ain%28%22new%22%2C+%22inprogress%22%29"
-        "&limit=20&recordSummaryFields=action%2Cdescription%2Cdevice_hostname%2Cdevice_ip%2CdstDevice_hostname"
-        "%2CdstDevice_ip%2Cemail_sender%2Cfile_basename%2Cfile_hash_md5%2Cfile_hash_sha1%2Cfile_hash_sha256"
-        "%2CsrcDevice_hostname%2CsrcDevice_ip%2Cthreat_name%2Cthreat_category%2Cthreat_identifier%2Cuser_username"
-        "%2Cthreat_url%2ClistMatches&offset=1",
-        json=mock_response2,
+        f"{MOCK_URL}/sec/v1/insights?sort=CREATED&sortDir=ASC&q=created%3A%3E%3D2026-02-11T00%3A00%3A00.000000+status%3Ain%28%22new%22%2C+%22inprogress%22%29&limit=20&offset=0",
+        json=mock_response_initial,
     )
 
     client = Client(
-        base_url=MOCK_URL, verify=False, headers=DEFAULT_HEADERS, proxy=False,
-        auth=("access_id", "access_key"), ok_codes=[200]
+        base_url=MOCK_URL, verify=False, headers=DEFAULT_HEADERS, proxy=False, auth=("access_id", "access_key"), ok_codes=[200]
     )
     client.set_extra_params({"instance_endpoint": "https://test.us2.sumologic.com"})
+
+    first_fetch_time = 1770768000  # 2026-02-11T00:00:00Z
 
     next_run, incidents = fetch_incidents(
         client=client,
         max_results=20,
         last_run={},
-        first_fetch_time=1621296000,
+        first_fetch_time=first_fetch_time,
         fetch_query=None,
         pull_signals=False,
-        record_summary_fields=RECORD_SUMMARY_FIELDS_DEFAULT,
+        record_summary_fields=None,
         other_args=None,
     )
 
-    # Verify incidents
-    assert len(incidents) == 2
-    assert incidents[0].get("name") == "Defense Evasion with Persistence - INSIGHT-231"
-    assert incidents[0].get("occurred") == "2021-05-18T14:46:46.741Z"
-    assert incidents[1].get("name") == "Defense Evasion with Persistence - INSIGHT-232"
-    assert incidents[1].get("occurred") == "2021-05-18T14:46:47.118Z"
+    assert len(incidents) == 1, f"First run: Expected 1 incident, got {len(incidents)}"
 
-    # Verify next_run has correct timestamp
-    latest_created_time = datetime.strptime(incidents[1].get("occurred"), "%Y-%m-%dT%H:%M:%S.%fZ")
-    assert next_run.get("last_fetch") == int(latest_created_time.replace(tzinfo=timezone.utc).timestamp())
-
-    # Verify new lookback fields are present
-    assert "last_fetch_ids" in next_run
-    assert "lookback_ids" in next_run
-    assert isinstance(next_run["last_fetch_ids"], list)
-    assert isinstance(next_run["lookback_ids"], dict)
-
-    # Verify IDs are tracked
-    assert len(next_run["last_fetch_ids"]) == 2
-    assert "3fa0cee5-6658-31d4-bd66-32fe1739cf61" in next_run["last_fetch_ids"]
-    assert "67134063-94a3-3374-9c5f-dcb40d7f172e" in next_run["last_fetch_ids"]
-
-
-def test_fetch_incidents_with_lookback_window(requests_mock):
-    """Tests that lookback window is applied correctly to capture delayed insights."""
-    from SumoLogicCloudSIEM import DEFAULT_HEADERS, Client, fetch_incidents
-
-    mock_response = util_load_json("test_data/insight_list_single.json")
+    # Second run: Lookback catches insight at 00:07:00
+    mock_response_lookback = {
+        "data": {
+            "objects": [
+                {
+                    "id": "INSIGHT-INITIAL",
+                    "readableId": "INSIGHT-INITIAL",
+                    "name": "Initial Insight",
+                    "created": "2026-02-11T00:10:00.000000",
+                    "description": "Initial insight.",
+                    "severity": "MEDIUM",
+                    "signals": [],
+                },
+                {
+                    "id": "INSIGHT-LOOKBACK",
+                    "readableId": "INSIGHT-LOOKBACK",
+                    "name": "Lookback Window Insight",
+                    "created": "2026-02-11T00:07:00.000000",
+                    "description": "Insight within lookback window.",
+                    "severity": "HIGH",
+                    "signals": [],
+                },
+            ],
+            "total": 2,
+            "hasNextPage": False,
+        },
+        "errors": [],
+    }
 
     requests_mock.get(
-        re.compile(f"{MOCK_URL}/sec/v1/insights.*"),
-        json=mock_response,
+        f"{MOCK_URL}/sec/v1/insights?sort=CREATED&sortDir=ASC&q=created%3A%3E%3D2026-02-11T00%3A05%3A00.000000+status%3Ain%28%22new%22%2C+%22inprogress%22%29&limit=20&offset=0",
+        json=mock_response_lookback,
     )
 
-    client = Client(
-        base_url=MOCK_URL, verify=False, headers=DEFAULT_HEADERS, proxy=False,
-        auth=("access_id", "access_key"), ok_codes=[200]
-    )
-    client.set_extra_params({"instance_endpoint": "https://test.us2.sumologic.com"})
-
-    # Simulate a previous run - use datetime to ensure proper timezone handling
-    last_fetch_time = datetime(2021, 5, 18, 14, 0, 0, tzinfo=timezone.utc)
-    last_fetch_epoch = int(last_fetch_time.timestamp())
-
-    last_run = {
-        "last_fetch": last_fetch_epoch,
-        "last_fetch_ids": [],
-        "lookback_ids": {}
-    }
+    last_run = {"last_fetch": next_run["last_fetch"], "last_fetch_ids": next_run["last_fetch_ids"]}
 
     next_run, incidents = fetch_incidents(
         client=client,
@@ -547,241 +548,61 @@ def test_fetch_incidents_with_lookback_window(requests_mock):
         first_fetch_time=None,
         fetch_query=None,
         pull_signals=False,
-        record_summary_fields=RECORD_SUMMARY_FIELDS_DEFAULT,
+        record_summary_fields=None,
         other_args=None,
     )
 
-    # Verify API was called with lookback time
-    assert requests_mock.called
-    called_url = requests_mock.request_history[0].url
-
-    # The lookback should be 5 minutes before last_fetch
-    # Just verify lookback is applied (we don't need exact time match due to timezone differences)
-    assert "created%3A%3E%3D" in called_url
-    assert "status%3Ain" in called_url
-
-    # Verify incidents were fetched
-    assert len(incidents) >= 1
-    assert next_run.get("last_fetch") is not None
-
-
-def test_fetch_incidents_deduplication_prevents_duplicates(requests_mock):
-    """Tests that insights already in last_fetch_ids are not fetched again."""
-    from SumoLogicCloudSIEM import DEFAULT_HEADERS, Client, fetch_incidents
-
-    mock_response = util_load_json("test_data/insight_list_with_duplicates.json")
-
-    requests_mock.get(
-        re.compile(f"{MOCK_URL}/sec/v1/insights.*"),
-        json=mock_response,
-    )
-
-    client = Client(
-        base_url=MOCK_URL, verify=False, headers=DEFAULT_HEADERS, proxy=False,
-        auth=("access_id", "access_key"), ok_codes=[200]
-    )
-    client.set_extra_params({"instance_endpoint": "https://test.us2.sumologic.com"})
-
-    # Simulate that INSIGHT-231 was already fetched
-    last_run = {
-        "last_fetch": 1621347806,  # 2021-05-18T14:46:46
-        "last_fetch_ids": ["3fa0cee5-6658-31d4-bd66-32fe1739cf61"],  # INSIGHT-231 ID
-        "lookback_ids": {"3fa0cee5-6658-31d4-bd66-32fe1739cf61": 1621347806}
-    }
-
-    next_run, incidents = fetch_incidents(
-        client=client,
-        max_results=20,
-        last_run=last_run,
-        first_fetch_time=None,
-        fetch_query=None,
-        pull_signals=False,
-        record_summary_fields=RECORD_SUMMARY_FIELDS_DEFAULT,
-        other_args=None,
-    )
-
-    # Should only fetch new insight (INSIGHT-233), not the duplicate (INSIGHT-231)
-    assert len(incidents) == 1
-    assert incidents[0].get("name") == "New Test Insight - INSIGHT-233"
-
-    # Verify the duplicate ID is not in the fetched incidents
-    incident_ids = [json.loads(inc["rawJSON"])["id"] for inc in incidents]
-    assert "3fa0cee5-6658-31d4-bd66-32fe1739cf61" not in incident_ids
-    assert "new-insight-id-123" in incident_ids
-
-    # Verify both IDs are preserved in next_run
-    assert len(next_run["last_fetch_ids"]) == 2
-    assert "3fa0cee5-6658-31d4-bd66-32fe1739cf61" in next_run["last_fetch_ids"]
-    assert "new-insight-id-123" in next_run["last_fetch_ids"]
-
-
-def test_fetch_incidents_lookback_ids_pruning(requests_mock):
-    """Tests that old lookback_ids outside the 5-minute window are pruned."""
-    from SumoLogicCloudSIEM import DEFAULT_HEADERS, Client, fetch_incidents
-
-    mock_response = util_load_json("test_data/insight_list_single.json")
-
-    requests_mock.get(
-        re.compile(f"{MOCK_URL}/sec/v1/insights.*"),
-        json=mock_response,
-    )
-
-    client = Client(
-        base_url=MOCK_URL, verify=False, headers=DEFAULT_HEADERS, proxy=False,
-        auth=("access_id", "access_key"), ok_codes=[200]
-    )
-    client.set_extra_params({"instance_endpoint": "https://test.us2.sumologic.com"})
-
-    now = int(time.time())
-    old_timestamp = now - 600  # 10 minutes ago (outside 5-minute lookback window)
-    recent_timestamp = now - 120  # 2 minutes ago (within 5-minute lookback window)
-
-    last_run = {
-        "last_fetch": now - 300,  # 5 minutes ago
-        "last_fetch_ids": [],
-        "lookback_ids": {
-            "old-insight-id": old_timestamp,  # Should be pruned
-            "recent-insight-id": recent_timestamp  # Should be retained
-        }
-    }
-
-    next_run, incidents = fetch_incidents(
-        client=client,
-        max_results=20,
-        last_run=last_run,
-        first_fetch_time=None,
-        fetch_query=None,
-        pull_signals=False,
-        record_summary_fields=RECORD_SUMMARY_FIELDS_DEFAULT,
-        other_args=None,
-    )
-
-    # Verify that old IDs are pruned and recent IDs are retained
-    assert "old-insight-id" not in next_run["lookback_ids"]
-    assert "recent-insight-id" in next_run["lookback_ids"]
-
-    # Verify new insights are added to lookback_ids
-    assert "3fa0cee5-6658-31d4-bd66-32fe1739cf61" in next_run["lookback_ids"]
-
-
-def test_fetch_incidents_first_fetch_no_lookback(requests_mock):
-    """Tests that first fetch doesn't apply lookback window."""
-    from SumoLogicCloudSIEM import DEFAULT_HEADERS, Client, fetch_incidents
-
-    mock_response = util_load_json("test_data/insight_list_single.json")
-
-    requests_mock.get(
-        re.compile(f"{MOCK_URL}/sec/v1/insights.*"),
-        json=mock_response,
-    )
-
-    client = Client(
-        base_url=MOCK_URL, verify=False, headers=DEFAULT_HEADERS, proxy=False,
-        auth=("access_id", "access_key"), ok_codes=[200]
-    )
-    client.set_extra_params({"instance_endpoint": "https://test.us2.sumologic.com"})
-
-    # Empty last_run simulates first fetch
-    next_run, incidents = fetch_incidents(
-        client=client,
-        max_results=20,
-        last_run={},
-        first_fetch_time=1621296000,  # 2021-05-18T00:00:00
-        fetch_query=None,
-        pull_signals=False,
-        record_summary_fields=RECORD_SUMMARY_FIELDS_DEFAULT,
-        other_args=None,
-    )
-
-    # Verify API was called with exact first_fetch_time (no lookback)
-    assert requests_mock.called
-    called_url = requests_mock.request_history[0].url
-    # Should contain created:>=2021-05-18T00:00:00Z (exact first_fetch_time)
-    assert "created%3A%3E%3D2021-05-18T00%3A00%3A00Z" in called_url
-
-    assert len(incidents) == 1
-    assert next_run.get("last_fetch") is not None
-
-    # Verify last_fetch_ids contains all fetched incident IDs
-    fetched_ids = [json.loads(inc["rawJSON"])["id"] for inc in incidents]
-    assert set(next_run.get("last_fetch_ids")) == set(fetched_ids)
-
-    # Verify lookback_ids contains the fetched incidents with timestamps
-    assert len(next_run.get("lookback_ids")) == 1
-    for inc in incidents:
-        inc_data = json.loads(inc["rawJSON"])
-        assert inc_data["id"] in next_run["lookback_ids"]
-
-
-def test_fetch_incidents_same_timestamp_deduplication(requests_mock):
-    """Tests handling of multiple insights with the same timestamp using last_fetch_ids."""
-    from SumoLogicCloudSIEM import DEFAULT_HEADERS, Client, fetch_incidents
-
-    mock_response = util_load_json("test_data/insight_list_same_timestamp.json")
-
-    requests_mock.get(
-        re.compile(f"{MOCK_URL}/sec/v1/insights.*"),
-        json=mock_response,
-    )
-
-    client = Client(
-        base_url=MOCK_URL, verify=False, headers=DEFAULT_HEADERS, proxy=False,
-        auth=("access_id", "access_key"), ok_codes=[200]
-    )
-    client.set_extra_params({"instance_endpoint": "https://test.us2.sumologic.com"})
-
-    # Simulate that one insight with same timestamp was already fetched
-    last_run = {
-        "last_fetch": 1621347806,  # 2021-05-18T14:46:46
-        "last_fetch_ids": ["insight-same-time-1"],
-        "lookback_ids": {}
-    }
-
-    next_run, incidents = fetch_incidents(
-        client=client,
-        max_results=20,
-        last_run=last_run,
-        first_fetch_time=None,
-        fetch_query=None,
-        pull_signals=False,
-        record_summary_fields=RECORD_SUMMARY_FIELDS_DEFAULT,
-        other_args=None,
-    )
-
-    # Should only fetch insight-same-time-2, not insight-same-time-1 (deduplication)
-    assert len(incidents) == 1
-    assert json.loads(incidents[0]["rawJSON"])["id"] == "insight-same-time-2"
-
-    # Both should be in next_run to prevent re-fetching
-    assert len(next_run["last_fetch_ids"]) == 2
-    assert "insight-same-time-1" in next_run["last_fetch_ids"]
-    assert "insight-same-time-2" in next_run["last_fetch_ids"]
+    assert len(incidents) == 1, f"Second run: Expected 1 incident, got {len(incidents)}"
+    assert incidents[0]["name"].startswith("Lookback Window Insight")
 
 
 def test_fetch_incidents_delayed_insight_captured(requests_mock):
-    """Tests that delayed insights within lookback window are captured."""
+    """
+    Test that a delayed insight is captured in the second run.
+
+    Scenario:
+    - Run 1: Fetch 2 initial insights
+    - Run 2: Delayed insight appears, initial ones are deduplicated
+    """
     from SumoLogicCloudSIEM import DEFAULT_HEADERS, Client, fetch_incidents
 
-    mock_response = util_load_json("test_data/insight_list_delayed.json")
+    mock_response_first = util_load_json("test_data/insight_list_first_run.json")
 
     requests_mock.get(
-        re.compile(f"{MOCK_URL}/sec/v1/insights.*"),
-        json=mock_response,
+        f"{MOCK_URL}/sec/v1/insights?sort=CREATED&sortDir=ASC&q=created%3A%3E%3D2026-02-11T00%3A00%3A00.000000+status%3Ain%28%22new%22%2C+%22inprogress%22%29&limit=20&offset=0",
+        json=mock_response_first,
     )
 
     client = Client(
-        base_url=MOCK_URL, verify=False, headers=DEFAULT_HEADERS, proxy=False,
-        auth=("access_id", "access_key"), ok_codes=[200]
+        base_url=MOCK_URL, verify=False, headers=DEFAULT_HEADERS, proxy=False, auth=("access_id", "access_key"), ok_codes=[200]
     )
     client.set_extra_params({"instance_endpoint": "https://test.us2.sumologic.com"})
 
-    # Last fetch was at 14:50:00, but a delayed insight was created at 14:47:00
-    # With lookback, we should capture it
-    last_run = {
-        "last_fetch": 1621348200,  # 2021-05-18T14:50:00
-        "last_fetch_ids": [],
-        "lookback_ids": {}
-    }
+    first_fetch_time = 1770768000  # 2026-02-11T00:00:00Z
+
+    next_run, incidents = fetch_incidents(
+        client=client,
+        max_results=20,
+        last_run={},
+        first_fetch_time=first_fetch_time,
+        fetch_query=None,
+        pull_signals=False,
+        record_summary_fields=None,
+        other_args=None,
+    )
+
+    assert len(incidents) == 2, f"First run: Expected 2 incidents, got {len(incidents)}"
+    assert any(i["name"].startswith("Initial Insight 1") for i in incidents)
+    assert any(i["name"].startswith("Initial Insight 2") for i in incidents)
+
+    mock_response_second = util_load_json("test_data/insight_list_delayed_run.json")
+
+    requests_mock.get(
+        f"{MOCK_URL}/sec/v1/insights?sort=CREATED&sortDir=ASC&q=created%3A%3E%3D2026-02-10T23%3A55%3A00.000000+status%3Ain%28%22new%22%2C+%22inprogress%22%29&limit=20&offset=0",
+        json=mock_response_second,
+    )
+
+    last_run = {"last_fetch": next_run["last_fetch"], "last_fetch_ids": next_run["last_fetch_ids"]}
 
     next_run, incidents = fetch_incidents(
         client=client,
@@ -790,38 +611,61 @@ def test_fetch_incidents_delayed_insight_captured(requests_mock):
         first_fetch_time=None,
         fetch_query=None,
         pull_signals=False,
-        record_summary_fields=RECORD_SUMMARY_FIELDS_DEFAULT,
+        record_summary_fields=None,
         other_args=None,
     )
 
-    # The delayed insight should be captured
-    assert len(incidents) == 1
-    incident_ids = [json.loads(inc["rawJSON"])["id"] for inc in incidents]
-    assert "delayed-insight-id" in incident_ids
-    assert incidents[0].get("name") == "Delayed Insight - INSIGHT-401"
+    assert len(incidents) == 1, f"Second run: Expected 1 incident, got {len(incidents)}"
+    assert incidents[0]["name"].startswith("Delayed Insight 1")
 
 
-def test_fetch_incidents_old_integration_format_compatibility(requests_mock):
-    """Tests backward compatibility when last_run only has last_fetch (old format)."""
+def test_fetch_incidents_no_duplicates(requests_mock):
+    """
+    Test that duplicate insights are not created due to lookback overlap.
+
+    Scenario:
+    - Run 1: Fetch 3 insights
+    - Run 2: Same 3 insights returned (lookback), all deduplicated
+    """
     from SumoLogicCloudSIEM import DEFAULT_HEADERS, Client, fetch_incidents
 
-    mock_response = util_load_json("test_data/insight_list_single.json")
+    mock_response_once = util_load_json("test_data/insight_list_delayed_run.json")
 
     requests_mock.get(
-        re.compile(f"{MOCK_URL}/sec/v1/insights.*"),
-        json=mock_response,
+        f"{MOCK_URL}/sec/v1/insights?sort=CREATED&sortDir=ASC&q=created%3A%3E%3D2026-02-11T00%3A01%3A00.000000+status%3Ain%28%22new%22%2C+%22inprogress%22%29&limit=20&offset=0",
+        json=mock_response_once,
     )
 
     client = Client(
-        base_url=MOCK_URL, verify=False, headers=DEFAULT_HEADERS, proxy=False,
-        auth=("access_id", "access_key"), ok_codes=[200]
+        base_url=MOCK_URL, verify=False, headers=DEFAULT_HEADERS, proxy=False, auth=("access_id", "access_key"), ok_codes=[200]
     )
     client.set_extra_params({"instance_endpoint": "https://test.us2.sumologic.com"})
 
-    # Simulate old integration format (no lookback_ids or last_fetch_ids)
-    last_run = {
-        "last_fetch": 1621342800  # Only has last_fetch
-    }
+    first_fetch_time = 1770768060  # 2026-02-11T00:01:00Z
+
+    next_run, incidents = fetch_incidents(
+        client=client,
+        max_results=20,
+        last_run={},
+        first_fetch_time=first_fetch_time,
+        fetch_query=None,
+        pull_signals=False,
+        record_summary_fields=None,
+        other_args=None,
+    )
+
+    assert len(incidents) == 3, f"First fetch: Expected 3 incidents, got {len(incidents)}"
+    ids = [i["name"] for i in incidents]
+    assert any("Initial Insight 1" in n for n in ids)
+    assert any("Initial Insight 2" in n for n in ids)
+    assert any("Delayed Insight 1" in n for n in ids)
+
+    requests_mock.get(
+        f"{MOCK_URL}/sec/v1/insights?sort=CREATED&sortDir=ASC&q=created%3A%3E%3D2026-02-10T23%3A56%3A00.000000+status%3Ain%28%22new%22%2C+%22inprogress%22%29&limit=20&offset=0",
+        json=mock_response_once,
+    )
+
+    last_run = {"last_fetch": next_run["last_fetch"], "last_fetch_ids": next_run["last_fetch_ids"]}
 
     next_run, incidents = fetch_incidents(
         client=client,
@@ -830,73 +674,152 @@ def test_fetch_incidents_old_integration_format_compatibility(requests_mock):
         first_fetch_time=None,
         fetch_query=None,
         pull_signals=False,
-        record_summary_fields=RECORD_SUMMARY_FIELDS_DEFAULT,
+        record_summary_fields=None,
         other_args=None,
     )
 
-    # Should work without errors
-    assert len(incidents) == 1
-    assert next_run.get("last_fetch") is not None
-
-    # New fields should be initialized
-    assert "last_fetch_ids" in next_run
-    assert "lookback_ids" in next_run
-    assert isinstance(next_run["last_fetch_ids"], list)
-    assert isinstance(next_run["lookback_ids"], dict)
-
-    # Verify fields are properly populated
-    assert len(next_run["last_fetch_ids"]) == 1
-    assert len(next_run["lookback_ids"]) == 1
+    assert len(incidents) == 0, f"Second fetch: Expected 0 incidents, got {len(incidents)}"
 
 
-def test_fetch_incidents_lookback_ids_persist_across_runs(requests_mock):
-    """Tests that lookback_ids are properly merged from previous run."""
+def test_fetch_incidents_no_missed_insight_in_6_runs(requests_mock):
+    """
+    Test that running fetch every minute for 6 runs does not miss any insight.
+
+    Scenario:
+    - 20 insights all at same timestamp (00:00:00)
+    - Run 6 times, each with lookback
+    - All 20 should be captured without missing any
+    """
     from SumoLogicCloudSIEM import DEFAULT_HEADERS, Client, fetch_incidents
 
-    mock_response = util_load_json("test_data/insight_list_single.json")
+    mock_response_many = util_load_json("test_data/insight_list_many.json")
 
+    # Run 1: no lookback
     requests_mock.get(
-        re.compile(f"{MOCK_URL}/sec/v1/insights.*"),
-        json=mock_response,
+        f"{MOCK_URL}/sec/v1/insights?sort=CREATED&sortDir=ASC&q=created%3A%3E%3D2026-02-11T00%3A00%3A00.000000+status%3Ain%28%22new%22%2C+%22inprogress%22%29&limit=20&offset=0",
+        json=mock_response_many,
+    )
+
+    # Runs 2-6: with lookback
+    requests_mock.get(
+        f"{MOCK_URL}/sec/v1/insights?sort=CREATED&sortDir=ASC&q=created%3A%3E%3D2026-02-10T23%3A55%3A00.000000+status%3Ain%28%22new%22%2C+%22inprogress%22%29&limit=20&offset=0",
+        json=mock_response_many,
     )
 
     client = Client(
-        base_url=MOCK_URL, verify=False, headers=DEFAULT_HEADERS, proxy=False,
-        auth=("access_id", "access_key"), ok_codes=[200]
+        base_url=MOCK_URL, verify=False, headers=DEFAULT_HEADERS, proxy=False, auth=("access_id", "access_key"), ok_codes=[200]
     )
     client.set_extra_params({"instance_endpoint": "https://test.us2.sumologic.com"})
 
-    now = int(time.time())
-    previous_insight_timestamp = now - 200  # 3.3 minutes ago (within lookback)
+    first_fetch_time = 1770768000  # 2026-02-11T00:00:00Z
+    last_run = {}
+    seen_ids = set()
 
-    last_run = {
-        "last_fetch": now - 100,
-        "last_fetch_ids": ["previous-insight-id"],
-        "lookback_ids": {
-            "previous-insight-id": previous_insight_timestamp
-        }
-    }
+    for i in range(6):
+        next_run, incidents = fetch_incidents(
+            client=client,
+            max_results=20,
+            last_run=last_run,
+            first_fetch_time=first_fetch_time if i == 0 else None,
+            fetch_query=None,
+            pull_signals=False,
+            record_summary_fields=None,
+            other_args=None,
+        )
 
-    next_run, incidents = fetch_incidents(
-        client=client,
-        max_results=20,
-        last_run=last_run,
-        first_fetch_time=None,
-        fetch_query=None,
-        pull_signals=False,
-        record_summary_fields=RECORD_SUMMARY_FIELDS_DEFAULT,
-        other_args=None,
+        for inc in incidents:
+            seen_ids.add(inc["name"])
+
+        last_run = next_run
+
+    assert len(seen_ids) == 20, f"Expected 20 unique insights, got {len(seen_ids)}"
+
+
+def test_fetch_incidents_5_insights_per_minute_for_6_runs(requests_mock):
+    """
+    Test continuous insight creation with 5 new insights every minute.
+    With the cap, all runs query from first_fetch_time (00:00:00).
+    """
+    from SumoLogicCloudSIEM import DEFAULT_HEADERS, Client, fetch_incidents
+
+    client = Client(
+        base_url=MOCK_URL, verify=False, headers=DEFAULT_HEADERS, proxy=False, auth=("access_id", "access_key"), ok_codes=[200]
+    )
+    client.set_extra_params({"instance_endpoint": "https://test.us2.sumologic.com"})
+
+    # All insights with proper timestamps
+    insights_data = []
+    for minute in range(6):
+        timestamp = f"2026-02-11T00:0{minute}:00.000000"
+        for i in range(5):
+            insight_num = minute * 5 + i + 1
+            insights_data.append(
+                {
+                    "id": f"INSIGHT-{insight_num}",
+                    "readableId": f"INSIGHT-{insight_num}",
+                    "name": f"Insight {insight_num}",
+                    "created": timestamp,
+                    "description": f"Insight {insight_num} created at minute {minute}",
+                    "severity": "MEDIUM",
+                    "signals": [],
+                }
+            )
+
+    first_fetch_time = 1770768000  # 2026-02-11T00:00:00Z
+    last_run = {}
+    all_fetched = []
+
+    # The base URL that will be queried every time (due to cap)
+    base_query = (
+        f"{MOCK_URL}/sec/v1/insights?sort=CREATED&sortDir=ASC"
+        f"&q=created%3A%3E%3D2026-02-11T00%3A00%3A00.000000"
+        "+status%3Ain%28%22new%22%2C+%22inprogress%22%29&limit=20"
     )
 
-    # Previous insight should still be in lookback_ids
-    assert "previous-insight-id" in next_run["lookback_ids"]
+    for run_num in range(1, 7):
+        # How many insights exist at this run (5 per minute)
+        total_insights = run_num * 5
+        current_insights = insights_data[:total_insights]
 
-    # New insights should be added
-    assert "3fa0cee5-6658-31d4-bd66-32fe1739cf61" in next_run["lookback_ids"]
+        # Mock page 1 (offset=0) - return first 20
+        page1_data = current_insights[:20]
+        requests_mock.get(
+            f"{base_query}&offset=0",
+            json={"data": {"objects": page1_data, "total": total_insights, "hasNextPage": total_insights > 20}, "errors": []},
+        )
 
-    # Both should be in last_fetch_ids
-    assert "previous-insight-id" in next_run["last_fetch_ids"]
-    assert "3fa0cee5-6658-31d4-bd66-32fe1739cf61" in next_run["last_fetch_ids"]
+        # Mock page 2 (offset=20) - if needed
+        if total_insights > 20:
+            page2_data = current_insights[20:]
+            requests_mock.get(
+                f"{base_query}&offset=20",
+                json={"data": {"objects": page2_data, "total": total_insights, "hasNextPage": False}, "errors": []},
+            )
+
+        # Fetch incidents
+        next_run, incidents = fetch_incidents(
+            client=client,
+            max_results=20,
+            last_run=last_run,
+            first_fetch_time=first_fetch_time,  # Always pass it
+            fetch_query=None,
+            pull_signals=False,
+            record_summary_fields=None,
+            other_args=None,
+        )
+
+        all_fetched.extend(incidents)
+        last_run = next_run
+
+        # Each run should fetch exactly 5 new insights
+        assert len(incidents) == 5, f"Run {run_num}: Expected 5 insights, got {len(incidents)}"
+
+    # Verify totals
+    assert len(all_fetched) == 30, f"Expected 30 total insights, got {len(all_fetched)}"
+
+    # Verify no duplicates
+    incident_names = [inc["name"] for inc in all_fetched]
+    assert len(set(incident_names)) == 30, "Found duplicate incidents"
 
 
 def test_fetch_incidents_with_signals(requests_mock):
