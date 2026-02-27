@@ -64,7 +64,11 @@ jobs:
           
           gh issue edit "$PR_NUMBER" --add-label "ready-for-ai-review" --repo "$REPO"
 
+          # Checkout the PR branch before creating the empty commit
+          git fetch origin "$PR_BRANCH"
+          git checkout "$PR_BRANCH"
+
           git commit -m "Trigger AI Reviewer" --allow-empty
 
           echo "Pushing to $PR_BRANCH..."
-          git push origin HEAD:refs/heads/"$PR_BRANCH"
+          git push origin "$PR_BRANCH"

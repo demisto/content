@@ -1,0 +1,16 @@
+{
+  "meta": {
+    "query_time": 0.001,
+    "powered_by": "recon-api",
+    "trace_id": "test-trace-id"
+  },
+  "resources": [
+    {
+      "id": "test-notification-id",
+      "assigned_to_uuid": "test-uuid",
+      "status": "in-progress",
+      "updated_date": "2026-01-29T08:00:00Z"
+    }
+  ],
+  "errors": []
+}
