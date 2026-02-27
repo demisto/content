@@ -17,6 +17,7 @@ urllib3.disable_warnings()
 """ GLOBAL VARS """
 
 MIRROR_DIRECTION = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
+DEFAULT_ARTICLE_CONTENT_TYPE = "text/plain; charset=utf8"
 
 """ HELPER FUNCTIONS """
 
@@ -418,7 +419,7 @@ def create_ticket_command(client: Client, args: dict[str, str]):
     owner = args.get("owner")
     article_subject = args.get("article_subject")
     article_body = args.get("article_body")
-    article_content_type = args.get("article_content_type", "text/plain; charset=utf8")
+    article_content_type = args.get("article_content_type", DEFAULT_ARTICLE_CONTENT_TYPE)
     ticket_type = args.get("type")
     dynamic_fields = args.get("dynamic_fields")
     attachment = args.get("attachment")
@@ -485,7 +486,7 @@ def update_ticket_command(client: Client, args: dict[str, str]):
     priority = args.get("priority")
     article_subject = args.get("article_subject")
     article_body = args.get("article_body")
-    article_content_type = args.get("article_content_type", "text/plain; charset=utf8")
+    article_content_type = args.get("article_content_type", DEFAULT_ARTICLE_CONTENT_TYPE)
     ticket_type = args.get("type")
     dynamic_fields = args.get("dynamic_fields")
     attachment = args.get("attachment")
@@ -576,7 +577,7 @@ def close_ticket_command(client: Client, args: dict[str, str]):
     ticket_id = args.get("ticket_id")
     article_subject = args.get("article_subject")
     article_body = args.get("article_body")
-    article_content_type = args.get("article_content_type", "text/plain; charset=utf8")
+    article_content_type = args.get("article_content_type", DEFAULT_ARTICLE_CONTENT_TYPE)
     state = args.get("state", "closed successful")
 
     article_object = {"Subject": article_subject, "Body": article_body, "ContentType": article_content_type}

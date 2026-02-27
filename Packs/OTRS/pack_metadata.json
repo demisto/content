@@ -12,7 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "OTRS"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
