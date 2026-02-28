@@ -98,6 +98,9 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 DETECTION_DATE_FORMAT = IOM_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEFAULT_TIMEOUT = 30
 
+DEFAULT_INTERVAL = 60
+DEFAULT_TIMEOUT_NGSIEM_SEARCH = 600
+
 DEFAULT_TIMEOUT_ON_GENERIC_HTTP_REQUEST = 60
 TOTAL_RETRIES_ON_ENRICHMENT = 0
 TIMEOUT_ON_ENRICHMENT = 15
@@ -498,9 +501,16 @@ def modify_detection_outputs(detection):
 
 
 def error_handler(res):
-    res_json = res.json()
     reason = res.reason
     demisto.debug(f"CrowdStrike Falcon error handler {res.status_code=} {reason=}")
+    try:
+        res_json = res.json()
+    except ValueError:
+        # Non-JSON response (common for NGSIEM errors: text/plain)
+        body = (res.text or "").strip()
+        # keep it short to avoid huge war-room errors
+        body = body[:4000]
+        raise DemistoException(f"Error in API call to CrowdStrike Falcon: code: {res.status_code} - reason: {reason}\n{body}")
     resources = res_json.get("resources", {})
     extracted_error_message = ""
     if resources:
@@ -1744,7 +1754,7 @@ def get_detections_entities(detections_ids: list):
     return {"resources": combined_resources}
 
 
-def get_cases_data(url_filter: str, limit: int, offset: int) -> tuple[int, list[str]]:
+def get_cases_data(url_filter: str = "", limit: int = 100, offset: int = 0) -> tuple[int, list[str]]:
     """
     Fetches NGSIEM Case ids with provided filter
     :param url_filter: URL filter
@@ -1755,7 +1765,7 @@ def get_cases_data(url_filter: str, limit: int, offset: int) -> tuple[int, list[
         tuple[int, list[str]]: The number of total cases in the filter and the list of cases ids.
     """
     params = {"sort": "created_timestamp.asc", "offset": offset, "limit": limit}
-    endpoint_url = f"/cases/queries/cases/v1?filter={url_filter}"
+    endpoint_url = f"/cases/queries/cases/v1?filter={url_filter}" if url_filter else "/cases/queries/cases/v1"
     response = http_request("GET", endpoint_url, params)
     total_cases: int = demisto.get(response, "meta.pagination.total")
     ids: list[str] = demisto.get(response, "resources", [])
@@ -1857,6 +1867,32 @@ def get_cases_details(ids: list[str]) -> list[dict[str, Any]]:
 
     # Return the combined result.
     return full_cases
+
+
+def add_case_tags(case_id: str, tags: list[str]) -> dict:
+    """
+    Add tags to a case.
+    Args:
+        case_id: The ID of the case to add tags to.
+        tags: The list of tags to add.
+    Returns:
+        dict: The response from the API.
+    """
+    body = {"id": case_id, "tags": tags}
+    return http_request("POST", "/cases/entities/case-tags/v1", json=body)
+
+
+def delete_case_tags(case_id: str, tag: str) -> dict:
+    """
+    Delete a tag from a case.
+    Args:
+        case_id: The ID of the case to delete the tag from.
+        tag: The tag to delete.
+    Returns:
+        dict: The response from the API.
+    """
+    params = {"id": case_id, "tag": tag}
+    return http_request("DELETE", "/cases/entities/case-tags/v1", params=params)
 
 
 def get_detection_entities(incidents_ids: list):
@@ -2390,23 +2426,6 @@ def update_detection_request(ids: list[str], status: str) -> dict:
     return resolve_detection(
         ids=ids, status=status, assigned_to_uuid=None, username=None, show_in_ui=None, comment=None, tag=None
     )
-
-
-def update_ngsiem_case_request(id: str, status: str) -> dict:
-    """
-    Updates a NGSIEM case status
-    :param id: The case ID to update
-    :param status: The new status
-    :return: The response
-    """
-    list_of_stats = STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES
-    if status not in list_of_stats:
-        raise DemistoException(f"CrowdStrike Falcon Error: Status given is {status} and it is not in {list_of_stats}")
-
-    demisto.debug(f"Updating remote ngsiem case with {id=} and {status=}")
-    payload = {"fields": {"status": status}, "id": id}
-
-    return http_request("PATCH", "/cases/entities/cases/v2", data=json.dumps(payload))
 
 
 def update_request_for_multiple_detection_types(ids: list[str], status: str) -> dict:
@@ -3056,9 +3075,9 @@ def update_remote_ngsiem_case(delta, inc_status: IncidentStatus, ngsiem_case_id:
     remote_id = ngsiem_case_id.replace(f"{IncidentType.NGSIEM_CASE.value}:", "", 1)
     if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
         demisto.debug(f"Closing case with remote ID {remote_id} in remote system.")
-        return str(update_ngsiem_case_request(remote_id, "closed"))
+        return str(resolve_case(remote_id, status="closed"))
     elif "status" in delta:
-        return str(update_ngsiem_case_request(remote_id, delta.get("status")))
+        return str(resolve_case(remote_id, status=delta.get("status")))
     return ""
 
 
@@ -5937,6 +5956,217 @@ def list_incident_summaries_command():
     )
 
 
+def cases_to_human_readable(cases):
+    """
+    Converts a list of cases to a human-readable format.
+    Args:
+        cases: A list of cases.
+    Returns:
+        str: The human-readable string.
+    """
+    cases_readable_outputs = []
+    for case in cases:
+        readable_output = assign_params(
+            case_id=case.get("id"),
+            name=case.get("name"),
+            created_time=case.get("created_timestamp"),
+            status=case.get("status"),
+            version=case.get("version"),
+            description=case.get("description"),
+            severity=case.get("severity"),
+            assigned_to=case.get("assigned_to"),
+            tags=case.get("tags"),
+        )
+        demisto.debug(f"appending {readable_output=} to cases_readable_outputs")
+        cases_readable_outputs.append(readable_output)
+    headers = ["case_id", "name", "created_timestamp", "status", "version", "description", "severity", "assigned_to", "tags"]
+    return tableToMarkdown(
+        "CrowdStrike Cases", cases_readable_outputs, headers, removeNull=True, headerTransform=string_to_table_header
+    )
+
+
+def list_case_summaries_command():
+    """
+    Lists case summaries.
+    """
+    args = demisto.args()
+    ids = argToList(args.get("ids"))
+    if not ids:
+        _, ids = get_cases_data()
+
+    demisto.debug(f"About to call get_cases_entities with {ids=}")
+    cases = get_cases_entities(ids)
+    demisto.debug(f"got {cases=}")
+    cases_human_readable = cases_to_human_readable(cases)
+    return CommandResults(
+        readable_output=cases_human_readable,
+        outputs_prefix="CrowdStrike.Case",
+        outputs_key_field="id",
+        outputs=cases,
+    )
+
+
+def get_evidence_for_case_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Get evidence for a specific case.
+    Args:
+        args: The arguments of the command.
+    Returns:
+        CommandResults: The command results object.
+    """
+    case_id = args.get("id")
+    if not case_id:
+        raise ValueError("The 'id' argument is required.")
+
+    cases = get_cases_entities([case_id])
+    if not cases:
+        return CommandResults(readable_output=f"No case found with id {case_id}")
+
+    case = cases[0]
+    evidence = case.get("evidence", {})
+
+    # Prepare Human Readable output
+    alerts = [record.get("selector", {}).get("id") for record in evidence.get("alerts", {}).get("records", [])]
+    events = [record.get("selector", {}).get("id") for record in evidence.get("events", {}).get("records", [])]
+    leads = [record.get("selector", {}).get("id") for record in evidence.get("leads", {}).get("records", [])]
+
+    readable_output = [{"Case Id": case.get("id"), "Case Alerts": alerts, "Case Events": events, "Case Leads": leads}]
+    markdown_output = tableToMarkdown(
+        "Case Evidence", readable_output, headers=["Case Id", "Case Alerts", "Case Events", "Case Leads"], removeNull=True
+    )
+    return CommandResults(
+        outputs_prefix="CrowdStrike.CaseEvidence", outputs=evidence, readable_output=markdown_output, raw_response=case
+    )
+
+
+def add_case_tags_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Add tags to a case.
+    Args:
+        args: The arguments of the command.
+    Returns:
+        CommandResults: The command results object.
+    """
+    case_id = args.get("id")
+    tags = argToList(args.get("tags"))
+
+    if not case_id:
+        raise ValueError("The 'id' argument is required.")
+    if not tags:
+        raise ValueError("The 'tags' argument is required.")
+
+    add_case_tags(case_id, tags)
+    return CommandResults(readable_output="Tags were added successfully.")
+
+
+def delete_case_tags_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Delete a tag from a case.
+    Args:
+        args: The arguments of the command.
+    Returns:
+        CommandResults: The command results object.
+    """
+    case_id = args.get("id")
+    tag = args.get("tag")
+
+    if not case_id:
+        raise ValueError("The 'id' argument is required.")
+    if not tag:
+        raise ValueError("The 'tag' argument is required.")
+
+    delete_case_tags(case_id, tag)
+    return CommandResults(readable_output="Tags were deleted successfully.")
+
+
+def resolve_case(
+    case_id: str,
+    status: str | None = None,
+    name: str | None = None,
+    assigned_to_uuid: str | None = None,
+    description: str | None = None,
+    remove_user_assignment: bool | None = None,
+    severity: int | None = None,
+    template_id: str | None = None,
+) -> dict:
+    """
+    Updates a specific case object using PATCH /cases/entities/cases/v2.
+
+    Args:
+        case_id (str): The ID of the case to patch.
+        status (str | None): The status to set for the case.
+        assigned_to_uuid (str | None): A UUID of a user to assign the case to.
+        description (str | None): A new description for the case.
+        remove_user_assignment (bool): Whether to remove case assignment from current user.
+        severity (int | None): The new case severity rating (10-100).
+        template_id (str | None): The unique ID of the template to apply to the case.
+
+    Returns:
+        dict: The response from the API.
+    """
+    # Build fields dict with API field names, filtering out None values
+    fields = {
+        "status": status,
+        "name": name,
+        "assigned_to_user_uuid": assigned_to_uuid,
+        "description": description,
+        "severity": severity,
+        "template": {"id": template_id} if template_id else None,
+        "remove_user_assignment": remove_user_assignment if remove_user_assignment else None,
+    }
+    fields = {k: v for k, v in fields.items() if v is not None}
+
+    payload = {"id": case_id, "fields": fields}
+    return http_request("PATCH", "/cases/entities/cases/v2", json=payload)
+
+
+def resolve_case_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Command function for cs-falcon-resolve-case.
+    """
+    case_id = args.get("id")
+
+    if not case_id:
+        raise ValueError("The 'id' argument is required.")
+
+    severity = arg_to_number(args.get("severity"))
+    if severity is not None and not (10 <= severity <= 100):
+        raise ValueError("Severity must be an integer between 10 and 100.")
+
+    # We take care of that value seperatly so that it won't appear in the HR unless passed by the user
+    remove_user_assignment_str_value = args.get("remove_user_assignment")
+
+    # Collect changed fields for both API call and display
+    changed_fields: dict[str, Any] = {
+        "status": args.get("status"),
+        "name": args.get("name"),
+        "assigned_to_uuid": args.get("assigned_to_uuid"),
+        "description": args.get("description"),
+        "severity": severity,
+        "template_id": args.get("template_id"),
+    }
+
+    resolve_case(
+        case_id=case_id, remove_user_assignment=argToBoolean(remove_user_assignment_str_value or False), **changed_fields
+    )
+
+    readable_output = f"Case {case_id} was changed successfully"
+    display_data = {"id": case_id, "remove_user_assignment": remove_user_assignment_str_value, **changed_fields}
+
+    if argToBoolean(remove_user_assignment_str_value or False):
+        display_data["assigned_to_uuid"] = "Unassigned"
+
+    table = tableToMarkdown(
+        "Edited Case",
+        display_data,
+        headers=list(changed_fields.keys()),
+        headerTransform=string_to_table_header,
+        removeNull=True,
+    )
+
+    return CommandResults(readable_output=f"{readable_output}\n{table}")
+
+
 def create_host_group_command(
     name: str, group_type: str | None = None, description: str | None = None, assignment_rule: str | None = None
 ) -> CommandResults:
@@ -6116,6 +6346,261 @@ def upload_batch_custom_ioc_command(
             )
         )
     return entry_objects_list
+
+
+# ============== NGSIEM Search Events Functions ==============
+def initiate_ngsiem_search_request(repository: str, body: dict) -> dict:
+    """
+    Initiate an NGSIEM search query job.
+
+    Args:
+        repository: The repository to search (e.g., 'search-all').
+        body: The request body containing query parameters.
+
+    Returns:
+        dict: Response containing the job ID.
+    """
+    demisto.debug(f"Initiating NGSIEM search with {repository=}, {body=}")
+
+    return http_request(
+        method="POST",
+        url_suffix=f"/humio/api/v1/repositories/{repository}/queryjobs",
+        json=body,
+    )
+
+
+def get_ngsiem_search_results_request(repository: str, job_id: str) -> dict:
+    """
+    Get the results of an NGSIEM search query job.
+
+    Args:
+        repository: The repository that was searched.
+        job_id: The job ID from the initiate search request.
+
+    Returns:
+        dict: Response containing the search results and status.
+    """
+    demisto.debug(f"Getting NGSIEM search results for {repository=}, {job_id=}")
+
+    return http_request(
+        method="GET",
+        url_suffix=f"/humio/api/v1/repositories/{repository}/queryjobs/{job_id}",
+    )
+
+
+def clean_ngsiem_rawstring_field(events: list[dict]) -> list[dict]:
+    """
+    Clean the @rawstring field by replacing escaped '\\&' sequences with '&'.
+
+    The NGSIEM API may return @rawstring values containing '\\&' (literal backslash + ampersand).
+    This replacement ensures the string is clean before the whole event is later serialized with json.dumps.
+    """
+    for event in events:
+        raw = event.get("@rawstring")
+        if isinstance(raw, str) and "\\&" in raw:
+            event["@rawstring"] = raw.replace("\\&", "&")
+    return events
+
+
+def build_ngsiem_query_with_limit(query: str, limit: int) -> str:
+    """
+    Add tail() function to query if not already present to limit results.
+
+    The default number of events returned for each API call is 200,
+    unless the 'tail' function is used.
+
+    Args:
+        query: The original query string.
+        limit: Maximum number of events to return.
+
+    Returns:
+        str: Query with tail() function appended if needed.
+    """
+    if "tail(" not in query.lower():
+        return f"{query} | tail({limit})"
+    return query
+
+
+def arg_to_timestamp(val: Any) -> Optional[int]:
+    """Converts a value to an epoch-milliseconds timestamp using ``arg_to_datetime``.
+
+    Returns ``None`` for empty/None values, otherwise an ``int`` (epoch ms).
+    """
+    if not val:
+        return None
+    dt = arg_to_datetime(val)
+    return int(dt.timestamp() * 1000) if dt else None
+
+
+def build_ngsiem_search_body(args: dict) -> dict:
+    """
+    Build the request body for NGSIEM search.
+
+    Args:
+        args: Command arguments.
+
+    Returns:
+        dict: The request body.
+    """
+    query = args.get("query", "")
+    around_config = assign_params(
+        eventId=args.get("around_event_id"),
+        numberOfEventsBefore=arg_to_number(args.get("around_number_events_before")),
+        numberOfEventsAfter=arg_to_number(args.get("around_number_events_after")),
+        timestamp=arg_to_timestamp(args.get("around_timestamp")),
+    )
+
+    if not around_config.get("numberOfEventsBefore") and not around_config.get("numberOfEventsAfter"):
+        # If an "around" is used (around_number_events_before/after), adding `limit` would override/ignore the config,
+        # so we only set `limit` when "around" is not used.
+        limit = arg_to_number(args.get("limit")) or 50
+        query = build_ngsiem_query_with_limit(query, limit)
+
+    body = assign_params(
+        queryString=query,
+        start=arg_to_timestamp(args.get("start")),
+        end=arg_to_timestamp(args.get("end")),
+        ingestStart=arg_to_timestamp(args.get("ingest_start")),
+        ingestEnd=arg_to_timestamp(args.get("ingest_end")),
+        useIngestTime=argToBoolean(args.get("use_ingest_time")) if args.get("use_ingest_time") else None,
+        around=around_config,
+    )
+    return body
+
+
+def build_ngsiem_hr_rows(events: list[dict], hr_keys: list[str]) -> list[dict]:
+    """
+    Build human-readable table rows from NGSIEM events.
+
+    For each desired key, resolves the value by trying the bare key first,
+    then falling back to the '@' and '#' prefixed variants.
+    Converts epoch-ms timestamp values to ISO 8601 date strings.
+
+    Args:
+        events: The raw event dicts (not modified).
+        hr_keys: The unprefixed keys to extract for display.
+
+    Returns:
+        list[dict]: A list of dicts ready for tableToMarkdown (HR only).
+    """
+    hr_rows: list[dict] = []
+    for event in events:
+        row: dict[str, Any] = {}
+        for key in hr_keys:
+            val = event.get(key) or event.get(f"@{key}") or event.get(f"#{key}")
+            if key == "timestamp" and val is not None:
+                try:
+                    if isinstance(val, (int | float)):
+                        val = timestamp_to_datestring(val)
+                    elif isinstance(val, str) and val.isdigit():
+                        val = timestamp_to_datestring(int(val))
+                except Exception:
+                    demisto.debug(f"Failed to convert timestamp {val} to date string")
+            row[key] = val
+        hr_rows.append(row)
+    return hr_rows
+
+
+def process_ngsiem_search_completion(response: dict, args: dict) -> PollResult:
+    """
+    Process the completion of an NGSIEM search job.
+
+    Args:
+        response: The response from the search job.
+        args: Command arguments.
+
+    Returns:
+        PollResult: The result of the polling.
+    """
+    args["wait_for_result"] = False
+    events = response.get("events", [])
+    warnings = response.get("warnings", [])
+    if warnings:
+        demisto.debug(f"NGSIEM search completed with warnings: {warnings}")
+
+    if events:
+        events = clean_ngsiem_rawstring_field(events)
+        demisto.debug(f"Returned {len(events)} results from NGSIEM search")
+
+        hr_keys = ["id", "event_simpleName", "user.name", "host.hostname", "timestamp"]
+
+        def header_transform(header: str) -> str:
+            return header.replace("_", " ").replace(".", " ").title()
+
+        hr = tableToMarkdown(
+            name=f"NGSIEM Events (Total: {len(events)})",
+            t=build_ngsiem_hr_rows(events, hr_keys),
+            headerTransform=header_transform,
+            headers=hr_keys,
+            removeNull=True,
+        )
+    else:
+        demisto.debug("No events found matching the query.")
+        hr = "No events found matching the query."
+    command_results = CommandResults(
+        outputs_prefix="CrowdStrike.NGSiemEvent",
+        outputs=events,
+        readable_output=hr,
+        raw_response=response,
+    )
+    return PollResult(response=command_results, continue_to_poll=False)
+
+
+@polling_function(
+    "cs-falcon-search-ngsiem-events",
+    poll_message="Searching NGSIEM events:",
+    polling_arg_name="wait_for_result",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", DEFAULT_INTERVAL)),
+    timeout=arg_to_number(demisto.args().get("timeout_in_seconds", DEFAULT_TIMEOUT_NGSIEM_SEARCH)),
+)
+def cs_falcon_search_ngsiem_events_command(args: dict) -> PollResult:
+    """
+    Search NGSIEM historical events using polling.
+
+    This command initiates a search query job and polls for results until complete.
+    Query jobs must continue to be polled until complete. If a query job is still
+    in progress, the response will show done as false.
+
+    Args:
+        args: Command arguments including query, repository, time range, etc.
+
+    Returns:
+        PollResult: Contains the search results or indicates to continue polling.
+    """
+    job_id = args.get("job_id")
+    repository = args.get("repository", "search-all")
+
+    if not job_id:
+        # First call - initiate the search job
+        body = build_ngsiem_search_body(args)
+        response = initiate_ngsiem_search_request(repository=repository, body=body)
+
+        job_id = response.get("id")
+        if not job_id:
+            raise DemistoException(f"Failed to initiate NGSIEM search. Response: {response}")
+
+        demisto.debug(f"NGSIEM search job initiated with {job_id=}")
+        args["job_id"] = job_id
+
+    # Poll for results
+    response = get_ngsiem_search_results_request(repository, job_id)
+
+    is_done = response.get("done", False)
+    is_cancelled = response.get("cancelled", False)
+    demisto.debug(f"NGSIEM search job status: {is_done=}, {is_cancelled=}")
+    if is_cancelled:
+        raise DemistoException(f"NGSIEM search job {job_id} was cancelled.")
+
+    if is_done:
+        return process_ngsiem_search_completion(response, args)
+
+    demisto.info(f"NGSIEM search job {job_id} still in progress, continuing to poll...")
+
+    return PollResult(
+        response=CommandResults(readable_output=f"NGSIEM search job {job_id} still in progress, continuing to poll..."),
+        continue_to_poll=True,
+        args_for_next_run=args,
+    )
 
 
 def module_test():
@@ -8137,6 +8622,10 @@ def main():  # pragma: no cover
             return_results(list_detection_summaries_command())
         elif command == "cs-falcon-list-incident-summaries":
             return_results(list_incident_summaries_command())
+        elif command == "cs-falcon-list-case-summaries":
+            return_results(list_case_summaries_command())
+        elif command == "cs-falcon-get-evidence-for-case":
+            return_results(get_evidence_for_case_command(args))
         elif command == "cs-falcon-search-iocs":
             return_results(search_iocs_command(**args))
         elif command == "cs-falcon-get-ioc":
@@ -8324,6 +8813,14 @@ def main():  # pragma: no cover
             fetch_assets_command()
         elif command == "cs-falcon-list-cnapp-alerts":
             return_results(list_cnapp_alerts_command(args=args))
+        elif command == "cs-falcon-add-case-tag":
+            return_results(add_case_tags_command(args))
+        elif command == "cs-falcon-delete-case-tag":
+            return_results(delete_case_tags_command(args))
+        elif command == "cs-falcon-resolve-case":
+            return_results(resolve_case_command(args))
+        elif command == "cs-falcon-search-ngsiem-events":
+            return_results(cs_falcon_search_ngsiem_events_command(args))
         else:
             raise NotImplementedError(f"CrowdStrike Falcon error: command {command} is not implemented")
     except Exception as e:
