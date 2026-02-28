@@ -238,6 +238,9 @@ class Client:
         )
         return self.http_request("GET", "/siem/issues", params=params)
 
+    def get_threat_summary(self, threat_id):
+        return self.http_request("GET", f"/threat/summary/{threat_id}")
+
 
 def test_module(client: Client) -> str:
     """
@@ -1289,6 +1292,20 @@ def list_issues_command(
     return command_results_list
 
 
+def get_threat_summary_command(client: Client, threat_id: str) -> CommandResults:
+    raw_response = client.get_threat_summary(threat_id)
+
+    readable_output = tableToMarkdown(f"Threat {threat_id} summary", raw_response, headerTransform=pascalToSpace)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Proofpoint.ThreatSummary",
+        outputs_key_field="id",
+        outputs=raw_response,
+        raw_response=raw_response,
+    )
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1379,6 +1396,8 @@ def main():
 
         elif command == "proofpoint-list-issues":
             return_results(list_issues_command(client, **args))
+        elif command == "proofpoint-get-threat-summary":
+            return_results(get_threat_summary_command(client, **args))
 
     except Exception as exception:
         if command == "test-module":

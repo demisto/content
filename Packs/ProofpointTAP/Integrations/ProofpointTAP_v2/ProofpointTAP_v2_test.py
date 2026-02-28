@@ -929,3 +929,26 @@ def test_validate_first_fetch_time_not_valid():
             "The First fetch time range is more than 7 days ago. Please update this parameter since "
             "Proofpoint supports a maximum 1 week fetch back."
         ) in str(e)
+
+
+def test_get_threat_summary_command(requests_mock):
+    """
+    Scenario: retrieve a threat summary.
+    Given:
+     - User has provided valid credentials and arguments.
+    When:get threat summary command is called.
+    Then:
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
+
+    """
+    from ProofpointTAP_v2 import Client, get_threat_summary_command
+
+    mock_response = json.loads(load_mock_response("threat_summary.json"))
+    requests_mock.get(f"{MOCK_URL}/v2/threat/summary/test_123", json=mock_response)
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+    result = get_threat_summary_command(client, "test_123")
+    assert result.outputs_prefix == "Proofpoint.ThreatSummary"
+    assert result.outputs.get("id") == "test_123"
