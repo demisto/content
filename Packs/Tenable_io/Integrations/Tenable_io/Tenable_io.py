@@ -113,10 +113,9 @@ USE_SSL = not PARAMS["unsecure"]
 USE_PROXY = PARAMS.get("proxy", False)
 
 if not USE_PROXY:
-    del os.environ["HTTP_PROXY"]
-    del os.environ["HTTPS_PROXY"]
-    del os.environ["http_proxy"]
-    del os.environ["https_proxy"]
+    # Remove proxy environment variables if they exist
+    for proxy_var in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:
+        os.environ.pop(proxy_var, None)
 
 DATE_FORMAT = "%Y-%m-%d"
 VENDOR = "tenable"
@@ -2112,25 +2111,31 @@ def main():  # pragma: no cover   # pylint: disable=W9018
             demisto.debug(f"new lastrun assets: {assets_last_run}")
             demisto.setAssetsLastRun(assets_last_run)
 
-            # Get snapshot_id and determine if we're still fetching assets
-            # Note: items_count is for the assets snapshot only, not vulnerabilities
+            # Get snapshot_id for this fetch cycle
             # Fallback to generate_snapshot_id() if not in last_run - this handles edge cases
             # where the fetch cycle starts without a stored snapshot_id (e.g., first run or reset)
-            snapshot_id = assets_last_run.get("snapshot_id", generate_snapshot_id())
-            total_assets = assets_last_run.get("total_assets", len(assets))
+            snapshot_id = assets_last_run.get("snapshot_id")
+            if not snapshot_id:
+                snapshot_id = generate_snapshot_id()
+                assets_last_run["snapshot_id"] = snapshot_id
+                demisto.setAssetsLastRun(assets_last_run)
 
             # Check if assets fetch is still in progress (has more asset chunks or asset export job pending)
             # Vulnerabilities are separate and don't affect the assets snapshot completion
             assets_fetch_in_progress = is_assets_fetch_in_progress(assets_last_run)
 
-            # items_count: Set to 1 if assets fetch is still in progress to signal snapshot is incomplete
-            # Set to actual count when assets are done to signal snapshot is complete
-            items_count = 1 if assets_fetch_in_progress else total_assets
-
             if assets:
+                # Calculate cumulative total BEFORE sending to XSIAM
+                # Per the Fetch Assets Development Flow doc (Case 2 - Continuation Iteration):
+                #   items_count = 1 if not finished pulling all results,
+                #   otherwise items_count = last_run["total_assets"] + len(assets)
+                cumulative_total = assets_last_run.get("total_assets", 0) + len(assets)
+                items_count = 1 if assets_fetch_in_progress else cumulative_total
+
                 demisto.debug(
                     f"sending {len(assets)} assets to XSIAM with snapshot_id={snapshot_id}, "
-                    f"items_count={items_count}, total_assets={total_assets}"
+                    f"items_count={items_count}, cumulative_total={cumulative_total}, "
+                    f"assets_fetch_in_progress={assets_fetch_in_progress}"
                 )
                 send_data_to_xsiam(
                     data=assets,
@@ -2146,17 +2151,44 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                 )
                 # Update cumulative asset count AFTER successful send_data_to_xsiam()
                 # This ensures the counter only reflects assets that were actually sent to XSIAM
-                total_assets = assets_last_run.get("total_assets", 0) + len(assets)
-                assets_last_run["total_assets"] = total_assets
+                assets_last_run["total_assets"] = cumulative_total
                 demisto.setAssetsLastRun(assets_last_run)
+
+            elif not assets_fetch_in_progress:
+                # Edge case: asset fetch completed but returned an empty list of assets.
+                # We still need to seal the snapshot by sending an empty payload with the final items_count
+                # so XSIAM knows the snapshot is complete.
+                cumulative_total = assets_last_run.get("total_assets", 0)
+                if cumulative_total > 0:
+                    demisto.debug(
+                        f"Asset fetch completed with empty assets list. Sealing snapshot with "
+                        f"snapshot_id={snapshot_id}, items_count={cumulative_total}"
+                    )
+                    send_data_to_xsiam(
+                        data=[],
+                        vendor=VENDOR,
+                        product=f"{PRODUCT}_assets",
+                        data_type="assets",
+                        snapshot_id=snapshot_id,
+                        items_count=str(cumulative_total),
+                        should_update_health_module=False,
+                    )
+                else:
+                    # First fetch returned empty - log this scenario
+                    demisto.debug(
+                        f"Asset fetch completed with empty assets list and cumulative_total=0. "
+                        f"No snapshot sealing needed for snapshot_id={snapshot_id}"
+                    )
+
             if vulnerabilities:
                 vulnerabilities = parse_vulnerabilities(vulnerabilities)
                 demisto.debug(f"sending {len(vulnerabilities)} vulnerabilities to XSIAM.")
                 send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product=f"{PRODUCT}_vulnerabilities")
 
             # Update module health separately to show the number of assets pulled
+            cumulative_total = assets_last_run.get("total_assets", 0)
             if assets or not assets_fetch_in_progress:
-                demisto.updateModuleHealth({"assetsPulled": total_assets})
+                demisto.updateModuleHealth({"assetsPulled": cumulative_total})
 
             demisto.info("Done Sending data to XSIAM.")
 

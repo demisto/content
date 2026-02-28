@@ -427,20 +427,19 @@ def post_ai_review_introduction(pr: PullRequest, reviewers: list[str] | None = N
         reviewers (list[str] | None): List of assigned reviewers. If None or empty, uses generic greeting.
         t (Terminal | None): The terminal object for printing.
     """
-    # TODO
-    # if reviewers:
-    #     reviewer_mentions = ", ".join([f"@{r}" for r in reviewers])
-    #     greeting = f"Hi {reviewer_mentions}, you"
-    # else:
-    #     greeting = "You"
+    if reviewers:
+        reviewer_mentions = ", ".join([f"@{r}" for r in reviewers])
+        greeting = f"Hi {reviewer_mentions}, you"
+    else:
+        greeting = "You"
 
-    # ai_reviewer_introduction_msg = (
-    #     "## 🤖 AI-Powered Code Review Available\n\n"
-    #     f"{greeting} can leverage AI-powered code review to assist with this PR!\n\n"
-    #     "**Available Commands:**\n"
-    #     "- `@content-bot start review` - Initiate a full AI code review\n"
-    #     "- `@content-bot re-review` - Incremental review for new commits\n"
-    # )
-    # pr.create_issue_comment(ai_reviewer_introduction_msg)
-    # if t:
-    #     print(f"{t.cyan}Posted AI reviewer introduction comment{t.normal}")  # noqa: T201
+    ai_reviewer_introduction_msg = (
+        "## 🤖 AI-Powered Code Review Available\n\n"
+        f"{greeting} can leverage AI-powered code review to assist with this PR!\n\n"
+        "**Available Commands:**\n"
+        "- `@content-bot start review` - Initiate a full AI code review\n"
+        "- `@content-bot re-review` - Incremental review for new commits\n"
+    )
+    pr.create_issue_comment(ai_reviewer_introduction_msg)
+    if t:
+        print(f"{t.cyan}Posted AI reviewer introduction comment{t.normal}")  # noqa: T201

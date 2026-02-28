@@ -241,7 +241,7 @@ def build_entry_context(results: Union[dict, List], indicator_type: str):
 
     result_data = results.get("data", {})
     return_context = {
-        "Risk Score (Out of 1000)": result_data.get("score"),
+        "Risk Score (Out of 100)": result_data.get("score"),
         "Score Details": result_data.get("score_details"),
         "Total Encounters": len(result_data.get("findings", [])),
         map_indicator_type(result_data.get("classification")): result_data.get("value"),
