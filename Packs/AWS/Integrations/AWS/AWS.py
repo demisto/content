@@ -595,6 +595,81 @@ def build_kwargs_network_interface_attribute(args: dict, network_interface_id: s
     return kwargs
 
 
+def build_kwargs_lambda_function_config_update(args: dict) -> dict:
+    """Build kwargs for aws-lambda-update-function-configuration command.
+
+    Args:
+        args: A dict of arguments for the command.
+
+    Returns:
+        A dict of kwargs.
+    """
+    function_name = args.get("function_name")
+    kwargs = {
+        "FunctionName": function_name,
+        "Role": args.get("role"),
+        "Handler": args.get("handler"),
+        "Description": args.get("description"),
+        "Timeout": args.get("timeout"),
+        "MemorySize": args.get("memory_size"),
+        "VpcConfig": {
+            "SubnetIds": argToList(args.get("subnet_ids")),
+            "SecurityGroupIds": argToList(args.get("security_group_ids")),
+            "Ipv6AllowedForDualStack": arg_to_bool_or_none(args.get("ipv6_allowed_for_dualstack"))
+        },
+        "Environment": {
+            "Variables": parse_key_1_value_to_dict(args.get("environment", ""))
+        },
+        "Runtime": args["runtime"],
+        "DeadLetterConfig": {
+            "TargetArn": args.get("target_arn")
+        },
+        "KMSKeyArn": args.get("kms_key_arn"),
+        "TracingConfig": {
+            "Mode": args.get("tracing_config_mode"),
+        },
+        "RevisionId": args.get("revision_id"),
+        "Layers": argToList(args.get("layers")),
+        "ImageConfig": {
+            "EntryPoint": argToList(args.get("image_config_entry_point")),
+            "Command": argToList(args.get("image_config_command")),
+            "WorkingDirectory": args.get("image_config_working_directory")
+        },
+        "EphemeralStorage": {
+            "Size": args.get("ephemeral_storage_size")
+        },
+        "SnapStart": {
+            "ApplyOn": args.get("snap_start_apply_on")
+        },
+        "LoggingConfig": {
+            'LogFormat': args.get("log_format"),
+            'ApplicationLogLevel': args.get("application_log_level"),
+            'SystemLogLevel': args.get("system_log_level"),
+            'LogGroup': args.get("log_group")
+        },
+        "CapacityProviderConfig": {
+            "LambdaManagedInstancesCapacityProviderConfig": {
+                'CapacityProviderArn': args.get("capacity_provider_arn"),
+                'PerExecutionEnvironmentMaxConcurrency': args.get("per_execution_env_max_concurrency"),
+                'ExecutionEnvironmentMemoryGiBPerVCpu': args.get("execution_env_memory_per_cpu")
+            }
+        },
+        "DurableConfig": {
+            'RetentionPeriodInDays': args.get("durable_retention_period"),
+            'ExecutionTimeout': args.get("durable_execution_timeout")
+        }
+    }
+
+    if "file_system_configs" in args:
+        key_value_list = parse_tag_field(args.get("file_system_configs"))
+        arn_local_mount_path_list = []
+        for key_value in key_value_list:
+            arn_local_mount_path_list.append({'Arn': key_value['Key'], "LocalMountPath": key_value["Value"]})
+        kwargs["FileSystemConfigs"] = arn_local_mount_path_list
+
+    return kwargs
+
+
 class AWSErrorHandler:
     """
     Centralized error handling for AWS boto3 client errors.
@@ -6934,69 +7009,13 @@ class Lambda:
         """
         function_name = args.get("function_name")
 
-        kwargs = {
-            "FunctionName": function_name,
-            "Role": args.get("role"),
-            "Handler": args.get("handler"),
-            "Description": args.get("description"),
-            "Timeout": args.get("timeout"),
-            "MemorySize": args.get("memory_size"),
-            "VpcConfig": {
-                "SubnetIds": argToList(args.get("subnet_ids")),
-                "SecurityGroupIds": argToList(args.get("security_group_ids")),
-                "Ipv6AllowedForDualStack": arg_to_bool_or_none(args.get("ipv6_allowed_for_dualstack"))
-            },
-            "Environment": {
-                "Variables": parse_key_1_value_to_dict(args.get("environment", ""))
-            },
-            "Runtime": args["runtime"],
-            "DeadLetterConfig": {
-                "TargetArn": args.get("target_arn")
-            },
-            "KMSKeyArn": args.get("kms_key_arn"),
-            "TracingConfig": {
-                "Mode": args.get("tracing_config_mode"),
-            },
-            "RevisionId": args.get("revision_id"),
-            "Layers": argToList(args.get("layers")),
-            "ImageConfig": {
-                "EntryPoint": argToList(args.get("image_config_entry_point")),
-                "Command": argToList(args.get("image_config_command")),
-                "WorkingDirectory": args.get("image_config_working_directory")
-            },
-            "EphemeralStorage": {
-                "Size": args.get("ephemeral_storage_size")
-            },
-            "SnapStart": {
-                "ApplyOn": args.get("snap_start_apply_on")
-            },
-            "LoggingConfig": {
-                'LogFormat': args.get("log_format"),
-                'ApplicationLogLevel': args.get("application_log_level"),
-                'SystemLogLevel': args.get("system_log_level"),
-                'LogGroup': args.get("log_group")
-            },
-            "CapacityProviderConfig": {
-                "LambdaManagedInstancesCapacityProviderConfig": {
-                    'CapacityProviderArn': args.get("capacity_provider_arn"),
-                    'PerExecutionEnvironmentMaxConcurrency': args.get("per_execution_env_max_concurrency"),
-                    'ExecutionEnvironmentMemoryGiBPerVCpu': args.get("execution_env_memory_per_cpu")
-                }
-            },
-            "DurableConfig": {
-                'RetentionPeriodInDays': args.get("durable_retention_period"),
-                'ExecutionTimeout': args.get("durable_execution_timeout")
-            }
-        }
-
-        if "file_system_configs" in args:
-            key_value_list = parse_tag_field(args.get("file_system_configs"))
-            arn_local_mount_path_list = []
-            for key_value in key_value_list:
-                arn_local_mount_path_list.append({'Arn': key_value['Key'], "LocalMountPath": key_value["Value"]})
-            kwargs["FileSystemConfigs"] = arn_local_mount_path_list
+        kwargs = remove_empty_elements(build_kwargs_lambda_function_config_update(args))
+        print_debug_logs(client, f"Calling update_function_configuration with {kwargs=}")
 
         response = client.update_function_configuration(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         outputs = copy.deepcopy(response)
         if outputs.get("ResponseMetadata", {}):
@@ -7012,7 +7031,7 @@ class Lambda:
         return CommandResults(
             outputs_prefix="AWS.Lambda.FunctionConfig",
             outputs_key_field="FunctionArn",
-            outputs=response,
+            outputs=outputs,
             readable_output=human_readable,
             raw_response=response,
         )
