@@ -28,10 +28,12 @@ The operations are accessed through port 10000.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL (e.g., `https://xxxxxxxx.pphosted.com:10000`) | True |
-| credentials | Username | True |
-| unsecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
+| Server URL (e.g., `https://xxxxxxxx.pphosted.com:10000`) |  | True |
+| Username |  | True |
+| Password |  | True |
+| Trust any certificate \(not secure\) | | False |
+| Use system proxy settings |  | False |
+| Request Timeout | The timeout for HTTP(S) requests \(in seconds\) to the Proofpoint server. | False |
 
 ## Commands
 
