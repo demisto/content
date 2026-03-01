@@ -201,8 +201,7 @@ def validate_iso8601_date(dt: str | None) -> str | None:
         datetime.fromisoformat(dt)
     except ValueError as e:
         raise DemistoException(
-            f"Invalid ISO 8601 date format: '{dt}'. "
-            f"Expected format: YYYY-MM-DDTHH:MM:SS or YYYY-MM-DDTHH:MM:SS+HH:MM.\n{e}"
+            f"Invalid ISO 8601 date format: '{dt}'. " f"Expected format: YYYY-MM-DDTHH:MM:SS or YYYY-MM-DDTHH:MM:SS+HH:MM.\n{e}"
         )
     return dt
 
@@ -698,7 +697,7 @@ def aws_ec2_fleet_create_args_builder(args: Dict[str, Any]) -> Dict[str, Any]:
                     "ReplacementStrategy": args.get("capacity_rebalance_replacement_strategy"),
                     "TerminationDelay": arg_to_number(args.get("capacity_rebalance_termination_delay")),
                 }
-            }
+            },
         },
         "OnDemandOptions": {
             "AllocationStrategy": args.get("on_demand_allocation_strategy"),

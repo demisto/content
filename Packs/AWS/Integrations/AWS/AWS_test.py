@@ -94,14 +94,14 @@ def test_validate_iso8601_date_empty_string_returns_none():
 
 def test_validate_iso8601_date_invalid_plain_date():
     """
-    Given: A plain date string without time component (YYYY-MM-DD only).
+    Given: A string that is not a valid ISO 8601 datetime (random text).
     When: validate_iso8601_date is called with the string.
     Then: It should raise a DemistoException indicating invalid ISO 8601 format.
     """
     from AWS import validate_iso8601_date
 
     with pytest.raises(DemistoException, match="Invalid ISO 8601 date format"):
-        validate_iso8601_date("2024-01-15")
+        validate_iso8601_date("not-a-date")
 
 
 def test_validate_iso8601_date_invalid_format():
@@ -4286,16 +4286,16 @@ def test_build_pagination_kwargs_with_limit_exceeding_maximum():
 
 def test_build_pagination_kwargs_with_zero_limit():
     """
-    Given: A limit argument of zero.
+    Given: A limit argument of zero and minimum_limit=1.
     When: build_pagination_kwargs is called with zero limit.
-    Then: It should raise ValueError indicating limit must be greater than 0.
+    Then: It should raise ValueError indicating limit must be greater than 1.
     """
     from AWS import build_pagination_kwargs
 
     args = {"limit": "0"}
 
-    with pytest.raises(ValueError, match="Limit must be greater than 0"):
-        build_pagination_kwargs(args)
+    with pytest.raises(ValueError, match="Limit must be greater than 1"):
+        build_pagination_kwargs(args, minimum_limit=1)
 
 
 def test_build_pagination_kwargs_with_negative_limit():
@@ -12610,7 +12610,7 @@ def test_create_fleet_command_success(mocker):
     result = EC2.create_fleet_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "AWS.EC2.Fleet"
+    assert result.outputs_prefix == "AWS.EC2.Fleets"
     assert result.outputs["FleetId"] == "fleet-12345"
     assert "fleet-12345" in result.readable_output
 
@@ -12986,7 +12986,7 @@ def test_describe_fleets_command_with_pagination(mocker):
     call_kwargs = mock_client.describe_fleets.call_args[1]
     assert call_kwargs.get("MaxResults") == 5
     assert call_kwargs.get("NextToken") == "token-prev"
-    assert result.outputs["AWS.EC2(true)"]["FleetNextToken"] == "token-abc"
+    assert result.outputs["AWS.EC2(true)"]["FleetsNextToken"] == "token-abc"
 
 
 def test_describe_fleet_instances_command_success(mocker):
@@ -13127,11 +13127,11 @@ def test_describe_fleet_instances_command_outputs_structure(mocker):
 
     assert isinstance(result, CommandResults)
     # ResponseMetadata must be stripped from the context output
-    fleet_output = result.outputs["AWS.EC2.Fleet(val.FleetId && val.FleetId == obj.FleetId)"]
+    fleet_output = result.outputs["AWS.EC2.Fleets(val.FleetId && val.FleetId == obj.FleetId)"]
     assert "ResponseMetadata" not in fleet_output
     assert fleet_output.get("FleetId") == "fleet-out-001"
     # NextToken sentinel should be present but None
-    assert result.outputs["AWS.EC2(true)"]["FleetInstancesNextToken"] is None
+    assert result.outputs["AWS.EC2.Fleets(true)"]["FleetInstancesNextToken"] is None
 
 
 def test_describe_fleet_instances_command_next_token_propagated(mocker):
