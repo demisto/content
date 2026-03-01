@@ -4018,30 +4018,15 @@ script:
           description: The specific problem concentration.
           type: String
     - name: core-get-support-ticket-taxonomy
-      description: Retrieves the complete support ticket taxonomy in a single call. Fetches all SME areas and sub-groups, then iterates over every combination to retrieve the full questionnaire catalog including questions and log upload fields.
+      description: Retrieves the complete support ticket taxonomy including all issue categories and their associated problem concentrations.
       arguments: []
       outputs:
         - contextPath: Core.SupportTicketTaxonomy.issue_category
           description: The issue category (SME area). Maps to the issue_category argument of core-fill-support-ticket.
           type: String
-        - contextPath: Core.SupportTicketTaxonomy.problem_concentrations.problem_concentration
-          description: The problem concentration (sub-group) within the issue category. Maps to the problem_concentration argument of core-fill-support-ticket.
-          type: String
-        - contextPath: Core.SupportTicketTaxonomy.problem_concentrations.questions.key
-          description: The unique key identifier for the questionnaire item.
-          type: String
-        - contextPath: Core.SupportTicketTaxonomy.problem_concentrations.questions.label
-          description: The display label or question text.
-          type: String
-        - contextPath: Core.SupportTicketTaxonomy.problem_concentrations.questions.required
-          description: Whether the questionnaire item is required.
-          type: Boolean
-        - contextPath: Core.SupportTicketTaxonomy.problem_concentrations.questions.type
-          description: The input type of the questionnaire item (e.g., text, file).
-          type: String
-        - contextPath: Core.SupportTicketTaxonomy.problem_concentrations.questions.questionType
-          description: The type of questionnaire item (e.g., question, log).
-          type: String
+        - contextPath: Core.SupportTicketTaxonomy.problem_concentrations
+          description: List of problem concentrations (sub-groups) within the issue category. Each value maps to the problem_concentration argument of core-fill-support-ticket.
+          type: Unknown
     - name: core-verify-support-ticket-permission
       description: Verifies whether the current user has the required permissions to manage support tickets. Checks both user CSP permission and tenant entitlement.
       arguments: []
