@@ -75,6 +75,7 @@ WEBAPP_COMMANDS = [
     "core-delete-profile",
     "core-fill-support-ticket",
     "core-get-support-ticket-taxonomy",
+    "core-verify-support-ticket-permission",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -4802,7 +4803,6 @@ def get_support_ticket_taxonomy_command(client: Client, args: dict[str, Any]) ->
                 sg.get("value") for sg in suggested_values if sg.get("value")
             ]
 
-            # Build the final structure minus the questions key
             category_entry = {
                 "issue_category": area_value,
                 "problem_concentrations": problem_concentrations,
@@ -5216,6 +5216,45 @@ def verify_support_ticket_permission(client: Client):
         raise DemistoException("You do not have the required permissions to manage support tickets.")
 
 
+def verify_support_ticket_permission_command(client: Client) -> CommandResults:
+    """
+    Command wrapper for verify_support_ticket_permission.
+    Checks whether the current user has the required permissions to manage support tickets.
+
+    Args:
+        client (Client): The client instance used to send the request.
+
+    Returns:
+        CommandResults: Object containing the permission check results with
+            user_csp_permission and tenant_entitlement_check fields.
+    """
+    response = client.check_support_permission()
+    reply = response.get("reply", {})
+    user_csp_permission = reply.get("user_csp_permission", False)
+    tenant_entitlement_check = reply.get("tenant_entitlement_check", False)
+
+    has_permission = bool(user_csp_permission and tenant_entitlement_check)
+
+    output = {
+        "user_csp_permission": user_csp_permission,
+        "tenant_entitlement_check": tenant_entitlement_check,
+        "has_permission": has_permission,
+    }
+
+    readable_output = tableToMarkdown(
+        "Support Ticket Permission",
+        output,
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.SupportTicketPermission",
+        outputs=output,
+        raw_response=response,
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -5376,6 +5415,10 @@ def main():  # pragma: no cover
             verify_platform_version("8.14.0")
             verify_support_ticket_permission(client)
             return_results(get_support_ticket_taxonomy_command(client, args))
+
+        elif command == "core-verify-support-ticket-permission":
+            verify_platform_version("8.14.0")
+            return_results(verify_support_ticket_permission_command(client))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
