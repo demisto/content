@@ -5197,7 +5197,7 @@ class EC2:
                     "PrivateDnsPreference": args.get("dns_options_private_dns_preference"),
                     "PrivateDnsSpecifiedDomains": argToList(args.get("dns_options_private_dns_specified_domains")),
                 },
-                "TagSpecifications": [{"ResourceType": "vpc-endpoint", "Tags": parse_tag_field(args.get("tags"))}]
+                "TagSpecifications": [{"ResourceType": "vpc-endpoint", "Tags": parse_tag_field(args.get("tags"))}],
             }
         )
 
