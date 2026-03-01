@@ -1,5 +1,5 @@
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+from CommonServerPython import * # noqa: F401
 from collections.abc import Callable
 
 import uuid
@@ -985,6 +985,8 @@ def spam_quarantine_message_search_command(
     order_by = args.get("order_by")
     order_dir = args.get("order_dir")
 
+    if quarantine_type == "pvo" and not quarantines:
+        raise DemistoException("quarantines must be specified when quarantine_type is 'pvo'.")
 
     if quarantine_type == "spam":
         validate_related_arguments(
@@ -1130,6 +1132,9 @@ def spam_quarantine_message_release_command(
     quarantine_name = args.get("quarantine_name")
     message_ids = format_number_list_argument(args["message_ids"])
 
+    if quarantine_type == "pvo" and not quarantine_name:
+        raise DemistoException("quarantine_name must be specified when quarantine_type is 'pvo'.")
+
     command_results_list = []
 
     if quarantine_type == "spam":
@@ -1179,6 +1184,9 @@ def spam_quarantine_message_delete_command(
     quarantine_type = args.get("quarantine_type", QUARANTINE_TYPE)
     quarantine_name = args.get("quarantine_name")
     message_ids = format_number_list_argument(args["message_ids"])
+
+    if quarantine_type == "pvo" and not quarantine_name:
+        raise DemistoException("quarantine_name must be specified when quarantine_type is 'pvo'.")
 
     command_results_list = []
 
@@ -1261,6 +1269,9 @@ def spam_quarantine_message_send_copy_command(
     quarantine_name = args.get("quarantine_name")
     message_id = format_number_list_argument(args["message_id"])
     recipients = argToList(args.get("recipients"))
+
+    if quarantine_type == "pvo" and not quarantine_name:
+        raise DemistoException("quarantine_name must be specified when quarantine_type is 'pvo'.")
 
     command_results_list = []
 
