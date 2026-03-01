@@ -32,40 +32,16 @@ def test_parse_resource_ids_with_none():
         parse_resource_ids(None)
 
 
-def test_validate_iso8601_date_valid_datetime():
+def test_validate_iso8601_date_valid_utc_z():
     """
-    Given: A valid ISO 8601 datetime string with time component.
+    Given: A valid AWS UTC timestamp string with 'Z' suffix.
     When: validate_iso8601_date is called with the string.
     Then: It should return the original string unchanged.
     """
     from AWS import validate_iso8601_date
 
-    result = validate_iso8601_date("2024-01-15T10:30:00")
-    assert result == "2024-01-15T10:30:00"
-
-
-def test_validate_iso8601_date_valid_with_timezone():
-    """
-    Given: A valid ISO 8601 datetime string with timezone offset.
-    When: validate_iso8601_date is called with the string.
-    Then: It should return the original string unchanged.
-    """
-    from AWS import validate_iso8601_date
-
-    result = validate_iso8601_date("2024-01-15T10:30:00+02:00")
-    assert result == "2024-01-15T10:30:00+02:00"
-
-
-def test_validate_iso8601_date_valid_with_utc_z():
-    """
-    Given: A valid ISO 8601 datetime string with UTC 'Z' suffix.
-    When: validate_iso8601_date is called with the string.
-    Then: It should return the original string unchanged.
-    """
-    from AWS import validate_iso8601_date
-
-    result = validate_iso8601_date("2024-01-15T10:30:00+00:00")
-    assert result == "2024-01-15T10:30:00+00:00"
+    result = validate_iso8601_date("2024-01-15T10:30:00Z")
+    assert result == "2024-01-15T10:30:00Z"
 
 
 def test_validate_iso8601_date_none_returns_none():
@@ -92,52 +68,64 @@ def test_validate_iso8601_date_empty_string_returns_none():
     assert result is None
 
 
-def test_validate_iso8601_date_invalid_plain_date():
+def test_validate_iso8601_date_missing_z_suffix():
     """
-    Given: A string that is not a valid ISO 8601 datetime (random text).
+    Given: A datetime string without the required 'Z' UTC suffix.
     When: validate_iso8601_date is called with the string.
-    Then: It should raise a DemistoException indicating invalid ISO 8601 format.
+    Then: It should raise a DemistoException indicating invalid AWS UTC format.
     """
     from AWS import validate_iso8601_date
 
-    with pytest.raises(DemistoException, match="Invalid ISO 8601 date format"):
-        validate_iso8601_date("not-a-date")
+    with pytest.raises(DemistoException, match="Invalid date format"):
+        validate_iso8601_date("2024-01-15T10:30:00")
+
+
+def test_validate_iso8601_date_with_offset_instead_of_z():
+    """
+    Given: A datetime string with a timezone offset instead of 'Z'.
+    When: validate_iso8601_date is called with the string.
+    Then: It should raise a DemistoException since AWS requires the 'Z' suffix.
+    """
+    from AWS import validate_iso8601_date
+
+    with pytest.raises(DemistoException, match="Invalid date format"):
+        validate_iso8601_date("2024-01-15T10:30:00+02:00")
 
 
 def test_validate_iso8601_date_invalid_format():
     """
     Given: A date string in an unsupported format (DD-MM-YYYY).
     When: validate_iso8601_date is called with the malformed string.
-    Then: It should raise a DemistoException indicating invalid ISO 8601 format.
+    Then: It should raise a DemistoException indicating invalid AWS UTC format.
     """
     from AWS import validate_iso8601_date
 
-    with pytest.raises(DemistoException, match="Invalid ISO 8601 date format"):
-        validate_iso8601_date("15-01-2024T10:30:00")
+    with pytest.raises(DemistoException, match="Invalid date format"):
+        validate_iso8601_date("15-01-2024T10:30:00Z")
 
 
 def test_validate_iso8601_date_invalid_month():
     """
-    Given: An ISO 8601 string with an out-of-range month value (month 13).
+    Given: An AWS UTC timestamp string with an out-of-range month value (month 13).
     When: validate_iso8601_date is called with the invalid string.
-    Then: It should raise a DemistoException indicating invalid ISO 8601 format.
+    Then: It should raise a DemistoException indicating invalid AWS UTC format.
     """
     from AWS import validate_iso8601_date
 
-    with pytest.raises(DemistoException, match="Invalid ISO 8601 date format"):
-        validate_iso8601_date("2024-13-01T10:30:00")
+    with pytest.raises(DemistoException, match="Invalid date format"):
+        validate_iso8601_date("2024-13-01T10:30:00Z")
 
 
 def test_validate_iso8601_date_invalid_hour():
     """
-    Given: An ISO 8601 string with an out-of-range hour value (hour 25).
+    Given: An AWS UTC timestamp string with an out-of-range hour value (hour 25).
     When: validate_iso8601_date is called with the invalid string.
-    Then: It should raise a DemistoException indicating invalid ISO 8601 format.
+    Then: It should raise a DemistoException indicating invalid AWS UTC format.
     """
     from AWS import validate_iso8601_date
 
-    with pytest.raises(DemistoException, match="Invalid ISO 8601 date format"):
-        validate_iso8601_date("2024-01-15T25:00:00")
+    with pytest.raises(DemistoException, match="Invalid date format"):
+        validate_iso8601_date("2024-01-15T25:00:00Z")
 
 
 def test_datetime_encoder_with_datetime():
@@ -12553,9 +12541,9 @@ def test_aws_ec2_fleet_create_args_builder_required_fields():
 
 def test_aws_ec2_fleet_create_args_builder_with_valid_from_until():
     """
-    Given: Args with valid ISO 8601 ValidFrom and ValidUntil datetime strings.
+    Given: Args with valid AWS UTC timestamp strings (YYYY-MM-DDTHH:MM:SSZ) for ValidFrom and ValidUntil.
     When: aws_ec2_fleet_create_args_builder is called.
-    Then: ValidFrom and ValidUntil in the result should match the provided ISO 8601 strings exactly.
+    Then: ValidFrom and ValidUntil in the result should match the provided UTC strings exactly.
     """
     from AWS import aws_ec2_fleet_create_args_builder
 
@@ -12564,14 +12552,14 @@ def test_aws_ec2_fleet_create_args_builder_with_valid_from_until():
         "total_target_capacity": "3",
         "launch_template_id": "lt-0abc123",
         "launch_template_version": "$Default",
-        "valid_from": "2025-06-01T00:00:00+00:00",
-        "valid_until": "2025-12-31T23:59:59+00:00",
+        "valid_from": "2025-06-01T00:00:00Z",
+        "valid_until": "2025-12-31T23:59:59Z",
     }
 
     result = aws_ec2_fleet_create_args_builder(args)
 
-    assert result["ValidFrom"] == "2025-06-01T00:00:00+00:00"
-    assert result["ValidUntil"] == "2025-12-31T23:59:59+00:00"
+    assert result["ValidFrom"] == "2025-06-01T00:00:00Z"
+    assert result["ValidUntil"] == "2025-12-31T23:59:59Z"
 
 
 def test_create_fleet_command_success(mocker):

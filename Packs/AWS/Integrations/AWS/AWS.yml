@@ -12303,10 +12303,10 @@ script:
       - maintain
       - instant
     - name: valid_from
-      description: The start date and time of the request, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
+      description: The start date and time of the request, in UTC format (YYYY-MM-DDTHH:MM:SSZ). For example, 2024-01-15T10:30:00Z.
       required: false
     - name: valid_until
-      description: The end date and time of the request, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
+      description: The end date and time of the request, in UTC format (YYYY-MM-DDTHH:MM:SSZ). For example, 2024-01-15T10:30:00Z.
       required: false
     - name: replace_unhealthy_instances
       description: Whether the EC2 Fleet should replace unhealthy instances.

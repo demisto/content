@@ -186,22 +186,27 @@ def build_pagination_kwargs(
 
 def validate_iso8601_date(dt: str | None) -> str | None:
     """
-    Validates that a date string is in ISO 8601 format and returns it unchanged.
+    Validates that a date string matches the AWS UTC timestamp format and returns it unchanged.
+
+    AWS requires timestamps in UTC format: YYYY-MM-DDTHH:MM:SSZ
+    (e.g. '2024-01-15T10:30:00Z').
+
     Args:
-        dt (str | None): A date string expected to be in ISO 8601 format
-            (e.g. '2024-01-15T00:00:00', '2024-01-15T00:00:00Z', '2024-01-15T00:00:00+02:00').
+        dt (str | None): A date string expected in AWS UTC format (YYYY-MM-DDTHH:MM:SSZ).
+
     Returns:
         str | None: The original date string if valid, or None if dt is falsy.
+
     Raises:
-        DemistoException: If the date string is not a valid ISO 8601 datetime.
+        DemistoException: If the date string does not match the required AWS UTC format.
     """
     if not dt:
         return None
     try:
-        datetime.fromisoformat(dt)
+        datetime.strptime(dt, "%Y-%m-%dT%H:%M:%SZ")
     except ValueError as e:
         raise DemistoException(
-            f"Invalid ISO 8601 date format: '{dt}'. " f"Expected format: YYYY-MM-DDTHH:MM:SS or YYYY-MM-DDTHH:MM:SS+HH:MM.\n{e}"
+            f"Invalid date format: '{dt}'. " f"Expected AWS UTC format: YYYY-MM-DDTHH:MM:SSZ (e.g. '2024-01-15T10:30:00Z').\n{e}"
         )
     return dt
 
@@ -474,13 +479,10 @@ def prepare_create_function_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
 def aws_ec2_block_device_mapping_args_builder(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     Builds the BlockDeviceMappings list for EC2 launch template and fleet commands.
-
     Constructs a single block device mapping entry from the provided arguments,
     including EBS volume configuration and device naming options.
-
     Args:
         args (Dict[str, Any]): The command arguments containing block device mapping fields.
-
     Returns:
         List[Dict[str, Any]]: A list containing a single block device mapping dictionary.
     """
@@ -506,14 +508,11 @@ def aws_ec2_block_device_mapping_args_builder(args: Dict[str, Any]) -> List[Dict
 def create_launch_template_kwargs_builder(args: Dict[str, Any]) -> Dict[str, Any]:
     """
     Builds the kwargs dictionary for EC2 launch template create and modify commands.
-
     Constructs the full request payload including launch template metadata,
     block device mappings, IAM instance profile, instance market options (Spot),
     network interfaces, placement, security groups, monitoring, and tag specifications.
-
     Args:
         args (Dict[str, Any]): The command arguments containing launch template fields.
-
     Returns:
         Dict[str, Any]: A dictionary of kwargs.
     """
@@ -617,15 +616,11 @@ def build_kwargs_network_interface_attribute(args: dict, network_interface_id: s
 def aws_ec2_fleet_command_launch_templates_config_args_builder(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     Builds the LaunchTemplateConfigs list for EC2 Fleet create/modify commands.
-
     For the Overrides list, each override field (availability_zone, instance_type, etc.)
     is read as a single value. Multiple overrides are not supported via this builder.
-
     Args:
         args (Dict[str, Any]): The command arguments containing launch template specification
-            fields (launch_template_id, launch_template_name, launch_template_version) and
-            override fields (availability_zone, instance_type, subnet_id, etc.).
-
+            fields and override fields.
     Returns:
         List[Dict[str, Any]]: A list containing a single LaunchTemplateConfig dict with
             ``LaunchTemplateSpecification`` and ``Overrides``, with empty/None values removed.
@@ -665,14 +660,11 @@ def aws_ec2_fleet_command_launch_templates_config_args_builder(args: Dict[str, A
 def aws_ec2_fleet_create_args_builder(args: Dict[str, Any]) -> Dict[str, Any]:
     """
     Builds the full kwargs dictionary for the EC2 Fleet create command.
-
     Constructs the complete request payload including fleet type, capacity termination
     policies, validity window, launch template configurations, Spot options, On-Demand
     options, target capacity specification, and tag specifications.
-
     Args:
         args (Dict[str, Any]): The command arguments containing fleet configuration.
-
     Returns:
         Dict[str, Any]: A dictionary of kwargs.
     """
