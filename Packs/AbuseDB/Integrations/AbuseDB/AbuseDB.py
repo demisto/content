@@ -118,10 +118,17 @@ def http_request(method, url_suffix, params=None, headers=HEADERS, threshold=THR
         return_error(str(e))
 
 
-def abusech_hunting_http_request(headers, payload):
+def abusech_hunting_http_request(headers: dict, payload: dict):
     """
     Dedicated request helper for Abuse.ch Hunting API.
     Sends a POST request with a JSON body to the base URL.
+
+    Args:
+        headers (dict): The headers for the request.
+        payload (dict): The JSON payload for the request.
+
+    Returns:
+        requests.Response: The response from the Abuse.ch Hunting API.
     """
     if not ABUSECH_URL:
         raise Exception("Hunting API URL was not provided in the integration parameters.")
@@ -340,9 +347,14 @@ def get_blacklist_command(limit, days, confidence, saveToContext):
     return analysis if type(analysis) is str else blacklist_to_entry(analysis.get("data"), saveToContext)
 
 
-def get_fplist_command(format, limit, all_results):
+def get_fplist_command(format: str, limit: int, all_results: bool):
     """
     Retrieves the False Positive List (FPL) from abuse.ch.
+
+    Args:
+        format (str): The format of the response (json or csv).
+        limit (int): The maximum number of entries to return.
+        all_results (bool): Whether to return all results.
     """
     demisto.debug("Retrieving the false positive list from hunting abuse api.")
 
