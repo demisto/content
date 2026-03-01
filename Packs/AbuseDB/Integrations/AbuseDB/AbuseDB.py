@@ -400,8 +400,11 @@ def get_fplist_command(format: str, limit: int, all_results: bool):
             outputs_prefix="AbuseIPDB.FPL", outputs_key_field="id", outputs=data, readable_output=readable_output
         )
 
-    else:  # format == 'csv'
+    elif format == "csv":
         return fileResult("abusech_fplist.csv", response.content)
+
+    else:
+        raise ValueError(f"Unexpected format type: {format}")
 
 
 def test_module(reliability):
