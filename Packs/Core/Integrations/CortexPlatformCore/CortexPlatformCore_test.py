@@ -9513,8 +9513,6 @@ def test_get_case_resolution_statuses_command(mocker):
     mock_client.get_case_resolution_statuses.return_value = {"done": {"caseTasks": []}}
     mock_client.get_playbooks_metadata.return_value = []
 
-    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="mock_table")
-
     args = {"case_id": "123,456"}
     result = get_case_resolution_statuses(mock_client, args)
 
@@ -9523,6 +9521,36 @@ def test_get_case_resolution_statuses_command(mocker):
     assert len(result.outputs) == 2
     assert len(result.raw_response) == 2
     assert mock_client.get_case_resolution_statuses.call_count == 2
+
+
+def test_get_case_resolution_statuses_command_with_data(mocker):
+    """
+    GIVEN:
+        - A mocked client and arguments with a case ID that has resolution data.
+    WHEN:
+        - get_case_resolution_statuses is called.
+    THEN:
+        - The readable output contains a properly formatted table with task data.
+    """
+    from CortexPlatformCore import get_case_resolution_statuses
+
+    mock_client = mocker.Mock()
+    mock_client.get_case_resolution_statuses.return_value = {
+        "done": {"caseTasks": [{"id": "pb1", "taskName": "Task 1"}]},
+        "inProgress": {"caseTasks": []},
+        "pending": {"caseTasks": []},
+        "recommended": {"caseTasks": []},
+    }
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "pb1", "name": "Playbook 1", "comment": "Comment 1"},
+    ]
+
+    args = {"case_id": "123"}
+    result = get_case_resolution_statuses(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert len(result.outputs) == 1
+    assert len(result.outputs[0]) == 1  # Only one task in "done"
 
 
 def test_get_ai_model_activity_command_empty_response(mocker: MockerFixture):
@@ -9865,3 +9893,49 @@ class TestProfileCommands:
 
         assert "Your request was sent successfully." in result.readable_output
         mock_client.delete_profile.assert_called_once_with(["12345", "67890"])
+
+
+def test_send_endpoint_heartbeat_command_success(mocker):
+    """
+    Given:
+        - A client and valid arguments with an endpoint ID.
+    When:
+        - send_endpoint_heartbeat_command is called.
+    Then:
+        - The client's perform_endpoint_heartbeat method is called with the correct JSON data.
+        - A CommandResults object is returned with a success message.
+    """
+    from CortexPlatformCore import send_endpoint_heartbeat_command, Client
+
+    mock_client = mocker.Mock(spec=Client)
+    args = {"endpoint_id": "endpoint-123"}
+
+    result = send_endpoint_heartbeat_command(mock_client, args)
+
+    expected_json_data = {
+        "request_data": {
+            "endpoint_id": "endpoint-123",
+            "call_home_type": 6,
+        }
+    }
+
+    mock_client.send_endpoint_heartbeat.assert_called_once_with(expected_json_data)
+    assert result.readable_output == "Heartbeat sent successfully for endpoint endpoint-123"
+
+
+def test_send_endpoint_heartbeat_command_missing_id(mocker):
+    """
+    Given:
+        - A client and arguments missing the endpoint ID.
+    When:
+        - send_endpoint_heartbeat_command is called.
+    Then:
+        - A ValueError is raised indicating that endpoint_id is required.
+    """
+    from CortexPlatformCore import send_endpoint_heartbeat_command, Client
+
+    mock_client = mocker.Mock(spec=Client)
+    args = {}
+
+    with pytest.raises(ValueError, match="endpoint_id is required"):
+        send_endpoint_heartbeat_command(mock_client, args)
