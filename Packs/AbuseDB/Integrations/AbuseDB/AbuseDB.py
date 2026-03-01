@@ -18,6 +18,8 @@ SERVER = demisto.params().get("server")
 if not SERVER.endswith("/"):
     SERVER += "/"
 API_KEY = demisto.params().get("credentials", {}).get("password") or demisto.params().get("apikey")
+ABUSECH_API_KEY = demisto.params().get("hunting_credentials", {}).get("password")
+ABUSECH_URL = demisto.params().get("abusech_hunting_url")
 DISABLE_PRIVATE_IP_LOOKUP = argToBoolean(demisto.params().get("disable_private_ip_lookup", "False"))
 MAX_AGE = demisto.params().get("days")
 THRESHOLD = demisto.params().get("threshold")
@@ -114,6 +116,38 @@ def http_request(method, url_suffix, params=None, headers=HEADERS, threshold=THR
     except Exception as e:
         LOG(e)
         return_error(str(e))
+
+
+def abusech_hunting_http_request(headers, payload):
+    """
+    Dedicated request helper for Abuse.ch Hunting API.
+    Sends a POST request with a JSON body to the base URL.
+    """
+    if not ABUSECH_URL:
+        raise Exception("Hunting API URL was not provided in the integration parameters.")
+
+    if not ABUSECH_API_KEY:
+        raise Exception("Hunting API Key was not provided in the integration parameters.")
+
+    demisto.debug(f"Sending a POST request to '{ABUSECH_URL}' with the following payload: {payload}")
+
+    try:
+        response = session.request(method="POST", url=ABUSECH_URL, headers=headers, json=payload, verify=not INSECURE)
+
+        response.raise_for_status()
+
+        try:  # this API wraps errors with a status=200 response, check if 'query_status' is present
+            res_json = response.json()
+            if res_json.get("query_status"):
+                error_message = res_json.get("data", "Hunting API response error.")
+                raise Exception(error_message)
+        except ValueError:  # there is no 'query_status', which means the response doesn't wrap an error
+            pass
+
+        return response
+
+    except Exception as e:
+        raise Exception(f"Failed to connect to Abuse.ch: {str(e)}")
 
 
 def format_privte_ips(private_ips):
@@ -306,12 +340,70 @@ def get_blacklist_command(limit, days, confidence, saveToContext):
     return analysis if type(analysis) is str else blacklist_to_entry(analysis.get("data"), saveToContext)
 
 
+def get_fplist_command(format, limit, all_results):
+    """
+    Retrieves the False Positive List (FPL) from abuse.ch.
+    """
+    demisto.debug("Retrieving the false positive list from hunting abuse api.")
+
+    limit_int = arg_to_number(limit)
+    all_results_bool = argToBoolean(all_results)
+
+    headers = {"Auth-Key": ABUSECH_API_KEY, "Content-Type": "application/json"}
+    payload = {"query": "get_fplist", "format": format}
+
+    response = abusech_hunting_http_request(headers, payload)
+
+    if format == "json":
+        res_json = response.json()
+
+        if not isinstance(res_json, dict):
+            raise Exception(f"Unexpected response format from Abuse.ch: {res_json}")
+
+        demisto.debug("Flattening json response.")
+        data = []
+        for entry_id, details in res_json.items():
+            if isinstance(details, dict):
+                details["id"] = entry_id
+                data.append(details)
+            else:
+                demisto.debug(f"Skipping non-dictionary entry in FPL response: {entry_id}={details}")
+
+        if not data:
+            demisto.debug("Response had no valid data within it.")
+            return CommandResults(readable_output="No data found in the False Positive List.")
+
+        if not all_results_bool:
+            demisto.debug(f"Trimming data to first {limit_int} entries.")
+            data = data[:limit_int]
+
+        readable_output = tableToMarkdown(
+            "Abuse.ch False Positive List",
+            data,
+            headers=["id", "time_stamp", "platform", "entry_type", "entry_value", "removed_by", "removal_notes"],
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_prefix="AbuseIPDB.FPL", outputs_key_field="id", outputs=data, readable_output=readable_output
+        )
+
+    else:  # format == 'csv'
+        return fileResult("abusech_fplist.csv", response.content)
+
+
 def test_module(reliability):
     try:
         check_ip_command(ip=TEST_IP, disable_private_ip_lookup=False, verbose=False, reliability=reliability)
     except Exception as e:
-        LOG(e)
-        return_error(str(e))
+        return_error(f"AbuseIPDB connection failed: {str(e)}")
+
+    if ABUSECH_API_KEY:
+        try:
+            get_fplist_command("json", 1, False)
+        except Exception as e:
+            return_error(f"Abuse.ch Hunting API connection failed: {str(e)}")
+
     demisto.results("ok")
 
 
@@ -330,28 +422,35 @@ def get_categories_command():
     return entry
 
 
-try:
-    reliability = demisto.params().get("integrationReliability", "C - Fairly reliable")
+def main():
+    try:
+        reliability = demisto.params().get("integrationReliability", "C - Fairly reliable")
 
-    if DBotScoreReliability.is_valid_type(reliability):
-        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
-    else:
-        raise Exception("Please provide a valid value for the Source Reliability parameter.")
+        if DBotScoreReliability.is_valid_type(reliability):
+            reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+        else:
+            raise Exception("Please provide a valid value for the Source Reliability parameter.")
 
-    if demisto.command() == "test-module":
-        # Tests connectivity and credentails on login
-        test_module(reliability)
-    elif demisto.command() == "ip":
-        demisto.results(check_ip_command(reliability, **demisto.args()))
-    elif demisto.command() == "abuseipdb-check-cidr-block":
-        demisto.results(check_block_command(reliability, **demisto.args()))
-    elif demisto.command() == "abuseipdb-report-ip":
-        demisto.results(report_ip_command(**demisto.args()))
-    elif demisto.command() == "abuseipdb-get-blacklist":
-        demisto.results(get_blacklist_command(**demisto.args()))
-    elif demisto.command() == "abuseipdb-get-categories":
-        demisto.results(get_categories_command(**demisto.args()))  # type:ignore
+        if demisto.command() == "test-module":
+            # Tests connectivity and credentails on login
+            test_module(reliability)
+        elif demisto.command() == "ip":
+            demisto.results(check_ip_command(reliability, **demisto.args()))
+        elif demisto.command() == "abuseipdb-check-cidr-block":
+            demisto.results(check_block_command(reliability, **demisto.args()))
+        elif demisto.command() == "abuseipdb-report-ip":
+            demisto.results(report_ip_command(**demisto.args()))
+        elif demisto.command() == "abuseipdb-get-blacklist":
+            demisto.results(get_blacklist_command(**demisto.args()))
+        elif demisto.command() == "abuseipdb-get-categories":
+            demisto.results(get_categories_command(**demisto.args()))  # type:ignore
+        elif demisto.command() == "abuseipdb-get-fplist":
+            return_results(get_fplist_command(**demisto.args()))
 
-except Exception as e:
-    LOG.print_log()
-    return_error(str(e))
+    except Exception as e:
+        LOG.print_log()
+        return_error(str(e))
+
+
+if __name__ in ("__main__", "__builtin__", "builtins"):
+    main()
