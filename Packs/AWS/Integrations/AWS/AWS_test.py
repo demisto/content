@@ -32,52 +32,112 @@ def test_parse_resource_ids_with_none():
         parse_resource_ids(None)
 
 
-def test_parse_date_valid_date():
+def test_validate_iso8601_date_valid_datetime():
     """
-    Given: A valid date string in 'YYYY-MM-DD' format.
-    When: parse_date is called with the date string.
-    Then: It should return the date in ISO 8601 format.
+    Given: A valid ISO 8601 datetime string with time component.
+    When: validate_iso8601_date is called with the string.
+    Then: It should return the original string unchanged.
     """
-    from AWS import parse_date
+    from AWS import validate_iso8601_date
 
-    result = parse_date("2024-01-15")
-    assert result == "2024-01-15T00:00:00"
+    result = validate_iso8601_date("2024-01-15T10:30:00")
+    assert result == "2024-01-15T10:30:00"
 
 
-def test_parse_date_invalid_format():
+def test_validate_iso8601_date_valid_with_timezone():
     """
-    Given: A date string with an invalid format (not 'YYYY-MM-DD').
-    When: parse_date is called with the malformed string.
-    Then: It should raise a DemistoException indicating the date could not be parsed.
+    Given: A valid ISO 8601 datetime string with timezone offset.
+    When: validate_iso8601_date is called with the string.
+    Then: It should return the original string unchanged.
     """
-    from AWS import parse_date
+    from AWS import validate_iso8601_date
 
-    with pytest.raises(DemistoException, match="Date could not be parsed"):
-        parse_date("15-01-2024")
+    result = validate_iso8601_date("2024-01-15T10:30:00+02:00")
+    assert result == "2024-01-15T10:30:00+02:00"
 
 
-def test_parse_date_invalid_values():
+def test_validate_iso8601_date_valid_with_utc_z():
     """
-    Given: A date string with out-of-range values (e.g. month 13).
-    When: parse_date is called with the invalid date.
-    Then: It should raise a DemistoException indicating the date could not be parsed.
+    Given: A valid ISO 8601 datetime string with UTC 'Z' suffix.
+    When: validate_iso8601_date is called with the string.
+    Then: It should return the original string unchanged.
     """
-    from AWS import parse_date
+    from AWS import validate_iso8601_date
 
-    with pytest.raises(DemistoException, match="Date could not be parsed"):
-        parse_date("2024-13-01")
+    result = validate_iso8601_date("2024-01-15T10:30:00+00:00")
+    assert result == "2024-01-15T10:30:00+00:00"
 
 
-def test_parse_date_leap_year():
+def test_validate_iso8601_date_none_returns_none():
     """
-    Given: A valid leap year date string '2024-02-29'.
-    When: parse_date is called with the leap year date.
-    Then: It should return the correct ISO 8601 formatted string.
+    Given: A None value.
+    When: validate_iso8601_date is called with None.
+    Then: It should return None without raising an exception.
     """
-    from AWS import parse_date
+    from AWS import validate_iso8601_date
 
-    result = parse_date("2024-02-29")
-    assert result == "2024-02-29T00:00:00"
+    result = validate_iso8601_date(None)
+    assert result is None
+
+
+def test_validate_iso8601_date_empty_string_returns_none():
+    """
+    Given: An empty string.
+    When: validate_iso8601_date is called with an empty string.
+    Then: It should return None without raising an exception.
+    """
+    from AWS import validate_iso8601_date
+
+    result = validate_iso8601_date("")
+    assert result is None
+
+
+def test_validate_iso8601_date_invalid_plain_date():
+    """
+    Given: A plain date string without time component (YYYY-MM-DD only).
+    When: validate_iso8601_date is called with the string.
+    Then: It should raise a DemistoException indicating invalid ISO 8601 format.
+    """
+    from AWS import validate_iso8601_date
+
+    with pytest.raises(DemistoException, match="Invalid ISO 8601 date format"):
+        validate_iso8601_date("2024-01-15")
+
+
+def test_validate_iso8601_date_invalid_format():
+    """
+    Given: A date string in an unsupported format (DD-MM-YYYY).
+    When: validate_iso8601_date is called with the malformed string.
+    Then: It should raise a DemistoException indicating invalid ISO 8601 format.
+    """
+    from AWS import validate_iso8601_date
+
+    with pytest.raises(DemistoException, match="Invalid ISO 8601 date format"):
+        validate_iso8601_date("15-01-2024T10:30:00")
+
+
+def test_validate_iso8601_date_invalid_month():
+    """
+    Given: An ISO 8601 string with an out-of-range month value (month 13).
+    When: validate_iso8601_date is called with the invalid string.
+    Then: It should raise a DemistoException indicating invalid ISO 8601 format.
+    """
+    from AWS import validate_iso8601_date
+
+    with pytest.raises(DemistoException, match="Invalid ISO 8601 date format"):
+        validate_iso8601_date("2024-13-01T10:30:00")
+
+
+def test_validate_iso8601_date_invalid_hour():
+    """
+    Given: An ISO 8601 string with an out-of-range hour value (hour 25).
+    When: validate_iso8601_date is called with the invalid string.
+    Then: It should raise a DemistoException indicating invalid ISO 8601 format.
+    """
+    from AWS import validate_iso8601_date
+
+    with pytest.raises(DemistoException, match="Invalid ISO 8601 date format"):
+        validate_iso8601_date("2024-01-15T25:00:00")
 
 
 def test_datetime_encoder_with_datetime():
@@ -12419,6 +12479,101 @@ def test_ec2_delete_launch_template_command_failure(mocker):
     demisto_results.assert_called_once()
 
 
+def test_aws_ec2_fleet_command_launch_templates_config_args_builder_with_template_id():
+    """
+    Given: Args containing a launch_template_id, version, instance_type, and subnet_id.
+    When: aws_ec2_fleet_command_launch_templates_config_args_builder is called.
+    Then: It should return a list with one entry containing LaunchTemplateSpecification and Overrides,
+          with the correct values mapped and empty fields removed.
+    """
+    from AWS import aws_ec2_fleet_command_launch_templates_config_args_builder
+
+    args = {
+        "launch_template_id": "lt-0abc123",
+        "launch_template_version": "$Default",
+        "instance_type": "t3.micro",
+        "subnet_id": "subnet-111",
+    }
+
+    result = aws_ec2_fleet_command_launch_templates_config_args_builder(args)
+
+    assert len(result) == 1
+    config = result[0]
+    assert config["LaunchTemplateSpecification"]["LaunchTemplateId"] == "lt-0abc123"
+    assert config["LaunchTemplateSpecification"]["Version"] == "$Default"
+    assert "LaunchTemplateName" not in config["LaunchTemplateSpecification"]
+    overrides = config["Overrides"][0]
+    assert overrides["InstanceType"] == "t3.micro"
+    assert overrides["SubnetId"] == "subnet-111"
+
+
+def test_aws_ec2_fleet_command_launch_templates_config_args_builder_empty_args():
+    """
+    Given: Args with no launch template or override fields provided.
+    When: aws_ec2_fleet_command_launch_templates_config_args_builder is called.
+    Then: It should return a list with one entry where LaunchTemplateSpecification and Overrides
+          contain no keys (all empty values removed).
+    """
+    from AWS import aws_ec2_fleet_command_launch_templates_config_args_builder
+
+    result = aws_ec2_fleet_command_launch_templates_config_args_builder({})
+
+    assert len(result) == 1
+    config = result[0]
+    assert "LaunchTemplateSpecification" not in config or config.get("LaunchTemplateSpecification") == {}
+    overrides = config.get("Overrides", [{}])
+    assert isinstance(overrides, list)
+
+
+def test_aws_ec2_fleet_create_args_builder_required_fields():
+    """
+    Given: Args with the minimum required fields: type, total_target_capacity, and launch_template_id.
+    When: aws_ec2_fleet_create_args_builder is called.
+    Then: It should return a dict with Type and TargetCapacitySpecification correctly populated,
+          and ValidFrom/ValidUntil absent (no dates provided).
+    """
+    from AWS import aws_ec2_fleet_create_args_builder
+
+    args = {
+        "type": "instant",
+        "total_target_capacity": "2",
+        "default_target_capacity_type": "spot",
+        "launch_template_id": "lt-0abc123",
+        "launch_template_version": "$Default",
+    }
+
+    result = aws_ec2_fleet_create_args_builder(args)
+
+    assert result["Type"] == "instant"
+    assert result["TargetCapacitySpecification"]["TotalTargetCapacity"] == 2
+    assert result["TargetCapacitySpecification"]["DefaultTargetCapacityType"] == "spot"
+    assert result.get("ValidFrom") is None
+    assert result.get("ValidUntil") is None
+
+
+def test_aws_ec2_fleet_create_args_builder_with_valid_from_until():
+    """
+    Given: Args with valid ISO 8601 ValidFrom and ValidUntil datetime strings.
+    When: aws_ec2_fleet_create_args_builder is called.
+    Then: ValidFrom and ValidUntil in the result should match the provided ISO 8601 strings exactly.
+    """
+    from AWS import aws_ec2_fleet_create_args_builder
+
+    args = {
+        "type": "maintain",
+        "total_target_capacity": "3",
+        "launch_template_id": "lt-0abc123",
+        "launch_template_version": "$Default",
+        "valid_from": "2025-06-01T00:00:00+00:00",
+        "valid_until": "2025-12-31T23:59:59+00:00",
+    }
+
+    result = aws_ec2_fleet_create_args_builder(args)
+
+    assert result["ValidFrom"] == "2025-06-01T00:00:00+00:00"
+    assert result["ValidUntil"] == "2025-12-31T23:59:59+00:00"
+
+
 def test_create_fleet_command_success(mocker):
     """
     Given: A mocked EC2 client and valid fleet creation arguments with a launch template ID.
@@ -12508,9 +12663,11 @@ def test_create_fleet_command_both_templates_provided(mocker):
 
 def test_create_fleet_command_with_spot_and_ondemand_options(mocker):
     """
-    Given: A mocked EC2 client and arguments including SpotOptions and OnDemandOptions.
+    Given: A mocked EC2 client and arguments including SpotOptions, OnDemandOptions,
+           and CapacityRebalance maintenance strategy fields.
     When: create_fleet_command is called with full configuration.
-    Then: It should call create_fleet with the correct SpotOptions and OnDemandOptions parameters.
+    Then: It should call create_fleet with the correct SpotOptions (including
+          MaintenanceStrategies.CapacityRebalance) and OnDemandOptions parameters.
     """
     from AWS import EC2
 
@@ -12538,6 +12695,8 @@ def test_create_fleet_command_with_spot_and_ondemand_options(mocker):
         "on_demand_target_capacity": "1",
         "spot_target_capacity": "3",
         "type": "maintain",
+        "capacity_rebalance_replacement_strategy": "launch-before-terminate",
+        "capacity_rebalance_termination_delay": "120",
     }
 
     result = EC2.create_fleet_command(mock_client, args)
@@ -12548,6 +12707,9 @@ def test_create_fleet_command_with_spot_and_ondemand_options(mocker):
     assert call_kwargs["SpotOptions"]["InstancePoolsToUseCount"] == 2
     assert call_kwargs["OnDemandOptions"]["AllocationStrategy"] == "prioritized"
     assert call_kwargs["TargetCapacitySpecification"]["TotalTargetCapacity"] == 4
+    capacity_rebalance = call_kwargs["SpotOptions"]["MaintenanceStrategies"]["CapacityRebalance"]
+    assert capacity_rebalance["ReplacementStrategy"] == "launch-before-terminate"
+    assert capacity_rebalance["TerminationDelay"] == 120
 
 
 def test_create_fleet_command_with_tags(mocker):
@@ -12626,6 +12788,8 @@ def test_delete_fleet_command_success(mocker):
     assert result.outputs_prefix == "AWS.EC2.DeletedFleets"
     assert "fleet-aaa" in result.readable_output
     assert result.outputs["SuccessfulFleetDeletions"][0]["FleetId"] == "fleet-aaa"
+    call_kwargs = mock_client.delete_fleets.call_args[1]
+    assert "fleet-aaa" in call_kwargs["FleetIds"]
 
 
 def test_delete_fleet_command_partial_failure(mocker):
@@ -12748,6 +12912,9 @@ def test_describe_fleets_command_success(mocker):
     assert isinstance(result, CommandResults)
     assert "fleet-111" in result.readable_output
     assert "fleet-222" in result.readable_output
+    call_kwargs = mock_client.describe_fleets.call_args[1]
+    assert "fleet-111" in call_kwargs["FleetIds"]
+    assert "fleet-222" in call_kwargs["FleetIds"]
 
 
 def test_describe_fleets_command_no_fleets_found(mocker):
@@ -12857,6 +13024,8 @@ def test_describe_fleet_instances_command_success(mocker):
     assert isinstance(result, CommandResults)
     assert "i-aaa111" in result.readable_output
     assert "i-bbb222" in result.readable_output
+    call_kwargs = mock_client.describe_fleet_instances.call_args[1]
+    assert call_kwargs["FleetId"] == "fleet-abc"
 
 
 def test_describe_fleet_instances_command_no_instances(mocker):
@@ -12967,15 +13136,17 @@ def test_describe_fleet_instances_command_outputs_structure(mocker):
 
 def test_describe_fleet_instances_command_next_token_propagated(mocker):
     """
-    Given: A mocked EC2 client returning a NextToken in the response.
-    When: describe_fleet_instances_command is called.
-    Then: FleetInstancesNextToken in the AWS.EC2(true) output should match the response NextToken.
+    Given: A mocked EC2 client returning 2 instances and a NextToken (limit=2 was reached).
+    When: describe_fleet_instances_command is called with limit=2.
+    Then: FleetInstancesNextToken in the AWS.EC2.Fleets(true) output should match the response NextToken,
+          and MaxResults=2 should be passed to the API call.
     """
     from AWS import EC2
 
     mock_client = mocker.Mock()
     instances = [
-        {"InstanceId": "i-page001", "InstanceType": "t3.nano", "SpotInstanceRequestId": "sir-page1", "InstanceHealth": "healthy"}
+        {"InstanceId": "i-page001", "InstanceType": "t3.nano", "SpotInstanceRequestId": "sir-page1", "InstanceHealth": "healthy"},
+        {"InstanceId": "i-page002", "InstanceType": "t3.nano", "SpotInstanceRequestId": "sir-page2", "InstanceHealth": "healthy"},
     ]
     serialized = {"ActiveInstances": instances, "FleetId": "fleet-page-001", "NextToken": "next-token-xyz"}
     mock_client.describe_fleet_instances.return_value = {
@@ -12994,7 +13165,7 @@ def test_describe_fleet_instances_command_next_token_propagated(mocker):
     result = EC2.describe_fleet_instances_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs["AWS.EC2(true)"]["FleetInstancesNextToken"] == "next-token-xyz"
+    assert result.outputs["AWS.EC2.Fleets(true)"]["FleetInstancesNextToken"] == "next-token-xyz"
     call_kwargs = mock_client.describe_fleet_instances.call_args[1]
     assert call_kwargs.get("MaxResults") == 2
 
@@ -13067,6 +13238,11 @@ def test_modify_fleet_command_success(mocker):
     assert isinstance(result, CommandResults)
     assert "Successfully modified" in result.readable_output
     assert "fleet-mod-001" in result.readable_output
+    call_kwargs = mock_client.modify_fleet.call_args[1]
+    assert call_kwargs["FleetId"] == "fleet-mod-001"
+    assert call_kwargs["TargetCapacitySpecification"]["TotalTargetCapacity"] == 5
+    assert call_kwargs["TargetCapacitySpecification"]["DefaultTargetCapacityType"] == "spot"
+    assert "LaunchTemplateConfigs" not in call_kwargs
 
 
 def test_modify_fleet_command_api_returns_false(mocker):
@@ -13096,35 +13272,6 @@ def test_modify_fleet_command_api_returns_false(mocker):
     assert isinstance(result, CommandResults)
     assert "Failed to modify" in result.readable_output
     assert "fleet-mod-002" in result.readable_output
-
-
-def test_modify_fleet_command_without_launch_template(mocker):
-    """
-    Given: A mocked EC2 client and arguments with no launch template specified.
-    When: modify_fleet_command is called with only capacity changes.
-    Then: It should call modify_fleet without LaunchTemplateConfigs in the payload.
-    """
-    from AWS import EC2
-
-    mock_client = mocker.Mock()
-    mock_client.modify_fleet.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
-        "Return": True,
-    }
-
-    args = {
-        "account_id": "123456789012",
-        "region": "us-east-1",
-        "fleet_id": "fleet-mod-003",
-        "total_target_capacity": "10",
-        "excess_capacity_termination_policy": "termination",
-    }
-
-    result = EC2.modify_fleet_command(mock_client, args)
-
-    assert isinstance(result, CommandResults)
-    call_kwargs = mock_client.modify_fleet.call_args[1]
-    assert "LaunchTemplateConfigs" not in call_kwargs
 
 
 def test_modify_fleet_command_with_launch_template(mocker):

@@ -167,7 +167,7 @@ def build_pagination_kwargs(
         raise ValueError(f"Invalid limit parameter: {limit_arg}. Must be a valid number.") from e
 
     # Validate limit lower constraints
-    if limit is not None and limit <= minimum_limit:
+    if limit is not None and limit < minimum_limit:
         raise ValueError(f"Limit must be greater than {minimum_limit}")
 
     # AWS API upper constraints
@@ -184,24 +184,27 @@ def build_pagination_kwargs(
     return kwargs
 
 
-def parse_date(dt):
+def validate_iso8601_date(dt: str | None) -> str | None:
     """
-    Parses a date string in 'YYYY-MM-DD' format and returns an ISO 8601 formatted string.
+    Validates that a date string is in ISO 8601 format and returns it unchanged.
     Args:
-        dt (str): A date string in 'YYYY-MM-DD' format.
+        dt (str | None): A date string expected to be in ISO 8601 format
+            (e.g. '2024-01-15T00:00:00', '2024-01-15T00:00:00Z', '2024-01-15T00:00:00+02:00').
     Returns:
-        str: The date in ISO 8601 format (e.g. '2024-01-15T00:00:00').
+        str | None: The original date string if valid, or None if dt is falsy.
     Raises:
-        DemistoException: If the date string cannot be parsed (invalid format or values).
+        DemistoException: If the date string is not a valid ISO 8601 datetime.
     """
     if not dt:
         return None
     try:
-        arr = dt.split("-")
-        parsed_date = (datetime(int(arr[0]), int(arr[1]), int(arr[2]))).isoformat()
+        datetime.fromisoformat(dt)
     except ValueError as e:
-        raise DemistoException(f"Date could not be parsed. Please check the date again.\n{e}")
-    return parsed_date
+        raise DemistoException(
+            f"Invalid ISO 8601 date format: '{dt}'. "
+            f"Expected format: YYYY-MM-DDTHH:MM:SS or YYYY-MM-DDTHH:MM:SS+HH:MM.\n{e}"
+        )
+    return dt
 
 
 def parse_resource_ids(resource_id: str | None) -> list[str]:
@@ -618,6 +621,15 @@ def aws_ec2_fleet_command_launch_templates_config_args_builder(args: Dict[str, A
 
     For the Overrides list, each override field (availability_zone, instance_type, etc.)
     is read as a single value. Multiple overrides are not supported via this builder.
+
+    Args:
+        args (Dict[str, Any]): The command arguments containing launch template specification
+            fields (launch_template_id, launch_template_name, launch_template_version) and
+            override fields (availability_zone, instance_type, subnet_id, etc.).
+
+    Returns:
+        List[Dict[str, Any]]: A list containing a single LaunchTemplateConfig dict with
+            ``LaunchTemplateSpecification`` and ``Overrides``, with empty/None values removed.
     """
     override = [
         {
@@ -670,8 +682,8 @@ def aws_ec2_fleet_create_args_builder(args: Dict[str, Any]) -> Dict[str, Any]:
         "ReplaceUnhealthyInstances": arg_to_bool_or_none(args.get("replace_unhealthy_instances")),
         "TerminateInstancesWithExpiration": arg_to_bool_or_none(args.get("terminate_instances_with_expiration")),
         "Type": args.get("type"),
-        "ValidFrom": parse_date(args.get("valid_from")),
-        "ValidUntil": parse_date(args.get("valid_until")),
+        "ValidFrom": validate_iso8601_date(args.get("valid_from")),
+        "ValidUntil": validate_iso8601_date(args.get("valid_until")),
         "LaunchTemplateConfigs": aws_ec2_fleet_command_launch_templates_config_args_builder(args),
         "SpotOptions": {
             "AllocationStrategy": args.get("spot_allocation_strategy"),
@@ -681,6 +693,12 @@ def aws_ec2_fleet_create_args_builder(args: Dict[str, Any]) -> Dict[str, Any]:
             "SingleAvailabilityZone": arg_to_bool_or_none(args.get("single_availability_zone")),
             "MinTargetCapacity": arg_to_number(args.get("min_target_capacity")),
             "MaxTotalPrice": args.get("max_total_price"),
+            "MaintenanceStrategies": {
+                "CapacityRebalance": {
+                    "ReplacementStrategy": args.get("capacity_rebalance_replacement_strategy"),
+                    "TerminationDelay": arg_to_number(args.get("capacity_rebalance_termination_delay")),
+                }
+            }
         },
         "OnDemandOptions": {
             "AllocationStrategy": args.get("on_demand_allocation_strategy"),
@@ -4893,7 +4911,7 @@ class EC2:
         """
         launch_template_info = remove_empty_elements([args.get("launch_template_id"), args.get("launch_template_name")])
         if len(launch_template_info) != 1:
-            raise DemistoException("Either launch_template_id or launch_template_name must be provided, but not both")
+            raise DemistoException("Either launch_template_id or launch_template_name must be provided, but not both.")
 
         kwargs: Dict[str, Any] = remove_empty_elements(aws_ec2_fleet_create_args_builder(args))
 
@@ -4907,7 +4925,7 @@ class EC2:
         outputs = {k: v for k, v in response.items() if k != "ResponseMetadata"}
 
         return CommandResults(
-            outputs_prefix="AWS.EC2.Fleet",
+            outputs_prefix="AWS.EC2.Fleets",
             outputs_key_field="FleetId",
             outputs=outputs,
             readable_output=tableToMarkdown(
@@ -5004,7 +5022,7 @@ class EC2:
 
         # Add pagination if no fleet_ids specified
         if not kwargs.get("FleetIds"):
-            kwargs.update(build_pagination_kwargs(args, minimum_limit=2))
+            kwargs.update(build_pagination_kwargs(args, minimum_limit=1))
 
         print_debug_logs(client, f"Describing fleets with parameters: {kwargs}")
         response = client.describe_fleets(**kwargs)
@@ -5019,8 +5037,8 @@ class EC2:
             return CommandResults(readable_output="No fleets were found.")
 
         outputs = {
-            "AWS.EC2.Fleet(val.FleetId && val.FleetId == obj.FleetId)": fleets,
-            "AWS.EC2(true)": {"FleetNextToken": response.get("NextToken")},
+            "AWS.EC2.Fleets(val.FleetId && val.FleetId == obj.FleetId)": fleets,
+            "AWS.EC2(true)": {"FleetsNextToken": response.get("NextToken")},
         }
 
         return CommandResults(
@@ -5070,8 +5088,8 @@ class EC2:
 
         response_data = {k: v for k, v in response.items() if k != "ResponseMetadata"}
         outputs = {
-            "AWS.EC2.Fleet(val.FleetId && val.FleetId == obj.FleetId)": response_data,
-            "AWS.EC2(true)": {"FleetInstancesNextToken": response_data.get("NextToken")},
+            "AWS.EC2.Fleets(val.FleetId && val.FleetId == obj.FleetId)": response_data,
+            "AWS.EC2.Fleets(true)": {"FleetInstancesNextToken": response_data.get("NextToken")},
         }
 
         return CommandResults(
@@ -5125,7 +5143,7 @@ class EC2:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(
-            outputs_prefix="AWS.EC2.Fleet",
+            outputs_prefix="AWS.EC2.Fleets",
             readable_output=f"Successfully modified EC2 Fleet {args.get('fleet_id')}"
             if response.get("Return", False)
             else f"Failed to modify EC2 Fleet {args.get('fleet_id')}",

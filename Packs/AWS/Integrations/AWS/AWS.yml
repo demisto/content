@@ -12105,6 +12105,16 @@ script:
     - name: max_total_price
       description: The maximum amount per hour for Spot Instances that you are willing to pay.
       required: false
+    - name: capacity_rebalance_replacement_strategy
+      description: The replacement strategy to use. Only available for fleets of type maintain.
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - launch
+        - launch-before-terminate
+    - name: capacity_rebalance_termination_delay
+      description: The amount of time (in seconds) that Amazon EC2 waits before terminating the old Spot Instance after launching a new replacement Spot Instance.
+      required: false
     - name: spot_single_instance_type
       description: Indicates that the fleet uses a single instance type to launch all Spot Instances in the fleet.
       required: false
@@ -12293,10 +12303,10 @@ script:
       - maintain
       - instant
     - name: valid_from
-      description: The start date and time of the request, in YYYY-MM-DD format.
+      description: The start date and time of the request, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
       required: false
     - name: valid_until
-      description: The end date and time of the request, in YYYY-MM-DD format.
+      description: The end date and time of the request, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
       required: false
     - name: replace_unhealthy_instances
       description: Whether the EC2 Fleet should replace unhealthy instances.
@@ -12306,91 +12316,91 @@ script:
       - 'true'
       - 'false'
     - name: tags
-      description: "The tags to apply to the resource. Format: ResourceType:key=Name,value=test;key=Owner,value=Bob#ResourceType2:key=Name,value=test2"
+      description: "The tags to apply to the resource. Format: key=<key>,value=<value>;key=<key>,value=<value>."
       required: false
     outputs:
-    - contextPath: AWS.EC2.Fleet.FleetId
+    - contextPath: AWS.EC2.Fleets.FleetId
       description: The ID of the EC2 Fleet.
       type: string
-    - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.LaunchTemplateSpecification.LaunchTemplateId
+    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
       description: The ID of the launch template.
       type: string
-    - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.LaunchTemplateSpecification.LaunchTemplateName
+    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
       description: The name of the launch template.
       type: string
-    - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.LaunchTemplateSpecification.Version
+    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
       description: The version number of the launch template.
       type: string
-    - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.Overrides.InstanceType
+    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
       description: The instance type.
       type: string
-    - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.Overrides.MaxPrice
+    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
       description: The maximum price per unit hour that you are willing to pay for a Spot Instance.
       type: string
-    - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.Overrides.SubnetId
+    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
       description: The ID of the subnet in which to launch the instances.
       type: string
-    - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.Overrides.AvailabilityZone
+    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
       description: The Availability Zone in which to launch the instances.
       type: string
-    - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.Overrides.WeightedCapacity
+    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
       description: The number of units provided by the specified instance type.
       type: number
-    - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.Overrides.Priority
+    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
       description: The priority for the launch template override.
       type: number
-    - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.Overrides.Placement.GroupName
+    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
       description: The name of the placement group the instance is in.
       type: string
-    - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.Lifecycle
+    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
       description: Whether the instance that could not be launched was a Spot Instance or an on-demand instance.
       type: string
-    - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.ErrorCode
+    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
       description: The error code that indicates why the instance could not be launched.
       type: string
-    - contextPath: AWS.EC2.Fleet.Errors.LaunchTemplateAndOverrides.ErrorMessage
+    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
       description: The error message that describes why the instance could not be launched.
       type: string
-    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.LaunchTemplateSpecification.LaunchTemplateId
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
       description: The ID of the launch template.
       type: string
-    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.LaunchTemplateSpecification.LaunchTemplateName
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
       description: The name of the launch template.
       type: string
-    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.LaunchTemplateSpecification.Version
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
       description: The version number of the launch template.
       type: string
-    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.Overrides.InstanceType
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
       description: The instance type.
       type: string
-    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.Overrides.MaxPrice
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
       description: The maximum price per unit hour that you are willing to pay for a Spot Instance.
       type: string
-    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.Overrides.SubnetId
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
       description: The ID of the subnet in which to launch the instances.
       type: string
-    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.Overrides.AvailabilityZone
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
       description: The Availability Zone in which to launch the instances.
       type: string
-    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.Overrides.WeightedCapacity
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
       description: The number of units provided by the specified instance type.
       type: number
-    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.Overrides.Priority
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
       description: The priority for the launch template override.
       type: number
-    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.Overrides.Placement.GroupName
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
       description: The name of the placement group the instance is in.
       type: string
-    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.Lifecycle
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
       description: Whether the instance that was launched is a Spot Instance or an on-demand instance.
       type: string
-    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.InstanceIds
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
       description: The IDs of the instances.
       type: array
-    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.InstanceType
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
       description: The instance type.
       type: string
-    - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.Platform
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
       description: The value is Windows for Windows instances; otherwise blank.
       type: string
 
@@ -12461,10 +12471,10 @@ script:
     - contextPath: AWS.EC2.DeletedFleets.SuccessfulFleetDeletions.FleetId
       description: The ID of the EC2 Fleet.
       type: string
-    - contextPath: AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.Error.Code
+    - contextPath: AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.Error
       description: The error code.
       type: string
-    - contextPath: AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.Error.Message
+    - contextPath: AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.Error
       description: The description for the error code.
       type: string
     - contextPath: AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.FleetId
@@ -12517,137 +12527,134 @@ script:
       - us-gov-east-1
       - us-gov-west-1
     - name: filters
-      description: "One or more filters separated by ';'. See AWS documentation for details & filter options."
+      description: "One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options."
       required: false
     - name: fleet_ids
       description: A comma-separated list of EC2 Fleet IDs.
       required: false
       isArray: true
     - name: limit
-      description: The maximum number of results to return in a single call. Specify a value between 2 and 1000.
+      description: The maximum number of results to return in a single call. Specify a value between 1 and 1000.
       required: false
     - name: next_token
       description: The token for the next set of results.
       required: false
     outputs:
-    - contextPath: AWS.EC2.FleetNextToken
+    - contextPath: AWS.EC2.FleetsNextToken
       description: The token for the next set of results.
       type: string
-    - contextPath: AWS.EC2.Fleet.ActivityStatus
+    - contextPath: AWS.EC2.Fleets.ActivityStatus
       description: The progress of the EC2 Fleet. If there is an error, the status is error.
       type: string
-    - contextPath: AWS.EC2.Fleet.Fleets.CreateTime
+    - contextPath: AWS.EC2.Fleets.CreateTime
       description: The creation date and time of the EC2 Fleet.
       type: date
-    - contextPath: AWS.EC2.Fleet.Fleets.FleetId
+    - contextPath: AWS.EC2.Fleets.FleetId
       description: The ID of the EC2 Fleet.
       type: string
-    - contextPath: AWS.EC2.Fleet.Fleets.FleetState
+    - contextPath: AWS.EC2.Fleets.FleetState
       description: The state of the EC2 Fleet.
       type: string
-    - contextPath: AWS.EC2.Fleet.Fleets.ClientToken
-      description: Unique, case-sensitive identifier you provide to ensure the idempotency of the request.
-      type: string
-    - contextPath: AWS.EC2.Fleet.Fleets.ExcessCapacityTerminationPolicy
+    - contextPath: AWS.EC2.Fleets.ExcessCapacityTerminationPolicy
       description: Whether running instances should be terminated if the target capacity of the EC2 Fleet is decreased below the current size of the EC2 Fleet.
       type: string
-    - contextPath: AWS.EC2.Fleet.Fleets.FulfilledCapacity
+    - contextPath: AWS.EC2.Fleets.FulfilledCapacity
       description: The number of units fulfilled by this request compared to the set target capacity.
       type: number
-    - contextPath: AWS.EC2.Fleet.Fleets.FulfilledOnDemandCapacity
+    - contextPath: AWS.EC2.Fleets.FulfilledOnDemandCapacity
       description: The number of units fulfilled by this request compared to the set target On-Demand capacity.
       type: number
-    - contextPath: AWS.EC2.Fleet.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification.LaunchTemplateId
+    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
       description: The ID of the launch template.
       type: string
-    - contextPath: AWS.EC2.Fleet.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification.LaunchTemplateName
+    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
       description: The name of the launch template.
       type: string
-    - contextPath: AWS.EC2.Fleet.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification.Version
+    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
       description: The version number of the launch template.
       type: string
-    - contextPath: AWS.EC2.Fleet.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification.Overrides.InstanceType
+    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
       description: The instance type.
       type: string
-    - contextPath: AWS.EC2.Fleet.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification.Overrides.MaxPrice
+    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
       description: The maximum price per unit hour that you are willing to pay for a Spot Instance.
       type: string
-    - contextPath: AWS.EC2.Fleet.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification.Overrides.SubnetId
+    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
       description: The ID of the subnet in which to launch the instances.
       type: string
-    - contextPath: AWS.EC2.Fleet.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification.Overrides.AvailabilityZone
+    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
       description: The Availability Zone in which to launch the instances.
       type: string
-    - contextPath: AWS.EC2.Fleet.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification.Overrides.WeightedCapacity
+    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
       description: The number of units provided by the specified instance type.
       type: number
-    - contextPath: AWS.EC2.Fleet.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification.Overrides.Priority
+    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
       description: The priority for the launch template override.
       type: number
-    - contextPath: AWS.EC2.Fleet.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification.Overrides.Placement.GroupName
+    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
       description: The name of the placement group the instance is in.
       type: string
-    - contextPath: AWS.EC2.Fleet.Fleets.TargetCapacitySpecification.TotalTargetCapacity
+    - contextPath: AWS.EC2.Fleets.TargetCapacitySpecification.TotalTargetCapacity
       description: The number of units to request, filled using DefaultTargetCapacityType.
       type: number
-    - contextPath: AWS.EC2.Fleet.Fleets.TargetCapacitySpecification.OnDemandTargetCapacity
+    - contextPath: AWS.EC2.Fleets.TargetCapacitySpecification.OnDemandTargetCapacity
       description: The number of On-Demand units to request.
       type: number
-    - contextPath: AWS.EC2.Fleet.Fleets.TargetCapacitySpecification.SpotTargetCapacity
+    - contextPath: AWS.EC2.Fleets.TargetCapacitySpecification.SpotTargetCapacity
       description: The maximum number of Spot units to launch.
       type: number
-    - contextPath: AWS.EC2.Fleet.Fleets.TargetCapacitySpecification.DefaultTargetCapacityType
+    - contextPath: AWS.EC2.Fleets.TargetCapacitySpecification.DefaultTargetCapacityType
       description: The default TotalTargetCapacity, which is either Spot or On-Demand.
       type: string
-    - contextPath: AWS.EC2.Fleet.Fleets.TerminateInstancesWithExpiration
+    - contextPath: AWS.EC2.Fleets.TerminateInstancesWithExpiration
       description: Whether running instances should be terminated when the EC2 Fleet expires.
       type: boolean
-    - contextPath: AWS.EC2.Fleet.Fleets.Type
+    - contextPath: AWS.EC2.Fleets.Type
       description: The type of request. Indicates whether the EC2 Fleet only requests the target capacity, or also attempts to maintain it.
       type: string
-    - contextPath: AWS.EC2.Fleet.Fleets.ValidFrom
+    - contextPath: AWS.EC2.Fleets.ValidFrom
       description: The start date and time of the request, in UTC format.
       type: date
-    - contextPath: AWS.EC2.Fleet.Fleets.ValidUntil
+    - contextPath: AWS.EC2.Fleets.ValidUntil
       description: The end date and time of the request, in UTC format.
       type: date
-    - contextPath: AWS.EC2.Fleet.Fleets.ReplaceUnhealthyInstances
+    - contextPath: AWS.EC2.Fleets.ReplaceUnhealthyInstances
       description: Whether EC2 Fleet should replace unhealthy instances.
       type: boolean
-    - contextPath: AWS.EC2.Fleet.Fleets.SpotOptions.AllocationStrategy
+    - contextPath: AWS.EC2.Fleets.SpotOptions.AllocationStrategy
       description: Indicates how to allocate the target capacity across the Spot pools specified by the Spot Fleet request.
       type: string
-    - contextPath: AWS.EC2.Fleet.Fleets.SpotOptions.InstanceInterruptionBehavior
+    - contextPath: AWS.EC2.Fleets.SpotOptions.InstanceInterruptionBehavior
       description: The behavior when a Spot Instance is interrupted. The default is terminate.
       type: string
-    - contextPath: AWS.EC2.Fleet.Fleets.SpotOptions.InstancePoolsToUseCount
+    - contextPath: AWS.EC2.Fleets.SpotOptions.InstancePoolsToUseCount
       description: The number of Spot pools across which to allocate your target Spot capacity.
       type: number
-    - contextPath: AWS.EC2.Fleet.Fleets.SpotOptions.SingleInstanceType
+    - contextPath: AWS.EC2.Fleets.SpotOptions.SingleInstanceType
       description: Whether the fleet uses a single instance type to launch all Spot Instances in the fleet.
       type: boolean
-    - contextPath: AWS.EC2.Fleet.Fleets.SpotOptions.SingleAvailabilityZone
+    - contextPath: AWS.EC2.Fleets.SpotOptions.SingleAvailabilityZone
       description: Whether the fleet launches all Spot Instances into a single Availability Zone.
       type: boolean
-    - contextPath: AWS.EC2.Fleet.Fleets.SpotOptions.MinTargetCapacity
+    - contextPath: AWS.EC2.Fleets.SpotOptions.MinTargetCapacity
       description: The minimum target capacity for Spot Instances in the fleet.
       type: number
-    - contextPath: AWS.EC2.Fleet.Fleets.OnDemandOptions.AllocationStrategy
+    - contextPath: AWS.EC2.Fleets.OnDemandOptions.AllocationStrategy
       description: The order of the launch template overrides to use in fulfilling On-Demand capacity.
       type: string
-    - contextPath: AWS.EC2.Fleet.Fleets.OnDemandOptions.SingleInstanceType
+    - contextPath: AWS.EC2.Fleets.OnDemandOptions.SingleInstanceType
       description: Whether the fleet uses a single instance type to launch all on-demand instances in the fleet.
       type: boolean
-    - contextPath: AWS.EC2.Fleet.Fleets.OnDemandOptions.SingleAvailabilityZone
+    - contextPath: AWS.EC2.Fleets.OnDemandOptions.SingleAvailabilityZone
       description: Whether the fleet launches all on-demand instances into a single Availability Zone.
       type: boolean
-    - contextPath: AWS.EC2.Fleet.Fleets.OnDemandOptions.MinTargetCapacity
+    - contextPath: AWS.EC2.Fleets.OnDemandOptions.MinTargetCapacity
       description: The minimum target capacity for on-demand instances in the fleet.
       type: number
-    - contextPath: AWS.EC2.Fleet.Fleets.Tags.Key
+    - contextPath: AWS.EC2.Fleets.Tags.Key
       description: The key of the tag.
       type: string
-    - contextPath: AWS.EC2.Fleet.Fleets.Tags.Value
+    - contextPath: AWS.EC2.Fleets.Tags.Value
       description: The value of the tag.
       type: string
 
@@ -12697,7 +12704,7 @@ script:
       - us-gov-east-1
       - us-gov-west-1
     - name: filters
-      description: "One or more filters separated by ';'. See AWS documentation for details & filter options."
+      description: "One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options."
       required: false
     - name: fleet_id
       description: The ID of the EC2 Fleet.
@@ -12709,22 +12716,22 @@ script:
       description: The token for the next set of results.
       required: false
     outputs:
-    - contextPath: AWS.EC2.Fleet.ActiveInstances.InstanceId
+    - contextPath: AWS.EC2.Fleets.ActiveInstances.InstanceId
       description: The ID of the instance.
       type: string
-    - contextPath: AWS.EC2.Fleet.ActiveInstances.InstanceType
+    - contextPath: AWS.EC2.Fleets.ActiveInstances.InstanceType
       description: The instance type.
       type: string
-    - contextPath: AWS.EC2.Fleet.ActiveInstances.SpotInstanceRequestId
+    - contextPath: AWS.EC2.Fleets.ActiveInstances.SpotInstanceRequestId
       description: The ID of the Spot Instance request.
       type: string
-    - contextPath: AWS.EC2.Fleet.ActiveInstances.InstanceHealth
+    - contextPath: AWS.EC2.Fleets.ActiveInstances.InstanceHealth
       description: The health status of the instance.
       type: string
-    - contextPath: AWS.EC2.Fleet.NextToken
+    - contextPath: AWS.EC2.Fleets.FleetInstancesNextToken
       description: The token for the next set of results.
       type: string
-    - contextPath: AWS.EC2.Fleet.FleetId
+    - contextPath: AWS.EC2.Fleets.FleetId
       description: The ID of the EC2 Fleet.
       type: string
 
