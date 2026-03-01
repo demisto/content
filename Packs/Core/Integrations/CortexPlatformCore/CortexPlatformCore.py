@@ -5408,12 +5408,10 @@ def main():  # pragma: no cover
 
         elif command == "core-fill-support-ticket":
             verify_platform_version("8.14.0")
-            verify_support_ticket_permission(client)
             return_results(core_fill_support_ticket_command(args))
 
         elif command == "core-get-support-ticket-taxonomy":
             verify_platform_version("8.14.0")
-            verify_support_ticket_permission(client)
             return_results(get_support_ticket_taxonomy_command(client, args))
 
         elif command == "core-verify-support-ticket-permission":
