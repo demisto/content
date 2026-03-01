@@ -286,6 +286,34 @@ def test_abusech_hunting_http_request_api_error(mocker):
         abusech_hunting_http_request({}, {})
 
 
+def test_abusech_hunting_http_request_api_warpped_error(mocker):
+    """
+    Given:
+        - A response where the error is wrapped in a 200 OK response.
+    When:
+        - abusech_hunting_http_request is called.
+    Then:
+        - Verify Exception is raised with the error message from the 'data' field.
+    """
+    from requests import Session
+    import AbuseDB
+    from AbuseDB import abusech_hunting_http_request
+
+    mock_response = mocker.Mock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {
+        "query_status": "unknown_auth_key",
+        "data": "The Auth-Key you provided is unknown.",
+    }
+
+    mocker.patch.object(AbuseDB, "ABUSECH_URL", "https://test-url")
+    mocker.patch.object(AbuseDB, "ABUSECH_API_KEY", "test-key")
+    mocker.patch.object(Session, "request", return_value=mock_response)
+
+    with pytest.raises(Exception, match="The Auth-Key you provided is unknown"):
+        abusech_hunting_http_request({}, {})
+
+
 def test_abusech_hunting_http_request_connection_error(mocker):
     """
     Given:
