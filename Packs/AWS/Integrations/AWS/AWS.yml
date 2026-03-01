@@ -12908,7 +12908,7 @@ script:
       - units
 
   - name: aws-ec2-vpc-delete
-    description: Deletes the specified VPC. You must detach or delete all gateways and resources that are associated with the VPC before you can delete it.
+    description: Deletes a specified VPC. You must detach or delete all gateways and resources that are associated with the VPC before you can delete it.
     execution: true
     arguments:
     - name: account_id
@@ -13003,15 +13003,15 @@ script:
       - us-gov-east-1
       - us-gov-west-1
     - name: vpc_id
-      description: The ID of the VPC in which the endpoint will be used.
+      description: The VPC ID where the endpoint is created.
       required: true
     - name: service_name
-      description: The service name. For AWS services, the service name is usually in the form com.amazonaws.<region>.<service>.
+      description: "The service name. For AWS services, the service name is usually in the form com.amazonaws.<region>.<service>."
       required: true
     - name: service_network_arn
-      description: The Amazon Resource Name (ARN) of a service network that will be associated with the VPC endpoint of type service-network.
+      description: The service network Amazon Resource Name (ARN) to associate with the service-network VPC endpoint.
     - name: service_region
-      description: The region where the service is hosted. The default is the current region.
+      description: The region where the service is hosted. Default is the current region.
     - name: vpc_endpoint_type
       description: The type of endpoint.
       required: false
@@ -13026,15 +13026,15 @@ script:
       description: A policy to attach to the endpoint that controls access to the service. The policy must be in valid JSON format.
       required: false
     - name: route_table_ids
-      description: One or more route table IDs (comma-separated). Applicable for Gateway endpoints only.
+      description: A comma-separated list of route table IDs. Applicable for Gateway endpoints only.
       required: false
       isArray: true
     - name: subnet_ids
-      description: The ID of one or more subnets (comma-separated) in which to create an endpoint network interface. Applicable for Interface and GatewayLoadBalancer endpoints only.
+      description: A comma-separated list of subnet IDs for an endpoint network interface. Applicable for Interface and GatewayLoadBalancer endpoints only.
       required: false
       isArray: true
     - name: security_group_ids
-      description: The ID of one or more security groups (comma-separated) to associate with the endpoint network interface. Applicable for Interface and GatewayLoadBalancer endpoints only.
+      description: A comma-separated list of security group IDs to associate with the endpoint network interface. Applicable for Interface and GatewayLoadBalancer endpoints only.
       required: false
       isArray: true
     - name: ip_address_type
@@ -13062,10 +13062,10 @@ script:
       - 'true'
       - 'false'
     - name: dns_options_private_dns_preference
-      description: The preference for which private domains have a private hosted zone created for and associated with the specified VPC.
+      description: The preference for creating and associating private hosted zones with a specified VPC.
       required: false
     - name: dns_options_private_dns_specified_domains
-      description: Indicates which of the private domains to create private hosted zones for and associate with the specified VPC.
+      description: The private domains used for creating and associating private hosted zones with the VPC
       required: false
     - name: private_dns_enabled
       description: Whether to associate a private hosted zone with the specified VPC. Applicable for Interface endpoints only.
@@ -13075,10 +13075,10 @@ script:
       - 'true'
       - 'false'
     - name: resource_configuration_arn
-      description: The Amazon Resource Name (ARN) of a resource configuration that will be associated with the VPC endpoint of type resource.
+      description: The Amazon Resource Name (ARN) of a resource configuration that is associated with the VPC resource type endpoint.
       required: false
     - name: tag_specifications
-      description: The tags to apply to the VPC endpoint. Format key=<key>,value=<value>;key=<key>,value=<value>.
+      description: "The tags to apply to the VPC endpoint. Format key=<key>,value=<value>;key=<key>,value=<value>."
       required: false
     outputs:
     - contextPath: AWS.EC2.VpcEndpoints.VpcEndpointId
@@ -13088,10 +13088,10 @@ script:
       description: The type of endpoint.
       type: string
     - contextPath: AWS.EC2.VpcEndpoints.VpcId
-      description: The ID of the VPC to which the endpoint is associated.
+      description: The ID of the VPC associated with the endpoint.
       type: string
     - contextPath: AWS.EC2.VpcEndpoints.ServiceName
-      description: The name of the service to which the endpoint is associated.
+      description: The name of the service associated with the endpoint.
       type: string
     - contextPath: AWS.EC2.VpcEndpoints.State
       description: The state of the VPC endpoint.
@@ -13118,13 +13118,13 @@ script:
       description: The DNS records created for the endpoint.
       type: string
     - contextPath: AWS.EC2.VpcEndpoints.DnsOptions.PrivateDnsOnlyForInboundResolverEndpoint
-      description: Indicates whether to enable private DNS only for inbound endpoints.
+      description: Whether to enable private DNS only for inbound endpoints.
       type: boolean
     - contextPath: AWS.EC2.VpcEndpoints.PrivateDnsEnabled
-      description: Indicates whether the VPC is associated with a private hosted zone.
+      description: Whether the VPC is associated with a private hosted zone.
       type: boolean
     - contextPath: AWS.EC2.VpcEndpoints.RequesterManaged
-      description: Indicates whether the VPC endpoint is being managed by its service.
+      description: Whether the VPC endpoint is being managed by its service.
       type: boolean
     - contextPath: AWS.EC2.VpcEndpoints.NetworkInterfaceIds
       description: One or more network interfaces for the endpoint.
@@ -13148,14 +13148,14 @@ script:
       description: The ID of the AWS account that owns the VPC endpoint.
       type: string
     - contextPath: AWS.EC2.VpcEndpoints.LastError.Message
-      description: The error message for the VPC endpoint error.
+      description: The VCP endpoint error message.
       type: string
     - contextPath: AWS.EC2.VpcEndpoints.LastError.Code
-      description: The error code for the VPC endpoint error.
+      description: The VCP endpoint error code.
       type: string
 
   - name: aws-ec2-internet-gateway-describe
-    description: Describes one or more of your internet gateways.
+    description: A description of one or more of your internet gateways.
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -13200,7 +13200,7 @@ script:
       - us-gov-east-1
       - us-gov-west-1
     - name: filters
-      description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
+      description: "One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for filter details and options."
       required: false
     - name: internet_gateway_ids
       description: One or more internet gateway IDs (comma-separated).
@@ -13232,7 +13232,7 @@ script:
       description: The ID of the AWS account that owns the internet gateway.
       type: string
     - contextPath: AWS.EC2.InternetGatewaysNextToken
-      description: The token to use to retrieve the next page of results.
+      description: The token used to retrieve the next page of results.
       type: string
 
   - name: aws-ec2-internet-gateway-detach
@@ -13440,7 +13440,7 @@ script:
       description: The rule number for the entry (Positive integer from 1 to 32766. The range 32767 to 65535 is reserved for internal use.). ACL entries are processed in ascending order by rule number.
       required: true
     - name: protocol
-      description: The protocol number. A value of -1 or all means all protocols. If you specify all, -1, or a protocol number other than tcp, udp, or icmp, traffic on all ports is allowed, regardless of any ports or ICMP types or codes that you specify.
+      description: The protocol number, where -1 or all specifies all protocols. Using all, -1, or any protocol other than tcp, udp, or icmp allows traffic on all ports, regardless other settings.
       required: true
       auto: PREDEFINED
       predefined:
@@ -13450,14 +13450,14 @@ script:
       - icmpv6
       - '-1'
     - name: rule_action
-      description: Whether to allow or deny the traffic that matches the rule.
+      description: Whether to allow the traffic that matches the rule.
       required: true
       auto: PREDEFINED
       predefined:
       - allow
       - deny
     - name: egress
-      description: Whether this is an egress rule (rule is applied to traffic leaving the subnet).
+      description: Whether it is an egress rule (a rule applied to traffic leaving the subnet).
       required: true
       auto: PREDEFINED
       predefined:
