@@ -217,7 +217,6 @@ class CaseManagement:
     STATUS = {
         "new": "STATUS_010_NEW",
         "under_investigation": "STATUS_020_UNDER_INVESTIGATION",
-        "in_progress": "STATUS_020_UNDER_INVESTIGATION",
         "resolved": "STATUS_025_RESOLVED",
     }
 
@@ -2625,6 +2624,7 @@ def create_policy_command(client: Client, args: dict) -> CommandResults:
             - conditions_*: Various condition parameters (finding type, severity, etc.)
             - scope_*: Policy scope configuration parameters
             - trigger_*: Policy trigger configuration (periodic, PR, CI/CD)
+            - suggestion_id: Optional ID of an AI-generated policy suggestion to link to
 
     Returns:
         CommandResults: Results object containing the created policy information with
@@ -2649,7 +2649,7 @@ def create_policy_command(client: Client, args: dict) -> CommandResults:
     if not any(trigger.get("isEnabled") for trigger in triggers.values()):
         raise DemistoException("At least one trigger (periodic, PR, or CI/CD) must be enabled for the policy.")
 
-    payload = {
+    payload: dict = {
         "name": policy_name,
         "description": description,
         "conditions": conditions,
@@ -2657,6 +2657,11 @@ def create_policy_command(client: Client, args: dict) -> CommandResults:
         "assetGroupIds": asset_group_ids,
         "triggers": triggers,
     }
+
+    # Optional: link to an AI-generated policy suggestion
+    if suggestion_id := args.get("suggestion_id"):
+        payload["suggestionId"] = suggestion_id
+
     payload = json.dumps(payload)
     demisto.debug(f"{payload=}")
 
@@ -2688,7 +2693,16 @@ def create_policy_build_conditions(client: Client, args: dict) -> dict:
         # Default to all finding types if none specified
         finding_types = [ft for ft in POLICY_FINDING_TYPE_MAPPING if ft != "CI/CD Risk"]
 
-    builder.add_field("Finding Type", FilterType.EQ, finding_types, POLICY_FINDING_TYPE_MAPPING)
+    # Support both human-readable names ("Vulnerabilities") and raw API values ("CAS_CVE_SCANNER").
+    api_values = set(POLICY_FINDING_TYPE_MAPPING.values())
+    resolved_finding_types = []
+    for ft in finding_types:
+        if ft in api_values:
+            resolved_finding_types.append(ft)
+        elif ft in POLICY_FINDING_TYPE_MAPPING:
+            resolved_finding_types.append(POLICY_FINDING_TYPE_MAPPING[ft])
+
+    builder.add_field("Finding Type", FilterType.EQ, resolved_finding_types)
 
     # Severity
     if severities := argToList(args.get("conditions_severity")):
@@ -2779,7 +2793,7 @@ def create_policy_build_scope(args: dict) -> dict:
             - scope_has_deployed_assets: Boolean for deployed assets filter
             - scope_has_internet_exposed_deployed_assets: Boolean for internet exposure filter
             - scope_has_sensitive_data_access: Boolean for sensitive data access filter
-            - scope_has_privileged_capabilities: Boolean for privileged capabilities filter
+            - scope_has_leverage_privileged_capabilities: Boolean for privileged capabilities filter
 
     Returns:
         dict: Filter dictionary structure for policy scope, can be empty if no scope filters set
@@ -2790,10 +2804,9 @@ def create_policy_build_scope(args: dict) -> dict:
     if categories := argToList(args.get("scope_category", [])):
         builder.add_field("category", FilterType.EQ, categories, POLICY_CATEGORY_MAPPING)
 
-    # Business application names - use the exact field name
+    # Business application names — always use ARRAY_CONTAINS since the field is an array type.
     if business_app_names := argToList(args.get("scope_business_application_names")):
-        filter_type = FilterType.ARRAY_CONTAINS if len(business_app_names) > 1 else FilterType.CONTAINS
-        builder.add_field("business_application_names", filter_type, business_app_names)
+        builder.add_field("business_application_names", FilterType.ARRAY_CONTAINS, business_app_names)
 
     # Application business criticality
     if app_criticality := args.get("scope_application_business_criticality"):
@@ -2809,7 +2822,7 @@ def create_policy_build_scope(args: dict) -> dict:
         "scope_has_deployed_assets": "has_deployed_assets",
         "scope_has_internet_exposed_deployed_assets": "has_internet_exposed",
         "scope_has_sensitive_data_access": "has_sensitive_data_access",
-        "scope_has_privileged_capabilities": "has_privileged_capabilities",
+        "scope_has_leverage_privileged_capabilities": "has_leverage_privileged_capabilities",
     }.items():
         if val := arg_to_bool_or_none(args.get(key)):
             builder.add_field(label, FilterType.EQ, val)
@@ -2918,6 +2931,18 @@ def create_policy_build_triggers(args: dict) -> dict:
     return triggers
 
 
+# Mapping from human-readable issue type names to table names.
+ISSUE_TYPE_TABLE_MAPPING: dict[str, str] = {
+    "vulnerabilities": "ISSUES_CVES",
+    "secrets": "ISSUES_SECRETS",
+    "iac": "ISSUES_IAC",
+    "weaknesses": "ISSUES_WEAKNESSES",
+    "operational_risk": "ISSUES_OPERATIONAL_RISK",
+    "licenses": "ISSUES_LICENSES",
+    "cicd": "ISSUES_CI_CD",
+}
+
+
 def create_appsec_issues_filter_and_tables(args: dict) -> dict[str, FilterBuilder]:
     """
     Generate a filter and determine applicable tables for fetching AppSec issues based on input filter arguments.
@@ -2934,9 +2959,24 @@ def create_appsec_issues_filter_and_tables(args: dict) -> dict[str, FilterBuilde
     tables_filters = {}
     filter_builder = FilterBuilder()
 
-    for issue_type in AppsecIssues.ISSUE_TYPES:
-        if special_filter_args.issubset(issue_type.filters):
-            tables_filters[issue_type.table_name] = filter_builder
+    # If issue_category is specified, restrict to those specific tables
+    requested_types = argToList(args.get("issue_category"))
+    if requested_types:
+        valid_table_names = {it.table_name for it in AppsecIssues.ISSUE_TYPES}
+        for rt in requested_types:
+            rt_lower = rt.lower().strip()
+            table_name = ISSUE_TYPE_TABLE_MAPPING.get(rt_lower) or rt.upper().strip()
+            if table_name in valid_table_names:
+                tables_filters[table_name] = filter_builder
+            else:
+                raise DemistoException(
+                    f"Unknown issue type '{rt}'. "
+                    f"Supported values: {', '.join(ISSUE_TYPE_TABLE_MAPPING.keys())}."
+                )
+    else:
+        for issue_type in AppsecIssues.ISSUE_TYPES:
+            if special_filter_args.issubset(issue_type.filters):
+                tables_filters[issue_type.table_name] = filter_builder
 
     if not tables_filters:
         raise DemistoException(f"No matching issue type found for the given filter combination: {special_filter_args}")
@@ -3041,10 +3081,13 @@ def normalize_and_filter_appsec_issue(issue: dict) -> dict:
         "secret_validation": {"path": ["secret_validation"]},
         "is_fixable": {"path": ["cas_issues_is_fixable"]},
         "repository_name": {"path": ["cas_issues_normalized_fields", "xdm.repository.name"]},
+        "package_version": {"path": ["cas_issues_extended_fields", "package_version"]},
+        "fix_versions": {"path": ["cas_issues_normalized_fields", "xdm.vulnerability.fix_versions"]},
         "repository_organization": {"path": ["cas_issues_normalized_fields", "xdm.repository.organization"]},
         "file_path": {"path": ["cas_issues_normalized_fields", "xdm.file.path"]},
         "collaborator": {"path": ["cas_issues_normalized_fields", "xdm.code.git.commit.author.name"]},
         "is_deployed": {"path": ["cas_issues_extended_fields", "urgency", "metric", "is_deployed"]},
+        "repository_is_public": {"path": ["cas_issues_extended_fields", "repository_is_public"]},
         "backlog_status": {"path": ["backlog_status"]},
     }
     appsec_issue = {}
