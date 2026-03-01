@@ -1,0 +1,91 @@
+commonfields:
+  id: CASGetPolicySuggestion
+  version: -1
+name: CASGetPolicySuggestion
+script: ''
+type: python
+tags:
+- Utilities
+- AppSec
+- AI
+comment: |
+  Retrieves AI-powered prevention policy recommendations from the Cortex AppSec guardrails suggestions API.
+  This script calls the /api/cas/v1/policies/guardrails/suggestions endpoint and returns the full policy suggestion data, including conditions, scope, triggers, and evidence. Results can be filtered by scope criteria such as repository attributes (public, deployed, internet-exposed), application name, or business criticality. Multiple scope filters use OR logic — suggestions matching any of the provided criteria are returned.
+  The returned policy objects contain all the data needed to apply policies directly.
+enabled: true
+args:
+- name: business_application_name
+  description: Filter suggestions by business application name (e.g., "terragoat_GitHub").
+- name: application_business_criticality
+  description: Filter suggestions by application business criticality level.
+  auto: PREDEFINED
+  predefined:
+  - CRITICAL
+  - HIGH
+  - MEDIUM
+  - LOW
+- name: is_public_repository
+  description: Filter suggestions that apply to public repositories.
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+- name: has_internet_exposed
+  description: Filter suggestions that apply to internet-exposed assets.
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+- name: has_deployed_assets
+  description: Filter suggestions that apply to repositories with deployed assets.
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+- name: has_access_sensitive_data
+  description: Filter suggestions that apply to assets that access sensitive data.
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+- name: has_leverage_privileged_capabilities
+  description: Filter suggestions that apply to assets that leverage privileged capabilities.
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+- name: repository_name
+  description: Filter suggestions by a specific repository name.
+- name: limit
+  description: Maximum number of policy suggestions to return. The default is 3.
+  defaultValue: "3"
+outputs:
+- contextPath: Core.PolicySuggestion
+  description: |
+    AI-generated prevention policy recommendations. Each policy suggestion includes:
+    - id: Unique identifier for the policy suggestion
+    - name: Human-readable policy name (e.g., "Block critical vulnerabilities")
+    - type: Policy type (e.g., "VULNERABILITY", "SECRET", "MISCONFIGURATION")
+    - description: Explanation of what the policy does and why it's recommended
+    - conditions: AND/OR conditions defining what findings the policy matches, with SEARCH_FIELD, SEARCH_TYPE, and SEARCH_VALUE
+    - scope: AND/OR conditions defining which assets/applications the policy applies to. Scope fields include:
+      - is_public_repository: Whether the repository is public
+      - has_internet_exposed: Whether the asset is internet-exposed
+      - has_deployed_assets: Whether the repository has deployed assets
+      - has_access_sensitive_data: Whether the asset accesses sensitive data
+      - has_leverage_privileged_capabilities: Whether the asset leverages privileged capabilities
+      - business_application_names: Business application names (e.g., "terragoat_GitHub")
+      - application_business_criticality: Application criticality level (CRITICAL, HIGH, MEDIUM, LOW)
+      - repository_name: The name of the repository
+    - triggers: Configuration for CI/CD, PR, and periodic triggers with actions (blockCicd, blockPr, reportIssue, etc.)
+    - evidence: Evidence supporting the recommendation (e.g., cleanScope indicates no existing issues in the scope)
+  type: Unknown
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.12.6391686
+fromversion: 8.13.0
+isInternal: false
+tests:
+- No tests (auto formatted)
+marketplaces:
+- platform

@@ -1,0 +1,91 @@
+commonfields:
+  id: CasGetPolicySuggestions
+  version: -1
+name: CasGetPolicySuggestions
+display: CAS - Get Policy Suggestions
+description: Retrieves AI-powered policy suggestions filtered by scope criteria such as repository attributes, application name, or business criticality.
+category: Application Security
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- agentix
+- xsiam
+- cloud_posture
+args:
+- name: business_application_name
+  type: string
+  description: "The business application name to filter suggestions by (e.g., terragoat_GitHub)."
+  underlyingargname: business_application_name
+- name: application_business_criticality
+  type: string
+  description: "The application business criticality level to filter suggestions by. Options: CRITICAL, HIGH, MEDIUM, LOW."
+  underlyingargname: application_business_criticality
+- name: is_public_repository
+  type: string
+  description: "Whether to filter suggestions that apply to public repositories. Options: true, false."
+  underlyingargname: is_public_repository
+- name: has_internet_exposed
+  type: string
+  description: "Whether to filter suggestions that apply to internet-exposed assets. Options: true, false."
+  underlyingargname: has_internet_exposed
+- name: has_deployed_assets
+  type: string
+  description: "Whether to filter suggestions that apply to repositories with deployed assets. Options: true, false."
+  underlyingargname: has_deployed_assets
+- name: has_access_sensitive_data
+  type: string
+  description: "Whether to filter suggestions that apply to assets accessing sensitive data. Options: true, false."
+  underlyingargname: has_access_sensitive_data
+- name: has_leverage_privileged_capabilities
+  type: string
+  description: "Whether to filter suggestions that apply to assets leveraging privileged capabilities. Options: true, false."
+  underlyingargname: has_leverage_privileged_capabilities
+- name: repository_name
+  type: string
+  description: The repository name to filter suggestions by.
+  underlyingargname: repository_name
+- name: limit
+  type: number
+  defaultvalue: "3"
+  description: The maximum number of policy suggestions to return. The default is 3.
+  underlyingargname: limit
+outputs:
+- name: Core.PolicySuggestion.id
+  description: The unique identifier of the policy suggestion.
+  type: string
+  underlyingoutputcontextpath: Core.PolicySuggestion.id
+- name: Core.PolicySuggestion.name
+  description: The human-readable name of the policy suggestion.
+  type: string
+  underlyingoutputcontextpath: Core.PolicySuggestion.name
+- name: Core.PolicySuggestion.type
+  description: The policy type (e.g., VULNERABILITY, SECRET, MISCONFIGURATION).
+  type: string
+  underlyingoutputcontextpath: Core.PolicySuggestion.type
+- name: Core.PolicySuggestion.description
+  description: The explanation of what the policy does and why it is recommended.
+  type: string
+  underlyingoutputcontextpath: Core.PolicySuggestion.description
+- name: Core.PolicySuggestion.conditions
+  description: The AND/OR conditions defining what findings the policy matches.
+  type: unknown
+  underlyingoutputcontextpath: Core.PolicySuggestion.conditions
+- name: Core.PolicySuggestion.scope
+  description: The AND/OR conditions defining which assets and applications the policy applies to.
+  type: unknown
+  underlyingoutputcontextpath: Core.PolicySuggestion.scope
+- name: Core.PolicySuggestion.triggers
+  description: The trigger configuration for CI/CD, PR, and periodic actions.
+  type: unknown
+  underlyingoutputcontextpath: Core.PolicySuggestion.triggers
+- name: Core.PolicySuggestion.evidence
+  description: The evidence supporting the recommendation.
+  type: unknown
+  underlyingoutputcontextpath: Core.PolicySuggestion.evidence
+underlyingcontentitem:
+  id: CASGetPolicySuggestion
+  name: CASGetPolicySuggestion
+  type: script
+  version: -1
+  command: ""
