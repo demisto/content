@@ -1,0 +1,16 @@
+{
+    "certificate": {
+        "found": true,
+        "valid": true,
+        "expired": false,
+        "blacklisted": false,
+        "name_match": true,
+        "valid_peer": true,
+        "fingerprint_sha256": "AA:BB:CC:DD:EE:FF",
+        "details": {
+            "issuer": {"common_name": "DigiCert", "country": "US", "organization": "DigiCert Inc"},
+            "subject": {"common_name": "example.com", "country": "US"},
+            "validity": {"valid_from": "2023-01-01", "valid_to": "2024-01-01", "days_left": 100}
+        }
+    }
+}
