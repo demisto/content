@@ -1,5 +1,4 @@
 from typing import Any
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
@@ -74,6 +73,8 @@ WEBAPP_COMMANDS = [
     "core-update-windows-malware-profile",
     "core-update-windows-exploit-profile",
     "core-delete-profile",
+    "core-fill-support-ticket",
+    "core-get-support-ticket-taxonomy",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -995,6 +996,48 @@ class Client(CoreClient):
             url_suffix=f"case/{case_id}/resolution-plan/tasks",
         )
         return reply
+
+    def check_support_permission(self) -> dict:
+        """
+        Check if the current user has permission to create/manage support tickets.
+
+        Returns:
+            dict: The response containing permission status.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/sfdc_support/check_permission",
+        )
+
+    def get_sme_areas_and_sub_groups(self) -> dict:
+        """
+        Retrieve SME areas and sub-groups for the tenant's product type.
+
+        Returns:
+            dict: The response containing SME areas and their associated sub-groups.
+        """
+        return self._http_request(
+            method="GET",
+            url_suffix="/sfdc_support/get_sme_areas_and_sub_groups",
+        )
+
+    def get_questionnaire_by_sme(self, sme_area: str, sub_group: str) -> dict:
+        """
+        Retrieve questionnaire mappings by SME area and sub-group for the tenant's product type.
+
+        Args:
+            sme_area (str): The SME area (issue category) to fetch questions for.
+            sub_group (str): The sub-group (problem concentration) within the SME area.
+
+        Returns:
+            dict: The response containing questionnaire items (questions and log upload fields).
+        """
+        return self._http_request(
+            method="POST",
+            headers=self._headers,
+            url_suffix="/sfdc_support/get_questions_by_sme_area_and_sub_group/",
+            json_data={"request_data": {"sme_area": sme_area, "sub_group": sub_group}},
+        )
 
     def get_custom_fields_metadata(self) -> dict[str, Any]:
         """
@@ -3420,7 +3463,7 @@ def run_playbook_command(client: Client, args: dict) -> CommandResults:
     raise ValueError(f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages))
 
 
-def list_scripts_command(client: Client, args: dict) -> List[CommandResults]:
+def list_scripts_command(client: Client, args: dict) -> list[CommandResults]:
     """
     Retrieves a list of scripts from the platform with optional filtering.
     """
@@ -3765,7 +3808,7 @@ def create_assessment_profile_payload(
     day: str | None,
     time: str | None,
     report_type: str = "ALL",
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Prepare assessment profile payload
 
@@ -3802,7 +3845,7 @@ def list_compliance_standards_payload(
     labels: list[str] | None = None,
     page=0,
     page_size=MAX_COMPLIANCE_STANDARDS,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Prepare assessment profile payload
 
@@ -4361,7 +4404,7 @@ def list_system_users_command(client, args):
     )
 
 
-def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, int]:
+def convert_timeframe_string_to_json(time_to_convert: str) -> dict[str, int]:
     """Convert a timeframe string to a json required for XQL queries.
 
     Args:
@@ -4545,7 +4588,7 @@ def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str
     Returns:
         str: The query execution ID.
     """
-    data: Dict[str, Any] = {
+    data: dict[str, Any] = {
         "query": query,
         "timeframe": timeframe,
     }
@@ -4597,6 +4640,184 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
         outputs_prefix="GenericXQLQuery", outputs_key_field="execution_id", outputs=outputs, raw_response=outputs
     )
 
+
+def core_fill_support_ticket_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Validates arguments and maps them to the support ticket context.
+    Includes dependent validation for problem_concentration based on the issue_category.
+    """
+
+    start_time = args.get("most_recent_issue_start_time")
+
+    start_time_dt = arg_to_datetime(start_time) if start_time else None
+    data = {
+        "description": args.get("description"),
+        "contactNumber": args.get("contact_number"),
+        "OngoingIssue": args.get("issue_frequency"),
+        "DateTimeOfIssue": start_time_dt.timestamp() if start_time_dt else None,
+        "IssueImpact": args.get("issue_impact"),
+        "smeArea": args.get("issue_category"),
+        "subGroupName": args.get("problem_concentration"),
+    }
+
+    return CommandResults(
+        outputs_prefix="Core.SupportTicket",
+        outputs=data,
+        raw_response=data,
+    )
+
+SUPPORT_TICKET_TAXONOMY_DATA = [
+    {
+        "issue_category": "Agent",
+        "problem_concentrations": [
+            "Communication", "Device Control", "Install/Upgrade/Uninstall",
+            "Performance", "non-persistent VDI"
+        ]
+    },
+    {
+        "issue_category": "Attack Surface Management",
+        "problem_concentrations": [
+            "Asset Inventory", "Attack Surface Issues", "Policies and Configuration"
+        ]
+    },
+    {
+        "issue_category": "Cases and Issues",
+        "problem_concentrations": [
+            "Breach Assessment", "Custom Domain", "Health Domain", "Hunting Domain",
+            "IT Domain", "Posture Domain", "Security Domain", "Threat Coverage Analysis"
+        ]
+    },
+    {
+        "issue_category": "Cloud Onboarding",
+        "problem_concentrations": [
+            "CI/CD Security", "Cloud Scan", "Kubernetes Connectors",
+            "Option not available", "Registry Configuration", "Scan with Outpost"
+        ]
+    },
+    {
+        "issue_category": "Data Collection, Integrations, and Marketplace",
+        "problem_concentrations": [
+            "Broker VM", "Cloud Identitiy Engine", "Data Collection Configuration",
+            "Data Management", "Engines", "Integrations Configuration",
+            "Marketplace", "Public API"
+        ]
+    },
+    {
+        "issue_category": "Detection, Investigation and Inventory",
+        "problem_concentrations": [
+            "Cases and Issues Configuration", "Dashboard and Reports",
+            "Host Insights/Host Inventory", "Inventory - Assets",
+            "Inventory - Endpoints", "Investigation and Response", "Threat Management"
+        ]
+    },
+    {
+        "issue_category": "Modules",
+        "problem_concentrations": [
+            "AI Security", "Application Security", "Attack Surface Management",
+            "Data Classification", "Data Security", "Identity Security"
+        ]
+    },
+    {
+        "issue_category": "Posture Management",
+        "problem_concentrations": ["Management", "Policies", "Rules"]
+    },
+    {
+        "issue_category": "Security Incidents",
+        "problem_concentrations": [
+            "Breach Assessment", "Coverage Assessment",
+            "Other Alert Source", "Security Incidents"
+        ]
+    },
+    {
+        "issue_category": "Server",
+        "problem_concentrations": [
+            "Automation", "Broker VM", "Dashboard and Reports", "Data Ingestion",
+            "Endpoint Management", "Marketplace", "Others",
+            "TIM (Threat Intelligence Management)", "Tenant Performance"
+        ]
+    },
+    {
+        "issue_category": "Tenant Administration and Access Control",
+        "problem_concentrations": [
+            "Access Management", "Add-ons", "Audit Logs and Health Issues",
+            "Copilot", "Cortex Gateway", "Licensing, Onboarding and Access",
+            "Support Case Creation", "Tenant Availability", "Tenant Configuration",
+            "Tenant Migration"
+        ]
+    },
+    {
+        "issue_category": "Vulnerability and Compliance Management",
+        "problem_concentrations": [
+            "Compliance Management", "Option not available", "Vulnerability Management"
+        ]
+    },
+    {
+        "issue_category": "Web Application and API Security",
+        "problem_concentrations": [
+            "API Discovery", "API Gateway Configuration", "API Specifications", "In-Line Security"
+        ]
+    },
+    {
+        "issue_category": "XDR Agent",
+        "problem_concentrations": [
+            "XDR Agent for Cloud - App-embedded", "XDR Agent for Cloud - Container",
+            "XDR Agent for Cloud - Host", "XDR Agent for Cloud - Kubernetes",
+            "XDR Agent for Cloud - Serverless", "XDR Agent for Enterprise - Android",
+            "XDR Agent for Enterprise - Linux", "XDR Agent for Enterprise - Windows",
+            "XDR Agent for Enterprise - iOS", "XDR Agent for Enterprise - macOS"
+        ]
+    }
+]
+
+def get_support_ticket_taxonomy_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the complete support ticket taxonomy: all issue categories, their problem concentrations,
+    and the questionnaire items for every combination.
+
+    This is a single command that aggregates data from:
+      1. /sfdc_support/get_sme_areas_and_sub_groups/
+      2. /sfdc_support/get_questions_by_sme_area_and_sub_group/ (for each combination)
+
+    Returns a nested structure grouped by issue_category → problem_concentration → questions.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Command arguments (none required).
+
+    Returns:
+        CommandResults: Object containing the full nested taxonomy data.
+    """
+    areas_response = client.get_sme_areas_and_sub_groups()
+    areas_reply = areas_response.get("reply", areas_response)
+    areas = areas_reply if isinstance(areas_reply, list) else []
+
+    if areas:
+        taxonomy: list[dict] = []
+        for area in areas:
+            area_value = area.get("value", "")
+            suggested_values = area.get("suggestedValues", [])
+
+            # Extract only the 'value' string from each suggestedValue object
+            problem_concentrations = [
+                sg.get("value") for sg in suggested_values if sg.get("value")
+            ]
+
+            # Build the final structure minus the questions key
+            category_entry = {
+                "issue_category": area_value,
+                "problem_concentrations": problem_concentrations,
+            }
+
+            taxonomy.append(category_entry)
+
+    else:
+        taxonomy = SUPPORT_TICKET_TAXONOMY_DATA
+
+    return CommandResults(
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.SupportTicketTaxonomy",
+        outputs=taxonomy,
+        raw_response=taxonomy,
+    )
 
 def init_client(api_type: str) -> Client:
     """
@@ -4964,6 +5185,37 @@ def delete_profile_command(client, args):
     return CommandResults(readable_output="Your request was sent successfully.")
 
 
+def verify_support_ticket_permission(client: Client):
+    """
+    Verify that the current user has permission to manage support tickets
+    by calling the sfdc_support/check_permission endpoint.
+
+    The expected response is:
+        {"reply": {"user_csp_permission": true, "tenant_entitlement_check": true}}
+
+    Both user_csp_permission and tenant_entitlement_check must be true for the user to have permissions.
+    If the API call fails, it also means the user does not have permissions.
+
+    Args:
+        client (Client): The client instance used to send the request.
+
+    Raises:
+        DemistoException: If the user does not have the required permissions or the API call fails.
+    """
+    try:
+        response = client.check_support_permission()
+    except Exception as e:
+        demisto.debug(f"Support ticket permission check failed: {e}")
+        raise DemistoException("You do not have the required permissions to manage support tickets.")
+
+    reply = response.get("reply", {})
+    user_csp_permission = reply.get("user_csp_permission", False)
+    tenant_entitlement_check = reply.get("tenant_entitlement_check", False)
+
+    if not user_csp_permission or not tenant_entitlement_check:
+        raise DemistoException("You do not have the required permissions to manage support tickets.")
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -5114,6 +5366,16 @@ def main():  # pragma: no cover
 
         elif command == "core-delete-profile":
             return_results(delete_profile_command(client, args))
+
+        elif command == "core-fill-support-ticket":
+            verify_platform_version("8.14.0")
+            verify_support_ticket_permission(client)
+            return_results(core_fill_support_ticket_command(args))
+
+        elif command == "core-get-support-ticket-taxonomy":
+            verify_platform_version("8.14.0")
+            verify_support_ticket_permission(client)
+            return_results(get_support_ticket_taxonomy_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())

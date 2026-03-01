@@ -9893,3 +9893,315 @@ class TestProfileCommands:
 
         assert "Your request was sent successfully." in result.readable_output
         mock_client.delete_profile.assert_called_once_with(["12345", "67890"])
+
+
+def test_verify_support_ticket_permission_success(mocker: MockerFixture):
+    """
+    GIVEN:
+        A client that returns both user_csp_permission and tenant_entitlement_check as true.
+    WHEN:
+        verify_support_ticket_permission is called.
+    THEN:
+        No exception is raised.
+    """
+    from CortexPlatformCore import verify_support_ticket_permission, Client
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(
+        mock_client,
+        "check_support_permission",
+        return_value={"reply": {"user_csp_permission": True, "tenant_entitlement_check": True}},
+    )
+
+    # Should not raise
+    verify_support_ticket_permission(mock_client)
+
+
+def test_verify_support_ticket_permission_no_user_permission(mocker: MockerFixture):
+    """
+    GIVEN:
+        A client that returns user_csp_permission as false.
+    WHEN:
+        verify_support_ticket_permission is called.
+    THEN:
+        A DemistoException is raised indicating insufficient permissions.
+    """
+    from CortexPlatformCore import verify_support_ticket_permission, Client, DemistoException
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(
+        mock_client,
+        "check_support_permission",
+        return_value={"reply": {"user_csp_permission": False, "tenant_entitlement_check": True}},
+    )
+
+    with pytest.raises(DemistoException, match="You do not have the required permissions to manage support tickets."):
+        verify_support_ticket_permission(mock_client)
+
+
+def test_verify_support_ticket_permission_no_tenant_entitlement(mocker: MockerFixture):
+    """
+    GIVEN:
+        A client that returns tenant_entitlement_check as false.
+    WHEN:
+        verify_support_ticket_permission is called.
+    THEN:
+        A DemistoException is raised indicating insufficient permissions.
+    """
+    from CortexPlatformCore import verify_support_ticket_permission, Client, DemistoException
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(
+        mock_client,
+        "check_support_permission",
+        return_value={"reply": {"user_csp_permission": True, "tenant_entitlement_check": False}},
+    )
+
+    with pytest.raises(DemistoException, match="You do not have the required permissions to manage support tickets."):
+        verify_support_ticket_permission(mock_client)
+
+
+def test_verify_support_ticket_permission_both_false(mocker: MockerFixture):
+    """
+    GIVEN:
+        A client that returns both permission fields as false.
+    WHEN:
+        verify_support_ticket_permission is called.
+    THEN:
+        A DemistoException is raised indicating insufficient permissions.
+    """
+    from CortexPlatformCore import verify_support_ticket_permission, Client, DemistoException
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(
+        mock_client,
+        "check_support_permission",
+        return_value={"reply": {"user_csp_permission": False, "tenant_entitlement_check": False}},
+    )
+
+    with pytest.raises(DemistoException, match="You do not have the required permissions to manage support tickets."):
+        verify_support_ticket_permission(mock_client)
+
+
+def test_verify_support_ticket_permission_empty_reply(mocker: MockerFixture):
+    """
+    GIVEN:
+        A client that returns an empty reply from the check_permission endpoint.
+    WHEN:
+        verify_support_ticket_permission is called.
+    THEN:
+        A DemistoException is raised indicating insufficient permissions.
+    """
+    from CortexPlatformCore import verify_support_ticket_permission, Client, DemistoException
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "check_support_permission", return_value={"reply": {}})
+
+    with pytest.raises(DemistoException, match="You do not have the required permissions to manage support tickets."):
+        verify_support_ticket_permission(mock_client)
+
+
+def test_verify_support_ticket_permission_api_call_fails(mocker: MockerFixture):
+    """
+    GIVEN:
+        A client where the check_permission API call raises an exception.
+    WHEN:
+        verify_support_ticket_permission is called.
+    THEN:
+        A DemistoException is raised indicating insufficient permissions.
+    """
+    from CortexPlatformCore import verify_support_ticket_permission, Client, DemistoException
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "check_support_permission", side_effect=Exception("API connection error"))
+
+    with pytest.raises(DemistoException, match="You do not have the required permissions to manage support tickets."):
+        verify_support_ticket_permission(mock_client)
+
+
+def test_core_fill_support_ticket_command_success(mocker: MockerFixture):
+    """
+    GIVEN:
+        Valid arguments including the new product_type.
+    WHEN:
+        The core_fill_support_ticket_command function is called.
+    THEN:
+        The response contains the productType and other fields correctly mapped.
+    """
+    from CortexPlatformCore import core_fill_support_ticket_command
+
+    args = {
+        "product_type": "Cortex XSIAM",
+        "description": "This is a detailed description that is at least 25 characters long.",
+        "contact_number": "123456789",
+        "issue_impact": "P4",
+        "issue_category": "Agent",
+        "problem_concentration": "Communication",
+        "issue_frequency": "Yes - Consistent",
+        "most_recent_issue_start_time": "2023-01-01T00:00:00Z",
+    }
+
+    result = core_fill_support_ticket_command(args)
+
+    assert result.outputs["description"] == args["description"]
+    assert result.outputs["contactNumber"] == "123456789"
+    assert result.outputs["IssueImpact"] == "P4"
+    assert result.outputs["smeArea"] == "Agent"
+    assert result.outputs["subGroupName"] == "Communication"
+    assert result.outputs["OngoingIssue"] == "Yes - Consistent"
+    assert result.outputs["DateTimeOfIssue"] is not None
+    assert result.outputs_prefix == "Core.SupportTicket"
+
+
+def test_get_support_ticket_taxonomy_command_success(mocker: MockerFixture):
+    """
+    GIVEN:
+        Mock API responses with SME areas, sub-groups, and questionnaire items.
+    WHEN:
+        The get_support_ticket_taxonomy_command function is called.
+    THEN:
+        It fetches all SME areas, iterates over all combinations, and returns the full aggregated taxonomy.
+    """
+    from CortexPlatformCore import get_support_ticket_taxonomy_command, Client
+
+    areas_response = {
+        "reply": [
+            {
+                "value": "Agent",
+                "label": "Agent",
+                "suggestedValues": [
+                    {"value": "Communication", "label": "Communication"},
+                    {"value": "Performance", "label": "Performance"},
+                ],
+            },
+            {
+                "value": "Server",
+                "label": "Server",
+                "suggestedValues": [
+                    {"value": "Automation", "label": "Automation"},
+                ],
+            },
+        ]
+    }
+
+    questionnaire_responses = {
+        ("Agent", "Communication"): {
+            "reply": [
+                {"key": "1", "label": "Q1", "required": True, "type": "text", "questionType": "question"},
+            ]
+        },
+        ("Agent", "Performance"): {
+            "reply": [
+                {"key": "1", "label": "Q2", "required": False, "type": "text", "questionType": "question"},
+                {"key": "2", "label": "Upload logs", "required": False, "type": "file", "questionType": "log"},
+            ]
+        },
+        ("Server", "Automation"): {
+            "reply": [
+                {"key": "1", "label": "Q3", "required": True, "type": "text", "questionType": "question"},
+            ]
+        },
+    }
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "get_sme_areas_and_sub_groups", return_value=areas_response)
+    mocker.patch.object(
+        mock_client,
+        "get_questionnaire_by_sme",
+        side_effect=lambda area, sg: questionnaire_responses[(area, sg)],
+    )
+
+    result = get_support_ticket_taxonomy_command(mock_client, {})
+
+    assert result.outputs_prefix == "Core.SupportTicketTaxonomy"
+    # Nested structure: 2 issue categories
+    assert len(result.outputs) == 2
+
+    # First category: Agent with 2 problem concentrations
+    agent = result.outputs[0]
+    assert agent["issue_category"] == "Agent"
+    assert len(agent["problem_concentrations"]) == 2
+    assert agent["problem_concentrations"][0]["problem_concentration"] == "Communication"
+    assert len(agent["problem_concentrations"][0]["questions"]) == 1
+    assert agent["problem_concentrations"][1]["problem_concentration"] == "Performance"
+    assert len(agent["problem_concentrations"][1]["questions"]) == 2
+
+    # Second category: Server with 1 problem concentration
+    server = result.outputs[1]
+    assert server["issue_category"] == "Server"
+    assert len(server["problem_concentrations"]) == 1
+    assert server["problem_concentrations"][0]["problem_concentration"] == "Automation"
+    assert len(server["problem_concentrations"][0]["questions"]) == 1
+
+    assert mock_client.get_sme_areas_and_sub_groups.call_count == 1
+    assert mock_client.get_questionnaire_by_sme.call_count == 3
+
+
+def test_get_support_ticket_taxonomy_command_empty_areas(mocker: MockerFixture):
+    """
+    GIVEN:
+        The SME areas API returns an empty list.
+    WHEN:
+        The get_support_ticket_taxonomy_command function is called.
+    THEN:
+        The response contains an empty list and no questionnaire calls are made.
+    """
+    from CortexPlatformCore import get_support_ticket_taxonomy_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "get_sme_areas_and_sub_groups", return_value={"reply": []})
+    mock_get_q = mocker.patch.object(mock_client, "get_questionnaire_by_sme")
+
+    result = get_support_ticket_taxonomy_command(mock_client, {})
+
+    assert result.outputs == []
+    assert result.outputs_prefix == "Core.SupportTicketTaxonomy"
+    mock_get_q.assert_not_called()
+
+
+def test_get_support_ticket_taxonomy_command_skips_errors(mocker: MockerFixture):
+    """
+    GIVEN:
+        One of the questionnaire API calls fails.
+    WHEN:
+        The get_support_ticket_taxonomy_command function is called.
+    THEN:
+        The failing combination is skipped and the rest are returned successfully.
+    """
+    from CortexPlatformCore import get_support_ticket_taxonomy_command, Client
+
+    areas_response = {
+        "reply": [
+            {
+                "value": "Agent",
+                "label": "Agent",
+                "suggestedValues": [
+                    {"value": "Good", "label": "Good"},
+                    {"value": "Bad", "label": "Bad"},
+                ],
+            },
+        ]
+    }
+
+    def mock_get_questionnaire(area, sg):
+        if sg == "Bad":
+            raise Exception("API error")
+        return {"reply": [{"key": "1", "label": "Q1", "required": True, "type": "text", "questionType": "question"}]}
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "get_sme_areas_and_sub_groups", return_value=areas_response)
+    mocker.patch.object(mock_client, "get_questionnaire_by_sme", side_effect=mock_get_questionnaire)
+
+    result = get_support_ticket_taxonomy_command(mock_client, {})
+
+    # 1 category with 2 problem concentrations
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["issue_category"] == "Agent"
+    concentrations = result.outputs[0]["problem_concentrations"]
+    assert len(concentrations) == 2
+    # Good has questions
+    assert concentrations[0]["problem_concentration"] == "Good"
+    assert len(concentrations[0]["questions"]) == 1
+    # Bad has empty questions (error was skipped)
+    assert concentrations[1]["problem_concentration"] == "Bad"
+    assert len(concentrations[1]["questions"]) == 0
