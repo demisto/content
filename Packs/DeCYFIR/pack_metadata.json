@@ -2,15 +2,24 @@
     "name": "DeCYFIR",
     "description": "DeCYFIR API's provides External Threat Landscape Management insights",
     "support": "partner",
-    "currentVersion": "1.0.19",
+    "currentVersion": "1.1.1",
     "author": "Cyfirma",
     "url": "https://www.cyfirma.com/",
     "email": "contact@cyfirma.com",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
-    "useCases": [],
+    "tags": [
+        "Alerts",
+        "Security",
+        "Threat Intelligence Management",
+        "Threat Intelligence"
+    ],
+    "useCases": [
+        "Network Security",
+        "Threat Intelligence Management",
+        "Asset Management"
+    ],
     "keywords": [
         "Attack Surface",
         "Digital Risk",
@@ -55,7 +64,7 @@
         "CommonTypes",
         "CoreAlertFields"
     ],
-    "defaultDataSource": "decyfir",
+    "defaultDataSource": "DecyfirEventCollector",
     "supportedModules": [
         "X1",
         "X3",

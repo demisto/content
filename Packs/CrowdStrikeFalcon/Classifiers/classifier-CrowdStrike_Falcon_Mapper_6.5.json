@@ -1672,10 +1672,10 @@
 				"Last Update Time": {
 					"simple": "updated_timestamp"
 				},
-				"Lead Id": {
+				"CrowdStrike Falcon Lead Id": {
 					"simple": "lead_id"
 				},
-				"Lead Type": {
+				"CrowdStrike Falcon Lead Type": {
 					"simple": "lead_type"
 				},
 				"Risk Score": {
@@ -1690,7 +1690,7 @@
 				"occurred": {
 					"simple": "created_timestamp"
 				},
-                "Pattern ID": {
+                "CrowdStrike Falcon Pattern ID": {
                     "simple": "mitre_attack.pattern_id"
                 },
                 "MITRE Tactic ID": {
@@ -1752,7 +1752,7 @@
 				"Last Update Time": {
 					"simple": "updated_timestamp"
 				},
-				"Mitre Attack": {
+				"CrowdStrike Falcon Mitre Attack": {
 					"simple": "mitre_attack"
 				},
 				"Source IPs": {

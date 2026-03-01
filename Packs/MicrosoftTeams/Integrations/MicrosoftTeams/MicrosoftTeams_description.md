@@ -29,6 +29,8 @@ In order to use the following commands, you must use the **Authorization Code fl
   - ***microsoft-teams-chat-message-list***
   - ***microsoft-teams-chat-update***
 
+***microsoft-teams-list-messages*** supports **Client Credentials flow** only when retrieving messages from a channel. Retrieving messages from a chat requires **Authorization Code flow**.
+
 
 **Notes:** 
 - When switching from the **Client Credentials Flow** to the **Authorization Code Flow** do as follow: Save the instance, run the ***!microsoft-teams-generate-login-url*** command and follow the instructions mentioned there. Once done, test the validity of your instance by running the ***!microsoft-teams-auth-test*** command. When switching from the **Authorization Code Flow** to the **Client Credentials Flow**, test the validity of the instance by clicking the 'Test' button.

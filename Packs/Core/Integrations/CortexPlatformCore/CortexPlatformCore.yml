@@ -177,19 +177,15 @@ script:
         - contextPath: Core.Coverage.Histogram.column_name
           description: The column over which the histogram is generated.
           type: String
-
         - contextPath: Core.Coverage.Histogram.data.value
           description: The distinct value.
           type: String
-
         - contextPath: Core.Coverage.Histogram.data.count
           description: The number of records with this value after filtering.
           type: Number
-
         - contextPath: Core.Coverage.Histogram.data.percentage
           description: The percentage of filtered records with this value.
           type: Number
-
         - contextPath: Core.Coverage.Histogram.data.pretty_name
           description: A user-friendly label for the value.
           type: String
@@ -355,84 +351,67 @@ script:
         - contextPath: Core.Coverage.Asset.asset_id
           description: The unique ID of the asset. Each asset is assigned a unique identifier in the system.
           type: String
-
         - contextPath: Core.Coverage.Asset.asset_name
           description: The name of the asset. Typically corresponds to the repository, container image, or pipeline name.
           type: String
-
         - contextPath: Core.Coverage.Asset.asset_provider
           description:
             "The vendor or source platform of the asset. Indicates where the asset originates from. Possible values: AWS, AWS_CODE_BUILD, AWS_CODE_COMMIT, AZURE, AZURE_REPOS, BITBUCKET, BITBUCKET_DATACENTER, CIRCLE_CI, DOCKER, GCP, GITHUB, GITHUB_ACTIONS, GITHUB_ENTERPRISE, GITLAB, GITLAB_SELF_MANAGED, HCP_TFC_RUN_TASKS, HCP_TFE_RUN_TASKS, JENKINS, JFROG_ARTIFACTORY, OCI."
           type: String
-
         - contextPath: Core.Coverage.Asset.asset_type
           description:
             "The type or category of the asset. Determines the nature of the resource being scanned. Possible values: CICD PIPELINE, CONTAINER IMAGE REPOSITORY, REPOSITORY."
           type: String
-
         - contextPath: Core.Coverage.Asset.business_application_names
           description: A list of business applications associated with the asset. These applications help map the asset to business context or ownership.
           type: Array
-
         - contextPath: Core.Coverage.Asset.is_scanned_by_cicd
           description:
             "Indicates whether the asset is scanned within CI/CD pipelines. Possible values: ENABLED, DISABLED, IRRELEVANT."
           type: String
-
         - contextPath: Core.Coverage.Asset.is_scanned_by_code_weakness
           description:
             "Indicates whether code weakness scanning is performed on the asset. Possible values: ENABLED, DISABLED, IRRELEVANT."
           type: String
-
         - contextPath: Core.Coverage.Asset.is_scanned_by_iac
           description:
             "Indicates whether infrastructure-as-code (IaC) scanning is enabled for the asset. Possible values: ENABLED, DISABLED, IRRELEVANT."
           type: String
-
         - contextPath: Core.Coverage.Asset.is_scanned_by_malware
           description:
             "Indicates whether malware scanning is enabled for the asset. Possible values: ENABLED, DISABLED, IRRELEVANT."
           type: String
-
         - contextPath: Core.Coverage.Asset.is_scanned_by_secrets
           description:
             "Indicates whether the asset is scanned for hardcoded secrets or credentials. Possible values: ENABLED, DISABLED, IRRELEVANT."
           type: String
-
         - contextPath: Core.Coverage.Asset.is_scanned_by_semgrep
           description:
             "Boolean flag indicating whether the asset is analyzed using Semgrep for code issues or misconfigurations. Possible values: true, false."
           type: Boolean
-
         - contextPath: Core.Coverage.Asset.is_scanned_by_sonarqube
           description:
             "Boolean flag indicating whether the asset is analyzed using SonarQube for code quality and security issues. Possible values: true, false."
           type: Boolean
-
         - contextPath: Core.Coverage.Asset.is_scanned_by_veracode
           description:
             "Boolean flag indicating whether the asset is scanned using Veracode for security vulnerabilities. Possible values: true, false."
           type: Boolean
-
         - contextPath: Core.Coverage.Asset.is_scanned_by_vulnerabilities
           description:
             "Indicates whether vulnerability scanning is enabled for the asset. Possible values: ENABLED, DISABLED, IRRELEVANT."
           type: String
-
         - contextPath: Core.Coverage.Asset.last_scan_status
           description:
             "The status of the most recent scan performed on the asset. Possible values: NOT_SCANNED_YET, ERROR, COMPLETED."
           type: String
-
         - contextPath: Core.Coverage.Asset.scanners_data
           description: An array containing detailed information from the scanners that evaluated the asset, including scan results, timestamps, and metadata.
           type: Array
-
         - contextPath: Core.Coverage.Asset.status_coverage
           description:
             "The overall scan coverage of the asset. Possible values: FULLY SCANNED, PARTIALLY SCANNED, NOT SCANNED."
           type: String
-
         - contextPath: Core.Coverage.Asset.unified_provider
           description:
             "The unified provider name associated with the asset. Standardized across different vendor integrations. Possible values: AWS, AWS_CODE_BUILD, AWS_CODE_COMMIT, AZURE, AZURE_PIPELINES, AZURE_REPOS, BITBUCKET, CIRCLE_CI, DOCKER, GCP, GITHUB, GITHUB_ACTIONS, GITLAB, GITLAB_CI, HCP_TFC_RUN_TASKS, JENKINS, JFROG_ARTIFACTORY, OCI."
@@ -1902,7 +1881,6 @@ script:
           isArray: true
       name: core-enable-scanners
       description: Enable or disable scanners with the specified configuration.
-
     - name: core-create-appsec-policy
       description: Creates a new AppSec policy in Cortex Platform with defined conditions, scope, and triggers for application security governance.
       arguments:
@@ -1964,7 +1942,6 @@ script:
         - name: conditions_license_type
           description: Target specific software license types for compliance and legal risk management.
           isArray: true
-
         # Scope Filters (Asset Criteria)
         - name: scope_category
           description: "Define asset categories to include in policy scope. Supported values: Application, Repository, CI/CD Instance, CI/CD Pipeline, VCS Collaborator, VCS Organization."
@@ -2114,8 +2091,16 @@ script:
           name: status
           predefined:
             - 'new'
-            - 'under_investigation'
+            - 'in_progress'
             - 'resolved'
+        - description: A comma-separated list of statuses to exclude.
+          isArray: true
+          name: not_status
+          predefined:
+            - 'new'
+            - 'in_progress'
+            - 'resolved'
+          auto: PREDEFINED
         - auto: PREDEFINED
           description: |
             A comma-separated list of severity levels to filter cases by.
@@ -2527,7 +2512,7 @@ script:
           type: String
           predefined:
             - "new"
-            - "under_investigation"
+            - "in_progress"
             - "resolved"
         - name: notes
           description: Additional notes for the case.
@@ -3370,11 +3355,633 @@ script:
       - contextPath: GenericXQLQuery.results
         description: The output obtained from the query.
         type: List
+      - contextPath: GenericXQLQuery.query_limit_modified
+        description: Contains a message if the query's LIMIT clauses were automatically reduced to the maximum supported limit.
+        type: String
+    - arguments:
+        - description: A comma separated list of case ids to retrieve resolution statuses for.
+          isArray: false
+          name: case_id
+          required: true
+      name: core-get-case-resolution-statuses
+      description:  Retrieves resolution status information for a specific case.
+      hidden: true
+      outputs:
+        - contextPath: Core.CaseResolutionStatus.category
+          description: The category of the item (done, inProgress, pending, recommended).
+          type: String
+        - contextPath: Core.CaseResolutionStatus.itemType
+          description: The type of item - "playbook" or "playbookTask".
+          type: String
+        - contextPath: Core.CaseResolutionStatus.id
+          description: The unique identifier of the playbook or task.
+          type: String
+        - contextPath: Core.CaseResolutionStatus.name
+          description: The name of the playbook or task.
+          type: String
+        - contextPath: Core.CaseResolutionStatus.description
+          description: The description of the playbook or task.
+          type: String
+        - contextPath: Core.CaseResolutionStatus.status
+          description: The execution/completion status.
+          type: String
+        - contextPath: Core.CaseResolutionStatus.type
+          description: The type of the task (for playbookTask items).
+          type: String
+        - contextPath: Core.CaseResolutionStatus.issueIDs
+          description: Array of issue IDs associated with the playbook or task.
+          type: String
+        - contextPath: Core.CaseResolutionStatus.playbookVersion
+          description: The version number of the playbook.
+          type: Number
+        - contextPath: Core.CaseResolutionStatus.startedAt
+          description: Timestamp when execution started (for done/inProgress playbooks).
+          type: Number
+        - contextPath: Core.CaseResolutionStatus.completedAt
+          description: Timestamp when execution completed (for done playbooks).
+          type: Number
+        - contextPath: Core.CaseResolutionStatus.parentPlaybook.id
+          description: The unique identifier of the parent playbook.
+          type: String
+        - contextPath: Core.CaseResolutionStatus.parentPlaybook.name
+          description: The name of the parent playbook.
+          type: String
+        - contextPath: Core.CaseResolutionStatus.parentPlaybook.description
+          description: The description of the parent playbook.
+          type: String
+        - contextPath: Core.CaseResolutionStatus.userInput
+          description: User input parameters (for pending playbookTask items).
+          type: Unknown
+    - name: core-get-ai-model-activity
+      description: Retrieves AI model activity information including usage statistics and inactive status.
+      hidden: true
+      arguments:
+        - name: asset_id
+          description: A comma-separated list of AI model asset IDs.
+          required: true
+          isArray: true
+      outputs:
+        - contextPath: Core.AIModelActivity.asset_id
+          description: The unique identifier of the AI model asset.
+          type: String
+        - contextPath: Core.AIModelActivity.last_used
+          description: The timestamp when the model was last used.
+          type: Date
+        - contextPath: Core.AIModelActivity.event_count
+          description: The number of events associated with the model.
+          type: Number
+        - contextPath: Core.AIModelActivity.is_inactive
+          description: Whether the model is currently inactive.
+          type: Boolean
+    - arguments:
+        - description: The name of the profile.
+          name: profile_name
+          required: true
+        - description: The description of the profile.
+          name: profile_description
+        - auto: PREDEFINED
+          defaultValue: disabled
+          description: Analyze ASP and ASPX files written to the file system, and quarantine them if found to be malicious.
+          name: asp_aspx_files
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: disabled
+          description: Breach & Attack Simulation (BAS) tool settings.
+          name: breach_attack_simulation_tools_settings
+          predefined:
+            - enabled
+            - disabled
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against UAC bypass mechanisms associated with process privilege elevation.
+          name: uac_bypass_prevention
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: disabled
+          description: Periodically scans endpoints and attached removable drives for dormant malware.
+          name: on_demand_file_examination
+          predefined:
+            - disabled
+            - enabled
+        - auto: PREDEFINED
+          defaultValue: enabled
+          description: Locally scans endpoints and attached removable drives for dormant malware.
+          name: end_user_initiated_local_scan
+          predefined:
+            - disabled
+            - enabled
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Analyzes and halts ransomware-related encryption activity to prevent data loss.
+          name: ransomware_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against cryptominers.
+          name: cryptominers_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against tampering attempts, such as modification or termination of the Cortex XDR agent.
+          name: anti_tampering_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against IIS-related attacks.
+          name: iis_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against UEFI manipulation attempts.
+          name: uefi_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against the connection of potentially malicious Human Interface Devices (HIDs).
+          name: malicious_device_prevention
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: terminateSession
+          description: Analyzes network packet data to detect malicious behavior.
+          name: network_packet_inspection_engine
+          predefined:
+            - terminateSession
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against processes attempting to access or steal passwords and other sensitive credentials.
+          name: credential_gathering_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against processes dropping malicious webshells.
+          name: anti_webshell_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Analyzes and prevents malicious macros in Microsoft Office Word or Excel files from executing.
+          name: office_files_with_macros_examination
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Prevents evasive attacks using shellcodes to load malicious code.
+          name: in_process_shellcode_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Analyzes and prevents malicious JScript files from running.
+          name: jscript_file_examination
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Prevents script-based malware attacks by blocking targeted processes from launching child processes.
+          name: malicious_child_process_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Analyzes and prevents malicious VB files from running.
+          name: vb_scripts_examination
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Prevents attacks using built-in OS executables and administration utilities by monitoring endpoint activity for malicious causality chains.
+          name: global_behavioral_threat_protection_rules
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Analyzes and prevents malicious PowerShell script files from running.
+          name: powershell_script_files
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against financial and banking malware techniques.
+          name: financial_malware_threat_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against security-bypass techniques.
+          name: security_measures_bypass
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Provides runtime protection against the abuse of kernel drivers.
+          name: dynamic_driver_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against malicious processes running at boot time.
+          name: dynamic_kernel_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: enabled
+          description: Prevents attacks using the Mimikatz tool to extract passwords from memory.
+          name: password_theft_protection
+          predefined:
+            - disabled
+            - enabled
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Analyzes and prevents malicious executable and DLL files from running.
+          name: portable_executables_and_dll_examination
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: enabled
+          description: Configure agent automatic response actions to malicious causality chains.
+          name: respond_to_malicious_causality_chains
+          predefined:
+            - disabled
+            - enabled
+      description: Creates a new windows malware profile.
+      name: core-create-windows-malware-profile
+      hidden: true
+      outputs:
+        - contextPath: Core.Profile.profile_id
+          description: The ID of the created profile.
+          type: String
+    - arguments:
+        - description: The ID of the profile.
+          name: profile_id
+          required: true
+        - description: The new name for the profile.
+          name: profile_name
+        - description: The new description for the profile.
+          name: profile_description
+        - auto: PREDEFINED
+          description: Analyzes ASP and ASPX files written to the file system and quarantines malicious files.
+          name: asp_aspx_files
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Enables or disables Breach & Attack Simulation (BAS) tool settings.
+          name: breach_attack_simulation_tools_settings
+          predefined:
+            - enabled
+            - disabled
+        - auto: PREDEFINED
+          description: Protects against UAC bypass mechanisms associated with process privilege elevation.
+          name: uac_bypass_prevention
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Periodically scans endpoints and attached removable drives for dormant malware.
+          name: on_demand_file_examination
+          predefined:
+            - disabled
+            - enabled
+        - auto: PREDEFINED
+          description: Locally scans endpoints and attached removable drives for dormant malware.
+          name: end_user_initiated_local_scan
+          predefined:
+            - disabled
+            - enabled
+        - auto: PREDEFINED
+          description: Targets encryption based activity associated with ransomware to analyze and halt ransomware before any data loss occurs.
+          name: ransomware_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protects against cryptominers.
+          name: cryptominers_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protects against tampering attempts, such as modification or termination of the Cortex XDR agent.
+          name: anti_tampering_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protects against IIS-related attacks.
+          name: iis_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protects against UEFI manipulation attempts.
+          name: uefi_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protects against the connection of potentially malicious Human Interface Devices (HIDs).
+          name: malicious_device_prevention
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Analyzes network packet data to detect malicious behavior.
+          name: network_packet_inspection_engine
+          predefined:
+            - terminateSession
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protects against processes attempting to access or steal passwords and other sensitive credentials.
+          name: credential_gathering_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protects against processes dropping malicious webshells.
+          name: anti_webshell_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Analyzes and prevents malicious macros in Microsoft Office Word or Excel files from executing.
+          name: office_files_with_macros_examination
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Prevents evasive attacks using shellcodes to load malicious code.
+          name: in_process_shellcode_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Analyzes and prevents malicious JScript files from running.
+          name: jscript_file_examination
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Prevents script-based malware attacks by blocking targeted processes from launching child processes.
+          name: malicious_child_process_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Analyzes and prevents malicious VB files from running.
+          name: vb_scripts_examination
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Prevents attacks using built-in OS executables and administration utilities by monitoring endpoint activity for malicious causality chains.
+          name: global_behavioral_threat_protection_rules
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Analyzes and prevents malicious PowerShell script files from running.
+          name: powershell_script_files
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protects against financial and banking malware techniques.
+          name: financial_malware_threat_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protects against security-bypass techniques.
+          name: security_measures_bypass
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Provides runtime protection against the abuse of kernel drivers.
+          name: dynamic_driver_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protects against malicious processes running at boot time.
+          name: dynamic_kernel_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Prevents attacks using the Mimikatz tool to extract passwords from memory.
+          name: password_theft_protection
+          predefined:
+            - disabled
+            - enabled
+        - auto: PREDEFINED
+          description: Analyzes and prevents malicious executable and DLL files from running.
+          name: portable_executables_and_dll_examination
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Configures automatic agent response actions for malicious causality chains.
+          name: respond_to_malicious_causality_chains
+          predefined:
+            - disabled
+            - enabled
+      description: Updates the specified Windows malware profile.
+      name: core-update-windows-malware-profile
+      hidden: true
+      outputs: []
+    - arguments:
+        - description: The profile name.
+          name: profile_name
+          required: true
+        - description: The profile description.
+          name: profile_description
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against browser exploits.
+          name: browser_exploits_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against logical exploits.
+          name: logical_exploits_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against known vulnerable processes.
+          name: known_vulnerable_processes_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protects against operating system exploits.
+          name: operating_system_exploit_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: disabled
+          description: Provides exploit protection for additional processes.
+          name: exploit_protection_for_additional_processes
+          predefined:
+            - block
+            - disabled
+            - report
+      description: Creates a new Windows exploit profile.
+      name: core-create-windows-exploit-profile
+      hidden: true
+      outputs:
+        - contextPath: Core.Profile.profile_id
+          description: The ID of the created profile.
+          type: String
+    - arguments:
+        - description: The profile ID.
+          name: profile_id
+          required: true
+        - description: The profile name.
+          name: profile_name
+        - description: The profile description.
+          name: profile_description
+        - auto: PREDEFINED
+          description: Protects against browser exploits.
+          name: browser_exploits_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protects against logical exploits.
+          name: logical_exploits_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protects against known vulnerable processes.
+          name: known_vulnerable_processes_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protects against operating system exploits.
+          name: operating_system_exploit_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Provides exploit protection for additional processes.
+          name: exploit_protection_for_additional_processes
+          predefined:
+            - block
+            - disabled
+            - report
+      description: Updates the specified Windows exploit profile.
+      name: core-update-windows-exploit-profile
+      hidden: true
+      outputs: []
+    - arguments:
+        - description: The IDs of the profiles.
+          name: profile_ids
+          required: true
+          isArray: true
+      description: Deletes the provided profiles.
+      name: core-delete-profile
+      hidden: true
+      outputs: []
   runonce: false
   script: "-"
   subtype: python3
   type: python
-  dockerimage: demisto/google-cloud-storage:1.0.0.5633894
+  dockerimage: demisto/google-cloud-storage:1.0.0.6387824
 tests:
   - No tests
 fromversion: 6.2.0

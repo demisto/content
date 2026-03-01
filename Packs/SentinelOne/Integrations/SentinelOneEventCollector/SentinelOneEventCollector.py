@@ -129,22 +129,36 @@ def first_run(from_time: str = str(arg_to_datetime("3 days"))) -> dict[str, str]
     }
 
 
-def add_keys_to_events(events: list[dict[str, Any]] | None):
+def add_keys_to_events(events: list[dict[str, Any]] | None, instance_url: str):
     """
-    Adds the _time and eventType keys to the events.
+    Adds the _time, eventType, and _EXTERNAL_URL keys to the events.
     Args:
-        events (list): The events to add the time key to.
+        events (list): The events to add the fields key to.
+        instance_url (str): The base URL of the SentinelOne instance (e.g., 'https://your-instance.sentinelone.net').
     """
+    demisto.debug(f"Adding keys to {len(events) if events else 0} events")
+    instance_url = instance_url.rstrip("/")
+
     for event in events or []:
         if alert_info := event.get("alertInfo"):
             event["_time"] = alert_info.get("updatedAt")
             event["eventType"] = "Alert"
+            if alert_id := alert_info.get("alertId"):
+                event["_EXTERNAL_URL"] = f"{instance_url}/incidents/alerts/{alert_id}/overview"
+            else:
+                demisto.debug(f"Alert event is missing alertId: {alert_info}")
+
         elif threat_info := event.get("threatInfo"):
             event["_time"] = threat_info.get("updatedAt")
             event["eventType"] = "Threat"
+            if threat_id := threat_info.get("threatId"):
+                event["_EXTERNAL_URL"] = f"{instance_url}/incidents/threats/{threat_id}/overview"
+            else:
+                demisto.debug(f"Threat event is missing threatId: {threat_info}")
         else:  # Otherwise, it's an activity.
             event["_time"] = event.get("updatedAt")
             event["eventType"] = "Activity"
+            event["_EXTERNAL_URL"] = f"{instance_url}/activity"
 
 
 """ COMMAND FUNCTIONS """
@@ -238,7 +252,8 @@ def main() -> None:
     args = demisto.args()
     command = demisto.command()
     api_key = params.get("credentials", {}).get("password")
-    base_url = urljoin(params.get("url"), "web/api/v2.1")
+    instance_url = params.get("url") or ""
+    base_url = urljoin(instance_url, "web/api/v2.1")
     verify_certificate = not params.get("insecure", False)
 
     # How much time before the first fetch to retrieve events
@@ -261,14 +276,14 @@ def main() -> None:
             return_results(results)
 
             if argToBoolean(args.get("should_push_events", False)):
-                add_keys_to_events(events)
+                add_keys_to_events(events, instance_url)
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
         elif command == "fetch-events":
             last_run = demisto.getLastRun() or first_run(first_fetch_time)  # type: ignore
             next_run, events = fetch_events(client=client, last_run=last_run, event_type=event_type)
 
-            add_keys_to_events(events)
+            add_keys_to_events(events, instance_url)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
 

@@ -1,0 +1,6 @@
+fromversion: 8.4.0 # Will be updated with XSIAM version updates
+name: Docusign Docusign Modeling Rule
+id: docusign_docusign_ModelingRule
+rules: ''
+schema: ''
+tags: ''

@@ -418,23 +418,28 @@ def is_organization_member(gh: Github, username: str, org_name: str = ORGANIZATI
         return False
 
 
-def post_ai_review_introduction(pr: PullRequest, reviewers: list[str], t: Terminal) -> None:
+def post_ai_review_introduction(pr: PullRequest, reviewers: list[str] | None = None, t: Terminal | None = None) -> None:
     """
     Posts the AI reviewer introduction comment.
 
     Args:
         pr (PullRequest): The PullRequest object.
-        reviewers (list[str]): List of assigned reviewers.
-        t (Terminal): The terminal object for printing.
+        reviewers (list[str] | None): List of assigned reviewers. If None or empty, uses generic greeting.
+        t (Terminal | None): The terminal object for printing.
     """
+    if reviewers:
+        reviewer_mentions = ", ".join([f"@{r}" for r in reviewers])
+        greeting = f"Hi {reviewer_mentions}, you"
+    else:
+        greeting = "You"
+
     ai_reviewer_introduction_msg = (
         "## 🤖 AI-Powered Code Review Available\n\n"
-        "Hi @{reviewers}, you can leverage AI-powered code review to assist with this PR!\n\n"
+        f"{greeting} can leverage AI-powered code review to assist with this PR!\n\n"
         "**Available Commands:**\n"
-        "- `@content_bot start review` - Initiate a full AI code review\n"
-        "- `@content_bot re-review` - Incremental review for new commits\n"
+        "- `@content-bot start review` - Initiate a full AI code review\n"
+        "- `@content-bot re-review` - Incremental review for new commits\n"
     )
-    reviewer_mentions = ", ".join([f"@{r}" for r in reviewers])
-    ai_introduction_body = ai_reviewer_introduction_msg.format(reviewers=reviewer_mentions)
-    pr.create_issue_comment(ai_introduction_body)
-    print(f"{t.cyan}Posted AI reviewer introduction comment{t.normal}")  # noqa: T201
+    pr.create_issue_comment(ai_reviewer_introduction_msg)
+    if t:
+        print(f"{t.cyan}Posted AI reviewer introduction comment{t.normal}")  # noqa: T201
