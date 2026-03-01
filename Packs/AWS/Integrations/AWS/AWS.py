@@ -5198,8 +5198,6 @@ class EC2:
                     "PrivateDnsSpecifiedDomains": argToList(args.get("dns_options_private_dns_specified_domains")),
                 },
                 "TagSpecifications": [{"ResourceType": "vpc-endpoint", "Tags": parse_tag_field(args.get("tags"))}]
-                if args.get("tags")
-                else None,
             }
         )
 
@@ -5320,7 +5318,7 @@ class EC2:
 
         Args:
             client (BotoClient): The boto3 client for EC2 service
-            args (Dict[str, Any]): Command arguments including internet gateway
+            args (Dict[str, Any]): Command arguments including internet gateway ID
 
         Returns:
             CommandResults: Results with success message

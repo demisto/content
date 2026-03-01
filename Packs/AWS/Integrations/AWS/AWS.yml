@@ -13077,7 +13077,7 @@ script:
     - name: resource_configuration_arn
       description: The Amazon Resource Name (ARN) of a resource configuration that is associated with the VPC resource type endpoint.
       required: false
-    - name: tag_specifications
+    - name: tags
       description: "The tags to apply to the VPC endpoint. Format key=<key>,value=<value>;key=<key>,value=<value>."
       required: false
     outputs:
@@ -13203,7 +13203,7 @@ script:
       description: "One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for filter details and options."
       required: false
     - name: internet_gateway_ids
-      description: One or more internet gateway IDs (comma-separated).
+      description: A comma-separated list of internet gateway IDs.
       required: false
       isArray: true
     - name: limit
