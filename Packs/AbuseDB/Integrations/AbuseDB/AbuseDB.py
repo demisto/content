@@ -140,21 +140,24 @@ def abusech_hunting_http_request(headers: dict, payload: dict):
 
     try:
         response = session.request(method="POST", url=ABUSECH_URL, headers=headers, json=payload, verify=not INSECURE)
-
         response.raise_for_status()
-
-        try:  # this API wraps errors with a status=200 response, check if 'query_status' is present
-            res_json = response.json()
-            if res_json.get("query_status"):
-                error_message = res_json.get("data", "Hunting API response error.")
-                raise Exception(error_message)
-        except ValueError:  # there is no 'query_status', which means the response doesn't wrap an error
-            pass
-
-        return response
-
     except Exception as e:
         raise Exception(f"Failed to connect to Abuse.ch: {str(e)}")
+
+    # this API wraps errors with a status=200 response, attempt to decode it as json
+    try:
+        res_json = response.json()
+    except AttributeError:
+        # the response is not a json, which means the response doesn't wrap an error
+        return response
+
+    # if 'query_status' is present, an error is wrapped within the json
+    if res_json.get("query_status"):
+        demisto.debug(f"Hunting API response: {res_json}")
+        error_message = res_json.get("data", "Hunting API response error.")
+        raise Exception(f"Failed to connect to Abuse.ch: {error_message}")
+
+    return response
 
 
 def format_privte_ips(private_ips):
