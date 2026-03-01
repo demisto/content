@@ -4,7 +4,8 @@ Citrix Cloud is a cloud-based management platform that provides the centralized 
 
 ## What does this pack contain?
 
-- Citrix Cloud integration that collects system log records from the Citrix Cloud platform.
+- Citrix Cloud integration that collects system log records.
+- Citrix Daas integration that collects Config Logs records.
 - Modeling rules for Citrix Cloud system log records
 
 ## Configure Citrix Cloud Event Collector in Cortex
@@ -28,7 +29,7 @@ Citrix Cloud is a cloud-based management platform that provides the centralized 
 Sign up for a free Citrix Cloud account, or log in to Citrix Cloud.
 
 Citrix Cloud API Access with Service Principals
-A service principal acts as an API client to Citrix Cloud APIs and has the following characteristics:
+A service Principal acts as an API client to Citrix Cloud APIs and has the following characteristics:
 
 **1. Create a Service Principal**
 
@@ -83,3 +84,44 @@ Returns system log events extracted from Citrix.
 #### Context Output
 
 There is no context output for this command.
+
+---
+
+## Citrix DaaS Integration
+
+Citrix DaaS simplifies the delivery and management of Citrix technologies by enabling organizations to deliver secure virtual apps and desktops from the cloud while maintaining centralized control and configuration management.
+
+This integration manages configuration logging and administrative activities, including:
+
+- Configuration changes initiated from the **Manage** section
+- Administrative activities from the **Monitor** node
+- PowerShell script execution
+- REST API requests
+
+---
+
+## Configure Citrix DaaS in Cortex
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | The Base URL of the Citrix Cloud API. | True |
+| Client Id | The Service Principal Client ID. | True |
+| Client Secret | The Service Principal Client Secret. | True |
+| Customer ID | Citrix Customer ID (Citrix-CustomerId header). | True |
+| Site Name | The Specific Citrix DaaS site name (if applicable). | False |
+| Max events per fetch | Maximum number of events to retrieve. Requires configuration logging database to be enabled. Results are returned most-recent first. | False |
+| Trust any certificate (not secure) | Trust unverified SSL certificates. | False |
+| Use system proxy settings | Use Cortex system proxy settings. | False |
+
+---
+
+## Configuration Steps
+
+The authentication setup for Citrix DaaS uses the same Service Principal process described above in the Citrix Cloud section.
+
+Ensure that:
+
+- The Service Principal has sufficient API permissions.
+- Configuration logging is enabled in the Citrix DaaS environment.
+- The correct customer ID is configured.
+- (Optional) The site Name is specified if working with multiple sites.
