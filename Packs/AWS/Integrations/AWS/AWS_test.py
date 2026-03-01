@@ -13453,6 +13453,42 @@ def test_create_vpc_endpoint_command_failure(mocker):
     mock_error_handler.assert_called_once()
 
 
+def test_create_vpc_endpoint_command_with_tags(mocker):
+    """
+    Given: A mocked EC2 client and arguments including tags.
+    When: create_vpc_endpoint_command is called with tags.
+    Then: It should include TagSpecifications with resource type 'vpc-endpoint' in the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_vpc_endpoint.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "VpcEndpoint": {"VpcEndpointId": "vpce-tagged001", "State": "available"},
+    }
+    mocker.patch(
+        "AWS.serialize_response_with_datetime_encoding",
+        return_value={"VpcEndpoint": {"VpcEndpointId": "vpce-tagged001", "State": "available"}},
+    )
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "vpc_id": "vpc-0abc12345",
+        "service_name": "com.amazonaws.us-east-1.s3",
+        "tags": "key=Env,value=prod;key=Owner,value=team",
+    }
+
+    result = EC2.create_vpc_endpoint_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.create_vpc_endpoint.call_args[1]
+    tag_specs = call_kwargs.get("TagSpecifications", [])
+    assert len(tag_specs) == 1
+    assert tag_specs[0]["ResourceType"] == "vpc-endpoint"
+    assert any(t["Key"] == "Env" for t in tag_specs[0]["Tags"])
+
+
 # ── aws-ec2-internet-gateway-describe ─────────────────────────────────────────
 
 
@@ -13552,6 +13588,43 @@ def test_describe_internet_gateways_command_with_filter(mocker):
     call_kwargs = mock_client.describe_internet_gateways.call_args[1]
     assert "Filters" in call_kwargs
     assert call_kwargs["InternetGatewayIds"] == ["igw-filtered"]
+
+
+def test_describe_internet_gateways_command_next_token_propagated(mocker):
+    """
+    Given: A mocked EC2 client returning a NextToken in the response (no internet_gateway_ids specified).
+    When: describe_internet_gateways_command is called with limit and next_token.
+    Then: InternetGatewaysNextToken should be present in the AWS.EC2(true) output,
+          and MaxResults/NextToken should be passed to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    igw = {"InternetGatewayId": "igw-page001", "OwnerId": "123456789012", "Attachments": []}
+    mock_client.describe_internet_gateways.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "InternetGateways": [igw],
+        "NextToken": "next-igw-token",
+    }
+    mocker.patch(
+        "AWS.serialize_response_with_datetime_encoding",
+        return_value={"InternetGateways": [igw], "NextToken": "next-igw-token"},
+    )
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "limit": "5",
+        "next_token": "prev-igw-token",
+    }
+
+    result = EC2.describe_internet_gateways_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.describe_internet_gateways.call_args[1]
+    assert call_kwargs.get("MaxResults") == 5
+    assert call_kwargs.get("NextToken") == "prev-igw-token"
+    assert result.outputs["AWS.EC2(true)"]["InternetGatewaysNextToken"] == "next-igw-token"
 
 
 # ── aws-ec2-internet-gateway-detach ───────────────────────────────────────────
