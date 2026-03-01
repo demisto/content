@@ -10,11 +10,17 @@
         "Network Security"
     ],
     "tags": [
-        "Network"
+        "Network",
+        "Security"
     ],
     "useCases": [],
     "keywords": [
-        "Pulse"
+        "Pulse",
+        "Ivanti",
+        "Connect Secure",
+        "ICS",
+        "VPN",
+        "SSL VPN"
     ],
     "marketplaces": [
         "marketplacev2",

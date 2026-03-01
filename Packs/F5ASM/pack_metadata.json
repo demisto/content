@@ -17,7 +17,11 @@
         "Network Security"
     ],
     "keywords": [
-        "Application Security Manager"
+        "Application Security Manager",
+        "F5",
+        "ASM",
+        "WAF",
+        "Web Application Firewall"
     ],
     "marketplaces": [
         "marketplacev2",

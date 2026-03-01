@@ -10,9 +10,17 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Network"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Forcepoint",
+        "Web Security",
+        "Web Gateway",
+        "Proxy"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

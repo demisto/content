@@ -12,11 +12,16 @@
         "Cloud Security"
     ],
     "tags": [
-        "Security"
+        "Security",
+        "Alerts",
+        "Compliance"
     ],
     "useCases": [],
     "keywords": [
-        "Amazon"
+        "Amazon",
+        "AWS",
+        "Security Hub",
+        "AWS Security Hub"
     ],
     "marketplaces": [
         "xsoar",

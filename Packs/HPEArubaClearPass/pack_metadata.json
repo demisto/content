@@ -9,9 +9,20 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Network",
+        "IAM"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "HPE",
+        "Aruba",
+        "ClearPass",
+        "NAC",
+        "Network Access Control",
+        "Hewlett Packard Enterprise"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

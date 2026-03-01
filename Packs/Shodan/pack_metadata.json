@@ -11,12 +11,15 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Free Enricher"
+        "Free Enricher",
+        "Security"
     ],
     "useCases": [],
     "keywords": [
         "Shodan",
-        "Banner"
+        "Banner",
+        "internet scanning",
+        "IoT search"
     ],
     "marketplaces": [
         "xsoar",

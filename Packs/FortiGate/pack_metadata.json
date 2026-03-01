@@ -10,11 +10,17 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Network"
+    ],
     "useCases": [],
     "keywords": [
         "fortinet",
-        "fortigate"
+        "fortigate",
+        "Firewall",
+        "NGFW",
+        "FortiOS"
     ],
     "marketplaces": [
         "xsoar",

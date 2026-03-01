@@ -11,14 +11,18 @@
         "Email"
     ],
     "tags": [
-        "Email"
+        "Email",
+        "Security"
     ],
     "useCases": [
         "Phishing",
         "Network Security"
     ],
     "keywords": [
-        "ironscales"
+        "ironscales",
+        "Email Security",
+        "Anti-Phishing",
+        "Phishing"
     ],
     "githubUser": [],
     "marketplaces": [

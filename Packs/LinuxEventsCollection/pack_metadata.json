@@ -15,7 +15,10 @@
     ],
     "useCases": [],
     "keywords": [
-        "linux"
+        "linux",
+        "syslog",
+        "operating system",
+        "OS"
     ],
     "marketplaces": [
         "marketplacev2",

@@ -9,9 +9,18 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Network"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "F5",
+        "LTM",
+        "Local Traffic Manager",
+        "BIG-IP",
+        "Load Balancer",
+        "Traffic Management"
+    ],
     "devEmail": [
         "amahmoud@paloaltonetworks.com"
     ],

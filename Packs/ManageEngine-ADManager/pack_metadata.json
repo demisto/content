@@ -9,9 +9,18 @@
     "categories": [
         "IT Services"
     ],
-    "tags": [],
+    "tags": [
+        "IAM",
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "ManageEngine",
+        "ADManager",
+        "ADManager Plus",
+        "Active Directory",
+        "AD management"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

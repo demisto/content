@@ -11,12 +11,19 @@
         "IT Services"
     ],
     "tags": [
-        "Network"
+        "Network",
+        "IT"
     ],
     "useCases": [
         "Network Security"
     ],
-    "keywords": [],
+    "keywords": [
+        "Cisco",
+        "Meraki",
+        "cloud networking",
+        "WiFi",
+        "SD-WAN"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

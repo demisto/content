@@ -9,9 +9,17 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Portnox",
+        "NAC",
+        "network access control",
+        "zero trust"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

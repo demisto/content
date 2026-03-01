@@ -10,9 +10,19 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Cisco",
+        "Firepower",
+        "Cisco Firepower",
+        "FTD",
+        "IPS",
+        "NGFW"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

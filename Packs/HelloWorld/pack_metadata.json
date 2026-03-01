@@ -15,7 +15,12 @@
         "Getting Started"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Hello World",
+        "Example",
+        "Tutorial",
+        "Demo"
+    ],
     "dependencies": {
         "CommonScripts": {
             "mandatory": true,

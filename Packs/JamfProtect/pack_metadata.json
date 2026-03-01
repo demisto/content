@@ -10,9 +10,17 @@
     "categories": [
         "IT Services"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Jamf Protect",
+        "Apple",
+        "Mac",
+        "macOS",
+        "endpoint protection"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

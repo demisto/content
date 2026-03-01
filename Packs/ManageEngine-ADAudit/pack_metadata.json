@@ -9,9 +9,19 @@
     "categories": [
         "IT Services"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Compliance"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "ManageEngine",
+        "ADAudit",
+        "ADAudit Plus",
+        "Active Directory",
+        "audit",
+        "Windows Server"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

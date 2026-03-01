@@ -16,7 +16,11 @@
     "useCases": [
         "Compliance"
     ],
-    "keywords": [],
+    "keywords": [
+        "Docusign",
+        "e-signature",
+        "eSignature"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

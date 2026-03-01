@@ -9,9 +9,18 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "IAM",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Semperis",
+        "DSP",
+        "Directory Services Protector",
+        "Active Directory",
+        "Azure AD"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

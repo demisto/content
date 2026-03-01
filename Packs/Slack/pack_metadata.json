@@ -13,10 +13,15 @@
     "categories": [
         "Messaging and Conferencing"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
     "keywords": [
-        "Slack"
+        "Slack",
+        "messaging",
+        "collaboration",
+        "chat"
     ],
     "dependencies": {
         "CommonTypes": {

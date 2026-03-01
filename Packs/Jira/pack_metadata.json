@@ -10,12 +10,19 @@
     "categories": [
         "Case Management"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "itemPrefix": [
         "Jira"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Atlassian",
+        "Jira",
+        "issue tracking",
+        "project management"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

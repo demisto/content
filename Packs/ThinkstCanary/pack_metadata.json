@@ -10,9 +10,17 @@
     "categories": [
         "Deception & Breach Simulation"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Thinkst",
+        "Canary",
+        "Canarytoken",
+        "honeypot",
+        "deception"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

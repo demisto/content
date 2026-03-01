@@ -9,9 +9,18 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Trend Micro",
+        "TippingPoint",
+        "IPS",
+        "intrusion prevention",
+        "network security"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

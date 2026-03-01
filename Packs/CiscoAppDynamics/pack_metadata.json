@@ -10,13 +10,19 @@
         "Analytics & SIEM"
     ],
     "tags": [
-        "Security"
+        "Security",
+        "IT",
+        "Alerts"
     ],
     "useCases": [
         "Network Security"
     ],
     "keywords": [
-        "Network Security"
+        "Network Security",
+        "Cisco",
+        "AppDynamics",
+        "APM",
+        "Application Performance Monitoring"
     ],
     "marketplaces": [
         "marketplacev2",

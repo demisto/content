@@ -18,11 +18,15 @@
         "Attack",
         "Alerts",
         "Malware",
-        "Network"
+        "Network",
+        "Security"
     ],
     "useCases": [],
     "keywords": [
-        "Darktrace"
+        "Darktrace",
+        "NDR",
+        "AI Analyst",
+        "Network Detection and Response"
     ],
     "certification": "certified",
     "marketplaces": [

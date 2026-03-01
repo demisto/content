@@ -11,13 +11,16 @@
         "Cloud Services"
     ],
     "tags": [
-        "Compliance"
+        "Compliance",
+        "IT"
     ],
     "useCases": [
         "Compliance"
     ],
     "keywords": [
-        "Dropbox"
+        "Dropbox",
+        "Cloud Storage",
+        "File Sharing"
     ],
     "marketplaces": [
         "marketplacev2",

@@ -10,9 +10,18 @@
     "categories": [
         "Identity and Access Management"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "IAM"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Duo",
+        "Cisco Duo",
+        "MFA",
+        "Multi-Factor Authentication",
+        "2FA"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

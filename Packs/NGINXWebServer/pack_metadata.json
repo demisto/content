@@ -9,9 +9,16 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "NGINX",
+        "web server",
+        "reverse proxy",
+        "load balancer"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

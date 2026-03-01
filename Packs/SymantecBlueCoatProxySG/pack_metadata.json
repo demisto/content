@@ -18,7 +18,12 @@
         "Network Security"
     ],
     "keywords": [
-        "broadcom"
+        "broadcom",
+        "Symantec",
+        "BlueCoat",
+        "ProxySG",
+        "proxy",
+        "web security"
     ],
     "marketplaces": [
         "marketplacev2",

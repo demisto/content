@@ -9,9 +9,16 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Microsoft",
+        "Windows",
+        "AMSI",
+        "Antimalware Scan Interface"
+    ],
     "dependencies": {
         "MicrosoftWindowsEvents": {
             "mandatory": true,

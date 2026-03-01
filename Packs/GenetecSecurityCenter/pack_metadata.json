@@ -9,9 +9,17 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Genetec",
+        "Security Center",
+        "Physical Security",
+        "Video Surveillance",
+        "Access Control"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

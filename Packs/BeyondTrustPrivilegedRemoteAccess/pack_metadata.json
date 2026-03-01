@@ -10,7 +10,9 @@
         "Analytics & SIEM"
     ],
     "tags": [
-        "IT"
+        "IT",
+        "IAM",
+        "Security"
     ],
     "useCases": [],
     "keywords": [
@@ -20,7 +22,8 @@
         "Remote Access",
         "Privileged Remote Access",
         "PRA",
-        "Privileged"
+        "Privileged",
+        "BeyondTrust PRA"
     ],
     "marketplaces": [
         "marketplacev2",

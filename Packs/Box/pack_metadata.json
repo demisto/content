@@ -14,11 +14,15 @@
     "tags": [
         "Security",
         "Compliance",
-        "Breach"
+        "Breach",
+        "IAM",
+        "IT"
     ],
     "useCases": [],
     "keywords": [
-        "box"
+        "box",
+        "Cloud Storage",
+        "File Sharing"
     ],
     "marketplaces": [
         "xsoar",

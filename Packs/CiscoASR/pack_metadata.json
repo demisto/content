@@ -9,9 +9,18 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Cisco",
+        "ASR",
+        "Cisco ASR",
+        "Aggregation Services Router",
+        "Router"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

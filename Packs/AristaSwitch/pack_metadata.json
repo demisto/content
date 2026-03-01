@@ -9,9 +9,18 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Arista",
+        "EOS",
+        "Arista EOS",
+        "Switch",
+        "Network Switch"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

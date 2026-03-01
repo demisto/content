@@ -10,9 +10,17 @@
     "categories": [
         "Endpoint"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "SentinelOne",
+        "S1",
+        "EDR",
+        "endpoint protection",
+        "XDR"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

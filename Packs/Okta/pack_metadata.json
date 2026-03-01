@@ -10,9 +10,18 @@
     "categories": [
         "Identity and Access Management"
     ],
-    "tags": [],
+    "tags": [
+        "IAM",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Okta",
+        "identity management",
+        "SSO",
+        "MFA",
+        "single sign-on"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
