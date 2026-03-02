@@ -2148,7 +2148,7 @@ script:
         - description: Filters for returned cases that were modified on or after the specified date range, for example, 1 month, 2 days, 1 hour, and so on.
           name: since_modification_time
         - auto: PREDEFINED
-          description: Whether to include enriched case data in the response (detection_time, notes, xdr_url, manual_description, starred_manually). Recommended for up to 10 cases.
+          description: Whether to include enriched case data in the response (detection_time, notes, xdr_url, manual_description, starred_manually). Only supported for up to 10 cases. When more than 10 cases are returned, the command automatically falls back to standard case data.
           name: get_enriched_case_data
           defaultValue: 'false'
           predefined:
@@ -2488,8 +2488,15 @@ script:
       - cloud_runtime_security
       - xsiam
       - edr
-    - name: core-update-case
+    - name: core-send-endpoint-heartbeat
+      description: Sends endpoint heartbeat.
       hidden: true
+      arguments:
+        - name: endpoint_id
+          description: The ID of the endpoint.
+          required: true
+      outputs: []
+    - name: core-update-case
       description: Updates the properties of a case.
       arguments:
         - name: case_id
