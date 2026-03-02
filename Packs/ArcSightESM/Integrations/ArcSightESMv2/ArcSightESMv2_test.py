@@ -2,6 +2,7 @@ from pathlib import Path
 import json
 import requests
 from ArcSightESMv2 import parse_json_response, repair_malformed_json
+import ArcSightESMv2
 import demistomock as demisto
 import pytest
 import requests_mock
@@ -33,6 +34,14 @@ test_data = [
     (True, "as-clear-entries", "https://server/www/manager-service/rest/ActiveListService/clearEntries?alt=json"),
     (False, "as-clear-entries", "https://server/www/manager-service/services/ActiveListService/"),
 ]
+
+
+@pytest.fixture(autouse=True)
+def reset_v79_flag():
+    """Reset IS_V7_9 to False before each test to ensure legacy mode by default."""
+    ArcSightESMv2.IS_V7_9 = False
+    yield
+    ArcSightESMv2.IS_V7_9 = False
 
 
 @pytest.mark.parametrize("use_rest, cmd_name, expected_rest_endpoint", test_data)
@@ -577,3 +586,337 @@ def test_unfixable_json_response():
     unfixable_response._content = b'{"key": "value"'  # Missing closing brace
     with pytest.raises(json.JSONDecodeError):
         parse_json_response(unfixable_response)
+
+
+# ===================== v7.9 No-Namespace Support Tests =====================
+
+
+def test_ns_key_helper():
+    """Test _ns_key() returns correct keys for both legacy and v7.9 modes.
+
+    Given:
+        - The _ns_key helper function
+
+    When:
+        - IS_V7_9 is False (legacy mode)
+        - IS_V7_9 is True (v7.9 mode)
+
+    Then:
+        - Legacy mode returns 'prefix.key'
+        - v7.9 mode returns just 'key'
+    """
+    ArcSightESMv2.IS_V7_9 = False
+    assert ArcSightESMv2._ns_key("cas", "return") == "cas.return"
+    assert ArcSightESMv2._ns_key("sev", "getSecurityEvents") == "sev.getSecurityEvents"
+    assert ArcSightESMv2._ns_key("log", "loginResponse") == "log.loginResponse"
+
+    ArcSightESMv2.IS_V7_9 = True
+    assert ArcSightESMv2._ns_key("cas", "return") == "return"
+    assert ArcSightESMv2._ns_key("sev", "getSecurityEvents") == "getSecurityEvents"
+    assert ArcSightESMv2._ns_key("log", "loginResponse") == "loginResponse"
+
+
+def test_login_v79_no_namespace(mocker, requests_mock):
+    """Verify login succeeds with v7.9 no-namespace response and sets IS_V7_9 = True.
+
+    Given:
+        - ArcSight ESM v7.9 login endpoint returns {"loginResponse": {"return": "token"}}
+
+    When:
+        - login() is called
+
+    Then:
+        - The auth token is returned
+        - IS_V7_9 is set to True
+    """
+    mocker.patch.object(demisto, "params", return_value=PARAMS)
+    mocker.patch.object(demisto, "command", return_value="as-get-all-cases")
+    mocker.patch.object(demisto, "setIntegrationContext")
+
+    requests_mock.post(
+        PARAMS["server"] + "/www/core-service/rest/LoginService/login",
+        json={"loginResponse": {"return": "v79_token"}},
+    )
+
+    ArcSightESMv2.IS_V7_9 = False
+    ArcSightESMv2.BASE_URL = PARAMS["server"] + "/"
+    ArcSightESMv2.VERIFY_CERTIFICATE = False
+
+    token = ArcSightESMv2.login()
+    assert token == "v79_token"
+    assert ArcSightESMv2.IS_V7_9 is True
+
+
+def test_login_legacy_namespace(mocker, requests_mock):
+    """Verify login succeeds with legacy namespaced response and sets IS_V7_9 = False.
+
+    Given:
+        - Legacy ArcSight ESM login endpoint returns {"log.loginResponse": {"log.return": "token"}}
+
+    When:
+        - login() is called
+
+    Then:
+        - The auth token is returned
+        - IS_V7_9 is set to False
+    """
+    mocker.patch.object(demisto, "params", return_value=PARAMS)
+    mocker.patch.object(demisto, "command", return_value="as-get-all-cases")
+    mocker.patch.object(demisto, "setIntegrationContext")
+
+    requests_mock.post(
+        PARAMS["server"] + "/www/core-service/rest/LoginService/login",
+        json={"log.loginResponse": {"log.return": "legacy_token"}},
+    )
+
+    ArcSightESMv2.IS_V7_9 = True  # Start as True to verify it gets set to False
+    ArcSightESMv2.BASE_URL = PARAMS["server"] + "/"
+    ArcSightESMv2.VERIFY_CERTIFICATE = False
+
+    token = ArcSightESMv2.login()
+    assert token == "legacy_token"
+    assert ArcSightESMv2.IS_V7_9 is False
+
+
+def test_get_case_v79(mocker, requests_mock):
+    """Verify get_case() works with v7.9 no-namespace response.
+
+    Given:
+        - ArcSight ESM v7.9 returns case data without namespace prefixes
+
+    When:
+        - get_case() is called
+
+    Then:
+        - The case data is correctly parsed from the no-namespace response
+    """
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"auth_token": "token"})
+    mocker.patch.object(demisto, "params", return_value=PARAMS)
+
+    ArcSightESMv2.IS_V7_9 = True
+    ArcSightESMv2.AUTH_TOKEN = "token"
+    ArcSightESMv2.BASE_URL = PARAMS["server"] + "/"
+    ArcSightESMv2.VERIFY_CERTIFICATE = False
+
+    requests_mock.get(
+        PARAMS["server"] + "/www/manager-service/rest/CaseService/getResourceById",
+        json={
+            "getResourceByIdResponse": {
+                "return": {
+                    "name": "Test Case v79",
+                    "resourceid": "abc123",
+                    "createdTimestamp": 1629097454417,
+                }
+            }
+        },
+    )
+
+    case = ArcSightESMv2.get_case("abc123")
+    assert case["name"] == "Test Case v79"
+    assert case["resourceid"] == "abc123"
+
+
+def test_get_all_cases_v79(mocker, requests_mock):
+    """Verify get_all_cases_command() works with v7.9 no-namespace response.
+
+    Given:
+        - ArcSight ESM v7.9 returns case IDs without namespace prefixes
+
+    When:
+        - get_all_cases_command() is called
+
+    Then:
+        - The case IDs are correctly parsed
+    """
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"auth_token": "token"})
+    mocker.patch.object(demisto, "results")
+    mocker.patch.object(demisto, "command", return_value="as-get-all-cases")
+    mocker.patch.object(demisto, "params", return_value=PARAMS)
+
+    ArcSightESMv2.IS_V7_9 = True
+    ArcSightESMv2.AUTH_TOKEN = "token"
+    ArcSightESMv2.BASE_URL = PARAMS["server"] + "/"
+    ArcSightESMv2.VERIFY_CERTIFICATE = False
+
+    requests_mock.get(
+        PARAMS["server"] + "/www/manager-service/rest/CaseService/findAllIds",
+        json={
+            "findAllIdsResponse": {
+                "return": ["case1", "case2", "case3"]
+            }
+        },
+    )
+
+    ArcSightESMv2.get_all_cases_command()
+    results = demisto.results.call_args[0][0]
+    cases = results["Contents"]
+    assert len(cases) == 3
+    assert cases[0] == "case1"
+
+
+def test_get_security_events_v79(mocker, requests_mock):
+    """Verify get_security_events() uses no-namespace keys in request and parses response correctly.
+
+    Given:
+        - ArcSight ESM v7.9 mode is active
+
+    When:
+        - get_security_events() is called
+
+    Then:
+        - Request body uses no-namespace keys
+        - Response is correctly parsed from no-namespace format
+    """
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"auth_token": "token"})
+    mocker.patch.object(demisto, "params", return_value=PARAMS)
+
+    ArcSightESMv2.IS_V7_9 = True
+    ArcSightESMv2.AUTH_TOKEN = "token"
+    ArcSightESMv2.BASE_URL = PARAMS["server"] + "/"
+    ArcSightESMv2.VERIFY_CERTIFICATE = False
+
+    post_mock = requests_mock.post(
+        PARAMS["server"] + "/www/manager-service/rest/SecurityEventService/getSecurityEvents",
+        json={
+            "getSecurityEventsResponse": {
+                "return": [
+                    {"eventId": 12345, "name": "Test Event v79"}
+                ]
+            }
+        },
+    )
+
+    events = ArcSightESMv2.get_security_events(["12345"])
+    assert events is not None
+    assert len(events) == 1
+    assert events[0]["name"] == "Test Event v79"
+
+    # Verify request body uses no-namespace keys
+    request_body = post_mock.last_request.json()
+    assert "getSecurityEvents" in request_body
+    assert "authToken" in request_body["getSecurityEvents"]
+    assert "ids" in request_body["getSecurityEvents"]
+
+
+def test_get_query_viewer_results_v79(mocker, requests_mock):
+    """Verify get_query_viewer_results() works with v7.9 no-namespace response.
+
+    Given:
+        - ArcSight ESM v7.9 returns query viewer data without namespace prefixes
+
+    When:
+        - get_query_viewer_results() is called
+
+    Then:
+        - The data is correctly parsed
+    """
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"auth_token": "token"})
+    mocker.patch.object(demisto, "params", return_value=PARAMS)
+
+    ArcSightESMv2.IS_V7_9 = True
+    ArcSightESMv2.AUTH_TOKEN = "token"
+    ArcSightESMv2.BASE_URL = PARAMS["server"] + "/"
+    ArcSightESMv2.VERIFY_CERTIFICATE = False
+
+    requests_mock.get(
+        PARAMS["server"] + "/www/manager-service/rest/QueryViewerService/getMatrixData",
+        json={
+            "getMatrixDataResponse": {
+                "return": {
+                    "columnHeaders": ["ID", "Name"],
+                    "rows": [
+                        {
+                            "@xsi.type": "listWrapper",
+                            "value": [
+                                {"@xsi.type": "xs:string", "$": "id1"},
+                                {"@xsi.type": "xs:string", "$": "name1"},
+                            ],
+                        }
+                    ],
+                }
+            }
+        },
+    )
+
+    fields, results = ArcSightESMv2.get_query_viewer_results("test_qv_id")
+    assert fields == ["ID", "Name"]
+    assert len(results) == 1
+    assert results[0]["ID"] == "id1"
+    assert results[0]["Name"] == "name1"
+
+
+def test_get_case_event_ids_v79(mocker, requests_mock):
+    """Verify get_case_event_ids_command() works with v7.9 no-namespace response.
+
+    Given:
+        - ArcSight ESM v7.9 returns case event IDs without namespace prefixes
+
+    When:
+        - get_case_event_ids_command() is called
+
+    Then:
+        - The event IDs are correctly parsed
+    """
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"auth_token": "token"})
+    mocker.patch.object(demisto, "results")
+    mocker.patch.object(demisto, "command", return_value="as-get-case-event-ids")
+    mocker.patch.object(demisto, "params", return_value=PARAMS)
+    mocker.patch.object(demisto, "args", return_value={"caseId": "case1", "withCorrelatedEvents": "false"})
+
+    ArcSightESMv2.IS_V7_9 = True
+    ArcSightESMv2.AUTH_TOKEN = "token"
+    ArcSightESMv2.BASE_URL = PARAMS["server"] + "/"
+    ArcSightESMv2.VERIFY_CERTIFICATE = False
+
+    requests_mock.get(
+        PARAMS["server"] + "/www/manager-service/rest/CaseService/getCaseEventIDs",
+        json={
+            "getCaseEventIDsResponse": {
+                "return": [111, 222, 333]
+            }
+        },
+    )
+
+    ArcSightESMv2.get_case_event_ids_command()
+    results = demisto.results.call_args[0][0]
+    event_ids = results["Contents"]["getCaseEventIDsResponse"]["return"]
+    assert len(event_ids) == 3
+    assert event_ids[0] == 111
+
+
+def test_get_all_query_viewers_v79(mocker, requests_mock):
+    """Verify get_all_query_viewers_command() works with v7.9 no-namespace response.
+
+    Given:
+        - ArcSight ESM v7.9 returns query viewer IDs without namespace prefixes
+
+    When:
+        - get_all_query_viewers_command() is called
+
+    Then:
+        - The query viewer IDs are correctly parsed
+    """
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"auth_token": "token"})
+    mocker.patch.object(demisto, "results")
+    mocker.patch.object(demisto, "command", return_value="as-get-all-query-viewers")
+    mocker.patch.object(demisto, "params", return_value=PARAMS)
+
+    ArcSightESMv2.IS_V7_9 = True
+    ArcSightESMv2.AUTH_TOKEN = "token"
+    ArcSightESMv2.BASE_URL = PARAMS["server"] + "/"
+    ArcSightESMv2.VERIFY_CERTIFICATE = False
+
+    requests_mock.post(
+        PARAMS["server"] + "/www/manager-service/rest/QueryViewerService/findAllIds",
+        json={
+            "findAllIdsResponse": {
+                "return": ["qv1", "qv2", "qv3"]
+            }
+        },
+    )
+
+    ArcSightESMv2.get_all_query_viewers_command()
+    results = demisto.results.call_args[0][0]
+    output = results["Contents"]
+    assert len(output) == 3
+    assert output[0] == "qv1"
