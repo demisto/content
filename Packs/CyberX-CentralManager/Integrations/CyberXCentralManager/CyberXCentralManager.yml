@@ -3,36 +3,43 @@ provider: Microsoft
 commonfields:
   id: CyberX - Central Manager
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
 - defaultvalue: 127.0.0.1
   display: IP/DNS
   name: Server
   required: true
   type: 0
+  section: Connect
 - display: Token generated in CyberX
   name: Api-Token
   required: true
   type: 4
+  section: Connect
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
   required: false
+  section: Connect
 description: Updates alerts in CyberX Central Management
 display: CyberX - Central Manager
 name: CyberX - Central Manager
 script:
   commands:
   - arguments:
-    - description: The unique ID
+    - description: The unique ID.
       name: cyberx_uuid
       required: true
     - auto: PREDEFINED
-      description: The action to perform on the alert
+      description: The action to perform on the alert.
       name: action
       predefined:
       - handle
@@ -40,7 +47,7 @@ script:
       required: true
     description: Updating the alert
     name: cyberx-update-alert
-  dockerimage: demisto/python3-deb:3.12.10.3561556
+  dockerimage: demisto/python3-deb:3.12.12.7090913
   script: ''
   subtype: python3
   type: python
