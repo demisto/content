@@ -343,11 +343,13 @@ script:
       name: limit
       defaultValue: '30'
     - auto: PREDEFINED
-      description: Specifies whether to sort endpoints by the first time or last time they were seen. Can be "first_seen" or "last_seen".
+      description: Sorts the endpoints by the selected field.
+      defaultValue: first_seen
       name: sort_by
       predefined:
       - first_seen
       - last_seen
+      - endpoint_id
     - auto: PREDEFINED
       description: The order by which to sort results. Can be "asc" (ascending) or "desc" ( descending). Default set to asc.
       name: sort_order
@@ -4462,7 +4464,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/google-cloud-storage:1.0.0.5633894
+  dockerimage: demisto/google-cloud-storage:1.0.0.7039514
 tests:
 - No tests
 supportsquickactions: true

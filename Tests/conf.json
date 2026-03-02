@@ -5901,7 +5901,8 @@
             ],
             "instance_names": [
                 "virus_total_v3"
-            ]
+            ],
+            "fromversion": "8.0.0"
         },
         {
             "playbookID": "DomainEnrichment-Test",
@@ -5909,7 +5910,7 @@
             "instance_names": [
                 "virus_total_v3"
             ],
-            "fromversion": "6.10.0"
+            "fromversion": "8.0.0"
         },
         {
             "playbookID": "URLEnrichment-Test",
@@ -5919,7 +5920,8 @@
             ],
             "instance_names": [
                 "virus_total_v3"
-            ]
+            ],
+            "fromversion": "8.0.0"
         },
         {
             "playbookID": "IPEnrichment-Test",
@@ -5931,7 +5933,7 @@
             "instance_names": [
                 "virus_total_v3"
             ],
-            "fromversion": "6.10.0"
+            "fromversion": "8.0.0"
         },
         {
             "playbookID": "GetEndpointData-Test",
@@ -5940,7 +5942,7 @@
                 "active_directory_80k"
             ],
             "timeout": 300,
-            "fromversion": "6.10.0"
+            "fromversion": "8.0.0"
         },
         {
             "integrations": "Unit 42 Intelligence",
@@ -5948,7 +5950,8 @@
         },
         {
             "playbookID": "CVEEnrichment-Test",
-            "integrations": ["CIRCL CVE Search","Palo Alto Networks Threat Vault v2"]
+            "integrations": ["CIRCL CVE Search","Palo Alto Networks Threat Vault v2"],
+            "fromversion": "8.0.0"
         }
     ],
     "skipped_tests": {
