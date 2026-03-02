@@ -1765,7 +1765,9 @@ def get_cases_data(url_filter: str = "", limit: int = 100, offset: int = 0) -> t
         tuple[int, list[str]]: The number of total cases in the filter and the list of cases ids.
     """
     params = {"sort": "created_timestamp.asc", "offset": offset, "limit": limit}
-    endpoint_url = f"/cases/queries/cases/v1?filter={url_filter}" if url_filter else "/cases/queries/cases/v1"
+    if url_filter:
+        params["filter"] = url_filter
+    endpoint_url = "/cases/queries/cases/v1"
     response = http_request("GET", endpoint_url, params)
     total_cases: int = demisto.get(response, "meta.pagination.total")
     ids: list[str] = demisto.get(response, "resources", [])
