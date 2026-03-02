@@ -55,7 +55,7 @@ configuration:
   section: Collect
 - defaultvalue: Iris Investigate
   display: 'Domain Enrichment Method (DomainTools)'
-  name: domain_enrichmenth_method
+  name: domain_enrichment_method
   options:
   - Iris Investigate
   - Iris Enrich

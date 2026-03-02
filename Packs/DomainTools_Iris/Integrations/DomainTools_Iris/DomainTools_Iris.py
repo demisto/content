@@ -1213,16 +1213,15 @@ def create_history_table(data, headers):
 
 
 def get_domaintools_domain_enrichment_command() -> dict[str, Callable]:
-    domain_enrichmenth_method = demisto.params().get("domain_enrichmenth_method") or "Iris Investigate"
+    domain_enrichment_method = demisto.params().get("domain_enrichment_method") or "Iris Investigate"
+    method_key = domain_enrichment_method.lower()
+
     domain_enrich_function_mapping = {
         "iris enrich": {"cmd": domain_enrich, "formatter": format_enrich_output},
         "iris investigate": {"cmd": domain_investigate, "formatter": format_investigate_output},
     }
 
-    try:
-        dt_domain_func = domain_enrich_function_mapping[domain_enrichmenth_method.lower()]
-    except Exception:
-        dt_domain_func = domain_enrich_function_mapping["iris investigate"]
+    dt_domain_func = domain_enrich_function_mapping.get(method_key, domain_enrich_function_mapping["iris investigate"])
 
     return dt_domain_func
 
@@ -1236,7 +1235,7 @@ def domain_command():
     e.g. !domain domain=domaintools.com
     """
     domain = demisto.args()["domain"]
-    bypass_auto_enrich = argToBoolean(demisto.args()["bypass_auto_enrich"])
+    bypass_auto_enrich = argToBoolean(demisto.args().get("bypass_auto_enrich", False))
     domain_list = domain.split(",")
 
     domain_result_type = demisto.params().get("domain_result_type") or "Iris"
@@ -1284,25 +1283,34 @@ def domain_command():
             missing_domains = response.get("missing_domains", [])
             results = response.get("results", [])
 
-            for result in results:
-                human_readable_output, indicators = dt_enrichment_command["formatter"](result)
+            if results:
+                for result in results:
+                    human_readable_output, indicators = dt_enrichment_command["formatter"](result)
 
-                if len(missing_domains) > 0:
-                    human_readable_output += f"Missing Domains: {','.join(missing_domains)}"
-                    missing_domains = []
+                    if len(missing_domains) > 0:
+                        human_readable_output += f"Missing Domains: {','.join(missing_domains)}"
 
-                domain_indicator = indicators.get("domain") if include_context else None
-                domaintools_context = indicators.get("domaintools") if include_context else None
+                    domain_indicator = indicators.get("domain") if include_context else None
+                    domaintools_context = indicators.get("domaintools") if include_context else None
 
+                    command_results_list.append(
+                        CommandResults(
+                            outputs_prefix="DomainTools",
+                            outputs_key_field="Name",
+                            indicator=domain_indicator,
+                            outputs=domaintools_context,
+                            readable_output=human_readable_output,
+                            raw_response=result,
+                            ignore_auto_extract=True,
+                        )
+                    )
+            elif missing_domains:
                 command_results_list.append(
                     CommandResults(
-                        outputs_prefix="DomainTools",
-                        outputs_key_field="Name",
-                        indicator=domain_indicator,
-                        outputs=domaintools_context,
-                        readable_output=human_readable_output,
-                        raw_response=result,
-                        ignore_auto_extract=True,
+                        readable_output=f"### DomainTools Enrichment\nNo data found for: {', '.join(missing_domains)}",
+                        outputs_prefix="DomainTools.Missing",
+                        outputs={"MissingDomains": missing_domains},
+                        raw_response=response,
                     )
                 )
 
@@ -1799,19 +1807,19 @@ def parsed_whois_command():
     registrar_contacts = parsed.get("contacts", {})
 
     domain_kwargs = {
-        "registrant_name": "",
-        "registrant_email": "",
-        "registrant_phone": "",
-        "registrant_country": "",
-        "admin_name": "",
-        "admin_email": "",
-        "admin_phone": "",
-        "admin_country": "",
-        "tech_country": "",
-        "tech_name": "",
-        "tech_organization": "",
-        "tech_email": "",
-        "billing": "",
+        "registrant_name": None,
+        "registrant_email": None,
+        "registrant_phone": None,
+        "registrant_country": None,
+        "admin_name": None,
+        "admin_email": None,
+        "admin_phone": None,
+        "admin_country": None,
+        "tech_country": None,
+        "tech_name": None,
+        "tech_organization": None,
+        "tech_email": None,
+        "billing": None,
     }
 
     if isinstance(registrar_contacts, dict):

@@ -12,7 +12,7 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": ["DomainTools"],
     "certification": "certified",
     "marketplaces": [
         "xsoar",
@@ -26,5 +26,6 @@
         "ENT_PLUS",
         "agentix",
         "xsiam"
-    ]
+    ],
+    "githubUser": ["briluza", "wesleya"]
 }
