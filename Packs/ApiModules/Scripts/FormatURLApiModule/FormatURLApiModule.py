@@ -125,12 +125,8 @@ class URLCheck:
         if not self.done and self.fragment:
             self.fragment_check()
 
-        while "%" in self.output:
-            unquoted = urllib.parse.unquote(self.output)
-            if unquoted != self.output:
-                self.output = unquoted
-            else:
-                break
+        # We removed the automatic unquoting of the entire URL to preserve URL-encoded Unicode sequences
+        # and other encoded characters that are necessary for the URL's integrity (XSUP-64471).
 
     def __str__(self):
         return f"{self.output}"
