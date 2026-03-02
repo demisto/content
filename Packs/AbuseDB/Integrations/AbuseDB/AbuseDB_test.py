@@ -286,7 +286,7 @@ def test_abusech_hunting_http_request_api_error(mocker):
         abusech_hunting_http_request({}, {})
 
 
-def test_abusech_hunting_http_request_api_warpped_error(mocker):
+def test_abusech_hunting_http_request_api_wrapped_error(mocker):
     """
     Given:
         - A response where the error is wrapped in a 200 OK response.
