@@ -376,7 +376,7 @@ script:
       description: The platform or service associated with the entry.
       type: String
     - contextPath: AbuseIPDB.FPL.entry_type
-      description: The type of the indicator (e.g., IPv4, domain).
+      description: The indicator type (for example, IPv4, domain).
       type: String
     - contextPath: AbuseIPDB.FPL.entry_value
       description: The actual indicator value (IP address or domain) that was marked as a false positive.
