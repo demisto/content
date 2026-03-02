@@ -370,7 +370,7 @@ script:
       description: The unique identifier for the False Positive List entry.
       type: String
     - contextPath: AbuseIPDB.FPL.time_stamp
-      description: The date and time (UTC) when the entry was added to the False Positive List.
+      description: The date and time (UTC) the entry was added to the False Positive List.
       type: String
     - contextPath: AbuseIPDB.FPL.platform
       description: The platform or service associated with the entry.
