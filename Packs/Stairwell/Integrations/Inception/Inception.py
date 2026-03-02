@@ -36,7 +36,7 @@ RETRY_BACKOFF_FACTOR = 1.5  # exponential backoff factor
 # --------------------------------
 # Helpers
 # --------------------------------
-def _require_args(required: Dict[str, Optional[str]]) -> Optional[CommandResults]:
+def _require_args(required: Dict[str, Any]) -> Optional[CommandResults]:
     missing = [k for k, v in required.items() if not v]
     if missing:
         return CommandResults(
@@ -756,17 +756,17 @@ def ai_triage_summarize_command(client: Client, object_id: str) -> CommandResult
     missing = _require_args({"object_id": object_id})
     if missing:
         return missing
-    
+
     try:
         response = client.summarize_file(object_id)
-        
+
         # Build readable markdown output
         md = "# Stairwell AI Triage Summary\n\n"
-        
+
         if isinstance(response, dict):
             file_hash = response.get("hash", object_id)
             raw_data = response.get("raw", {})
-            
+
             if not raw_data:
                 # Fallback if structure is different
                 md += "### AI Summary Response\n"
@@ -779,22 +779,22 @@ def ai_triage_summarize_command(client: Client, object_id: str) -> CommandResult
                         "raw": response
                     }
                 )
-            
+
             summary_json = raw_data.get("summaryJson", {})
             tldr = raw_data.get("tldr", summary_json.get("tldr", ""))
             detailed_summary = raw_data.get("summary", "")
-            
+
             # Header with key metrics
             md += f"**File Hash:** {file_hash}\n\n"
-            
+
             if tldr:
                 md += f"## TL;DR\n{tldr}\n\n"
-            
+
             # Key metrics from summaryJson
             malicious_likelihood = summary_json.get("malicious_likelihood")
             confidence = summary_json.get("confidence")
             threat_type = summary_json.get("threat_type")
-            
+
             if malicious_likelihood is not None:
                 md += f"**Malicious Likelihood:** {malicious_likelihood}%\n"
             if confidence is not None:
@@ -802,7 +802,7 @@ def ai_triage_summarize_command(client: Client, object_id: str) -> CommandResult
             if threat_type:
                 md += f"**Threat Type:** {threat_type}\n"
             md += "\n"
-            
+
             # Summary points
             summary_points = summary_json.get("summary", [])
             if isinstance(summary_points, list) and summary_points:
@@ -811,19 +811,19 @@ def ai_triage_summarize_command(client: Client, object_id: str) -> CommandResult
                     if isinstance(point, str):
                         md += f"- {point}\n"
                 md += "\n"
-            
+
             # IOCs
             iocs = summary_json.get("iocs", {})
             if isinstance(iocs, dict):
                 md += "## Indicators of Compromise (IOCs)\n"
-                
+
                 urls = iocs.get("urls", [])
                 if urls:
                     md += "### URLs\n"
                     for url in urls:
                         md += f"- {url}\n"
                     md += "\n"
-                
+
                 file_paths = iocs.get("file_paths_filenames", [])
                 if file_paths:
                     md += "### File Paths/Filenames\n"
@@ -832,77 +832,77 @@ def ai_triage_summarize_command(client: Client, object_id: str) -> CommandResult
                     if len(file_paths) > 20:
                         md += f"- ... and {len(file_paths) - 20} more\n"
                     md += "\n"
-                
+
                 registry_keys = iocs.get("registry_keys", [])
                 if registry_keys:
                     md += "### Registry Keys\n"
                     for key in registry_keys:
                         md += f"- {key}\n"
                     md += "\n"
-                
+
                 ip_addresses = iocs.get("ip_addresses", [])
                 if ip_addresses:
                     md += "### IP Addresses\n"
                     for ip in ip_addresses:
                         md += f"- {ip}\n"
                     md += "\n"
-            
+
             # Key Considerations
             key_considerations = summary_json.get("key_considerations", {})
             if isinstance(key_considerations, dict):
                 md += "## Key Considerations\n"
-                
+
                 prevalence = key_considerations.get("prevalence")
                 if prevalence:
                     md += f"### Prevalence\n{prevalence}\n\n"
-                
+
                 api_analysis = key_considerations.get("api_analysis")
                 if api_analysis:
                     md += f"### API Analysis\n{api_analysis}\n\n"
-                
+
                 entropy_analysis = key_considerations.get("entropy_analysis")
                 if entropy_analysis:
                     md += f"### Entropy Analysis\n{entropy_analysis}\n\n"
-            
+
             # Guidance for Clarity and Impact
             guidance = summary_json.get("guidance_for_clarity_and_impact", {})
             if isinstance(guidance, dict):
                 md += "## Guidance for Clarity and Impact\n"
-                
+
                 persistence = guidance.get("persistence_mechanisms", [])
                 if persistence:
                     md += "### Persistence Mechanisms\n"
                     for item in persistence:
                         md += f"- {item}\n"
                     md += "\n"
-                
+
                 obfuscation = guidance.get("obfuscation_or_evasion_techniques", [])
                 if obfuscation:
                     md += "### Obfuscation/Evasion Techniques\n"
                     for item in obfuscation:
                         md += f"- {item}\n"
                     md += "\n"
-                
+
                 data_exfiltration = guidance.get("data_exfiltration_capabilities", [])
                 if data_exfiltration:
                     md += "### Data Exfiltration Capabilities\n"
                     for item in data_exfiltration:
                         md += f"- {item}\n"
                     md += "\n"
-            
+
             # Full detailed summary if available
             if detailed_summary and len(detailed_summary) > len(tldr):
                 md += "## Detailed Analysis\n"
                 md += detailed_summary
         else:
             md += f"### AI Summary Response\n{json.dumps(response, indent=2)}"
-        
+
         # Prepare structured outputs
         outputs = {
             "hash": response.get("hash", object_id) if isinstance(response, dict) else object_id,
             "raw": response
         }
-        
+
         # Extract key fields for easier access
         if isinstance(response, dict):
             raw_data = response.get("raw", {})
@@ -912,14 +912,14 @@ def ai_triage_summarize_command(client: Client, object_id: str) -> CommandResult
                 outputs["confidence"] = summary_json.get("confidence")
                 outputs["threat_type"] = summary_json.get("threat_type")
                 outputs["tldr"] = summary_json.get("tldr", raw_data.get("tldr", ""))
-        
+
         return CommandResults(
             readable_output=md,
             outputs_prefix='Stairwell.AI_Triage',
             outputs_key_field='hash',
             outputs=outputs
         )
-    
+
     except DemistoException as err:
         # Handle different error codes
         if "404" in str(err):
@@ -1075,8 +1075,8 @@ def asn_get_whois_command(client: Client, asn: str) -> CommandResults:
     try:
         response = client.get_asn_whois(asn)
 
-        # Add asn to response for key field tracking
-        if isinstance(response, dict):
+        # Add asn to response for key field tracking if not already present
+        if isinstance(response, dict) and "asn" not in response:
             response["asn"] = asn
 
         readable = tableToMarkdown(f"ASN {asn} WHOIS Information", response) if isinstance(response, dict) else str(response)

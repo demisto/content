@@ -127,7 +127,7 @@ def test_intake_preflight_and_upload_missing_args():
     # Test missing asset_id
     results = intake_preflight_and_upload(asset_id="", file_path="/path/to/file")
     assert results.readable_output == "Missing required arguments: asset_id"
-    
+
     # Test missing file_path
     results = intake_preflight_and_upload(asset_id="test-asset", file_path="")
     assert results.readable_output == "Missing required arguments: file_path"
@@ -319,11 +319,11 @@ def test_ai_triage_summarize_command_success(requests_mock):
             }
         }
     }
-    
+
     requests_mock.get(f"https://app.stairwell.com/v1/objects/{TEST_OBJECT_ID}:summarize", json=mock_response)
-    
+
     results = ai_triage_summarize_command(test_client_v1, TEST_OBJECT_ID)
-    
+
     assert results
     assert "AI Triage Summary" in results.readable_output
     assert results.outputs.get("hash") == TEST_OBJECT_ID
@@ -334,9 +334,9 @@ def test_ai_triage_summarize_command_success(requests_mock):
 def test_ai_triage_summarize_command_notfound(requests_mock):
     """Test AI Triage summarize command with 404 error"""
     requests_mock.get(f"https://app.stairwell.com/v1/objects/{TEST_OBJECT_ID}:summarize", status_code=404)
-    
+
     results = ai_triage_summarize_command(test_client_v1, TEST_OBJECT_ID)
-    
+
     assert results
     assert "Object not found" in results.readable_output
 
@@ -344,7 +344,7 @@ def test_ai_triage_summarize_command_notfound(requests_mock):
 def test_ai_triage_summarize_command_missing_args():
     """Test AI Triage summarize command with missing arguments"""
     results = ai_triage_summarize_command(test_client_v1, "")
-    
+
     assert results
     assert "Missing required arguments" in results.readable_output
 
@@ -360,11 +360,11 @@ def test_object_sightings_command_success(requests_mock):
             }
         ]
     }
-    
+
     requests_mock.get(f"https://app.stairwell.com/v1/objects/{TEST_OBJECT_ID}/sightings", json=mock_response)
-    
+
     results = object_sightings_command(test_client_v1, TEST_OBJECT_ID)
-    
+
     assert results
     assert results.outputs_prefix == "Stairwell.Sightings"
     assert "sightings" in results.outputs
@@ -373,11 +373,11 @@ def test_object_sightings_command_success(requests_mock):
 def test_object_sightings_command_no_sightings(requests_mock):
     """Test object sightings command with no sightings"""
     mock_response = {"sightings": []}
-    
+
     requests_mock.get(f"https://app.stairwell.com/v1/objects/{TEST_OBJECT_ID}/sightings", json=mock_response)
-    
+
     results = object_sightings_command(test_client_v1, TEST_OBJECT_ID)
-    
+
     assert results
     assert "No sightings found" in results.readable_output
 
@@ -385,7 +385,7 @@ def test_object_sightings_command_no_sightings(requests_mock):
 def test_object_sightings_command_missing_args():
     """Test object sightings command with missing arguments"""
     results = object_sightings_command(test_client_v1, "")
-    
+
     assert results
     assert "Missing required arguments" in results.readable_output
 
@@ -394,11 +394,11 @@ def test_object_sightings_command_missing_args():
 def test_object_detonation_trigger_command_success(requests_mock):
     """Test object detonation trigger command with successful response"""
     mock_response = {"status": "triggered", "detonation_id": "det-123"}
-    
+
     requests_mock.post(f"https://app.stairwell.com/v1/objects/{TEST_OBJECT_ID}/detonation:trigger", json=mock_response)
-    
+
     results = object_detonation_trigger_command(test_client_v1, TEST_OBJECT_ID)
-    
+
     assert results
     assert "Detonation triggered" in results.readable_output
     assert results.outputs_prefix == "Stairwell.Detonation.Trigger"
@@ -407,7 +407,7 @@ def test_object_detonation_trigger_command_success(requests_mock):
 def test_object_detonation_trigger_command_missing_args():
     """Test object detonation trigger command with missing arguments"""
     results = object_detonation_trigger_command(test_client_v1, "")
-    
+
     assert results
     assert "Missing required arguments" in results.readable_output
 
@@ -419,11 +419,11 @@ def test_object_detonation_get_command_success(requests_mock):
         "status": "completed",
         "results": {"behavior": "malicious", "score": 95}
     }
-    
+
     requests_mock.get(f"https://app.stairwell.com/v1/objects/{TEST_OBJECT_ID}/detonation", json=mock_response)
-    
+
     results = object_detonation_get_command(test_client_v1, TEST_OBJECT_ID)
-    
+
     assert results
     assert results.outputs_prefix == "Stairwell.Detonation"
     assert results.outputs.get("status") == "completed"
@@ -432,7 +432,7 @@ def test_object_detonation_get_command_success(requests_mock):
 def test_object_detonation_get_command_missing_args():
     """Test object detonation get command with missing arguments"""
     results = object_detonation_get_command(test_client_v1, "")
-    
+
     assert results
     assert "Missing required arguments" in results.readable_output
 
@@ -445,11 +445,11 @@ def test_object_opinions_command_success(requests_mock):
             {"source": "analyst", "verdict": "malicious", "confidence": 90}
         ]
     }
-    
+
     requests_mock.get(f"https://app.stairwell.com/v1/objects/{TEST_OBJECT_ID}/opinions", json=mock_response)
-    
+
     results = object_opinions_command(test_client_v1, TEST_OBJECT_ID)
-    
+
     assert results
     assert results.outputs_prefix == "Stairwell.Opinions"
     assert "opinions" in results.outputs
@@ -458,11 +458,11 @@ def test_object_opinions_command_success(requests_mock):
 def test_object_opinions_command_no_opinions(requests_mock):
     """Test object opinions command with no opinions"""
     mock_response = {"opinions": []}
-    
+
     requests_mock.get(f"https://app.stairwell.com/v1/objects/{TEST_OBJECT_ID}/opinions", json=mock_response)
-    
+
     results = object_opinions_command(test_client_v1, TEST_OBJECT_ID)
-    
+
     assert results
     assert "No opinions found" in results.readable_output
 
@@ -470,7 +470,7 @@ def test_object_opinions_command_no_opinions(requests_mock):
 def test_object_opinions_command_missing_args():
     """Test object opinions command with missing arguments"""
     results = object_opinions_command(test_client_v1, "")
-    
+
     assert results
     assert "Missing required arguments" in results.readable_output
 
@@ -484,23 +484,23 @@ def test_run_to_ground_generate_command_success(requests_mock):
         proxy=False,
         headers={"Authorization": API_KEY}
     )
-    
+
     mock_response = {
         "analysis": {
             "objects": [TEST_OBJECT_ID, TEST_FILE_HASH],
             "relationships": []
         }
     }
-    
+
     object_ids = f"{TEST_OBJECT_ID},{TEST_FILE_HASH}"
     requests_mock.get(
         "https://app.stairwell.com/v1/generateRunToGround:generate",
         json=mock_response,
         status_code=200
     )
-    
+
     results = run_to_ground_generate_command(test_client_rtg, object_ids)
-    
+
     assert results
     assert results.outputs_prefix == "Stairwell.RunToGround"
     assert "analysis" in results.outputs
@@ -514,9 +514,9 @@ def test_run_to_ground_generate_command_missing_args():
         proxy=False,
         headers={"Authorization": API_KEY}
     )
-    
+
     results = run_to_ground_generate_command(test_client_rtg, "")
-    
+
     assert results
     assert "Missing required arguments" in results.readable_output
 
@@ -529,17 +529,17 @@ def test_run_to_ground_generate_command_multiple_objects(requests_mock):
         proxy=False,
         headers={"Authorization": API_KEY}
     )
-    
+
     mock_response = {"analysis": {"objects": [TEST_OBJECT_ID, TEST_FILE_HASH]}}
-    
+
     object_ids = f"{TEST_OBJECT_ID}, {TEST_FILE_HASH} , another-hash"
     requests_mock.get(
         "https://app.stairwell.com/v1/generateRunToGround:generate",
         json=mock_response
     )
-    
+
     results = run_to_ground_generate_command(test_client_rtg, object_ids)
-    
+
     assert results
     assert results.outputs_prefix == "Stairwell.RunToGround"
 
@@ -552,11 +552,11 @@ def test_asn_get_whois_command_success(requests_mock):
         "organization": "Test Organization",
         "country": "US"
     }
-    
+
     requests_mock.get("https://app.stairwell.com/v1/network/asns/12345/whois", json=mock_response)
-    
+
     results = asn_get_whois_command(test_client_network, "12345")
-    
+
     assert results
     assert results.outputs_prefix == "Stairwell.ASN.WHOIS"
     assert results.outputs.get("asn") == "AS12345"
@@ -565,9 +565,9 @@ def test_asn_get_whois_command_success(requests_mock):
 def test_asn_get_whois_command_notfound(requests_mock):
     """Test ASN get whois command with 404 error"""
     requests_mock.get("https://app.stairwell.com/v1/network/asns/99999/whois", status_code=404)
-    
+
     results = asn_get_whois_command(test_client_network, "99999")
-    
+
     assert results
     assert "ASN not found" in results.readable_output
 
@@ -575,7 +575,7 @@ def test_asn_get_whois_command_notfound(requests_mock):
 def test_asn_get_whois_command_missing_args():
     """Test ASN get whois command with missing arguments"""
     results = asn_get_whois_command(test_client_network, "")
-    
+
     assert results
     assert "Missing required arguments" in results.readable_output
 
@@ -587,11 +587,11 @@ def test_hostname_get_command_success(requests_mock):
         "hostname": "example.com",
         "resolutions": [{"ip": "1.2.3.4", "timestamp": "2024-01-01T00:00:00Z"}]
     }
-    
-    requests_mock.get("https://app.stairwell.com/v1/network/hostname/example.com", json=mock_response)
-    
+
+    requests_mock.get("https://app.stairwell.com/v1/network/hostnames/example.com", json=mock_response)
+
     results = hostname_get_command(test_client_network, "example.com")
-    
+
     assert results
     assert results.outputs_prefix == "Stairwell.Hostname"
     assert results.outputs.get("hostname") == "example.com"
@@ -599,10 +599,10 @@ def test_hostname_get_command_success(requests_mock):
 
 def test_hostname_get_command_notfound(requests_mock):
     """Test hostname get command with 404 error"""
-    requests_mock.get("https://app.stairwell.com/v1/network/hostname/nonexistent.com", status_code=404)
-    
+    requests_mock.get("https://app.stairwell.com/v1/network/hostnames/nonexistent.com", status_code=404)
+
     results = hostname_get_command(test_client_network, "nonexistent.com")
-    
+
     assert results
     assert "Hostname not found" in results.readable_output
 
@@ -615,11 +615,11 @@ def test_hostname_get_resolutions_command_success(requests_mock):
             {"ip": "5.6.7.8", "timestamp": "2024-01-02T00:00:00Z"}
         ]
     }
-    
-    requests_mock.get("https://app.stairwell.com/v1/network/hostname/example.com/resolutions", json=mock_response)
-    
+
+    requests_mock.get("https://app.stairwell.com/v1/network/hostnames/example.com/resolutions", json=mock_response)
+
     results = hostname_get_resolutions_command(test_client_network, "example.com")
-    
+
     assert results
     assert results.outputs_prefix == "Stairwell.Hostname.Resolutions"
     assert len(results.outputs.get("resolutions", [])) == 2
@@ -633,11 +633,11 @@ def test_hostname_batch_get_resolutions_command_success(requests_mock):
             "test.com": [{"ip": "5.6.7.8"}]
         }
     }
-    
+
     requests_mock.post("https://app.stairwell.com/v1/network/hostnames:batch-resolutions", json=mock_response)
-    
+
     results = hostname_batch_get_resolutions_command(test_client_network, "example.com,test.com")
-    
+
     assert results
     assert results.outputs_prefix == "Stairwell.Hostname.BatchResolutions"
 
@@ -650,11 +650,11 @@ def test_ipaddress_get_command_success(requests_mock):
         "country": "US",
         "asn": "AS12345"
     }
-    
-    requests_mock.get("https://app.stairwell.com/v1/network/ipaddress/1.2.3.4", json=mock_response)
-    
+
+    requests_mock.get("https://app.stairwell.com/v1/network/ips/1.2.3.4", json=mock_response)
+
     results = ipaddress_get_command(test_client_network, "1.2.3.4")
-    
+
     assert results
     assert results.outputs_prefix == "Stairwell.IPAddress"
     assert results.outputs.get("ip") == "1.2.3.4"
@@ -667,11 +667,11 @@ def test_ipaddress_lookup_cloud_provider_command_success(requests_mock):
         "cloud_provider": "AWS",
         "region": "us-east-1"
     }
-    
-    requests_mock.get("https://app.stairwell.com/v1/network/ipaddress/1.2.3.4/cloudprovider", json=mock_response)
-    
+
+    requests_mock.get("https://app.stairwell.com/v1/network/ips/1.2.3.4/provider", json=mock_response)
+
     results = ipaddress_lookup_cloud_provider_command(test_client_network, "1.2.3.4")
-    
+
     assert results
     assert results.outputs_prefix == "Stairwell.IPAddress.CloudProvider"
     assert results.outputs.get("cloud_provider") == "AWS"
@@ -682,11 +682,11 @@ def test_ipaddress_get_hostnames_resolving_to_ip_command_success(requests_mock):
     mock_response = {
         "hostnames": ["example.com", "www.example.com"]
     }
-    
-    requests_mock.get("https://app.stairwell.com/v1/network/ipaddress/1.2.3.4/hostnames", json=mock_response)
-    
+
+    requests_mock.get("https://app.stairwell.com/v1/network/ips/1.2.3.4/hostnames", json=mock_response)
+
     results = ipaddress_get_hostnames_resolving_to_ip_command(test_client_network, "1.2.3.4")
-    
+
     assert results
     assert results.outputs_prefix == "Stairwell.IPAddress.Hostnames"
     assert len(results.outputs.get("hostnames", [])) == 2
@@ -699,11 +699,11 @@ def test_ipaddress_get_whois_command_success(requests_mock):
         "organization": "Test Org",
         "country": "US"
     }
-    
-    requests_mock.get("https://app.stairwell.com/v1/network/ipaddress/1.2.3.4/whois", json=mock_response)
-    
+
+    requests_mock.get("https://app.stairwell.com/v1/network/ips/1.2.3.4/whois", json=mock_response)
+
     results = ipaddress_get_whois_command(test_client_network, "1.2.3.4")
-    
+
     assert results
     assert results.outputs_prefix == "Stairwell.IPAddress.WHOIS"
     assert results.outputs.get("ip") == "1.2.3.4"
@@ -718,11 +718,11 @@ def test_utilities_get_cloud_ip_ranges_command_success(requests_mock):
             {"cidr": "5.6.7.0/24", "provider": "GCP"}
         ]
     }
-    
-    requests_mock.get("https://app.stairwell.com/v1/network/utilities/cloudipranges", json=mock_response)
-    
+
+    requests_mock.get("https://app.stairwell.com/v1/network/providers/ip-ranges", json=mock_response)
+
     results = utilities_get_cloud_ip_ranges_command(test_client_network)
-    
+
     assert results
     assert results.outputs_prefix == "Stairwell.Utilities.CloudIPRanges"
     assert len(results.outputs.get("ranges", [])) == 2
@@ -736,11 +736,11 @@ def test_utilities_batch_canonicalize_hostnames_command_success(requests_mock):
             "WWW.TEST.COM": "www.test.com"
         }
     }
-    
-    requests_mock.post("https://app.stairwell.com/v1/network/utilities/batch/canonicalizehostnames", json=mock_response)
-    
+
+    requests_mock.post("https://app.stairwell.com/v1/network/utilities/hostnames:batch-canonicalize", json=mock_response)
+
     results = utilities_batch_canonicalize_hostnames_command(test_client_network, "EXAMPLE.COM,WWW.TEST.COM")
-    
+
     assert results
     assert results.outputs_prefix == "Stairwell.Utilities.CanonicalizedHostnames"
 
@@ -753,11 +753,11 @@ def test_utilities_batch_compute_etld_plus_one_command_success(requests_mock):
             "www.test.co.uk": "test.co.uk"
         }
     }
-    
-    requests_mock.post("https://app.stairwell.com/v1/network/utilities/batch/computeetldplusone", json=mock_response)
-    
+
+    requests_mock.post("https://app.stairwell.com/v1/network/utilities/hostnames:batch-etld-plus-one", json=mock_response)
+
     results = utilities_batch_compute_etld_plus_one_command(test_client_network, "subdomain.example.com,www.test.co.uk")
-    
+
     assert results
     assert results.outputs_prefix == "Stairwell.Utilities.ETLDPlusOne"
 
@@ -768,11 +768,11 @@ def test_utilities_canonicalize_hostname_command_success(requests_mock):
         "original": "EXAMPLE.COM",
         "canonicalized": "example.com"
     }
-    
-    requests_mock.get("https://app.stairwell.com/v1/network/utilities/canonicalizehostname?hostname=EXAMPLE.COM", json=mock_response)
-    
+
+    requests_mock.get("https://app.stairwell.com/v1/network/utilities/hostnames:canonicalize/EXAMPLE.COM", json=mock_response)
+
     results = utilities_canonicalize_hostname_command(test_client_network, "EXAMPLE.COM")
-    
+
     assert results
     assert results.outputs_prefix == "Stairwell.Utilities.CanonicalizedHostname"
     assert results.outputs.get("canonicalized") == "example.com"
@@ -784,11 +784,11 @@ def test_utilities_compute_etld_plus_one_command_success(requests_mock):
         "domain": "subdomain.example.com",
         "etld_plus_one": "example.com"
     }
-    
-    requests_mock.get("https://app.stairwell.com/v1/network/utilities/computeetldplusone?domain=subdomain.example.com", json=mock_response)
-    
+
+    requests_mock.get("https://app.stairwell.com/v1/network/utilities/hostnames:etld-plus-one/subdomain.example.com", json=mock_response)
+
     results = utilities_compute_etld_plus_one_command(test_client_network, "subdomain.example.com")
-    
+
     assert results
     assert results.outputs_prefix == "Stairwell.Utilities.ETLDPlusOne"
     assert results.outputs.get("etld_plus_one") == "example.com"
@@ -802,11 +802,11 @@ def test_utilities_batch_canonicalize_urls_command_success(requests_mock):
             "HTTP://TEST.COM/": "http://test.com/"
         }
     }
-    
+
     requests_mock.post("https://app.stairwell.com/v1/network/utilities/urls:batch-canonicalize", json=mock_response)
-    
+
     results = utilities_batch_canonicalize_urls_command(test_client_network, "HTTPS://EXAMPLE.COM/PATH,HTTP://TEST.COM/")
-    
+
     assert results
     assert results.outputs_prefix == "Stairwell.Utilities.CanonicalizedURLs"
 
@@ -817,11 +817,11 @@ def test_utilities_canonicalize_url_command_success(requests_mock):
         "original": "HTTPS://EXAMPLE.COM/PATH",
         "canonicalized": "https://example.com/path"
     }
-    
-    requests_mock.get("https://app.stairwell.com/v1/network/utilities/canonicalizeurl?url=HTTPS://EXAMPLE.COM/PATH", json=mock_response)
-    
+
+    requests_mock.get("https://app.stairwell.com/v1/network/utilities/urls:canonicalize", json=mock_response)
+
     results = utilities_canonicalize_url_command(test_client_network, "HTTPS://EXAMPLE.COM/PATH")
-    
+
     assert results
     assert results.outputs_prefix == "Stairwell.Utilities.CanonicalizedURL"
     assert results.outputs.get("canonicalized") == "https://example.com/path"
