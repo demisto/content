@@ -9,9 +9,13 @@
     "categories": [
         "IT Services"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "AWS Security Lake"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

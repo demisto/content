@@ -10,9 +10,15 @@
     "categories": [
         "Cloud Service Provider"
     ],
-    "tags": [],
+    "tags": [
+        "IAM",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "AWS IAM",
+        "Amazon"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

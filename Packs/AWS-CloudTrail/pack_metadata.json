@@ -18,7 +18,9 @@
         "Amazon",
         "AWS",
         "CloudTrail",
-        "Cloud Trail"
+        "AWS CloudTrail",
+        "Audit",
+        "AWS Cloud Trail"
     ],
     "marketplaces": [
         "xsoar",

@@ -14,7 +14,10 @@
     "tags": [
         "Malware",
         "Threat Intelligence",
-        "Feed"
+        "Feed",
+        "Forensics",
+        "Security",
+        "TIM"
     ],
     "useCases": [
         "Ransomware",
@@ -29,7 +32,10 @@
         "ioc",
         "sandbox",
         "malware",
-        "phishing"
+        "phishing",
+        "Any Run Feed",
+        "Any Run Lookup",
+        "Any Run Sandbox"
     ],
     "marketplaces": [
         "xsoar",

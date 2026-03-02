@@ -10,9 +10,14 @@
     "categories": [
         "Cloud Service Provider"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "AWS ACM",
+        "Amazon"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

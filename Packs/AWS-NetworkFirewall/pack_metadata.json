@@ -10,9 +10,15 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "AWS Network Firewall",
+        "Amazon"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

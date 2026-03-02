@@ -22,7 +22,10 @@
     "keywords": [
         "AWS",
         "GuardDuty",
-        "AWS GuardDuty"
+        "AWS GuardDuty",
+        "AWS Guard Duty",
+        "AWS Guard Duty Event Collector",
+        "Amazon"
     ],
     "marketplaces": [
         "xsoar",

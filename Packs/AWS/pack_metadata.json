@@ -9,9 +9,13 @@
     "categories": [
         "Cloud Services"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Amazon"
+    ],
     "supportedModules": [
         "C1",
         "C3",

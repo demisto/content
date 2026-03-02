@@ -12,11 +12,15 @@
     ],
     "tags": [
         "Free Enricher",
-        "Network"
+        "Network",
+        "Security",
+        "Threat Intelligence"
     ],
     "created": "2020-04-01T22:23:20Z",
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "API Void"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

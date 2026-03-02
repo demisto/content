@@ -28,7 +28,8 @@
         "Alert",
         "PI",
         "SDS",
-        "ARIA"
+        "ARIA",
+        "ARIA Packet Intelligence"
     ],
     "marketplaces": [
         "xsoar",

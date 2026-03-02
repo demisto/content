@@ -10,9 +10,14 @@
     "categories": [
         "Cloud Service Provider"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "AWSSNS",
+        "Amazon"
+    ],
     "githubUser": [
         "jieliau"
     ],

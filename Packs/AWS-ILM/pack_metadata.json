@@ -9,9 +9,14 @@
     "categories": [
         "Identity and Access Management"
     ],
-    "tags": [],
+    "tags": [
+        "IAM"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "AWSILM",
+        "Amazon"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

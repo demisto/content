@@ -10,9 +10,14 @@
     "categories": [
         "IT Services"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "AWS Cloud Watch Logs",
+        "Amazon"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

@@ -11,10 +11,13 @@
         "Cloud Service Provider",
         "Cloud Services"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
     "keywords": [
-        "Amazon"
+        "Amazon",
+        "AWSSNS Listener"
     ],
     "marketplaces": [
         "xsoar",

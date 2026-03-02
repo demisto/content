@@ -10,9 +10,15 @@
     "categories": [
         "Cloud Service Provider"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "AWS EC2",
+        "Amazon",
+        "Elastic"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

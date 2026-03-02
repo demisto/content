@@ -9,9 +9,13 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "Threat Intelligence"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Amazon"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

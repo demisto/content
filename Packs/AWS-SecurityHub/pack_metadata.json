@@ -16,7 +16,10 @@
     ],
     "useCases": [],
     "keywords": [
-        "Amazon"
+        "AWS",
+        "Security Hub",
+        "AWS Security Hub",
+        "AWS Security Hub Event Collector"
     ],
     "marketplaces": [
         "xsoar",

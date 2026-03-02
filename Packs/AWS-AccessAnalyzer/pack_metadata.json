@@ -13,11 +13,13 @@
     ],
     "tags": [
         "IAM",
-        "Security"
+        "Security",
+        "Threat Intelligence"
     ],
     "useCases": [],
     "keywords": [
-        "Amazon"
+        "Amazon",
+        "AWS Access Analyzer"
     ],
     "marketplaces": [
         "xsoar",

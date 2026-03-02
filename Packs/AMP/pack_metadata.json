@@ -15,7 +15,11 @@
     "keywords": [
         "Cisco",
         "AMP",
-        "Secure Endpoint"
+        "Secure Endpoint",
+        "Cisco AMP",
+        "Endpoint Protection",
+        "EDR",
+        "Cisco AMP Event Collector"
     ],
     "marketplaces": [
         "xsoar",

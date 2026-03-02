@@ -12,14 +12,18 @@
         "IT Services"
     ],
     "tags": [
-        "IT"
+        "IT",
+        "Security"
     ],
     "useCases": [],
     "keywords": [
         "K8S",
         "Kubernetes",
         "AWS",
-        "EKS"
+        "EKS",
+        "AWSEKS",
+        "Amazon",
+        "Elastic"
     ],
     "marketplaces": [
         "xsoar",
