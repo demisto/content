@@ -235,14 +235,23 @@ def login():
 
     try:
         res_json = parse_json_response(res)
-        if "log.loginResponse" in res_json and "log.return" in res_json.get("log.loginResponse"):
-            auth_token = res_json.get("log.loginResponse").get("log.return")
-            if demisto.command() not in ["test-module", "fetch-incidents"]:
-                # this is done to bypass setting integration context outside of the cli
-                demisto.setIntegrationContext({"auth_token": auth_token})
-            return auth_token
+        global IS_V7_9
+        # ArcSight 7.9+ (no namespaces)
+        if "loginResponse" in res_json and "return" in res_json.get("loginResponse", {}):
+            auth_token = res_json["loginResponse"]["return"]
+            IS_V7_9 = True
+        # Legacy ArcSight (with namespaces)
+        elif "log.loginResponse" in res_json and "log.return" in res_json.get("log.loginResponse", {}):
+            auth_token = res_json["log.loginResponse"]["log.return"]
+            IS_V7_9 = False
+        else:
+            return_error("Failed to login. Have not received token after login")
+            return None
 
-        return_error("Failed to login. Have not received token after login")
+        if demisto.command() not in ["test-module", "fetch-incidents"]:
+            # this is done to bypass setting integration context outside of the cli
+            demisto.setIntegrationContext({"auth_token": auth_token})
+        return auth_token
     except ValueError:
         return_error("Failed to login. Please check integration parameters")
 
@@ -311,13 +320,18 @@ def get_query_viewer_results(query_viewer_id):
     return_object = None
     res_json = parse_json_response(res)
 
-    if "qvs.getMatrixDataResponse" in res_json and "qvs.return" in res_json["qvs.getMatrixDataResponse"]:
-        # ArcSight ESM version 6.7 & 6.9 rest API supports qvs.getMatrixDataResponse
-        return_object = res_json.get("qvs.getMatrixDataResponse").get("qvs.return")
+    qvs_resp_key = _ns_key("qvs", "getMatrixDataResponse")
+    qvs_ret_key = _ns_key("qvs", "return")
+    que_resp_key = _ns_key("que", "getMatrixDataResponse")
+    que_ret_key = _ns_key("que", "return")
 
-    elif "que.getMatrixDataResponse" in res_json and "que.return" in res_json["que.getMatrixDataResponse"]:
+    if qvs_resp_key in res_json and qvs_ret_key in res_json[qvs_resp_key]:
+        # ArcSight ESM version 6.7 & 6.9 rest API supports qvs.getMatrixDataResponse
+        return_object = res_json[qvs_resp_key][qvs_ret_key]
+
+    elif que_resp_key in res_json and que_ret_key in res_json[que_resp_key]:
         # ArcSight ESM version 6.1 rest API supports que.getMatrixDataResponse
-        return_object = res_json.get("que.getMatrixDataResponse").get("que.return")
+        return_object = res_json[que_resp_key][que_ret_key]
 
     else:
         return_error("Invalid response structure. Open ticket to Demisto support and attach the logs")
@@ -485,8 +499,10 @@ def get_case(resource_id, fetch_base_events=False):
             return_error(f"Failed to get case. StatusCode: {res.status_code}")
 
     res_json = parse_json_response(res)
-    if "cas.getResourceByIdResponse" in res_json and "cas.return" in res_json.get("cas.getResourceByIdResponse"):
-        case = res_json.get("cas.getResourceByIdResponse").get("cas.return")
+    cas_resp_key = _ns_key("cas", "getResourceByIdResponse")
+    cas_ret_key = _ns_key("cas", "return")
+    if cas_resp_key in res_json and cas_ret_key in res_json.get(cas_resp_key, {}):
+        case = res_json[cas_resp_key][cas_ret_key]
 
         if case.get("eventIDs") and not isinstance(case["eventIDs"], list):
             # if eventIDs is single id then convert to list
@@ -538,7 +554,9 @@ def get_all_cases_command():
         return_error(f"Failed to get case list. StatusCode: {res.status_code}")
 
     res_json = parse_json_response(res)
-    contents = res_json.get("cas.findAllIdsResponse").get("cas.return")
+    cas_resp_key = _ns_key("cas", "findAllIdsResponse")
+    cas_ret_key = _ns_key("cas", "return")
+    contents = res_json.get(cas_resp_key, {}).get(cas_ret_key)
     human_readable = tableToMarkdown(name="All cases", headers="caseID", t=contents, removeNull=True)
     outputs = {"ArcSightESM.AllCaseIDs": contents}
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
@@ -583,11 +601,11 @@ def get_security_events(event_ids, last_date_range=None, ignore_empty=False):
     query_path = "www/manager-service/rest/SecurityEventService/getSecurityEvents"
     params = {"alt": "json"}
     json_ = {
-        "sev.getSecurityEvents": {
-            "sev.authToken": AUTH_TOKEN,
-            "sev.ids": event_ids,
-            "sev.startMillis": start_time,
-            "sev.endMillis": end_time,
+        _ns_key("sev", "getSecurityEvents"): {
+            _ns_key("sev", "authToken"): AUTH_TOKEN,
+            _ns_key("sev", "ids"): event_ids,
+            _ns_key("sev", "startMillis"): start_time,
+            _ns_key("sev", "endMillis"): end_time,
         }
     }
     res = send_request(query_path, json=json_, params=params)
@@ -600,8 +618,10 @@ def get_security_events(event_ids, last_date_range=None, ignore_empty=False):
         )
 
     res_json = parse_json_response(res)
-    if res_json.get("sev.getSecurityEventsResponse") and res_json.get("sev.getSecurityEventsResponse").get("sev.return"):
-        events = res_json.get("sev.getSecurityEventsResponse").get("sev.return")
+    sev_resp_key = _ns_key("sev", "getSecurityEventsResponse")
+    sev_ret_key = _ns_key("sev", "return")
+    if res_json.get(sev_resp_key) and res_json.get(sev_resp_key).get(sev_ret_key):
+        events = res_json[sev_resp_key][sev_ret_key]
         return events if isinstance(events, list) else [events]
 
     demisto.debug(res.text)
@@ -644,9 +664,9 @@ def update_case(case_id, stage, severity):
     query_path = "www/manager-service/rest/CaseService/update"
     params = {"alt": "json"}
     json_ = {
-        "cas.update": {
-            "cas.authToken": AUTH_TOKEN,
-            "cas.resource": case,
+        _ns_key("cas", "update"): {
+            _ns_key("cas", "authToken"): AUTH_TOKEN,
+            _ns_key("cas", "resource"): case,
         }
     }
     res = send_request(query_path, json=json_, params=params)
@@ -659,7 +679,9 @@ def update_case(case_id, stage, severity):
         )
 
     res_json = parse_json_response(res)
-    if "cas.updateResponse" in res_json and "cas.return" in res_json.get("cas.updateResponse"):
+    cas_upd_resp_key = _ns_key("cas", "updateResponse")
+    cas_upd_ret_key = _ns_key("cas", "return")
+    if cas_upd_resp_key in res_json and cas_upd_ret_key in res_json.get(cas_upd_resp_key, {}):
         return case
 
     return_error(f"Failed to update case, fail to parse response. Response Body: {res.text}")
@@ -696,8 +718,10 @@ def get_case_event_ids_command():
         return_error(f"Failed to get Event IDs with:\nStatus Code: {res.status_code}\nResponse: {res.text}")
 
     res_json = parse_json_response(res)
-    if "cas.getCaseEventIDsResponse" in res_json and "cas.return" in res_json.get("cas.getCaseEventIDsResponse"):
-        event_ids = res_json.get("cas.getCaseEventIDsResponse").get("cas.return")
+    cas_evt_resp_key = _ns_key("cas", "getCaseEventIDsResponse")
+    cas_evt_ret_key = _ns_key("cas", "return")
+    if cas_evt_resp_key in res_json and cas_evt_ret_key in res_json.get(cas_evt_resp_key, {}):
+        event_ids = res_json[cas_evt_resp_key][cas_evt_ret_key]
         if not isinstance(event_ids, list):
             event_ids = [event_ids]
 
@@ -717,7 +741,12 @@ def delete_case_command():
     case_id = demisto.args().get("caseId")
 
     query_path = "www/manager-service/rest/CaseService/deleteByUUID"
-    req_body = json.dumps({"cas.deleteByUUID": {"cas.authToken": AUTH_TOKEN, "cas.id": case_id}})
+    req_body = json.dumps({
+        _ns_key("cas", "deleteByUUID"): {
+            _ns_key("cas", "authToken"): AUTH_TOKEN,
+            _ns_key("cas", "id"): case_id,
+        }
+    })
     params = {"alt": "json"}
     res = send_request(query_path, params=params, body=req_body)
     if not res.ok:
@@ -740,9 +769,9 @@ def get_entries_command(use_rest, args):
         query_path = "www/manager-service/rest/ActiveListService/getEntries"
         params = {"alt": "json"}
         body = {
-            "act.getEntries": {
-                "act.authToken": AUTH_TOKEN,
-                "act.resourceId": resource_id,
+            _ns_key("act", "getEntries"): {
+                _ns_key("act", "authToken"): AUTH_TOKEN,
+                _ns_key("act", "resourceId"): resource_id,
             }
         }  # type: Union[str, Dict[str, Dict[str, Any]]]
         res = send_request(query_path, json=body, params=params)
@@ -760,7 +789,9 @@ def get_entries_command(use_rest, args):
 
     if use_rest:
         res_json = parse_json_response(res)
-        raw_entries = res_json.get("act.getEntriesResponse", {}).get("act.return", {})
+        act_resp_key = _ns_key("act", "getEntriesResponse")
+        act_ret_key = _ns_key("act", "return")
+        raw_entries = res_json.get(act_resp_key, {}).get(act_ret_key, {})
     else:
         res_json = json.loads(xml2json((res.text).encode("utf-8")))
         raw_entries = demisto.get(res_json, "Envelope.Body.getEntriesResponse.return")
@@ -811,9 +842,9 @@ def clear_entries_command(use_rest, args):
         query_path = "www/manager-service/rest/ActiveListService/clearEntries"
         params = {"alt": "json"}
         body = {
-            "act.clearEntries": {
-                "act.authToken": AUTH_TOKEN,
-                "act.resourceId": resource_id,
+            _ns_key("act", "clearEntries"): {
+                _ns_key("act", "authToken"): AUTH_TOKEN,
+                _ns_key("act", "resourceId"): resource_id,
             }
         }  # type: Union[str, Dict[str, Dict[str, Any]]]
         res = send_request(query_path, json=body, params=params)
@@ -919,8 +950,10 @@ def get_all_query_viewers_command():
         return_error(f"Failed to get query viewers:\nStatus Code: {res.status_code}\nResponse: {res.text}")
 
     res_json = parse_json_response(res)
-    if "qvs.findAllIdsResponse" in res_json and "qvs.return" in res_json.get("qvs.findAllIdsResponse"):
-        query_viewers = res_json.get("qvs.findAllIdsResponse").get("qvs.return")
+    qvs_resp_key = _ns_key("qvs", "findAllIdsResponse")
+    qvs_ret_key = _ns_key("qvs", "return")
+    if qvs_resp_key in res_json and qvs_ret_key in res_json.get(qvs_resp_key, {}):
+        query_viewers = res_json[qvs_resp_key][qvs_ret_key]
 
         contents = decode_arcsight_output(query_viewers)
         outputs = {"ArcSightESM.AllQueryViewers": contents}
@@ -978,6 +1011,18 @@ MAX_UNIQUE: int
 FETCH_CHUNK_SIZE: int
 BASE_URL: str
 VERIFY_CERTIFICATE: bool
+IS_V7_9: bool = False
+
+
+def _ns_key(prefix: str, key: str) -> str:
+    """Return the namespaced or plain key depending on the ArcSight version.
+
+    ArcSight ESM v7.9+ removed XML-style namespace prefixes from REST API keys.
+    This helper returns the correct key format based on auto-detection during login.
+    """
+    if IS_V7_9:
+        return key
+    return f"{prefix}.{key}"
 
 
 def main():
