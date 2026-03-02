@@ -741,12 +741,14 @@ def delete_case_command():
     case_id = demisto.args().get("caseId")
 
     query_path = "www/manager-service/rest/CaseService/deleteByUUID"
-    req_body = json.dumps({
-        _ns_key("cas", "deleteByUUID"): {
-            _ns_key("cas", "authToken"): AUTH_TOKEN,
-            _ns_key("cas", "id"): case_id,
+    req_body = json.dumps(
+        {
+            _ns_key("cas", "deleteByUUID"): {
+                _ns_key("cas", "authToken"): AUTH_TOKEN,
+                _ns_key("cas", "id"): case_id,
+            }
         }
-    })
+    )
     params = {"alt": "json"}
     res = send_request(query_path, params=params, body=req_body)
     if not res.ok:

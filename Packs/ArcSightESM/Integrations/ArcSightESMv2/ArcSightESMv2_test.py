@@ -740,11 +740,7 @@ def test_get_all_cases_v79(mocker, requests_mock):
 
     requests_mock.get(
         PARAMS["server"] + "/www/manager-service/rest/CaseService/findAllIds",
-        json={
-            "findAllIdsResponse": {
-                "return": ["case1", "case2", "case3"]
-            }
-        },
+        json={"findAllIdsResponse": {"return": ["case1", "case2", "case3"]}},
     )
 
     ArcSightESMv2.get_all_cases_command()
@@ -777,13 +773,7 @@ def test_get_security_events_v79(mocker, requests_mock):
 
     post_mock = requests_mock.post(
         PARAMS["server"] + "/www/manager-service/rest/SecurityEventService/getSecurityEvents",
-        json={
-            "getSecurityEventsResponse": {
-                "return": [
-                    {"eventId": 12345, "name": "Test Event v79"}
-                ]
-            }
-        },
+        json={"getSecurityEventsResponse": {"return": [{"eventId": 12345, "name": "Test Event v79"}]}},
     )
 
     events = ArcSightESMv2.get_security_events(["12345"])
@@ -870,11 +860,7 @@ def test_get_case_event_ids_v79(mocker, requests_mock):
 
     requests_mock.get(
         PARAMS["server"] + "/www/manager-service/rest/CaseService/getCaseEventIDs",
-        json={
-            "getCaseEventIDsResponse": {
-                "return": [111, 222, 333]
-            }
-        },
+        json={"getCaseEventIDsResponse": {"return": [111, 222, 333]}},
     )
 
     ArcSightESMv2.get_case_event_ids_command()
@@ -908,11 +894,7 @@ def test_get_all_query_viewers_v79(mocker, requests_mock):
 
     requests_mock.post(
         PARAMS["server"] + "/www/manager-service/rest/QueryViewerService/findAllIds",
-        json={
-            "findAllIdsResponse": {
-                "return": ["qv1", "qv2", "qv3"]
-            }
-        },
+        json={"findAllIdsResponse": {"return": ["qv1", "qv2", "qv3"]}},
     )
 
     ArcSightESMv2.get_all_query_viewers_command()
