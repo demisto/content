@@ -358,7 +358,7 @@ script:
       - json
       - csv
     - defaultValue: '50'
-      description: The maximum number of results to return. Ignored when all_results is set to true or when format is set to csv.
+      description: The maximum number of results to return. This is ignored when all_results is set to true or format is set to csv.
       name: limit
     - defaultValue: false
       description: whether to return all results. This is ignored when format is set to csv.
