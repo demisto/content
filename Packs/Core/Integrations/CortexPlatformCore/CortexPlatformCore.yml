@@ -3944,7 +3944,6 @@ script:
           description: The start date and time of the most recent occurrence of the issue. Flexible formats are supported (e.g., "7 days ago", "2023-01-01T00:00:00Z").
         - name: issue_impact
           auto: PREDEFINED
-          required: true
           predefined:
             - P4
             - P3
@@ -3960,7 +3959,6 @@ script:
             - P0: Critical & Life/Operations at Risk - Imminent risk to life or our organization's finances, brand, or security. Requires urgent restoration.
         - name: issue_category
           auto: PREDEFINED
-          required: true
           predefined:
             - Agent
             - Cases and Issues
@@ -3992,7 +3990,6 @@ script:
           description: |
             The category of the issue.
         - name: problem_concentration
-          required: true
           description: |
             The specific problem concentration. Valid values vary based on the selected issue_category (smeArea) such as Communication, Device Control, Dashboard and Reports, etc.
       outputs:
