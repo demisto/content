@@ -2,7 +2,7 @@
 	"IncidentTypes": [
 		{
 			"id": "SpecterOpsBHE Attack Path",
-			"version": 6,
+			"version": -1,
 			"cacheVersn": 0,
 			"sequenceNumber": 2027125,
 			"primaryTerm": 1,

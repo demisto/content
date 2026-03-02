@@ -2,10 +2,6 @@
 SpecterOpsBHE integration for Cortex XSOAR - Unit Tests file
 """
 
-import sys
-
-sys.path.append("/home/ishika/demisto-env/content/Packs/ApiModules/Scripts/DemistoClassApiModule/")
-sys.path.append("/home/ishika/demisto-env/content")
 from unittest.mock import Mock, patch
 from urllib.parse import urljoin
 
@@ -44,7 +40,7 @@ from SpecterOpsBHE import (
     acquire_lock,
     collect_available_types,
     create_incidents,
-    does_path_exists_between_nodes,
+    check_path_exists_between_nodes,
     fetch_attack_path_details,
     fetch_incidents,
     fetch_path_info,
@@ -57,13 +53,10 @@ from SpecterOpsBHE import (
     get_finding_type_short_description,
     get_finding_type_short_remediation,
     get_object_id,
-    get_object_id_by_name,
     get_path_title,
     get_attack_path_details_page,
     release_lock,
 )
-
-RETURN_ERROR_TARGET = "SpecterOpsBHE.return_error"
 
 
 @pytest.fixture
@@ -242,7 +235,8 @@ class TestClient:
         assert result is not None
         assert "user:pass@" in result["http"]
 
-    def test_build_proxy_dict_invalid_url(self):
+    @patch("SpecterOpsBHE.demisto.error")
+    def test_build_proxy_dict_invalid_url(self, mock_error):
         """Test _build_proxy_dict with invalid proxy URL"""
         client = Client(
             bhe_domain="https://test.bhe.example.com",
@@ -256,6 +250,7 @@ class TestClient:
         )
         with pytest.raises(BloodHoundException):
             client._build_proxy_dict()
+        mock_error.assert_called()
 
     @patch("SpecterOpsBHE.requests.request")
     def test_api_request_success(self, mock_request, mock_client, mock_response):
@@ -300,21 +295,25 @@ class TestClient:
         assert result == {"data": []}
         assert mock_request.call_count == 2
 
+    @patch("SpecterOpsBHE.demisto.error")
     @patch("SpecterOpsBHE.requests.request")
-    def test_api_request_proxy_error(self, mock_request, mock_client):
+    def test_api_request_proxy_error(self, mock_request, mock_error, mock_client):
         """Test _api_request handles proxy errors"""
         mock_request.side_effect = requests.exceptions.ProxyError("Proxy error")
         with pytest.raises(BloodHoundException) as exc_info:
             mock_client._api_request("available_domain")
         assert "Proxy error" in str(exc_info.value)
+        mock_error.assert_called()
 
+    @patch("SpecterOpsBHE.demisto.error")
     @patch("SpecterOpsBHE.requests.request")
-    def test_api_request_connection_error(self, mock_request, mock_client):
+    def test_api_request_connection_error(self, mock_request, mock_error, mock_client):
         """Test _api_request handles connection errors"""
         mock_request.side_effect = requests.exceptions.ConnectionError("Connection error")
         with pytest.raises(BloodHoundException) as exc_info:
             mock_client._api_request("available_domain")
         assert "Connection error" in str(exc_info.value)
+        mock_error.assert_called()
 
     @patch("SpecterOpsBHE.requests.request")
     def test_test_connection(self, mock_request, mock_client, mock_response):
@@ -590,11 +589,23 @@ class TestPathFunctions:
 
     @patch.object(Client, "_api_request")
     def test_get_attack_path_details_page(self, mock_api_request, mock_client):
-        """Test get_attack_path_details_page"""
+        """Test get_attack_path_details_page without created_at filter"""
         mock_api_request.return_value = {"data": [{"id": "path1"}, {"id": "path2"}]}
         result = get_attack_path_details_page(mock_client, "domain1", "finding1", skip=0)
         assert len(result) == 2
         assert result[0]["id"] == "path1"
+        # Verify that _api_request was called
+        mock_api_request.assert_called_once()
+        # Verify the call arguments - created_at should not be in kwargs when not provided
+        call_args = mock_api_request.call_args
+        assert call_args[0][0] == "attack_path_details"  # endpoint_key is first positional arg
+        call_kwargs = call_args[1]  # Get keyword arguments
+        assert call_kwargs.get("domain_id") == "domain1"
+        assert call_kwargs.get("finding_type") == "finding1"
+        assert call_kwargs.get("skip") == 0
+        assert call_kwargs.get("sort_by") == "created_at"
+        # created_at should not be in kwargs when not provided
+        assert "created_at" not in call_kwargs
 
     @patch.object(Client, "_api_request")
     def test_get_attack_path_details_page_with_date_filter(self, mock_api_request, mock_client):
@@ -602,6 +613,17 @@ class TestPathFunctions:
         mock_api_request.return_value = {"data": [{"id": "path1"}]}
         result = get_attack_path_details_page(mock_client, "domain1", "finding1", skip=0, created_at="2024-01-01")
         assert len(result) == 1
+        # Verify that _api_request was called
+        mock_api_request.assert_called_once()
+        # Verify the call arguments
+        call_args = mock_api_request.call_args
+        assert call_args[0][0] == "attack_path_details"  # endpoint_key is first positional arg
+        call_kwargs = call_args[1]  # Get keyword arguments
+        assert call_kwargs.get("domain_id") == "domain1"
+        assert call_kwargs.get("finding_type") == "finding1"
+        assert call_kwargs.get("skip") == 0
+        assert call_kwargs.get("created_at") == "2024-01-01"
+        assert call_kwargs.get("sort_by") == "created_at"
 
     def test_get_last_timestamp_for_finding_type(self):
         """Test _get_last_timestamp_for_finding_type"""
@@ -668,35 +690,64 @@ class TestAssetFunctions:
     """Test cases for asset-related functions"""
 
     @patch.object(Client, "_api_request")
-    def test_get_object_id_by_name_success(self, mock_api_request, mock_client):
-        """Test get_object_id_by_name with successful response"""
-        mock_api_request.return_value = {"data": [{"id": "123", "name": "test"}]}
-        result = get_object_id_by_name(mock_client, "test")
-        assert result["status"] == "success"
-        assert result["data"] == [{"id": "123", "name": "test"}]
+    def test_get_object_id_success(self, mock_api_request, mock_client):
+        """Test get_object_id with successful response"""
+        mock_api_request.return_value = {"data": [{"id": "123", "name": "test", "objectid": "obj123"}]}
+        result = get_object_id(mock_client, ["test"])
+        assert "test" in result
+        assert result["test"]["status"] == "success"
+        assert result["test"]["message"] == "Object ID found."
+        assert result["test"]["data"] == [{"id": "123", "name": "test", "objectid": "obj123"}]
 
     @patch.object(Client, "_api_request")
-    def test_get_object_id_by_name_not_found(self, mock_api_request, mock_client):
-        """Test get_object_id_by_name when object not found"""
-        mock_api_request.return_value = {"data": []}
-        result = get_object_id_by_name(mock_client, "nonexistent")
-        assert result["status"] == "success"
-        assert result["message"] == "Object ID Not found."
-
-    @patch.object(Client, "_api_request")
-    def test_get_object_id_by_name_error(self, mock_api_request, mock_client):
-        """Test get_object_id_by_name with error"""
-        mock_api_request.side_effect = Exception("API Error")
-        result = get_object_id_by_name(mock_client, "test")
-        assert result["status"] == "error"
-
-    @patch("SpecterOpsBHE.get_object_id_by_name")
-    def test_get_object_id(self, mock_get_by_name, mock_client):
-        """Test get_object_id function"""
-        mock_get_by_name.return_value = {"status": "success", "data": [{"id": "123"}]}
+    def test_get_object_id_multiple_names(self, mock_api_request, mock_client):
+        """Test get_object_id with multiple names"""
+        mock_api_request.side_effect = [
+            {"data": [{"id": "123", "name": "test1", "objectid": "obj123"}]},
+            {"data": [{"id": "456", "name": "test2", "objectid": "obj456"}]},
+        ]
         result = get_object_id(mock_client, ["test1", "test2"])
         assert "test1" in result
         assert "test2" in result
+        assert result["test1"]["status"] == "success"
+        assert result["test2"]["status"] == "success"
+
+    @patch.object(Client, "_api_request")
+    def test_get_object_id_not_found(self, mock_api_request, mock_client):
+        """Test get_object_id when object not found"""
+        mock_api_request.return_value = {"data": []}
+        result = get_object_id(mock_client, ["nonexistent"])
+        assert "nonexistent" in result
+        assert result["nonexistent"]["status"] == "success"
+        assert result["nonexistent"]["message"] == "Object ID Not found."
+        assert result["nonexistent"]["data"] is None
+
+    @patch("SpecterOpsBHE.demisto.error")
+    @patch.object(Client, "_api_request")
+    def test_get_object_id_error(self, mock_api_request, mock_error, mock_client):
+        """Test get_object_id with error"""
+        mock_api_request.side_effect = Exception("API Error")
+        result = get_object_id(mock_client, ["test"])
+        assert "test" in result
+        assert result["test"]["status"] == "error"
+        assert "API Error" in result["test"]["message"]
+        assert result["test"]["data"] is None
+        mock_error.assert_called()
+
+    @patch("SpecterOpsBHE.demisto.error")
+    @patch.object(Client, "_api_request")
+    def test_get_object_id_partial_success(self, mock_api_request, mock_error, mock_client):
+        """Test get_object_id with partial success (one succeeds, one fails)"""
+        mock_api_request.side_effect = [
+            {"data": [{"id": "123", "name": "test1", "objectid": "obj123"}]},
+            Exception("API Error"),
+        ]
+        result = get_object_id(mock_client, ["test1", "test2"])
+        assert "test1" in result
+        assert "test2" in result
+        assert result["test1"]["status"] == "success"
+        assert result["test2"]["status"] == "error"
+        mock_error.assert_called()
 
     @patch.object(Client, "_api_request")
     def test_handle_fetch_asset_information_success(self, mock_api_request, mock_client):
@@ -761,27 +812,27 @@ class TestPathExistence:
     """Test cases for path existence functions"""
 
     @patch.object(Client, "_api_request")
-    def test_does_path_exists_between_nodes_success(self, mock_api_request, mock_client):
-        """Test does_path_exists_between_nodes when path exists"""
+    def test_check_path_exists_between_nodes_success(self, mock_api_request, mock_client):
+        """Test check_path_exists_between_nodes when path exists"""
         mock_response = Mock()
         mock_api_request.return_value = mock_response
-        result = does_path_exists_between_nodes(mock_client, "node1", "node2")
+        result = check_path_exists_between_nodes(mock_client, "node1", "node2")
         assert result["status"] == "success"
         assert result["data"] is True
 
     @patch.object(Client, "_api_request")
-    def test_does_path_exists_between_nodes_not_found(self, mock_api_request, mock_client):
-        """Test does_path_exists_between_nodes when path doesn't exist"""
+    def test_check_path_exists_between_nodes_not_found(self, mock_api_request, mock_client):
+        """Test check_path_exists_between_nodes when path doesn't exist"""
         mock_api_request.side_effect = BloodHoundServerErrorException("Path not found")
-        result = does_path_exists_between_nodes(mock_client, "node1", "node2")
+        result = check_path_exists_between_nodes(mock_client, "node1", "node2")
         assert result["status"] == "error"
         assert result["data"] is False
 
     @patch.object(Client, "_api_request")
-    def test_does_path_exists_between_nodes_error(self, mock_api_request, mock_client):
-        """Test does_path_exists_between_nodes with error"""
+    def test_check_path_exists_between_nodes_error(self, mock_api_request, mock_client):
+        """Test check_path_exists_between_nodes with error"""
         mock_api_request.side_effect = Exception("API Error")
-        result = does_path_exists_between_nodes(mock_client, "node1", "node2")
+        result = check_path_exists_between_nodes(mock_client, "node1", "node2")
         assert result["status"] == "error"
 
 
@@ -995,7 +1046,7 @@ class TestMainFunction:
     @patch("SpecterOpsBHE.get_object_id")
     @patch("SpecterOpsBHE.demisto")
     def test_main_get_object_id(self, mock_demisto, mock_get_object_id, mock_return_results):
-        """Test main function with bhe-get-object-id command"""
+        """Test main function with bhe-object-id-get command"""
         mock_demisto.params.return_value = {
             "url": "test.bhe.example.com",
             "token_id": "test_id",
@@ -1003,7 +1054,7 @@ class TestMainFunction:
             "finding_domain": "all",
             "finding_category": "all",
         }
-        mock_demisto.command.return_value = "bhe-get-object-id"
+        mock_demisto.command.return_value = "bhe-object-id-get"
         mock_demisto.args.return_value = {"object_names": "test1,test2"}
 
         SpecterOpsBHE.main()
@@ -1013,7 +1064,7 @@ class TestMainFunction:
     @patch("SpecterOpsBHE.fetch_asset_info")
     @patch("SpecterOpsBHE.demisto")
     def test_main_fetch_asset_info(self, mock_demisto, mock_fetch_asset_info, mock_return_results):
-        """Test main function with bhe-fetch-asset-info command"""
+        """Test main function with bhe-asset-info-get command"""
         mock_demisto.params.return_value = {
             "url": "test.bhe.example.com",
             "token_id": "test_id",
@@ -1021,17 +1072,17 @@ class TestMainFunction:
             "finding_domain": "all",
             "finding_category": "all",
         }
-        mock_demisto.command.return_value = "bhe-fetch-asset-info"
+        mock_demisto.command.return_value = "bhe-asset-info-get"
         mock_demisto.args.return_value = {"object_ids": "123,456"}
 
         SpecterOpsBHE.main()
         mock_fetch_asset_info.assert_called_once()
 
     @patch("SpecterOpsBHE.return_results")
-    @patch("SpecterOpsBHE.does_path_exists_between_nodes")
+    @patch("SpecterOpsBHE.check_path_exists_between_nodes")
     @patch("SpecterOpsBHE.demisto")
     def test_main_does_path_exist(self, mock_demisto, mock_does_path_exist, mock_return_results):
-        """Test main function with bhe-does-path-exist command"""
+        """Test main function with bhe-path-exist command"""
         mock_demisto.params.return_value = {
             "url": "test.bhe.example.com",
             "token_id": "test_id",
@@ -1039,8 +1090,8 @@ class TestMainFunction:
             "finding_domain": "all",
             "finding_category": "all",
         }
-        mock_demisto.command.return_value = "bhe-does-path-exist"
-        mock_demisto.args.return_value = {"FromPrincipal": "node1", "ToPrincipal": "node2"}
+        mock_demisto.command.return_value = "bhe-path-exist"
+        mock_demisto.args.return_value = {"from_principal": "node1", "to_principal": "node2"}
 
         SpecterOpsBHE.main()
         mock_does_path_exist.assert_called_once()
@@ -1048,7 +1099,7 @@ class TestMainFunction:
     @patch("SpecterOpsBHE.return_results")
     @patch("SpecterOpsBHE.demisto")
     def test_main_does_path_exist_missing_args(self, mock_demisto, mock_return_results):
-        """Test main function with bhe-does-path-exist missing arguments"""
+        """Test main function with bhe-path-exist missing arguments"""
         mock_demisto.params.return_value = {
             "url": "test.bhe.example.com",
             "token_id": "test_id",
@@ -1056,7 +1107,7 @@ class TestMainFunction:
             "finding_domain": "all",
             "finding_category": "all",
         }
-        mock_demisto.command.return_value = "bhe-does-path-exist"
+        mock_demisto.command.return_value = "bhe-path-exist"
         mock_demisto.args.return_value = {}
 
         SpecterOpsBHE.main()

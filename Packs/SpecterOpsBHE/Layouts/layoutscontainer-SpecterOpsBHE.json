@@ -282,24 +282,6 @@
 								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "eventnames",
-								"height": 53,
-								"id": "a9d1c104-6899-41e5-8981-baaaccfb80be",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "events",
-								"height": 26,
-								"id": "efd35788-196a-402b-ba1a-09385dc07150",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
 							}
 						],
 						"maxW": 3,

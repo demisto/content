@@ -40,9 +40,9 @@ tasks:
     task:
       id: a6bf4571-f72b-4659-b0cd-d76fee80d05d
       version: -1
-      name: bhe-get-object-id
-      description: Fetches object Id using Object Name
-      script: SpecterOpsBHE|||bhe-get-object-id
+      name: bhe-object-id-get
+      description: Fetches the object ID using the object name.
+      script: SpecterOpsBHE|||bhe-object-id-get
       type: regular
       iscommand: true
       brand: SpecterOpsBHE
@@ -50,8 +50,6 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      object_name:
-        simple: ${incident.labels.object_names}
       object_names:
         simple: ${incident.labels.ObjectNames}
       using:
@@ -81,7 +79,7 @@ tasks:
       id: bf6b7e83-2520-4759-86b3-87d622800fa2
       version: -1
       name: closeInvestigation
-      description: Close the current incident
+      description: Closes the current incident.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -109,9 +107,9 @@ tasks:
     task:
       id: 4e231c98-8283-41a3-b785-c889ac1f6c65
       version: -1
-      name: bhe-fetch-asset-info
-      description: Fetches Asset Info using Object Id
-      script: SpecterOpsBHE|||bhe-fetch-asset-info
+      name: bhe-asset-info-get
+      description: Fetches asset information using the object ID.
+      script: SpecterOpsBHE|||bhe-asset-info-get
       type: regular
       iscommand: true
       brand: SpecterOpsBHE
@@ -119,8 +117,6 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      object_id:
-        simple: ${incident.labels.object_ids}
       object_ids:
         simple: ${incident.labels.ObjectIds}
       using:
@@ -149,9 +145,9 @@ tasks:
     task:
       id: fb78ab7f-fa7f-4856-a06e-a7e4e43a9e74
       version: -1
-      name: bhe-does-path-exist
-      description: Check if path exists between two nodes
-      script: SpecterOpsBHE|||bhe-does-path-exist
+      name: bhe-path-exist
+      description: Checks if a path exists between the two nodes.
+      script: SpecterOpsBHE|||bhe-path-exist
       type: regular
       iscommand: true
       brand: SpecterOpsBHE
@@ -159,9 +155,9 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      FromPrincipal:
+      from_principal:
         simple: ${incident.labels.NonTierZeroPrincipalObjectId}
-      ToPrincipal:
+      to_principal:
         simple: ${incident.labels.ImpactedPrincipalObjectId}
       using:
         simple: ${incident.labels.Instance}

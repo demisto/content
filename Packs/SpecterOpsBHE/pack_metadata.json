@@ -1,19 +1,24 @@
 {
     "name": "SpecterOpsBHE",
-    "description": "SpecterOps BHE - XSOAR integration",
+    "description": "This content pack provides integration with BloodHound Enterprise (BHE), enabling automated retrieval and analysis of attack path findings from Active Directory and Microsoft Azure environments. The integration automatically ingests attack path findings into Cortex XSOAR as incidents, streamlining security operations and incident response workflows. Key capabilities include fetching attack paths with detailed remediation guidance, querying object IDs and asset information, and checking for path existence between security principals. This integration helps security teams proactively identify and remediate privilege escalation paths that attackers could exploit, reducing risk in enterprise environments.",
     "support": "community",
     "currentVersion": "1.0.0",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
+    "author": "SpecterOps",
+    "url": "",
     "email": "",
+    "created": "2025-12-15T00:00:00Z",
     "categories": [
         "Vulnerability Management"
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "SpecterOps",
+        "BloodHound"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "githubUser": []
 }

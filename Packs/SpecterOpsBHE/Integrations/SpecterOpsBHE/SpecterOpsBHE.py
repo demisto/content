@@ -359,7 +359,7 @@ class Client(BaseClient):
             params=params,
             data=data,
             proxies=proxies,
-            verify=True,
+            verify=False,
             timeout=30,
         )
         return response
@@ -868,12 +868,7 @@ def fetch_attack_path_details(client: Client, last_run: dict[str, Any], domains:
             if filtered_attack_paths:
                 attack_path_details[(domain_id, finding_type)] = filtered_attack_paths
                 domain_attack_path_counts[domain_name] += len(filtered_attack_paths)
-                demisto.info(
-                    f"{finding_type_key}: Found {len(filtered_attack_paths)} "
-                    f"new attack paths. "
-                    f"Latest created_at: "
-                    f"{finding_type_latest_dates.get(finding_type_key, 'N/A')}"
-                )
+
             else:
                 # Preserve existing timestamp even if no new paths found
                 if finding_type_key not in finding_type_latest_dates and last_created_at_timestamp:
@@ -1299,36 +1294,28 @@ def fetch_incidents(bhe_client: Client):
 """ Commands  """
 
 
-def get_object_id_by_name(client: Client, name: str) -> dict:
-    """
-    Fetches the object_id of a node based on its name.
-    Returns a dictionary with status, message, and object_id (if found).
-    """
-    try:
-        response = client._api_request("search", query=name)
-        if response.get("data"):
-            return {
-                "status": "success",
-                "message": "Object ID found.",
-                "data": response.get("data"),
-            }
-        else:
-            return {"status": "success", "message": "Object ID Not found."}
-    except Exception as e:
-        return {"status": "error", "message": str(e), "data": None}
-
-
 def get_object_id(bhe_client: Client, names: list[str]) -> dict:
-    try:
-        response_payload: dict[str, dict] = {}
-        for name in names:
+    response_payload: dict[str, dict] = {}
+
+    for name in names:
+        try:
             encoded_name = name.strip().replace(" ", "%20").replace("@", "%40")
-            response = get_object_id_by_name(bhe_client, encoded_name)
-            response_payload[name] = response
-        return response_payload
-    except Exception as e:
-        demisto.error(f"Error - {str(e)}")
-        return {"status": "error", "message": str(e)}
+
+            response = bhe_client._api_request("search", query=encoded_name)
+
+            if response.get("data"):
+                response_payload[name] = {
+                    "status": "success",
+                    "message": "Object ID found.",
+                    "data": response.get("data"),
+                }
+            else:
+                response_payload[name] = {"status": "success", "message": "Object ID Not found.", "data": None}
+        except Exception as e:
+            demisto.error(f"Error fetching object ID for '{name}': {str(e)}")
+            response_payload[name] = {"status": "error", "message": str(e), "data": None}
+
+    return response_payload
 
 
 def _handle_fetch_asset_information(client: Client, object_id: str) -> dict:
@@ -1571,7 +1558,7 @@ def fetch_asset_info(bhe_client: Client, object_ids: list[str]) -> dict:
         return {"status": "error", "message": f"Error: {str(e)}"}
 
 
-def does_path_exists_between_nodes(client: Client, start_node: str, end_node: str) -> dict:
+def check_path_exists_between_nodes(client: Client, start_node: str, end_node: str) -> dict:
     """
     Checks if a shortest path exists between two nodes in BloodHound Enterprise.
     Returns a dictionary with status, message, and data (True/False).
@@ -1585,14 +1572,12 @@ def does_path_exists_between_nodes(client: Client, start_node: str, end_node: st
             end_node=end_node,
         )
         return {"status": "success", "message": "Path exists between nodes.", "data": True}
-    except BloodHoundServerErrorException:
+    except (BloodHoundServerErrorException, BloodHoundException, Exception):
         return {
             "status": "error",
             "message": ("Internal server error or path does not exist"),
             "data": False,
         }
-    except Exception as e:
-        return {"status": "error", "message": str(e), "data": False}
 
 
 def test_module(bhe_client: Client) -> str:
@@ -1658,30 +1643,118 @@ def main():
             result = test_module(bhe_client)
             return_results(result)
 
-        elif command == "bhe-get-object-id":
-            object_result = get_object_id(bhe_client, args.get("object_names").split(","))
-            return_results(object_result)
+        elif command == "bhe-object-id-get":
+            object_result = get_object_id(bhe_client, argToList(args.get("object_names")))
+            readable_data = []
+            for name, result_data in object_result.items():
+                obj_id = "N/A"
+                if result_data.get("data") and isinstance(result_data.get("data"), list) and len(result_data.get("data", [])) > 0:
+                    obj_id = result_data.get("data", [{}])[0].get("objectid", "N/A")
 
-        elif command == "bhe-fetch-asset-info":
-            object_ids = [obj_id.strip() for obj_id in args.get("object_ids").split(",")]
+                readable_data.append(
+                    {
+                        "Object Name": name,
+                        "Status": result_data.get("status", "unknown"),
+                        "Message": result_data.get("message", ""),
+                        "Object ID": obj_id,
+                    }
+                )
+
+            readable_output = tableToMarkdown(
+                "Object ID Lookup Results",
+                readable_data,
+                headers=["Object Name", "Status", "Message", "Object ID"],
+                removeNull=True,
+            )
+            return_results(
+                CommandResults(
+                    outputs_prefix="SpecterOpsBHE.Object",
+                    outputs=object_result,
+                    readable_output=readable_output,
+                    raw_response=object_result,
+                )
+            )
+
+        elif command == "bhe-asset-info-get":
+            object_ids = argToList(args.get("object_ids"))
             fetch_result = fetch_asset_info(bhe_client, object_ids)
-            return_results(fetch_result)
 
-        elif command == "bhe-does-path-exist":
-            start_node = args.get("FromPrincipal")
-            end_node = args.get("ToPrincipal")
+            readable_data = []
+            for obj_id, result_data in fetch_result.items():
+                asset_data = result_data.get("data", {})
+                raw_data_str = json.dumps(asset_data, indent=2) if asset_data else "No data available"
+
+                readable_data.append(
+                    {
+                        "Object ID": obj_id,
+                        "Status": result_data.get("status", "unknown"),
+                        "Message": result_data.get("message", ""),
+                        "Raw Data": raw_data_str,
+                    }
+                )
+
+            readable_output = tableToMarkdown(
+                "Asset Information Results",
+                readable_data,
+                headers=["Object ID", "Status", "Message", "Raw Data"],
+                removeNull=True,
+            )
+
+            return_results(
+                CommandResults(
+                    outputs_prefix="SpecterOpsBHE.Asset",
+                    outputs=fetch_result,
+                    readable_output=readable_output,
+                    raw_response=fetch_result,
+                )
+            )
+
+        elif command == "bhe-path-exist":
+            start_node = args.get("from_principal")
+            end_node = args.get("to_principal")
             if not start_node and not end_node:
-                return_results("Error: Both 'FromPrincipal' and 'ToPrincipal' " "arguments are missing.")
+                return_results(
+                    CommandResults(
+                        readable_output="### Error\n**Message:** Both 'from_principal' and 'to_principal' arguments are missing."
+                    )
+                )
+
             elif not start_node:
-                return_results("Error: Missing required argument 'FromPrincipal'.")
+                return_results(
+                    CommandResults(readable_output="### Error\n**Message:** Missing required argument 'from_principal'.")
+                )
             elif not end_node:
-                return_results("Error: Missing required argument 'ToPrincipal'.")
+                return_results(
+                    CommandResults(readable_output="### Error\n**Message:** Missing required argument 'to_principal'.")
+                )
             else:
-                raw_result = does_path_exists_between_nodes(bhe_client, start_node, end_node)
-                if isinstance(raw_result, dict) and raw_result.get("status") == "error":
-                    return_results(f"Error: {raw_result.get('message', 'Unknown error')}")
-                else:
-                    return_results(raw_result)
+                raw_result = check_path_exists_between_nodes(bhe_client, start_node, end_node)
+
+                table_data = [
+                    {
+                        "From Principal": start_node,
+                        "To Principal": end_node,
+                        "Status": raw_result.get("status", "unknown"),
+                        "Message": raw_result.get("message", ""),
+                        "Path Exists": raw_result.get("data", False),
+                    }
+                ]
+
+                readable_output = tableToMarkdown(
+                    "Path Check Result",
+                    table_data,
+                    headers=["From Principal", "To Principal", "Status", "Message", "Path Exists"],
+                    removeNull=True,
+                )
+
+                return_results(
+                    CommandResults(
+                        outputs_prefix="SpecterOpsBHE.Path",
+                        outputs=raw_result,
+                        readable_output=readable_output,
+                        raw_response=raw_result,
+                    )
+                )
 
         elif command == "fetch-incidents":
             result = fetch_incidents(bhe_client)
