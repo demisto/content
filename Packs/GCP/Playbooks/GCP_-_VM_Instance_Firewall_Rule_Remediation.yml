@@ -1,0 +1,1086 @@
+description: This playbook adds new VPC Firewall rules with access only from private IP address range and blocks traffic that’s exposed to public internet. For example, if RDP is exposed this playbook adds new firewall rules that only allows traffic from private IP address and blocks rest of the RDP traffic. New Allow and Block rules created by this playbook target only the exposed asset.
+id: GCP - VM Instance Firewall Rule Remediation
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - AssetID
+  - RemotePort
+  - RemoteProtocol
+  - IntegrationInstance
+  - RemediationAllowRanges
+  name: General (Inputs group)
+inputs:
+- description: The Asset ID of the VM Instance
+  key: AssetID
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: The remote port that is publicly exposed.
+  key: RemotePort
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: The remote protocol that is publicly exposed.
+  key: RemoteProtocol
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: GCP integration instance to use if multiple instances are configured (optional).
+  key: IntegrationInstance
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Comma-separated list of IPv4 network ranges to be used as source addresses for the `cortex-remediation-allow-port-<port#>-<tcp|udp>` rule to be created.  Typically this will be private IP ranges (to allow access within the VPC and bastion hosts) but other networks can be added as needed.
+  key: RemediationAllowRanges
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16
+name: GCP - VM Instance Firewall Rule Remediation
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs:
+  - remediatedFlag
+  - remediation_action
+outputs:
+- contextPath: remediatedFlag
+  description: Output key to determine if remediation was successfully done.
+  type: boolean
+- contextPath: remediation_action
+  description: Textual summary of remediation action(s) that were performed.
+  type: string
+starttaskid: '0'
+tasks:
+  '0':
+    continueonerrortype: ''
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: b9c313fb-519c-4e04-89a3-1fca0562e90d
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: b9c313fb-519c-4e04-89a3-1fca0562e90d
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -300\n  }\n}"
+  '1':
+    continueonerrortype: ''
+    id: '1'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      filter:
+        complex:
+          root: RuleSuffix
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: name="cortex-remediation-allow-
+              suffix:
+                value:
+                  simple: '"'
+            operator: concat
+      project_id:
+        simple: ${Core.CoreAsset.xdm__asset__realm}
+      using:
+        simple: ${inputs.IntegrationInstance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: GCP
+      description: Lists firewall rules in the specified project.
+      id: d286ce56-4eec-4ed8-ba9b-3bed2a0b9a6e
+      iscommand: true
+      name: Lookup Firewall Remediation Allow Rule
+      script: GCP|||gcp-compute-firewall-list
+      type: regular
+      version: -1
+    taskid: d286ce56-4eec-4ed8-ba9b-3bed2a0b9a6e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 400\n  }\n}"
+  '2':
+    continueonerrortype: ''
+    id: '2'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: RuleSuffix
+      value:
+        complex:
+          accessor: network
+          root: Core.CoreAsset.xdm__asset__raw_fields.Platform Discovery.networkInterfaces
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: networks/
+              fields:
+                value:
+                  simple: '2'
+            operator: Cut
+          - args:
+              prefix:
+                value:
+                  simple: '-'
+              suffix: {}
+            operator: concat
+          - args:
+              prefix:
+                iscontext: true
+                value:
+                  simple: inputs.RemoteProtocol
+              suffix: {}
+            operator: concat
+          - args:
+              prefix:
+                value:
+                  simple: '-'
+              suffix: {}
+            operator: concat
+          - args:
+              prefix:
+                iscontext: true
+                value:
+                  simple: inputs.RemotePort
+              suffix: {}
+            operator: concat
+          - args:
+              prefix:
+                value:
+                  simple: port-
+              suffix: {}
+            operator: concat
+          - operator: toLowerCase
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: d7fb0ee2-f6d8-43d4-8eb7-67181d79d788
+      iscommand: false
+      name: Store Rule Suffix
+      script: Set
+      type: regular
+      version: -1
+    taskid: d7fb0ee2-f6d8-43d4-8eb7-67181d79d788
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 200\n  }\n}"
+  '3':
+    continueonerrortype: ''
+    id: '3'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      filter:
+        complex:
+          root: RuleSuffix
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: name="cortex-remediation-block-
+              suffix:
+                value:
+                  simple: '"'
+            operator: concat
+      project_id:
+        simple: ${Core.CoreAsset.xdm__asset__realm}
+      using:
+        simple: ${inputs.IntegrationInstance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: GCP
+      description: Lists firewall rules in the specified project.
+      id: e438ab57-c1bb-4579-bfa7-13319d14f76e
+      iscommand: true
+      name: Lookup Firewall Remediation Block Rule
+      script: GCP|||gcp-compute-firewall-list
+      type: regular
+      version: -1
+    taskid: e438ab57-c1bb-4579-bfa7-13319d14f76e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1130\n  }\n}"
+  '4':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: GCP
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: containsGeneral
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+          right:
+            value: {}
+      label: yes
+    continueonerrortype: ''
+    id: '4'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '16'
+      yes:
+      - '23'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Verify the required GCP integration is configured and enabled.
+      id: 5ee7d6be-a337-4d82-862e-83032994e2ea
+      iscommand: false
+      name: Is GCP Integration Enabled?
+      type: condition
+      version: -1
+    taskid: 5ee7d6be-a337-4d82-862e-83032994e2ea
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -160\n  }\n}"
+  '6':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: GCP.Compute.Firewall.name
+                    operator: containsGeneral
+                    right:
+                      value:
+                        simple: allow
+                root: GCP.Compute.Firewall.name
+          operator: isExists
+          right:
+            value: {}
+      label: yes
+    continueonerrortype: ''
+    id: '6'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '8'
+      yes:
+      - '17'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check if a rule for allowing continued internal access this port/protocol is already created.
+      id: 5370e5cd-5981-437a-a2bb-ee6dc7493195
+      iscommand: false
+      name: Has A Remediation Allow Rule Already Been Created?
+      type: condition
+      version: -1
+    taskid: 5370e5cd-5981-437a-a2bb-ee6dc7493195
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 580\n  }\n}"
+  '7':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: GCP.Compute.Firewall.name
+                    operator: containsGeneral
+                    right:
+                      value:
+                        simple: block
+                root: GCP.Compute.Firewall.name
+          operator: isExists
+          right:
+            value: {}
+      label: yes
+    continueonerrortype: ''
+    id: '7'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '9'
+      yes:
+      - '20'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check if a rule for blocking this port/protocol is already created.
+      id: 2c3fd448-9046-4452-9c51-eec0bb1b3c24
+      iscommand: false
+      name: Has A Remediation Block Rule Already Been Created?
+      type: condition
+      version: -1
+    taskid: 2c3fd448-9046-4452-9c51-eec0bb1b3c24
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1270\n  }\n}"
+  '8':
+    continueonerrortype: ''
+    id: '8'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '18'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      allowed:
+        complex:
+          root: inputs.RemotePort
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: ',ports='
+              suffix: {}
+            operator: concat
+          - args:
+              prefix:
+                iscontext: true
+                value:
+                  simple: inputs.RemoteProtocol
+              suffix: {}
+            operator: concat
+          - args:
+              prefix:
+                value:
+                  simple: ipprotocol=
+              suffix: {}
+            operator: concat
+      direction:
+        simple: INGRESS
+      network:
+        simple: ${Core.CoreAsset.xdm__asset__raw_fields.Platform Discovery.networkInterfaces.network}
+      priority:
+        simple: '0'
+      project_id:
+        simple: ${Core.CoreAsset.xdm__asset__realm}
+      resource_name:
+        complex:
+          root: RuleSuffix
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: cortex-remediation-allow-
+              suffix: {}
+            operator: concat
+      source_ranges:
+        simple: ${inputs.RemediationAllowRanges}
+      target_tags:
+        complex:
+          root: inputs.RemotePort
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: cortex-remediation-tag-
+              suffix: {}
+            operator: concat
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '-'
+            operator: concat
+          - args:
+              prefix: {}
+              suffix:
+                iscontext: true
+                value:
+                  simple: inputs.RemoteProtocol
+            operator: concat
+          - operator: toLowerCase
+      using:
+        simple: ${inputs.IntegrationInstance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: GCP
+      description: Creates a new firewall rule in the specified project.
+      id: 9990aba8-a782-4ee1-b67c-a28d1a062850
+      iscommand: true
+      name: Create Allow Rule for Internal Access
+      script: GCP|||gcp-compute-firewall-insert
+      type: regular
+      version: -1
+    taskid: 9990aba8-a782-4ee1-b67c-a28d1a062850
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 170,\n    \"y\": 790\n  }\n}"
+  '9':
+    continueonerrortype: ''
+    id: '9'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '19'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      denied:
+        complex:
+          root: inputs.RemotePort
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: ',ports='
+              suffix: {}
+            operator: concat
+          - args:
+              prefix:
+                iscontext: true
+                value:
+                  simple: inputs.RemoteProtocol
+              suffix: {}
+            operator: concat
+          - args:
+              prefix:
+                value:
+                  simple: ipprotocol=
+              suffix: {}
+            operator: concat
+      direction:
+        simple: INGRESS
+      network:
+        simple: ${Core.CoreAsset.xdm__asset__raw_fields.Platform Discovery.networkInterfaces.network}
+      priority:
+        simple: '1'
+      project_id:
+        simple: ${Core.CoreAsset.xdm__asset__realm}
+      resource_name:
+        complex:
+          root: RuleSuffix
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: cortex-remediation-block-
+              suffix: {}
+            operator: concat
+      source_ranges:
+        simple: 0.0.0.0/0
+      target_tags:
+        complex:
+          root: inputs.RemotePort
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: cortex-remediation-tag-
+              suffix: {}
+            operator: concat
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '-'
+            operator: concat
+          - args:
+              prefix: {}
+              suffix:
+                iscontext: true
+                value:
+                  simple: inputs.RemoteProtocol
+            operator: concat
+          - operator: toLowerCase
+      using:
+        simple: ${inputs.IntegrationInstance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: GCP
+      description: Creates a new firewall rule in the specified project.
+      id: 5e4b64fe-d2b1-4755-aae5-72380ff746dc
+      iscommand: true
+      name: Create Block Rule for External Access
+      script: GCP|||gcp-compute-firewall-insert
+      type: regular
+      version: -1
+    taskid: 5e4b64fe-d2b1-4755-aae5-72380ff746dc
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 170,\n    \"y\": 1440\n  }\n}"
+  '10':
+    continueonerrortype: ''
+    id: '10'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      instance:
+        simple: ${Core.CoreAsset.xdm__asset__strong_id}
+      project_id:
+        simple: ${Core.CoreAsset.xdm__asset__realm}
+      using:
+        simple: ${inputs.IntegrationInstance}
+      zone:
+        simple: ${Core.CoreAsset.xdm__cloud__zone}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: GCP
+      description: Returns the specified Instance resource. To get a list of available instances, make a list() request.
+      id: e31ca196-9093-4013-ae32-a2283c8b05f7
+      iscommand: true
+      name: Get VM Instance Network Tags
+      script: GCP|||gcp-compute-instance-get
+      type: regular
+      version: -1
+    taskid: e31ca196-9093-4013-ae32-a2283c8b05f7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1820\n  }\n}"
+  '11':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: GCP.Compute.Instances.tags.items
+          operator: containsGeneral
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.RemotePort
+                transformers:
+                - args:
+                    prefix:
+                      value:
+                        simple: cortex-remediation-tag-
+                    suffix: {}
+                  operator: concat
+                - args:
+                    prefix: {}
+                    suffix:
+                      value:
+                        simple: '-'
+                  operator: concat
+                - args:
+                    prefix: {}
+                    suffix:
+                      iscontext: true
+                      value:
+                        simple: inputs.RemoteProtocol
+                  operator: concat
+                - operator: toLowerCase
+      label: yes
+    continueonerrortype: ''
+    id: '11'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '13'
+      yes:
+      - '21'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Does this VM already have the tag for applying the block rule?
+      id: 89d15c1b-d677-482a-9035-13765a401b9c
+      iscommand: false
+      name: Is Remediation Tag Already Assigned to VM Instance?
+      type: condition
+      version: -1
+    taskid: 89d15c1b-d677-482a-9035-13765a401b9c
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2010\n  }\n}"
+  '12':
+    continueonerrortype: ''
+    id: '12'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: d1f1fd27-61dd-4dc7-b7e4-8fe71a7c1f2f
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: d1f1fd27-61dd-4dc7-b7e4-8fe71a7c1f2f
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2910\n  }\n}"
+  '13':
+    continueonerrortype: ''
+    id: '13'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '22'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      project_id:
+        simple: ${Core.CoreAsset.xdm__asset__realm}
+      resource_name:
+        simple: ${Core.CoreAsset.xdm__asset__strong_id}
+      tag:
+        complex:
+          root: inputs.RemotePort
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: cortex-remediation-tag-
+              suffix: {}
+            operator: concat
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '-'
+            operator: concat
+          - args:
+              prefix: {}
+              suffix:
+                iscontext: true
+                value:
+                  simple: inputs.RemoteProtocol
+            operator: concat
+          - operator: toLowerCase
+      tags_fingerprint:
+        simple: ${GCP.Compute.Instances.tags.fingerprint}
+      using:
+        simple: ${inputs.IntegrationInstance}
+      zone:
+        simple: ${Core.CoreAsset.xdm__cloud__zone}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: GCP
+      description: Adds a network tag to a VM instance (merges with existing tags).
+      id: 696581c9-1ccc-4041-bd9f-9f74c0cf413f
+      iscommand: true
+      name: Add Network Tags to VM Instance
+      script: GCP|||gcp-compute-network-tag-set
+      type: regular
+      version: -1
+    taskid: 696581c9-1ccc-4041-bd9f-9f74c0cf413f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 170,\n    \"y\": 2200\n  }\n}"
+  '14':
+    continueonerrortype: ''
+    id: '14'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '15'
+    note: true
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: "## Remediation Complete\nThis exposure has been remediated by modifying GCP VPC Firewall Rules to block access from the Internet to ${inputs.RemoteProtocol} port ${inputs.RemotePort} on Virtual Machine ${Core.CoreAsset.xdm__asset__strong_id}.\n\nGCP Project ID: ${Core.CoreAsset.xdm__asset__realm}\nGCP Network: ${Core.CoreAsset.xdm__asset__raw_fields.Platform Discovery.networkInterfaces.network.[0]}\nGCP Zone: ${Core.CoreAsset.xdm__cloud__zone}\n\n**Remediation Steps Taken:**\n${remediation_action}"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Prints text to war room (Markdown supported)
+      id: b4d39aae-46bf-42de-bafe-7f3221192ce1
+      iscommand: false
+      name: Post Remediation Summary to War Room
+      script: Print
+      type: regular
+      version: -1
+    taskid: b4d39aae-46bf-42de-bafe-7f3221192ce1
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2560\n  }\n}"
+  '15':
+    continueonerrortype: ''
+    id: '15'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '12'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: remediatedFlag
+      stringify:
+        simple: 'false'
+      value:
+        simple: 'true'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: fa4120ca-369a-41f6-8c1b-0fcf247717c5
+      iscommand: false
+      name: Set remediatedFlag to true
+      script: Set
+      type: regular
+      version: -1
+    taskid: fa4120ca-369a-41f6-8c1b-0fcf247717c5
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2724.375\n  }\n}"
+  '16':
+    continueonerrortype: ''
+    id: '16'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '12'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: remediatedFlag
+      stringify:
+        simple: 'false'
+      value:
+        simple: 'false'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: 7ab1b34e-855b-4e6a-ad58-253ec75a4dfb
+      iscommand: false
+      name: Set remediatedFlag to false
+      script: Set
+      type: regular
+      version: -1
+    taskid: 7ab1b34e-855b-4e6a-ad58-253ec75a4dfb
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -160,\n    \"y\": 2724.375\n  }\n}"
+  '17':
+    continueonerrortype: ''
+    id: '17'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'false'
+      key:
+        simple: remediation_action
+      value:
+        simple: "${remediation_action}\n- Found existing VPC Firewall Allow rule cortex-remediation-allow-${RuleSuffix} which can allow continued internal access."
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: ff63625d-a698-431e-ac3d-1641a05fda0c
+      iscommand: false
+      name: Add Allow Rule Name to Remediation Action Details
+      script: Set
+      type: regular
+      version: -1
+    taskid: ff63625d-a698-431e-ac3d-1641a05fda0c
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 740,\n    \"y\": 790\n  }\n}"
+  '18':
+    continueonerrortype: ''
+    id: '18'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'false'
+      key:
+        simple: remediation_action
+      value:
+        simple: "${remediation_action}\n- Created new VPC Firewall Allow rule cortex-remediation-allow-${RuleSuffix} to allow continued internal access."
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: 3de8d8ef-6325-43a4-ac43-88f60fc0fe39
+      iscommand: false
+      name: Add Allow Rule Name to Remediation Action Details
+      script: Set
+      type: regular
+      version: -1
+    taskid: 3de8d8ef-6325-43a4-ac43-88f60fc0fe39
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 170,\n    \"y\": 950\n  }\n}"
+  '19':
+    continueonerrortype: ''
+    id: '19'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '10'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'false'
+      key:
+        simple: remediation_action
+      value:
+        simple: "${remediation_action}\n- Created new VPC Firewall Block rule cortex-remediation-block-${RuleSuffix} to block public exposure."
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: 41235eb8-c3b5-43b4-b343-9a6e81a0bbde
+      iscommand: false
+      name: Add Block Rule Name to Remediation Action Details
+      script: Set
+      type: regular
+      version: -1
+    taskid: 41235eb8-c3b5-43b4-b343-9a6e81a0bbde
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 170,\n    \"y\": 1620\n  }\n}"
+  '20':
+    continueonerrortype: ''
+    id: '20'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '10'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'false'
+      key:
+        simple: remediation_action
+      value:
+        simple: "${remediation_action}\n- Found existing VPC Firewall rule cortex-remediation-block-${RuleSuffix} which can block public exposure."
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: 6e80bf37-bdc1-479c-9dde-afebfb3b3649
+      iscommand: false
+      name: Add Block Rule Name to Remediation Action Details
+      script: Set
+      type: regular
+      version: -1
+    taskid: 6e80bf37-bdc1-479c-9dde-afebfb3b3649
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 730,\n    \"y\": 1440\n  }\n}"
+  '21':
+    continueonerrortype: ''
+    id: '21'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '14'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'false'
+      key:
+        simple: remediation_action
+      value:
+        simple: "${remediation_action}\n- Found network tag for remediation (cortex-remediation-${inputs.RemotePort}-${inputs.RemoteProtocol}) already applied to VM for VPC Firewall rule matching."
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: 897d5210-3544-45d2-9f48-f1c69560ca73
+      iscommand: false
+      name: Add Existing Network Tag to Remediation Action Details
+      script: Set
+      type: regular
+      version: -1
+    taskid: 897d5210-3544-45d2-9f48-f1c69560ca73
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 730,\n    \"y\": 2200\n  }\n}"
+  '22':
+    continueonerrortype: ''
+    id: '22'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '14'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'false'
+      key:
+        simple: remediation_action
+      value:
+        simple: "${remediation_action}\n- Added network tag for remediation (cortex-remediation-${inputs.RemotePort}-${inputs.RemoteProtocol}) for VPC Firewall rule matching."
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: 5f0fac7a-fa08-4fb2-90f7-37f4fdc3377e
+      iscommand: false
+      name: Add New Network Tag to Remediation Details
+      script: Set
+      type: regular
+      version: -1
+    taskid: 5f0fac7a-fa08-4fb2-90f7-37f4fdc3377e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 170,\n    \"y\": 2365\n  }\n}"
+  '23':
+    continueonerrortype: ''
+    id: '23'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_id:
+        simple: ${inputs.AssetID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Cortex Core - Platform
+      description: Get asset information.
+      id: fd457a70-2cb5-4063-8ad0-4a01ac36d2e5
+      iscommand: true
+      name: Fetch VM Asset Details
+      script: Cortex Core - Platform|||core-get-asset-details
+      type: regular
+      version: -1
+    taskid: fd457a70-2cb5-4063-8ad0-4a01ac36d2e5
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 29.375\n  }\n}"
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 3270,\n      \"width\": 1280,\n      \"x\": -160,\n      \"y\": -300\n    }\n  }\n}"
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
