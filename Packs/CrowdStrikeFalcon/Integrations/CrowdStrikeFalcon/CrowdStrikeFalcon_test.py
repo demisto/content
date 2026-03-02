@@ -8390,7 +8390,9 @@ def test_get_cases_data_without_filter(mocker):
     assert total == 3
     assert ids == ["case5"]
     # Verify no filter parameter is passed when filter is empty
-    http_request_mock.assert_called_with("GET", "/cases/queries/cases/v1", {"sort": "created_timestamp.asc", "offset": 0, "limit": 10})
+    http_request_mock.assert_called_with(
+        "GET", "/cases/queries/cases/v1", {"sort": "created_timestamp.asc", "offset": 0, "limit": 10}
+    )
 
 
 def test_get_cases_details(mocker):
