@@ -1,7 +1,124 @@
 [MODEL: dataset="slack_slack_raw"]
-
+filter action IN("user_login*", "user_logout*", "cli_login") //Authentication events mapping
 // Extract actor and context fields
-alter
+| alter
+    get_actor_user_email = json_extract_scalar(actor, "$['user']['email']"),
+    get_actor_user_id = json_extract_scalar(actor, "$['user']['id']"),
+    get_actor_user_name = json_extract_scalar(actor, "$['user']['name']"),
+    get_actor_user_team = json_extract_scalar(actor, "$['user']['team']"),
+    get_entity_app_scopes = json_extract_scalar_array(entity, "$.app.scopes"),
+    get_entity_type = json_extract_scalar(entity, "$['type']")
+
+// Parse email into username and domain
+| alter
+    array_actor_user_email = if(get_actor_user_email != NULL, split(get_actor_user_email, "@"))
+
+| alter //XDM Mapping
+    xdm.event.type = "authentication",
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION),
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
+    xdm.event.id = id,
+    xdm.event.outcome = if(
+        action = "user_login" ,XDM_CONST.OUTCOME_SUCCESS,
+        XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome_reason = if(
+        action = "user_login_failed", "failed_login",
+        action IN("user_logout_non_compliant_mobile_app_version", "user_logout_compromised"), "auth_policy_access_violation",
+        "NOT_SPECIFIED"),
+    xdm.event.original_event_type = action,
+    xdm.network.ip_protocol = XDM_CONST.IP_PROTOCOL_TCP,
+    xdm.auth.service = "SP",
+    xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
+    xdm.source.ipv4 = if(is_ipv4(json_extract_scalar(context, "$['ip_address']")), json_extract_scalar(context, "$['ip_address']")),
+    xdm.source.ipv6 = if(is_ipv6(json_extract_scalar(context, "$['ip_address']")), json_extract_scalar(context, "$['ip_address']")),
+    xdm.target.ipv4 = "",
+    xdm.source.port = to_integer(0),
+    xdm.target.port = to_integer(0),
+    xdm.network.session_id = json_extract_scalar(context, "$['session_id']"),
+    xdm.source.user.user_type = XDM_CONST.USER_TYPE_REGULAR,
+    xdm.source.user.scope = XDM_CONST.SCOPE_TYPE_SAAS,
+    xdm.source.user.upn = get_actor_user_email,
+    xdm.source.user.username = arrayindex(array_actor_user_email, 0),
+    xdm.source.user.identifier = get_actor_user_id,
+    xdm.source.user.identity_type = if(
+        get_actor_user_id IN("*USLACKBOT*","*USLACKSECURITY*"), XDM_CONST.IDENTITY_TYPE_APPLICATION,
+        arrayindex(array_actor_user_email, 1) CONTAINS "slack-bots.com", XDM_CONST.IDENTITY_TYPE_APPLICATION,
+        get_actor_user_id ~= "^A", XDM_CONST.IDENTITY_TYPE_APPLICATION,
+        get_actor_user_id CONTAINS "USLACKUSER", XDM_CONST.IDENTITY_TYPE_UNKNOWN,
+        XDM_CONST.IDENTITY_TYPE_USER
+    ),
+    xdm.source.user_agent = json_extract_scalar(context, "$['ua']"),
+    xdm.source.user.full_domain_name = arrayindex(array_actor_user_email, 1),
+    xdm.source.user.domain = arrayindex(array_actor_user_email, 1),
+    xdm.source.user.first_name = if(
+        get_actor_user_name IN("*slack*","*Slack*"), NULL,
+        get_actor_user_name = arrayindex(array_actor_user_email, 0), NULL,
+        arrayindex(regextract(get_actor_user_name, "(^\w+)\s+"),0)
+    ),
+    xdm.source.user.last_name = if(
+        get_actor_user_name IN("*@*","*slack*","*Slack*"), NULL,
+        get_actor_user_name = arrayindex(array_actor_user_email, 0), NULL,
+        arrayindex(regextract(get_actor_user_name, "\s+(\S+)$"),0)
+    ),
+    xdm.source.user.groups = if(get_actor_user_team != null, arraycreate(get_actor_user_team)),
+    xdm.source.cloud.project = json_extract_scalar(context, "$['location']['domain']"),
+    xdm.source.cloud.project_id = json_extract_scalar(context, "$['location']['id']"),
+
+    xdm.logon.type = if(
+        json_extract_scalar(actor, "$['type']") ~= "[Uu]ser", XDM_CONST.LOGON_TYPE_INTERACTIVE,
+        XDM_CONST.LOGON_TYPE_SERVICE),
+
+    xdm.target.resource.type = get_entity_type,
+    xdm.target.resource.id = coalesce(
+        json_extract_scalar(entity, "$['app']['id']"),
+        json_extract_scalar(entity, "$['enterprise']['id']"),
+        json_extract_scalar(entity, "$['role']['id']"),
+        json_extract_scalar(entity, "$['workflow']['id']"),
+        json_extract_scalar(entity, "$['channel']['id']"),
+        json_extract_scalar(entity, "$['file']['id']"),
+        json_extract_scalar(entity, "$['workspace']['id']"),
+        json_extract_scalar(entity, "$['user']['id']"),
+        json_extract_scalar(entity, "$['account_type_role']['id']"),
+        json_extract_scalar(entity, "$['message']['id']"),
+        json_extract_scalar(entity, "$['usergroups']['id']"),
+        json_extract_scalar(entity, "$['huddles']['id']")
+    ),
+    xdm.target.resource.name = coalesce(
+        json_extract_scalar(entity, "$['app']['name']"),
+        json_extract_scalar(entity, "$['enterprise']['name']"),
+        json_extract_scalar(entity, "$['role']['name']"),
+        json_extract_scalar(entity, "$['workflow']['name']"),
+        json_extract_scalar(entity, "$['channel']['name']"),
+        json_extract_scalar(entity, "$['file']['name']"),
+        json_extract_scalar(entity, "$['workspace']['name']"),
+        json_extract_scalar(entity, "$['user']['name']"),
+        json_extract_scalar(entity, "$['account_type_role']['name']"),
+        json_extract_scalar(entity, "$['message']['name']"),
+        json_extract_scalar(entity, "$['usergroups']['name']"),
+        json_extract_scalar(entity, "$['huddles']['name']")
+    ),
+    xdm.source.application.name = json_extract_scalar(entity, "$['app']['name']"),
+    xdm.source.application.bundle_id = json_extract_scalar(entity, "$['app']['id']"),
+
+    xdm.target.user.upn = json_extract_scalar(entity, "$['user']['email']"),
+    xdm.target.user.scope = if( get_entity_type = "user", XDM_CONST.SCOPE_TYPE_SAAS),
+    xdm.target.user.roles = get_entity_app_scopes,
+    xdm.target.user.identity_type = if(
+        get_entity_type = "user", XDM_CONST.IDENTITY_TYPE_USER,
+        get_entity_type = "app", XDM_CONST.IDENTITY_TYPE_APPLICATION,
+        XDM_CONST.IDENTITY_TYPE_VIRTUAL
+    ),
+    xdm.target.user.groups = arraycreate(json_extract_scalar(entity, "$['user']['team']")),
+    xdm.target.user.identifier = json_extract_scalar(entity, "$['user']['id']"),
+    xdm.target.user.username = json_extract_scalar(entity, "$['user']['name']"),
+    xdm.target.file.filename = json_extract_scalar(entity, "$['file']['name']"),
+    xdm.target.file.file_type = json_extract_scalar(entity, "$['file']['filetype']"),
+    xdm.target.file.extension = arrayindex(regextract(json_extract_scalar(entity, "$['file']['name']"), "\.(\w+)$"),0),
+    xdm.alert.source_url = json_extract_scalar(details, "$['url_private']");
+
+filter action NOT IN("user_login*", "user_login_failed", "user_logout*") //SaaS Audit Mapping
+// Extract actor and context fields
+| alter
     get_actor_user_email = json_extract_scalar(actor, "$['user']['email']"),
     get_actor_user_id = json_extract_scalar(actor, "$['user']['id']"),
     get_context_app_id = json_extract_scalar(context, "$['app']['id']"),
