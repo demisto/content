@@ -363,7 +363,7 @@ script:
     - defaultValue: false
       description: Whether to return all results. Ignored when format is set to csv.
       name: all_results
-    description: Returns the False Positive List (FPL) from abuse.ch, containing indicators (IPs and domains) that have been removed from their blocklists.
+    description: Returns the False Positive List (FPL) from abuse.ch, including IP and domain indicators removed from their blocklists.
     name: abuseipdb-get-fplist
     outputs:
     - contextPath: AbuseIPDB.FPL.id
