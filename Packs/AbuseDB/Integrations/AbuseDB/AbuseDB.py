@@ -350,7 +350,7 @@ def get_blacklist_command(limit, days, confidence, saveToContext):
     return analysis if type(analysis) is str else blacklist_to_entry(analysis.get("data"), saveToContext)
 
 
-def get_fplist_command(format: str, limit: int, all_results: bool):
+def get_fplist_command(format: str, limit: int, all_results: bool) -> CommandResults | fileResult:
     """
     Retrieves the False Positive List (FPL) from abuse.ch.
 
