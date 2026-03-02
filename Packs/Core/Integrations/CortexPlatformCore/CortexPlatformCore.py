@@ -28,6 +28,7 @@ MALWARE_TYPE = "Malware"
 EXPLOIT_TYPE = "Exploit"
 WINDOWS_PLATFORM = "Windows"
 
+
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
     "asset_types": "xdm.asset.type.name",
@@ -77,7 +78,7 @@ WEBAPP_COMMANDS = [
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
-ENDPOINT_COMMANDS = ["core-get-endpoint-support-file"]
+ENDPOINT_COMMANDS = ["core-get-endpoint-support-file", "core-send-endpoint-heartbeat"]
 XSOAR_COMMANDS = ["core-run-playbook", "core-get-case-resolution-statuses"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
@@ -850,6 +851,20 @@ class Client(CoreClient):
             data=request_data,
             headers=self._headers,
             url_suffix="/retrieve_endpoint_tsf",
+        )
+
+    def send_endpoint_heartbeat(self, json_data: dict) -> dict:
+        """
+        Perform endpoint heartbeat.
+        Args:
+            json_data (dict[str, Any]): The json data containing endpoint information.
+        Returns:
+            dict: The response from the API.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/call_home/",
+            json_data=json_data,
         )
 
     def get_endpoint_update_version(self, request_data):
@@ -3092,6 +3107,36 @@ def get_endpoint_support_file_command(client: Client, args: dict) -> CommandResu
     )
 
 
+def send_endpoint_heartbeat_command(client: Client, args: dict) -> CommandResults:
+    """
+    Perform endpoint heartbeat.
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - endpoint_id (str): The ID of the endpoint.
+    Returns:
+        CommandResults: Object containing the formatted output.
+    """
+    call_home_type_heartbeat = 6
+    endpoint_id = args.get("endpoint_id")
+    if not endpoint_id:
+        raise ValueError("endpoint_id is required")
+
+    json_data = {
+        "request_data": {
+            "endpoint_id": endpoint_id,
+            "call_home_type": call_home_type_heartbeat,
+        }
+    }
+
+    client.send_endpoint_heartbeat(json_data)
+
+    return CommandResults(
+        readable_output=f"Heartbeat sent successfully for endpoint {endpoint_id}",
+    )
+
+
 def get_appsec_issues_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves application security issues based on specified filters across multiple issue types.
@@ -5139,6 +5184,9 @@ def main():  # pragma: no cover
 
         elif command == "core-get-endpoint-support-file":
             return_results(get_endpoint_support_file_command(client, args))
+
+        elif command == "core-send-endpoint-heartbeat":
+            return_results(send_endpoint_heartbeat_command(client, args))
 
         elif command == "core-list-exception-rules":
             return_results(list_exception_rules_command(client, args))
