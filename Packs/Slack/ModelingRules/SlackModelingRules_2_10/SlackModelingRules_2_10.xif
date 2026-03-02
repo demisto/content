@@ -1,5 +1,5 @@
 [MODEL: dataset="slack_slack_raw"]
-filter action IN("user_login*", "user_logout*", "cli_login") //Authentication events mapping
+filter action IN("user_login*", "user_logout_compromised", "user_logout_non_compliant_mobile_app_version", "cli_login") //Authentication events mapping
 // Extract actor and context fields
 | alter
     get_actor_user_email = json_extract_scalar(actor, "$['user']['email']"),
@@ -20,12 +20,14 @@ filter action IN("user_login*", "user_logout*", "cli_login") //Authentication ev
     xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
     xdm.event.id = id,
     xdm.event.outcome = if(
-        action = "user_login" ,XDM_CONST.OUTCOME_SUCCESS,
-        XDM_CONST.OUTCOME_FAILED),
+        action IN("user_logout_compromised", "user_logout_non_compliant_mobile_app_version"), XDM_CONST.OUTCOME_FAILED,
+        action IN("user_login","cli_login") ,XDM_CONST.OUTCOME_SUCCESS
+        ),
     xdm.event.outcome_reason = if(
         action = "user_login_failed", "failed_login",
         action IN("user_logout_non_compliant_mobile_app_version", "user_logout_compromised"), "auth_policy_access_violation",
-        "NOT_SPECIFIED"),
+        "NOT_SPECIFIED"
+        ),
     xdm.event.original_event_type = action,
     xdm.network.ip_protocol = XDM_CONST.IP_PROTOCOL_TCP,
     xdm.auth.service = "SP",
@@ -93,7 +95,7 @@ filter action IN("user_login*", "user_logout*", "cli_login") //Authentication ev
     xdm.target.file.extension = arrayindex(regextract(json_extract_scalar(entity, "$['file']['name']"), "\.(\w+)$"),0),
     xdm.alert.source_url = json_extract_scalar(details, "$['url_private']");
 
-filter action NOT IN("user_login*", "user_login_failed", "user_logout*") //SaaS Audit Mapping
+filter action NOT IN("user_login*", "user_logout_compromised", "user_logout_non_compliant_mobile_app_version", "cli_login") //SaaS Audit Mapping
 // Extract actor and context fields
 | alter
     get_actor_user_email = json_extract_scalar(actor, "$['user']['email']"),
@@ -123,7 +125,7 @@ filter action NOT IN("user_login*", "user_login_failed", "user_logout*") //SaaS 
         action ~= "pref\.|_updated|_renamed|_converted|_changed|_reset|_resumed|_upgraded|_downgraded|_expanded", XDM_CONST.OPERATION_TYPE_UPDATE,
         action ~= "_searched|_export|_download|_preview|_opened", XDM_CONST.OPERATION_TYPE_READ,
         action ~= "_forwarded|_moved|_merged", XDM_CONST.OPERATION_TYPE_COPY,
-        action ~= "_login$", XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
+        action ~= "_login$|_logout", XDM_CONST.OPERATION_TYPE_AUTHENTICATION,
         action ~= "_paused|_expired", XDM_CONST.OPERATION_TYPE_STATUS_CHANGE,
         action ~= "_notification|_requested|_failed|_join|_leave", XDM_CONST.OPERATION_TYPE_AUDIT,
         "OTHER"
