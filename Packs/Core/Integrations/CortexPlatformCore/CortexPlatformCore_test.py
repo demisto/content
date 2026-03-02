@@ -10027,3 +10027,47 @@ def test_list_findings_command_comma_separated_values(mocker: MockerFixture):
     call_args = mock_get_webapp_data.call_args[0][0]
     filter_dict = call_args["filter_data"]["filter"]
     assert "AND" in filter_dict
+def test_send_endpoint_heartbeat_command_success(mocker):
+    """
+    Given:
+        - A client and valid arguments with an endpoint ID.
+    When:
+        - send_endpoint_heartbeat_command is called.
+    Then:
+        - The client's perform_endpoint_heartbeat method is called with the correct JSON data.
+        - A CommandResults object is returned with a success message.
+    """
+    from CortexPlatformCore import send_endpoint_heartbeat_command, Client
+
+    mock_client = mocker.Mock(spec=Client)
+    args = {"endpoint_id": "endpoint-123"}
+
+    result = send_endpoint_heartbeat_command(mock_client, args)
+
+    expected_json_data = {
+        "request_data": {
+            "endpoint_id": "endpoint-123",
+            "call_home_type": 6,
+        }
+    }
+
+    mock_client.send_endpoint_heartbeat.assert_called_once_with(expected_json_data)
+    assert result.readable_output == "Heartbeat sent successfully for endpoint endpoint-123"
+
+
+def test_send_endpoint_heartbeat_command_missing_id(mocker):
+    """
+    Given:
+        - A client and arguments missing the endpoint ID.
+    When:
+        - send_endpoint_heartbeat_command is called.
+    Then:
+        - A ValueError is raised indicating that endpoint_id is required.
+    """
+    from CortexPlatformCore import send_endpoint_heartbeat_command, Client
+
+    mock_client = mocker.Mock(spec=Client)
+    args = {}
+
+    with pytest.raises(ValueError, match="endpoint_id is required"):
+        send_endpoint_heartbeat_command(mock_client, args)
