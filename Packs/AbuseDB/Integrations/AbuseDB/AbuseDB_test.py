@@ -314,6 +314,32 @@ def test_abusech_hunting_http_request_api_wrapped_error(mocker):
         abusech_hunting_http_request({}, {})
 
 
+def test_abusech_hunting_http_request_non_json_response(mocker):
+    """
+    Given:
+        - A response that is not JSON (e.g. CSV).
+    When:
+        - abusech_hunting_http_request is called.
+    Then:
+        - Verify the response object is returned as is.
+    """
+    from requests import Session
+    import AbuseDB
+    from AbuseDB import abusech_hunting_http_request
+    from json import JSONDecodeError
+
+    mock_response = mocker.Mock()
+    mock_response.status_code = 200
+    mock_response.json.side_effect = JSONDecodeError("Not JSON content", "CSV,Data,Points", 0)
+
+    mocker.patch.object(AbuseDB, "ABUSECH_URL", "https://test-url")
+    mocker.patch.object(AbuseDB, "ABUSECH_API_KEY", "test-key")
+    mocker.patch.object(Session, "request", return_value=mock_response)
+
+    response = abusech_hunting_http_request({}, {})
+    assert response == mock_response
+
+
 def test_abusech_hunting_http_request_connection_error(mocker):
     """
     Given:

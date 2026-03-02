@@ -147,7 +147,8 @@ def abusech_hunting_http_request(headers: dict, payload: dict) -> requests.Respo
     # this API wraps errors with a status=200 response, attempt to decode it as json
     try:
         res_json = response.json()
-    except AttributeError:
+    # when `requests.Request.json()` fails, a `json.JSONDecodeError` is raised, it inherits from `ValueError`
+    except ValueError:
         # the response is not a json, which means the response doesn't wrap an error
         return response
 
