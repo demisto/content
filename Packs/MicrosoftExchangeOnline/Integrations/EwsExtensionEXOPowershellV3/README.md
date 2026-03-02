@@ -838,7 +838,7 @@ Retrieve quarantine messages.
 | entity_type | Filters by entity workload type.                                                       | Optional |
 | recipient_address | Filters by the recipient email address.                                                | Optional |
 | sender_address | Filters by the sender email address.                                                   | Optional |
-| teams_conversation_types | Filters by one or more Teams conversation types. Deprecated  as it is not available in the PowerShell type used in this integration.                                      | Optional |
+| teams_conversation_types | Filters by one or more Teams conversation types. Deprecated as it is not available in the PowerShell type used in this integration.                                      | Optional |
 | direction | The message direction (inbound or outbound).                                           | Optional |
 | domain | Domain associated with the message.                                                    | Optional |
 | end_expires_date | End date for the message expiration.                                                   | Optional |
