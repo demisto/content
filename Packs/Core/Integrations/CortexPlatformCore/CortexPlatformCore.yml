@@ -3932,7 +3932,6 @@ script:
           required: true
         - name: contact_number
           description: The preferred contact number for follow-up.
-          required: true
         - name: issue_frequency
           auto: PREDEFINED
           predefined:
