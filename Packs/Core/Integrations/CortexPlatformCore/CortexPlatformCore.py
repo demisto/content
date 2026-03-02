@@ -28,6 +28,7 @@ MALWARE_TYPE = "Malware"
 EXPLOIT_TYPE = "Exploit"
 WINDOWS_PLATFORM = "Windows"
 
+
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
     "asset_types": "xdm.asset.type.name",
@@ -77,7 +78,7 @@ WEBAPP_COMMANDS = [
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
-ENDPOINT_COMMANDS = ["core-get-endpoint-support-file"]
+ENDPOINT_COMMANDS = ["core-get-endpoint-support-file", "core-send-endpoint-heartbeat"]
 XSOAR_COMMANDS = ["core-run-playbook", "core-get-case-resolution-statuses"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
@@ -850,6 +851,20 @@ class Client(CoreClient):
             data=request_data,
             headers=self._headers,
             url_suffix="/retrieve_endpoint_tsf",
+        )
+
+    def send_endpoint_heartbeat(self, json_data: dict) -> dict:
+        """
+        Perform endpoint heartbeat.
+        Args:
+            json_data (dict[str, Any]): The json data containing endpoint information.
+        Returns:
+            dict: The response from the API.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/call_home/",
+            json_data=json_data,
         )
 
     def get_endpoint_update_version(self, request_data):
@@ -1639,16 +1654,19 @@ def get_case_extra_data(client, args):
     """
     demisto.debug(f"Calling core-get-case-extra-data, {args=}")
     # Set the base URL for this API call to use the public API v1 endpoint
-    case_extra_data = get_extra_data_for_case_id_command(init_client("public"), args).outputs
+    try:
+        case_extra_data = get_extra_data_for_case_id_command(init_client("public"), args).outputs
+    except Exception as e:
+        demisto.debug(f"Failed to retrieve extra data for case ID {args.get('case_id')}: {str(e)}")
+        return {}
     demisto.debug(f"After calling core-get-case-extra-data, {case_extra_data=}")
     issue_ids = extract_ids(case_extra_data)
     case_data = case_extra_data.get("case", {})
     notes = case_data.get("notes")
     xdr_url = case_data.get("xdr_url")
     starred_manually = case_data.get("starred_manually")
-    manual_description = case_data.get("manual_description")
     detection_time = case_data.get("detection_time")
-    manual_description = case_extra_data.get("manual_description")
+    manual_description = case_extra_data.get("manual_description") or case_data.get("manual_description")
     network_artifacts = case_extra_data.get("network_artifacts")
     file_artifacts = case_extra_data.get("file_artifacts")
     extra_data = {
@@ -1897,10 +1915,9 @@ def get_cases_command(client, args):
 
     get_enriched_case_data = argToBoolean(args.get("get_enriched_case_data", "false"))
     # In case enriched case data was requested
-    if get_enriched_case_data and len(data) <= 10:
-        if isinstance(data, dict):
-            data = [data]
-
+    if isinstance(data, dict):
+        data = [data] if data else []
+    if get_enriched_case_data and 0 < len(data) <= 10:
         case_extra_data = add_cases_extra_data(client, data)
 
         command_results.append(
@@ -1915,13 +1932,16 @@ def get_cases_command(client, args):
 
     else:
         if get_enriched_case_data:
+            demisto.info(
+                f"Enriched case data requested but {len(data)} cases were returned (limit is 10). "
+                "Falling back to standard case data."
+            )
             command_results.append(
                 CommandResults(
-                    readable_output="Cannot retrieve enriched case data for more than 10 cases. "
-                    "Only standard case data will be shown. "
+                    readable_output="Note: Cannot retrieve enriched case data for more than 10 cases. "
+                    "Returning standard case data instead. "
                     "Try using a more specific query, "
                     "for example specific case IDs you want to get enriched data for.",
-                    entry_type=4,
                 )
             )
 
@@ -2078,6 +2098,14 @@ def get_extra_data_for_case_id_command(client: CoreClient, args):
                         raw response, and outputs for integration context.
     """
     case_id = args.get("case_id")
+    if not case_id:
+        raise DemistoException("case_id is required. Please provide a valid numeric case ID.")
+    case_id = str(case_id).strip()
+    if not case_id.isdigit():
+        raise DemistoException(
+            f"Invalid case_id '{case_id}'. The case_id must be a valid numeric identifier. "
+            "Use the core-get-cases command to retrieve valid case IDs."
+        )
     issues_limit = min(int(args.get("issues_limit", 1000)), 1000)
     response = client.get_incident_data(case_id, issues_limit, full_alert_fields=True)
     mapped_response = preprocess_get_case_extra_data_outputs(response)
@@ -3089,6 +3117,36 @@ def get_endpoint_support_file_command(client: Client, args: dict) -> CommandResu
         outputs_key_field="group_action_id",
         outputs=reply,
         raw_response=response,
+    )
+
+
+def send_endpoint_heartbeat_command(client: Client, args: dict) -> CommandResults:
+    """
+    Perform endpoint heartbeat.
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - endpoint_id (str): The ID of the endpoint.
+    Returns:
+        CommandResults: Object containing the formatted output.
+    """
+    call_home_type_heartbeat = 6
+    endpoint_id = args.get("endpoint_id")
+    if not endpoint_id:
+        raise ValueError("endpoint_id is required")
+
+    json_data = {
+        "request_data": {
+            "endpoint_id": endpoint_id,
+            "call_home_type": call_home_type_heartbeat,
+        }
+    }
+
+    client.send_endpoint_heartbeat(json_data)
+
+    return CommandResults(
+        readable_output=f"Heartbeat sent successfully for endpoint {endpoint_id}",
     )
 
 
@@ -5072,6 +5130,9 @@ def main():  # pragma: no cover
 
         elif command == "core-get-endpoint-support-file":
             return_results(get_endpoint_support_file_command(client, args))
+
+        elif command == "core-send-endpoint-heartbeat":
+            return_results(send_endpoint_heartbeat_command(client, args))
 
         elif command == "core-list-exception-rules":
             return_results(list_exception_rules_command(client, args))
