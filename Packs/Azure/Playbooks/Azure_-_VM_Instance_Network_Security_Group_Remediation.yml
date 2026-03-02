@@ -1,0 +1,2068 @@
+contentitemexportablefields:
+  contentitemfields: {}
+description: |-
+  This playbook adds new Azure Network Security Group (NSG) rules to NSGs attached to a NIC. The new rules will give access only to a private IP address range and block traffic that's exposed to the public internet ([using the private IP of the VM as stated in Azure documentation](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview)). For example, if RDP is exposed to the public internet, this playbook adds new firewall rules that only allow traffic from private IP addresses and blocks the rest of the RDP traffic.
+
+  Conditions and limitations:
+  - Limited to one resource group.
+  - 2 priorities lower than the offending rule priority must be available.
+  - Adds rules to NSGs associated to NICs.
+id: 'Azure - VM Instance Network Security Group Remediation'
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - AssetID
+  - PublicIP
+  - RemoteProtocol
+  - RemotePort
+  - IntegrationInstance
+  - RemediationAllowRanges
+  name: General (Inputs group)
+inputs:
+- description: The Asset ID of the VM Instance
+  key: AssetID
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: The Public IP whose exposure to remediate.
+  key: PublicIP
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: The remote protocol that is publicly exposed.
+  key: RemoteProtocol
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: The remote port that is publicly exposed.
+  key: RemotePort
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: Azure Network Security Groups integration instance to use if you have multiple instances configured (optional).
+  key: IntegrationInstance
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Comma-separated list of IPv4 network ranges to be used as source addresses for the `cortex-remediation-allow-port-<port#>-<tcp|udp>` rule to be created.  Typically this will be private IP ranges (to allow access within the vnet and bastion hosts) but other networks can be added as needed.
+  key: RemediationAllowRanges
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16
+name: Azure - VM Instance Network Security Group Remediation
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs:
+  - remediatedFlag
+  - remediation_action
+outputs:
+- contextPath: remediatedFlag
+  description: Output key to determine if remediation was successfully done.
+  type: boolean
+- contextPath: remediation_action
+  description: Textual summary of remediation action(s) that were performed.
+  type: string
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6ce17739-3f39-4681-8310-fd45ba54b9bb
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 6ce17739-3f39-4681-8310-fd45ba54b9bb
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": -630
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "56"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      network_security_group_name:
+        simple: ${NSGName}
+      resource_group_name:
+        simple: ${ResourceGroupName}
+      subscription_id:
+        simple: ${Core.CoreAsset.xdm__asset__realm}
+      using:
+        simple: ${inputs.IntegrationInstance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Azure
+      description: Gets all security rules in a network security group.
+      id: 28500742-49d1-415f-8f31-c7ea9842a9a4
+      iscommand: true
+      name: Retrieve Rules from NSG Associated to Public IP
+      script: Azure|||azure-nsg-security-rules-list
+      type: regular
+      version: -1
+    taskid: 28500742-49d1-415f-8f31-c7ea9842a9a4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 1695
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Azure
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: containsGeneral
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "47"
+      "yes":
+      - "66"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Verify the required Azure integration is configured and enabled.
+      id: 4d36387e-ce9e-464a-afa8-0b06ca0f3ea1
+      iscommand: false
+      name: Is Azure Integration Enabled?
+      type: condition
+      version: -1
+    taskid: 4d36387e-ce9e-464a-afa8-0b06ca0f3ea1
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": -450
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7482a072-0101-4618-83f9-1dd8189b715e
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 7482a072-0101-4618-83f9-1dd8189b715e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 4280
+        }
+      }
+  "30":
+    continueonerrortype: ""
+    id: "30"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "31"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ff99f57c-f115-473e-b9bd-20cc24bb93ee
+      iscommand: false
+      name: Update Existing Allow Rule
+      type: title
+      version: -1
+      description: ''
+    taskid: ff99f57c-f115-473e-b9bd-20cc24bb93ee
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2290
+        }
+      }
+  "31":
+    continueonerrortype: ""
+    id: "31"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "62"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: existingAllowRule
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Azure.NSGRule.properties.direction
+              operator: isEqualString
+              right:
+                value:
+                  simple: Inbound
+          - - left:
+                iscontext: true
+                value:
+                  simple: Azure.NSGRule.properties.access
+              operator: isEqualString
+              right:
+                value:
+                  simple: Allow
+          - - left:
+                iscontext: true
+                value:
+                  simple: Azure.NSGRule.name
+              operator: containsGeneral
+              right:
+                value:
+                  simple: cortex-remediation-allow-port
+          - - left:
+                iscontext: true
+                value:
+                  simple: Azure.NSGRule.name
+              operator: containsGeneral
+              right:
+                iscontext: true
+                value:
+                  simple: ${inputs.RemotePort}
+          - - left:
+                iscontext: true
+                value:
+                  simple: Azure.NSGRule.name
+              operator: containsGeneral
+              right:
+                iscontext: true
+                value:
+                  simple: ${inputs.RemoteProtocol}
+          - - left:
+                iscontext: true
+                value:
+                  simple: Azure.NSGRule.properties.destinationAddressPrefix
+              operator: notContainsGeneral
+              right:
+                iscontext: true
+                value:
+                  simple: ExposedNICPrivateIPs
+          root: Azure.NSGRule
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a variable for the existing allow rule.
+      id: 3e7d1757-1741-45cf-adda-762e170c4c2a
+      iscommand: false
+      name: Set variable for existing allow rule name
+      script: Set
+      type: regular
+      version: -1
+    taskid: 3e7d1757-1741-45cf-adda-762e170c4c2a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2440
+        }
+      }
+  "32":
+    continueonerrortype: ""
+    id: "32"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      destination:
+        complex:
+          accessor: destinationAddressPrefix
+          root: existingAllowRule.properties
+          transformers:
+          - args:
+              item:
+                iscontext: true
+                value:
+                  simple: existingAllowRule.properties.destinationAddressPrefixes
+              raw: {}
+            operator: AppendIfNotEmpty
+          - args:
+              item:
+                iscontext: true
+                value:
+                  simple: ExposedNICPrivateIPs
+              raw: {}
+            operator: AppendIfNotEmpty
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+      resource_group_name:
+        simple: ${ResourceGroupName}
+      security_group_name:
+        simple: ${NSGName}
+      security_rule_name:
+        complex:
+          accessor: name
+          root: existingAllowRule
+      subscription_id:
+        simple: ${Core.CoreAsset.xdm__asset__realm}
+      using:
+        simple: ${inputs.IntegrationInstance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Azure
+      description: Update a security rule. If one does not exist, it will be created.
+      id: 1c04ac5b-6037-45b0-a94f-3cb5bd9bb544
+      iscommand: true
+      name: Update existing remediation allow rule
+      script: Azure|||azure-nsg-security-rule-update
+      type: regular
+      version: -1
+    taskid: 1c04ac5b-6037-45b0-a94f-3cb5bd9bb544
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2805
+        }
+      }
+  "34":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Azure.NSGRule.properties.access
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Deny
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Azure.NSGRule.name
+                    operator: containsGeneral
+                    right:
+                      value:
+                        simple: cortex-remediation-deny-port
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Azure.NSGRule.name
+                    operator: containsGeneral
+                    right:
+                      iscontext: true
+                      value:
+                        simple: ${inputs.RemotePort}
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Azure.NSGRule.name
+                    operator: containsGeneral
+                    right:
+                      iscontext: true
+                      value:
+                        simple: ${inputs.RemoteProtocol}
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Azure.NSGRule.properties.destinationAddressPrefix
+                    operator: containsGeneral
+                    right:
+                      iscontext: true
+                      value:
+                        simple: ExposedNICPrivateIPs
+                  - left:
+                      iscontext: true
+                      value:
+                        simple: Azure.NSGRule.properties.destinationAddressPrefixes
+                    operator: containsGeneral
+                    right:
+                      iscontext: true
+                      value:
+                        simple: ExposedNICPrivateIPs
+                root: Azure.NSGRule
+                transformers:
+                - args:
+                    field:
+                      value:
+                        simple: name
+                  operator: getField
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Azure.NSGRule.properties.access
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Deny
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Azure.NSGRule.name
+                    operator: containsGeneral
+                    right:
+                      value:
+                        simple: cortex-remediation-deny-port
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Azure.NSGRule.name
+                    operator: containsGeneral
+                    right:
+                      iscontext: true
+                      value:
+                        simple: ${inputs.RemotePort}
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Azure.NSGRule.name
+                    operator: containsGeneral
+                    right:
+                      iscontext: true
+                      value:
+                        simple: ${inputs.RemoteProtocol}
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Azure.NSGRule.properties.destinationAddressPrefix
+                    operator: notContainsGeneral
+                    right:
+                      iscontext: true
+                      value:
+                        simple: ExposedNICPrivateIPs
+                  - left:
+                      iscontext: true
+                      value:
+                        simple: Azure.NSGRule.properties.destinationAddressPrefixes
+                    operator: notContainsGeneral
+                    right:
+                      iscontext: true
+                      value:
+                        simple: ExposedNICPrivateIPs
+                root: Azure.NSGRule
+          operator: isExists
+      label: Update
+    continueonerrortype: ""
+    id: "34"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "45"
+      Update:
+      - "35"
+      "yes":
+      - "46"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines whether a remediation deny rule already exists or not.
+      id: d6d85d54-179a-4def-a8ed-11b521681d5d
+      iscommand: false
+      name: Does Remediation Deny Rule Already Exist?
+      type: condition
+      version: -1
+    taskid: d6d85d54-179a-4def-a8ed-11b521681d5d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 2980
+        }
+      }
+  "35":
+    continueonerrortype: ""
+    id: "35"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "36"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ee54b253-96a9-46c1-a903-5b8847020a2c
+      iscommand: false
+      name: Update Existing Deny Rule
+      type: title
+      version: -1
+      description: ''
+    taskid: ee54b253-96a9-46c1-a903-5b8847020a2c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3145
+        }
+      }
+  "36":
+    continueonerrortype: ""
+    id: "36"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "64"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: existingDenyRule
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Azure.NSGRule.properties.direction
+              operator: isEqualString
+              right:
+                value:
+                  simple: Inbound
+          - - left:
+                iscontext: true
+                value:
+                  simple: Azure.NSGRule.properties.access
+              operator: isEqualString
+              right:
+                value:
+                  simple: Deny
+          - - left:
+                iscontext: true
+                value:
+                  simple: Azure.NSGRule.name
+              operator: containsGeneral
+              right:
+                value:
+                  simple: cortex-remediation-deny-port
+          - - left:
+                iscontext: true
+                value:
+                  simple: Azure.NSGRule.name
+              operator: containsGeneral
+              right:
+                iscontext: true
+                value:
+                  simple: inputs.RemotePort
+          - - left:
+                iscontext: true
+                value:
+                  simple: Azure.NSGRule.name
+              operator: containsGeneral
+              right:
+                iscontext: true
+                value:
+                  simple: inputs.RemoteProtocol
+          - - left:
+                iscontext: true
+                value:
+                  simple: Azure.NSGRule.properties.destinationAddressPrefix
+              operator: notContainsGeneral
+              right:
+                iscontext: true
+                value:
+                  simple: ExposedNICPrivateIPs
+          root: Azure.NSGRule
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a variable for the existing deny rule.
+      id: 1c2e19f4-fb80-4dbb-a791-916b25d31def
+      iscommand: false
+      name: Set variable for existing deny rule name
+      script: Set
+      type: regular
+      version: -1
+    taskid: 1c2e19f4-fb80-4dbb-a791-916b25d31def
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3285
+        }
+      }
+  "37":
+    continueonerrortype: ""
+    id: "37"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "46"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      destination:
+        complex:
+          accessor: destinationAddressPrefix
+          root: existingDenyRule.properties
+          transformers:
+          - args:
+              item:
+                iscontext: true
+                value:
+                  simple: existingAllowRule.properties.destinationAddressPrefixes
+              raw: {}
+            operator: AppendIfNotEmpty
+          - args:
+              item:
+                iscontext: true
+                value:
+                  simple: ExposedNICPrivateIPs
+              raw: {}
+            operator: AppendIfNotEmpty
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+      resource_group_name:
+        simple: ${ResourceGroupName}
+      security_group_name:
+        simple: ${NSGName}
+      security_rule_name:
+        complex:
+          accessor: name
+          root: existingDenyRule
+      subscription_id:
+        simple: ${Core.CoreAsset.xdm__asset__realm}
+      using:
+        simple: ${inputs.IntegrationInstance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Azure
+      description: Update a security rule. If one does not exist, it will be created.
+      id: f47323c0-b685-408c-bdfc-8c403a8956b9
+      iscommand: true
+      name: Update existing remediation deny rule
+      script: Azure|||azure-nsg-security-rule-update
+      type: regular
+      version: -1
+    taskid: f47323c0-b685-408c-bdfc-8c403a8956b9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3650
+        }
+      }
+  "38":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Azure.NSGRule.properties.access
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Allow
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Azure.NSGRule.name
+                    operator: containsGeneral
+                    right:
+                      value:
+                        simple: cortex-remediation-allow-port
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Azure.NSGRule.name
+                    operator: containsGeneral
+                    right:
+                      iscontext: true
+                      value:
+                        simple: ${inputs.RemotePort}
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Azure.NSGRule.name
+                    operator: containsGeneral
+                    right:
+                      iscontext: true
+                      value:
+                        simple: ${inputs.RemoteProtocol}
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Azure.NSGRule.properties.destinationAddressPrefix
+                    operator: containsGeneral
+                    right:
+                      iscontext: true
+                      value:
+                        simple: ExposedNICPrivateIPs
+                  - left:
+                      iscontext: true
+                      value:
+                        simple: Azure.NSGRule.properties.destinationAddressPrefixes
+                    operator: containsGeneral
+                    right:
+                      iscontext: true
+                      value:
+                        simple: ExposedNICPrivateIPs
+                root: Azure.NSGRule
+                transformers:
+                - args:
+                    field:
+                      value:
+                        simple: name
+                  operator: getField
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Azure.NSGRule.properties.access
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Allow
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Azure.NSGRule.name
+                    operator: containsGeneral
+                    right:
+                      value:
+                        simple: cortex-remediation-allow-port
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Azure.NSGRule.name
+                    operator: containsGeneral
+                    right:
+                      iscontext: true
+                      value:
+                        simple: ${inputs.RemotePort}
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Azure.NSGRule.name
+                    operator: containsGeneral
+                    right:
+                      iscontext: true
+                      value:
+                        simple: ${inputs.RemoteProtocol}
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Azure.NSGRule.properties.destinationAddressPrefix
+                    operator: notContainsGeneral
+                    right:
+                      iscontext: true
+                      value:
+                        simple: ExposedNICPrivateIPs
+                  - left:
+                      iscontext: true
+                      value:
+                        simple: Azure.NSGRule.properties.destinationAddressPrefixes
+                    operator: notContainsGeneral
+                    right:
+                      iscontext: true
+                      value:
+                        simple: ExposedNICPrivateIPs
+                root: Azure.NSGRule
+          operator: isExists
+      label: Update
+    continueonerrortype: ""
+    id: "38"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "39"
+      Update:
+      - "30"
+      "yes":
+      - "34"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines whether a remediation allow rule already exists or not.
+      id: 0733fb83-9dc1-4a20-9f92-66b6e4d5e42d
+      iscommand: false
+      name: Does Remediation Allow Rule Already Exist?
+      type: condition
+      version: -1
+    taskid: 0733fb83-9dc1-4a20-9f92-66b6e4d5e42d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 2085
+        }
+      }
+  "39":
+    continueonerrortype: ""
+    id: "39"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7366b914-5c78-49c4-8651-1b351c671998
+      iscommand: false
+      name: Create New Allow Rule
+      type: title
+      version: -1
+      description: ''
+    taskid: 7366b914-5c78-49c4-8651-1b351c671998
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 2290
+        }
+      }
+  "42":
+    continueonerrortype: ""
+    id: "42"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "63"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: Allow
+      destination:
+        complex:
+          root: ExposedNICPrivateIPs
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+      destination_ports:
+        complex:
+          root: inputs.RemotePort
+      direction:
+        simple: Inbound
+      priority:
+        complex:
+          accessor: NextAvailablePriorityValues
+          root: AzurePublicExposure
+          transformers:
+          - args:
+              index:
+                value:
+                  simple: "1"
+            operator: atIndex
+      protocol:
+        complex:
+          root: inputs.RemoteProtocol
+      resource_group_name:
+        simple: ${ResourceGroupName}
+      security_group_name:
+        simple: ${NSGName}
+      security_rule_name:
+        complex:
+          root: inputs.RemotePort
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: cortex-remediation-allow-port-
+              suffix:
+                value:
+                  simple: '-'
+            operator: concat
+          - args:
+              prefix: {}
+              suffix:
+                iscontext: true
+                value:
+                  simple: ${inputs.RemoteProtocol}
+            operator: concat
+      source:
+        simple: ${inputs.RemediationAllowRanges}
+      subscription_id:
+        simple: ${Core.CoreAsset.xdm__asset__realm}
+      using:
+        simple: ${inputs.IntegrationInstance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Azure
+      description: Create a security rule.
+      id: 98dc0dfe-8831-49bb-9002-644b38d2a4a5
+      iscommand: true
+      name: Add allow rule for port ${inputs.RemotePort} and ${inputs.RemoteProtocol}
+      script: Azure|||azure-nsg-security-rule-create
+      type: regular
+      version: -1
+    taskid: 98dc0dfe-8831-49bb-9002-644b38d2a4a5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 2440
+        }
+      }
+  "44":
+    continueonerrortype: ""
+    id: "44"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "65"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: Deny
+      destination:
+        complex:
+          root: ExposedNICPrivateIPs
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+      destination_ports:
+        complex:
+          root: inputs.RemotePort
+      direction:
+        simple: Inbound
+      priority:
+        complex:
+          accessor: NextAvailablePriorityValues
+          root: AzurePublicExposure
+          transformers:
+          - args:
+              index:
+                value:
+                  simple: "0"
+            operator: atIndex
+      protocol:
+        complex:
+          root: inputs.RemoteProtocol
+      resource_group_name:
+        simple: ${ResourceGroupName}
+      security_group_name:
+        simple: ${NSGName}
+      security_rule_name:
+        complex:
+          root: inputs.RemotePort
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: cortex-remediation-deny-port-
+              suffix:
+                value:
+                  simple: '-'
+            operator: concat
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ${inputs.RemoteProtocol}
+            operator: concat
+      source:
+        simple: Internet
+      source_ports:
+        simple: '*'
+      subscription_id:
+        simple: ${Core.CoreAsset.xdm__asset__realm}
+      using:
+        simple: ${inputs.IntegrationInstance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Azure
+      description: Create a security rule.
+      id: 143d53b2-9d8b-42e0-a604-2a2368578cbc
+      iscommand: true
+      name: Add block rule for port ${inputs.RemotePort}
+      script: Azure|||azure-nsg-security-rule-create
+      type: regular
+      version: -1
+    taskid: 143d53b2-9d8b-42e0-a604-2a2368578cbc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 3285
+        }
+      }
+  "45":
+    continueonerrortype: ""
+    id: "45"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "44"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8592df6d-f210-47d1-97ef-3b27d3c7ba0b
+      iscommand: false
+      name: Create New Deny Rule
+      type: title
+      version: -1
+      description: ''
+    taskid: 8592df6d-f210-47d1-97ef-3b27d3c7ba0b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 3145
+        }
+      }
+  "46":
+    continueonerrortype: ""
+    id: "46"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "61"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: remediatedFlag
+      stringify:
+        simple: "false"
+      value:
+        simple: "true"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set remediatedFlag to true
+      id: 349eae5e-9535-4ff9-92da-f2723e2fdb60
+      iscommand: false
+      name: Set remediatedFlag to true
+      script: Set
+      type: regular
+      version: -1
+    taskid: 349eae5e-9535-4ff9-92da-f2723e2fdb60
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 3905
+        }
+      }
+  "47":
+    continueonerrortype: ""
+    id: "47"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: remediatedFlag
+      stringify:
+        simple: "false"
+      value:
+        simple: "false"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set remediatedFlag to false
+      id: bd4f3caf-4f6c-4405-97e4-74c3cd0a273a
+      iscommand: false
+      name: Set remediatedFlag to false
+      script: Set
+      type: regular
+      version: -1
+    taskid: bd4f3caf-4f6c-4405-97e4-74c3cd0a273a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 3905
+        }
+      }
+  "50":
+    continueonerrortype: ""
+    id: "50"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "52"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      address_name:
+        complex:
+          accessor: publicIpAddressId
+          root: Core.CoreAsset.xdm__asset__raw_fields.Platform Discovery.properties.networkProfile.networkInterfaces.ipConfigurations
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: publicIPAddresses/
+              fields:
+                value:
+                  simple: "2"
+            operator: Cut
+      resource_group_name:
+        simple: ${ResourceGroupName}
+      subscription_id:
+        simple: ${Core.CoreAsset.xdm__asset__realm}
+      using:
+        simple: ${inputs.IntegrationInstance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Azure
+      description: Gets the properties of a given public IP address.
+      id: 4b0bf67c-2bd2-4759-921f-65f5dfe968d6
+      iscommand: true
+      name: Get Public IP Details
+      script: Azure|||azure-vm-public-ip-details-get
+      type: regular
+      version: -1
+    taskid: 4b0bf67c-2bd2-4759-921f-65f5dfe968d6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 650
+        }
+      }
+  "52":
+    continueonerrortype: ""
+    id: "52"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "60"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: ExposedPublicIpID
+      value:
+        complex:
+          accessor: id
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Azure.Network.IPConfigurations.properties.ipAddress
+              operator: isEqualString
+              right:
+                iscontext: true
+                value:
+                  simple: inputs.PublicIP
+          root: Azure.Network.IPConfigurations
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      id: a8d3f6eb-a2ca-4f55-9ca5-f22696142822
+      iscommand: false
+      name: Store ID of Public IP Instance
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: a8d3f6eb-a2ca-4f55-9ca5-f22696142822
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 825
+        }
+      }
+  "53":
+    continueonerrortype: ""
+    id: "53"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "50"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      network_interface_name:
+        complex:
+          accessor: id
+          root: Core.CoreAsset.xdm__asset__raw_fields.Platform Discovery.properties.networkProfile.networkInterfaces
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: networkInterfaces/
+              fields:
+                value:
+                  simple: "2"
+            operator: Cut
+      resource_group_name:
+        simple: ${ResourceGroupName}
+      subscription_id:
+        simple: ${Core.CoreAsset.xdm__asset__realm}
+      using:
+        simple: ${inputs.IntegrationInstance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Azure
+      description: Gets the properties of a given network interface.
+      id: 9618ba5e-fd79-42f2-9416-ee797ebe1cf9
+      iscommand: true
+      name: Get Azure NIC Details
+      script: Azure|||azure-vm-network-interface-details-get
+      type: regular
+      version: -1
+    taskid: 9618ba5e-fd79-42f2-9416-ee797ebe1cf9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 465
+        }
+      }
+  "55":
+    continueonerrortype: ""
+    id: "55"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "57"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: ExposedNICName
+      value:
+        complex:
+          accessor: id
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Core.CoreAsset.xdm__asset__raw_fields.Platform Discovery.properties.networkProfile.networkInterfaces.ipConfigurations.publicIpAddressId
+              operator: isEqualString
+              right:
+                iscontext: true
+                value:
+                  simple: ExposedPublicIpID
+          root: Core.CoreAsset.xdm__asset__raw_fields.Platform Discovery.properties.networkProfile.networkInterfaces
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Store Interface Name where Public IP Is Used
+      id: 2685b917-6f50-492c-ad72-e1fc37b14859
+      iscommand: false
+      name: Store Interface Name where Public IP Is Used
+      script: Set
+      type: regular
+      version: -1
+    taskid: 2685b917-6f50-492c-ad72-e1fc37b14859
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 1160
+        }
+      }
+  "56":
+    continueonerrortype: ""
+    id: "56"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      integration_instance:
+        simple: ${inputs.IntegrationInstance}
+      network_security_group_name:
+        simple: ${NSGName}
+      port:
+        simple: ${inputs.RemotePort}
+      priority_count:
+        simple: "2"
+      private_ip_address:
+        simple: ${ExposedNICPrivateIPs}
+      private_ip_addresses:
+        simple: ${ExposedNICPrivateIPs}
+      protocol:
+        simple: ${inputs.RemoteProtocol}
+      resource_group_name:
+        simple: ${ResourceGroupName}
+      subscription_id:
+        simple: ${Core.CoreAsset.xdm__asset__realm}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This script identifies the first inbound Allow rule in the specified NSG that matches the criteria for network exposure. It returns details about the identified rule as well as a list of available priority numbers to insert new security rules with a higher priority.
+      id: 070dc1bf-7644-4864-9ac6-91863bbab50b
+      iscommand: false
+      name: Identify Offending Rule and Available Priorities For New Rules
+      script: AzureIdentifyNSGExposureRule
+      type: regular
+      version: -1
+    taskid: 070dc1bf-7644-4864-9ac6-91863bbab50b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 1890
+        }
+      }
+  "57":
+    continueonerrortype: ""
+    id: "57"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "58"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: NSGName
+      value:
+        complex:
+          accessor: properties.networkSecurityGroup.id
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Azure.Network.Interfaces.id
+              operator: isEqualString
+              right:
+                iscontext: true
+                value:
+                  simple: ExposedNICName
+          root: Azure.Network.Interfaces
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: networkSecurityGroups/
+              fields:
+                value:
+                  simple: "2"
+            operator: Cut
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Store Name of NSG Used By Identified Interface
+      id: a1a93a1d-b0dc-4506-88fb-67c938318481
+      iscommand: false
+      name: Store Name of NSG Used By Identified Interface
+      script: Set
+      type: regular
+      version: -1
+    taskid: a1a93a1d-b0dc-4506-88fb-67c938318481
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 1325
+        }
+      }
+  "58":
+    continueonerrortype: ""
+    id: "58"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: ExposedNICPrivateIPs
+      value:
+        complex:
+          accessor: ipConfigurations.properties.privateIPAddress
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Azure.Network.Interfaces.properties.networkSecurityGroup.id
+              operator: endWith
+              right:
+                iscontext: true
+                value:
+                  simple: NSGName
+          root: Azure.Network.Interfaces.properties
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Store Private IP(s) of Exposed NIC
+      id: 1fef233b-d0df-4720-812f-5f97846c4763
+      iscommand: false
+      name: Store Private IP(s) of Exposed NIC
+      script: Set
+      type: regular
+      version: -1
+    taskid: 1fef233b-d0df-4720-812f-5f97846c4763
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 1510
+        }
+      }
+  "59":
+    continueonerrortype: ""
+    id: "59"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "53"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f1316f10-bb5b-4818-98bc-1ced0c0e5d14
+      iscommand: false
+      name: Collect VM NIC and NSG Details
+      type: title
+      version: -1
+      description: ''
+    taskid: f1316f10-bb5b-4818-98bc-1ced0c0e5d14
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 305
+        }
+      }
+  "60":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ExposedPublicIpID
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "60"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "47"
+      "yes":
+      - "55"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check that the public IP address has been identified.
+      id: 814aa59c-5bf1-49de-a7e0-d4f79f62e538
+      iscommand: false
+      name: Was a Public IP Address Identified?
+      type: condition
+      version: -1
+    taskid: 814aa59c-5bf1-49de-a7e0-d4f79f62e538
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 980
+        }
+      }
+  "61":
+    continueonerrortype: ""
+    id: "61"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: |-
+          ## Remediation Complete
+          This exposure has been remediated by modifying Azure Network Security Groups to block access from the Internet to ${inputs.RemoteProtocol} port ${inputs.RemotePort} on Virtual Machine ${VirtualMachineName}.
+
+          Azure Subscription ID: ${Core.CoreAsset.xdm__asset__realm}.
+          Azure Resource Group: ${ResourceGroupName}.
+          Network Security Group assigned to VM NIC: ${NSGName}.
+          Rule Name Permitting Exposure: ${AzurePublicExposure.MatchingRuleName}.
+
+          **Remediation Steps Taken:**
+          ${remediation_action}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 7f383403-37c3-4506-92f9-7a7c59b10f8d
+      iscommand: false
+      name: Post Remediation Summary to War Room
+      script: Print
+      type: regular
+      version: -1
+    taskid: 7f383403-37c3-4506-92f9-7a7c59b10f8d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 4080
+        }
+      }
+  "62":
+    continueonerrortype: ""
+    id: "62"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "32"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: remediation_action
+      value:
+        simple: |-
+          ${remediation_action}
+          - Updated Existing Allow Rule: ${existingAllowRule.name}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 910522fc-e0a2-4a2f-9c8a-efde7662baeb
+      iscommand: false
+      name: Add Allow Rule Name to Remediation Action Details
+      script: Set
+      type: regular
+      version: -1
+    taskid: 910522fc-e0a2-4a2f-9c8a-efde7662baeb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2630
+        }
+      }
+  "63":
+    continueonerrortype: ""
+    id: "63"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: remediation_action
+      value:
+        simple: |-
+          ${remediation_action}
+          - Created New NSG Allow Rule: cortex-remediation-allow-port-${inputs.RemoteProtocol}-${inputs.RemotePort}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 8ae20756-f001-4268-9a96-a9c16206ec5c
+      iscommand: false
+      name: Add Allow Rule Name to Remediation Action Details
+      script: Set
+      type: regular
+      version: -1
+    taskid: 8ae20756-f001-4268-9a96-a9c16206ec5c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 2630
+        }
+      }
+  "64":
+    continueonerrortype: ""
+    id: "64"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: remediation_action
+      value:
+        simple: |-
+          ${remediation_action}
+          - Updated Existing Deny Rule: ${existingDenyRule.name}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 25519df8-6236-421b-9717-23a935aa348f
+      iscommand: false
+      name: Add Deny Rule Name to Remediation Action Details
+      script: Set
+      type: regular
+      version: -1
+    taskid: 25519df8-6236-421b-9717-23a935aa348f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3466.875
+        }
+      }
+  "65":
+    continueonerrortype: ""
+    id: "65"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "46"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: remediation_action
+      value:
+        simple: |-
+          ${remediation_action}
+          - Created New NSG Deny Rule: cortex-remediation-deny-port-${inputs.RemoteProtocol}-${inputs.RemotePort}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: da705932-83d7-4ece-95ab-76fa5ba30649
+      iscommand: false
+      name: Add Deny Rule Name to Remediation Action Details
+      script: Set
+      type: regular
+      version: -1
+    taskid: da705932-83d7-4ece-95ab-76fa5ba30649
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 3466.875
+        }
+      }
+  "66":
+    continueonerrortype: ""
+    id: "66"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "67"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_id:
+        simple: ${inputs.AssetID}
+      using:
+        simple: ${inputs.IntegrationInstance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Cortex Core - Platform
+      description: Get asset information.
+      id: 1d4a2c2e-569a-447b-a76e-cfc2ef0dea11
+      iscommand: true
+      name: Fetch VM Asset Details
+      script: Cortex Core - Platform|||core-get-asset-details
+      type: regular
+      version: -1
+    taskid: 1d4a2c2e-569a-447b-a76e-cfc2ef0dea11
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": -230
+        }
+      }
+  "67":
+    continueonerrortype: ""
+    id: "67"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "68"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: ResourceGroupName
+      value:
+        complex:
+          accessor: xdm__asset__strong_id
+          root: Core.CoreAsset
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: resourceGroups/
+              fields:
+                value:
+                  simple: "2"
+            operator: Cut
+          - args:
+              delimiter:
+                value:
+                  simple: /
+              fields:
+                value:
+                  simple: "1"
+            operator: Cut
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: c572a1b8-6c92-43b2-aa57-7c0b7672c384
+      iscommand: false
+      name: Store Azure Resource Group Name
+      script: Set
+      type: regular
+      version: -1
+    taskid: c572a1b8-6c92-43b2-aa57-7c0b7672c384
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": -50
+        }
+      }
+  "68":
+    continueonerrortype: ""
+    id: "68"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "59"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: VirtualMachineName
+      value:
+        complex:
+          accessor: xdm__asset__strong_id
+          root: Core.CoreAsset
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: virtualMachines/
+              fields:
+                value:
+                  simple: "2"
+            operator: Cut
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 5d0d8f37-8c1a-474e-b415-96683902a57d
+      iscommand: false
+      name: Store Virtual Machine Name
+      script: Set
+      type: regular
+      version: -1
+    taskid: 5d0d8f37-8c1a-474e-b415-96683902a57d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 130
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "34_35_Update": 0.65,
+      "34_46_yes": 0.13,
+      "38_34_yes": 0.2,
+      "38_39_#default#": 0.58,
+      "4_47_#default#": 0.13,
+      "60_47_#default#": 0.17
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4970,
+        "width": 1270,
+        "x": 50,
+        "y": -630
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
