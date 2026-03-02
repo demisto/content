@@ -351,7 +351,7 @@ script:
       type: string
   - arguments:
     - defaultValue: json
-      description: The format of the output (json, csv). Set to 'csv' to download the response as a file. The 'json' format inserts the response into the incident context.
+      description: The output format (JSON or CSV). Use "csv" to download the response as a file or "json" to insert it into the incident context.
       name: format
       auto: PREDEFINED
       predefined:
