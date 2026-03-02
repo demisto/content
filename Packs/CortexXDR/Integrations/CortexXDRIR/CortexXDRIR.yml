@@ -340,8 +340,9 @@ script:
     - defaultValue: 'False'
       description: "Whether to exclude Network Artifacts and File Artifacts from incident data."
       name: excluding_artifacts
-    description: Returns additional data for the specified incident, for example, related alerts, file artifacts, network artifacts, and so on.
+    description: This command is deprecated. Returns additional data for the specified incident, for example, related alerts, file artifacts, network artifacts, and so on.
     name: xdr-get-incident-extra-data
+    deprecated: true
     outputs:
     - contextPath: PaloAltoNetworksXDR.Incident.incident_id
       description: Unique ID assigned to each returned incident.
@@ -725,17 +726,19 @@ script:
     - description: The alert description.
       name: alert_description
     description: |-
-      Uploads an alert from external alert sources in Cortex XDR format. Cortex XDR displays alerts that are parsed
+      This command is deprecated. Uploads an alert from external alert sources in Cortex XDR format. Cortex XDR displays alerts that are parsed
       successfully in related incidents and views. You can send 600 alerts per minute. Each request can contain a
       maximum of 60 alerts.
     name: xdr-insert-parsed-alert
+    deprecated: true
   - arguments:
     - description: List of alerts in CEF format.
       isArray: true
       name: cef_alerts
       required: true
-    description: Upload alerts in CEF format from external alert sources. After you map CEF alert fields to Cortex XDR fields, Cortex XDR displays the alerts in related incidents and views. You can send 600 requests per minute. Each request can contain a maximum of 60 alerts.
+    description: This command is deprecated. Upload alerts in CEF format from external alert sources. After you map CEF alert fields to Cortex XDR fields, Cortex XDR displays the alerts in related incidents and views. You can send 600 requests per minute. Each request can contain a maximum of 60 alerts.
     name: xdr-insert-cef-alerts
+    deprecated: true
   - arguments:
     - description: The incident ID. Allows linking the response action to the incident that triggered it.
       name: incident_id
@@ -3098,8 +3101,9 @@ script:
       predefined:
       - 'list'
       - 'dict'
-    description: Returns information about each alert ID.
+    description: This command is deprecated. Returns information about each alert ID.
     name: xdr-get-cloud-original-alerts
+    deprecated: true
     outputs:
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event._time
       description: The timestamp of the occurrence of the event.
@@ -5003,6 +5007,104 @@ script:
       required: true
     description: Deletes correlation rules.
     name: xdr-correlation-rule-delete
+  - arguments:
+    - description: The vulnerability ID to retrieve details for.
+      name: vulnerability_id
+      required: true
+    description: Gets vulnerability details by ID.
+    name: xdr-vulnerability-details-get
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.vulnerabilityID
+      description: The unique identifier (CVE ID).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.description
+      description: Detailed description of the vulnerability.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.publishedDate
+      description: The date the vulnerability was first published.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.epss_score
+      description: The Probability of exploitability (0-1).
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.exploitMaturity
+      description: Current state of exploit availability (e.g., weaponized).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.weaponizedExploitFound
+      description: Whether a functional exploit exists in the wild.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.reportedExploited
+      description: Whether the vulnerability has been actively exploited.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.reportedExploitedByThreatActors
+      description: Whether known threat actors are exploiting this vulnerability.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.reportedExploitedByRansomware
+      description: Whether the vulnerability is used in ransomware campaigns.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.reportedExploitedByBotnets
+      description: Whether the vulnerability is being leveraged by botnet clusters.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.firstReportedThreatActor
+      description: The timestamp of the first recorded threat actor activity.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.mostRecentReportedThreatActor
+      description: The timestamp of the last recorded threat actor activity.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.cisaKevDateDue
+      description: The deadline set by CISA for federal agency remediation.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.weaknesses.cweId
+      description: The Common Weakness Enumeration ID.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.vulncheck-threat-actors
+      description: A list of specific threat actor groups associated with the vulnerability.
+      type: String
+  - description: Runs a system health check on the Cortex XDR environment.
+    name: xdr-healthcheck-run
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.HealthStatus.status
+      description: The health status of the Cortex XDR system.
+      type: String
+  - description: Gets a list of available triage presets.
+    name: xdr-endpoint-triage-preset-list
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.EndpointTriagePreset.created_by
+      description: The user or system entity that created the triage preset.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.EndpointTriagePreset.description
+      description: A brief explanation of the preset's purpose or contents.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.EndpointTriagePreset.name
+      description: The unique display name of the triage preset.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.EndpointTriagePreset.os
+      description: The operating system platform the preset targets (e.g., windows, linux, macos).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.EndpointTriagePreset.type
+      description: The category or classification of the preset (e.g., standard, custom).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.EndpointTriagePreset.uuid
+      description: The unique universal identifier (UUID) assigned to this specific preset.
+      type: String
+  - arguments:
+    - description: A comma-separated list of endpoint IDs to initiate triage on. You can find the endpoint ID under the "Inventory" section, under "All Endpoints".
+      isArray: true
+      name: endpoint_id
+      required: true
+    - description: The collector UUID to use for the triage.
+      name: collector_uuid
+    description: Initiates a forensics triage on the specified endpoints. You must have Cortex XDR with the Forensics add-on. The agent also must have the Forensics License enabled.
+    name: xdr-endpoint-triage
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.EndpointTriage.TRIAGE_ID
+      description: The unique identifier assigned to the created triage action.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.EndpointTriage.SUCCESSFUL_AGENT_IDS
+      description: A list of agent IDs where the triage action was successfully initiated.
+      type: Array
+    - contextPath: PaloAltoNetworksXDR.EndpointTriage.UNSUCCESSFUL_AGENT_IDS
+      description: A list of agent IDs where the triage action failed to initiate.
+      type: Array
   dockerimage: demisto/python3:3.12.12.7019815
   isfetch: true
   isfetch:xpanse: false
