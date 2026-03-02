@@ -2226,6 +2226,7 @@ script:
       description: Filters by the sender email address.
     - name: teams_conversation_types
       hidden: true
+      deprecated: true
       auto: PREDEFINED
       predefined:
       - ResultNotFound
