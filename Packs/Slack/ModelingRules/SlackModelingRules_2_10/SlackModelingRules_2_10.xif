@@ -6,6 +6,7 @@ filter action IN("user_login*", "user_logout*", "cli_login") //Authentication ev
     get_actor_user_id = json_extract_scalar(actor, "$['user']['id']"),
     get_actor_user_name = json_extract_scalar(actor, "$['user']['name']"),
     get_actor_user_team = json_extract_scalar(actor, "$['user']['team']"),
+    get_context_ua = json_extract_scalar(context, "$['ua']"),
     get_entity_app_scopes = json_extract_scalar_array(entity, "$.app.scopes"),
     get_entity_type = json_extract_scalar(entity, "$['type']")
 
@@ -35,6 +36,7 @@ filter action IN("user_login*", "user_logout*", "cli_login") //Authentication ev
     xdm.source.port = to_integer(0),
     xdm.target.port = to_integer(0),
     xdm.network.session_id = json_extract_scalar(context, "$['session_id']"),
+
     xdm.source.user.user_type = XDM_CONST.USER_TYPE_REGULAR,
     xdm.source.user.scope = XDM_CONST.SCOPE_TYPE_SAAS,
     xdm.source.user.upn = get_actor_user_email,
@@ -47,7 +49,7 @@ filter action IN("user_login*", "user_logout*", "cli_login") //Authentication ev
         get_actor_user_id CONTAINS "USLACKUSER", XDM_CONST.IDENTITY_TYPE_UNKNOWN,
         XDM_CONST.IDENTITY_TYPE_USER
     ),
-    xdm.source.user_agent = json_extract_scalar(context, "$['ua']"),
+    xdm.source.user_agent = get_context_ua,
     xdm.source.user.full_domain_name = arrayindex(array_actor_user_email, 1),
     xdm.source.user.domain = arrayindex(array_actor_user_email, 1),
     xdm.source.user.first_name = if(
@@ -61,6 +63,14 @@ filter action IN("user_login*", "user_logout*", "cli_login") //Authentication ev
         arrayindex(regextract(get_actor_user_name, "\s+(\S+)$"),0)
     ),
     xdm.source.user.groups = if(get_actor_user_team != null, arraycreate(get_actor_user_team)),
+    xdm.source.host.os = arrayindex(regextract(get_context_ua, "\(([^;)]+)"),0),
+    xdm.source.host.os_family = if(
+        get_context_ua CONTAINS "Windows", XDM_CONST.OS_FAMILY_WINDOWS,
+        get_context_ua CONTAINS "Android", XDM_CONST.OS_FAMILY_ANDROID,
+        get_context_ua IN("*iPhone*", "*iPad*"), XDM_CONST.OS_FAMILY_IOS,
+        get_context_ua IN("*Macintosh*", "*Mac OS X*"), XDM_CONST.OS_FAMILY_MACOS,
+        get_context_ua IN("*Linux*", "*X11*"), XDM_CONST.OS_FAMILY_LINUX,
+        get_context_ua),
     xdm.source.cloud.project = json_extract_scalar(context, "$['location']['domain']"),
     xdm.source.cloud.project_id = json_extract_scalar(context, "$['location']['id']"),
 
@@ -68,46 +78,13 @@ filter action IN("user_login*", "user_logout*", "cli_login") //Authentication ev
         json_extract_scalar(actor, "$['type']") ~= "[Uu]ser", XDM_CONST.LOGON_TYPE_INTERACTIVE,
         XDM_CONST.LOGON_TYPE_SERVICE),
 
-    xdm.target.resource.type = get_entity_type,
-    xdm.target.resource.id = coalesce(
-        json_extract_scalar(entity, "$['app']['id']"),
-        json_extract_scalar(entity, "$['enterprise']['id']"),
-        json_extract_scalar(entity, "$['role']['id']"),
-        json_extract_scalar(entity, "$['workflow']['id']"),
-        json_extract_scalar(entity, "$['channel']['id']"),
-        json_extract_scalar(entity, "$['file']['id']"),
-        json_extract_scalar(entity, "$['workspace']['id']"),
-        json_extract_scalar(entity, "$['user']['id']"),
-        json_extract_scalar(entity, "$['account_type_role']['id']"),
-        json_extract_scalar(entity, "$['message']['id']"),
-        json_extract_scalar(entity, "$['usergroups']['id']"),
-        json_extract_scalar(entity, "$['huddles']['id']")
-    ),
-    xdm.target.resource.name = coalesce(
-        json_extract_scalar(entity, "$['app']['name']"),
-        json_extract_scalar(entity, "$['enterprise']['name']"),
-        json_extract_scalar(entity, "$['role']['name']"),
-        json_extract_scalar(entity, "$['workflow']['name']"),
-        json_extract_scalar(entity, "$['channel']['name']"),
-        json_extract_scalar(entity, "$['file']['name']"),
-        json_extract_scalar(entity, "$['workspace']['name']"),
-        json_extract_scalar(entity, "$['user']['name']"),
-        json_extract_scalar(entity, "$['account_type_role']['name']"),
-        json_extract_scalar(entity, "$['message']['name']"),
-        json_extract_scalar(entity, "$['usergroups']['name']"),
-        json_extract_scalar(entity, "$['huddles']['name']")
-    ),
     xdm.source.application.name = json_extract_scalar(entity, "$['app']['name']"),
     xdm.source.application.bundle_id = json_extract_scalar(entity, "$['app']['id']"),
 
     xdm.target.user.upn = json_extract_scalar(entity, "$['user']['email']"),
-    xdm.target.user.scope = if( get_entity_type = "user", XDM_CONST.SCOPE_TYPE_SAAS),
+    xdm.target.user.scope = if(get_entity_type = "user", XDM_CONST.SCOPE_TYPE_SAAS),
     xdm.target.user.roles = get_entity_app_scopes,
-    xdm.target.user.identity_type = if(
-        get_entity_type = "user", XDM_CONST.IDENTITY_TYPE_USER,
-        get_entity_type = "app", XDM_CONST.IDENTITY_TYPE_APPLICATION,
-        XDM_CONST.IDENTITY_TYPE_VIRTUAL
-    ),
+    xdm.target.user.identity_type = if(get_entity_type = "user", XDM_CONST.IDENTITY_TYPE_USER),
     xdm.target.user.groups = arraycreate(json_extract_scalar(entity, "$['user']['team']")),
     xdm.target.user.identifier = json_extract_scalar(entity, "$['user']['id']"),
     xdm.target.user.username = json_extract_scalar(entity, "$['user']['name']"),
