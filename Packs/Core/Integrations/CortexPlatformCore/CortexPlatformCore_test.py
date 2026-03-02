@@ -10027,6 +10027,8 @@ def test_list_findings_command_comma_separated_values(mocker: MockerFixture):
     call_args = mock_get_webapp_data.call_args[0][0]
     filter_dict = call_args["filter_data"]["filter"]
     assert "AND" in filter_dict
+
+
 def test_send_endpoint_heartbeat_command_success(mocker):
     """
     Given:
