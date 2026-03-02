@@ -118,7 +118,7 @@ def http_request(method, url_suffix, params=None, headers=HEADERS, threshold=THR
         return_error(str(e))
 
 
-def abusech_hunting_http_request(headers: dict, payload: dict):
+def abusech_hunting_http_request(headers: dict, payload: dict) -> requests.Response:
     """
     Dedicated request helper for Abuse.ch Hunting API.
     Sends a POST request with a JSON body to the base URL.
