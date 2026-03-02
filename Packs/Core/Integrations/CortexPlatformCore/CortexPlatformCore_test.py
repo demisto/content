@@ -9513,8 +9513,6 @@ def test_get_case_resolution_statuses_command(mocker):
     mock_client.get_case_resolution_statuses.return_value = {"done": {"caseTasks": []}}
     mock_client.get_playbooks_metadata.return_value = []
 
-    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="mock_table")
-
     args = {"case_id": "123,456"}
     result = get_case_resolution_statuses(mock_client, args)
 
@@ -9523,6 +9521,36 @@ def test_get_case_resolution_statuses_command(mocker):
     assert len(result.outputs) == 2
     assert len(result.raw_response) == 2
     assert mock_client.get_case_resolution_statuses.call_count == 2
+
+
+def test_get_case_resolution_statuses_command_with_data(mocker):
+    """
+    GIVEN:
+        - A mocked client and arguments with a case ID that has resolution data.
+    WHEN:
+        - get_case_resolution_statuses is called.
+    THEN:
+        - The readable output contains a properly formatted table with task data.
+    """
+    from CortexPlatformCore import get_case_resolution_statuses
+
+    mock_client = mocker.Mock()
+    mock_client.get_case_resolution_statuses.return_value = {
+        "done": {"caseTasks": [{"id": "pb1", "taskName": "Task 1"}]},
+        "inProgress": {"caseTasks": []},
+        "pending": {"caseTasks": []},
+        "recommended": {"caseTasks": []},
+    }
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "pb1", "name": "Playbook 1", "comment": "Comment 1"},
+    ]
+
+    args = {"case_id": "123"}
+    result = get_case_resolution_statuses(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert len(result.outputs) == 1
+    assert len(result.outputs[0]) == 1  # Only one task in "done"
 
 
 def test_get_ai_model_activity_command_empty_response(mocker: MockerFixture):
@@ -9649,3 +9677,338 @@ def test_get_ai_model_activity_command_asset_id_list_format(mocker: MockerFixtur
     assert len(result.outputs) == 2
     assert result.outputs[0]["asset_id"] == "model-a"
     assert result.outputs[1]["asset_id"] == "model-b"
+
+
+def test_get_extra_data_for_case_id_command_missing_case_id(mocker: MockerFixture):
+    """
+    GIVEN:
+        No case_id is provided in args.
+    WHEN:
+        The get_extra_data_for_case_id_command function is called.
+    THEN:
+        A DemistoException is raised with a descriptive error message.
+    """
+    from CortexPlatformCore import get_extra_data_for_case_id_command
+
+    mock_client = mocker.Mock()
+    args = {}
+
+    with pytest.raises(DemistoException, match="case_id is required"):
+        get_extra_data_for_case_id_command(mock_client, args)
+
+
+def test_get_extra_data_for_case_id_command_invalid_case_id(mocker: MockerFixture):
+    """
+    GIVEN:
+        A non-numeric case_id is provided in args.
+    WHEN:
+        The get_extra_data_for_case_id_command function is called.
+    THEN:
+        A DemistoException is raised indicating the case_id must be numeric.
+    """
+    from CortexPlatformCore import get_extra_data_for_case_id_command
+
+    mock_client = mocker.Mock()
+    args = {"case_id": "invalid-id"}
+
+    with pytest.raises(DemistoException, match="must be a valid numeric identifier"):
+        get_extra_data_for_case_id_command(mock_client, args)
+
+
+def test_get_cases_command_enrichment_fallback_over_10_cases(mocker: MockerFixture):
+    """
+    GIVEN:
+        get_enriched_case_data=true and more than 10 cases are returned.
+    WHEN:
+        The get_cases_command function is called.
+    THEN:
+        - A warning entry (entry_type=1) is returned instead of an error (entry_type=4).
+        - Standard case data is still returned in the output.
+    """
+    from CortexPlatformCore import get_cases_command
+
+    mock_client = mocker.Mock()
+    # Return 11 cases to exceed the enrichment limit
+    cases_data = [{"CASE_ID": i} for i in range(1, 12)]
+    mock_client.get_webapp_data.return_value = {"reply": {"DATA": cases_data, "FILTER_COUNT": "11"}}
+    mapped_cases = [{"case_id": str(i)} for i in range(1, 12)]
+    mocker.patch("CortexPlatformCore.map_case_format", return_value=mapped_cases)
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+
+    args = {"get_enriched_case_data": "true"}
+    result = get_cases_command(mock_client, args)
+
+    # Should have 3 results: metadata + warning entry + standard case data
+    assert len(result) == 3
+    # result[0] is CasesMetadata
+    assert result[0].outputs_prefix == "Core.CasesMetadata"
+    # result[1] is the warning (entry_type=1, not error entry_type=4)
+    assert result[1].entry_type == 1
+    assert "Note:" in result[1].readable_output
+    assert "standard case data" in result[1].readable_output
+    # result[2] contains the actual case data
+    assert result[2].outputs is not None
+    assert len(result[2].outputs) == 11
+
+
+class TestProfileCommands:
+    def test_create_profile_modules_by_type_malware_defaults(self):
+        """
+        Given:
+            No arguments provided.
+        When:
+            Calling create_profile_modules_by_type with "Malware" profile type.
+        Then:
+            Default malware profile modules are returned.
+        """
+        from CortexPlatformCore import create_profile_modules_by_type
+
+        args = {}
+        modules = create_profile_modules_by_type(args, "Malware")
+
+        assert modules["scanEndpoints"]["periodicScan"]["mode"] == "disabled"
+        assert modules["aspFiles"]["mode"] == "disabled"
+        assert modules["ransomware"]["mode"] == "block"
+
+    def test_create_profile_modules_by_type_malware_custom(self):
+        """
+        Given:
+            Custom arguments for scanEndpoints and ransomware.
+        When:
+            Calling create_profile_modules_by_type with "Malware" profile type.
+        Then:
+            Custom malware profile modules are returned reflecting the arguments.
+        """
+        from CortexPlatformCore import create_profile_modules_by_type, Profile
+
+        args = {Profile.FIELDS["scanEndpoints"]: "enabled", Profile.FIELDS["ransomware"]: "report"}
+        modules = create_profile_modules_by_type(args, "Malware")
+
+        assert modules["scanEndpoints"]["periodicScan"]["mode"] == "enabled"
+        assert modules["ransomware"]["mode"] == "report"
+
+    def test_create_profile_modules_by_type_exploit_defaults(self):
+        """
+        Given:
+            No arguments provided.
+        When:
+            Calling create_profile_modules_by_type with "Exploit" profile type.
+        Then:
+            Default exploit profile modules are returned.
+        """
+        from CortexPlatformCore import create_profile_modules_by_type
+
+        args = {}
+        modules = create_profile_modules_by_type(args, "Exploit")
+
+        assert modules["vulnerableApps"]["mode"] == "block"
+        assert modules["logicalExploits"]["mode"] == "block"
+
+    def test_create_profile_command_success(self, mocker):
+        """
+        Given:
+            Valid arguments for creating a profile.
+        When:
+            Calling create_profile_command.
+        Then:
+            The profile is created successfully and the result contains the profile ID.
+        """
+        from CortexPlatformCore import create_profile_command, Client
+
+        mock_client = mocker.Mock(spec=Client)
+        mock_client.create_profile.return_value = {"reply": "12345"}
+
+        args = {"profile_name": "Test Profile", "profile_description": "Test Description"}
+
+        result = create_profile_command(mock_client, args, "Malware")
+
+        assert result.outputs["profile_id"] == "12345"
+        assert "Profile 12345 created successfully" in result.readable_output
+
+        mock_client.create_profile.assert_called_once()
+        call_args = mock_client.create_profile.call_args[0][0]
+        assert call_args["request_data"]["name"] == "Test Profile"
+        assert call_args["request_data"]["profile_type"] == "Malware"
+
+    def test_create_profile_command_invalid_arg(self, mocker):
+        """
+        Given:
+            Invalid argument for ransomware protection.
+        When:
+            Calling create_profile_command.
+        Then:
+            A DemistoException is raised indicating the invalid argument.
+        """
+        from CortexPlatformCore import create_profile_command, Client, DemistoException
+
+        mock_client = mocker.Mock(spec=Client)
+
+        args = {"profile_name": "Test Profile", "ransomware_protection": "invalid_value"}
+
+        with pytest.raises(DemistoException, match="Invalid value 'invalid_value' for argument 'ransomware_protection'"):
+            create_profile_command(mock_client, args, "Malware")
+
+    def test_update_profile_command_success(self, mocker):
+        """
+        Given:
+            Valid arguments for updating a profile.
+        When:
+            Calling update_profile_command.
+        Then:
+            The profile is updated successfully.
+        """
+        from CortexPlatformCore import update_profile_command, Client, Profile
+
+        mock_client = mocker.Mock(spec=Client)
+        mock_client.get_profile.return_value = {
+            "reply": {
+                "PROFILE_NAME": "Old Name",
+                "PROFILE_DESCRIPTION": "Old Desc",
+                "PROFILE_MODULES": {"ransomware": {"mode": {"value": "block"}}},
+            }
+        }
+        mock_client.update_profile.return_value = {}
+
+        args = {"profile_id": "12345", "profile_name": "New Name", Profile.FIELDS["ransomware"]: "report"}
+
+        result = update_profile_command(mock_client, args)
+
+        assert "Profile 12345 updated successfully" in result.readable_output
+
+        mock_client.update_profile.assert_called_once()
+        call_args = mock_client.update_profile.call_args[0][0]
+        assert call_args["profile_id"] == "12345"
+        assert call_args["update_data"]["PROFILE_NAME"] == "New Name"
+        assert call_args["update_data"]["PROFILE_MODULES"]["ransomware"]["mode"]["value"] == "report"
+
+    def test_update_profile_command_invalid_arg(self, mocker):
+        """
+        Given:
+            Invalid argument for ransomware protection.
+        When:
+            Calling update_profile_command.
+        Then:
+            A DemistoException is raised indicating the invalid argument.
+        """
+        from CortexPlatformCore import update_profile_command, Client, DemistoException
+
+        mock_client = mocker.Mock(spec=Client)
+
+        args = {"profile_id": "12345", "ransomware_protection": "invalid_value"}
+
+        with pytest.raises(DemistoException, match="Invalid value 'invalid_value' for argument 'ransomware_protection'"):
+            update_profile_command(mock_client, args)
+
+    def test_update_profile_command_multiple_invalid_args(self, mocker):
+        """
+        Given:
+            Multiple invalid arguments.
+        When:
+            Calling update_profile_command.
+        Then:
+            A DemistoException is raised listing all invalid arguments.
+        """
+        from CortexPlatformCore import update_profile_command, Client, DemistoException
+
+        mock_client = mocker.Mock(spec=Client)
+
+        args = {
+            "profile_id": "12345",
+            "ransomware_protection": "invalid_value_1",
+            "cryptominers_protection": "invalid_value_2",
+        }
+
+        with pytest.raises(DemistoException) as excinfo:
+            update_profile_command(mock_client, args)
+
+        assert "Invalid value 'invalid_value_1' for argument 'ransomware_protection'" in str(excinfo.value)
+        assert "Allowed values are: block, disabled, report" in str(excinfo.value)
+        assert "Invalid value 'invalid_value_2' for argument 'cryptominers_protection'" in str(excinfo.value)
+        assert "Allowed values are: block, disabled, report" in str(excinfo.value)
+
+    def test_update_profile_command_not_found(self, mocker):
+        """
+        Given:
+            A profile ID that does not exist.
+        When:
+            Calling update_profile_command.
+        Then:
+            A DemistoException is raised indicating the profile doesn't exist.
+        """
+        from CortexPlatformCore import update_profile_command, Client, DemistoException
+
+        mock_client = mocker.Mock(spec=Client)
+        mock_client.get_profile.return_value = {"reply": None}
+
+        args = {"profile_id": "12345"}
+
+        with pytest.raises(DemistoException, match="Profile 12345 doesn't exist"):
+            update_profile_command(mock_client, args)
+
+    def test_delete_profile_command_success(self, mocker):
+        """
+        Given:
+            Valid profile IDs to delete.
+        When:
+            Calling delete_profile_command.
+        Then:
+            The profiles are deleted successfully.
+        """
+        from CortexPlatformCore import delete_profile_command, Client
+
+        mock_client = mocker.Mock(spec=Client)
+        mock_client.delete_profile.return_value = {}
+
+        args = {"profile_ids": "12345,67890"}
+
+        result = delete_profile_command(mock_client, args)
+
+        assert "Your request was sent successfully." in result.readable_output
+        mock_client.delete_profile.assert_called_once_with(["12345", "67890"])
+
+
+def test_send_endpoint_heartbeat_command_success(mocker):
+    """
+    Given:
+        - A client and valid arguments with an endpoint ID.
+    When:
+        - send_endpoint_heartbeat_command is called.
+    Then:
+        - The client's perform_endpoint_heartbeat method is called with the correct JSON data.
+        - A CommandResults object is returned with a success message.
+    """
+    from CortexPlatformCore import send_endpoint_heartbeat_command, Client
+
+    mock_client = mocker.Mock(spec=Client)
+    args = {"endpoint_id": "endpoint-123"}
+
+    result = send_endpoint_heartbeat_command(mock_client, args)
+
+    expected_json_data = {
+        "request_data": {
+            "endpoint_id": "endpoint-123",
+            "call_home_type": 6,
+        }
+    }
+
+    mock_client.send_endpoint_heartbeat.assert_called_once_with(expected_json_data)
+    assert result.readable_output == "Heartbeat sent successfully for endpoint endpoint-123"
+
+
+def test_send_endpoint_heartbeat_command_missing_id(mocker):
+    """
+    Given:
+        - A client and arguments missing the endpoint ID.
+    When:
+        - send_endpoint_heartbeat_command is called.
+    Then:
+        - A ValueError is raised indicating that endpoint_id is required.
+    """
+    from CortexPlatformCore import send_endpoint_heartbeat_command, Client
+
+    mock_client = mocker.Mock(spec=Client)
+    args = {}
+
+    with pytest.raises(ValueError, match="endpoint_id is required"):
+        send_endpoint_heartbeat_command(mock_client, args)
