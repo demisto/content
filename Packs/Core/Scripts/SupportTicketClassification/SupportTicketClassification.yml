@@ -1,0 +1,77 @@
+commonfields:
+  id: SupportTicketClassification
+  version: -1
+name: SupportTicketClassification
+isllm: true
+promptConfig:
+  temperature: 0.0
+  maxOutputTokens: 1000
+  webSearch: false
+userprompt: |-
+ 
+
+  ## User-Provided Ticket Details
+
+  - **Description**: ${description}
+
+
+  ## Available Taxonomy
+
+  The taxonomy below is a list of dictionaries. Each dictionary has exactly one key (the issue_category) whose value is a list of allowed problem_concentrations for that category. You MUST select values ONLY from this taxonomy.
+
+  ${taxonomy}
+
+  ## Your Task
+
+  1. Carefully read the ticket description and all provided details.
+  2. From the available **issue_category** values, select the single most appropriate category that matches the described issue.
+  3. From the **problem_concentrations** that belong ONLY to the selected category, select the single most appropriate sub-group. Each category has its own set of problem concentrations — do NOT mix them across categories.
+  4. If no problem concentration clearly fits within the selected category, select the closest match from that category's available options. If a category contains "Option not available", only use it as a last resort.
+
+  ## Output Format
+
+  You MUST respond with EXACTLY one line in the following format and nothing else:
+
+  <selected_issue_category>|||<selected_problem_concentration>
+
+  - Use `|||` (three pipe characters) as the delimiter between the two values.
+  - Do NOT include any explanation, reasoning, markdown, or extra text.
+  - Do NOT wrap the output in quotes or code blocks.
+
+  Example output:
+  XDR Agent|||XDR Agent for Enterprise - Linux
+systemprompt: |-
+
+  Rules:
+  1. You MUST only select values that exist in the provided taxonomy. Never invent or hallucinate categories or problem concentrations.
+  2. You MUST return exactly one issue_category and exactly one problem_concentration.
+  3. Your output MUST be a single line with the two values separated by `|||` (three pipe characters). No other text, explanation, or formatting is allowed.
+  4. Base your classification on the ticket description, issue impact, issue frequency, and timing information.
+  5. If the description is ambiguous, prefer the category and concentration that covers the broadest relevant area.
+  6. Consider the issue_impact and issue_frequency as secondary signals to refine your classification.
+type: python
+tags: []
+outputs:
+- contextPath: Core.SupportTicketClassification.result
+  description: 'The classification result as a delimited string in the format: issue_category|||problem_concentration. Use the Split transformer with delimiter ||| to parse.'
+  type: string
+args:
+- name: description
+  required: true
+  description: The user-provided description of the support issue.
+- name: taxonomy
+  required: true
+  description: 'The support ticket taxonomy as a single string. Structure: a list of dictionaries where each dictionary has one key (the issue_category) mapped to a list of its allowed problem_concentrations. Example: [{"Agent": ["Communication", "Device Control"]}, {"Modules": ["AI Security", "Identity Security"]}]. Obtained from the core-get-support-ticket-taxonomy command output.'
+comment: Classifies a support ticket by selecting the most appropriate issue category and problem concentration from a dynamically provided taxonomy, based on user-provided ticket details. The taxonomy argument expects the string output of core-get-support-ticket-taxonomy (a list of dicts mapping each issue_category to its problem_concentrations). Returns a delimited string parseable with the Split transformer using delimiter |||.
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.12.12.6391686
+fromversion: 8.13.0
+tests:
+- No tests
+marketplaces:
+- platform
+supportedModules:
+- agentix
+- xsiam
+- edr
