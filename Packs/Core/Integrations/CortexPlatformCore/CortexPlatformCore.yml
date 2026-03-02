@@ -4021,12 +4021,9 @@ script:
       description: Retrieves the complete support ticket taxonomy including all issue categories and their associated problem concentrations.
       arguments: []
       outputs:
-        - contextPath: Core.SupportTicketTaxonomy.issue_category
-          description: The issue category (SME area). Maps to the issue_category argument of core-fill-support-ticket.
+        - contextPath: Core.SupportTicketTaxonomy
+          description: A mapping of support issue categories to their specific problem concentrations.Each key represents an 'issue_category', and its associated list represents the valid 'problem_concentrations' for that category.
           type: String
-        - contextPath: Core.SupportTicketTaxonomy.problem_concentrations
-          description: List of problem concentrations (sub-groups) within the issue category. Each value maps to the problem_concentration argument of core-fill-support-ticket.
-          type: Unknown
     - name: core-verify-support-ticket-permission
       description: Verifies whether the current user has the required permissions to manage support tickets. Checks both user CSP permission and tenant entitlement.
       arguments: []
