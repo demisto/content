@@ -22,7 +22,7 @@ from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, FileType
 from demisto_sdk.commands.common.logger import DEFAULT_CONSOLE_THRESHOLD, logging_setup
 from demisto_sdk.commands.common.tools import find_type
 from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
-from pkg_resources import get_distribution
+from importlib.metadata import version
 from ruamel.yaml import YAML
 
 DEFAULT_CONFIG_CATEGORY = "xsoar_best_practices_path_based_validations"
@@ -120,7 +120,7 @@ def ConstantTemporaryDirectory(path):
 
 def log_demisto_sdk_version():
     try:
-        demisto.debug(f'Using demisto-sdk version {get_distribution("demisto-sdk").version}')
+        demisto.debug(f'Using demisto-sdk version {version("demisto-sdk")}')
     except Exception as e:
         demisto.debug(f"Could not get demisto-sdk version. Error: {e}")
 
