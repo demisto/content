@@ -1,0 +1,515 @@
+contentitemexportablefields:
+  contentitemfields: {}
+description: This playbook handles exposure issue remediation for cloud hosted Virtual Machines by modifying cloud network security settings to block public access to the exposed service port.
+id: 'Cortex EM - AWS VM Exposure Remediation'
+inputSections:
+- description: Generic group for inputs
+  inputs: []
+  name: General (Inputs group)
+inputs: []
+name: Cortex EM - AWS VM Exposure Remediation
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs: []
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d20ee622-b5c3-4968-8e15-86a7a6cc9dd6
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: d20ee622-b5c3-4968-8e15-86a7a6cc9dd6
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -1170
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4e8583c6-a9a7-47de-832d-7b2343bfe76d
+      iscommand: false
+      name: |
+        Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 4e8583c6-a9a7-47de-832d-7b2343bfe76d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 480
+        }
+      }
+  "31":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: remediatedFlag
+          operator: isTrue
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "31"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "48"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if remediation was completed from the previous playbook.
+      id: cc675f85-59e1-441a-81ae-e694e1697230
+      iscommand: false
+      name: Was remediation completed?
+      type: condition
+      version: -1
+    taskid: cc675f85-59e1-441a-81ae-e694e1697230
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 70
+        }
+      }
+  "32":
+    continueonerrortype: ""
+    id: "32"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Remediation didn't complete. This could be due to missing cloud integrations or instances (such as AWS), or other issues. Please investigate further to determine the exact cause.
+      id: 5708da0a-ca14-4950-9c13-066edd7fa2f6
+      iscommand: false
+      name: Automated Remediation Failed. See Work Plan for more information.
+      type: regular
+      version: -1
+    taskid: 5708da0a-ca14-4950-9c13-066edd7fa2f6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 290
+        }
+      }
+  "34":
+    continueonerrortype: ""
+    id: "34"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "35"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_id:
+        simple: ${issue.asset_ids}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Cortex Core - Platform
+      description: Get asset information.
+      id: 1eadf675-f777-40ae-92fe-847f3b212cbd
+      iscommand: true
+      name: Get Asset Details
+      script: Cortex Core - Platform|||core-get-asset-details
+      type: regular
+      version: -1
+    taskid: 1eadf675-f777-40ae-92fe-847f3b212cbd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -1000
+        }
+      }
+  "35":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Core.CoreAsset.xdm__asset__type__name
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Service
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Core.CoreAsset.xdm__asset__type__class
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: External Surface
+                root: Core.CoreAsset
+          operator: isExists
+          right:
+            value: {}
+      - - left:
+            iscontext: true
+            value:
+              simple: Core.CoreAsset.xdm__asset__relations
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "35"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "38"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if an asset was returned from the last command.
+      id: ffe5d76a-28cf-45fc-b0b6-cff6b1399427
+      iscommand: false
+      name: Was a Service and Related Asset found?
+      type: condition
+      version: -1
+    taskid: ffe5d76a-28cf-45fc-b0b6-cff6b1399427
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -843.125
+        }
+      }
+  "38":
+    continueonerrortype: ""
+    id: "38"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "40"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: RelatedAssets
+      value:
+        simple: ${Core.CoreAsset.xdm__asset__relations}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 416082bd-f454-44ab-9773-037a0ec9be10
+      iscommand: false
+      name: Store Related Assets
+      script: Set
+      type: regular
+      version: -1
+    taskid: 416082bd-f454-44ab-9773-037a0ec9be10
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -640
+        }
+      }
+  "40":
+    continueonerrortype: ""
+    id: "40"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "41"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_id:
+        simple: ${RelatedAssets.asset_id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Cortex Core - Platform
+      description: Get asset information.
+      id: 4f9e318b-e62b-482a-a909-f32f6f59ec72
+      iscommand: true
+      name: Get Related Asset Details
+      script: Cortex Core - Platform|||core-get-asset-details
+      type: regular
+      version: -1
+    taskid: 4f9e318b-e62b-482a-a909-f32f6f59ec72
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -490
+        }
+      }
+  "41":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Core.CoreAsset.xdm__asset__type__category
+          operator: isEqualString
+          right:
+            value:
+              simple: VM Instance
+      label: "yes"
+    continueonerrortype: ""
+    id: "41"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "46"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check that VM asset details were fetched.
+      id: 38efc530-59d0-4d26-a9da-912c8d16f4ff
+      iscommand: false
+      name: Is there a VM Instance Asset?
+      type: condition
+      version: -1
+    taskid: 38efc530-59d0-4d26-a9da-912c8d16f4ff
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -350
+        }
+      }
+  "46":
+    continueonerrortype: ""
+    id: "46"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "31"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AssetID:
+        complex:
+          accessor: xdm__asset__id
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Core.CoreAsset.xdm__asset__type__category
+              operator: isEqualString
+              right:
+                value:
+                  simple: VM Instance
+          root: Core.CoreAsset
+      PublicIP:
+        complex:
+          accessor: xdm__host__ipv4_addresses
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Core.CoreAsset.xdm__asset__type__category
+              operator: isEqualString
+              right:
+                value:
+                  simple: Service
+          root: Core.CoreAsset
+      RemotePort:
+        complex:
+          accessor: xdm__port
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Core.CoreAsset.xdm__asset__type__category
+              operator: isEqualString
+              right:
+                value:
+                  simple: Service
+          root: Core.CoreAsset
+      RemoteProtocol:
+        complex:
+          accessor: xdm__ip_protocol
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Core.CoreAsset.xdm__asset__type__category
+              operator: isEqualString
+              right:
+                value:
+                  simple: Service
+          root: Core.CoreAsset
+          transformers:
+          - operator: toLowerCase
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        This playbook identifies the Security Group(s) used on the EC2 interface with the given public IP. It then determines which rules allow access to the interface on the given port and protocol and creates a new copy of the Security Group that has only the identified rules removed. The EC2 interface is then updated to use the modified security group(s). The original Security Groups are left unmodified so that the remediated copy is only applied to the exposed EC2 instance.
+      id: 3458c7ea-fd9d-40ae-b8ea-643ce8ab4a0a
+      iscommand: false
+      name: Remediate Exposure via EC2 Security Groups
+      playbookId: 'AWS - EC2 Instance Security Group Remediation'
+      type: playbook
+      version: -1
+    taskid: 3458c7ea-fd9d-40ae-b8ea-643ce8ab4a0a
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -115
+        }
+      }
+  "48":
+    continueonerrortype: ""
+    id: "48"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      status:
+        simple: Resolved - Fixed
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.alert.status
+      id: 771625c0-fe66-41d4-ab1a-b4c145332eaa
+      iscommand: true
+      name: Resolve Issue As Fixed
+      script: Builtin|||setIssueStatus
+      type: regular
+      version: -1
+    taskid: 771625c0-fe66-41d4-ab1a-b4c145332eaa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 290
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "35_32_#default#": 0.21,
+      "35_38_yes": 0.55,
+      "41_32_#default#": 0.2
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1710,
+        "width": 890,
+        "x": 160,
+        "y": -1170
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
