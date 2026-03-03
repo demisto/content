@@ -630,7 +630,6 @@ class Client(CoreClient):
             url_suffix="/issue/search",
             json_data=request_data,
         )
-        # return res
         return res.get("reply", {}).get("DATA", [])
 
     def create_issue(self, request_data: dict):
@@ -1953,11 +1952,9 @@ def list_issues_command(client: Client, args: Dict) -> CommandResults:
             sort_field = "id"
         request_data["request_data"]["sort"] = {"field": sort_field, "keyword": sort_order}
 
-    # TODO decide if to keep
     request_data["request_data"]["include_fields"] = ["custom_fields", "normalized_fields"]
 
     issues = client.list_issues(request_data)
-    demisto.debug(f"Results {issues}")
 
     readable_output = tableToMarkdown(
         name="Issues",
