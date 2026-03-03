@@ -3929,10 +3929,8 @@ script:
       arguments:
         - name: description
           description: A detailed description of the issue. Include error messages/codes or other identifying details. Limited to 25-32000 chars.
-          required: true
         - name: contact_number
           description: The preferred contact number for follow-up.
-          required: true
         - name: issue_frequency
           auto: PREDEFINED
           predefined:
