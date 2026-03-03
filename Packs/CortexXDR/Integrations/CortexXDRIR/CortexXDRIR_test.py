@@ -4093,6 +4093,4 @@ def test_update_issue_command(args, expected_update_data):
         result = update_issue_command(client, args)
 
         assert result.readable_output == f"Issue with ID {args['issue_id']} updated successfully"
-        mock_update.assert_called_with(
-            args["issue_id"], {"request_data": {"update_data": expected_update_data}}
-        )
+        mock_update.assert_called_with(args["issue_id"], {"request_data": {"update_data": expected_update_data}})
