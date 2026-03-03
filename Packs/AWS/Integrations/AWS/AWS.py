@@ -5407,12 +5407,14 @@ class EC2:
             {
                 "KeyPairIds": argToList(args.get("key_pair_ids")),
                 "KeyNames": argToList(args.get("key_names")),
-                "Filters": parse_filter_field(args.get("filters")) if args.get("filters") else None,
+                "Filters": parse_filter_field(args.get("filters")),
                 "IncludePublicKey": arg_to_bool_or_none(args.get("include_public_key")),
             }
         )
+
         if not kwargs.get("KeyPairIds") and not kwargs.get("KeyNames"):
             kwargs.update(build_pagination_kwargs(args))
+
         print_debug_logs(client, f"Describing key pairs with parameters: {kwargs}")
         response = client.describe_key_pairs(**kwargs)
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
