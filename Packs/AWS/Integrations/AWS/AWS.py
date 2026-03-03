@@ -132,7 +132,7 @@ def process_instance_data(instance: Dict[str, Any]) -> Dict[str, Any]:
 
 def build_pagination_kwargs(
     args: Dict[str, Any],
-    minimum_limit: int = 0,
+    minimum_limit: int = 1,
     max_limit: int = MAX_LIMIT_VALUE,
     next_token_name: str = "NextToken",
     limit_name: str = "MaxResults",
@@ -4920,7 +4920,7 @@ class EC2:
             outputs_key_field="FleetId",
             outputs=outputs,
             readable_output=tableToMarkdown(
-                "AWS EC2 Fleet", outputs, headers=["FleetId"], removeNull=True, headerTransform=pascalToSpace
+                "The AWS EC2 Fleet was created successfully", outputs, headers=["FleetId"], removeNull=True, headerTransform=pascalToSpace
             ),
             raw_response=response,
         )
@@ -5013,7 +5013,7 @@ class EC2:
 
         # Add pagination if no fleet_ids specified
         if not kwargs.get("FleetIds"):
-            kwargs.update(build_pagination_kwargs(args, minimum_limit=1))
+            kwargs.update(build_pagination_kwargs(args))
 
         print_debug_logs(client, f"Describing fleets with parameters: {kwargs}")
         response = client.describe_fleets(**kwargs)
@@ -5063,7 +5063,7 @@ class EC2:
             }
         )
 
-        kwargs.update(build_pagination_kwargs(args, minimum_limit=1))
+        kwargs.update(build_pagination_kwargs(args))
 
         print_debug_logs(client, f"Describing fleet instances with parameters: {kwargs}")
         response = client.describe_fleet_instances(**kwargs)
