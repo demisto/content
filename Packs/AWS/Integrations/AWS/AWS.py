@@ -5277,8 +5277,7 @@ class EC2:
         )
 
         outputs = {
-            "AWS.EC2.InternetGateways(val.InternetGatewayId && val.InternetGatewayId == obj.InternetGatewayId)":
-                internet_gateways,
+            "AWS.EC2.InternetGateways(val.InternetGatewayId && val.InternetGatewayId == obj.InternetGatewayId)": internet_gateways,
             "AWS.EC2(true)": {"InternetGatewaysNextToken": response.get("NextToken")},
         }
 
