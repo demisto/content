@@ -5105,6 +5105,237 @@ script:
     - contextPath: PaloAltoNetworksXDR.EndpointTriage.UNSUCCESSFUL_AGENT_IDS
       description: A list of agent IDs where the triage action failed to initiate.
       type: Array
+  - name: xdr-issue-list
+    description: Retrieve issues based on filters. Issues with an 'INFO' severity level are filtered out.
+    arguments:
+    - name: issue_id
+      description: A comma-separated list of issue IDs.
+      isArray: true
+    - name: external_id
+      description: A comma-separated list of external IDs.
+      isArray: true
+    - name: detection_method
+      description: A comma-separated list of methods used to detect the activity.
+      auto: PREDEFINED
+      predefined:
+        - BIOC
+        - Correlation
+        - Analytics
+        - System
+        - IOC
+    - name: domain
+      description: A comma-separated list of domains.
+    - name: severity
+      description: A comma-separated list of severities.
+      auto: PREDEFINED
+      predefined:
+        - info
+        - low
+        - medium
+        - high
+        - critical
+    - name: insert_time
+      description: Filter by issues inserted after this time.
+    - name: status
+      description: "A comma-separated list of statuses. Possible values: 'New', 'In Progress', 'Resolved'."
+      isArray: true
+    - name: sort_field
+      description: The field to sort by.
+      auto: PREDEFINED
+      predefined:
+        - issue_id
+        - severity
+        - observation_time
+    - name: sort_order
+      description: The sort order.
+      auto: PREDEFINED
+      predefined:
+        - asc
+        - desc
+    - name: limit
+      description: The maximum number of results to return.
+    - name: page_size
+      description: The page size.
+    - name: page
+      description: The page number.
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.Issue.observation_time
+      description: The timestamp when the observation occurred.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Issue.domain
+      description: The security domain associated with the observation.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Issue.remediation
+      description: Suggested remediation steps.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Issue.impact
+      description: The potential impact of the observed activity.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Issue.status
+      description: The current progress status (e.g., New).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Issue.status_resolution_comment
+      description: Comments regarding the resolution of the status.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Issue.status_progress
+      description: The current progress status (e.g., New).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Issue.asset_ids
+      description: List of asset IDs involved.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Issue.assigned_to_pretty
+      description: The display name of the user assigned to this item.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Issue.last_update_timestamp
+      description: The last time this record was updated.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Issue.detection_method
+      description: The method used to detect the activity (e.g., BIOC).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Issue.is_starred
+      description: Whether the item has been starred/flagged.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Issue.name
+      description: The name of the observation or alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Issue.external_id
+      description: The unique UUID for external reference.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Issue.insert_time
+      description: The time the record was inserted into the database.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Issue.detection_rule_id
+      description: The ID of the specific detection rule triggered.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Issue.tags
+      description: A list of tags associated with the observation.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Issue.type
+      description: The classification type of the observation.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Issue.id
+      description: The numeric ID of the observation.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Issue.description
+      description: Detailed description of the observed activity.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Issue.severity
+      description: The severity level (e.g., LOW).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Issue.category
+      description: The category classification.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Issue.is_excluded
+      description: Whether this observation is excluded from standard views.
+      type: Boolean
+  - name: xdr-issue-create
+    description: Create a new issue. Issues with an 'INFO' severity level will not be displayed in the UI
+    arguments:
+    - name: name
+      description: The issue name.
+      required: true
+    - name: description
+      description: The issue description.
+      required: true
+    - name: observation_time
+      description: The observation time. Should support english expressions like "one year".
+      required: true
+    - name: domain
+      description: The domain.
+      required: true
+    - name: category
+      description: The category.
+      required: true
+    - name: asset_id
+      description: A comma-separated list of asset IDs.
+      isArray: true
+    - name: mitre_tactic
+      description: A comma-separated list of MITRE tactics.
+      isArray: true
+    - name: mitre_tecnique
+      description: A comma-separated list of MITRE techniques.
+      isArray: true
+    - name: type
+      description: The issue type.
+    - name: extended_description
+      description: The extended description.
+    - name: impact
+      description: The impact.
+    - name: tags
+      description: A comma-separated list of tags.
+      isArray: true
+    - name: is_excluded
+      description: Whether the issue is excluded.
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+    - name: is_starred
+      description: Whether the issue is starred.
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+    - name: assigned_to
+      description: The user assigned to the issue.
+    - name: assigned_to_pretty
+      description: The pretty name of the user assigned to the issue.
+    - name: severity
+      description: The severity.
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - critical
+        - info
+        - low
+        - medium
+        - high
+    - name: normalized_fields_json
+      description: The JSON to add to the "normalized_fields" field in the API.
+    - name: custom_fields_json
+      description: The JSON to add to the "custom_fields" field in the API.
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.Issue.external_id
+      description: The issue external ID.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Issue.detection_method
+      description: The issue detection method.
+      type: String
+  - name: xdr-issue-update
+    description: Update an existing issue.
+    arguments:
+    - name: issue_id
+      description: The issue ID.
+      required: true
+    - name: severity
+      description: The severity.
+      auto: PREDEFINED
+      predefined:
+        - critical
+        - info
+        - low
+        - medium
+        - high
+    - name: status
+      description: The status.
+      auto: PREDEFINED
+      predefined:
+        - new
+        - in_progress
+        - resolved
+    - name: resolve_reason
+      description: The resolve reason.
+      auto: PREDEFINED
+      predefined:
+        - resolved_threat_handled
+        - resolved_known_issue
+        - resolved_duplicate
+        - resolved_false_positive
+        - resolved_other
+        - resolved_true_positive
+        - resolved_security_testing
+    - name: resolve_comment
+      description: The resolve comment.
   dockerimage: demisto/python3:3.12.12.7019815
   isfetch: true
   isfetch:xpanse: false
