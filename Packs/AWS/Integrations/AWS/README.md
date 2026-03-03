@@ -6,7 +6,7 @@ This integration was integrated and tested with version 1.0.0 of AWS.
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Main Role | Main Role to be used for authentication e.g. 'PowerUserAccess' | False |
-| Deafult AWS Account ID | AWS Account ID used for running integration test |  |
+| Default AWS Account ID | AWS Account ID used for running integration test |  |
 | Role Session Name | Role session name to be used for authentication |  |
 | Role Session Duration | Max role session duration | False |
 | Default AWS Access Key ID | AWS Access Key ID used for authentication when role-based authentication is not available. Must be used together with 'Default AWS Secret Access Key'. If provided, these credentials will be used as a fallback when role assumption fails. | False |
@@ -4271,6 +4271,491 @@ Deletes a Lambda function.
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
 | function_name | The name of the Lambda function or version. | Required |
 | qualifier | Specify a version to delete. You can't delete a version that an alias references. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-fleet-create
+
+***
+Launches an EC2 Fleet.
+
+#### Base Command
+
+`aws-ec2-fleet-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| spot_allocation_strategy | Indicates how to allocate the target capacity across the Spot pools specified by the Spot Fleet request. Possible values are: lowest-price, diversified, capacity-optimized, capacity-optimized-prioritized, price-capacity-optimized. | Optional |
+| instance_interruption_behavior | The behavior when a Spot Instance is interrupted. Possible values are: hibernate, stop, terminate. | Optional |
+| instance_pools_to_use_count | The number of Spot pools across which to allocate your target Spot capacity. | Optional |
+| max_total_price | The maximum amount per hour for Spot Instances that you are willing to pay. | Optional |
+| capacity_rebalance_replacement_strategy | The replacement strategy to use. Only available for fleets of type maintain. Possible values are: launch, launch-before-terminate. | Optional |
+| capacity_rebalance_termination_delay | The amount of time (in seconds) that Amazon EC2 waits before terminating the old Spot Instance after launching a new replacement Spot Instance. | Optional |
+| spot_single_instance_type | Indicates that the fleet uses a single instance type to launch all Spot Instances in the fleet. Possible values are: true, false. | Optional |
+| single_availability_zone | Indicates that the fleet launches all Spot Instances into a single Availability Zone. Possible values are: true, false. | Optional |
+| min_target_capacity | The minimum target capacity for Spot Instances in the fleet. If the minimum target capacity is not reached, the fleet launches no instances. | Optional |
+| on_demand_allocation_strategy | The launch template override order to use to fulfill on-demand capacity. Possible values are: lowest-price, prioritized. | Optional |
+| on_demand_single_instance_type | Whether the fleet uses a single instance type to launch all on-demand instances in the fleet. Possible values are: true, false. | Optional |
+| on_demand_single_availability_zone | Whether the fleet launches all on-demand instances into a single Availability Zone. Possible values are: true, false. | Optional |
+| on_demand_min_target_capacity | The minimum target capacity for on-demand instances in the fleet. If the minimum target capacity is not reached, the fleet launches no instances. | Optional |
+| on_demand_max_total_price | The maximum amount per hour you are willing to pay for on-demand instances. | Optional |
+| capacity_reservation_strategy | Whether to use unused capacity reservations to fulfill on-demand capacity. Possible values are: use-capacity-reservations-first. | Optional |
+| excess_capacity_termination_policy | Whether running instances should be terminated if the total target capacity of the EC2 Fleet is decreased below the current size of the EC2 Fleet. Possible values are: no-termination, termination. | Optional |
+| launch_template_id | The ID of the launch template. | Optional |
+| launch_template_name | The name of the launch template. | Optional |
+| launch_template_version | The version number of the launch template. Default is 1. | Optional |
+| availability_zone | The Availability Zone in which to launch the instances. | Optional |
+| availability_zone_id | The ID of the Availability Zone in which to launch the instances. | Optional |
+| image_id | The ID of the AMI. | Optional |
+| instance_type | The instance type. | Optional |
+| max_price | The maximum price per unit hour that you are willing to pay for a Spot Instance. | Optional |
+| placement_group_id | The ID of the placement group. | Optional |
+| placement_group_name | The name of the placement group. | Optional |
+| priority | The priority for the launch template override. The highest priority is launched first. | Optional |
+| subnet_id | The ID of the subnet in which to launch the instances. | Optional |
+| weighted_capacity | The number of units provided by the specified instance type. | Optional |
+| device_name | The device name (for example, /dev/sdh or xvdh). | Optional |
+| ebs_encrypted | Whether the encryption state of an EBS volume is changed when restored from a backup snapshot. Possible values are: true, false. | Optional |
+| ebs_delete_on_termination | Whether the EBS volume is deleted on instance termination. Possible values are: true, false. | Optional |
+| ebs_iops | The number of I/O operations per second (IOPS). | Optional |
+| ebs_kms_key_id | Identifier for a user-managed CMK under which the EBS volume is encrypted. | Optional |
+| ebs_snapshot_id | The ID of the snapshot. | Optional |
+| ebs_volume_size | The size of the volume, in GiBs. | Optional |
+| ebs_volume_type | The volume type. Possible values are: gp2, gp3, io1, io2, st1, sc1, standard. | Optional |
+| ebs_throughput | The throughput for the volume, in MiB/s. This parameter is valid only for gp3 volumes. | Optional |
+| block_device_mappings_no_device | Suppresses the specified device included in the block device mapping of the AMI. | Optional |
+| block_device_mappings_virtual_name | The virtual device name (ephemeralN). | Optional |
+| total_target_capacity | The number of units to request. | Required |
+| on_demand_target_capacity | The number of on-demand units to request. | Optional |
+| spot_target_capacity | The number of Spot units to request. | Optional |
+| default_target_capacity_type | The default TotalTargetCapacity, which is either Spot or on-demand. Possible values are: spot, on-demand, capacity-block. | Required |
+| target_capacity_unit | The unit for the target capacity. Possible values are: vcpu, memory-mib, units. | Optional |
+| terminate_instances_with_expiration | Whether running instances should be terminated when the EC2 Fleet expires. Possible values are: true, false. | Optional |
+| type | The request type. Possible values are: request, maintain, instant. | Optional |
+| valid_from | The start date and time of the request, in UTC format (YYYY-MM-DDTHH:MM:SSZ). For example, 2024-01-15T10:30:00Z. | Optional |
+| valid_until | The end date and time of the request, in UTC format (YYYY-MM-DDTHH:MM:SSZ). For example, 2024-01-15T10:30:00Z. | Optional |
+| replace_unhealthy_instances | Whether the EC2 Fleet should replace unhealthy instances. Possible values are: true, false. | Optional |
+| tags | The tags to apply to the resource. Format: key=&lt;key&gt;,value=&lt;value&gt;;key=&lt;key&gt;,value=&lt;value&gt;. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Fleets.FleetId | string | The ID of the EC2 Fleet. |
+| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The ID of the launch template. |
+| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The name of the launch template. |
+| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The version number of the launch template. |
+| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The instance type. |
+| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The maximum price per unit hour that you are willing to pay for a Spot Instance. |
+| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The ID of the subnet in which to launch the instances. |
+| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The Availability Zone in which to launch the instances. |
+| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | number | The number of units provided by the specified instance type. |
+| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | number | The priority for the launch template override. |
+| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The name of the placement group the instance is in. |
+| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | Whether the instance that could not be launched was a Spot Instance or an on-demand instance. |
+| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The error code that indicates why the instance could not be launched. |
+| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The error message that describes why the instance could not be launched. |
+| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The ID of the launch template. |
+| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The name of the launch template. |
+| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The version number of the launch template. |
+| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The instance type. |
+| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The maximum price per unit hour that you are willing to pay for a Spot Instance. |
+| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The ID of the subnet in which to launch the instances. |
+| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The Availability Zone in which to launch the instances. |
+| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | number | The number of units provided by the specified instance type. |
+| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | number | The priority for the launch template override. |
+| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The name of the placement group the instance is in. |
+| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | Whether the instance that was launched is a Spot Instance or an on-demand instance. |
+| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | array | The IDs of the instances. |
+| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The instance type. |
+| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The value is Windows for Windows instances; otherwise blank. |
+
+### aws-ec2-fleet-delete
+
+***
+Deletes the specified EC2 Fleet.
+
+#### Base Command
+
+`aws-ec2-fleet-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| fleet_ids | A comma-separated list of EC2 Fleet IDs. | Required |
+| terminate_instances | Whether to terminate instances for an EC2 Fleet if it is deleted successfully. Possible values are: true, false. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.DeletedFleets.SuccessfulFleetDeletions.CurrentFleetState | string | The current state of the EC2 Fleet. |
+| AWS.EC2.DeletedFleets.SuccessfulFleetDeletions.PreviousFleetState | string | The previous state of the EC2 Fleet. |
+| AWS.EC2.DeletedFleets.SuccessfulFleetDeletions.FleetId | string | The ID of the EC2 Fleet. |
+| AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.Error | string | The error code. |
+| AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.Error | string | The description for the error code. |
+| AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.FleetId | string | The ID of the EC2 Fleet. |
+
+### aws-ec2-fleets-describe
+
+***
+Describes one or more of your EC2 Fleets.
+
+#### Base Command
+
+`aws-ec2-fleets-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). See AWS documentation for details &amp; filter options. | Optional |
+| fleet_ids | A comma-separated list of EC2 Fleet IDs. | Optional |
+| limit | The maximum number of results to return in a single call. Specify a value between 1 and 1000. | Optional |
+| next_token | The token for the next set of results. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.FleetsNextToken | string | The token for the next set of results. |
+| AWS.EC2.Fleets.ActivityStatus | string | The progress of the EC2 Fleet. If there is an error, the status is error. |
+| AWS.EC2.Fleets.CreateTime | date | The creation date and time of the EC2 Fleet. |
+| AWS.EC2.Fleets.FleetId | string | The ID of the EC2 Fleet. |
+| AWS.EC2.Fleets.FleetState | string | The state of the EC2 Fleet. |
+| AWS.EC2.Fleets.ExcessCapacityTerminationPolicy | string | Whether running instances should be terminated if the target capacity of the EC2 Fleet is decreased below the current size of the EC2 Fleet. |
+| AWS.EC2.Fleets.FulfilledCapacity | number | The number of units fulfilled by this request compared to the set target capacity. |
+| AWS.EC2.Fleets.FulfilledOnDemandCapacity | number | The number of units fulfilled by this request compared to the set target On-Demand capacity. |
+| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | string | The ID of the launch template. |
+| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | string | The name of the launch template. |
+| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | string | The version number of the launch template. |
+| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | string | The instance type. |
+| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | string | The maximum price per unit hour that you are willing to pay for a Spot Instance. |
+| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | string | The ID of the subnet in which to launch the instances. |
+| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | string | The Availability Zone in which to launch the instances. |
+| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | number | The number of units provided by the specified instance type. |
+| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | number | The priority for the launch template override. |
+| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | string | The name of the placement group the instance is in. |
+| AWS.EC2.Fleets.TargetCapacitySpecification.TotalTargetCapacity | number | The number of units to request, filled using DefaultTargetCapacityType. |
+| AWS.EC2.Fleets.TargetCapacitySpecification.OnDemandTargetCapacity | number | The number of On-Demand units to request. |
+| AWS.EC2.Fleets.TargetCapacitySpecification.SpotTargetCapacity | number | The maximum number of Spot units to launch. |
+| AWS.EC2.Fleets.TargetCapacitySpecification.DefaultTargetCapacityType | string | The default TotalTargetCapacity, which is either Spot or On-Demand. |
+| AWS.EC2.Fleets.TerminateInstancesWithExpiration | boolean | Whether running instances should be terminated when the EC2 Fleet expires. |
+| AWS.EC2.Fleets.Type | string | The type of request. Indicates whether the EC2 Fleet only requests the target capacity, or also attempts to maintain it. |
+| AWS.EC2.Fleets.ValidFrom | date | The start date and time of the request, in UTC format. |
+| AWS.EC2.Fleets.ValidUntil | date | The end date and time of the request, in UTC format. |
+| AWS.EC2.Fleets.ReplaceUnhealthyInstances | boolean | Whether EC2 Fleet should replace unhealthy instances. |
+| AWS.EC2.Fleets.SpotOptions.AllocationStrategy | string | Indicates how to allocate the target capacity across the Spot pools specified by the Spot Fleet request. |
+| AWS.EC2.Fleets.SpotOptions.InstanceInterruptionBehavior | string | The behavior when a Spot Instance is interrupted. The default is terminate. |
+| AWS.EC2.Fleets.SpotOptions.InstancePoolsToUseCount | number | The number of Spot pools across which to allocate your target Spot capacity. |
+| AWS.EC2.Fleets.SpotOptions.SingleInstanceType | boolean | Whether the fleet uses a single instance type to launch all Spot Instances in the fleet. |
+| AWS.EC2.Fleets.SpotOptions.SingleAvailabilityZone | boolean | Whether the fleet launches all Spot Instances into a single Availability Zone. |
+| AWS.EC2.Fleets.SpotOptions.MinTargetCapacity | number | The minimum target capacity for Spot Instances in the fleet. |
+| AWS.EC2.Fleets.OnDemandOptions.AllocationStrategy | string | The order of the launch template overrides to use in fulfilling On-Demand capacity. |
+| AWS.EC2.Fleets.OnDemandOptions.SingleInstanceType | boolean | Whether the fleet uses a single instance type to launch all on-demand instances in the fleet. |
+| AWS.EC2.Fleets.OnDemandOptions.SingleAvailabilityZone | boolean | Whether the fleet launches all on-demand instances into a single Availability Zone. |
+| AWS.EC2.Fleets.OnDemandOptions.MinTargetCapacity | number | The minimum target capacity for on-demand instances in the fleet. |
+| AWS.EC2.Fleets.Tags.Key | string | The key of the tag. |
+| AWS.EC2.Fleets.Tags.Value | string | The value of the tag. |
+
+### aws-ec2-fleet-instances-describe
+
+***
+Describes the running instances for the specified EC2 Fleet.
+
+#### Base Command
+
+`aws-ec2-fleet-instances-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). See AWS documentation for details &amp; filter options. | Optional |
+| fleet_id | The ID of the EC2 Fleet. | Required |
+| limit | The maximum number of results to return in a single call. Specify a value between 1 and 1000. | Optional |
+| next_token | The token for the next set of results. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Fleets.ActiveInstances.InstanceId | string | The ID of the instance. |
+| AWS.EC2.Fleets.ActiveInstances.InstanceType | string | The instance type. |
+| AWS.EC2.Fleets.ActiveInstances.SpotInstanceRequestId | string | The ID of the Spot Instance request. |
+| AWS.EC2.Fleets.ActiveInstances.InstanceHealth | string | The health status of the instance. |
+| AWS.EC2.Fleets.FleetInstancesNextToken | string | The token for the next set of results. |
+| AWS.EC2.Fleets.FleetId | string | The ID of the EC2 Fleet. |
+
+### aws-ec2-fleet-modify
+
+***
+Modifies the specified EC2 Fleet.
+
+#### Base Command
+
+`aws-ec2-fleet-modify`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| fleet_id | The ID of the EC2 Fleet. | Required |
+| excess_capacity_termination_policy | Whether running instances should be terminated if the total target capacity of the EC2 Fleet is decreased below the current size of the EC2 Fleet. Possible values are: no-termination, termination. | Optional |
+| launch_template_id | The ID of the launch template. | Optional |
+| launch_template_name | The name of the launch template. | Optional |
+| launch_template_version | The version number of the launch template. Default is 1. | Optional |
+| availability_zone | The Availability Zone in which to launch the instances. | Optional |
+| availability_zone_id | The ID of the Availability Zone in which to launch the instances. | Optional |
+| image_id | The ID of the AMI. | Optional |
+| instance_type | The instance type. | Optional |
+| max_price | The maximum price per unit hour that you are willing to pay for a Spot Instance. | Optional |
+| placement_group_id | The ID of the placement group. | Optional |
+| placement_group_name | The name of the placement group. | Optional |
+| priority | The priority for the launch template override. | Optional |
+| subnet_id | The ID of the subnet in which to launch the instances. | Optional |
+| weighted_capacity | The number of units provided by the specified instance type. | Optional |
+| device_name | The device name (for example, /dev/sdh or xvdh). | Optional |
+| ebs_encrypted | Whether the encryption state of an EBS volume is changed when restored from a backup snapshot. Possible values are: true, false. | Optional |
+| ebs_delete_on_termination | Whether the EBS volume is deleted on instance termination. Possible values are: true, false. | Optional |
+| ebs_iops | The number of I/O operations per second (IOPS). For gp3, io1, and io2 volumes, this represents the number of IOPS that are provisioned for the volume. For gp2 volumes, this represents the baseline performance of the volume and the rate at which the volume accumulates I/O credits for bursting. This parameter is required for io1 and io2 volumes. The default for gp3 volumes is 3,000 IOPS. | Optional |
+| ebs_kms_key_id | Identifier (key ID, key alias, ID ARN, or alias ARN) for a user-managed CMK under which the EBS volume is encrypted. | Optional |
+| ebs_snapshot_id | The ID of the snapshot. | Optional |
+| ebs_volume_size | The size of the volume, in GiBs. You must specify either an ebs_snapshot_id or an ebs_volume_size. If you specify a snapshot, the default is the snapshot size. You can specify a volume size that is equal to or larger than the snapshot size. | Optional |
+| ebs_volume_type | The volume type. Possible values are: gp2, gp3, io1, io2, st1, sc1, standard. | Optional |
+| ebs_throughput | The throughput for the volume, in MiB/s. This parameter is valid only for gp3 volumes. | Optional |
+| block_device_mappings_no_device | Suppresses the specified device included in the block device mapping of the AMI. | Optional |
+| block_device_mappings_virtual_name | The virtual device name (ephemeralN). | Optional |
+| total_target_capacity | The number of units to request, filled using DefaultTargetCapacityType. | Required |
+| on_demand_target_capacity | The number of On-Demand units to request. | Optional |
+| spot_target_capacity | The number of Spot units to request. | Optional |
+| default_target_capacity_type | The default TotalTargetCapacityType, which is either Spot or On-Demand. Possible values are: spot, on-demand, capacity-block. | Optional |
+| target_capacity_unit | The unit for the target capacity. Possible values are: vcpu, memory-mib, units. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-vpc-delete
+
+***
+Deletes a specified VPC. You must detach or delete all gateways and resources that are associated with the VPC before you can delete it.
+
+#### Base Command
+
+`aws-ec2-vpc-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| vpc_id | The ID of the VPC. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-vpc-endpoint-create
+
+***
+Creates a VPC endpoint for a specified service. An endpoint enables you to create a private connection between your VPC and the service.
+
+#### Base Command
+
+`aws-ec2-vpc-endpoint-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| vpc_id | The VPC ID where the endpoint is created. | Required |
+| service_name | The service name. For AWS services, the service name is usually in the form com.amazonaws.&lt;region&gt;.&lt;service&gt;. | Required |
+| service_network_arn | The service network Amazon Resource Name (ARN) to associate with the service-network VPC endpoint. | Optional |
+| service_region | The region where the service is hosted. Default is the current region. | Optional |
+| vpc_endpoint_type | The type of endpoint. Possible values are: Interface, Gateway, GatewayLoadBalancer, Resource, ServiceNetwork. | Optional |
+| policy_document | A policy to attach to the endpoint that controls access to the service. The policy must be in valid JSON format. | Optional |
+| route_table_ids | A comma-separated list of route table IDs. Applicable for Gateway endpoints only. | Optional |
+| subnet_ids | A comma-separated list of subnet IDs for an endpoint network interface. Applicable for Interface and GatewayLoadBalancer endpoints only. | Optional |
+| security_group_ids | A comma-separated list of security group IDs to associate with the endpoint network interface. Applicable for Interface and GatewayLoadBalancer endpoints only. | Optional |
+| ip_address_type | The IP address type for the endpoint. Possible values are: ipv4, dualstack, ipv6. | Optional |
+| dns_options_dns_record_ip_type | The DNS records created for the endpoint. Possible values are: ipv4, dualstack, ipv6, service-defined. | Optional |
+| dns_options_private_dns_only_for_inbound_resolver_endpoint | Whether to enable private DNS only for inbound endpoints. Possible values are: true, false. | Optional |
+| dns_options_private_dns_preference | The preference for creating and associating private hosted zones with a specified VPC. | Optional |
+| dns_options_private_dns_specified_domains | The private domains used for creating and associating private hosted zones with the VPC. | Optional |
+| private_dns_enabled | Whether to associate a private hosted zone with the specified VPC. Applicable for Interface endpoints only. Possible values are: true, false. | Optional |
+| resource_configuration_arn | The Amazon Resource Name (ARN) of a resource configuration that is associated with the VPC resource type endpoint. | Optional |
+| tags | The tags to apply to the VPC endpoint. Format key=&lt;key&gt;,value=&lt;value&gt;;key=&lt;key&gt;,value=&lt;value&gt;. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.VpcEndpoints.VpcEndpointId | string | The ID of the VPC endpoint. |
+| AWS.EC2.VpcEndpoints.VpcEndpointType | string | The type of endpoint. |
+| AWS.EC2.VpcEndpoints.VpcId | string | The ID of the VPC associated with the endpoint. |
+| AWS.EC2.VpcEndpoints.ServiceName | string | The name of the service associated with the endpoint. |
+| AWS.EC2.VpcEndpoints.State | string | The state of the VPC endpoint. |
+| AWS.EC2.VpcEndpoints.PolicyDocument | string | The policy document associated with the endpoint, if applicable. |
+| AWS.EC2.VpcEndpoints.RouteTableIds | array | One or more route tables associated with the endpoint. |
+| AWS.EC2.VpcEndpoints.SubnetIds | array | One or more subnets in which the endpoint is located. |
+| AWS.EC2.VpcEndpoints.Groups.GroupId | string | The ID of the security group. |
+| AWS.EC2.VpcEndpoints.Groups.GroupName | string | The name of the security group. |
+| AWS.EC2.VpcEndpoints.IpAddressType | string | The IP address type for the endpoint. |
+| AWS.EC2.VpcEndpoints.DnsOptions.DnsRecordIpType | string | The DNS records created for the endpoint. |
+| AWS.EC2.VpcEndpoints.DnsOptions.PrivateDnsOnlyForInboundResolverEndpoint | boolean | Whether to enable private DNS only for inbound endpoints. |
+| AWS.EC2.VpcEndpoints.PrivateDnsEnabled | boolean | Whether the VPC is associated with a private hosted zone. |
+| AWS.EC2.VpcEndpoints.RequesterManaged | boolean | Whether the VPC endpoint is being managed by its service. |
+| AWS.EC2.VpcEndpoints.NetworkInterfaceIds | array | One or more network interfaces for the endpoint. |
+| AWS.EC2.VpcEndpoints.DnsEntries.DnsName | string | The DNS name. |
+| AWS.EC2.VpcEndpoints.DnsEntries.HostedZoneId | string | The ID of the private hosted zone. |
+| AWS.EC2.VpcEndpoints.CreationTimestamp | date | The date and time that the VPC endpoint was created. |
+| AWS.EC2.VpcEndpoints.Tags.Key | string | The key of the tag. |
+| AWS.EC2.VpcEndpoints.Tags.Value | string | The value of the tag. |
+| AWS.EC2.VpcEndpoints.OwnerId | string | The ID of the AWS account that owns the VPC endpoint. |
+| AWS.EC2.VpcEndpoints.LastError.Message | string | The VCP endpoint error message. |
+| AWS.EC2.VpcEndpoints.LastError.Code | string | The VCP endpoint error code. |
+
+### aws-ec2-internet-gateway-describe
+
+***
+A description of one or more of your internet gateways.
+
+#### Base Command
+
+`aws-ec2-internet-gateway-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). See AWS documentation for filter details and options. | Optional |
+| internet_gateway_ids | A comma-separated list of internet gateway IDs. | Optional |
+| limit | The maximum number of results to return with a single call. Specify a value between 5 and 1000. | Optional |
+| next_token | The token for the next page of results. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.InternetGateways.InternetGatewayId | string | The ID of the internet gateway. |
+| AWS.EC2.InternetGateways.Attachments.State | string | The current state of the attachment. |
+| AWS.EC2.InternetGateways.Attachments.VpcId | string | The ID of the VPC. |
+| AWS.EC2.InternetGateways.Tags.Key | string | The key of the tag. |
+| AWS.EC2.InternetGateways.Tags.Value | string | The value of the tag. |
+| AWS.EC2.InternetGateways.OwnerId | string | The ID of the AWS account that owns the internet gateway. |
+| AWS.EC2.InternetGatewaysNextToken | string | The token used to retrieve the next page of results. |
+
+### aws-ec2-internet-gateway-detach
+
+***
+Detaches an internet gateway from a VPC, disabling connectivity between the internet and the VPC.
+
+#### Base Command
+
+`aws-ec2-internet-gateway-detach`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| internet_gateway_id | The ID of the internet gateway. | Required |
+| vpc_id | The ID of the VPC. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-internet-gateway-delete
+
+***
+Deletes the specified internet gateway. You must detach the internet gateway from the VPC before you can delete it.
+
+#### Base Command
+
+`aws-ec2-internet-gateway-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| internet_gateway_id | The ID of the internet gateway. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-subnet-delete
+
+***
+Deletes the specified subnet. You must terminate all running instances in the subnet before you can delete the subnet.
+
+#### Base Command
+
+`aws-ec2-subnet-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| subnet_id | The ID of the subnet. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-network-acl-entry-create
+
+***
+Creates an entry (a rule) in a network ACL with the specified rule number.
+
+#### Base Command
+
+`aws-ec2-network-acl-entry-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| network_acl_id | The ID of the network ACL. | Required |
+| rule_number | The rule number for the entry (Positive integer from 1 to 32766. The range 32767 to 65535 is reserved for internal use.). ACL entries are processed in ascending order by rule number. | Required |
+| protocol | The protocol number, where -1 or all specifies all protocols. Using all, -1, or any protocol other than tcp, udp, or icmp allows traffic on all ports, regardless other settings. Possible values are: tcp, udp, icmp, icmpv6, -1. | Required |
+| rule_action | Whether to allow the traffic that matches the rule. Possible values are: allow, deny. | Required |
+| egress | Whether it is an egress rule (a rule applied to traffic leaving the subnet). Possible values are: true, false. | Required |
+| cidr_block | The IPv4 network range to allow or deny, in CIDR notation (for example, 172.16.0.0/24). You must specify either cidr_block or ipv6_cidr_block. | Optional |
+| ipv6_cidr_block | The IPv6 network range to allow or deny, in CIDR notation (for example, 2001:db8:1234:1a00::/64). You must specify either cidr_block or ipv6_cidr_block. | Optional |
+| icmp_type_code_type | The ICMP type. A value of -1 means all types. Required if specifying icmp or icmpv6 for the protocol parameter. | Optional |
+| icmp_type_code_code | The ICMP code. A value of -1 means all codes for the specified ICMP type. Required if specifying icmp or icmpv6 for the protocol parameter. | Optional |
+| port_range_from | The first port in the range. Required if specifying tcp or udp for the protocol parameter. | Optional |
+| port_range_to | The last port in the range. Required if specifying tcp or udp for the protocol parameter. | Optional |
 
 #### Context Output
 

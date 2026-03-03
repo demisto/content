@@ -12036,6 +12036,1451 @@ script:
         description: The value of the tag.
         type: string
 
+  - name: aws-ec2-fleet-create
+    description: Launches an EC2 Fleet.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: spot_allocation_strategy
+      description: Indicates how to allocate the target capacity across the Spot pools specified by the Spot Fleet request.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - lowest-price
+      - diversified
+      - capacity-optimized
+      - capacity-optimized-prioritized
+      - price-capacity-optimized
+    - name: instance_interruption_behavior
+      description: The behavior when a Spot Instance is interrupted.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - hibernate
+      - stop
+      - terminate
+    - name: instance_pools_to_use_count
+      description: The number of Spot pools across which to allocate your target Spot capacity.
+      required: false
+    - name: max_total_price
+      description: The maximum amount per hour for Spot Instances that you are willing to pay.
+      required: false
+    - name: capacity_rebalance_replacement_strategy
+      description: The replacement strategy to use. Only available for fleets of type maintain.
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - launch
+        - launch-before-terminate
+    - name: capacity_rebalance_termination_delay
+      description: The amount of time (in seconds) that Amazon EC2 waits before terminating the old Spot Instance after launching a new replacement Spot Instance.
+      required: false
+    - name: spot_single_instance_type
+      description: Indicates that the fleet uses a single instance type to launch all Spot Instances in the fleet.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: single_availability_zone
+      description: Indicates that the fleet launches all Spot Instances into a single Availability Zone.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: min_target_capacity
+      description: The minimum target capacity for Spot Instances in the fleet. If the minimum target capacity is not reached, the fleet launches no instances.
+      required: false
+    - name: on_demand_allocation_strategy
+      description: The launch template override order to use to fulfill on-demand capacity.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - lowest-price
+      - prioritized
+    - name: on_demand_single_instance_type
+      description: Whether the fleet uses a single instance type to launch all on-demand instances in the fleet.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: on_demand_single_availability_zone
+      description: Whether the fleet launches all on-demand instances into a single Availability Zone.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: on_demand_min_target_capacity
+      description: The minimum target capacity for on-demand instances in the fleet. If the minimum target capacity is not reached, the fleet launches no instances.
+      required: false
+    - name: on_demand_max_total_price
+      description: The maximum amount per hour you are willing to pay for on-demand instances.
+      required: false
+    - name: capacity_reservation_strategy
+      description: Whether to use unused capacity reservations to fulfill on-demand capacity.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - use-capacity-reservations-first
+    - name: excess_capacity_termination_policy
+      description: Whether running instances should be terminated if the total target capacity of the EC2 Fleet is decreased below the current size of the EC2 Fleet.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - no-termination
+      - termination
+    - name: launch_template_id
+      description: The ID of the launch template.
+      required: false
+    - name: launch_template_name
+      description: The name of the launch template.
+      required: false
+    - name: launch_template_version
+      description: The version number of the launch template.
+      required: false
+      defaultValue: "1"
+    - name: availability_zone
+      description: The Availability Zone in which to launch the instances.
+      required: false
+    - name: availability_zone_id
+      description: The ID of the Availability Zone in which to launch the instances.
+      required: false
+    - name: image_id
+      description: The ID of the AMI.
+      required: false
+    - name: instance_type
+      description: The instance type.
+      required: false
+    - name: max_price
+      description: The maximum price per unit hour that you are willing to pay for a Spot Instance.
+      required: false
+    - name: placement_group_id
+      description: The ID of the placement group.
+      required: false
+    - name: placement_group_name
+      description: The name of the placement group.
+      required: false
+    - name: priority
+      description: The priority for the launch template override. The highest priority is launched first.
+      required: false
+    - name: subnet_id
+      description: The ID of the subnet in which to launch the instances.
+      required: false
+    - name: weighted_capacity
+      description: The number of units provided by the specified instance type.
+      required: false
+    - name: device_name
+      description: "The device name (for example, /dev/sdh or xvdh)."
+      required: false
+    - name: ebs_encrypted
+      description: "Whether the encryption state of an EBS volume is changed when restored from a backup snapshot."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: ebs_delete_on_termination
+      description: "Whether the EBS volume is deleted on instance termination."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: ebs_iops
+      description: "The number of I/O operations per second (IOPS)."
+      required: false
+    - name: ebs_kms_key_id
+      description: "Identifier for a user-managed CMK under which the EBS volume is encrypted."
+      required: false
+    - name: ebs_snapshot_id
+      description: "The ID of the snapshot."
+      required: false
+    - name: ebs_volume_size
+      description: "The size of the volume, in GiBs."
+      required: false
+    - name: ebs_volume_type
+      description: "The volume type."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - gp2
+      - gp3
+      - io1
+      - io2
+      - st1
+      - sc1
+      - standard
+    - name: ebs_throughput
+      description: "The throughput for the volume, in MiB/s. This parameter is valid only for gp3 volumes."
+      required: false
+    - name: block_device_mappings_no_device
+      description: "Suppresses the specified device included in the block device mapping of the AMI."
+      required: false
+    - name: block_device_mappings_virtual_name
+      description: "The virtual device name (ephemeralN)."
+      required: false
+    - name: total_target_capacity
+      description: The number of units to request.
+      required: true
+    - name: on_demand_target_capacity
+      description: The number of on-demand units to request.
+      required: false
+    - name: spot_target_capacity
+      description: The number of Spot units to request.
+      required: false
+    - name: default_target_capacity_type
+      description: The default TotalTargetCapacity, which is either Spot or on-demand.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - spot
+      - on-demand
+      - capacity-block
+    - name: target_capacity_unit
+      description: The unit for the target capacity.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - vcpu
+      - memory-mib
+      - units
+    - name: terminate_instances_with_expiration
+      description: Whether running instances should be terminated when the EC2 Fleet expires.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: type
+      description: The request type.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - request
+      - maintain
+      - instant
+    - name: valid_from
+      description: The start date and time of the request, in UTC format (YYYY-MM-DDTHH:MM:SSZ). For example, 2024-01-15T10:30:00Z.
+      required: false
+    - name: valid_until
+      description: The end date and time of the request, in UTC format (YYYY-MM-DDTHH:MM:SSZ). For example, 2024-01-15T10:30:00Z.
+      required: false
+    - name: replace_unhealthy_instances
+      description: Whether the EC2 Fleet should replace unhealthy instances.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: tags
+      description: "The tags to apply to the resource. Format: key=<key>,value=<value>;key=<key>,value=<value>."
+      required: false
+    outputs:
+    - contextPath: AWS.EC2.Fleets.FleetId
+      description: The ID of the EC2 Fleet.
+      type: string
+    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
+      description: The ID of the launch template.
+      type: string
+    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
+      description: The name of the launch template.
+      type: string
+    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
+      description: The version number of the launch template.
+      type: string
+    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
+      description: The instance type.
+      type: string
+    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
+      description: The maximum price per unit hour that you are willing to pay for a Spot Instance.
+      type: string
+    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
+      description: The ID of the subnet in which to launch the instances.
+      type: string
+    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
+      description: The Availability Zone in which to launch the instances.
+      type: string
+    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
+      description: The number of units provided by the specified instance type.
+      type: number
+    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
+      description: The priority for the launch template override.
+      type: number
+    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
+      description: The name of the placement group the instance is in.
+      type: string
+    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
+      description: Whether the instance that could not be launched was a Spot Instance or an on-demand instance.
+      type: string
+    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
+      description: The error code that indicates why the instance could not be launched.
+      type: string
+    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
+      description: The error message that describes why the instance could not be launched.
+      type: string
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
+      description: The ID of the launch template.
+      type: string
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
+      description: The name of the launch template.
+      type: string
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
+      description: The version number of the launch template.
+      type: string
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
+      description: The instance type.
+      type: string
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
+      description: The maximum price per unit hour that you are willing to pay for a Spot Instance.
+      type: string
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
+      description: The ID of the subnet in which to launch the instances.
+      type: string
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
+      description: The Availability Zone in which to launch the instances.
+      type: string
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
+      description: The number of units provided by the specified instance type.
+      type: number
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
+      description: The priority for the launch template override.
+      type: number
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
+      description: The name of the placement group the instance is in.
+      type: string
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
+      description: Whether the instance that was launched is a Spot Instance or an on-demand instance.
+      type: string
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
+      description: The IDs of the instances.
+      type: array
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
+      description: The instance type.
+      type: string
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
+      description: The value is Windows for Windows instances; otherwise blank.
+      type: string
+
+  - name: aws-ec2-fleet-delete
+    description: Deletes the specified EC2 Fleet.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: fleet_ids
+      description: A comma-separated list of EC2 Fleet IDs.
+      required: true
+      isArray: true
+    - name: terminate_instances
+      description: Whether to terminate instances for an EC2 Fleet if it is deleted successfully.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: AWS.EC2.DeletedFleets.SuccessfulFleetDeletions.CurrentFleetState
+      description: The current state of the EC2 Fleet.
+      type: string
+    - contextPath: AWS.EC2.DeletedFleets.SuccessfulFleetDeletions.PreviousFleetState
+      description: The previous state of the EC2 Fleet.
+      type: string
+    - contextPath: AWS.EC2.DeletedFleets.SuccessfulFleetDeletions.FleetId
+      description: The ID of the EC2 Fleet.
+      type: string
+    - contextPath: AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.Error
+      description: The error code.
+      type: string
+    - contextPath: AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.Error
+      description: The description for the error code.
+      type: string
+    - contextPath: AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.FleetId
+      description: The ID of the EC2 Fleet.
+      type: string
+
+  - name: aws-ec2-fleets-describe
+    description: Describes one or more of your EC2 Fleets.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: filters
+      description: "One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options."
+      required: false
+    - name: fleet_ids
+      description: A comma-separated list of EC2 Fleet IDs.
+      required: false
+      isArray: true
+    - name: limit
+      description: The maximum number of results to return in a single call. Specify a value between 1 and 1000.
+      required: false
+    - name: next_token
+      description: The token for the next set of results.
+      required: false
+    outputs:
+    - contextPath: AWS.EC2.FleetsNextToken
+      description: The token for the next set of results.
+      type: string
+    - contextPath: AWS.EC2.Fleets.ActivityStatus
+      description: The progress of the EC2 Fleet. If there is an error, the status is error.
+      type: string
+    - contextPath: AWS.EC2.Fleets.CreateTime
+      description: The creation date and time of the EC2 Fleet.
+      type: date
+    - contextPath: AWS.EC2.Fleets.FleetId
+      description: The ID of the EC2 Fleet.
+      type: string
+    - contextPath: AWS.EC2.Fleets.FleetState
+      description: The state of the EC2 Fleet.
+      type: string
+    - contextPath: AWS.EC2.Fleets.ExcessCapacityTerminationPolicy
+      description: Whether running instances should be terminated if the target capacity of the EC2 Fleet is decreased below the current size of the EC2 Fleet.
+      type: string
+    - contextPath: AWS.EC2.Fleets.FulfilledCapacity
+      description: The number of units fulfilled by this request compared to the set target capacity.
+      type: number
+    - contextPath: AWS.EC2.Fleets.FulfilledOnDemandCapacity
+      description: The number of units fulfilled by this request compared to the set target On-Demand capacity.
+      type: number
+    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
+      description: The ID of the launch template.
+      type: string
+    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
+      description: The name of the launch template.
+      type: string
+    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
+      description: The version number of the launch template.
+      type: string
+    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
+      description: The instance type.
+      type: string
+    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
+      description: The maximum price per unit hour that you are willing to pay for a Spot Instance.
+      type: string
+    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
+      description: The ID of the subnet in which to launch the instances.
+      type: string
+    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
+      description: The Availability Zone in which to launch the instances.
+      type: string
+    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
+      description: The number of units provided by the specified instance type.
+      type: number
+    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
+      description: The priority for the launch template override.
+      type: number
+    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
+      description: The name of the placement group the instance is in.
+      type: string
+    - contextPath: AWS.EC2.Fleets.TargetCapacitySpecification.TotalTargetCapacity
+      description: The number of units to request, filled using DefaultTargetCapacityType.
+      type: number
+    - contextPath: AWS.EC2.Fleets.TargetCapacitySpecification.OnDemandTargetCapacity
+      description: The number of On-Demand units to request.
+      type: number
+    - contextPath: AWS.EC2.Fleets.TargetCapacitySpecification.SpotTargetCapacity
+      description: The maximum number of Spot units to launch.
+      type: number
+    - contextPath: AWS.EC2.Fleets.TargetCapacitySpecification.DefaultTargetCapacityType
+      description: The default TotalTargetCapacity, which is either Spot or On-Demand.
+      type: string
+    - contextPath: AWS.EC2.Fleets.TerminateInstancesWithExpiration
+      description: Whether running instances should be terminated when the EC2 Fleet expires.
+      type: boolean
+    - contextPath: AWS.EC2.Fleets.Type
+      description: The type of request. Indicates whether the EC2 Fleet only requests the target capacity, or also attempts to maintain it.
+      type: string
+    - contextPath: AWS.EC2.Fleets.ValidFrom
+      description: The start date and time of the request, in UTC format.
+      type: date
+    - contextPath: AWS.EC2.Fleets.ValidUntil
+      description: The end date and time of the request, in UTC format.
+      type: date
+    - contextPath: AWS.EC2.Fleets.ReplaceUnhealthyInstances
+      description: Whether EC2 Fleet should replace unhealthy instances.
+      type: boolean
+    - contextPath: AWS.EC2.Fleets.SpotOptions.AllocationStrategy
+      description: Indicates how to allocate the target capacity across the Spot pools specified by the Spot Fleet request.
+      type: string
+    - contextPath: AWS.EC2.Fleets.SpotOptions.InstanceInterruptionBehavior
+      description: The behavior when a Spot Instance is interrupted. The default is terminate.
+      type: string
+    - contextPath: AWS.EC2.Fleets.SpotOptions.InstancePoolsToUseCount
+      description: The number of Spot pools across which to allocate your target Spot capacity.
+      type: number
+    - contextPath: AWS.EC2.Fleets.SpotOptions.SingleInstanceType
+      description: Whether the fleet uses a single instance type to launch all Spot Instances in the fleet.
+      type: boolean
+    - contextPath: AWS.EC2.Fleets.SpotOptions.SingleAvailabilityZone
+      description: Whether the fleet launches all Spot Instances into a single Availability Zone.
+      type: boolean
+    - contextPath: AWS.EC2.Fleets.SpotOptions.MinTargetCapacity
+      description: The minimum target capacity for Spot Instances in the fleet.
+      type: number
+    - contextPath: AWS.EC2.Fleets.OnDemandOptions.AllocationStrategy
+      description: The order of the launch template overrides to use in fulfilling On-Demand capacity.
+      type: string
+    - contextPath: AWS.EC2.Fleets.OnDemandOptions.SingleInstanceType
+      description: Whether the fleet uses a single instance type to launch all on-demand instances in the fleet.
+      type: boolean
+    - contextPath: AWS.EC2.Fleets.OnDemandOptions.SingleAvailabilityZone
+      description: Whether the fleet launches all on-demand instances into a single Availability Zone.
+      type: boolean
+    - contextPath: AWS.EC2.Fleets.OnDemandOptions.MinTargetCapacity
+      description: The minimum target capacity for on-demand instances in the fleet.
+      type: number
+    - contextPath: AWS.EC2.Fleets.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.EC2.Fleets.Tags.Value
+      description: The value of the tag.
+      type: string
+
+  - name: aws-ec2-fleet-instances-describe
+    description: Describes the running instances for the specified EC2 Fleet.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: filters
+      description: "One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options."
+      required: false
+    - name: fleet_id
+      description: The ID of the EC2 Fleet.
+      required: true
+    - name: limit
+      description: The maximum number of results to return in a single call. Specify a value between 1 and 1000.
+      required: false
+    - name: next_token
+      description: The token for the next set of results.
+      required: false
+    outputs:
+    - contextPath: AWS.EC2.Fleets.ActiveInstances.InstanceId
+      description: The ID of the instance.
+      type: string
+    - contextPath: AWS.EC2.Fleets.ActiveInstances.InstanceType
+      description: The instance type.
+      type: string
+    - contextPath: AWS.EC2.Fleets.ActiveInstances.SpotInstanceRequestId
+      description: The ID of the Spot Instance request.
+      type: string
+    - contextPath: AWS.EC2.Fleets.ActiveInstances.InstanceHealth
+      description: The health status of the instance.
+      type: string
+    - contextPath: AWS.EC2.Fleets.FleetInstancesNextToken
+      description: The token for the next set of results.
+      type: string
+    - contextPath: AWS.EC2.Fleets.FleetId
+      description: The ID of the EC2 Fleet.
+      type: string
+
+  - name: aws-ec2-fleet-modify
+    description: Modifies the specified EC2 Fleet.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: fleet_id
+      description: The ID of the EC2 Fleet.
+      required: true
+    - name: excess_capacity_termination_policy
+      description: Whether running instances should be terminated if the total target capacity of the EC2 Fleet is decreased below the current size of the EC2 Fleet.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - no-termination
+      - termination
+    - name: launch_template_id
+      description: The ID of the launch template.
+      required: false
+    - name: launch_template_name
+      description: The name of the launch template.
+      required: false
+    - name: launch_template_version
+      description: The version number of the launch template.
+      required: false
+      defaultValue: "1"
+    - name: availability_zone
+      description: The Availability Zone in which to launch the instances.
+      required: false
+    - name: availability_zone_id
+      description: The ID of the Availability Zone in which to launch the instances.
+      required: false
+    - name: image_id
+      description: The ID of the AMI.
+      required: false
+    - name: instance_type
+      description: The instance type.
+      required: false
+    - name: max_price
+      description: The maximum price per unit hour that you are willing to pay for a Spot Instance.
+      required: false
+    - name: placement_group_id
+      description: The ID of the placement group.
+      required: false
+    - name: placement_group_name
+      description: The name of the placement group.
+      required: false
+    - name: priority
+      description: The priority for the launch template override.
+      required: false
+    - name: subnet_id
+      description: The ID of the subnet in which to launch the instances.
+      required: false
+    - name: weighted_capacity
+      description: The number of units provided by the specified instance type.
+      required: false
+    - name: device_name
+      description: "The device name (for example, /dev/sdh or xvdh)."
+      required: false
+    - name: ebs_encrypted
+      description: "Whether the encryption state of an EBS volume is changed when restored from a backup snapshot."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: ebs_delete_on_termination
+      description: "Whether the EBS volume is deleted on instance termination."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: ebs_iops
+      description: "The number of I/O operations per second (IOPS). For gp3, io1, and io2 volumes, this represents the number of IOPS that are provisioned for the volume. For gp2 volumes, this represents the baseline performance of the volume and the rate at which the volume accumulates I/O credits for bursting. This parameter is required for io1 and io2 volumes. The default for gp3 volumes is 3,000 IOPS."
+      required: false
+    - name: ebs_kms_key_id
+      description: "Identifier (key ID, key alias, ID ARN, or alias ARN) for a user-managed CMK under which the EBS volume is encrypted."
+      required: false
+    - name: ebs_snapshot_id
+      description: "The ID of the snapshot."
+      required: false
+    - name: ebs_volume_size
+      description: "The size of the volume, in GiBs. You must specify either an ebs_snapshot_id or an ebs_volume_size. If you specify a snapshot, the default is the snapshot size. You can specify a volume size that is equal to or larger than the snapshot size."
+      required: false
+    - name: ebs_volume_type
+      description: "The volume type."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - gp2
+      - gp3
+      - io1
+      - io2
+      - st1
+      - sc1
+      - standard
+    - name: ebs_throughput
+      description: "The throughput for the volume, in MiB/s. This parameter is valid only for gp3 volumes."
+      required: false
+    - name: block_device_mappings_no_device
+      description: "Suppresses the specified device included in the block device mapping of the AMI."
+      required: false
+    - name: block_device_mappings_virtual_name
+      description: "The virtual device name (ephemeralN)."
+      required: false
+    - name: total_target_capacity
+      description: The number of units to request, filled using DefaultTargetCapacityType.
+      required: true
+    - name: on_demand_target_capacity
+      description: The number of On-Demand units to request.
+      required: false
+    - name: spot_target_capacity
+      description: The number of Spot units to request.
+      required: false
+    - name: default_target_capacity_type
+      description: The default TotalTargetCapacityType, which is either Spot or On-Demand.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - spot
+      - on-demand
+      - capacity-block
+    - name: target_capacity_unit
+      description: The unit for the target capacity.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - vcpu
+      - memory-mib
+      - units
+
+  - name: aws-ec2-vpc-delete
+    description: Deletes a specified VPC. You must detach or delete all gateways and resources that are associated with the VPC before you can delete it.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: vpc_id
+      description: The ID of the VPC.
+      required: true
+
+  - name: aws-ec2-vpc-endpoint-create
+    description: Creates a VPC endpoint for a specified service. An endpoint enables you to create a private connection between your VPC and the service.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: vpc_id
+      description: The VPC ID where the endpoint is created.
+      required: true
+    - name: service_name
+      description: "The service name. For AWS services, the service name is usually in the form com.amazonaws.<region>.<service>."
+      required: true
+    - name: service_network_arn
+      description: The service network Amazon Resource Name (ARN) to associate with the service-network VPC endpoint.
+    - name: service_region
+      description: The region where the service is hosted. Default is the current region.
+    - name: vpc_endpoint_type
+      description: The type of endpoint.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Interface
+      - Gateway
+      - GatewayLoadBalancer
+      - Resource
+      - ServiceNetwork
+    - name: policy_document
+      description: A policy to attach to the endpoint that controls access to the service. The policy must be in valid JSON format.
+      required: false
+    - name: route_table_ids
+      description: A comma-separated list of route table IDs. Applicable for Gateway endpoints only.
+      required: false
+      isArray: true
+    - name: subnet_ids
+      description: A comma-separated list of subnet IDs for an endpoint network interface. Applicable for Interface and GatewayLoadBalancer endpoints only.
+      required: false
+      isArray: true
+    - name: security_group_ids
+      description: A comma-separated list of security group IDs to associate with the endpoint network interface. Applicable for Interface and GatewayLoadBalancer endpoints only.
+      required: false
+      isArray: true
+    - name: ip_address_type
+      description: The IP address type for the endpoint.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - ipv4
+      - dualstack
+      - ipv6
+    - name: dns_options_dns_record_ip_type
+      description: The DNS records created for the endpoint.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - ipv4
+      - dualstack
+      - ipv6
+      - service-defined
+    - name: dns_options_private_dns_only_for_inbound_resolver_endpoint
+      description: Whether to enable private DNS only for inbound endpoints.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: dns_options_private_dns_preference
+      description: The preference for creating and associating private hosted zones with a specified VPC.
+      required: false
+    - name: dns_options_private_dns_specified_domains
+      description: The private domains used for creating and associating private hosted zones with the VPC
+      required: false
+    - name: private_dns_enabled
+      description: Whether to associate a private hosted zone with the specified VPC. Applicable for Interface endpoints only.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: resource_configuration_arn
+      description: The Amazon Resource Name (ARN) of a resource configuration that is associated with the VPC resource type endpoint.
+      required: false
+    - name: tags
+      description: "The tags to apply to the VPC endpoint. Format key=<key>,value=<value>;key=<key>,value=<value>."
+      required: false
+    outputs:
+    - contextPath: AWS.EC2.VpcEndpoints.VpcEndpointId
+      description: The ID of the VPC endpoint.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.VpcEndpointType
+      description: The type of endpoint.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.VpcId
+      description: The ID of the VPC associated with the endpoint.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.ServiceName
+      description: The name of the service associated with the endpoint.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.State
+      description: The state of the VPC endpoint.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.PolicyDocument
+      description: The policy document associated with the endpoint, if applicable.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.RouteTableIds
+      description: One or more route tables associated with the endpoint.
+      type: array
+    - contextPath: AWS.EC2.VpcEndpoints.SubnetIds
+      description: One or more subnets in which the endpoint is located.
+      type: array
+    - contextPath: AWS.EC2.VpcEndpoints.Groups.GroupId
+      description: The ID of the security group.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.Groups.GroupName
+      description: The name of the security group.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.IpAddressType
+      description: The IP address type for the endpoint.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.DnsOptions.DnsRecordIpType
+      description: The DNS records created for the endpoint.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.DnsOptions.PrivateDnsOnlyForInboundResolverEndpoint
+      description: Whether to enable private DNS only for inbound endpoints.
+      type: boolean
+    - contextPath: AWS.EC2.VpcEndpoints.PrivateDnsEnabled
+      description: Whether the VPC is associated with a private hosted zone.
+      type: boolean
+    - contextPath: AWS.EC2.VpcEndpoints.RequesterManaged
+      description: Whether the VPC endpoint is being managed by its service.
+      type: boolean
+    - contextPath: AWS.EC2.VpcEndpoints.NetworkInterfaceIds
+      description: One or more network interfaces for the endpoint.
+      type: array
+    - contextPath: AWS.EC2.VpcEndpoints.DnsEntries.DnsName
+      description: The DNS name.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.DnsEntries.HostedZoneId
+      description: The ID of the private hosted zone.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.CreationTimestamp
+      description: The date and time that the VPC endpoint was created.
+      type: date
+    - contextPath: AWS.EC2.VpcEndpoints.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.Tags.Value
+      description: The value of the tag.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.OwnerId
+      description: The ID of the AWS account that owns the VPC endpoint.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.LastError.Message
+      description: The VCP endpoint error message.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.LastError.Code
+      description: The VCP endpoint error code.
+      type: string
+
+  - name: aws-ec2-internet-gateway-describe
+    description: A description of one or more of your internet gateways.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: filters
+      description: "One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for filter details and options."
+      required: false
+    - name: internet_gateway_ids
+      description: A comma-separated list of internet gateway IDs.
+      required: false
+      isArray: true
+    - name: limit
+      description: The maximum number of results to return with a single call. Specify a value between 5 and 1000.
+      required: false
+    - name: next_token
+      description: The token for the next page of results.
+      required: false
+    outputs:
+    - contextPath: AWS.EC2.InternetGateways.InternetGatewayId
+      description: The ID of the internet gateway.
+      type: string
+    - contextPath: AWS.EC2.InternetGateways.Attachments.State
+      description: The current state of the attachment.
+      type: string
+    - contextPath: AWS.EC2.InternetGateways.Attachments.VpcId
+      description: The ID of the VPC.
+      type: string
+    - contextPath: AWS.EC2.InternetGateways.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.EC2.InternetGateways.Tags.Value
+      description: The value of the tag.
+      type: string
+    - contextPath: AWS.EC2.InternetGateways.OwnerId
+      description: The ID of the AWS account that owns the internet gateway.
+      type: string
+    - contextPath: AWS.EC2.InternetGatewaysNextToken
+      description: The token used to retrieve the next page of results.
+      type: string
+
+  - name: aws-ec2-internet-gateway-detach
+    description: Detaches an internet gateway from a VPC, disabling connectivity between the internet and the VPC.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: internet_gateway_id
+      description: The ID of the internet gateway.
+      required: true
+    - name: vpc_id
+      description: The ID of the VPC.
+      required: true
+
+  - name: aws-ec2-internet-gateway-delete
+    description: Deletes the specified internet gateway. You must detach the internet gateway from the VPC before you can delete it.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: internet_gateway_id
+      description: The ID of the internet gateway.
+      required: true
+
+  - name: aws-ec2-subnet-delete
+    description: Deletes the specified subnet. You must terminate all running instances in the subnet before you can delete the subnet.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: subnet_id
+      description: The ID of the subnet.
+      required: true
+
+  - name: aws-ec2-network-acl-entry-create
+    description: Creates an entry (a rule) in a network ACL with the specified rule number.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: network_acl_id
+      description: The ID of the network ACL.
+      required: true
+    - name: rule_number
+      description: The rule number for the entry (Positive integer from 1 to 32766. The range 32767 to 65535 is reserved for internal use.). ACL entries are processed in ascending order by rule number.
+      required: true
+    - name: protocol
+      description: The protocol number, where -1 or all specifies all protocols. Using all, -1, or any protocol other than tcp, udp, or icmp allows traffic on all ports, regardless other settings.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - tcp
+      - udp
+      - icmp
+      - icmpv6
+      - '-1'
+    - name: rule_action
+      description: Whether to allow the traffic that matches the rule.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - allow
+      - deny
+    - name: egress
+      description: Whether it is an egress rule (a rule applied to traffic leaving the subnet).
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: cidr_block
+      description: The IPv4 network range to allow or deny, in CIDR notation (for example, 172.16.0.0/24). You must specify either cidr_block or ipv6_cidr_block.
+      required: false
+    - name: ipv6_cidr_block
+      description: The IPv6 network range to allow or deny, in CIDR notation (for example, 2001:db8:1234:1a00::/64). You must specify either cidr_block or ipv6_cidr_block.
+      required: false
+    - name: icmp_type_code_type
+      description: The ICMP type. A value of -1 means all types. Required if specifying icmp or icmpv6 for the protocol parameter.
+      required: false
+    - name: icmp_type_code_code
+      description: The ICMP code. A value of -1 means all codes for the specified ICMP type. Required if specifying icmp or icmpv6 for the protocol parameter.
+      required: false
+    - name: port_range_from
+      description: The first port in the range. Required if specifying tcp or udp for the protocol parameter.
+      required: false
+    - name: port_range_to
+      description: The last port in the range. Required if specifying tcp or udp for the protocol parameter.
+      required: false
 
   isfetch: false
   runonce: false

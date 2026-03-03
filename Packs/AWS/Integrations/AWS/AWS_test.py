@@ -32,6 +32,102 @@ def test_parse_resource_ids_with_none():
         parse_resource_ids(None)
 
 
+def test_validate_iso8601_date_valid_utc_z():
+    """
+    Given: A valid AWS UTC timestamp string with 'Z' suffix.
+    When: validate_iso8601_date is called with the string.
+    Then: It should return the original string unchanged.
+    """
+    from AWS import validate_iso8601_date
+
+    result = validate_iso8601_date("2024-01-15T10:30:00Z")
+    assert result == "2024-01-15T10:30:00Z"
+
+
+def test_validate_iso8601_date_none_returns_none():
+    """
+    Given: A None value.
+    When: validate_iso8601_date is called with None.
+    Then: It should return None without raising an exception.
+    """
+    from AWS import validate_iso8601_date
+
+    result = validate_iso8601_date(None)
+    assert result is None
+
+
+def test_validate_iso8601_date_empty_string_returns_none():
+    """
+    Given: An empty string.
+    When: validate_iso8601_date is called with an empty string.
+    Then: It should return None without raising an exception.
+    """
+    from AWS import validate_iso8601_date
+
+    result = validate_iso8601_date("")
+    assert result is None
+
+
+def test_validate_iso8601_date_missing_z_suffix():
+    """
+    Given: A datetime string without the required 'Z' UTC suffix.
+    When: validate_iso8601_date is called with the string.
+    Then: It should raise a DemistoException indicating invalid AWS UTC format.
+    """
+    from AWS import validate_iso8601_date
+
+    with pytest.raises(DemistoException, match="Invalid date format"):
+        validate_iso8601_date("2024-01-15T10:30:00")
+
+
+def test_validate_iso8601_date_with_offset_instead_of_z():
+    """
+    Given: A datetime string with a timezone offset instead of 'Z'.
+    When: validate_iso8601_date is called with the string.
+    Then: It should raise a DemistoException since AWS requires the 'Z' suffix.
+    """
+    from AWS import validate_iso8601_date
+
+    with pytest.raises(DemistoException, match="Invalid date format"):
+        validate_iso8601_date("2024-01-15T10:30:00+02:00")
+
+
+def test_validate_iso8601_date_invalid_format():
+    """
+    Given: A date string in an unsupported format (DD-MM-YYYY).
+    When: validate_iso8601_date is called with the malformed string.
+    Then: It should raise a DemistoException indicating invalid AWS UTC format.
+    """
+    from AWS import validate_iso8601_date
+
+    with pytest.raises(DemistoException, match="Invalid date format"):
+        validate_iso8601_date("15-01-2024T10:30:00Z")
+
+
+def test_validate_iso8601_date_invalid_month():
+    """
+    Given: An AWS UTC timestamp string with an out-of-range month value (month 13).
+    When: validate_iso8601_date is called with the invalid string.
+    Then: It should raise a DemistoException indicating invalid AWS UTC format.
+    """
+    from AWS import validate_iso8601_date
+
+    with pytest.raises(DemistoException, match="Invalid date format"):
+        validate_iso8601_date("2024-13-01T10:30:00Z")
+
+
+def test_validate_iso8601_date_invalid_hour():
+    """
+    Given: An AWS UTC timestamp string with an out-of-range hour value (hour 25).
+    When: validate_iso8601_date is called with the invalid string.
+    Then: It should raise a DemistoException indicating invalid AWS UTC format.
+    """
+    from AWS import validate_iso8601_date
+
+    with pytest.raises(DemistoException, match="Invalid date format"):
+        validate_iso8601_date("2024-01-15T25:00:00Z")
+
+
 def test_datetime_encoder_with_datetime():
     """
     Given: A DatetimeEncoder instance and a datetime object.
@@ -4178,16 +4274,16 @@ def test_build_pagination_kwargs_with_limit_exceeding_maximum():
 
 def test_build_pagination_kwargs_with_zero_limit():
     """
-    Given: A limit argument of zero.
+    Given: A limit argument of zero and minimum_limit=1.
     When: build_pagination_kwargs is called with zero limit.
-    Then: It should raise ValueError indicating limit must be greater than 0.
+    Then: It should raise ValueError indicating limit must be greater than 1.
     """
     from AWS import build_pagination_kwargs
 
     args = {"limit": "0"}
 
-    with pytest.raises(ValueError, match="Limit must be greater than 0"):
-        build_pagination_kwargs(args)
+    with pytest.raises(ValueError, match="Limit must be greater than 1"):
+        build_pagination_kwargs(args, minimum_limit=1)
 
 
 def test_build_pagination_kwargs_with_negative_limit():
@@ -12369,3 +12465,1429 @@ def test_ec2_delete_launch_template_command_failure(mocker):
 
     # Verify that demisto.results was called (error handler was invoked)
     demisto_results.assert_called_once()
+
+
+def test_aws_ec2_fleet_command_launch_templates_config_args_builder_with_template_id():
+    """
+    Given: Args containing a launch_template_id, version, instance_type, and subnet_id.
+    When: aws_ec2_fleet_command_launch_templates_config_args_builder is called.
+    Then: It should return a list with one entry containing LaunchTemplateSpecification and Overrides,
+          with the correct values mapped and empty fields removed.
+    """
+    from AWS import aws_ec2_fleet_command_launch_templates_config_args_builder
+
+    args = {
+        "launch_template_id": "lt-0abc123",
+        "launch_template_version": "$Default",
+        "instance_type": "t3.micro",
+        "subnet_id": "subnet-111",
+    }
+
+    result = aws_ec2_fleet_command_launch_templates_config_args_builder(args)
+
+    assert len(result) == 1
+    config = result[0]
+    assert config["LaunchTemplateSpecification"]["LaunchTemplateId"] == "lt-0abc123"
+    assert config["LaunchTemplateSpecification"]["Version"] == "$Default"
+    assert "LaunchTemplateName" not in config["LaunchTemplateSpecification"]
+    overrides = config["Overrides"][0]
+    assert overrides["InstanceType"] == "t3.micro"
+    assert overrides["SubnetId"] == "subnet-111"
+
+
+def test_aws_ec2_fleet_command_launch_templates_config_args_builder_empty_args():
+    """
+    Given: Args with no launch template or override fields provided.
+    When: aws_ec2_fleet_command_launch_templates_config_args_builder is called.
+    Then: It should return a list with one entry where LaunchTemplateSpecification and Overrides
+          contain no keys (all empty values removed).
+    """
+    from AWS import aws_ec2_fleet_command_launch_templates_config_args_builder
+
+    result = aws_ec2_fleet_command_launch_templates_config_args_builder({})
+
+    assert len(result) == 1
+    config = result[0]
+    assert "LaunchTemplateSpecification" not in config or config.get("LaunchTemplateSpecification") == {}
+    overrides = config.get("Overrides", [{}])
+    assert isinstance(overrides, list)
+
+
+def test_aws_ec2_fleet_create_args_builder_required_fields():
+    """
+    Given: Args with the minimum required fields: type, total_target_capacity, and launch_template_id.
+    When: aws_ec2_fleet_create_args_builder is called.
+    Then: It should return a dict with Type and TargetCapacitySpecification correctly populated,
+          and ValidFrom/ValidUntil absent (no dates provided).
+    """
+    from AWS import aws_ec2_fleet_create_args_builder
+
+    args = {
+        "type": "instant",
+        "total_target_capacity": "2",
+        "default_target_capacity_type": "spot",
+        "launch_template_id": "lt-0abc123",
+        "launch_template_version": "$Default",
+    }
+
+    result = aws_ec2_fleet_create_args_builder(args)
+
+    assert result["Type"] == "instant"
+    assert result["TargetCapacitySpecification"]["TotalTargetCapacity"] == 2
+    assert result["TargetCapacitySpecification"]["DefaultTargetCapacityType"] == "spot"
+    assert result.get("ValidFrom") is None
+    assert result.get("ValidUntil") is None
+
+
+def test_aws_ec2_fleet_create_args_builder_with_valid_from_until():
+    """
+    Given: Args with valid AWS UTC timestamp strings (YYYY-MM-DDTHH:MM:SSZ) for ValidFrom and ValidUntil.
+    When: aws_ec2_fleet_create_args_builder is called.
+    Then: ValidFrom and ValidUntil in the result should match the provided UTC strings exactly.
+    """
+    from AWS import aws_ec2_fleet_create_args_builder
+
+    args = {
+        "type": "maintain",
+        "total_target_capacity": "3",
+        "launch_template_id": "lt-0abc123",
+        "launch_template_version": "$Default",
+        "valid_from": "2025-06-01T00:00:00Z",
+        "valid_until": "2025-12-31T23:59:59Z",
+    }
+
+    result = aws_ec2_fleet_create_args_builder(args)
+
+    assert result["ValidFrom"] == "2025-06-01T00:00:00Z"
+    assert result["ValidUntil"] == "2025-12-31T23:59:59Z"
+
+
+def test_create_fleet_command_success(mocker):
+    """
+    Given: A mocked EC2 client and valid fleet creation arguments with a launch template ID.
+    When: create_fleet_command is called with required parameters.
+    Then: It should return CommandResults with the new FleetId in the readable output.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_fleet.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FleetId": "fleet-12345",
+        "Instances": [],
+        "Errors": [],
+    }
+    mocker.patch(
+        "AWS.serialize_response_with_datetime_encoding",
+        return_value={
+            "FleetId": "fleet-12345",
+            "Instances": [],
+            "Errors": [],
+        },
+    )
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "launch_template_id": "lt-0abc123",
+        "launch_template_version": "1",
+        "total_target_capacity": "2",
+        "default_target_capacity_type": "spot",
+    }
+
+    result = EC2.create_fleet_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.Fleets"
+    assert result.outputs["FleetId"] == "fleet-12345"
+    assert "fleet-12345" in result.readable_output
+
+
+def test_create_fleet_command_missing_both_templates(mocker):
+    """
+    Given: A mocked EC2 client and arguments with neither launch_template_id nor launch_template_name.
+    When: create_fleet_command is called.
+    Then: It should raise DemistoException requiring one of the template identifiers.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "total_target_capacity": "2",
+        "default_target_capacity_type": "spot",
+    }
+
+    with pytest.raises(DemistoException, match="Either launch_template_id or launch_template_name must be provided"):
+        EC2.create_fleet_command(mock_client, args)
+
+
+def test_create_fleet_command_both_templates_provided(mocker):
+    """
+    Given: A mocked EC2 client and arguments with both launch_template_id and launch_template_name.
+    When: create_fleet_command is called.
+    Then: It should raise DemistoException because only one may be provided.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "launch_template_id": "lt-0abc123",
+        "launch_template_name": "my-template",
+        "total_target_capacity": "2",
+        "default_target_capacity_type": "spot",
+    }
+
+    with pytest.raises(
+        DemistoException, match="Either launch_template_id or launch_template_name must be provided, but not both"
+    ):
+        EC2.create_fleet_command(mock_client, args)
+
+
+def test_create_fleet_command_with_spot_and_ondemand_options(mocker):
+    """
+    Given: A mocked EC2 client and arguments including SpotOptions, OnDemandOptions,
+           and CapacityRebalance maintenance strategy fields.
+    When: create_fleet_command is called with full configuration.
+    Then: It should call create_fleet with the correct SpotOptions (including
+          MaintenanceStrategies.CapacityRebalance) and OnDemandOptions parameters.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_fleet.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FleetId": "fleet-99999",
+        "Instances": [],
+        "Errors": [],
+    }
+    mocker.patch(
+        "AWS.serialize_response_with_datetime_encoding",
+        return_value={"FleetId": "fleet-99999", "Instances": [], "Errors": []},
+    )
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "launch_template_id": "lt-0abc123",
+        "total_target_capacity": "4",
+        "default_target_capacity_type": "spot",
+        "spot_allocation_strategy": "lowest-price",
+        "instance_pools_to_use_count": "2",
+        "on_demand_allocation_strategy": "prioritized",
+        "on_demand_target_capacity": "1",
+        "spot_target_capacity": "3",
+        "type": "maintain",
+        "capacity_rebalance_replacement_strategy": "launch-before-terminate",
+        "capacity_rebalance_termination_delay": "120",
+    }
+
+    result = EC2.create_fleet_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.create_fleet.call_args[1]
+    assert call_kwargs["SpotOptions"]["AllocationStrategy"] == "lowest-price"
+    assert call_kwargs["SpotOptions"]["InstancePoolsToUseCount"] == 2
+    assert call_kwargs["OnDemandOptions"]["AllocationStrategy"] == "prioritized"
+    assert call_kwargs["TargetCapacitySpecification"]["TotalTargetCapacity"] == 4
+    capacity_rebalance = call_kwargs["SpotOptions"]["MaintenanceStrategies"]["CapacityRebalance"]
+    assert capacity_rebalance["ReplacementStrategy"] == "launch-before-terminate"
+    assert capacity_rebalance["TerminationDelay"] == 120
+
+
+def test_create_fleet_command_with_tags(mocker):
+    """
+    Given: A mocked EC2 client and arguments including tags.
+    When: create_fleet_command is called with tags.
+    Then: It should include TagSpecifications in the API call with the fleet resource type.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_fleet.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FleetId": "fleet-tagged",
+        "Instances": [],
+        "Errors": [],
+    }
+    mocker.patch(
+        "AWS.serialize_response_with_datetime_encoding",
+        return_value={"FleetId": "fleet-tagged", "Instances": [], "Errors": []},
+    )
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "launch_template_id": "lt-0abc123",
+        "total_target_capacity": "1",
+        "default_target_capacity_type": "on-demand",
+        "tags": "key=Env,value=prod",
+    }
+
+    result = EC2.create_fleet_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.create_fleet.call_args[1]
+    tag_specs = call_kwargs.get("TagSpecifications", [])
+    assert len(tag_specs) == 1
+    assert tag_specs[0]["ResourceType"] == "fleet"
+    assert tag_specs[0]["Tags"][0]["Key"] == "Env"
+
+
+def test_delete_fleet_command_success(mocker):
+    """
+    Given: A mocked EC2 client and valid fleet IDs with terminate_instances=true.
+    When: delete_fleet_command is called.
+    Then: It should return CommandResults with successful deletion details in the readable output.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.delete_fleets.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "SuccessfulFleetDeletions": [{"FleetId": "fleet-aaa", "CurrentFleetState": "deleted", "PreviousFleetState": "active"}],
+        "UnsuccessfulFleetDeletions": [],
+    }
+    mocker.patch(
+        "AWS.serialize_response_with_datetime_encoding",
+        return_value={
+            "SuccessfulFleetDeletions": [
+                {"FleetId": "fleet-aaa", "CurrentFleetState": "deleted", "PreviousFleetState": "active"}
+            ],
+            "UnsuccessfulFleetDeletions": [],
+        },
+    )
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "fleet_ids": "fleet-aaa",
+        "terminate_instances": "true",
+    }
+
+    result = EC2.delete_fleet_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.DeletedFleets"
+    assert "fleet-aaa" in result.readable_output
+    assert result.outputs["SuccessfulFleetDeletions"][0]["FleetId"] == "fleet-aaa"
+    call_kwargs = mock_client.delete_fleets.call_args[1]
+    assert "fleet-aaa" in call_kwargs["FleetIds"]
+
+
+def test_delete_fleet_command_partial_failure(mocker):
+    """
+    Given: A mocked EC2 client where one fleet deletion succeeds and one fails.
+    When: delete_fleet_command is called with two fleet IDs.
+    Then: It should return CommandResults containing both successful and unsuccessful deletions.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.delete_fleets.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "SuccessfulFleetDeletions": [{"FleetId": "fleet-ok", "CurrentFleetState": "deleted", "PreviousFleetState": "active"}],
+        "UnsuccessfulFleetDeletions": [
+            {"FleetId": "fleet-fail", "Error": {"Code": "InvalidFleetId", "Message": "Fleet not found"}}
+        ],
+    }
+    mocker.patch(
+        "AWS.serialize_response_with_datetime_encoding",
+        return_value={
+            "SuccessfulFleetDeletions": [{"FleetId": "fleet-ok", "CurrentFleetState": "deleted", "PreviousFleetState": "active"}],
+            "UnsuccessfulFleetDeletions": [
+                {"FleetId": "fleet-fail", "Error": {"Code": "InvalidFleetId", "Message": "Fleet not found"}}
+            ],
+        },
+    )
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "fleet_ids": "fleet-ok,fleet-fail",
+        "terminate_instances": "false",
+    }
+
+    result = EC2.delete_fleet_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "fleet-ok" in result.readable_output
+    assert "fleet-fail" in result.readable_output
+    assert len(result.outputs["SuccessfulFleetDeletions"]) == 1
+    assert len(result.outputs["UnsuccessfulFleetDeletions"]) == 1
+
+
+def test_delete_fleet_command_no_deletions(mocker):
+    """
+    Given: A mocked EC2 client that returns empty successful and unsuccessful lists.
+    When: delete_fleet_command is called.
+    Then: It should return CommandResults with a 'No fleets were deleted' message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.delete_fleets.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "SuccessfulFleetDeletions": [],
+        "UnsuccessfulFleetDeletions": [],
+    }
+    mocker.patch(
+        "AWS.serialize_response_with_datetime_encoding",
+        return_value={"SuccessfulFleetDeletions": [], "UnsuccessfulFleetDeletions": []},
+    )
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "fleet_ids": "fleet-ghost",
+        "terminate_instances": "true",
+    }
+
+    result = EC2.delete_fleet_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "No fleets were deleted" in result.readable_output
+
+
+def test_describe_fleets_command_success(mocker):
+    """
+    Given: A mocked EC2 client returning two fleets.
+    When: describe_fleets_command is called with fleet_ids.
+    Then: It should return CommandResults with fleet data in outputs and readable output.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    fleets = [
+        {
+            "FleetId": "fleet-111",
+            "FleetState": "active",
+            "ActivityStatus": "fulfilled",
+            "FulfilledCapacity": 2.0,
+            "TargetCapacitySpecification": {"TotalTargetCapacity": 2},
+        },
+        {
+            "FleetId": "fleet-222",
+            "FleetState": "active",
+            "ActivityStatus": "pending_fulfillment",
+            "FulfilledCapacity": 0.0,
+            "TargetCapacitySpecification": {"TotalTargetCapacity": 1},
+        },
+    ]
+    mock_client.describe_fleets.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Fleets": fleets,
+        "NextToken": None,
+    }
+    mocker.patch(
+        "AWS.serialize_response_with_datetime_encoding",
+        return_value={"Fleets": fleets, "NextToken": None},
+    )
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "fleet_ids": "fleet-111,fleet-222",
+    }
+
+    result = EC2.describe_fleets_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "fleet-111" in result.readable_output
+    assert "fleet-222" in result.readable_output
+    call_kwargs = mock_client.describe_fleets.call_args[1]
+    assert "fleet-111" in call_kwargs["FleetIds"]
+    assert "fleet-222" in call_kwargs["FleetIds"]
+
+
+def test_describe_fleets_command_no_fleets_found(mocker):
+    """
+    Given: A mocked EC2 client returning an empty Fleets list.
+    When: describe_fleets_command is called.
+    Then: It should return CommandResults with 'No fleets were found' message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_fleets.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Fleets": [],
+    }
+    mocker.patch(
+        "AWS.serialize_response_with_datetime_encoding",
+        return_value={"Fleets": [], "NextToken": None},
+    )
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "fleet_ids": "fleet-nonexistent",
+    }
+
+    result = EC2.describe_fleets_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "No fleets were found" in result.readable_output
+
+
+def test_describe_fleets_command_with_pagination(mocker):
+    """
+    Given: A mocked EC2 client and no fleet_ids (triggering pagination).
+    When: describe_fleets_command is called with limit and next_token.
+    Then: It should include pagination parameters in the API call and return NextToken in outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    fleet = {
+        "FleetId": "fleet-paged",
+        "FleetState": "active",
+        "ActivityStatus": "fulfilled",
+        "FulfilledCapacity": 1.0,
+        "TargetCapacitySpecification": {"TotalTargetCapacity": 1},
+    }
+    mock_client.describe_fleets.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Fleets": [fleet],
+        "NextToken": "token-abc",
+    }
+    mocker.patch(
+        "AWS.serialize_response_with_datetime_encoding",
+        return_value={"Fleets": [fleet], "NextToken": "token-abc"},
+    )
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "limit": "5",
+        "next_token": "token-prev",
+    }
+
+    result = EC2.describe_fleets_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.describe_fleets.call_args[1]
+    assert call_kwargs.get("MaxResults") == 5
+    assert call_kwargs.get("NextToken") == "token-prev"
+    assert result.outputs["AWS.EC2(true)"]["FleetsNextToken"] == "token-abc"
+
+
+def test_describe_fleet_instances_command_success(mocker):
+    """
+    Given: A mocked EC2 client returning active instances for a fleet.
+    When: describe_fleet_instances_command is called with a fleet_id.
+    Then: It should return CommandResults with instance data in the readable output.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    instances = [
+        {"InstanceId": "i-aaa111", "InstanceType": "t3.micro", "SpotInstanceRequestId": "sir-001", "InstanceHealth": "healthy"},
+        {"InstanceId": "i-bbb222", "InstanceType": "t3.small", "SpotInstanceRequestId": "sir-002", "InstanceHealth": "healthy"},
+    ]
+    mock_client.describe_fleet_instances.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ActiveInstances": instances,
+        "FleetId": "fleet-abc",
+        "NextToken": None,
+    }
+    mocker.patch(
+        "AWS.serialize_response_with_datetime_encoding",
+        return_value={"ActiveInstances": instances, "FleetId": "fleet-abc", "NextToken": None},
+    )
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "fleet_id": "fleet-abc",
+    }
+
+    result = EC2.describe_fleet_instances_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "i-aaa111" in result.readable_output
+    assert "i-bbb222" in result.readable_output
+    call_kwargs = mock_client.describe_fleet_instances.call_args[1]
+    assert call_kwargs["FleetId"] == "fleet-abc"
+
+
+def test_describe_fleet_instances_command_no_instances(mocker):
+    """
+    Given: A mocked EC2 client returning an empty ActiveInstances list.
+    When: describe_fleet_instances_command is called.
+    Then: It should return CommandResults with 'No active instances were found' message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_fleet_instances.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ActiveInstances": [],
+        "FleetId": "fleet-empty",
+        "NextToken": None,
+    }
+    mocker.patch(
+        "AWS.serialize_response_with_datetime_encoding",
+        return_value={"ActiveInstances": [], "FleetId": "fleet-empty", "NextToken": None},
+    )
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "fleet_id": "fleet-empty",
+    }
+
+    result = EC2.describe_fleet_instances_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "No active instances were found" in result.readable_output
+
+
+def test_describe_fleet_instances_command_with_filter(mocker):
+    """
+    Given: A mocked EC2 client and a filter argument.
+    When: describe_fleet_instances_command is called with a filter.
+    Then: It should pass the parsed filter to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    instances = [
+        {"InstanceId": "i-filtered", "InstanceType": "t3.micro", "SpotInstanceRequestId": "sir-003", "InstanceHealth": "healthy"}
+    ]
+    mock_client.describe_fleet_instances.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ActiveInstances": instances,
+        "FleetId": "fleet-xyz",
+        "NextToken": None,
+    }
+    mocker.patch(
+        "AWS.serialize_response_with_datetime_encoding",
+        return_value={"ActiveInstances": instances, "FleetId": "fleet-xyz", "NextToken": None},
+    )
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "fleet_id": "fleet-xyz",
+        "filters": "Name=instance-type,Values=t3.micro",
+    }
+
+    result = EC2.describe_fleet_instances_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.describe_fleet_instances.call_args[1]
+    assert "Filters" in call_kwargs
+    assert call_kwargs["Filters"][0]["Name"] == "instance-type"
+
+
+def test_describe_fleet_instances_command_outputs_structure(mocker):
+    """
+    Given: A mocked EC2 client returning active instances with a FleetId and no NextToken.
+    When: describe_fleet_instances_command is called.
+    Then: The outputs dict should contain the correct context keys, ResponseMetadata should be
+          excluded from response_data, and FleetInstancesNextToken should be None.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    instances = [
+        {"InstanceId": "i-out001", "InstanceType": "m5.large", "SpotInstanceRequestId": "sir-out1", "InstanceHealth": "healthy"}
+    ]
+    raw_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ActiveInstances": instances,
+        "FleetId": "fleet-out-001",
+        "NextToken": None,
+    }
+    serialized = {"ActiveInstances": instances, "FleetId": "fleet-out-001", "NextToken": None}
+    mock_client.describe_fleet_instances.return_value = raw_response
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=serialized)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "fleet_id": "fleet-out-001"}
+
+    result = EC2.describe_fleet_instances_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    # ResponseMetadata must be stripped from the context output
+    fleet_output = result.outputs["AWS.EC2.Fleets(val.FleetId && val.FleetId == obj.FleetId)"]
+    assert "ResponseMetadata" not in fleet_output
+    assert fleet_output.get("FleetId") == "fleet-out-001"
+    # NextToken sentinel should be present but None
+    assert result.outputs["AWS.EC2.Fleets(true)"]["FleetInstancesNextToken"] is None
+
+
+def test_describe_fleet_instances_command_next_token_propagated(mocker):
+    """
+    Given: A mocked EC2 client returning 2 instances and a NextToken (limit=2 was reached).
+    When: describe_fleet_instances_command is called with limit=2.
+    Then: FleetInstancesNextToken in the AWS.EC2.Fleets(true) output should match the response NextToken,
+          and MaxResults=2 should be passed to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    instances = [
+        {"InstanceId": "i-page001", "InstanceType": "t3.nano", "SpotInstanceRequestId": "sir-page1", "InstanceHealth": "healthy"},
+        {"InstanceId": "i-page002", "InstanceType": "t3.nano", "SpotInstanceRequestId": "sir-page2", "InstanceHealth": "healthy"},
+    ]
+    serialized = {"ActiveInstances": instances, "FleetId": "fleet-page-001", "NextToken": "next-token-xyz"}
+    mock_client.describe_fleet_instances.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        **serialized,
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=serialized)
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "fleet_id": "fleet-page-001",
+        "limit": "2",
+    }
+
+    result = EC2.describe_fleet_instances_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs["AWS.EC2.Fleets(true)"]["FleetInstancesNextToken"] == "next-token-xyz"
+    call_kwargs = mock_client.describe_fleet_instances.call_args[1]
+    assert call_kwargs.get("MaxResults") == 2
+
+
+def test_describe_fleet_instances_command_readable_output_headers(mocker):
+    """
+    Given: A mocked EC2 client returning instances with all four expected header fields.
+    When: describe_fleet_instances_command is called.
+    Then: The readable output table should contain all four column headers and the raw_response
+          should be attached to the CommandResults.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    instances = [
+        {
+            "InstanceId": "i-hdr001",
+            "InstanceType": "c5.xlarge",
+            "SpotInstanceRequestId": "sir-hdr1",
+            "InstanceHealth": "unhealthy",
+        }
+    ]
+    serialized = {"ActiveInstances": instances, "FleetId": "fleet-hdr-001", "NextToken": None}
+    mock_client.describe_fleet_instances.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        **serialized,
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=serialized)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "fleet_id": "fleet-hdr-001"}
+
+    result = EC2.describe_fleet_instances_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    # All four table headers must appear in the markdown output
+    for header in ("Instance Id", "Instance Type", "Spot Instance Request Id", "Instance Health"):
+        assert header in result.readable_output, f"Expected header '{header}' not found in readable_output"
+    # Instance values must appear
+    assert "i-hdr001" in result.readable_output
+    assert "unhealthy" in result.readable_output
+    # raw_response must be attached
+    assert result.raw_response is not None
+    assert result.raw_response.get("FleetId") == "fleet-hdr-001"
+
+
+def test_modify_fleet_command_success(mocker):
+    """
+    Given: A mocked EC2 client returning Return=True and valid fleet modification arguments.
+    When: modify_fleet_command is called.
+    Then: It should return CommandResults with a success message containing the fleet ID.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.modify_fleet.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Return": True,
+    }
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "fleet_id": "fleet-mod-001",
+        "total_target_capacity": "5",
+        "default_target_capacity_type": "spot",
+    }
+
+    result = EC2.modify_fleet_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "Successfully modified" in result.readable_output
+    assert "fleet-mod-001" in result.readable_output
+    call_kwargs = mock_client.modify_fleet.call_args[1]
+    assert call_kwargs["FleetId"] == "fleet-mod-001"
+    assert call_kwargs["TargetCapacitySpecification"]["TotalTargetCapacity"] == 5
+    assert call_kwargs["TargetCapacitySpecification"]["DefaultTargetCapacityType"] == "spot"
+    assert "LaunchTemplateConfigs" not in call_kwargs
+
+
+def test_modify_fleet_command_api_returns_false(mocker):
+    """
+    Given: A mocked EC2 client returning Return=False (modification rejected by AWS).
+    When: modify_fleet_command is called.
+    Then: It should return CommandResults with a failure message containing the fleet ID.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.modify_fleet.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Return": False,
+    }
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "fleet_id": "fleet-mod-002",
+        "total_target_capacity": "3",
+        "default_target_capacity_type": "on-demand",
+    }
+
+    result = EC2.modify_fleet_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "Failed to modify" in result.readable_output
+    assert "fleet-mod-002" in result.readable_output
+
+
+def test_modify_fleet_command_with_launch_template(mocker):
+    """
+    Given: A mocked EC2 client and arguments including a launch template ID.
+    When: modify_fleet_command is called.
+    Then: It should include LaunchTemplateConfigs in the API call payload.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.modify_fleet.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Return": True,
+    }
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "fleet_id": "fleet-mod-004",
+        "total_target_capacity": "6",
+        "launch_template_id": "lt-0newtemplate",
+        "launch_template_version": "2",
+        "instance_type": "m5.large",
+    }
+
+    result = EC2.modify_fleet_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.modify_fleet.call_args[1]
+    assert "LaunchTemplateConfigs" in call_kwargs
+    assert call_kwargs["LaunchTemplateConfigs"][0]["LaunchTemplateSpecification"]["LaunchTemplateId"] == "lt-0newtemplate"
+
+
+# ── aws-ec2-vpc-delete ────────────────────────────────────────────────────────
+
+
+def test_delete_vpc_command_success(mocker):
+    """
+    Given: A mocked EC2 client and a valid vpc_id argument.
+    When: delete_vpc_command is called with a successful response.
+    Then: It should return CommandResults with a success message containing the VPC ID.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.delete_vpc.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "vpc_id": "vpc-0abc12345"}
+
+    result = EC2.delete_vpc_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "vpc-0abc12345" in result.readable_output
+    mock_client.delete_vpc.assert_called_once_with(VpcId="vpc-0abc12345")
+
+
+def test_delete_vpc_command_failure(mocker):
+    """
+    Given: A mocked EC2 client that returns a non-200 HTTP status.
+    When: delete_vpc_command is called.
+    Then: It should invoke AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.delete_vpc.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "vpc_id": "vpc-0abc12345"}
+
+    EC2.delete_vpc_command(mock_client, args)
+
+    mock_error_handler.assert_called_once()
+
+
+# ── aws-ec2-vpc-endpoint-create ───────────────────────────────────────────────
+
+
+def test_create_vpc_endpoint_command_success(mocker):
+    """
+    Given: A mocked EC2 client and valid arguments for a Gateway VPC endpoint.
+    When: create_vpc_endpoint_command is called with a successful response.
+    Then: It should return CommandResults with the VpcEndpointId in outputs and readable output.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_vpc_endpoint.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "VpcEndpoint": {
+            "VpcEndpointId": "vpce-0abc12345",
+            "State": "available",
+            "ServiceName": "com.amazonaws.us-east-1.s3",
+            "VpcId": "vpc-0abc12345",
+            "VpcEndpointType": "Gateway",
+        },
+    }
+    mocker.patch(
+        "AWS.serialize_response_with_datetime_encoding",
+        return_value={
+            "VpcEndpoint": {
+                "VpcEndpointId": "vpce-0abc12345",
+                "State": "available",
+                "ServiceName": "com.amazonaws.us-east-1.s3",
+                "VpcId": "vpc-0abc12345",
+                "VpcEndpointType": "Gateway",
+            }
+        },
+    )
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "vpc_id": "vpc-0abc12345",
+        "service_name": "com.amazonaws.us-east-1.s3",
+        "vpc_endpoint_type": "Gateway",
+    }
+
+    result = EC2.create_vpc_endpoint_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.VpcEndpoints"
+    assert result.outputs["VpcEndpointId"] == "vpce-0abc12345"
+    assert "vpce-0abc12345" in result.readable_output
+
+
+def test_create_vpc_endpoint_command_with_dns_options(mocker):
+    """
+    Given: A mocked EC2 client and arguments including DNS options.
+    When: create_vpc_endpoint_command is called.
+    Then: It should pass DnsOptions in the API call payload.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_vpc_endpoint.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "VpcEndpoint": {"VpcEndpointId": "vpce-dns001", "State": "pending"},
+    }
+    mocker.patch(
+        "AWS.serialize_response_with_datetime_encoding",
+        return_value={"VpcEndpoint": {"VpcEndpointId": "vpce-dns001", "State": "pending"}},
+    )
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "vpc_id": "vpc-0abc12345",
+        "service_name": "com.amazonaws.us-east-1.s3",
+        "dns_options_dns_record_ip_type": "ipv4",
+        "private_dns_enabled": "true",
+    }
+
+    result = EC2.create_vpc_endpoint_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.create_vpc_endpoint.call_args[1]
+    assert call_kwargs["DnsOptions"]["DnsRecordIpType"] == "ipv4"
+    assert call_kwargs["PrivateDnsEnabled"] is True
+
+
+def test_create_vpc_endpoint_command_failure(mocker):
+    """
+    Given: A mocked EC2 client that returns a non-200 HTTP status.
+    When: create_vpc_endpoint_command is called.
+    Then: It should invoke AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_vpc_endpoint.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "VpcEndpoint": {},
+    }
+    mocker.patch(
+        "AWS.serialize_response_with_datetime_encoding",
+        return_value={"VpcEndpoint": {}},
+    )
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "vpc_id": "vpc-0abc12345",
+        "service_name": "com.amazonaws.us-east-1.s3",
+    }
+
+    EC2.create_vpc_endpoint_command(mock_client, args)
+
+    mock_error_handler.assert_called_once()
+
+
+def test_create_vpc_endpoint_command_with_tags(mocker):
+    """
+    Given: A mocked EC2 client and arguments including tags.
+    When: create_vpc_endpoint_command is called with tags.
+    Then: It should include TagSpecifications with resource type 'vpc-endpoint' in the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_vpc_endpoint.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "VpcEndpoint": {"VpcEndpointId": "vpce-tagged001", "State": "available"},
+    }
+    mocker.patch(
+        "AWS.serialize_response_with_datetime_encoding",
+        return_value={"VpcEndpoint": {"VpcEndpointId": "vpce-tagged001", "State": "available"}},
+    )
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "vpc_id": "vpc-0abc12345",
+        "service_name": "com.amazonaws.us-east-1.s3",
+        "tags": "key=Env,value=prod;key=Owner,value=team",
+    }
+
+    result = EC2.create_vpc_endpoint_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.create_vpc_endpoint.call_args[1]
+    tag_specs = call_kwargs.get("TagSpecifications", [])
+    assert len(tag_specs) == 1
+    assert tag_specs[0]["ResourceType"] == "vpc-endpoint"
+    assert any(t["Key"] == "Env" for t in tag_specs[0]["Tags"])
+
+
+# ── aws-ec2-internet-gateway-describe ─────────────────────────────────────────
+
+
+def test_describe_internet_gateways_command_success(mocker):
+    """
+    Given: A mocked EC2 client returning one internet gateway with an attachment.
+    When: describe_internet_gateways_command is called.
+    Then: It should return CommandResults with the gateway ID in readable output and outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_internet_gateways.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "InternetGateways": [
+            {
+                "InternetGatewayId": "igw-0abc12345",
+                "OwnerId": "123456789012",
+                "Attachments": [{"State": "available", "VpcId": "vpc-0abc12345"}],
+                "Tags": [],
+            }
+        ],
+    }
+    mocker.patch(
+        "AWS.serialize_response_with_datetime_encoding",
+        return_value={
+            "InternetGateways": [
+                {
+                    "InternetGatewayId": "igw-0abc12345",
+                    "OwnerId": "123456789012",
+                    "Attachments": [{"State": "available", "VpcId": "vpc-0abc12345"}],
+                    "Tags": [],
+                }
+            ]
+        },
+    )
+
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    result = EC2.describe_internet_gateways_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "igw-0abc12345" in result.readable_output
+
+
+def test_describe_internet_gateways_command_no_results(mocker):
+    """
+    Given: A mocked EC2 client returning an empty InternetGateways list.
+    When: describe_internet_gateways_command is called.
+    Then: It should return CommandResults with a 'no gateways found' message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_internet_gateways.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "InternetGateways": [],
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value={"InternetGateways": []})
+
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    result = EC2.describe_internet_gateways_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "No internet gateways were found" in result.readable_output
+
+
+def test_describe_internet_gateways_command_with_filter(mocker):
+    """
+    Given: A mocked EC2 client and a filters argument.
+    When: describe_internet_gateways_command is called.
+    Then: It should pass Filters in the API call payload.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_internet_gateways.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "InternetGateways": [{"InternetGatewayId": "igw-filtered", "OwnerId": "123456789012", "Attachments": []}],
+    }
+    mocker.patch(
+        "AWS.serialize_response_with_datetime_encoding",
+        return_value={"InternetGateways": [{"InternetGatewayId": "igw-filtered", "OwnerId": "123456789012", "Attachments": []}]},
+    )
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "filters": "name=attachment.state,values=available",
+        "internet_gateway_ids": "igw-filtered",
+    }
+
+    result = EC2.describe_internet_gateways_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.describe_internet_gateways.call_args[1]
+    assert "Filters" in call_kwargs
+    assert call_kwargs["InternetGatewayIds"] == ["igw-filtered"]
+
+
+def test_describe_internet_gateways_command_next_token_propagated(mocker):
+    """
+    Given: A mocked EC2 client returning a NextToken in the response (no internet_gateway_ids specified).
+    When: describe_internet_gateways_command is called with limit and next_token.
+    Then: InternetGatewaysNextToken should be present in the AWS.EC2(true) output,
+          and MaxResults/NextToken should be passed to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    igw = {"InternetGatewayId": "igw-page001", "OwnerId": "123456789012", "Attachments": []}
+    mock_client.describe_internet_gateways.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "InternetGateways": [igw],
+        "NextToken": "next-igw-token",
+    }
+    mocker.patch(
+        "AWS.serialize_response_with_datetime_encoding",
+        return_value={"InternetGateways": [igw], "NextToken": "next-igw-token"},
+    )
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "limit": "5",
+        "next_token": "prev-igw-token",
+    }
+
+    result = EC2.describe_internet_gateways_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.describe_internet_gateways.call_args[1]
+    assert call_kwargs.get("MaxResults") == 5
+    assert call_kwargs.get("NextToken") == "prev-igw-token"
+    assert result.outputs["AWS.EC2(true)"]["InternetGatewaysNextToken"] == "next-igw-token"
+
+
+# ── aws-ec2-internet-gateway-detach ───────────────────────────────────────────
+
+
+def test_detach_internet_gateway_command_success(mocker):
+    """
+    Given: A mocked EC2 client and valid internet_gateway_id and vpc_id arguments.
+    When: detach_internet_gateway_command is called with a successful response.
+    Then: It should return CommandResults with a success message containing both IDs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.detach_internet_gateway.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "internet_gateway_id": "igw-0abc12345",
+        "vpc_id": "vpc-0abc12345",
+    }
+
+    result = EC2.detach_internet_gateway_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "igw-0abc12345" in result.readable_output
+    assert "vpc-0abc12345" in result.readable_output
+    mock_client.detach_internet_gateway.assert_called_once_with(InternetGatewayId="igw-0abc12345", VpcId="vpc-0abc12345")
+
+
+def test_detach_internet_gateway_command_failure(mocker):
+    """
+    Given: A mocked EC2 client that returns a non-200 HTTP status.
+    When: detach_internet_gateway_command is called.
+    Then: It should invoke AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.detach_internet_gateway.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "internet_gateway_id": "igw-0abc12345",
+        "vpc_id": "vpc-0abc12345",
+    }
+
+    EC2.detach_internet_gateway_command(mock_client, args)
+
+    mock_error_handler.assert_called_once()
+
+
+# ── aws-ec2-internet-gateway-delete ───────────────────────────────────────────
+
+
+def test_delete_internet_gateway_command_success(mocker):
+    """
+    Given: A mocked EC2 client and a valid internet_gateway_id argument.
+    When: delete_internet_gateway_command is called with a successful response.
+    Then: It should return CommandResults with a success message containing the gateway ID.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.delete_internet_gateway.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "internet_gateway_id": "igw-0abc12345"}
+
+    result = EC2.delete_internet_gateway_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "igw-0abc12345" in result.readable_output
+    mock_client.delete_internet_gateway.assert_called_once_with(InternetGatewayId="igw-0abc12345")
+
+
+def test_delete_internet_gateway_command_failure(mocker):
+    """
+    Given: A mocked EC2 client that returns a non-200 HTTP status.
+    When: delete_internet_gateway_command is called.
+    Then: It should invoke AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.delete_internet_gateway.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "internet_gateway_id": "igw-0abc12345"}
+
+    EC2.delete_internet_gateway_command(mock_client, args)
+
+    mock_error_handler.assert_called_once()
+
+
+# ── aws-ec2-subnet-delete ─────────────────────────────────────────────────────
+
+
+def test_delete_subnet_command_success(mocker):
+    """
+    Given: A mocked EC2 client and a valid subnet_id argument.
+    When: delete_subnet_command is called with a successful response.
+    Then: It should return CommandResults with a success message containing the subnet ID.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.delete_subnet.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "subnet_id": "subnet-0abc12345"}
+
+    result = EC2.delete_subnet_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "subnet-0abc12345" in result.readable_output
+    mock_client.delete_subnet.assert_called_once_with(SubnetId="subnet-0abc12345")
+
+
+def test_delete_subnet_command_failure(mocker):
+    """
+    Given: A mocked EC2 client that returns a non-200 HTTP status.
+    When: delete_subnet_command is called.
+    Then: It should invoke AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.delete_subnet.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "subnet_id": "subnet-0abc12345"}
+
+    EC2.delete_subnet_command(mock_client, args)
+
+    mock_error_handler.assert_called_once()
+
+
+# ── aws-ec2-network-acl-entry-create ─────────────────────────────────────────
+
+
+def test_create_network_acl_entry_command_success(mocker):
+    """
+    Given: A mocked EC2 client and valid arguments for a TCP ingress rule.
+    When: create_network_acl_entry_command is called with a successful response.
+    Then: It should return CommandResults with a success message containing the network ACL ID.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_network_acl_entry.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "network_acl_id": "acl-0abc12345",
+        "rule_number": "100",
+        "protocol": "tcp",
+        "rule_action": "allow",
+        "egress": "false",
+        "cidr_block": "0.0.0.0/0",
+        "port_range_from": "80",
+        "port_range_to": "80",
+    }
+
+    result = EC2.create_network_acl_entry_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "acl-0abc12345" in result.readable_output
+    call_kwargs = mock_client.create_network_acl_entry.call_args[1]
+    assert call_kwargs["NetworkAclId"] == "acl-0abc12345"
+    assert call_kwargs["RuleNumber"] == 100
+    assert call_kwargs["Protocol"] == "tcp"
+    assert call_kwargs["RuleAction"] == "allow"
+    assert call_kwargs["Egress"] is False
+    assert call_kwargs["PortRange"] == {"From": 80, "To": 80}
+
+
+def test_create_network_acl_entry_command_with_icmp(mocker):
+    """
+    Given: A mocked EC2 client and arguments specifying ICMP protocol with type and code.
+    When: create_network_acl_entry_command is called.
+    Then: It should pass IcmpTypeCode in the API call payload.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_network_acl_entry.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "network_acl_id": "acl-0abc12345",
+        "rule_number": "200",
+        "protocol": "icmp",
+        "rule_action": "deny",
+        "egress": "true",
+        "cidr_block": "10.0.0.0/8",
+        "icmp_type_code_type": "8",
+        "icmp_type_code_code": "0",
+    }
+
+    result = EC2.create_network_acl_entry_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.create_network_acl_entry.call_args[1]
+    assert call_kwargs["IcmpTypeCode"] == {"Type": 8, "Code": 0}
+    assert call_kwargs["Egress"] is True
+
+
+def test_create_network_acl_entry_command_with_ipv6(mocker):
+    """
+    Given: A mocked EC2 client and arguments specifying an IPv6 CIDR block.
+    When: create_network_acl_entry_command is called.
+    Then: It should pass Ipv6CidrBlock in the API call payload.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_network_acl_entry.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "network_acl_id": "acl-0abc12345",
+        "rule_number": "300",
+        "protocol": "-1",
+        "rule_action": "allow",
+        "egress": "false",
+        "ipv6_cidr_block": "::/0",
+    }
+
+    result = EC2.create_network_acl_entry_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.create_network_acl_entry.call_args[1]
+    assert call_kwargs["Ipv6CidrBlock"] == "::/0"
+
+
+def test_create_network_acl_entry_command_failure(mocker):
+    """
+    Given: A mocked EC2 client that returns a non-200 HTTP status.
+    When: create_network_acl_entry_command is called.
+    Then: It should invoke AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_network_acl_entry.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "network_acl_id": "acl-0abc12345",
+        "rule_number": "100",
+        "protocol": "tcp",
+        "rule_action": "allow",
+        "egress": "false",
+        "cidr_block": "0.0.0.0/0",
+    }
+
+    EC2.create_network_acl_entry_command(mock_client, args)
+
+    mock_error_handler.assert_called_once()

@@ -167,7 +167,7 @@ def build_pagination_kwargs(
         raise ValueError(f"Invalid limit parameter: {limit_arg}. Must be a valid number.") from e
 
     # Validate limit lower constraints
-    if limit is not None and limit <= minimum_limit:
+    if limit is not None and limit < minimum_limit:
         raise ValueError(f"Limit must be greater than {minimum_limit}")
 
     # AWS API upper constraints
@@ -182,6 +182,33 @@ def build_pagination_kwargs(
         kwargs[next_token_name] = next_token.strip()
     kwargs.update({limit_name: limit})
     return kwargs
+
+
+def validate_iso8601_date(dt: str | None) -> str | None:
+    """
+    Validates that a date string matches the AWS UTC timestamp format and returns it unchanged.
+
+    AWS requires timestamps in UTC format: YYYY-MM-DDTHH:MM:SSZ
+    (e.g. '2024-01-15T10:30:00Z').
+
+    Args:
+        dt (str | None): A date string expected in AWS UTC format (YYYY-MM-DDTHH:MM:SSZ).
+
+    Returns:
+        str | None: The original date string if valid, or None if dt is falsy.
+
+    Raises:
+        DemistoException: If the date string does not match the required AWS UTC format.
+    """
+    if not dt:
+        return None
+    try:
+        datetime.strptime(dt, "%Y-%m-%dT%H:%M:%SZ")
+    except ValueError as e:
+        raise DemistoException(
+            f"Invalid date format: '{dt}'. " f"Expected AWS UTC format: YYYY-MM-DDTHH:MM:SSZ (e.g. '2024-01-15T10:30:00Z').\n{e}"
+        )
+    return dt
 
 
 def parse_resource_ids(resource_id: str | None) -> list[str]:
@@ -449,30 +476,51 @@ def prepare_create_function_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
     return remove_empty_elements(kwargs)
 
 
+def aws_ec2_block_device_mapping_args_builder(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """
+    Builds the BlockDeviceMappings list for EC2 launch template and fleet commands.
+    Constructs a single block device mapping entry from the provided arguments,
+    including EBS volume configuration and device naming options.
+    Args:
+        args (Dict[str, Any]): The command arguments containing block device mapping fields.
+    Returns:
+        List[Dict[str, Any]]: A list containing a single block device mapping dictionary.
+    """
+    return [
+        {
+            "DeviceName": args.get("device_name"),
+            "Ebs": {
+                "Encrypted": arg_to_bool_or_none(args.get("ebs_encrypted")),
+                "DeleteOnTermination": arg_to_bool_or_none(args.get("ebs_delete_on_termination")),
+                "Iops": arg_to_number(args.get("ebs_iops")),
+                "KmsKeyId": args.get("ebs_kms_key_id"),
+                "SnapshotId": args.get("ebs_snapshot_id"),
+                "VolumeSize": arg_to_number(args.get("ebs_volume_size")),
+                "VolumeType": args.get("ebs_volume_type"),
+                "Throughput": arg_to_number(args.get("ebs_throughput")),
+            },
+            "NoDevice": args.get("block_device_mappings_no_device"),
+            "VirtualName": args.get("block_device_mappings_virtual_name"),
+        }
+    ]
+
+
 def create_launch_template_kwargs_builder(args: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Builds the kwargs dictionary for EC2 launch template create and modify commands.
+    Constructs the full request payload including launch template metadata,
+    block device mappings, IAM instance profile, instance market options (Spot),
+    network interfaces, placement, security groups, monitoring, and tag specifications.
+    Args:
+        args (Dict[str, Any]): The command arguments containing launch template fields.
+    Returns:
+        Dict[str, Any]: A dictionary of kwargs.
+    """
     kwargs: Dict[str, Any] = {
         "LaunchTemplateName": args.get("launch_template_name"),
         "VersionDescription": args.get("version_description"),
         "LaunchTemplateData": {
-            "BlockDeviceMappings": [
-                {
-                    "DeviceName": args.get("device_name"),
-                    "Ebs": {
-                        "Encrypted": arg_to_bool_or_none(args.get("ebs_encrypted")),
-                        "DeleteOnTermination": arg_to_bool_or_none(args.get("ebs_delete_on_termination")),
-                        "Iops": arg_to_number(args.get("ebs_iops")),
-                        "KmsKeyId": args.get("ebs_kms_key_id"),
-                        "SnapshotId": args.get("ebs_snapshot_id"),
-                        "VolumeSize": arg_to_number(args.get("ebs_volume_size")),
-                        "VolumeType": args.get("ebs_volume_type"),
-                        "EbsCardIndex": arg_to_number(args.get("ebs_card_index")),
-                        "Throughput": arg_to_number(args.get("ebs_throughput")),
-                        "VolumeInitializationRate": arg_to_number(args.get("ebs_initialization_rate")),
-                    },
-                    "NoDevice": args.get("block_device_mappings_no_device"),
-                    "VirtualName": args.get("block_device_mappings_virtual_name"),
-                }
-            ],
+            "BlockDeviceMappings": aws_ec2_block_device_mapping_args_builder(args),
             "DisableApiTermination": arg_to_bool_or_none(args.get("disable_api_termination")),
             "EbsOptimized": arg_to_bool_or_none(args.get("ebs_optimized")),
             "IamInstanceProfile": {"Arn": args.get("iam_instance_profile_arn"), "Name": args.get("iam_instance_profile_name")},
@@ -563,6 +611,103 @@ def build_kwargs_network_interface_attribute(args: dict, network_interface_id: s
     kwargs = remove_empty_elements(kwargs)
     demisto.debug(f"After remove_empty_elements: {kwargs}")
     return kwargs
+
+
+def aws_ec2_fleet_command_launch_templates_config_args_builder(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """
+    Builds the LaunchTemplateConfigs list for EC2 Fleet create/modify commands.
+    For the Overrides list, each override field (availability_zone, instance_type, etc.)
+    is read as a single value. Multiple overrides are not supported via this builder.
+    Args:
+        args (Dict[str, Any]): The command arguments containing launch template specification
+            fields and override fields.
+    Returns:
+        List[Dict[str, Any]]: A list containing a single LaunchTemplateConfig dict with
+            ``LaunchTemplateSpecification`` and ``Overrides``, with empty/None values removed.
+    """
+    override = [
+        {
+            "AvailabilityZone": args.get("availability_zone"),
+            "AvailabilityZoneId": args.get("availability_zone_id"),
+            "ImageId": args.get("image_id"),
+            "InstanceType": args.get("instance_type"),
+            "MaxPrice": args.get("max_price"),
+            "Placement": {
+                "GroupId": args.get("placement_group_id"),
+                "GroupName": args.get("placement_group_name"),
+            },
+            "Priority": arg_to_number(args.get("priority")),
+            "SubnetId": args.get("subnet_id"),
+            "WeightedCapacity": arg_to_number(args.get("weighted_capacity")),
+            "BlockDeviceMappings": aws_ec2_block_device_mapping_args_builder(args),
+        }
+    ]
+
+    return [
+        remove_empty_elements(
+            {
+                "LaunchTemplateSpecification": {
+                    "LaunchTemplateId": args.get("launch_template_id"),
+                    "LaunchTemplateName": args.get("launch_template_name"),
+                    "Version": args.get("launch_template_version"),
+                },
+                "Overrides": override,
+            }
+        )
+    ]
+
+
+def aws_ec2_fleet_create_args_builder(args: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Builds the full kwargs dictionary for the EC2 Fleet create command.
+    Constructs the complete request payload including fleet type, capacity termination
+    policies, validity window, launch template configurations, Spot options, On-Demand
+    options, target capacity specification, and tag specifications.
+    Args:
+        args (Dict[str, Any]): The command arguments containing fleet configuration.
+    Returns:
+        Dict[str, Any]: A dictionary of kwargs.
+    """
+    return {
+        "ExcessCapacityTerminationPolicy": args.get("excess_capacity_termination_policy"),
+        "ReplaceUnhealthyInstances": arg_to_bool_or_none(args.get("replace_unhealthy_instances")),
+        "TerminateInstancesWithExpiration": arg_to_bool_or_none(args.get("terminate_instances_with_expiration")),
+        "Type": args.get("type"),
+        "ValidFrom": validate_iso8601_date(args.get("valid_from")),
+        "ValidUntil": validate_iso8601_date(args.get("valid_until")),
+        "LaunchTemplateConfigs": aws_ec2_fleet_command_launch_templates_config_args_builder(args),
+        "SpotOptions": {
+            "AllocationStrategy": args.get("spot_allocation_strategy"),
+            "InstanceInterruptionBehavior": args.get("instance_interruption_behavior"),
+            "InstancePoolsToUseCount": arg_to_number(args.get("instance_pools_to_use_count")),
+            "SingleInstanceType": arg_to_bool_or_none(args.get("spot_single_instance_type")),
+            "SingleAvailabilityZone": arg_to_bool_or_none(args.get("single_availability_zone")),
+            "MinTargetCapacity": arg_to_number(args.get("min_target_capacity")),
+            "MaxTotalPrice": args.get("max_total_price"),
+            "MaintenanceStrategies": {
+                "CapacityRebalance": {
+                    "ReplacementStrategy": args.get("capacity_rebalance_replacement_strategy"),
+                    "TerminationDelay": arg_to_number(args.get("capacity_rebalance_termination_delay")),
+                }
+            },
+        },
+        "OnDemandOptions": {
+            "AllocationStrategy": args.get("on_demand_allocation_strategy"),
+            "SingleInstanceType": arg_to_bool_or_none(args.get("on_demand_single_instance_type")),
+            "SingleAvailabilityZone": arg_to_bool_or_none(args.get("on_demand_single_availability_zone")),
+            "MinTargetCapacity": arg_to_number(args.get("on_demand_min_target_capacity")),
+            "MaxTotalPrice": args.get("on_demand_max_total_price"),
+            "CapacityReservationOptions": {"UsageStrategy": args.get("capacity_reservation_strategy")},
+        },
+        "TargetCapacitySpecification": {
+            "TotalTargetCapacity": arg_to_number(args.get("total_target_capacity")),
+            "DefaultTargetCapacityType": args.get("default_target_capacity_type"),
+            "OnDemandTargetCapacity": arg_to_number(args.get("on_demand_target_capacity")),
+            "SpotTargetCapacity": arg_to_number(args.get("spot_target_capacity")),
+            "TargetCapacityUnitType": args.get("target_capacity_unit"),
+        },
+        "TagSpecifications": [{"ResourceType": "fleet", "Tags": parse_tag_field(args.get("tags"))}] if args.get("tags") else None,
+    }
 
 
 class AWSErrorHandler:
@@ -4743,6 +4888,511 @@ class EC2:
             raw_response=response,
         )
 
+    @staticmethod
+    def create_fleet_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Launches an EC2 Fleet.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including fleet configuration parameters
+
+        Returns:
+            CommandResults: Results containing the created fleet ID
+        """
+        launch_template_info = remove_empty_elements([args.get("launch_template_id"), args.get("launch_template_name")])
+        if len(launch_template_info) != 1:
+            raise DemistoException("Either launch_template_id or launch_template_name must be provided, but not both.")
+
+        kwargs: Dict[str, Any] = remove_empty_elements(aws_ec2_fleet_create_args_builder(args))
+
+        print_debug_logs(client, f"Creating fleet with parameters: {kwargs}")
+        response = client.create_fleet(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        outputs = {k: v for k, v in response.items() if k != "ResponseMetadata"}
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Fleets",
+            outputs_key_field="FleetId",
+            outputs=outputs,
+            readable_output=tableToMarkdown(
+                "AWS EC2 Fleet", outputs, headers=["FleetId"], removeNull=True, headerTransform=pascalToSpace
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def delete_fleet_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deletes the specified EC2 Fleet.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including fleet IDs and termination settings
+
+        Returns:
+            CommandResults: Results containing successful and unsuccessful fleet deletions
+        """
+        kwargs = {
+            "FleetIds": argToList(args.get("fleet_ids")),
+            "TerminateInstances": arg_to_bool_or_none(args.get("terminate_instances")),
+        }
+
+        print_debug_logs(client, f"Deleting fleets with parameters: {kwargs}")
+        response = client.delete_fleets(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        successful = response.get("SuccessfulFleetDeletions", [])
+        unsuccessful = response.get("UnsuccessfulFleetDeletions", [])
+
+        readable_data = [
+            {
+                "FleetId": deletion.get("FleetId"),
+                "CurrentFleetState": deletion.get("CurrentFleetState"),
+                "PreviousFleetState": deletion.get("PreviousFleetState"),
+            }
+            for deletion in successful
+        ] + [
+            {
+                "FleetId": deletion.get("FleetId"),
+                "ErrorCode": deletion.get("Error", {}).get("Code"),
+                "ErrorMessage": deletion.get("Error", {}).get("Message"),
+            }
+            for deletion in unsuccessful
+        ]
+
+        if not readable_data:
+            return CommandResults(readable_output="No fleets were deleted.")
+
+        outputs = remove_empty_elements(
+            {
+                "SuccessfulFleetDeletions": successful,
+                "UnsuccessfulFleetDeletions": unsuccessful,
+            }
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.DeletedFleets",
+            outputs=outputs,
+            readable_output=tableToMarkdown(
+                "AWS Deleted Fleets",
+                readable_data,
+                headers=["FleetId", "CurrentFleetState", "PreviousFleetState", "ErrorCode", "ErrorMessage"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def describe_fleets_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes one or more of your EC2 Fleets.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including fleet IDs and filters
+
+        Returns:
+            CommandResults: Results containing fleet information
+        """
+
+        kwargs = remove_empty_elements(
+            {
+                "Filters": parse_filter_field(args.get("filters")) if args.get("filters") else None,
+                "FleetIds": argToList(args.get("fleet_ids")),
+            }
+        )
+
+        # Add pagination if no fleet_ids specified
+        if not kwargs.get("FleetIds"):
+            kwargs.update(build_pagination_kwargs(args, minimum_limit=1))
+
+        print_debug_logs(client, f"Describing fleets with parameters: {kwargs}")
+        response = client.describe_fleets(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        fleets = response.get("Fleets", [])
+
+        if not fleets:
+            return CommandResults(readable_output="No fleets were found.")
+
+        outputs = {
+            "AWS.EC2.Fleets(val.FleetId && val.FleetId == obj.FleetId)": fleets,
+            "AWS.EC2(true)": {"FleetsNextToken": response.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=tableToMarkdown(
+                "AWS EC2 Fleets",
+                fleets,
+                headers=["FleetId", "FleetState", "ActivityStatus", "FulfilledCapacity", "TotalTargetCapacity"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def describe_fleet_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes the running instances for the specified EC2 Fleet.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including fleet ID and filters
+
+        Returns:
+            CommandResults: Results containing fleet instance information
+        """
+        kwargs = remove_empty_elements(
+            {
+                "FleetId": args.get("fleet_id"),
+                "Filters": parse_filter_field(args.get("filters")) if args.get("filters") else None,
+            }
+        )
+
+        kwargs.update(build_pagination_kwargs(args, minimum_limit=1))
+
+        print_debug_logs(client, f"Describing fleet instances with parameters: {kwargs}")
+        response = client.describe_fleet_instances(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        active_instances = response.get("ActiveInstances", [])
+
+        if not active_instances:
+            return CommandResults(readable_output="No active instances were found.")
+
+        response_data = {k: v for k, v in response.items() if k != "ResponseMetadata"}
+        outputs = {
+            "AWS.EC2.Fleets(val.FleetId && val.FleetId == obj.FleetId)": response_data,
+            "AWS.EC2.Fleets(true)": {"FleetInstancesNextToken": response_data.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=tableToMarkdown(
+                "AWS EC2 Fleets Instances",
+                active_instances,
+                headers=["InstanceId", "InstanceType", "SpotInstanceRequestId", "InstanceHealth"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def modify_fleet_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modifies the specified EC2 Fleet.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including fleet ID and modification parameters
+
+        Returns:
+            CommandResults: Results of the modification operation
+        """
+        # LaunchTemplateConfigs is optional for modify — only include if a template is specified
+        launch_template_configs = None
+        if args.get("launch_template_id") or args.get("launch_template_name"):
+            launch_template_configs = aws_ec2_fleet_command_launch_templates_config_args_builder(args)
+
+        kwargs = remove_empty_elements(
+            {
+                "FleetId": args.get("fleet_id"),
+                "ExcessCapacityTerminationPolicy": args.get("excess_capacity_termination_policy"),
+                "TargetCapacitySpecification": {
+                    "TotalTargetCapacity": arg_to_number(args.get("total_target_capacity")),
+                    "OnDemandTargetCapacity": arg_to_number(args.get("on_demand_target_capacity")),
+                    "SpotTargetCapacity": arg_to_number(args.get("spot_target_capacity")),
+                    "DefaultTargetCapacityType": args.get("default_target_capacity_type"),
+                    "TargetCapacityUnitType": args.get("target_capacity_unit"),
+                },
+                "LaunchTemplateConfigs": launch_template_configs,
+            }
+        )
+
+        print_debug_logs(client, f"Modifying fleet with parameters: {kwargs}")
+        response = client.modify_fleet(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Fleets",
+            readable_output=f"Successfully modified EC2 Fleet {args.get('fleet_id')}"
+            if response.get("Return", False)
+            else f"Failed to modify EC2 Fleet {args.get('fleet_id')}",
+            raw_response=response,
+        )
+
+    @staticmethod
+    def delete_vpc_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deletes the specified VPC.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including VPC ID
+
+        Returns:
+            CommandResults: Results with success message
+        """
+        vpc_id = args.get("vpc_id")
+        print_debug_logs(client, f"Deleting VPC: {vpc_id}")
+        response = client.delete_vpc(VpcId=vpc_id)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(readable_output=f"Successfully deleted VPC {vpc_id}")
+
+    @staticmethod
+    def create_vpc_endpoint_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates a VPC endpoint for a specified service. An endpoint enables you to create a private
+        connection between your VPC and the service.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including vpc configuration.
+
+        Returns:
+            CommandResults: Results containing VPC endpoint information
+        """
+        kwargs = remove_empty_elements(
+            {
+                "VpcId": args.get("vpc_id"),
+                "ServiceName": args.get("service_name"),
+                "ServiceNetworkArn": args.get("service_network_arn"),
+                "ServiceRegion": args.get("service_region"),
+                "VpcEndpointType": args.get("vpc_endpoint_type"),
+                "PolicyDocument": args.get("policy_document"),
+                "RouteTableIds": argToList(args.get("route_table_ids")),
+                "SubnetIds": argToList(args.get("subnet_ids")),
+                "SecurityGroupIds": argToList(args.get("security_group_ids")),
+                "IpAddressType": args.get("ip_address_type"),
+                "PrivateDnsEnabled": arg_to_bool_or_none(args.get("private_dns_enabled")),
+                "ResourceConfigurationArn": args.get("resource_configuration_arn"),
+                "DnsOptions": {
+                    "DnsRecordIpType": args.get("dns_options_dns_record_ip_type"),
+                    "PrivateDnsOnlyForInboundResolverEndpoint": arg_to_bool_or_none(
+                        args.get("dns_options_private_dns_only_for_inbound_resolver_endpoint")
+                    ),
+                    "PrivateDnsPreference": args.get("dns_options_private_dns_preference"),
+                    "PrivateDnsSpecifiedDomains": argToList(args.get("dns_options_private_dns_specified_domains")),
+                },
+                "TagSpecifications": [{"ResourceType": "vpc-endpoint", "Tags": parse_tag_field(args.get("tags"))}],
+            }
+        )
+
+        print_debug_logs(client, f"Creating VPC endpoint with parameters: {kwargs}")
+        response = client.create_vpc_endpoint(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        vpc_endpoint = response.get("VpcEndpoint", {})
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.VpcEndpoints",
+            outputs_key_field="VpcEndpointId",
+            outputs=vpc_endpoint,
+            readable_output=tableToMarkdown(
+                "Successfully created VPC Endpoint",
+                vpc_endpoint,
+                headers=["VpcEndpointId", "State", "ServiceName", "VpcId", "VpcEndpointType"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def describe_internet_gateways_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes one or more of your internet gateways.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including internet gateway id and filters
+        Returns:
+            CommandResults: Results containing internet gateway information
+        """
+        kwargs = remove_empty_elements(
+            {
+                "InternetGatewayIds": argToList(args.get("internet_gateway_ids")),
+                "Filters": parse_filter_field(args.get("filters")),
+            }
+        )
+
+        if not kwargs.get("InternetGatewayIds"):
+            kwargs.update(build_pagination_kwargs(args, minimum_limit=5))
+
+        print_debug_logs(client, f"Describing internet gateways with parameters: {kwargs}")
+        response = client.describe_internet_gateways(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        internet_gateways = response.get("InternetGateways", [])
+
+        if not internet_gateways:
+            return CommandResults(readable_output="No internet gateways were found.")
+
+        # Prepare readable data with flattened attachment info
+        readable_data = []
+        for igw in internet_gateways:
+            igw_data = {
+                "InternetGatewayId": igw.get("InternetGatewayId"),
+                "OwnerId": igw.get("OwnerId"),
+                "State": igw.get("Attachments")[0].get("State") if igw.get("Attachments") else None,
+                "VpcId": igw.get("Attachments")[0].get("VpcId") if igw.get("Attachments") else None,
+            }
+            readable_data.append(igw_data)
+
+        readable_output = tableToMarkdown(
+            "AWS EC2 Internet Gateways",
+            readable_data,
+            headers=["InternetGatewayId", "OwnerId", "State", "VpcId"],
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        )
+
+        outputs = {
+            "AWS.EC2.InternetGateways(val.InternetGatewayId && val.InternetGatewayId == obj.InternetGatewayId)":
+                internet_gateways,
+            "AWS.EC2(true)": {"InternetGatewaysNextToken": response.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def detach_internet_gateway_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Detaches an internet gateway from a VPC, disabling connectivity between the internet and the VPC.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including internet gateway id and vpc id
+
+        Returns:
+            CommandResults: Results with success message
+        """
+        internet_gateway_id = args.get("internet_gateway_id")
+        vpc_id = args.get("vpc_id")
+
+        print_debug_logs(client, f"Detaching internet gateway {internet_gateway_id} from VPC {vpc_id}")
+        response = client.detach_internet_gateway(InternetGatewayId=internet_gateway_id, VpcId=vpc_id)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(readable_output=f"Successfully detached internet gateway {internet_gateway_id} from VPC {vpc_id}")
+
+    @staticmethod
+    def delete_internet_gateway_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deletes the specified internet gateway.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including internet gateway ID
+
+        Returns:
+            CommandResults: Results with success message
+        """
+        internet_gateway_id = args.get("internet_gateway_id")
+        print_debug_logs(client, f"Deleting internet gateway: {internet_gateway_id}")
+        response = client.delete_internet_gateway(InternetGatewayId=internet_gateway_id)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(readable_output=f"Successfully deleted internet gateway {internet_gateway_id}")
+
+    @staticmethod
+    def delete_subnet_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deletes the specified subnet.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including subnet id
+
+        Returns:
+            CommandResults: Results with success message
+        """
+        subnet_id = args.get("subnet_id")
+        print_debug_logs(client, f"Deleting subnet: {subnet_id}")
+        response = client.delete_subnet(SubnetId=subnet_id)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(readable_output=f"Successfully deleted subnet {subnet_id}")
+
+    @staticmethod
+    def create_network_acl_entry_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates an entry (a rule) in a network ACL with the specified rule number.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including network acl configuration
+
+        Returns:
+            CommandResults: Results with success message
+        """
+        kwargs = remove_empty_elements(
+            {
+                "NetworkAclId": args.get("network_acl_id"),
+                "RuleNumber": arg_to_number(args.get("rule_number")),
+                "Protocol": args.get("protocol"),
+                "RuleAction": args.get("rule_action"),
+                "Egress": arg_to_bool_or_none(args.get("egress")),
+                "CidrBlock": args.get("cidr_block"),
+                "Ipv6CidrBlock": args.get("ipv6_cidr_block"),
+                "IcmpTypeCode": {
+                    "Type": arg_to_number(args.get("icmp_type_code_type")),
+                    "Code": arg_to_number(args.get("icmp_type_code_code")),
+                },
+                "PortRange": {
+                    "From": arg_to_number(args.get("port_range_from")),
+                    "To": arg_to_number(args.get("port_range_to")),
+                },
+            }
+        )
+
+        print_debug_logs(client, f"Creating network ACL entry with parameters: {kwargs}")
+        response = client.create_network_acl_entry(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(readable_output=f"Successfully created network ACL entry for {args.get('network_acl_id')}")
+
 
 class EKS:
     service = AWSServices.EKS
@@ -7101,8 +7751,20 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-ec2-launch-templates-describe": EC2.describe_launch_templates_command,
     "aws-ec2-launch-template-create": EC2.create_launch_template_command,
     "aws-ec2-launch-template-delete": EC2.delete_launch_template_command,
+    "aws-ec2-fleet-create": EC2.create_fleet_command,
+    "aws-ec2-fleet-delete": EC2.delete_fleet_command,
+    "aws-ec2-fleets-describe": EC2.describe_fleets_command,
+    "aws-ec2-fleet-instances-describe": EC2.describe_fleet_instances_command,
+    "aws-ec2-fleet-modify": EC2.modify_fleet_command,
     "aws-ssm-inventory-entries-list": SSM.inventory_entries_list_command,
     "aws-ssm-command-run": SSM.command_run_command,
+    "aws-ec2-vpc-delete": EC2.delete_vpc_command,
+    "aws-ec2-vpc-endpoint-create": EC2.create_vpc_endpoint_command,
+    "aws-ec2-internet-gateway-describe": EC2.describe_internet_gateways_command,
+    "aws-ec2-internet-gateway-detach": EC2.detach_internet_gateway_command,
+    "aws-ec2-internet-gateway-delete": EC2.delete_internet_gateway_command,
+    "aws-ec2-subnet-delete": EC2.delete_subnet_command,
+    "aws-ec2-network-acl-entry-create": EC2.create_network_acl_entry_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -7177,6 +7839,11 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:TerminateInstances",
     "ec2:RunInstances",
     "ec2:ModifyNetworkInterfaceAttribute",
+    "ec2:CreateFleet",
+    "ec2:DeleteFleets",
+    "ec2:DescribeFleets",
+    "ec2:DescribeFleetInstances",
+    "ec2:ModifyFleet",
     "eks:UpdateClusterConfig",
     "iam:PassRole",
     "iam:DeleteLoginProfile",
@@ -7229,6 +7896,13 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:DeleteLaunchTemplate",
     "ssm:SendCommand",
     "ssm:ListCommands",
+    "ec2:DeleteVpc",
+    "ec2:CreateVpcEndpoint",
+    "ec2:DescribeInternetGateways",
+    "ec2:DetachInternetGateway",
+    "ec2:DeleteInternetGateway",
+    "ec2:DeleteSubnet",
+    "ec2:CreateNetworkAclEntry",
 ]
 
 COMMAND_SERVICE_MAP = {
