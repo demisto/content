@@ -630,8 +630,8 @@ class Client(CoreClient):
             url_suffix="/issue/search",
             json_data=request_data,
         )
-        return res
-        # return res.get("reply", {}).get("DATA", [])
+        # return res
+        return res.get("reply", {}).get("DATA", [])
 
     def create_issue(self, request_data: dict):
         res = self._http_request(
@@ -2004,7 +2004,7 @@ def create_issue_command(client: Client, args: Dict) -> CommandResults:
         "type_": args.get("type"),
         "extended_description": args.get("extended_description"),
         "impact": args.get("impact"),
-        "tags": argToList(args.get("tags")),
+        "tags": args.get("tags"),
         "is_excluded": argToBoolean(args.get("is_excluded")) if args.get("is_excluded") is not None else None,
         "is_starred": argToBoolean(args.get("is_starred")) if args.get("is_starred") is not None else None,
         "assigned_to": args.get("assigned_to"),
