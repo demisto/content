@@ -250,7 +250,7 @@ def login():
 
         if demisto.command() not in ["test-module", "fetch-incidents"]:
             # this is done to bypass setting integration context outside of the cli
-            demisto.setIntegrationContext({"auth_token": auth_token})
+            demisto.setIntegrationContext({"auth_token": auth_token, "is_v7_9": IS_V7_9})
         return auth_token
     except ValueError:
         return_error("Failed to login. Please check integration parameters")
@@ -1046,7 +1046,12 @@ def main():
     use_rest = demisto.params().get("use_rest", False)
 
     global AUTH_TOKEN
-    AUTH_TOKEN = demisto.getIntegrationContext().get("auth_token") or login()
+    integration_context = demisto.getIntegrationContext()
+    AUTH_TOKEN = integration_context.get("auth_token") or login()
+    
+    global IS_V7_9
+    # At this point, login() has already been called, and is_v7_9 is set within the login() function.
+    IS_V7_9 = integration_context.get("is_v7_9", False)
 
     use_detect_api = demisto.params().get("productVersion") == "7.4 and above"
 
