@@ -13481,6 +13481,351 @@ script:
     - name: port_range_to
       description: The last port in the range. Required if specifying tcp or udp for the protocol parameter.
       required: false
+  - name: aws-ec2-key-pairs-describe
+    description: Describes the specified key pairs or all of your key pairs.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: key_pair_ids
+        description: A comma-separated list of key pair IDs.
+        required: false
+        isArray: true
+      - name: key_names
+        description: A comma-separated list of key pair names.
+        required: false
+        isArray: true
+      - name: filters
+        description: "One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options."
+        required: false
+      - name: include_public_key
+        description: If true, the public key material is included in the response.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: limit
+        description: The maximum number of results to return in a single call.
+        required: false
+      - name: next_token
+        description: The token for the next page of results.
+        required: false
+    outputs:
+      - contextPath: AWS.EC2.KeyPairs.KeyPairId
+        description: The ID of the key pair.
+        type: string
+      - contextPath: AWS.EC2.KeyPairs.KeyName
+        description: The name of the key pair.
+        type: string
+      - contextPath: AWS.EC2.KeyPairs.KeyType
+        description: The type of key pair (rsa or ed25519).
+        type: string
+      - contextPath: AWS.EC2.KeyPairs.KeyFingerprint
+        description: The SHA-1 digest of the DER encoded private key (CreateKeyPair) or MD5 public key fingerprint (ImportKeyPair).
+        type: string
+      - contextPath: AWS.EC2.KeyPairs.PublicKey
+        description: The public key material. Present only when include_public_key=true.
+        type: string
+      - contextPath: AWS.EC2.KeyPairs.CreateTime
+        description: The date and time the key pair was created.
+        type: date
+      - contextPath: AWS.EC2.KeyPairs.Tags
+        description: Any tags applied to the key pair.
+        type: array
+
+  - name: aws-ec2-hosts-allocate
+    description: Allocates a Dedicated Host to your account. At a minimum, specify the supported instance type or instance family, the Availability Zone in which to allocate the host, and the number of hosts to allocate.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: availability_zone
+        description: The Availability Zone in which to allocate the Dedicated Host.
+        required: true
+      - name: quantity
+        description: The number of Dedicated Hosts to allocate to your account with these parameters.
+        required: true
+      - name: instance_type
+        description: Specifies the instance type to be supported by the Dedicated Hosts. Mutually exclusive with instance_family.
+        required: false
+      - name: instance_family
+        description: Specifies the instance family to be supported by the Dedicated Hosts. Mutually exclusive with instance_type.
+        required: false
+      - name: auto_placement
+        description: Indicates whether the host accepts any untargeted instance launches that match its instance type configuration, or if it only accepts Host tenancy instance launches that specify its unique host ID.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'on'
+          - 'off'
+      - name: host_recovery
+        description: Indicates whether to enable or disable host recovery for the Dedicated Host. Host recovery is disabled by default.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'on'
+          - 'off'
+      - name: host_maintenance
+        description: Indicates whether to enable or disable host maintenance for the Dedicated Host.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'on'
+          - 'off'
+      - name: outpost_arn
+        description: The Amazon Resource Name (ARN) of the Amazon Web Services Outpost on which to allocate the Dedicated Host.
+        required: false
+      - name: asset_ids
+        description: A comma-separated list of IDs of the Outpost hardware assets on which to allocate the Dedicated Hosts.
+        required: false
+        isArray: true
+      - name: tags
+        description: "The tags to apply to the Dedicated Host during creation. Format: key=<key>,value=<value>;key=<key>,value=<value>."
+        required: false
+    outputs:
+      - contextPath: AWS.EC2.Hosts.HostIds
+        description: The IDs of the allocated Dedicated Hosts.
+        type: array
+
+  - name: aws-ec2-hosts-release
+    description: Releases the specified Dedicated Hosts. On-Demand billing is stopped and the host goes into released state.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: host_ids
+        description: A comma-separated list of IDs of the Dedicated Hosts to release.
+        required: true
+        isArray: true
+    outputs:
+      - contextPath: AWS.EC2.ReleasedHosts.Successful
+        description: The IDs of the Dedicated Hosts that were successfully released.
+        type: array
+      - contextPath: AWS.EC2.ReleasedHosts.Unsuccessful
+        description: The IDs of the Dedicated Hosts that could not be released, including an error message.
+        type: array
+
+  - name: aws-ec2-traffic-mirror-session-create
+    description: Creates a Traffic Mirror session. A Traffic Mirror session actively copies packets from a Traffic Mirror source to a Traffic Mirror target.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: network_interface_id
+        description: The ID of the source network interface.
+        required: true
+      - name: traffic_mirror_target_id
+        description: The ID of the Traffic Mirror target.
+        required: true
+      - name: traffic_mirror_filter_id
+        description: The ID of the Traffic Mirror filter.
+        required: true
+      - name: session_number
+        description: The session number determines the order in which sessions are evaluated when an interface is used by multiple sessions. Valid values are 1-32766.
+        required: true
+      - name: virtual_network_id
+        description: The VXLAN ID for the Traffic Mirror session. If you do not specify a VirtualNetworkId, an account-wide unique ID is chosen at random.
+        required: false
+      - name: packet_length
+        description: The number of bytes in each packet to mirror. These are bytes after the VXLAN header. Do not specify this parameter when you want to mirror the entire packet.
+        required: false
+      - name: description
+        description: The description of the Traffic Mirror session.
+        required: false
+      - name: tags
+        description: "The tags to assign to a Traffic Mirror session. Format: key=<key>,value=<value>;key=<key>,value=<value>."
+        required: false
+    outputs:
+      - contextPath: AWS.EC2.TrafficMirrorSessions.TrafficMirrorSessionId
+        description: The ID of the Traffic Mirror session.
+        type: string
+      - contextPath: AWS.EC2.TrafficMirrorSessions.TrafficMirrorTargetId
+        description: The ID of the Traffic Mirror target.
+        type: string
+      - contextPath: AWS.EC2.TrafficMirrorSessions.TrafficMirrorFilterId
+        description: The ID of the Traffic Mirror filter.
+        type: string
+      - contextPath: AWS.EC2.TrafficMirrorSessions.NetworkInterfaceId
+        description: The ID of the Traffic Mirror session's network interface.
+        type: string
+      - contextPath: AWS.EC2.TrafficMirrorSessions.OwnerId
+        description: The ID of the account that owns the Traffic Mirror session.
+        type: string
+      - contextPath: AWS.EC2.TrafficMirrorSessions.PacketLength
+        description: The number of bytes in each packet to mirror.
+        type: number
+      - contextPath: AWS.EC2.TrafficMirrorSessions.SessionNumber
+        description: The session number determines the order in which sessions are evaluated when an interface is used by multiple sessions.
+        type: number
+      - contextPath: AWS.EC2.TrafficMirrorSessions.VirtualNetworkId
+        description: The virtual network ID associated with the Traffic Mirror session.
+        type: number
+      - contextPath: AWS.EC2.TrafficMirrorSessions.Description
+        description: The description of the Traffic Mirror session.
+        type: string
+      - contextPath: AWS.EC2.TrafficMirrorSessions.Tags
+        description: The tags assigned to the Traffic Mirror session.
+        type: array
 
   isfetch: false
   runonce: false

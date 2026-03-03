@@ -13891,3 +13891,301 @@ def test_create_network_acl_entry_command_failure(mocker):
     EC2.create_network_acl_entry_command(mock_client, args)
 
     mock_error_handler.assert_called_once()
+
+
+# ── aws-ec2-key-pairs-describe ────────────────────────────────────────────────
+
+
+def test_describe_key_pairs_command_success(mocker):
+    """
+    Given: A mocked EC2 client returning one key pair.
+    When: describe_key_pairs_command is called with a key name.
+    Then: It should return CommandResults with the key pair in outputs and readable output.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    key_pairs = [
+        {
+            "KeyPairId": "key-0abc12345",
+            "KeyName": "my-key-pair",
+            "KeyType": "rsa",
+            "KeyFingerprint": "aa:bb:cc:dd",
+            "CreateTime": "2024-01-15T10:00:00Z",
+        }
+    ]
+    mock_client.describe_key_pairs.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "KeyPairs": key_pairs,
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value={"KeyPairs": key_pairs})
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "key_names": "my-key-pair"}
+
+    result = EC2.describe_key_pairs_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.KeyPairs"
+    assert result.outputs[0]["KeyPairId"] == "key-0abc12345"
+    assert "my-key-pair" in result.readable_output
+    call_kwargs = mock_client.describe_key_pairs.call_args[1]
+    assert call_kwargs["KeyNames"] == ["my-key-pair"]
+
+
+def test_describe_key_pairs_command_no_results(mocker):
+    """
+    Given: A mocked EC2 client returning an empty KeyPairs list.
+    When: describe_key_pairs_command is called.
+    Then: It should return CommandResults with a 'no key pairs found' message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_key_pairs.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "KeyPairs": [],
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value={"KeyPairs": []})
+
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    result = EC2.describe_key_pairs_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "No key pairs were found" in result.readable_output
+
+
+def test_describe_key_pairs_command_with_include_public_key(mocker):
+    """
+    Given: A mocked EC2 client and include_public_key=true.
+    When: describe_key_pairs_command is called.
+    Then: It should pass IncludePublicKey=True in the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    key_pairs = [{"KeyPairId": "key-pub001", "KeyName": "pub-key", "KeyType": "ed25519", "PublicKey": "ssh-ed25519 AAAA..."}]
+    mock_client.describe_key_pairs.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "KeyPairs": key_pairs,
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value={"KeyPairs": key_pairs})
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "include_public_key": "true"}
+
+    result = EC2.describe_key_pairs_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.describe_key_pairs.call_args[1]
+    assert call_kwargs["IncludePublicKey"] is True
+
+
+# ── aws-ec2-hosts-allocate ────────────────────────────────────────────────────
+
+
+def test_allocate_hosts_command_success(mocker):
+    """
+    Given: A mocked EC2 client and valid allocation arguments.
+    When: allocate_hosts_command is called.
+    Then: It should return CommandResults with the allocated host IDs in outputs and readable output.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.allocate_hosts.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "HostIds": ["h-0abc12345"],
+    }
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "availability_zone": "us-east-1a",
+        "quantity": "1",
+        "instance_type": "m5.large",
+    }
+
+    result = EC2.allocate_hosts_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.Hosts"
+    assert "h-0abc12345" in result.outputs["HostIds"]
+    assert "h-0abc12345" in result.readable_output
+    call_kwargs = mock_client.allocate_hosts.call_args[1]
+    assert call_kwargs["AvailabilityZone"] == "us-east-1a"
+    assert call_kwargs["Quantity"] == 1
+    assert call_kwargs["InstanceType"] == "m5.large"
+
+
+def test_allocate_hosts_command_with_tags(mocker):
+    """
+    Given: A mocked EC2 client and arguments including tags.
+    When: allocate_hosts_command is called with tags.
+    Then: It should include TagSpecifications with resource type 'dedicated-host' in the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.allocate_hosts.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "HostIds": ["h-tagged001"],
+    }
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "availability_zone": "us-east-1a",
+        "quantity": "2",
+        "instance_family": "m5",
+        "tags": "key=Env,value=prod",
+    }
+
+    result = EC2.allocate_hosts_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.allocate_hosts.call_args[1]
+    tag_specs = call_kwargs.get("TagSpecifications", [])
+    assert len(tag_specs) == 1
+    assert tag_specs[0]["ResourceType"] == "dedicated-host"
+    assert call_kwargs["InstanceFamily"] == "m5"
+
+
+# ── aws-ec2-hosts-release ─────────────────────────────────────────────────────
+
+
+def test_release_hosts_command_success(mocker):
+    """
+    Given: A mocked EC2 client and valid host IDs.
+    When: release_hosts_command is called with a successful response.
+    Then: It should return CommandResults with the released host IDs in outputs and readable output.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.release_hosts.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Successful": [{"HostId": "h-0abc12345"}],
+        "Unsuccessful": [],
+    }
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "host_ids": "h-0abc12345"}
+
+    result = EC2.release_hosts_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.ReleasedHosts"
+    assert "h-0abc12345" in result.outputs["Successful"]
+    assert "h-0abc12345" in result.readable_output
+    mock_client.release_hosts.assert_called_once_with(HostIds=["h-0abc12345"])
+
+
+def test_release_hosts_command_partial_failure(mocker):
+    """
+    Given: A mocked EC2 client where one host release succeeds and one fails.
+    When: release_hosts_command is called with two host IDs.
+    Then: It should return CommandResults containing both successful and unsuccessful results.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.release_hosts.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Successful": [{"HostId": "h-success001"}],
+        "Unsuccessful": [{"ResourceId": "h-fail001", "Error": {"Code": "InvalidHostID", "Message": "Host not found"}}],
+    }
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "host_ids": "h-success001,h-fail001"}
+
+    result = EC2.release_hosts_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "h-success001" in result.outputs["Successful"]
+    assert len(result.outputs["Unsuccessful"]) == 1
+    assert "h-success001" in result.readable_output
+    assert "h-fail001" in result.readable_output
+
+
+# ── aws-ec2-traffic-mirror-session-create ─────────────────────────────────────
+
+
+def test_create_traffic_mirror_session_command_success(mocker):
+    """
+    Given: A mocked EC2 client and valid Traffic Mirror session arguments.
+    When: create_traffic_mirror_session_command is called.
+    Then: It should return CommandResults with the session ID in outputs and readable output.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    session = {
+        "TrafficMirrorSessionId": "tms-0abc12345",
+        "TrafficMirrorTargetId": "tmt-0abc12345",
+        "TrafficMirrorFilterId": "tmf-0abc12345",
+        "NetworkInterfaceId": "eni-0abc12345",
+        "OwnerId": "123456789012",
+        "SessionNumber": 1,
+    }
+    mock_client.create_traffic_mirror_session.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "TrafficMirrorSession": session,
+    }
+    mocker.patch(
+        "AWS.serialize_response_with_datetime_encoding",
+        return_value={"TrafficMirrorSession": session},
+    )
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "network_interface_id": "eni-0abc12345",
+        "traffic_mirror_target_id": "tmt-0abc12345",
+        "traffic_mirror_filter_id": "tmf-0abc12345",
+        "session_number": "1",
+    }
+
+    result = EC2.create_traffic_mirror_session_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.TrafficMirrorSessions"
+    assert result.outputs["TrafficMirrorSessionId"] == "tms-0abc12345"
+    assert "tms-0abc12345" in result.readable_output
+    call_kwargs = mock_client.create_traffic_mirror_session.call_args[1]
+    assert call_kwargs["NetworkInterfaceId"] == "eni-0abc12345"
+    assert call_kwargs["SessionNumber"] == 1
+
+
+def test_create_traffic_mirror_session_command_with_optional_params(mocker):
+    """
+    Given: A mocked EC2 client and arguments including optional packet_length, virtual_network_id, and description.
+    When: create_traffic_mirror_session_command is called.
+    Then: It should pass PacketLength, VirtualNetworkId, and Description in the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    session = {"TrafficMirrorSessionId": "tms-opt001", "SessionNumber": 2}
+    mock_client.create_traffic_mirror_session.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "TrafficMirrorSession": session,
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value={"TrafficMirrorSession": session})
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "network_interface_id": "eni-0abc12345",
+        "traffic_mirror_target_id": "tmt-0abc12345",
+        "traffic_mirror_filter_id": "tmf-0abc12345",
+        "session_number": "2",
+        "packet_length": "100",
+        "virtual_network_id": "7777",
+        "description": "My mirror session",
+    }
+
+    result = EC2.create_traffic_mirror_session_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.create_traffic_mirror_session.call_args[1]
+    assert call_kwargs["PacketLength"] == 100
+    assert call_kwargs["VirtualNetworkId"] == 7777
+    assert call_kwargs["Description"] == "My mirror session"

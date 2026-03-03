@@ -5393,6 +5393,157 @@ class EC2:
 
         return CommandResults(readable_output=f"Successfully created network ACL entry for {args.get('network_acl_id')}")
 
+    @staticmethod
+    def describe_key_pairs_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes the specified key pairs or all of your key pairs.
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including key pair IDs, names, and filters.
+        Returns:
+            CommandResults: Results containing key pair information.
+        """
+        kwargs = remove_empty_elements(
+            {
+                "KeyPairIds": argToList(args.get("key_pair_ids")),
+                "KeyNames": argToList(args.get("key_names")),
+                "Filters": parse_filter_field(args.get("filters")) if args.get("filters") else None,
+                "IncludePublicKey": arg_to_bool_or_none(args.get("include_public_key")),
+            }
+        )
+        if not kwargs.get("KeyPairIds") and not kwargs.get("KeyNames"):
+            kwargs.update(build_pagination_kwargs(args))
+        print_debug_logs(client, f"Describing key pairs with parameters: {kwargs}")
+        response = client.describe_key_pairs(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        response = serialize_response_with_datetime_encoding(response)
+        key_pairs = response.get("KeyPairs", [])
+        if not key_pairs:
+            return CommandResults(readable_output="No key pairs were found.")
+        return CommandResults(
+            outputs_prefix="AWS.EC2.KeyPairs",
+            outputs_key_field="KeyPairId",
+            outputs=key_pairs,
+            readable_output=tableToMarkdown(
+                "AWS EC2 Key Pairs",
+                key_pairs,
+                headers=["KeyPairId", "KeyName", "KeyType", "KeyFingerprint", "CreateTime"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+    @staticmethod
+    def allocate_hosts_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Allocates a Dedicated Host to your account.
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including availability zone, quantity, and host configuration.
+        Returns:
+            CommandResults: Results containing the allocated host IDs.
+        """
+        kwargs = remove_empty_elements(
+            {
+                "AvailabilityZone": args.get("availability_zone"),
+                "Quantity": arg_to_number(args.get("quantity")),
+                "InstanceType": args.get("instance_type"),
+                "InstanceFamily": args.get("instance_family"),
+                "AutoPlacement": args.get("auto_placement"),
+                "HostRecovery": args.get("host_recovery"),
+                "HostMaintenance": args.get("host_maintenance"),
+                "OutpostArn": args.get("outpost_arn"),
+                "AssetIds": argToList(args.get("asset_ids")),
+                "TagSpecifications": [{"ResourceType": "dedicated-host", "Tags": parse_tag_field(args.get("tags"))}]
+                if args.get("tags")
+                else None,
+            }
+        )
+        print_debug_logs(client, f"Allocating Dedicated Hosts with parameters: {kwargs}")
+        response = client.allocate_hosts(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        host_ids = response.get("HostIds", [])
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Hosts",
+            outputs={"HostIds": host_ids},
+            readable_output=f"Successfully allocated {args.get('quantity')} Dedicated Host(s). Host IDs: {', '.join(host_ids)}",
+            raw_response=response,
+        )
+    @staticmethod
+    def release_hosts_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Releases the specified Dedicated Hosts.
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including host IDs to release.
+        Returns:
+            CommandResults: Results containing successful and unsuccessful release information.
+        """
+        host_ids = argToList(args.get("host_ids"))
+        print_debug_logs(client, f"Releasing Dedicated Hosts: {host_ids}")
+        response = client.release_hosts(HostIds=host_ids)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        successful = [item.get("HostId") for item in response.get("Successful", [])]
+        unsuccessful = response.get("Unsuccessful", [])
+        outputs = remove_empty_elements(
+            {
+                "Successful": successful,
+                "Unsuccessful": unsuccessful,
+            }
+        )
+        readable_parts = []
+        if successful:
+            readable_parts.append(f"Successfully released: {', '.join(successful)}")
+        if unsuccessful:
+            failed_ids = [item.get("ResourceId") for item in unsuccessful]
+            readable_parts.append(f"Failed to release: {', '.join(str(i) for i in failed_ids)}")
+        return CommandResults(
+            outputs_prefix="AWS.EC2.ReleasedHosts",
+            outputs=outputs,
+            readable_output="\n".join(readable_parts) if readable_parts else "No hosts were released.",
+            raw_response=response,
+        )
+    @staticmethod
+    def create_traffic_mirror_session_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates a Traffic Mirror session.
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including network interface, target, filter, and session configuration.
+        Returns:
+            CommandResults: Results containing the created Traffic Mirror session information.
+        """
+        kwargs = remove_empty_elements(
+            {
+                "NetworkInterfaceId": args.get("network_interface_id"),
+                "TrafficMirrorTargetId": args.get("traffic_mirror_target_id"),
+                "TrafficMirrorFilterId": args.get("traffic_mirror_filter_id"),
+                "SessionNumber": arg_to_number(args.get("session_number")),
+                "VirtualNetworkId": arg_to_number(args.get("virtual_network_id")),
+                "PacketLength": arg_to_number(args.get("packet_length")),
+                "Description": args.get("description"),
+                "TagSpecifications": [{"ResourceType": "traffic-mirror-session", "Tags": parse_tag_field(args.get("tags"))}]
+                if args.get("tags")
+                else None,
+            }
+        )
+        print_debug_logs(client, f"Creating Traffic Mirror session with parameters: {kwargs}")
+        response = client.create_traffic_mirror_session(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        response = serialize_response_with_datetime_encoding(response)
+        session = response.get("TrafficMirrorSession", {})
+        return CommandResults(
+            outputs_prefix="AWS.EC2.TrafficMirrorSessions",
+            outputs_key_field="TrafficMirrorSessionId",
+            outputs=session,
+            readable_output=f"Successfully created Traffic Mirror Session {session.get('TrafficMirrorSessionId')}",
+            raw_response=response,
+        )
+
 
 class EKS:
     service = AWSServices.EKS
@@ -7765,6 +7916,10 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-ec2-internet-gateway-delete": EC2.delete_internet_gateway_command,
     "aws-ec2-subnet-delete": EC2.delete_subnet_command,
     "aws-ec2-network-acl-entry-create": EC2.create_network_acl_entry_command,
+    "aws-ec2-key-pairs-describe": EC2.describe_key_pairs_command,
+    "aws-ec2-hosts-allocate": EC2.allocate_hosts_command,
+    "aws-ec2-hosts-release": EC2.release_hosts_command,
+    "aws-ec2-traffic-mirror-session-create": EC2.create_traffic_mirror_session_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -7903,6 +8058,10 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:DeleteInternetGateway",
     "ec2:DeleteSubnet",
     "ec2:CreateNetworkAclEntry",
+    "ec2:DescribeKeyPairs",
+    "ec2:AllocateHosts",
+    "ec2:ReleaseHosts",
+    "ec2:CreateTrafficMirrorSession",
 ]
 
 COMMAND_SERVICE_MAP = {
