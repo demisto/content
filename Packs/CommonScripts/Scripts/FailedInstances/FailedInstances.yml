@@ -8,7 +8,7 @@ tags: []
 comment: Executes a test for all integration instances available and returns detailed information about succeeded and failed integration instances.
 enabled: true
 args:
-- description: The entry ID of the word document to be parsed for indicators. The document can be either in DOC or DOCX format.
+- description: Weather to test instances with "Do not use by default" option checked.
   name: includeDefault
   required: false
   auto: PREDEFINED
