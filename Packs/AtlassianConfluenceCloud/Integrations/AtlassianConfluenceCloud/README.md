@@ -14,6 +14,32 @@ This integration was integrated and tested with version 1000.0.0-847bdcbfcd00 of
 | Max number of events per fetch |  | False |
 | Fetch Events |  | False |
 
+## Authentication Methods
+
+### Basic Authentication (Email + API Token)
+
+1. Provide your **Email** address
+2. Provide your **API Token** (generate from [Atlassian API Token management](https://id.atlassian.com/manage/api-tokens))
+
+### OAuth 2.0 Authentication
+
+OAuth 2.0 provides a more secure authentication method using the [Atlassian Developer Console](https://developer.atlassian.com/console/myapps/).
+
+**Required OAuth Scopes** (must be configured in the Atlassian Developer Console for your OAuth app):
+
+| Scope | Description |
+| --- | --- |
+| `read:audit-log:confluence` | **Required for event fetching** — Read Confluence audit log records |
+| `read:confluence-content.all` | Read all Confluence content |
+| `read:confluence-space.summary` | Read space summaries |
+| `read:confluence-user` | Read user information |
+| `read:confluence-groups` | Read group information |
+| `write:confluence-content` | Write content |
+| `write:confluence-space` | Write space data |
+| `offline_access` | Enables refresh token for unattended access |
+
+> **Note**: The `read:audit-log:confluence` scope is specifically required for the event fetching functionality (`fetch-events` and `confluence-cloud-get-events` commands). Without this scope, event collection will fail.
+
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.

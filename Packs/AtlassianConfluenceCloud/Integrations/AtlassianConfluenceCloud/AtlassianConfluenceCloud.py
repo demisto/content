@@ -1430,10 +1430,36 @@ def oauth_complete_command(oauth_client, code: str) -> CommandResults:
 
 
 def oauth_test_command(oauth_client) -> CommandResults:
-    """Test OAuth authentication."""
+    """Test OAuth authentication and verify accessible resources."""
     try:
-        oauth_client.test_connection()
-        return CommandResults(readable_output="✓ Authentication successful")
+        access_token = oauth_client.get_access_token()
+        
+        # Query accessible resources to verify cloud_id and product access
+        response = requests.get(
+            "https://api.atlassian.com/oauth/token/accessible-resources",
+            headers={"Authorization": f"Bearer {access_token}", "Accept": "application/json"},
+            verify=oauth_client.verify,
+        )
+        resources = response.json()
+        demisto.debug(f"{LOGGING_INTEGRATION_NAME} Accessible resources: {resources}")
+        
+        # Format the resources for display
+        resource_info = []
+        for resource in resources:
+            resource_info.append(
+                f"- **{resource.get('name', 'Unknown')}** (ID: `{resource.get('id', 'N/A')}`)\n"
+                f"  URL: {resource.get('url', 'N/A')}\n"
+                f"  Scopes: {', '.join(resource.get('scopes', []))}"
+            )
+        
+        resources_display = "\n".join(resource_info) if resource_info else "No accessible resources found."
+        
+        return CommandResults(
+            readable_output=(
+                f"### ✓ Authentication successful\n\n"
+                f"### Accessible Resources:\n{resources_display}"
+            )
+        )
     except Exception as e:
         raise DemistoException(f"Authentication failed: {str(e)}")
 
@@ -1447,9 +1473,9 @@ def create_oauth_client(params: dict):
 
     :return: OAuth client instance or None if not using OAuth.
     """
-    auth_type = params.get("auth_type", "basic")
+    auth_method = params.get("auth_method", "Basic")
     
-    if auth_type != "oauth":
+    if auth_method != "OAuth 2.0":
         return None
     
     client_creds = params.get("client_credentials", {})
@@ -1457,8 +1483,7 @@ def create_oauth_client(params: dict):
     client_secret = client_creds.get("password", "")
     cloud_id = params.get("cloud_id", "")
     callback_url = params.get("callback_url", "")
-    verify_certificate = not params.get("insecure", False)
-    proxy = params.get("proxy", False)
+    server_url = str(params.get("url", "")).strip().removesuffix("/")
     
     if not client_id or not client_secret:
         raise DemistoException(
@@ -1473,8 +1498,9 @@ def create_oauth_client(params: dict):
         client_secret=client_secret,
         callback_url=callback_url,
         cloud_id=cloud_id,
-        verify=verify_certificate,
-        proxy=proxy,
+        server_url=server_url,
+        verify=not params.get("insecure", False),
+        proxy=params.get("proxy", False),
         product="confluence",
     )
 
@@ -1493,24 +1519,34 @@ def create_client(params: dict, oauth_client=None) -> Client:
     :rtype: ``Client``
     """
     # get the service API url
-    url = params["url"].strip()
-    base_url = f"https://{url}.atlassian.net"
+    raw_url = params["url"].strip().removesuffix("/")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
-    validate_url(url)
+    validate_url(raw_url)
     headers: dict = {"Accept": "application/json"}
 
-    # Check if OAuth authentication is configured
-    auth_type = params.get("auth_type", "basic")
+    # Extract the site name from the URL, handling various input formats:
+    # "mysite", "mysite.atlassian.net", "https://mysite.atlassian.net", "https://mysite.atlassian.net/wiki/"
+    site_name = raw_url.removeprefix("https://").removeprefix("http://").removesuffix("/")
+    # Remove any path components (e.g., /wiki)
+    site_name = site_name.split("/")[0]
+    # Remove .atlassian.net suffix if present to get just the site name
+    site_name = site_name.removesuffix(".atlassian.net").removesuffix(".atlassian.com")
+    base_url = f"https://{site_name}.atlassian.net"
 
-    if auth_type == "oauth" and oauth_client is not None:
+    # Check if OAuth authentication is configured
+    auth_method = params.get("auth_method", "Basic")
+
+    if auth_method == "OAuth 2.0" and oauth_client is not None:
         # OAuth 2.0 authentication
         demisto.debug(f"{LOGGING_INTEGRATION_NAME} Using OAuth 2.0 authentication")
 
         # Get the access token
         access_token = oauth_client.get_access_token()
         headers["Authorization"] = f"Bearer {access_token}"
+
+        demisto.debug(f"{LOGGING_INTEGRATION_NAME} OAuth base_url: {base_url}")
 
         return Client(
             base_url=base_url,
@@ -1552,8 +1588,8 @@ def main() -> None:  # pragma: no cover
     demisto.debug(f"{LOGGING_INTEGRATION_NAME} Command being called is {command}")
     try:
         # Get authentication parameters
-        auth_type = params.get("auth_type", "basic")
-        is_oauth = auth_type == "oauth"
+        auth_method = params.get("auth_method", "Basic")
+        is_oauth = auth_method == "OAuth 2.0"
         
         # OAuth client initialization
         oauth_client = None

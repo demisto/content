@@ -24,13 +24,14 @@ OAuth 2.0 provides a more secure authentication method using the Atlassian Devel
 2. Click "Create" and select "OAuth 2.0 integration"
 3. Enter a name for your app and click "Create"
 4. Navigate to "Permissions" and add the required Confluence API scopes:
-   - `read:confluence-content.all`
-   - `read:confluence-space.summary`
-   - `read:confluence-user`
-   - `read:confluence-groups`
-   - `write:confluence-content`
-   - `write:confluence-space`
-   - `read:audit-log:confluence` (for event collection)
+   - `read:audit-log:confluence` — **Required for event fetching** (audit log access)
+   - `read:confluence-content.all` — Read all Confluence content
+   - `read:confluence-space.summary` — Read space summaries
+   - `read:confluence-user` — Read user information
+   - `read:confluence-groups` — Read group information
+   - `write:confluence-content` — Write content
+   - `write:confluence-space` — Write space data
+   - `offline_access` — Enables refresh token for unattended access
 5. Navigate to "Authorization" and configure the callback URL
 6. Navigate to "Settings" to find your Client ID and Client Secret
 

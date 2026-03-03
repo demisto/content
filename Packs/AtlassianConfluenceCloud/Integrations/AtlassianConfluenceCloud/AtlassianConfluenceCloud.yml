@@ -13,15 +13,15 @@ configuration:
   required: true
   type: 0
   section: Connect
-- additionalinfo: Select the authentication method to use.
-  display: Authentication Type
-  name: auth_type
-  required: true
+- additionalinfo: Select the authentication method to use. Basic authentication requires username and API token. OAuth 2.0 requires Client ID and Client Secret.
+  display: Authentication Method
+  name: auth_method
   type: 15
-  defaultvalue: basic
+  required: false
+  defaultvalue: Basic
   options:
-  - basic
-  - oauth
+  - Basic
+  - OAuth 2.0
   section: Connect
 - additionalinfo: The Atlassian account email. Required for Basic authentication.
   display: Email
@@ -30,23 +30,24 @@ configuration:
   required: false
   type: 9
   section: Connect
-- additionalinfo: The OAuth 2.0 Client ID. Required for OAuth authentication. Obtain from Atlassian Developer Console.
-  display: Client ID (OAuth)
-  name: client_id
-  required: false
-  type: 0
-  section: Connect
-- additionalinfo: The OAuth 2.0 Client Secret. Required for OAuth authentication. Obtain from Atlassian Developer Console.
-  display: Client Secret (OAuth)
-  name: client_secret
-  required: false
-  type: 9
-  section: Connect
-- additionalinfo: The Atlassian Cloud ID. Required for OAuth authentication. Can be found in the URL when accessing your Confluence instance.
-  display: Cloud ID (OAuth)
+- additionalinfo: Required for Confluence Cloud instances using OAuth 2.0. You can find your Cloud ID by navigating to https://admin.atlassian.com and selecting your site.
+  display: Cloud ID
   name: cloud_id
   required: false
   type: 0
+  section: Connect
+- additionalinfo: The redirect URL to use for OAuth 2.0 (e.g., https://localhost/myapp)
+  display: Callback URL
+  name: callback_url
+  required: false
+  type: 0
+  section: Connect
+- additionalinfo: OAuth 2.0 credentials. Required when using OAuth 2.0 authentication.
+  display: Client ID
+  name: client_credentials
+  required: false
+  type: 9
+  displaypassword: Client Secret
   section: Connect
 - display: Use system proxy settings
   name: proxy

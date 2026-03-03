@@ -34,10 +34,15 @@ OAuth 2.0 provides more secure authentication with limited scopes, avoiding the 
 
 #### For Jira Cloud
 
-**Required OAuth Scopes**:
+**Required OAuth Scopes** (must be configured in the [Atlassian Developer Console](https://developer.atlassian.com/console/myapps/) for your OAuth app):
 
-- **Classic (Recommended)**: `manage:jira-configuration`
-- **Granular**: `read:audit-log:jira`, `read:user:jira`
+| Scope | Description |
+| --- | --- |
+| `read:audit-log:jira` | Granular scope for reading Jira audit log records (required for event fetching) |
+| `manage:jira-configuration` | Classic admin scope required by the audit API |
+| `read:jira-work` | Required for Jira API v3 access |
+| `read:jira-user` | User information access |
+| `offline_access` | Enables refresh token for unattended access |
 
 **Setup Steps**:
 
@@ -70,7 +75,9 @@ OAuth 2.0 provides more secure authentication with limited scopes, avoiding the 
 
 **Required OAuth Scopes**:
 
-- `WRITE` (provides read and write access)
+| Scope | Description |
+| --- | --- |
+| `ADMIN` | Admin-level scope required for audit log access on Data Center instances |
 
 **Setup Steps**:
 
