@@ -1,5 +1,6 @@
 fromversion: 8.3.0
-id: salesforce_modeling_rule
+toversion: 8.13.0
+id: Salesforce_ModelingRule
 name: Salesforce Modeling Rule
 rules: ''
 schema: ''
