@@ -37,6 +37,7 @@ class Client(BaseClient):
     ):
         self.singer = self.build_singer_object(user_ocid, private_key, key_fingerprint, tenancy_ocid, private_key_type)
         self.base_url = self.build_audit_base_url(region)
+        self.searchlog_url = self.build_searchlog_url(region)
         self.compartment_id = compartment_id if compartment_id else tenancy_ocid
         super().__init__(proxy=proxy, verify=verify_certificate, auth=self.singer, base_url=self.base_url)
 
@@ -95,6 +96,26 @@ class Client(BaseClient):
             )
 
         return f"https://audit.{region}.oraclecloud.com/{PORT}/auditEvents"
+
+    def build_searchlog_url(self, region: str) -> str:
+        """Build the base URL for the search logs API.
+
+        Args:
+            region (str): Region parameter.
+
+        Raises:
+            DemistoException: If the region is not valid.
+
+        Returns:
+            str: Base URL for the search logs API.
+        """
+        if not is_region(region):
+            raise DemistoException(
+                "Could not create a valid OCI configuration dictionary due to invalid region parameter. \
+                Please check your OCI-related instance configuration parameters."
+            )
+
+        return f"https://logging.{region}.oci.oraclecloud.com/20190909/search"
 
     def validate_private_key_syntax(self, private_key_parameter: str, private_key_type: str) -> str:
         """Validate private key parameter syntax.
@@ -249,6 +270,38 @@ def audit_log_api_request(client: Client, start_time: str, next_page: str | None
     return client._http_request(method="GET", params=params, resp_type="response")
 
 
+def searchlogs_api_request(
+    client: Client, time_start: str, time_end: str, search_query: str,
+    limit: int = 2, next_page: str | None = None
+) -> requests.Response:
+    """Makes HTTP POST request to the OCI Search Logs API endpoint.
+
+    Args:
+        client (Client): client object.
+        time_start (str): start time for the search query.
+        time_end (str): end time for the search query.
+        search_query (str): the search query string.
+        limit (int, optional): maximum number of results to return. Defaults to 1000.
+        next_page (str | None, optional): next page query parameter for pagination. Defaults to None.
+
+    Returns:
+        requests.Response: raw response from the API.
+    """
+    url = client.searchlog_url
+    body = {
+        "timeStart": time_start,
+        "timeEnd": time_end,
+        "searchQuery": search_query,
+        "isReturnFieldInfo": False
+    }
+    params: dict[str, str | int] = {"limit": limit}
+    if next_page:
+        params["page"] = next_page
+    return client._http_request(
+        method="POST", full_url=url, params=params, json_data=body, resp_type="response"
+    )
+
+
 def add_millisecond_to_timestamp(timestamp: str) -> str:
     """Add 1 millisecond to the given timestamp.
 
@@ -291,6 +344,9 @@ def get_events(
         tuple[list[dict[str, Any]], str]: A tuple of the events list and the last event time for next fetch cycle.
     """
     try:
+        searchlogs_res = searchlogs_api_request(client=client,time_start='2026-01-01T11:05:00.000Z',time_end='2026-01-01T11:45:00.000Z')
+        searchlogs = json.loads(searchlogs_res.content)
+
         response = audit_log_api_request(client=client, start_time=first_fetch_time.strftime(DATE_FORMAT))
         events = json.loads(response.content)
 
