@@ -7,6 +7,15 @@ type: javascript
 tags: []
 comment: Executes a test for all integration instances available and returns detailed information about succeeded and failed integration instances.
 enabled: true
+args:
+- description: The entry ID of the word document to be parsed for indicators. The document can be either in DOC or DOCX format.
+  name: includeDefault
+  required: false
+  auto: PREDEFINED
+  predefined:
+  - "false"
+  - "true"
+  defaultValue: "false"
 outputs:
 - contextPath: FailedInstances.instance
   description: The name of the failed integration instance.
