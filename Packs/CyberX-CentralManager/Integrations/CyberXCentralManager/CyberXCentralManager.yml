@@ -29,7 +29,7 @@ configuration:
   type: 8
   required: false
   section: Connect
-description: Updates alerts in CyberX Central Management
+description: Updates alerts in CyberX Central Management.
 display: CyberX - Central Manager
 name: CyberX - Central Manager
 script:

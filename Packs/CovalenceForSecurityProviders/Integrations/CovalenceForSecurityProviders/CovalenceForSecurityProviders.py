@@ -35,7 +35,7 @@ def find_covs(client_name):
         if client_name == link.contents[0]:
             href = link.get("href", "")
             if href:
-                covs.append(href.split("/index/", 1)[-1])
+                covs.append(href.split("/index/", 1)[-1])  # type: ignore[union-attr]
 
     return covs
 
