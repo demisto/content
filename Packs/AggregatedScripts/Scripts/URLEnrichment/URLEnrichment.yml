@@ -206,7 +206,7 @@ subtype: python3
 dockerimage: demisto/python3:3.12.12.6204436
 fromversion: 8.0.0
 marketplaces:
-- xsoar
+- xsoar_saas
 - platform
 - marketplacev2
 tests:
