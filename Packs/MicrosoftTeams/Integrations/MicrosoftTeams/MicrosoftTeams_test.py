@@ -406,7 +406,7 @@ def test_send_message_raising_errors(mocker, args, result):
     mocker.patch.object(demisto, "args", return_value=args)
     with pytest.raises(ValueError) as e:
         send_message()
-    assert str(e.value) == result
+    assert result in str(e.value)
 
 
 @pytest.mark.parametrize(
@@ -4014,7 +4014,7 @@ def test_send_proactive_message_command_with_adaptive_card(mocker, requests_mock
         f"{service_url}/v3/conversations/{conversation_id}/activities", json={"id": activity_id}
     )
 
-    mocker.patch.object(demisto, "args", return_value={"user_id": "test@example.com", "adaptive_card": adaptive_card})
+    mocker.patch.object(demisto, "args", return_value={"user_id": "test@example.com", "adaptive_card": json.dumps(adaptive_card)})
     send_proactive_message_command()
 
     # Verify adaptive card was wrapped correctly
@@ -4067,7 +4067,7 @@ def test_send_proactive_message_command_with_teams_ask_adaptive_card(mocker, req
     )
 
     mocker.patch.object(
-        demisto, "args", return_value={"user_id": "test@example.com", "adaptive_card": adaptive_card_with_entitlement}
+        demisto, "args", return_value={"user_id": "test@example.com", "adaptive_card": json.dumps(adaptive_card_with_entitlement)}
     )
     mocker.patch("MicrosoftTeams.return_results")
 

@@ -992,23 +992,19 @@ def create_proactive_conversation(user_id: str) -> str:
     :return: The conversation ID
     """
     integration_context: dict = get_integration_context()
-    bot_id: str = BOT_ID
     bot_name: str = integration_context.get("bot_name", "")
     tenant_id: str = integration_context.get("tenant_id", "")
     service_url: str = integration_context.get("service_url", "")
 
     if not service_url:
-        raise ValueError(
-            "Did not find service URL. Try messaging the bot on Microsoft Teams"
-        )
+        raise ValueError("Did not find service URL. Try messaging the bot on Microsoft Teams")
 
     if not tenant_id:
         raise ValueError(MISS_CONFIGURATION_ERROR_MESSAGE)
 
-    
     # Check if we have a cached conversation for this user
     cached_conversations: dict = integration_context.get("proactive_conversations", {})
-    demisto.debug(f"cached_conversations: type(cached_conversations)")
+    demisto.debug("cached_conversations: type(cached_conversations)")
     if isinstance(cached_conversations, str):
         cached_conversations = json.loads(cached_conversations)
 
@@ -1047,8 +1043,13 @@ def send_proactive_message_to_conversation(conversation_id: str, message: str = 
     """
     Sends a proactive message to a conversation using Bot Framework API.
 
+    Supports @mention syntax in the message text (e.g. ``@John Smith;``).
+    Mentioned users are resolved via the Microsoft Graph API since proactive
+    messages may target users who are not present in the cached team members.
+
     :param conversation_id: The conversation ID
-    :param message: The text message to send (optional if adaptive_card is provided)
+    :param message: The text message to send (optional if adaptive_card is provided).
+                    May contain @mention syntax: ``@DisplayName;``
     :param adaptive_card: The adaptive card to send (optional if message is provided)
     :return: The API response
     """
@@ -1058,16 +1059,14 @@ def send_proactive_message_to_conversation(conversation_id: str, message: str = 
     if not service_url:
         raise ValueError("Service URL not found. Please ensure the bot has been added to a team.")
 
-    # Build the conversation payload
-    conversation_payload: dict = {"type": "message"}
-
-    if adaptive_card:
-        # Handle raw adaptive card format
-        adaptive_card = handle_raw_adaptive_card(adaptive_card)
-        conversation_payload["attachments"] = [adaptive_card]
-    elif message:
-        conversation_payload["text"] = message
-        #conversation_payload["entities"] = []
+    conversation_payload: dict = build_conversation_payload(
+        message=message,
+        adaptive_card=adaptive_card or {},
+        integration_context=integration_context,
+        message_id="",
+        external_form_url_header=None,
+        proactive=True,
+    )
 
     url: str = f"{service_url}/v3/conversations/{conversation_id}/activities"
     demisto.debug(f"Sending proactive message to conversation {conversation_id}")
@@ -2640,21 +2639,93 @@ def process_mentioned_users_in_message(message: str) -> tuple[list, str]:
     return mentioned_users, message
 
 
-def mentioned_users_to_entities(mentioned_users: list, integration_context: dict) -> list:
+def mentioned_users_to_entities(mentioned_users: list, integration_context: dict, proactive: bool = False) -> list:
     """
-    Returns a list of entities built from the mentioned users
+    Returns a list of entities built from the mentioned users.
+
+    By default, resolves user IDs from the cached team members in the integration context
+    (fast, no API call). When ``proactive=True``, resolves each user via the Microsoft
+    Graph API instead — required when called from the proactive-message flow, where
+    mentioned users may not be present in the team cache.
+
     :param mentioned_users: A list of mentioned users in the message
-    :param integration_context: Cached object to retrieve relevant data from
+    :param integration_context: Cached object to retrieve relevant data from (used when proactive=False)
+    :param proactive: When True, resolve user IDs via Graph API instead of the team cache.
+                      Set this when calling from a proactive message context.
     :return: A list of entities
     """
-    return [
-        {
-            "type": "mention",
-            "mentioned": {"id": get_team_member_id(user, integration_context), "name": user},
-            "text": f"<at>@{user}</at>",
-        }
-        for user in mentioned_users
-    ]
+    entities = []
+    for user in mentioned_users:
+        if proactive:
+            user_id = resolve_user_id_for_proactive_message(user)
+        else:
+            user_id = get_team_member_id(user, integration_context)
+        entities.append(
+            {
+                "type": "mention",
+                "mentioned": {"id": user_id, "name": user},
+                "text": f"<at>@{user}</at>",
+            }
+        )
+    return entities
+
+
+def build_conversation_payload(
+    message: str,
+    adaptive_card: dict,
+    integration_context: dict,
+    message_id: str = "",
+    external_form_url_header: str | None = None,
+    proactive: bool = False,
+) -> dict:
+    """
+    Builds the Bot Framework conversation payload dict from either a text message
+    or an adaptive card.
+
+    Handles three cases:
+    1. TeamsAsk text message  – message is a JSON blob matching MS_TEAMS_ASK_MESSAGE_KEYS.
+    2. Regular text message   – plain text, optionally with @mentions and URL hyperlinking.
+       When message_id is set the payload targets a channel-thread reply (Graph API format).
+    3. Adaptive card only     – message is empty; adaptive_card is resolved and attached.
+
+    :param message: The text message to send (may be empty if adaptive_card is provided).
+    :param adaptive_card: The adaptive card dict (may be empty if message is provided).
+    :param integration_context: Cached integration context (used for @mention resolution
+                                when proactive=False).
+    :param message_id: When set, formats the payload as a channel-thread reply.
+                       Pass an empty string for a new top-level message.
+    :param external_form_url_header: Custom header for Data Collection survey URLs.
+                                     Defaults to EXTERNAL_FORM_URL_DEFAULT_HEADER when None.
+    :param proactive: When True, resolves @mentions via Graph API instead of the team cache.
+                      Set this when building a payload for a proactive message.
+    :return: The conversation payload dict ready to be sent to the Bot Framework API.
+    """
+    if message:
+        entitlement_match_msg: Match[str] | None = re.search(ENTITLEMENT_REGEX, message)
+        if entitlement_match_msg and is_teams_ask_message(message):
+            # TeamsAsk flow: build an Adaptive Card from the JSON message
+            card = process_ask_user(message)
+            demisto.debug(f"The following Adaptive Card will be used:\n{json.dumps(card)}")
+            return {"type": "message", "attachments": [card]}
+
+        # Regular text message
+        formatted_message: str = urlify_hyperlinks(message, external_form_url_header)
+        mentioned_users, formatted_message_with_mentions = process_mentioned_users_in_message(formatted_message)
+        entities = mentioned_users_to_entities(mentioned_users, integration_context, proactive=proactive)
+        demisto.info(f"msg: {formatted_message_with_mentions}, ent: {entities}")
+
+        if not message_id:
+            return {"type": "message", "text": formatted_message_with_mentions, "entities": entities}
+        else:
+            # Reply to an existing channel message (Graph API format)
+            payload: dict = {"body": {"contentType": "html", "content": formatted_message_with_mentions}}
+            if entities:
+                payload["body"]["mentions"] = entities
+            return payload
+
+    # Adaptive card only
+    # This use case is relevant for TeamsAsk script when the entitlement is one of the keys under the adaptive_card
+    return {"type": "message", "attachments": [resolve_adaptive_card(adaptive_card)]}
 
 
 def send_message():
@@ -2662,15 +2733,12 @@ def send_message():
     original_message: str = demisto.args().get("originalMessage", "")
     message: str = demisto.args().get("message", "")
     message_id: str = demisto.args().get("message_id", "")
+    adaptive_card: str = demisto.args().get("adaptive_card", "")
     team_name: str = demisto.args().get("team", "") or demisto.params().get("team", "")
     external_form_url_header: str | None = demisto.args().get("external_form_url_header") or demisto.params().get(
         "external_form_url_header"
     )
     demisto.debug(f"In send message with message type: {message_type}, and channel name:{demisto.args().get('channel')}")
-    try:
-        adaptive_card: dict = json.loads(demisto.args().get("adaptive_card", "{}"))
-    except ValueError as e:
-        raise ValueError(f"Given adaptive card is not in valid JSON format. Error: {str(e)}")
 
     if message_type == MESSAGE_TYPES["mirror_entry"] and ENTRY_FOOTER in original_message:
         demisto.debug(f"the message '{message}' was already mirrored, skipping it")
@@ -2715,6 +2783,11 @@ def send_message():
     if message and adaptive_card:
         raise ValueError("Provide either message or adaptive to send, not both.")
 
+    try:
+        adaptive_card: dict = json.loads(demisto.args().get("adaptive_card", "{}"))
+    except ValueError as e:
+        raise ValueError(f"Given adaptive card is not in valid JSON format. Error: {str(e)}")
+
     integration_context: dict = get_integration_context()
     channel_id = ""
     personal_conversation_id = ""
@@ -2735,30 +2808,14 @@ def send_message():
 
     recipient: str = channel_id or personal_conversation_id
 
-    conversation: dict = {}
-
-    if message:
-        entitlement_match_msg: Match[str] | None = re.search(ENTITLEMENT_REGEX, message)
-        if entitlement_match_msg and is_teams_ask_message(message):
-            # In TeamsAsk process
-            adaptive_card = process_ask_user(message)
-            conversation = {"type": "message", "attachments": [adaptive_card]}
-            demisto.debug(f"The following Adaptive Card will be used:\n{json.dumps(adaptive_card)}")
-        else:
-            # Sending regular message
-            formatted_message: str = urlify_hyperlinks(message, external_form_url_header)
-            mentioned_users, formatted_message_with_mentions = process_mentioned_users_in_message(formatted_message)
-            entities = mentioned_users_to_entities(mentioned_users, integration_context)
-            demisto.info(f"msg: {formatted_message_with_mentions}, ent: {entities}")
-            if not message_id:
-                conversation = {"type": "message", "text": formatted_message_with_mentions, "entities": entities}
-            else:
-                conversation = {"body": {"contentType": "html", "content": formatted_message_with_mentions}}
-                if entities:
-                    conversation["body"]["mentions"] = entities
-    else:  # Adaptive card
-        # This use case is relevant for TeamsAsk script when the entitlement is one of the keys under the adaptive_card
-        conversation = {"type": "message", "attachments": [resolve_adaptive_card(adaptive_card)]}
+    conversation: dict = build_conversation_payload(
+        message=message,
+        adaptive_card=adaptive_card,
+        integration_context=integration_context,
+        message_id=message_id,
+        external_form_url_header=external_form_url_header,
+        proactive=False,
+    )
 
     service_url: str = integration_context.get("service_url", "")
     if not service_url:
@@ -2847,19 +2904,16 @@ def send_proactive_message_command():
     demisto.debug(f"Creating/retrieving proactive conversation for user: {user_id}")
     conversation_id = create_proactive_conversation(user_id)
 
-    adaptive_card_obj = None
+    adaptive_card: dict = {}
     if adaptive_card_arg:
         try:
-            adaptive_card: dict = json.loads(adaptive_card_arg)
+            adaptive_card = json.loads(adaptive_card_arg)
         except ValueError as e:
             raise ValueError(f"Failed to parse Adaptive Card: The provided input is not a valid JSON string. Error: {str(e)}")
-    
-        # Check for TeamsAsk entitlement - SAME AS send-notification
-        adaptive_card_obj = resolve_adaptive_card(adaptive_card)
 
     demisto.debug(f"Sending proactive message to conversation: {conversation_id}")
     response = send_proactive_message_to_conversation(
-        conversation_id=conversation_id, message=message, adaptive_card=adaptive_card_obj
+        conversation_id=conversation_id, message=message, adaptive_card=adaptive_card
     )
     demisto.debug(f"Proactive message sent successfully. ActivityId: {response.get('id', '')}")
     # Prepare outputs
