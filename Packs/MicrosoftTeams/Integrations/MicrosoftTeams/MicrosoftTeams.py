@@ -858,6 +858,31 @@ def process_teams_ask_adaptive_card(adaptive_card_obj: dict) -> dict:
     return adaptive_card
 
 
+def has_entitlement(adaptive_card: dict) -> bool:
+    """
+    Returns True if the adaptive card contains a valid TeamsAsk entitlement GUID.
+
+    :param adaptive_card: The adaptive card object (may contain an 'entitlement' key).
+    :return: True if an entitlement GUID is found, False otherwise.
+    """
+    return bool(re.search(ENTITLEMENT_REGEX, adaptive_card.get("entitlement", "")))
+
+
+def resolve_adaptive_card(adaptive_card: dict) -> dict:
+    """
+    Resolves an adaptive card to its final processed form.
+    If the card carries a TeamsAsk entitlement, it is processed via
+    process_teams_ask_adaptive_card(); otherwise it is normalised via
+    handle_raw_adaptive_card().
+
+    :param adaptive_card: The raw adaptive card object (may contain an 'entitlement' key).
+    :return: The processed adaptive card ready to be placed in a message attachment.
+    """
+    if has_entitlement(adaptive_card):
+        return process_teams_ask_adaptive_card(adaptive_card)
+    return handle_raw_adaptive_card(adaptive_card)
+
+
 def get_bot_access_token() -> str:
     """
     Retrieves Bot Framework API access token, either from cache or from Microsoft
@@ -980,8 +1005,10 @@ def create_proactive_conversation(user_id: str) -> str:
     if not tenant_id:
         raise ValueError(MISS_CONFIGURATION_ERROR_MESSAGE)
 
+    
     # Check if we have a cached conversation for this user
     cached_conversations: dict = integration_context.get("proactive_conversations", {})
+    demisto.debug(f"cached_conversations: type(cached_conversations)")
     if isinstance(cached_conversations, str):
         cached_conversations = json.loads(cached_conversations)
 
@@ -992,7 +1019,7 @@ def create_proactive_conversation(user_id: str) -> str:
 
     # Create new conversation
     conversation: dict = {
-        "bot": {"id": f"28:{bot_id}", "name": bot_name},
+        "bot": {"id": BOT_ID, "name": bot_name},
         "members": [{"id": user_id}],
         "channelData": {"tenant": {"id": tenant_id}},
     }
@@ -1003,6 +1030,7 @@ def create_proactive_conversation(user_id: str) -> str:
     response: dict = cast(dict[Any, Any], http_request("POST", url, json_=conversation, api="bot"))
     conversation_id: str = response.get("id", "")
 
+    demisto.debug(f"response: {response}")
     if not conversation_id:
         raise ValueError("Failed to create conversation: No conversation ID returned")
 
@@ -1039,7 +1067,7 @@ def send_proactive_message_to_conversation(conversation_id: str, message: str = 
         conversation_payload["attachments"] = [adaptive_card]
     elif message:
         conversation_payload["text"] = message
-        conversation_payload["entities"] = []
+        #conversation_payload["entities"] = []
 
     url: str = f"{service_url}/v3/conversations/{conversation_id}/activities"
     demisto.debug(f"Sending proactive message to conversation {conversation_id}")
@@ -2641,8 +2669,8 @@ def send_message():
     demisto.debug(f"In send message with message type: {message_type}, and channel name:{demisto.args().get('channel')}")
     try:
         adaptive_card: dict = json.loads(demisto.args().get("adaptive_card", "{}"))
-    except ValueError:
-        raise ValueError("Given adaptive card is not in valid JSON format.")
+    except ValueError as e:
+        raise ValueError(f"Given adaptive card is not in valid JSON format. Error: {str(e)}")
 
     if message_type == MESSAGE_TYPES["mirror_entry"] and ENTRY_FOOTER in original_message:
         demisto.debug(f"the message '{message}' was already mirrored, skipping it")
@@ -2730,13 +2758,7 @@ def send_message():
                     conversation["body"]["mentions"] = entities
     else:  # Adaptive card
         # This use case is relevant for TeamsAsk script when the entitlement is one of the keys under the adaptive_card
-        entitlement_match_ac: Match[str] | None = re.search(ENTITLEMENT_REGEX, adaptive_card.get("entitlement", ""))
-        if entitlement_match_ac:
-            adaptive_card_processed = process_teams_ask_adaptive_card(adaptive_card)
-            conversation = {"type": "message", "attachments": [adaptive_card_processed]}
-        else:
-            adaptive_card = handle_raw_adaptive_card(adaptive_card)
-            conversation = {"type": "message", "attachments": [adaptive_card]}
+        conversation = {"type": "message", "attachments": [resolve_adaptive_card(adaptive_card)]}
 
     service_url: str = integration_context.get("service_url", "")
     if not service_url:
@@ -2820,7 +2842,6 @@ def send_proactive_message_command():
     if message and adaptive_card_arg:
         raise ValueError("Provide either message or adaptive_card, not both.")
 
-    demisto.debug(f"Resolving user identifier: {user_id_arg}")
     user_id = resolve_user_id_for_proactive_message(user_id_arg)
 
     demisto.debug(f"Creating/retrieving proactive conversation for user: {user_id}")
@@ -2828,21 +2849,13 @@ def send_proactive_message_command():
 
     adaptive_card_obj = None
     if adaptive_card_arg:
-        # Parse if string, use directly if dict
-        if isinstance(adaptive_card_arg, str):
-            try:
-                adaptive_card: dict = json.loads(adaptive_card_arg)
-            except json.JSONDecodeError as e:
-                raise ValueError(f"Invalid adaptive card JSON format: {str(e)}")
-
+        try:
+            adaptive_card: dict = json.loads(adaptive_card_arg)
+        except ValueError as e:
+            raise ValueError(f"Failed to parse Adaptive Card: The provided input is not a valid JSON string. Error: {str(e)}")
+    
         # Check for TeamsAsk entitlement - SAME AS send-notification
-        entitlement_match: Match[str] | None = re.search(ENTITLEMENT_REGEX, adaptive_card.get("entitlement", ""))
-        if entitlement_match:
-            # TeamsAsk adaptive card with entitlement
-            adaptive_card_obj = process_teams_ask_adaptive_card(adaptive_card)
-        else:
-            # Regular adaptive card
-            adaptive_card_obj = handle_raw_adaptive_card(adaptive_card)
+        adaptive_card_obj = resolve_adaptive_card(adaptive_card)
 
     demisto.debug(f"Sending proactive message to conversation: {conversation_id}")
     response = send_proactive_message_to_conversation(
@@ -3352,10 +3365,7 @@ def entitlement_handler(integration_context: dict, request_body: dict, value: di
                         set_integration_context(integration_context)
                         demisto.debug(f"Cached user email in integration context: {team_members_id} -> {user_email}")
             except Exception as e:
-                demisto.error(f"Failed to retrieve user details: {str(e)}")
-                # Final fallback: try from_property
-                user_email = from_property.get("email") or from_property.get("userPrincipalName", "")
-                demisto.debug(f"Using email from request from_property: {user_email}")
+                raise ValueError(f"Failed to retrieve user details: {str(e)}")
 
     demisto.handleEntitlementForUser(
         incidentID=investigation_id,
