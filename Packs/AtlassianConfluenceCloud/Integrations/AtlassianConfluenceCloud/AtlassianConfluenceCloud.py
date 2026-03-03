@@ -1433,7 +1433,7 @@ def oauth_test_command(oauth_client) -> CommandResults:
     """Test OAuth authentication and verify accessible resources."""
     try:
         access_token = oauth_client.get_access_token()
-        
+
         # Query accessible resources to verify cloud_id and product access
         response = requests.get(
             "https://api.atlassian.com/oauth/token/accessible-resources",
@@ -1442,7 +1442,7 @@ def oauth_test_command(oauth_client) -> CommandResults:
         )
         resources = response.json()
         demisto.debug(f"{LOGGING_INTEGRATION_NAME} Accessible resources: {resources}")
-        
+
         # Format the resources for display
         resource_info = []
         for resource in resources:
@@ -1451,14 +1451,11 @@ def oauth_test_command(oauth_client) -> CommandResults:
                 f"  URL: {resource.get('url', 'N/A')}\n"
                 f"  Scopes: {', '.join(resource.get('scopes', []))}"
             )
-        
+
         resources_display = "\n".join(resource_info) if resource_info else "No accessible resources found."
-        
+
         return CommandResults(
-            readable_output=(
-                f"### ✓ Authentication successful\n\n"
-                f"### Accessible Resources:\n{resources_display}"
-            )
+            readable_output=(f"### ✓ Authentication successful\n\n" f"### Accessible Resources:\n{resources_display}")
         )
     except Exception as e:
         raise DemistoException(f"Authentication failed: {str(e)}")
@@ -1474,24 +1471,22 @@ def create_oauth_client(params: dict):
     :return: OAuth client instance or None if not using OAuth.
     """
     auth_method = params.get("auth_method", "Basic")
-    
+
     if auth_method != "OAuth 2.0":
         return None
-    
+
     client_creds = params.get("client_credentials", {})
     client_id = client_creds.get("identifier", "")
     client_secret = client_creds.get("password", "")
     cloud_id = params.get("cloud_id", "")
     callback_url = params.get("callback_url", "")
     server_url = str(params.get("url", "")).strip().removesuffix("/")
-    
+
     if not client_id or not client_secret:
-        raise DemistoException(
-            "Client ID and Client Secret are required for OAuth 2.0 authentication"
-        )
+        raise DemistoException("Client ID and Client Secret are required for OAuth 2.0 authentication")
     if not callback_url:
         raise DemistoException("Callback URL is required for OAuth 2.0 authentication")
-    
+
     # Create OAuth client using AtlassianApiModule
     return create_atlassian_oauth_client(
         client_id=client_id,
@@ -1590,12 +1585,12 @@ def main() -> None:  # pragma: no cover
         # Get authentication parameters
         auth_method = params.get("auth_method", "Basic")
         is_oauth = auth_method == "OAuth 2.0"
-        
+
         # OAuth client initialization
         oauth_client = None
         if is_oauth:
             oauth_client = create_oauth_client(params)
-        
+
         # Commands dictionary
         commands: dict[str, Callable] = {
             "confluence-cloud-group-list": confluence_cloud_group_list_command,
@@ -1610,7 +1605,7 @@ def main() -> None:  # pragma: no cover
             "confluence-cloud-space-create": confluence_cloud_space_create_command,
             "confluence-cloud-content-get": confluence_cloud_content_get_command,
         }
-        
+
         strip_args(args)
         remove_nulls_from_dictionary(args)
         limit = int(arg_to_number(params.get("max_events_per_fetch", 10000)))  # type:ignore
@@ -1618,16 +1613,12 @@ def main() -> None:  # pragma: no cover
         # Handle OAuth commands first (they don't need a client)
         if command == "confluence-cloud-oauth-start":
             if not oauth_client:
-                raise DemistoException(
-                    "OAuth commands are only available when using OAuth 2.0 authentication"
-                )
+                raise DemistoException("OAuth commands are only available when using OAuth 2.0 authentication")
             return_results(oauth_start_command(oauth_client))
 
         elif command == "confluence-cloud-oauth-complete":
             if not oauth_client:
-                raise DemistoException(
-                    "OAuth commands are only available when using OAuth 2.0 authentication"
-                )
+                raise DemistoException("OAuth commands are only available when using OAuth 2.0 authentication")
             code = args.get("code", "")
             if not code:
                 raise DemistoException("Authorization code is required")
@@ -1635,9 +1626,7 @@ def main() -> None:  # pragma: no cover
 
         elif command == "confluence-cloud-oauth-test":
             if not oauth_client:
-                raise DemistoException(
-                    "OAuth commands are only available when using OAuth 2.0 authentication"
-                )
+                raise DemistoException("OAuth commands are only available when using OAuth 2.0 authentication")
             return_results(oauth_test_command(oauth_client))
 
         elif command == "test-module":

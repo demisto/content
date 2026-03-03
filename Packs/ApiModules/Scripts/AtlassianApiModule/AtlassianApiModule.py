@@ -319,8 +319,8 @@ class JiraOnPremOAuthClient(AtlassianOAuthClient):
             # Generate PKCE code verifier and challenge
             code_verifier = base64.urlsafe_b64encode(os.urandom(40)).decode("utf-8")
             code_verifier = re.sub("[^a-zA-Z0-9]+", "", code_verifier)
-            code_challenge = hashlib.sha256(code_verifier.encode("utf-8")).digest()
-            code_challenge = base64.urlsafe_b64encode(code_challenge).decode("utf-8")
+            code_challenge_bytes = hashlib.sha256(code_verifier.encode("utf-8")).digest()
+            code_challenge = base64.urlsafe_b64encode(code_challenge_bytes).decode("utf-8")
             code_challenge = code_challenge.replace("=", "")
             
             # Store code_verifier in integration context for later use

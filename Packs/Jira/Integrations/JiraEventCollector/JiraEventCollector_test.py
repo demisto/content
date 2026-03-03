@@ -56,7 +56,7 @@ def test_fetch_incidents_few_incidents(mocker):
     mocker.patch("JiraEventCollector.send_events_to_xsiam")
 
     with requests_mock.Mocker() as m:
-        m.get(URL, json=util_load_json("test_data/events.json"))
+        m.get(URL, json=util_load_json("test_data/events.json"), headers={"Content-Type": "application/json"})
 
         from JiraEventCollector import main
 
@@ -89,7 +89,7 @@ def test_fetch_events_no_incidents(mocker):
     mocker.patch("JiraEventCollector.send_events_to_xsiam")
 
     with requests_mock.Mocker() as m:
-        m.get(URL, json={})
+        m.get(URL, json={}, headers={"Content-Type": "application/json"})
 
         from JiraEventCollector import main
 
@@ -123,7 +123,7 @@ def test_fetch_events_max_fetch_set_to_one(mocker):
     mocker.patch("JiraEventCollector.send_events_to_xsiam")
 
     with requests_mock.Mocker() as m:
-        m.get(URL, json=util_load_json("test_data/events.json"))
+        m.get(URL, json=util_load_json("test_data/events.json"), headers={"Content-Type": "application/json"})
 
         from JiraEventCollector import main
 
@@ -294,7 +294,7 @@ def test_fetch_events_with_oauth(mocker):
     oauth_url = "https://api.atlassian.com/ex/jira/test-cloud-id/rest/api/3/auditing/record"
 
     with requests_mock.Mocker() as m:
-        m.get(oauth_url, json=util_load_json("test_data/events.json"))
+        m.get(oauth_url, json=util_load_json("test_data/events.json"), headers={"Content-Type": "application/json"})
 
         from JiraEventCollector import main
 
@@ -387,7 +387,7 @@ def test_fetch_events_with_oauth_onprem(mocker):
     onprem_url = "https://jira.company.com/rest/auditing/1.0/events"
 
     with requests_mock.Mocker() as m:
-        m.get(onprem_url, json=util_load_json("test_data/events.json"))
+        m.get(onprem_url, json=util_load_json("test_data/events.json"), headers={"Content-Type": "application/json"})
 
         from JiraEventCollector import main
 
