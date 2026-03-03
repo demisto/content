@@ -163,6 +163,45 @@ script:
     - contextPath: BlueCat.AddressManager.Range.Parents.CIDR
       description: Classless Inter-Domain Routing.
       type: String
+  - arguments:
+    - description: The name of the entity to search for.
+      name: name
+      required: true
+    - description: The ID of the parent entity.
+      name: parent_id
+    - description: The type of the object to return. Must be one of the object type constants defined in the BlueCat Address Manager API (e.g., HostRecord, IP4Address).
+      name: type
+    - defaultValue: 'true'
+      description: An optional boolean flag for REST calls that sets the level of detail when retrieving xHA pair server objects. When set to true, the returned xHA server object includes details for the xHA status of the nodes. When set to false, only basic information is returned without polling xHA status. Default is true.
+      name: include_ha
+      type: Boolean
+    description: Returns an entity by its name.
+    name: bluecat-am-get-entity-by-name
+    outputs:
+    - contextPath: BlueCat.AddressManager.Entity.ID
+      description: The address manager ID of the entity.
+      type: Number
+    - contextPath: BlueCat.AddressManager.Entity.Name
+      description: Name of the entity.
+      type: String
+    - contextPath: BlueCat.AddressManager.Entity.Type
+      description: Type of the entity.
+      type: String
+    - contextPath: BlueCat.AddressManager.Entity.AbsoluteName
+      description: The absolute (fully qualified) DNS name of the entity.
+      type: String
+    - contextPath: BlueCat.AddressManager.Entity.Addresses
+      description: The IP address(es) associated with the entity.
+      type: String
+    - contextPath: BlueCat.AddressManager.Entity.Parents.ID
+      description: ID of the parent entity.
+      type: Number
+    - contextPath: BlueCat.AddressManager.Entity.Parents.Type
+      description: Type of the parent entity.
+      type: String
+    - contextPath: BlueCat.AddressManager.Entity.Parents.Name
+      description: Name of the parent entity.
+      type: String
   dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: '-'

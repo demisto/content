@@ -1,3 +1,4 @@
+import demistomock as demisto
 import ipaddress
 
 import requests
@@ -127,6 +128,16 @@ class Client:
                     return conf.get("id")
 
         return confs[0].get("id")
+
+    def get_entity_by_name(self, name: str, parent_id: int | None, entity_type: str | None, include_ha: bool = True):
+        params = {
+            "parentId": parent_id if parent_id else self.conf,
+            "name": name,
+            "type": entity_type,
+            "includeHA": include_ha,
+        }
+        demisto.debug(f"Sending a GET request for an entity with the following arguments: {params}")
+        return self.http_request("GET", "/getEntityByName", params=params)
 
 
 def get_passed_minutes(start_time, end_time):
@@ -354,6 +365,60 @@ def search_response_policy_by_domain(client: Client, domain: str):
     return client.http_request("GET", "/findResponsePoliciesWithItem", params=params)
 
 
+def get_entity_by_name_command(client: Client):
+    name = demisto.getArg("name")
+    parent_id = arg_to_number(demisto.getArg("parent_id"))
+    entity_type = demisto.getArg("type")
+    include_ha = argToBoolean(demisto.getArg("include_ha") or "true")
+    demisto.debug(f"bluecat-am-get-entity-by-name called with {name=}, {parent_id=}, {entity_type=}, {include_ha=}")
+
+    raw_res = client.get_entity_by_name(name, parent_id, entity_type, include_ha)
+    demisto.debug(f"Raw API response for entity '{name}': {raw_res}")
+
+    if not raw_res or raw_res.get("id") in (None, 0):
+        demisto.debug(f"Entity with name '{name}' was not found (id={raw_res.get('id') if raw_res else None})")
+        return_results(f"Entity with name: {name} was not found.")
+        return
+
+    entity_id = raw_res.get("id")
+    demisto.debug(f"Found a matching entity with {entity_id=}")
+
+    parents = get_entity_parents(client, entity_id)
+    demisto.debug(f"Resolved {len(parents)} parent(s) for entity {entity_id}: {parents}")
+
+    entity_obj = {
+        "ID": entity_id,
+        "Name": raw_res.get("name"),
+        "Type": raw_res.get("type"),
+        "Parents": parents,
+    }
+    entity_obj.update(properties_to_camelized_dict(raw_res.get("properties") or ""))
+    demisto.debug(f"The matching entity is {entity_obj=}")
+
+    readable_output = create_human_readable_entity(entity_obj, name)
+    demisto.debug(f"Human readable output generated for entity '{name}'")
+
+    return_results(
+        CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="BlueCat.AddressManager.Entity",
+            outputs_key_field="ID",
+            outputs=entity_obj,
+            raw_response=raw_res,
+        )
+    )
+
+
+def create_human_readable_entity(entity_obj: dict, name: str):
+    entity_obj_cpy = dict(entity_obj)
+    reversed_parents = list(reversed(entity_obj_cpy.get("Parents", [])))
+    entity_obj_cpy.pop("Parents", None)
+    hr = tblToMd(f"Entity Result for {name}:", entity_obj_cpy, headerTransform=pascalToSpace)
+    if reversed_parents:
+        hr += tblToMd("Parents Details:", reversed_parents, headerTransform=pascalToSpace)
+    return hr
+
+
 def main():
     params = demisto.params()
     url = params.get("url")
@@ -387,6 +452,8 @@ def main():
             add_domain_response_policy_command(client)
         elif command == "bluecat-am-response-policy-remove-domain":
             remove_domain_response_policy_command(client)
+        elif command == "bluecat-am-get-entity-by-name":
+            get_entity_by_name_command(client)
         else:
             raise NotImplementedError(f"{command} is not an existing Bluecat Address Mannager command")
 
