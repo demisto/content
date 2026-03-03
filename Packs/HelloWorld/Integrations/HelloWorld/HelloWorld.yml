@@ -44,11 +44,10 @@ configuration:
   type: 0
   section: Collect
   required: false
-- displaypassword: API Key
+- display: api_key
   name: credentials
   required: true
-  type: 9
-  hiddenusername: true
+  type: 0
   section: Connect
 - defaultvalue: '65'
   display: Score threshold for IP reputation command
@@ -87,6 +86,10 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+- name: API-Key-Violation
+  type: 0
+  required: true
+  section: Connect
 description: This is the Hello World integration for getting started.
 display: HelloWorld
 name: HelloWorld
