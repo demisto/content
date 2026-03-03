@@ -13155,7 +13155,6 @@ def test_describe_fleet_instances_command_next_token_propagated(mocker):
 
     assert isinstance(result, CommandResults)
     outputs = result.outputs  # type: ignore[index]
-    # NextToken is renamed to FleetInstancesNextToken in the flat outputs dict
     assert outputs["FleetInstancesNextToken"] == "next-token-xyz"
     call_kwargs = mock_client.describe_fleet_instances.call_args[1]
     assert call_kwargs.get("MaxResults") == 2
@@ -13191,13 +13190,10 @@ def test_describe_fleet_instances_command_readable_output_headers(mocker):
     result = EC2.describe_fleet_instances_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    # All four table headers must appear in the markdown output
     for header in ("Instance Id", "Instance Type", "Spot Instance Request Id", "Instance Health"):
         assert header in result.readable_output, f"Expected header '{header}' not found in readable_output"
-    # Instance values must appear
     assert "i-hdr001" in result.readable_output
     assert "unhealthy" in result.readable_output
-    # raw_response must be attached
     assert result.raw_response is not None
     assert result.raw_response.get("FleetId") == "fleet-hdr-001"
 
