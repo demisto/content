@@ -2108,13 +2108,15 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def list_vm_request(self, subscription_id: str, resource_group_name: str):
+    def list_vm_request(self, subscription_id: str, resource_group_name: str, next_token: str, expand: str):
         """
         Lists all the virtual machines in the specified resource group.
 
         Args:
             subscription_id (str): The ID of the Azure subscription.
             resource_group_name (str): The name of the resource group containing the virtual machine.
+            next_token (str): The URI to fetch the next page of results.
+            expand (str): The expand expression to apply.
 
         Returns:
             The list of virtual machines.
@@ -2122,12 +2124,20 @@ class AzureClient:
         Docs:
             https://learn.microsoft.com/en-us/rest/api/compute/virtual-machines/list?view=rest-compute-2025-04-01&tabs=HTTP
         """
-        full_url = (
-            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Compute/"
-            f"virtualMachines"
-        )
-        parameters = {"api-version": VM_API_VERSION}
+        if not next_token:
+            full_url = (
+                f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Compute/"
+                f"virtualMachines"
+            )
+            parameters = {
+                "api-version": "2025-04-01",
+            }
+        else:
+            demisto.debug(f"using {next_token=} for retrieving the next page of results.")
+            full_url = next_token
+            parameters = {}
         try:
+            demisto.debug(f"[Azure] {parameters=}")
             return self.http_request(method="GET", full_url=full_url, params=parameters)
         except Exception as e:
             self.handle_azure_error(
@@ -4426,42 +4436,32 @@ def list_vm_command(client: AzureClient, params: dict[str, Any], args: dict[str,
     """
     subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
     resource_group_name = get_from_args_or_params(args=args, params=params, key="resource_group_name")
+    next_token = args.get("next_token", "")
+    expand = args.get("expand", "")
+    demisto.debug(f"[Azure] args being sent to list_vm_request {subscription_id=} {resource_group_name=} {expand=}")
 
-    response = client.list_vm_request(subscription_id, resource_group_name)
-    vms = response.get("value", [])
-    
-    formatted_vms = []
-    for vm in vms:
-        properties = vm.get("properties", {})
-        os_disk = properties.get("storageProfile", {}).get("osDisk", {})
-        statuses = properties.get("instanceView", {}).get("statuses", [])
-        power_state = None
+    response = client.list_vm_request(subscription_id, resource_group_name, next_token, expand)
 
-        for status in statuses:
-            status_code = status.get("code", "")
-            status_code_prefix = status_code[: status_code.find("/")]
-            if status_code_prefix == "PowerState":
-                power_state = status.get("displayStatus")
-        
-        formatted_vms.append({
-            "Name": vm.get("name"),
-            "ID": properties.get("vmId"),
-            "Size": os_disk.get("diskSizeGB", "NA"),
-            "OS": os_disk.get("osType"),
-            "ProvisioningState": properties.get("provisioningState"),
-            "Location": vm.get("location"),
-            "PowerState": power_state,
-            "ResourceGroup": resource_group_name,
-        })
+    demisto.debug(f"[Azure] list_vm_request response={response} end response.")
 
-    title = f'Virtual Machines in Resource Group "{resource_group_name}"'
-    table_headers = ["Name", "ID", "Size", "OS", "ProvisioningState", "Location", "PowerState"]
-    human_readable = tableToMarkdown(title, formatted_vms, headers=table_headers, removeNull=True, headerTransform=pascalToSpace)
+    vms_list = response.get("value", [])
+
+    if not vms_list:
+        return CommandResults("No Virtual Machines found.")
+
+    outputs = {
+        "Azure.Compute.VMs(val.id && val.id == obj.id)": vms_list,
+        "Azure.Compute(true)": {"VMsNextToken": response.get("nextLink")}
+    }
+
+    title = "The list of Virtual Machines"
+    headers = ["name", "id", "location"]
+    human_readable = tableToMarkdown(title, vms_list, headers=headers, removeNull=True, headerTransform=pascalToSpace)
+
+    demisto.debug(f"[Azure] list_vm_request {human_readable=}")
 
     return CommandResults(
-        outputs_prefix="Azure.Compute",
-        outputs_key_field="ID",
-        outputs=vms,
+        outputs=outputs,
         readable_output=human_readable,
         raw_response=response,
     )
@@ -4579,7 +4579,6 @@ def network_interface_update_command(client: AzureClient, params: dict[str, Any]
     demisto.debug(f"[Azure] Get the current state of the network interface {network_interface_name}")
 
     # Get the current network interface configuration
-    # TODO check what happens if the nic doesn't exist.
     current_nic = client.get_network_interface_request(subscription_id, resource_group_name, network_interface_name)
     demisto.debug(f"[Azure] Current network interface: {current_nic}")
 

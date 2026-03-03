@@ -6449,83 +6449,160 @@ script:
     arguments:
     - name: subscription_id
       description: "The subscription ID."
+      required: true
     - name: resource_group_name
       description: "The name of the resource group."
-    - name: status_only
-      description: "The statusOnly query parameter can be used to fetch only the power state of the virtual machines."
-      auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
-    - name: next_link
+      required: true
+    - name: next_token
       description: "The URI to fetch the next page of results."
     outputs:
-    - contextPath: Azure.VM.id
-      description: "The virtual machine ID."
-      type: String
-    - contextPath: Azure.VM.name
-      description: "The virtual machine name."
-      type: String
-    - contextPath: Azure.VM.type
-      description: "The virtual machine type."
-      type: String
-    - contextPath: Azure.VM.location
-      description: "The virtual machine location."
-      type: String
-    - contextPath: Azure.VM.properties.vmId
-      description: "The virtual machine unique ID."
-      type: String
-    - contextPath: Azure.VM.properties.hardwareProfile.vmSize
-      description: "The virtual machine size."
-      type: String
-    - contextPath: Azure.VM.properties.storageProfile.imageReference.publisher
-      description: "The image publisher."
-      type: String
-    - contextPath: Azure.VM.properties.storageProfile.imageReference.offer
-      description: "The image offer."
-      type: String
-    - contextPath: Azure.VM.properties.storageProfile.imageReference.sku
-      description: "The image SKU."
-      type: String
-    - contextPath: Azure.VM.properties.storageProfile.imageReference.version
-      description: "The image version."
-      type: String
-    - contextPath: Azure.VM.properties.storageProfile.osDisk.osType
-      description: "The OS type."
-      type: String
-    - contextPath: Azure.VM.properties.storageProfile.osDisk.name
-      description: "The OS disk name."
-      type: String
-    - contextPath: Azure.VM.properties.storageProfile.osDisk.caching
-      description: "The OS disk caching type."
-      type: String
-    - contextPath: Azure.VM.properties.storageProfile.osDisk.createOption
-      description: "The create option."
-      type: String
-    - contextPath: Azure.VM.properties.storageProfile.osDisk.managedDisk.id
-      description: "The managed disk ID."
-      type: String
-    - contextPath: Azure.VM.properties.osProfile.computerName
-      description: "The computer name."
-      type: String
-    - contextPath: Azure.VM.properties.osProfile.adminUsername
-      description: "The admin username."
-      type: String
-    - contextPath: Azure.VM.properties.networkProfile.networkInterfaces.id
-      description: "The network interface ID."
-      type: String
-    - contextPath: Azure.VM.properties.provisioningState
-      description: "The provisioning state, which only appears in the response."
-      type: String
-    - contextPath: Azure.VM.properties.instanceView.powerState.code
-      description: "The power state of the virtual machine."
-      type: String
-    - contextPath: Azure.VM.properties.instanceView.powerState.displayStatus
-      description: "The display status of the power state."
-      type: String
-    - contextPath: Azure.VM.nextLink
-      description: "The URI to fetch the next page of results."
-      type: String
+      - contextPath: Azure.Compute.VMs.properties.vmId
+        description: The unique ID of the virtual machine.
+        type: String
+      - contextPath: Azure.Compute.VMs.properties.availabilitySet
+        description: The availability set that the virtual machine is in.
+        type: String
+      - contextPath: Azure.Compute.VMs.properties.hardwareProfile.
+        description: Specifies the hardware settings for the virtual machine.
+        type: Object
+      - contextPath: Azure.Compute.VMs.properties.storageProfile
+        description: Specifies the storage settings for the virtual machine disks.
+        type: Object
+      - contextPath: Azure.Compute.VMs.properties.osProfile
+        description: Specifies the operating system settings for the virtual machine.
+        type: Object
+      - contextPath: Azure.Compute.VMs.properties.networkProfile
+        description: Specifies the network interfaces of the virtual machine.
+        type: String
+      - contextPath: Azure.Compute.VMs.properties.provisioningState
+        description: The provisioning state, which only appears in the response.
+        type: String
+      - contextPath: Azure.Compute.VMs.properties.additionalCapabilities
+        description: Specifies additional capabilities enabled or disabled on the virtual machine.
+        type: Object
+      - contextPath: Azure.Compute.VMs.properties.securityProfile
+        description: Specifies the security settings for the virtual machine.
+        type: Object
+      - contextPath: Azure.Compute.VMs.properties.diagnosticsProfile
+        description: Specifies the boot diagnostic settings state.
+        type: Object
+      - contextPath: Azure.Compute.VMs.properties.virtualMachineScaleSet
+        description: The virtual machine scale set that the virtual machine is in.
+        type: Object
+      - contextPath: Azure.Compute.VMs.properties.proximityPlacementGroup
+        description: The proximity placement group that the virtual machine is in.
+        type: Object
+      - contextPath: Azure.Compute.VMs.properties.priority
+        description: The priority for the virtual machine.
+        type: String
+      - contextPath: Azure.Compute.VMs.properties.evictionPolicy
+        description: The eviction policy for the virtual machine.
+        type: String
+      - contextPath: Azure.Compute.VMs.properties.billingProfile
+        description: Specifies the billing related details of a Azure Spot virtual machine.
+        type: Object
+      - contextPath: Azure.Compute.VMs.properties.host
+        description: The host that the virtual machine is in.
+        type: Object
+      - contextPath: Azure.Compute.VMs.properties.hostGroup
+        description: The host group that the virtual machine is in.
+        type: Object
+      - contextPath: Azure.Compute.VMs.properties.licenseType
+        description: The license type, which is for bringing your own license scenario.
+        type: String
+      - contextPath: Azure.Compute.VMs.properties.extensionsTimeBudget
+        description: Specifies the time alloted for all extensions to start.
+        type: String
+      - contextPath: Azure.Compute.VMs.properties.platformFaultDomain
+        description: The fault domain that the virtual machine is in.
+        type: Number
+      - contextPath: Azure.Compute.VMs.properties.scheduledEventsProfile
+        description: Specifies scheduled event related configurations.
+        type: Object
+      - contextPath: Azure.Compute.VMs.properties.userData
+        description: UserData for the VM, which must be base-64 encoded.
+        type: String
+      - contextPath: Azure.Compute.VMs.properties.capacityReservation
+        description: Specifies the capacity reservation related details of a virtual machine.
+        type: Object
+      - contextPath: Azure.Compute.VMs.properties.applicationProfile
+        description: Specifies the gallery applications that should be made available to the VM/VMSS.
+        type: Object
+      - contextPath: Azure.Compute.VMs.properties.timeCreated
+        description: The time when the virtual machine was created.
+        type: Date
+      - contextPath: Azure.Compute.VMs.type
+        description: The type of the resource.
+        type: String
+      - contextPath: Azure.Compute.VMs.location
+        description: The location of the resource.
+        type: String
+      - contextPath: Azure.Compute.VMs.tags
+        description: The tags of the resource.
+        type: Unknown
+      - contextPath: Azure.Compute.VMs.id
+        description: The ID of the resource.
+        type: String
+      - contextPath: Azure.Compute.VMs.name
+        description: The name of the resource.
+        type: String
+      - contextPath: Azure.Compute.VMs.plan.name
+        description: The plan name.
+        type: String
+      - contextPath: Azure.Compute.VMs.plan.publisher
+        description: The publisher of the plan.
+        type: String
+      - contextPath: Azure.Compute.VMs.plan.product
+        description: The product of the plan.
+        type: String
+      - contextPath: Azure.Compute.VMs.plan.promotionCode
+        description: The promotion code of the plan.
+        type: String
+      - contextPath: Azure.Compute.VMs.resources.properties
+        description: The properties of the resource.
+        type: Object
+      - contextPath: Azure.Compute.VMs.resources.id
+        description: The ID of the resource.
+        type: String
+      - contextPath: Azure.Compute.VMs.resources.name
+        description: The name of the resource.
+        type: String
+      - contextPath: Azure.Compute.VMs.resources.type
+        description: The type of the resource.
+        type: String
+      - contextPath: Azure.Compute.VMs.resources.location
+        description: The location of the resource.
+        type: String
+      - contextPath: Azure.Compute.VMs.resources.tags
+        description: The tags of the resource.
+        type: Object
+      - contextPath: Azure.Compute.VMs.identity.principalId
+        description: The principal ID of the identity.
+        type: String
+      - contextPath: Azure.Compute.VMs.identity.tenantId
+        description: The tenant ID of the identity.
+        type: String
+      - contextPath: Azure.Compute.VMs.identity.type
+        description: The type of the identity.
+        type: String
+      - contextPath: Azure.Compute.VMs.identity.userAssignedIdentities
+        description: The list of user assigned identities associated with the virtual machine.
+        type: String
+      - contextPath: Azure.Compute.VMs.zones
+        description: The zones of the virtual machine.
+        type: String
+      - contextPath: Azure.Compute.VMs.extendedLocation.name
+        description: The name of the extended location.
+        type: String
+      - contextPath: Azure.Compute.VMs.extendedLocation.type
+        description: The type of the extended location.
+        type: String
+      - contextPath: Azure.Compute.VMs.properties.instanceView
+        description: The virtual machine instance view.
+        type: Object
+      - contextPath: Azure.Compute.VMsNextToken
+        description: The URI to fetch the next page of VMs. Call the same command with the next_token argument to get the next page of VMs.
+        type: String
   isfetch: false
   runonce: false
   script: '-'
