@@ -3866,3 +3866,233 @@ def test_endpoint_triage_command(mocker, args, expected_request_data):
     assert result.outputs == mock_reply
     assert result.raw_response == mock_reply
     assert "Triage Endpoint Results" in result.readable_output
+
+
+@pytest.mark.parametrize(
+    "args, expected_filters, expected_sort",
+    [
+        (
+            {"issue_id": "100", "status": "new"},
+            [
+                {"field": "id", "operator": "in", "value": [100]},
+                {"field": "status.progress", "operator": "in", "value": ["new"]},
+            ],
+            {},
+        ),
+        (
+            {"severity": "high", "sort_field": "severity", "sort_order": "desc"},
+            [{"field": "severity", "operator": "in", "value": ["high"]}],
+            {"field": "severity", "keyword": "desc"},
+        ),
+        (
+            {"domain": "network", "limit": "10"},
+            [{"field": "issue_domain", "operator": "in", "value": ["network"]}],
+            {},
+        ),
+        (
+            {"external_id": "ext-1,ext-2"},
+            [{"field": "external_id", "operator": "in", "value": ["ext-1", "ext-2"]}],
+            {},
+        ),
+        (
+            {"detection_method": "xdr_agent"},
+            [{"field": "detection.method", "operator": "in", "value": ["xdr_agent"]}],
+            {},
+        ),
+        (
+            {"sort_field": "issue_id", "sort_order": "asc"},
+            [],
+            {"field": "id", "keyword": "asc"},
+        ),
+    ],
+)
+def test_list_issues_command(args, expected_filters, expected_sort):
+    """
+    Given:
+        - args for issue list command
+    When:
+        - Running list_issues_command
+    Then:
+        - Verify the client.list_issues is called with correct filters and sort arguments
+    """
+    from CortexXDRIR import Client, list_issues_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    with patch.object(Client, "list_issues", return_value=[{"id": 1, "name": "test issue"}]) as mock_list:
+        result = list_issues_command(client, args)
+
+        call_args = mock_list.call_args[0][0]
+        if expected_filters:
+            assert call_args["request_data"]["filters"] == expected_filters
+        else:
+            assert "filters" not in call_args["request_data"]
+        if expected_sort:
+            assert call_args["request_data"]["sort"] == expected_sort
+        else:
+            assert "sort" not in call_args["request_data"]
+        assert result.outputs_prefix == "PaloAltoNetworksXDR.Issue"
+        assert result.outputs_key_field == "id"
+        assert "Issues" in result.readable_output
+
+
+@pytest.mark.parametrize(
+    "args, expected_issue_data",
+    [
+        (
+            {
+                "name": "Test Issue",
+                "description": "A test issue",
+                "observation_time": "2024-01-01T00:00:00Z",
+                "domain": "network",
+                "category": "security",
+                "severity": "high",
+            },
+            {
+                "name": "Test Issue",
+                "description": "A test issue",
+                "issue_domain": "network",
+                "category": "security",
+                "severity": "HIGH",
+            },
+        ),
+        (
+            {
+                "name": "Issue with extras",
+                "description": "Extended issue",
+                "observation_time": "2024-01-01T00:00:00Z",
+                "domain": "identity",
+                "category": "compliance",
+                "severity": "medium",
+                "type": "misconfiguration",
+                "is_excluded": "true",
+                "is_starred": "false",
+                "assigned_to": "admin@example.com",
+                "asset_id": "asset-1,asset-2",
+            },
+            {
+                "name": "Issue with extras",
+                "description": "Extended issue",
+                "issue_domain": "identity",
+                "category": "compliance",
+                "severity": "MEDIUM",
+                "type_": "misconfiguration",
+                "is_excluded": True,
+                "is_starred": False,
+                "assigned_to": "admin@example.com",
+                "asset_id": ["asset-1", "asset-2"],
+            },
+        ),
+    ],
+)
+def test_create_issue_command(args, expected_issue_data):
+    """
+    Given:
+        - args for issue create command
+    When:
+        - Running create_issue_command
+    Then:
+        - Verify the client.create_issue is called with correct issue data
+        - Verify the returned CommandResults contains the expected outputs
+    """
+    from CortexXDRIR import Client, create_issue_command
+
+    mock_reply = {"external_id": "ext-123", "id": 1}
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    with patch.object(Client, "create_issue", return_value=mock_reply) as mock_create:
+        result = create_issue_command(client, args)
+
+        call_args = mock_create.call_args[0][0]
+        issue_data = call_args["request_data"]["issue"]
+        for key, value in expected_issue_data.items():
+            assert issue_data[key] == value
+        assert result.outputs_prefix == "PaloAltoNetworksXDR.Issue"
+        assert result.outputs_key_field == "external_id"
+        assert result.outputs == mock_reply
+        assert "Created Issue" in result.readable_output
+
+
+def test_create_issue_command_invalid_json():
+    """
+    Given:
+        - args with invalid JSON in normalized_fields_json
+    When:
+        - Running create_issue_command
+    Then:
+        - Verify a DemistoException is raised for invalid JSON
+    """
+    from CortexXDRIR import Client, create_issue_command
+
+    args = {
+        "name": "Test",
+        "description": "desc",
+        "observation_time": "2024-01-01T00:00:00Z",
+        "domain": "network",
+        "category": "security",
+        "severity": "high",
+        "normalized_fields_json": "invalid-json{",
+    }
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    with pytest.raises(DemistoException, match="Invalid JSON format in field"):
+        create_issue_command(client, args)
+
+
+@pytest.mark.parametrize(
+    "args, expected_update_data",
+    [
+        (
+            {"issue_id": "100", "status": "new"},
+            {"status_progress": "New"},
+        ),
+        (
+            {"issue_id": "200", "severity": "high"},
+            {"severity": "HIGH"},
+        ),
+        (
+            {
+                "issue_id": "300",
+                "status": "resolved",
+                "resolve_reason": "resolved_false_positive",
+                "resolve_comment": "Not a real issue",
+            },
+            {
+                "status_progress": "Resolved",
+                "status_resolution_reason": "resolved - false positive",
+                "status_resolution_comment": "Not a real issue",
+            },
+        ),
+        (
+            {"issue_id": "400", "status": "in_progress", "severity": "low"},
+            {"severity": "LOW", "status_progress": "In Progress"},
+        ),
+        (
+            {
+                "issue_id": "500",
+                "resolve_reason": "resolved_known_issue",
+            },
+            {
+                "status_resolution_reason": "resolved - known issue",
+            },
+        ),
+    ],
+)
+def test_update_issue_command(args, expected_update_data):
+    """
+    Given:
+        - args for issue update command
+    When:
+        - Running update_issue_command
+    Then:
+        - Verify the client.update_issue is called with correct arguments
+        - Verify the readable output confirms the update
+    """
+    from CortexXDRIR import Client, update_issue_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    with patch.object(Client, "update_issue") as mock_update:
+        result = update_issue_command(client, args)
+
+        assert result.readable_output == f"Issue with ID {args['issue_id']} updated successfully"
+        mock_update.assert_called_with(
+            args["issue_id"], {"request_data": {"update_data": expected_update_data}}
+        )
