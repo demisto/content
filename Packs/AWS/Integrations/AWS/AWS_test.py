@@ -4283,7 +4283,7 @@ def test_build_pagination_kwargs_with_zero_limit():
     args = {"limit": "0"}
 
     with pytest.raises(ValueError, match="Limit must be greater than 1"):
-        build_pagination_kwargs(args, minimum_limit=1)
+        build_pagination_kwargs(args)
 
 
 def test_build_pagination_kwargs_with_negative_limit():
