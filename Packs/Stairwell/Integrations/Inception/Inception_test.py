@@ -29,10 +29,9 @@ from Inception import (
     yara_query_matches_command,
     asset_list_command,
     asset_create_command,
-    asset_get_command
+    asset_get_command,
 )
 import json
-import io
 import os
 import tempfile
 from unittest.mock import patch
@@ -43,41 +42,27 @@ TEST_OBJECT_ID = "357d2eac00ed810e597703ef2a4dfe7c57d528944e337d7f780c2d5d3ddd62
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
-test_client = Client(
-    base_url='https://fakeapi.stairwelldemo.com',
-    verify=False,
-    proxy=False,
-    headers={"Authorization": API_KEY}
-)
+test_client = Client(base_url="https://fakeapi.stairwelldemo.com", verify=False, proxy=False, headers={"Authorization": API_KEY})
 
 test_client_v1 = Client(
-    base_url='https://app.stairwell.com/v1/objects/',
-    verify=False,
-    proxy=False,
-    headers={"Authorization": API_KEY}
+    base_url="https://app.stairwell.com/v1/objects/", verify=False, proxy=False, headers={"Authorization": API_KEY}
 )
 
 test_client_network = Client(
-    base_url='https://app.stairwell.com/v1/network/',
-    verify=False,
-    proxy=False,
-    headers={"Authorization": API_KEY}
+    base_url="https://app.stairwell.com/v1/network/", verify=False, proxy=False, headers={"Authorization": API_KEY}
 )
 
 test_client_v1_base = Client(
-    base_url='https://app.stairwell.com/v1/',
-    verify=False,
-    proxy=False,
-    headers={"Authorization": API_KEY}
+    base_url="https://app.stairwell.com/v1/", verify=False, proxy=False, headers={"Authorization": API_KEY}
 )
 
 
 def test_variant_discovery_command_success(requests_mock):
-    mock_response = util_load_json('test_data/variant_discovery_command_result.json')
+    mock_response = util_load_json("test_data/variant_discovery_command_result.json")
 
     requests_mock.get("https://fakeapi.stairwelldemo.com/" + TEST_FILE_HASH, json=mock_response)
 
@@ -86,7 +71,7 @@ def test_variant_discovery_command_success(requests_mock):
 
 
 def test_variant_discovery_command_none(requests_mock):
-    mock_response = util_load_json('test_data/variant_discovery_command_results_none.json')
+    mock_response = util_load_json("test_data/variant_discovery_command_results_none.json")
 
     requests_mock.get("https://fakeapi.stairwelldemo.com/" + TEST_FILE_HASH, json=mock_response)
 
@@ -95,7 +80,7 @@ def test_variant_discovery_command_none(requests_mock):
 
 
 def test_variant_discovery_command_notfound(requests_mock):
-    mock_response = util_load_json('test_data/variant_discovery_command_results_notfound.json')
+    mock_response = util_load_json("test_data/variant_discovery_command_results_notfound.json")
 
     requests_mock.get("https://fakeapi.stairwelldemo.com/" + TEST_FILE_HASH, json=mock_response, status_code=500)
 
@@ -104,7 +89,7 @@ def test_variant_discovery_command_notfound(requests_mock):
 
 
 def test_file_enrichment_command(requests_mock):
-    mock_response = util_load_json('test_data/file_enrichment_command_result.json')
+    mock_response = util_load_json("test_data/file_enrichment_command_result.json")
 
     requests_mock.get("https://fakeapi.stairwelldemo.com/" + TEST_FILE_HASH, json=mock_response)
 
@@ -113,7 +98,7 @@ def test_file_enrichment_command(requests_mock):
 
 
 def test_file_enrichment_command_notfound(requests_mock):
-    mock_response = util_load_json('test_data/file_enrichment_command_result.json')
+    mock_response = util_load_json("test_data/file_enrichment_command_result.json")
 
     requests_mock.get("https://fakeapi.stairwelldemo.com/" + TEST_FILE_HASH, json=mock_response, status_code=404)
 
@@ -135,12 +120,14 @@ def test_intake_preflight_and_upload_missing_args():
 
 def test_intake_preflight_and_upload_already_exists(requests_mock):
     """Test intake_preflight_and_upload when file already exists"""
-    mock_response = util_load_json('test_data/intake_preflight_already_exists.json')
+    mock_response = util_load_json("test_data/intake_preflight_already_exists.json")
 
     requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", json=mock_response)
 
-    with patch("Inception.os.path.exists", return_value=True), \
-         patch("Inception._hash_sha256", return_value=("abc123fakehash", None)):
+    with (
+        patch("Inception.os.path.exists", return_value=True),
+        patch("Inception._hash_sha256", return_value=("abc123fakehash", None)),
+    ):
         results = intake_preflight_and_upload(asset_id="test-asset", file_path="/path/to/test/file.exe")
 
     assert results
@@ -151,7 +138,7 @@ def test_intake_preflight_and_upload_already_exists(requests_mock):
 
 def test_intake_preflight_and_upload_success(requests_mock):
     """Test intake_preflight_and_upload with successful upload"""
-    mock_preflight = util_load_json('test_data/intake_preflight_upload.json')
+    mock_preflight = util_load_json("test_data/intake_preflight_upload.json")
 
     # Mock the preflight request
     requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", json=mock_preflight)
@@ -176,7 +163,7 @@ def test_intake_preflight_and_upload_success(requests_mock):
 
 def test_intake_preflight_and_upload_upload_failure(requests_mock):
     """Test intake_preflight_and_upload when upload fails"""
-    mock_preflight = util_load_json('test_data/intake_preflight_upload.json')
+    mock_preflight = util_load_json("test_data/intake_preflight_upload.json")
 
     # Mock the preflight request
     requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", json=mock_preflight)
@@ -201,12 +188,14 @@ def test_intake_preflight_and_upload_upload_failure(requests_mock):
 
 def test_intake_preflight_and_upload_missing_upload_info(requests_mock):
     """Test intake_preflight_and_upload when preflight requests upload but missing upload info"""
-    mock_response = util_load_json('test_data/intake_preflight_missing_upload_info.json')
+    mock_response = util_load_json("test_data/intake_preflight_missing_upload_info.json")
 
     requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", json=mock_response)
 
-    with patch("Inception.os.path.exists", return_value=True), \
-         patch("Inception._hash_sha256", return_value=("abc123fakehash", None)):
+    with (
+        patch("Inception.os.path.exists", return_value=True),
+        patch("Inception._hash_sha256", return_value=("abc123fakehash", None)),
+    ):
         results = intake_preflight_and_upload(asset_id="test-asset", file_path="/path/to/test/file.exe")
 
     assert results
@@ -216,12 +205,14 @@ def test_intake_preflight_and_upload_missing_upload_info(requests_mock):
 
 def test_intake_preflight_and_upload_unknown_action(requests_mock):
     """Test intake_preflight_and_upload with unknown action"""
-    mock_response = util_load_json('test_data/intake_preflight_unknown_action.json')
+    mock_response = util_load_json("test_data/intake_preflight_unknown_action.json")
 
     requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", json=mock_response)
 
-    with patch("Inception.os.path.exists", return_value=True), \
-         patch("Inception._hash_sha256", return_value=("abc123fakehash", None)):
+    with (
+        patch("Inception.os.path.exists", return_value=True),
+        patch("Inception._hash_sha256", return_value=("abc123fakehash", None)),
+    ):
         results = intake_preflight_and_upload(asset_id="test-asset", file_path="/path/to/test/file.exe")
 
     assert results
@@ -232,8 +223,10 @@ def test_intake_preflight_and_upload_http_error(requests_mock):
     """Test intake_preflight_and_upload with HTTP error"""
     requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", status_code=500)
 
-    with patch("Inception.os.path.exists", return_value=True), \
-         patch("Inception._hash_sha256", return_value=("abc123fakehash", None)):
+    with (
+        patch("Inception.os.path.exists", return_value=True),
+        patch("Inception._hash_sha256", return_value=("abc123fakehash", None)),
+    ):
         results = intake_preflight_and_upload(asset_id="test-asset", file_path="/path/to/test/file.exe")
 
     assert results
@@ -243,7 +236,7 @@ def test_intake_preflight_and_upload_http_error(requests_mock):
 
 def test_intake_preflight_and_upload_with_sha256(requests_mock):
     """Test intake_preflight_and_upload with provided SHA256"""
-    mock_response = util_load_json('test_data/intake_preflight_already_exists.json')
+    mock_response = util_load_json("test_data/intake_preflight_already_exists.json")
 
     requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", json=mock_response)
 
@@ -251,7 +244,7 @@ def test_intake_preflight_and_upload_with_sha256(requests_mock):
         results = intake_preflight_and_upload(
             asset_id="test-asset",
             file_path="/path/to/test/file.exe",
-            sha256="e7762f90024c5366807c7c145d3456f0ac3be086c0ec3557427d3c2c10a2052d"
+            sha256="e7762f90024c5366807c7c145d3456f0ac3be086c0ec3557427d3c2c10a2052d",
         )
 
     assert results
@@ -260,19 +253,21 @@ def test_intake_preflight_and_upload_with_sha256(requests_mock):
 
 def test_intake_preflight_and_upload_with_web_origin(requests_mock):
     """Test intake_preflight_and_upload with web origin type"""
-    mock_response = util_load_json('test_data/intake_preflight_already_exists.json')
+    mock_response = util_load_json("test_data/intake_preflight_already_exists.json")
 
     requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", json=mock_response)
 
-    with patch("Inception.os.path.exists", return_value=True), \
-         patch("Inception._hash_sha256", return_value=("abc123fakehash", None)):
+    with (
+        patch("Inception.os.path.exists", return_value=True),
+        patch("Inception._hash_sha256", return_value=("abc123fakehash", None)),
+    ):
         results = intake_preflight_and_upload(
             asset_id="test-asset",
             file_path="/path/to/test/file.exe",
             origin_type="web",
             origin_referrer_url="https://example.com/referrer",
             origin_host_url="https://example.com",
-            origin_zone_id=123
+            origin_zone_id=123,
         )
 
     assert results
@@ -281,16 +276,16 @@ def test_intake_preflight_and_upload_with_web_origin(requests_mock):
 
 def test_intake_preflight_and_upload_with_detonation_plan(requests_mock):
     """Test intake_preflight_and_upload with detonation plan"""
-    mock_response = util_load_json('test_data/intake_preflight_already_exists.json')
+    mock_response = util_load_json("test_data/intake_preflight_already_exists.json")
 
     requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", json=mock_response)
 
-    with patch("Inception.os.path.exists", return_value=True), \
-         patch("Inception._hash_sha256", return_value=("abc123fakehash", None)):
+    with (
+        patch("Inception.os.path.exists", return_value=True),
+        patch("Inception._hash_sha256", return_value=("abc123fakehash", None)),
+    ):
         results = intake_preflight_and_upload(
-            asset_id="test-asset",
-            file_path="/path/to/test/file.exe",
-            detonation_plan="test-plan"
+            asset_id="test-asset", file_path="/path/to/test/file.exe", detonation_plan="test-plan"
         )
 
     assert results
@@ -314,10 +309,10 @@ def test_ai_triage_summarize_command_success(requests_mock):
                 "iocs": {
                     "urls": ["http://example.com"],
                     "file_paths_filenames": ["test.exe"],
-                    "registry_keys": ["SOFTWARE\\Test"]
-                }
-            }
-        }
+                    "registry_keys": ["SOFTWARE\\Test"],
+                },
+            },
+        },
     }
 
     requests_mock.get(f"https://app.stairwell.com/v1/objects/{TEST_OBJECT_ID}:summarize", json=mock_response)
@@ -352,14 +347,7 @@ def test_ai_triage_summarize_command_missing_args():
 # Object Sightings Tests
 def test_object_sightings_command_success(requests_mock):
     """Test object sightings command with successful response"""
-    mock_response = {
-        "sightings": [
-            {
-                "asset": {"id": "asset-1", "name": "Test Asset"},
-                "timestamp": "2024-01-01T00:00:00Z"
-            }
-        ]
-    }
+    mock_response = {"sightings": [{"asset": {"id": "asset-1", "name": "Test Asset"}, "timestamp": "2024-01-01T00:00:00Z"}]}
 
     requests_mock.get(f"https://app.stairwell.com/v1/objects/{TEST_OBJECT_ID}/sightings", json=mock_response)
 
@@ -415,10 +403,7 @@ def test_object_detonation_trigger_command_missing_args():
 # Object Detonation Get Tests
 def test_object_detonation_get_command_success(requests_mock):
     """Test object detonation get command with successful response"""
-    mock_response = {
-        "status": "completed",
-        "results": {"behavior": "malicious", "score": 95}
-    }
+    mock_response = {"status": "completed", "results": {"behavior": "malicious", "score": 95}}
 
     requests_mock.get(f"https://app.stairwell.com/v1/objects/{TEST_OBJECT_ID}/detonation", json=mock_response)
 
@@ -440,11 +425,7 @@ def test_object_detonation_get_command_missing_args():
 # Object Opinions Tests
 def test_object_opinions_command_success(requests_mock):
     """Test object opinions command with successful response"""
-    mock_response = {
-        "opinions": [
-            {"source": "analyst", "verdict": "malicious", "confidence": 90}
-        ]
-    }
+    mock_response = {"opinions": [{"source": "analyst", "verdict": "malicious", "confidence": 90}]}
 
     requests_mock.get(f"https://app.stairwell.com/v1/objects/{TEST_OBJECT_ID}/opinions", json=mock_response)
 
@@ -479,25 +460,13 @@ def test_object_opinions_command_missing_args():
 def test_run_to_ground_generate_command_success(requests_mock):
     """Test run-to-ground generate command with successful response"""
     test_client_rtg = Client(
-        base_url='https://app.stairwell.com/v1/',
-        verify=False,
-        proxy=False,
-        headers={"Authorization": API_KEY}
+        base_url="https://app.stairwell.com/v1/", verify=False, proxy=False, headers={"Authorization": API_KEY}
     )
 
-    mock_response = {
-        "analysis": {
-            "objects": [TEST_OBJECT_ID, TEST_FILE_HASH],
-            "relationships": []
-        }
-    }
+    mock_response = {"analysis": {"objects": [TEST_OBJECT_ID, TEST_FILE_HASH], "relationships": []}}
 
     object_ids = f"{TEST_OBJECT_ID},{TEST_FILE_HASH}"
-    requests_mock.get(
-        "https://app.stairwell.com/v1/generateRunToGround:generate",
-        json=mock_response,
-        status_code=200
-    )
+    requests_mock.get("https://app.stairwell.com/v1/generateRunToGround:generate", json=mock_response, status_code=200)
 
     results = run_to_ground_generate_command(test_client_rtg, object_ids)
 
@@ -509,10 +478,7 @@ def test_run_to_ground_generate_command_success(requests_mock):
 def test_run_to_ground_generate_command_missing_args():
     """Test run-to-ground generate command with missing arguments"""
     test_client_rtg = Client(
-        base_url='https://app.stairwell.com/v1/',
-        verify=False,
-        proxy=False,
-        headers={"Authorization": API_KEY}
+        base_url="https://app.stairwell.com/v1/", verify=False, proxy=False, headers={"Authorization": API_KEY}
     )
 
     results = run_to_ground_generate_command(test_client_rtg, "")
@@ -524,19 +490,13 @@ def test_run_to_ground_generate_command_missing_args():
 def test_run_to_ground_generate_command_multiple_objects(requests_mock):
     """Test run-to-ground generate command with multiple object IDs"""
     test_client_rtg = Client(
-        base_url='https://app.stairwell.com/v1/',
-        verify=False,
-        proxy=False,
-        headers={"Authorization": API_KEY}
+        base_url="https://app.stairwell.com/v1/", verify=False, proxy=False, headers={"Authorization": API_KEY}
     )
 
     mock_response = {"analysis": {"objects": [TEST_OBJECT_ID, TEST_FILE_HASH]}}
 
     object_ids = f"{TEST_OBJECT_ID}, {TEST_FILE_HASH} , another-hash"
-    requests_mock.get(
-        "https://app.stairwell.com/v1/generateRunToGround:generate",
-        json=mock_response
-    )
+    requests_mock.get("https://app.stairwell.com/v1/generateRunToGround:generate", json=mock_response)
 
     results = run_to_ground_generate_command(test_client_rtg, object_ids)
 
@@ -547,11 +507,7 @@ def test_run_to_ground_generate_command_multiple_objects(requests_mock):
 # Network Intel Tests - ASN
 def test_asn_get_whois_command_success(requests_mock):
     """Test ASN get whois command with successful response"""
-    mock_response = {
-        "asn": "AS12345",
-        "organization": "Test Organization",
-        "country": "US"
-    }
+    mock_response = {"asn": "AS12345", "organization": "Test Organization", "country": "US"}
 
     requests_mock.get("https://app.stairwell.com/v1/network/asns/12345/whois", json=mock_response)
 
@@ -583,10 +539,7 @@ def test_asn_get_whois_command_missing_args():
 # Network Intel Tests - Hostname
 def test_hostname_get_command_success(requests_mock):
     """Test hostname get command with successful response"""
-    mock_response = {
-        "hostname": "example.com",
-        "resolutions": [{"ip": "1.2.3.4", "timestamp": "2024-01-01T00:00:00Z"}]
-    }
+    mock_response = {"hostname": "example.com", "resolutions": [{"ip": "1.2.3.4", "timestamp": "2024-01-01T00:00:00Z"}]}
 
     requests_mock.get("https://app.stairwell.com/v1/network/hostnames/example.com", json=mock_response)
 
@@ -612,7 +565,7 @@ def test_hostname_get_resolutions_command_success(requests_mock):
     mock_response = {
         "resolutions": [
             {"ip": "1.2.3.4", "timestamp": "2024-01-01T00:00:00Z"},
-            {"ip": "5.6.7.8", "timestamp": "2024-01-02T00:00:00Z"}
+            {"ip": "5.6.7.8", "timestamp": "2024-01-02T00:00:00Z"},
         ]
     }
 
@@ -627,12 +580,7 @@ def test_hostname_get_resolutions_command_success(requests_mock):
 
 def test_hostname_batch_get_resolutions_command_success(requests_mock):
     """Test hostname batch get resolutions command with successful response"""
-    mock_response = {
-        "results": {
-            "example.com": [{"ip": "1.2.3.4"}],
-            "test.com": [{"ip": "5.6.7.8"}]
-        }
-    }
+    mock_response = {"results": {"example.com": [{"ip": "1.2.3.4"}], "test.com": [{"ip": "5.6.7.8"}]}}
 
     requests_mock.post("https://app.stairwell.com/v1/network/hostnames:batch-resolutions", json=mock_response)
 
@@ -645,11 +593,7 @@ def test_hostname_batch_get_resolutions_command_success(requests_mock):
 # Network Intel Tests - IP Address
 def test_ipaddress_get_command_success(requests_mock):
     """Test IP address get command with successful response"""
-    mock_response = {
-        "ip": "1.2.3.4",
-        "country": "US",
-        "asn": "AS12345"
-    }
+    mock_response = {"ip": "1.2.3.4", "country": "US", "asn": "AS12345"}
 
     requests_mock.get("https://app.stairwell.com/v1/network/ips/1.2.3.4", json=mock_response)
 
@@ -662,11 +606,7 @@ def test_ipaddress_get_command_success(requests_mock):
 
 def test_ipaddress_lookup_cloud_provider_command_success(requests_mock):
     """Test IP address lookup cloud provider command with successful response"""
-    mock_response = {
-        "ip": "1.2.3.4",
-        "cloud_provider": "AWS",
-        "region": "us-east-1"
-    }
+    mock_response = {"ip": "1.2.3.4", "cloud_provider": "AWS", "region": "us-east-1"}
 
     requests_mock.get("https://app.stairwell.com/v1/network/ips/1.2.3.4/provider", json=mock_response)
 
@@ -679,9 +619,7 @@ def test_ipaddress_lookup_cloud_provider_command_success(requests_mock):
 
 def test_ipaddress_get_hostnames_resolving_to_ip_command_success(requests_mock):
     """Test IP address get hostnames resolving to IP command with successful response"""
-    mock_response = {
-        "hostnames": ["example.com", "www.example.com"]
-    }
+    mock_response = {"hostnames": ["example.com", "www.example.com"]}
 
     requests_mock.get("https://app.stairwell.com/v1/network/ips/1.2.3.4/hostnames", json=mock_response)
 
@@ -694,11 +632,7 @@ def test_ipaddress_get_hostnames_resolving_to_ip_command_success(requests_mock):
 
 def test_ipaddress_get_whois_command_success(requests_mock):
     """Test IP address get whois command with successful response"""
-    mock_response = {
-        "ip": "1.2.3.4",
-        "organization": "Test Org",
-        "country": "US"
-    }
+    mock_response = {"ip": "1.2.3.4", "organization": "Test Org", "country": "US"}
 
     requests_mock.get("https://app.stairwell.com/v1/network/ips/1.2.3.4/whois", json=mock_response)
 
@@ -712,12 +646,7 @@ def test_ipaddress_get_whois_command_success(requests_mock):
 # Network Intel Tests - Utilities
 def test_utilities_get_cloud_ip_ranges_command_success(requests_mock):
     """Test utilities get cloud IP ranges command with successful response"""
-    mock_response = {
-        "ranges": [
-            {"cidr": "1.2.3.0/24", "provider": "AWS"},
-            {"cidr": "5.6.7.0/24", "provider": "GCP"}
-        ]
-    }
+    mock_response = {"ranges": [{"cidr": "1.2.3.0/24", "provider": "AWS"}, {"cidr": "5.6.7.0/24", "provider": "GCP"}]}
 
     requests_mock.get("https://app.stairwell.com/v1/network/providers/ip-ranges", json=mock_response)
 
@@ -730,12 +659,7 @@ def test_utilities_get_cloud_ip_ranges_command_success(requests_mock):
 
 def test_utilities_batch_canonicalize_hostnames_command_success(requests_mock):
     """Test utilities batch canonicalize hostnames command with successful response"""
-    mock_response = {
-        "results": {
-            "EXAMPLE.COM": "example.com",
-            "WWW.TEST.COM": "www.test.com"
-        }
-    }
+    mock_response = {"results": {"EXAMPLE.COM": "example.com", "WWW.TEST.COM": "www.test.com"}}
 
     requests_mock.post("https://app.stairwell.com/v1/network/utilities/hostnames:batch-canonicalize", json=mock_response)
 
@@ -747,12 +671,7 @@ def test_utilities_batch_canonicalize_hostnames_command_success(requests_mock):
 
 def test_utilities_batch_compute_etld_plus_one_command_success(requests_mock):
     """Test utilities batch compute ETLD+1 command with successful response"""
-    mock_response = {
-        "results": {
-            "subdomain.example.com": "example.com",
-            "www.test.co.uk": "test.co.uk"
-        }
-    }
+    mock_response = {"results": {"subdomain.example.com": "example.com", "www.test.co.uk": "test.co.uk"}}
 
     requests_mock.post("https://app.stairwell.com/v1/network/utilities/hostnames:batch-etld-plus-one", json=mock_response)
 
@@ -764,10 +683,7 @@ def test_utilities_batch_compute_etld_plus_one_command_success(requests_mock):
 
 def test_utilities_canonicalize_hostname_command_success(requests_mock):
     """Test utilities canonicalize hostname command with successful response"""
-    mock_response = {
-        "original": "EXAMPLE.COM",
-        "canonicalized": "example.com"
-    }
+    mock_response = {"original": "EXAMPLE.COM", "canonicalized": "example.com"}
 
     requests_mock.get("https://app.stairwell.com/v1/network/utilities/hostnames:canonicalize/EXAMPLE.COM", json=mock_response)
 
@@ -780,12 +696,11 @@ def test_utilities_canonicalize_hostname_command_success(requests_mock):
 
 def test_utilities_compute_etld_plus_one_command_success(requests_mock):
     """Test utilities compute ETLD+1 command with successful response"""
-    mock_response = {
-        "domain": "subdomain.example.com",
-        "etld_plus_one": "example.com"
-    }
+    mock_response = {"domain": "subdomain.example.com", "etld_plus_one": "example.com"}
 
-    requests_mock.get("https://app.stairwell.com/v1/network/utilities/hostnames:etld-plus-one/subdomain.example.com", json=mock_response)
+    requests_mock.get(
+        "https://app.stairwell.com/v1/network/utilities/hostnames:etld-plus-one/subdomain.example.com", json=mock_response
+    )
 
     results = utilities_compute_etld_plus_one_command(test_client_network, "subdomain.example.com")
 
@@ -796,12 +711,7 @@ def test_utilities_compute_etld_plus_one_command_success(requests_mock):
 
 def test_utilities_batch_canonicalize_urls_command_success(requests_mock):
     """Test utilities batch canonicalize URLs command with successful response"""
-    mock_response = {
-        "results": {
-            "HTTPS://EXAMPLE.COM/PATH": "https://example.com/path",
-            "HTTP://TEST.COM/": "http://test.com/"
-        }
-    }
+    mock_response = {"results": {"HTTPS://EXAMPLE.COM/PATH": "https://example.com/path", "HTTP://TEST.COM/": "http://test.com/"}}
 
     requests_mock.post("https://app.stairwell.com/v1/network/utilities/urls:batch-canonicalize", json=mock_response)
 
@@ -813,10 +723,7 @@ def test_utilities_batch_canonicalize_urls_command_success(requests_mock):
 
 def test_utilities_canonicalize_url_command_success(requests_mock):
     """Test utilities canonicalize URL command with successful response"""
-    mock_response = {
-        "original": "HTTPS://EXAMPLE.COM/PATH",
-        "canonicalized": "https://example.com/path"
-    }
+    mock_response = {"original": "HTTPS://EXAMPLE.COM/PATH", "canonicalized": "https://example.com/path"}
 
     requests_mock.get("https://app.stairwell.com/v1/network/utilities/urls:canonicalize", json=mock_response)
 
@@ -834,13 +741,10 @@ def test_yara_create_rule_command_success(requests_mock):
     mock_response = {
         "name": "environments/test-environment-id/yaraRules/rule-123",
         "definition": "rule simple_rule { condition: true }",
-        "state": "ACTIVE"
+        "state": "ACTIVE",
     }
 
-    requests_mock.post(
-        f"https://app.stairwell.com/v1/environments/{TEST_ENV}/yaraRules",
-        json=mock_response
-    )
+    requests_mock.post(f"https://app.stairwell.com/v1/environments/{TEST_ENV}/yaraRules", json=mock_response)
 
     results = yara_create_rule_command(test_client_v1_base, TEST_ENV, "rule simple_rule { condition: true }")
 
@@ -864,13 +768,10 @@ def test_yara_get_rule_command_success(requests_mock):
         "name": f"environments/{TEST_ENV}/yaraRules/{TEST_RULE}",
         "definition": "rule simple_rule { condition: true }",
         "state": "ACTIVE",
-        "matchCounts": {}
+        "matchCounts": {},
     }
 
-    requests_mock.get(
-        f"https://app.stairwell.com/v1/environments/{TEST_ENV}/yaraRules/{TEST_RULE}",
-        json=mock_response
-    )
+    requests_mock.get(f"https://app.stairwell.com/v1/environments/{TEST_ENV}/yaraRules/{TEST_RULE}", json=mock_response)
 
     results = yara_get_rule_command(test_client_v1_base, TEST_ENV, TEST_RULE)
 
@@ -883,10 +784,7 @@ def test_yara_get_rule_command_notfound(requests_mock):
     TEST_ENV = "test-environment-id"
     TEST_RULE = "nonexistent-rule"
 
-    requests_mock.get(
-        f"https://app.stairwell.com/v1/environments/{TEST_ENV}/yaraRules/{TEST_RULE}",
-        status_code=404
-    )
+    requests_mock.get(f"https://app.stairwell.com/v1/environments/{TEST_ENV}/yaraRules/{TEST_RULE}", status_code=404)
 
     results = yara_get_rule_command(test_client_v1_base, TEST_ENV, TEST_RULE)
 
@@ -901,12 +799,11 @@ def test_yara_query_matches_command_success(requests_mock):
         "objects": [
             {"sha256": TEST_FILE_HASH, "md5": "abc123", "sha1": "def456"},
         ],
-        "nextPageToken": ""
+        "nextPageToken": "",
     }
 
     requests_mock.get(
-        f"https://app.stairwell.com/v1/environments/{TEST_ENV}/yaraRules/{TEST_RULE}/matchingObjects",
-        json=mock_response
+        f"https://app.stairwell.com/v1/environments/{TEST_ENV}/yaraRules/{TEST_RULE}/matchingObjects", json=mock_response
     )
 
     results = yara_query_matches_command(test_client_v1_base, TEST_ENV, TEST_RULE)
@@ -922,14 +819,11 @@ def test_asset_list_command_success(requests_mock):
     mock_response = {
         "assets": [
             {"name": "assets/VPNB84-P9L3H4-QDTEFJ-JCJ2U8A6", "label": "test-endpoint"},
-            {"name": "assets/XXXX-YYYY-ZZZZ", "label": "another-endpoint"}
+            {"name": "assets/XXXX-YYYY-ZZZZ", "label": "another-endpoint"},
         ]
     }
 
-    requests_mock.get(
-        f"https://app.stairwell.com/v1/environments/{TEST_ENV}/assets",
-        json=mock_response
-    )
+    requests_mock.get(f"https://app.stairwell.com/v1/environments/{TEST_ENV}/assets", json=mock_response)
 
     results = asset_list_command(test_client_v1_base, TEST_ENV)
 
@@ -948,16 +842,9 @@ def test_asset_list_command_missing_args():
 def test_asset_create_command_success(requests_mock):
     """Test asset create command with successful response"""
     TEST_ENV = "test-environment-id"
-    mock_response = {
-        "name": "assets/VPNB84-P9L3H4-QDTEFJ-JCJ2U8A6",
-        "label": "test-endpoint",
-        "uploadToken": "token-abc-123"
-    }
+    mock_response = {"name": "assets/VPNB84-P9L3H4-QDTEFJ-JCJ2U8A6", "label": "test-endpoint", "uploadToken": "token-abc-123"}
 
-    requests_mock.post(
-        f"https://app.stairwell.com/v1/environments/{TEST_ENV}/assets",
-        json=mock_response
-    )
+    requests_mock.post(f"https://app.stairwell.com/v1/environments/{TEST_ENV}/assets", json=mock_response)
 
     results = asset_create_command(test_client_v1_base, TEST_ENV, "test-endpoint")
 
@@ -968,16 +855,9 @@ def test_asset_create_command_success(requests_mock):
 def test_asset_get_command_success(requests_mock):
     """Test asset get command with successful response"""
     TEST_ASSET = "VPNB84-P9L3H4-QDTEFJ-JCJ2U8A6"
-    mock_response = {
-        "name": f"assets/{TEST_ASSET}",
-        "label": "test-endpoint",
-        "uploadToken": "token-abc-123"
-    }
+    mock_response = {"name": f"assets/{TEST_ASSET}", "label": "test-endpoint", "uploadToken": "token-abc-123"}
 
-    requests_mock.get(
-        f"https://app.stairwell.com/v1/assets/{TEST_ASSET}",
-        json=mock_response
-    )
+    requests_mock.get(f"https://app.stairwell.com/v1/assets/{TEST_ASSET}", json=mock_response)
 
     results = asset_get_command(test_client_v1_base, TEST_ASSET)
 
@@ -989,10 +869,7 @@ def test_asset_get_command_notfound(requests_mock):
     """Test asset get command with 404 error"""
     TEST_ASSET = "NONEXISTENT-ASSET-ID"
 
-    requests_mock.get(
-        f"https://app.stairwell.com/v1/assets/{TEST_ASSET}",
-        status_code=404
-    )
+    requests_mock.get(f"https://app.stairwell.com/v1/assets/{TEST_ASSET}", status_code=404)
 
     results = asset_get_command(test_client_v1_base, TEST_ASSET)
 

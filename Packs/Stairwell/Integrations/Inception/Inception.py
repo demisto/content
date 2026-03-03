@@ -1,4 +1,5 @@
-''' IMPORTS '''
+"""IMPORTS"""
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa: F401
@@ -13,12 +14,12 @@ import os
 import tempfile
 import traceback
 import hashlib
-from typing import Optional, Dict, Any, Tuple, List
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 
-''' CONSTANTS '''
+""" CONSTANTS """
 REPUTATION_BASE_URL = "https://reputation.app.stairwell.com/api/v3/files/"
 VARIANTS_BASE_URL = "https://app.stairwell.com/v202112/variants/"
 INTAKE_PREFLIGHT_URL = "https://http.intake.app.stairwell.com/v2021.05/upload"
@@ -27,8 +28,8 @@ V1_BASE_URL = "https://app.stairwell.com/v1/"
 V2_BASE_URL = "https://app.stairwell.com/v2/"
 NETWORK_INTEL_BASE_URL = "https://app.stairwell.com/v1/network/"
 
-HTTP_TIMEOUT = 120        # seconds for API calls
-UPLOAD_TIMEOUT = 600      # seconds for GCS upload
+HTTP_TIMEOUT = 120  # seconds for API calls
+UPLOAD_TIMEOUT = 600  # seconds for GCS upload
 RETRY_COUNT = 3
 RETRY_BACKOFF_FACTOR = 1.5  # exponential backoff factor
 
@@ -36,16 +37,14 @@ RETRY_BACKOFF_FACTOR = 1.5  # exponential backoff factor
 # --------------------------------
 # Helpers
 # --------------------------------
-def _require_args(required: Dict[str, Any]) -> Optional[CommandResults]:
+def _require_args(required: dict[str, Any]) -> CommandResults | None:
     missing = [k for k, v in required.items() if not v]
     if missing:
-        return CommandResults(
-            readable_output=f"Missing required arguments: {', '.join(missing)}"
-        )
+        return CommandResults(readable_output=f"Missing required arguments: {', '.join(missing)}")
     return None
 
 
-def _parse_int_arg(value: Optional[str], param_name: str, allow_negative: bool = False) -> Optional[int]:
+def _parse_int_arg(value: str | None, param_name: str, allow_negative: bool = False) -> int | None:
     """
     Safely parse integer argument with validation.
 
@@ -66,17 +65,13 @@ def _parse_int_arg(value: Optional[str], param_name: str, allow_negative: bool =
     try:
         parsed = int(value)
         if not allow_negative and parsed < 0:
-            raise DemistoException(
-                f"Invalid {param_name} parameter: '{value}'. Must be a positive integer."
-            )
+            raise DemistoException(f"Invalid {param_name} parameter: '{value}'. Must be a positive integer.")
         return parsed
     except ValueError:
-        raise DemistoException(
-            f"Invalid {param_name} parameter: '{value}'. Must be an integer."
-        )
+        raise DemistoException(f"Invalid {param_name} parameter: '{value}'. Must be an integer.")
 
 
-def _hash_sha256(file_path: str) -> Tuple[Optional[str], Optional[str]]:
+def _hash_sha256(file_path: str) -> tuple[str | None, str | None]:
     """Returns (sha256_hex, error_str)"""
     try:
         h = hashlib.sha256()
@@ -88,8 +83,9 @@ def _hash_sha256(file_path: str) -> Tuple[Optional[str], Optional[str]]:
         return None, f"Failed computing sha256 for {file_path}: {e}"
 
 
-def _create_session_with_retries(max_retries: int = RETRY_COUNT,
-                                 backoff_factor: float = RETRY_BACKOFF_FACTOR) -> requests.Session:
+def _create_session_with_retries(
+    max_retries: int = RETRY_COUNT, backoff_factor: float = RETRY_BACKOFF_FACTOR
+) -> requests.Session:
     """
     Create a requests Session with retry logic for 5xx and 429 status codes.
     Uses urllib3's Retry mechanism instead of sleep to comply with XSOAR best practices.
@@ -99,7 +95,7 @@ def _create_session_with_retries(max_retries: int = RETRY_COUNT,
         total=max_retries,
         backoff_factor=backoff_factor,
         status_forcelist=[500, 502, 503, 504, 429],
-        allowed_methods=["POST", "GET", "PUT", "DELETE"]
+        allowed_methods=["POST", "GET", "PUT", "DELETE"],
     )
     adapter = HTTPAdapter(max_retries=retry_strategy)
     session.mount("http://", adapter)
@@ -107,11 +103,13 @@ def _create_session_with_retries(max_retries: int = RETRY_COUNT,
     return session
 
 
-def _resolve_file_source(entry_id: Optional[str] = None,
-                         url: Optional[str] = None,
-                         file_path: Optional[str] = None,
-                         verify: bool = True,
-                         use_proxy: bool = False) -> Tuple[Optional[str], Optional[str], Optional[str]]:
+def _resolve_file_source(
+    entry_id: str | None = None,
+    url: str | None = None,
+    file_path: str | None = None,
+    verify: bool = True,
+    use_proxy: bool = False,
+) -> tuple[str | None, str | None, str | None]:
     """
     Resolve file source from one of three methods: entryID, url, or filePath.
 
@@ -128,11 +126,7 @@ def _resolve_file_source(entry_id: Optional[str] = None,
         - On error: (None, None, error_string)
     """
     # Count how many sources were provided
-    sources_provided = sum([
-        entry_id is not None,
-        url is not None,
-        file_path is not None
-    ])
+    sources_provided = sum([entry_id is not None, url is not None, file_path is not None])
 
     # Validate exactly one source is provided
     if sources_provided == 0:
@@ -148,8 +142,8 @@ def _resolve_file_source(entry_id: Optional[str] = None,
             if not isinstance(file_info, dict):
                 return None, None, f"Failed to resolve entry ID {entry_id}: invalid response from getFilePath"
 
-            resolved_path = file_info.get('path')
-            filename = file_info.get('name', 'unknown')
+            resolved_path = file_info.get("path")
+            filename = file_info.get("name", "unknown")
 
             if not resolved_path:
                 return None, None, f"Failed to resolve entry ID {entry_id}: no path in response"
@@ -167,14 +161,14 @@ def _resolve_file_source(entry_id: Optional[str] = None,
         try:
             # Validate URL scheme
             parsed_url = urllib.parse.urlparse(url)
-            if parsed_url.scheme not in ['http', 'https']:
+            if parsed_url.scheme not in ["http", "https"]:
                 return None, None, f"Invalid URL scheme: only http and https are supported (got: {parsed_url.scheme})"
 
             # Extract filename from URL
             url_path = parsed_url.path
-            filename = os.path.basename(url_path) if url_path else 'downloaded_file'
-            if not filename or filename == '/':
-                filename = 'downloaded_file'
+            filename = os.path.basename(url_path) if url_path else "downloaded_file"
+            if not filename or filename == "/":
+                filename = "downloaded_file"
 
             # Download file to temp location
             session = _create_session_with_retries()
@@ -222,7 +216,7 @@ def _resolve_file_source(entry_id: Optional[str] = None,
             if not os.path.exists(file_path):
                 return None, None, f"File not found at path: {file_path}"
 
-            filename = os.path.basename(file_path) or 'unknown'
+            filename = os.path.basename(file_path) or "unknown"
             return file_path, filename, None
 
         except Exception as e:
@@ -233,119 +227,78 @@ def _resolve_file_source(entry_id: Optional[str] = None,
 
 
 class Client(BaseClient):
-    def get_file_reputation(self, file_hash: str) -> Dict[str, Any]:
-        return self._http_request(
-            method='GET',
-            url_suffix=file_hash,
-            timeout=HTTP_TIMEOUT
-        )
+    def get_file_reputation(self, file_hash: str) -> dict[str, Any]:
+        return self._http_request(method="GET", url_suffix=file_hash, timeout=HTTP_TIMEOUT)
 
-    def get_file_variants(self, file_hash: str) -> Dict[str, Any]:
-        return self._http_request(
-            method='GET',
-            url_suffix=file_hash,
-            timeout=HTTP_TIMEOUT
-        )
+    def get_file_variants(self, file_hash: str) -> dict[str, Any]:
+        return self._http_request(method="GET", url_suffix=file_hash, timeout=HTTP_TIMEOUT)
 
-    def summarize_file(self, object_id: str) -> Dict[str, Any]:
+    def summarize_file(self, object_id: str) -> dict[str, Any]:
         """Get AI-generated summary for a file object."""
-        return self._http_request(
-            method='GET',
-            url_suffix=f"{object_id}:summarize",
-            timeout=HTTP_TIMEOUT
-        )
+        return self._http_request(method="GET", url_suffix=f"{object_id}:summarize", timeout=HTTP_TIMEOUT)
 
-    def list_object_sightings(self, object_id: str) -> Dict[str, Any]:
+    def list_object_sightings(self, object_id: str) -> dict[str, Any]:
         """List sightings for a given object."""
-        return self._http_request(
-            method='GET',
-            url_suffix=f"{object_id}/sightings",
-            timeout=HTTP_TIMEOUT
-        )
+        return self._http_request(method="GET", url_suffix=f"{object_id}/sightings", timeout=HTTP_TIMEOUT)
 
-    def trigger_object_detonation(self, object_id: str) -> Dict[str, Any]:
+    def trigger_object_detonation(self, object_id: str) -> dict[str, Any]:
         """Trigger detonation for an object."""
-        return self._http_request(
-            method='POST',
-            url_suffix=f"{object_id}/detonation:trigger",
-            timeout=HTTP_TIMEOUT
-        )
+        return self._http_request(method="POST", url_suffix=f"{object_id}/detonation:trigger", timeout=HTTP_TIMEOUT)
 
-    def get_object_detonation(self, object_id: str) -> Dict[str, Any]:
+    def get_object_detonation(self, object_id: str) -> dict[str, Any]:
         """Get detonation details for an object."""
-        return self._http_request(
-            method='GET',
-            url_suffix=f"{object_id}/detonation",
-            timeout=HTTP_TIMEOUT
-        )
+        return self._http_request(method="GET", url_suffix=f"{object_id}/detonation", timeout=HTTP_TIMEOUT)
 
-    def list_object_opinions(self, object_id: str) -> Dict[str, Any]:
+    def list_object_opinions(self, object_id: str) -> dict[str, Any]:
         """List opinions for an object."""
-        return self._http_request(
-            method='GET',
-            url_suffix=f"{object_id}/opinions",
-            timeout=HTTP_TIMEOUT
-        )
+        return self._http_request(method="GET", url_suffix=f"{object_id}/opinions", timeout=HTTP_TIMEOUT)
 
-    def generate_run_to_ground(self, object_ids: List[str]) -> Dict[str, Any]:
+    def generate_run_to_ground(self, object_ids: list[str]) -> dict[str, Any]:
         """Generate Run-To-Ground analysis for objects."""
         # API expects objectIds parameter (can be repeated for multiple objects)
         params = {"objectIds": object_ids}
-        return self._http_request(
-            method='GET',
-            url_suffix="generateRunToGround:generate",
-            params=params,
-            timeout=HTTP_TIMEOUT
-        )
+        return self._http_request(method="GET", url_suffix="generateRunToGround:generate", params=params, timeout=HTTP_TIMEOUT)
 
     # Network Intel API Methods - ASN
-    def get_asn_whois(self, asn: str) -> Dict[str, Any]:
+    def get_asn_whois(self, asn: str) -> dict[str, Any]:
         """Get ASN WHOIS information."""
-        return self._http_request(
-            method='GET',
-            url_suffix=f"asns/{asn}/whois",
-            timeout=HTTP_TIMEOUT
-        )
+        return self._http_request(method="GET", url_suffix=f"asns/{asn}/whois", timeout=HTTP_TIMEOUT)
 
     # Network Intel API Methods - Hostname
-    def get_hostname(self, hostname: str, record_type: Optional[str] = None) -> Dict[str, Any]:
+    def get_hostname(self, hostname: str, record_type: str | None = None) -> dict[str, Any]:
         """Get hostname entity with DNS resolution data."""
-        params: Dict[str, Any] = {}
+        params: dict[str, Any] = {}
         if record_type:
             params["recordTypes"] = record_type
-        return self._http_request(
-            method='GET',
-            url_suffix=f"hostnames/{hostname}",
-            params=params,
-            timeout=HTTP_TIMEOUT
-        )
+        return self._http_request(method="GET", url_suffix=f"hostnames/{hostname}", params=params, timeout=HTTP_TIMEOUT)
 
-    def get_hostname_resolutions(self, hostname: str, start_time: Optional[str] = None,
-                                 end_time: Optional[str] = None) -> Dict[str, Any]:
+    def get_hostname_resolutions(
+        self, hostname: str, start_time: str | None = None, end_time: str | None = None
+    ) -> dict[str, Any]:
         """Get all addresses resolved to by a hostname over a time range."""
-        params: Dict[str, Any] = {}
+        params: dict[str, Any] = {}
         if start_time:
             params["interval.startTime"] = start_time
         if end_time:
             params["interval.endTime"] = end_time
         return self._http_request(
-            method='GET',
-            url_suffix=f"hostnames/{hostname}/resolutions",
-            params=params,
-            timeout=HTTP_TIMEOUT
+            method="GET", url_suffix=f"hostnames/{hostname}/resolutions", params=params, timeout=HTTP_TIMEOUT
         )
 
-    def batch_get_hostname_resolutions(self, hostnames: List[str],
-                                       start_time: Optional[str] = None,
-                                       end_time: Optional[str] = None,
-                                       record_types: Optional[List[str]] = None,
-                                       include_errors: Optional[bool] = None) -> Dict[str, Any]:
+    def batch_get_hostname_resolutions(
+        self,
+        hostnames: list[str],
+        start_time: str | None = None,
+        end_time: str | None = None,
+        record_types: list[str] | None = None,
+        include_errors: bool | None = None,
+    ) -> dict[str, Any]:
         """Get resolution summaries for multiple hostnames."""
-        json_data: Dict[str, Any] = {"hostnames": hostnames}
+        json_data: dict[str, Any] = {"hostnames": hostnames}
 
         # Add interval if provided
         if start_time or end_time:
-            interval: Dict[str, str] = {}
+            interval: dict[str, str] = {}
             if start_time:
                 interval["startTime"] = start_time
             if end_time:
@@ -361,203 +314,163 @@ class Client(BaseClient):
             json_data["includeErrors"] = include_errors
 
         return self._http_request(
-            method='POST',
-            url_suffix="hostnames:batch-resolutions",
-            json_data=json_data,
-            timeout=HTTP_TIMEOUT
+            method="POST", url_suffix="hostnames:batch-resolutions", json_data=json_data, timeout=HTTP_TIMEOUT
         )
 
     # Network Intel API Methods - IP Address
-    def get_ip_address(self, ip_address: str) -> Dict[str, Any]:
+    def get_ip_address(self, ip_address: str) -> dict[str, Any]:
         """Get IP address entity with enrichment data."""
-        return self._http_request(
-            method='GET',
-            url_suffix=f"ips/{ip_address}",
-            timeout=HTTP_TIMEOUT
-        )
+        return self._http_request(method="GET", url_suffix=f"ips/{ip_address}", timeout=HTTP_TIMEOUT)
 
-    def lookup_cloud_provider(self, ip_address: str) -> Dict[str, Any]:
+    def lookup_cloud_provider(self, ip_address: str) -> dict[str, Any]:
         """Check if an IP address belongs to a known cloud provider."""
-        return self._http_request(
-            method='GET',
-            url_suffix=f"ips/{ip_address}/provider",
-            timeout=HTTP_TIMEOUT
-        )
+        return self._http_request(method="GET", url_suffix=f"ips/{ip_address}/provider", timeout=HTTP_TIMEOUT)
 
-    def get_hostnames_resolving_to_ip(self, ip_address: str, start_time: Optional[str] = None,
-                                      end_time: Optional[str] = None) -> Dict[str, Any]:
+    def get_hostnames_resolving_to_ip(
+        self, ip_address: str, start_time: str | None = None, end_time: str | None = None
+    ) -> dict[str, Any]:
         """Get all hostnames resolved to by an IP over a time interval."""
-        params: Dict[str, Any] = {}
+        params: dict[str, Any] = {}
         if start_time:
             params["interval.startTime"] = start_time
         if end_time:
             params["interval.endTime"] = end_time
-        return self._http_request(
-            method='GET',
-            url_suffix=f"ips/{ip_address}/hostnames",
-            params=params,
-            timeout=HTTP_TIMEOUT
-        )
+        return self._http_request(method="GET", url_suffix=f"ips/{ip_address}/hostnames", params=params, timeout=HTTP_TIMEOUT)
 
-    def get_ip_address_whois(self, ip_address: str) -> Dict[str, Any]:
+    def get_ip_address_whois(self, ip_address: str) -> dict[str, Any]:
         """Get WHOIS information for an IP address."""
-        return self._http_request(
-            method='GET',
-            url_suffix=f"ips/{ip_address}/whois",
-            timeout=HTTP_TIMEOUT
-        )
+        return self._http_request(method="GET", url_suffix=f"ips/{ip_address}/whois", timeout=HTTP_TIMEOUT)
 
     # Network Intel API Methods - Utilities
-    def get_cloud_ip_ranges(self, provider: Optional[str] = None) -> Dict[str, Any]:
+    def get_cloud_ip_ranges(self, provider: str | None = None) -> dict[str, Any]:
         """Get IP ranges for known cloud providers."""
         # v2 API uses a different path structure: providers/{providers}/ip-ranges
         # If no provider specified, use empty string to get all
         provider_path = provider if provider else ""
         return self._http_request(
-            method='GET',
+            method="GET",
             url_suffix=f"providers/{provider_path}/ip-ranges" if provider_path else "providers/ip-ranges",
-            timeout=HTTP_TIMEOUT
+            timeout=HTTP_TIMEOUT,
         )
 
-    def batch_canonicalize_hostnames(self, hostnames: List[str]) -> Dict[str, Any]:
+    def batch_canonicalize_hostnames(self, hostnames: list[str]) -> dict[str, Any]:
         """Canonicalize multiple hostnames in bulk."""
         return self._http_request(
-            method='POST',
+            method="POST",
             url_suffix="utilities/hostnames:batch-canonicalize",
             json_data={"hostnames": hostnames},
-            timeout=HTTP_TIMEOUT
+            timeout=HTTP_TIMEOUT,
         )
 
-    def batch_compute_etld_plus_one(self, domains: List[str]) -> Dict[str, Any]:
+    def batch_compute_etld_plus_one(self, domains: list[str]) -> dict[str, Any]:
         """Compute effective top-level domain plus one for multiple domains."""
         return self._http_request(
-            method='POST',
+            method="POST",
             url_suffix="utilities/hostnames:batch-etld-plus-one",
             json_data={"domains": domains},
-            timeout=HTTP_TIMEOUT
+            timeout=HTTP_TIMEOUT,
         )
 
-    def canonicalize_hostname(self, hostname: str) -> Dict[str, Any]:
+    def canonicalize_hostname(self, hostname: str) -> dict[str, Any]:
         """Canonicalize a single hostname."""
-        return self._http_request(
-            method='GET',
-            url_suffix=f"utilities/hostnames:canonicalize/{hostname}",
-            timeout=HTTP_TIMEOUT
-        )
+        return self._http_request(method="GET", url_suffix=f"utilities/hostnames:canonicalize/{hostname}", timeout=HTTP_TIMEOUT)
 
-    def compute_etld_plus_one(self, domain: str) -> Dict[str, Any]:
+    def compute_etld_plus_one(self, domain: str) -> dict[str, Any]:
         """Compute effective top-level domain plus one for a single domain."""
-        return self._http_request(
-            method='GET',
-            url_suffix=f"utilities/hostnames:etld-plus-one/{domain}",
-            timeout=HTTP_TIMEOUT
-        )
+        return self._http_request(method="GET", url_suffix=f"utilities/hostnames:etld-plus-one/{domain}", timeout=HTTP_TIMEOUT)
 
-    def batch_canonicalize_urls(self, urls: List[str]) -> Dict[str, Any]:
+    def batch_canonicalize_urls(self, urls: list[str]) -> dict[str, Any]:
         """Canonicalize multiple URLs in bulk."""
         return self._http_request(
-            method='POST',
-            url_suffix="utilities/urls:batch-canonicalize",
-            json_data={"urls": urls},
-            timeout=HTTP_TIMEOUT
+            method="POST", url_suffix="utilities/urls:batch-canonicalize", json_data={"urls": urls}, timeout=HTTP_TIMEOUT
         )
 
-    def canonicalize_url(self, url: str) -> Dict[str, Any]:
+    def canonicalize_url(self, url: str) -> dict[str, Any]:
         """Canonicalize a single URL."""
         return self._http_request(
-            method='GET',
-            url_suffix="utilities/urls:canonicalize",
-            params={"url": url},
-            timeout=HTTP_TIMEOUT
+            method="GET", url_suffix="utilities/urls:canonicalize", params={"url": url}, timeout=HTTP_TIMEOUT
         )
 
-    def intake_preflight(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    def intake_preflight(self, payload: dict[str, Any]) -> dict[str, Any]:
         """Send intake preflight request to Stairwell Intake API."""
-        return self._http_request(
-            method='POST',
-            url_suffix='',
-            json_data=payload,
-            timeout=HTTP_TIMEOUT
-        )
+        return self._http_request(method="POST", url_suffix="", json_data=payload, timeout=HTTP_TIMEOUT)
 
     # YARA Rules API Methods
-    def list_yara_rules(self, environment: str, page_size: Optional[int] = None,
-                        page_token: Optional[str] = None) -> Dict[str, Any]:
+    def list_yara_rules(self, environment: str, page_size: int | None = None, page_token: str | None = None) -> dict[str, Any]:
         """List all YARA rules in an environment."""
-        params: Dict[str, Any] = {}
+        params: dict[str, Any] = {}
         if page_size:
             params["pageSize"] = page_size
         if page_token:
             params["pageToken"] = page_token
         return self._http_request(
-            method='GET',
-            url_suffix=f"environments/{environment}/yaraRules",
-            params=params,
-            timeout=HTTP_TIMEOUT
+            method="GET", url_suffix=f"environments/{environment}/yaraRules", params=params, timeout=HTTP_TIMEOUT
         )
 
-    def create_yara_rule(self, environment: str, rule_definition: str,
-                         metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def create_yara_rule(self, environment: str, rule_definition: str, metadata: dict[str, Any] | None = None) -> dict[str, Any]:
         """Create a new YARA rule."""
-        json_data: Dict[str, Any] = {"definition": rule_definition}
+        json_data: dict[str, Any] = {"definition": rule_definition}
         if metadata:
             json_data.update(metadata)
         return self._http_request(
-            method='POST',
-            url_suffix=f"environments/{environment}/yaraRules",
-            json_data=json_data,
-            timeout=HTTP_TIMEOUT
+            method="POST", url_suffix=f"environments/{environment}/yaraRules", json_data=json_data, timeout=HTTP_TIMEOUT
         )
 
-    def get_yara_rule(self, environment: str, yara_rule: str, match_count_envs: Optional[str] = None) -> Dict[str, Any]:
+    def get_yara_rule(self, environment: str, yara_rule: str, match_count_envs: str | None = None) -> dict[str, Any]:
         """Get a specific YARA rule."""
-        params: Dict[str, Any] = {}
+        params: dict[str, Any] = {}
         if match_count_envs:
             params["matchCountEnvs"] = match_count_envs
         return self._http_request(
-            method='GET',
-            url_suffix=f"environments/{environment}/yaraRules/{yara_rule}",
-            params=params,
-            timeout=HTTP_TIMEOUT
+            method="GET", url_suffix=f"environments/{environment}/yaraRules/{yara_rule}", params=params, timeout=HTTP_TIMEOUT
         )
 
-    def delete_yara_rule(self, environment: str, yara_rule: str, force: bool = False) -> Dict[str, Any]:
+    def delete_yara_rule(self, environment: str, yara_rule: str, force: bool = False) -> dict[str, Any]:
         """Delete a YARA rule."""
-        params: Dict[str, Any] = {}
+        params: dict[str, Any] = {}
         if force:
             params["force"] = "true"
         return self._http_request(
-            method='DELETE',
-            url_suffix=f"environments/{environment}/yaraRules/{yara_rule}",
-            params=params,
-            timeout=HTTP_TIMEOUT
+            method="DELETE", url_suffix=f"environments/{environment}/yaraRules/{yara_rule}", params=params, timeout=HTTP_TIMEOUT
         )
 
-    def update_yara_rule(self, environment: str, yara_rule: str, rule_definition: Optional[str] = None,
-                        update_mask: Optional[str] = None, metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def update_yara_rule(
+        self,
+        environment: str,
+        yara_rule: str,
+        rule_definition: str | None = None,
+        update_mask: str | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """Update a YARA rule."""
-        json_data: Dict[str, Any] = {}
+        json_data: dict[str, Any] = {}
         if rule_definition:
             json_data["definition"] = rule_definition
         if metadata:
             json_data.update(metadata)
 
-        params: Dict[str, Any] = {}
+        params: dict[str, Any] = {}
         if update_mask:
             params["updateMask"] = update_mask
 
         return self._http_request(
-            method='PATCH',
+            method="PATCH",
             url_suffix=f"environments/{environment}/yaraRules/{yara_rule}",
             json_data=json_data,
             params=params,
-            timeout=HTTP_TIMEOUT
+            timeout=HTTP_TIMEOUT,
         )
 
-    def query_yara_matches(self, environment: str, yara_rule: str, included_environments: Optional[List[str]] = None,
-                          page_size: Optional[int] = None, page_token: Optional[str] = None) -> Dict[str, Any]:
+    def query_yara_matches(
+        self,
+        environment: str,
+        yara_rule: str,
+        included_environments: list[str] | None = None,
+        page_size: int | None = None,
+        page_token: str | None = None,
+    ) -> dict[str, Any]:
         """Query objects matching a YARA rule."""
-        params: Dict[str, Any] = {}
+        params: dict[str, Any] = {}
         if included_environments:
             params["includedEnvironments"] = included_environments
         if page_size:
@@ -565,34 +478,37 @@ class Client(BaseClient):
         if page_token:
             params["pageToken"] = page_token
         return self._http_request(
-            method='GET',
+            method="GET",
             url_suffix=f"environments/{environment}/yaraRules/{yara_rule}/matchingObjects",
             params=params,
-            timeout=HTTP_TIMEOUT
+            timeout=HTTP_TIMEOUT,
         )
 
     # Asset Management API Methods
-    def list_assets(self, environment: str, page_size: Optional[int] = None, page_token: Optional[str] = None) -> Dict[str, Any]:
+    def list_assets(self, environment: str, page_size: int | None = None, page_token: str | None = None) -> dict[str, Any]:
         """List all assets in an environment."""
-        params: Dict[str, Any] = {}
+        params: dict[str, Any] = {}
         if page_size:
             params["pageSize"] = page_size
         if page_token:
             params["pageToken"] = page_token
         return self._http_request(
-            method='GET',
-            url_suffix=f"environments/{environment}/assets",
-            params=params,
-            timeout=HTTP_TIMEOUT
+            method="GET", url_suffix=f"environments/{environment}/assets", params=params, timeout=HTTP_TIMEOUT
         )
 
-    def create_asset(self, environment: str, label: str, idempotency_key: Optional[str] = None,
-                    os: Optional[str] = None, os_version: Optional[str] = None,
-                    forwarder_version: Optional[str] = None) -> Dict[str, Any]:
+    def create_asset(
+        self,
+        environment: str,
+        label: str,
+        idempotency_key: str | None = None,
+        os: str | None = None,
+        os_version: str | None = None,
+        forwarder_version: str | None = None,
+    ) -> dict[str, Any]:
         """Create a new asset in an environment."""
-        json_data: Dict[str, Any] = {"label": label}
+        json_data: dict[str, Any] = {"label": label}
 
-        params: Dict[str, Any] = {}
+        params: dict[str, Any] = {}
         if idempotency_key:
             params["idempotencyKey"] = idempotency_key
         if label:
@@ -605,20 +521,16 @@ class Client(BaseClient):
             params["forwarderVersion"] = forwarder_version
 
         return self._http_request(
-            method='POST',
+            method="POST",
             url_suffix=f"environments/{environment}/assets",
             json_data=json_data,
             params=params,
-            timeout=HTTP_TIMEOUT
+            timeout=HTTP_TIMEOUT,
         )
 
-    def get_asset(self, asset: str) -> Dict[str, Any]:
+    def get_asset(self, asset: str) -> dict[str, Any]:
         """Get a specific asset by ID."""
-        return self._http_request(
-            method='GET',
-            url_suffix=f"assets/{asset}",
-            timeout=HTTP_TIMEOUT
-        )
+        return self._http_request(method="GET", url_suffix=f"assets/{asset}", timeout=HTTP_TIMEOUT)
 
 
 def test_module(client):  # pragma: no cover
@@ -628,10 +540,10 @@ def test_module(client):  # pragma: no cover
         if isinstance(response, dict) and "data" in response:
             data = response.get("data", {})
             if isinstance(data, dict) and "attributes" in data:
-                return 'ok'
-        return 'Authorization Error: unexpected response format'
+                return "ok"
+        return "Authorization Error: unexpected response format"
     except Exception:
-        return 'Authorization Error: make sure API Key is correctly set'
+        return "Authorization Error: make sure API Key is correctly set"
 
 
 def file_enrichment_command(client: Client, file_hash: str) -> CommandResults:
@@ -702,15 +614,12 @@ def file_enrichment_command(client: Client, file_hash: str) -> CommandResults:
             "filenames": names,
             "seen_assets_count": len(seen_assets_list) if isinstance(seen_assets_list, list) else 0,
         }
-        outputs = {
-            "summary": summary,
-            "raw": response
-        }
+        outputs = {"summary": summary, "raw": response}
 
         return CommandResults(
             readable_output=md,
-            outputs_prefix='Stairwell.File_Details',
-            outputs_key_field='sha256',
+            outputs_prefix="Stairwell.File_Details",
+            outputs_key_field="sha256",
             outputs=outputs,
         )
 
@@ -733,8 +642,8 @@ def variant_discovery_command(client: Client, file_hash: str) -> CommandResults:
             if variants:
                 md_string = tableToMarkdown("File Variants Discovered", variants)
                 return CommandResults(
-                    outputs_prefix='Stairwell.Variants',
-                    outputs_key_field='sha256',
+                    outputs_prefix="Stairwell.Variants",
+                    outputs_key_field="sha256",
                     readable_output=md_string,
                     outputs=response,
                 )
@@ -772,12 +681,7 @@ def ai_triage_summarize_command(client: Client, object_id: str) -> CommandResult
                 md += "### AI Summary Response\n"
                 md += json.dumps(response, indent=2)
                 return CommandResults(
-                    readable_output=md,
-                    outputs_prefix='Stairwell.AI_Triage',
-                    outputs={
-                        "hash": file_hash,
-                        "raw": response
-                    }
+                    readable_output=md, outputs_prefix="Stairwell.AI_Triage", outputs={"hash": file_hash, "raw": response}
                 )
 
             summary_json = raw_data.get("summaryJson", {})
@@ -898,10 +802,7 @@ def ai_triage_summarize_command(client: Client, object_id: str) -> CommandResult
             md += f"### AI Summary Response\n{json.dumps(response, indent=2)}"
 
         # Prepare structured outputs
-        outputs = {
-            "hash": response.get("hash", object_id) if isinstance(response, dict) else object_id,
-            "raw": response
-        }
+        outputs = {"hash": response.get("hash", object_id) if isinstance(response, dict) else object_id, "raw": response}
 
         # Extract key fields for easier access
         if isinstance(response, dict):
@@ -913,12 +814,7 @@ def ai_triage_summarize_command(client: Client, object_id: str) -> CommandResult
                 outputs["threat_type"] = summary_json.get("threat_type")
                 outputs["tldr"] = summary_json.get("tldr", raw_data.get("tldr", ""))
 
-        return CommandResults(
-            readable_output=md,
-            outputs_prefix='Stairwell.AI_Triage',
-            outputs_key_field='hash',
-            outputs=outputs
-        )
+        return CommandResults(readable_output=md, outputs_prefix="Stairwell.AI_Triage", outputs_key_field="hash", outputs=outputs)
 
     except DemistoException as err:
         # Handle different error codes
@@ -945,10 +841,7 @@ def object_sightings_command(client: Client, object_id: str) -> CommandResults:
             response["objectId"] = object_id
 
         return CommandResults(
-            readable_output=readable,
-            outputs_prefix="Stairwell.Sightings",
-            outputs_key_field="objectId",
-            outputs=response
+            readable_output=readable, outputs_prefix="Stairwell.Sightings", outputs_key_field="objectId", outputs=response
         )
     except DemistoException as err:
         if "404" in str(err):
@@ -974,7 +867,7 @@ def object_detonation_trigger_command(client: Client, object_id: str) -> Command
             readable_output=readable,
             outputs_prefix="Stairwell.Detonation.Trigger",
             outputs_key_field="objectId",
-            outputs=response
+            outputs=response,
         )
     except DemistoException as err:
         if "404" in str(err):
@@ -999,10 +892,7 @@ def object_detonation_get_command(client: Client, object_id: str) -> CommandResu
             response["objectId"] = object_id
 
         return CommandResults(
-            readable_output=readable,
-            outputs_prefix="Stairwell.Detonation",
-            outputs_key_field="objectId",
-            outputs=response
+            readable_output=readable, outputs_prefix="Stairwell.Detonation", outputs_key_field="objectId", outputs=response
         )
     except DemistoException as err:
         if "404" in str(err):
@@ -1026,10 +916,7 @@ def object_opinions_command(client: Client, object_id: str) -> CommandResults:
             response["objectId"] = object_id
 
         return CommandResults(
-            readable_output=readable,
-            outputs_prefix="Stairwell.Opinions",
-            outputs_key_field="objectId",
-            outputs=response
+            readable_output=readable, outputs_prefix="Stairwell.Opinions", outputs_key_field="objectId", outputs=response
         )
     except DemistoException as err:
         if "404" in str(err):
@@ -1047,20 +934,12 @@ def run_to_ground_generate_command(client: Client, object_ids: str) -> CommandRe
         object_list = [oid.strip() for oid in object_ids.split(",") if oid.strip()]
         response = client.generate_run_to_ground(object_list)
         readable = tableToMarkdown("Run To Ground Results", response) if isinstance(response, dict) else str(response)
-        return CommandResults(
-            readable_output=readable,
-            outputs_prefix="Stairwell.RunToGround",
-            outputs=response
-        )
+        return CommandResults(readable_output=readable, outputs_prefix="Stairwell.RunToGround", outputs=response)
     except DemistoException as err:
         if "400" in str(err):
-            return CommandResults(
-                readable_output="Invalid object IDs provided. Check that object IDs are valid SHA256 hashes."
-            )
+            return CommandResults(readable_output="Invalid object IDs provided. Check that object IDs are valid SHA256 hashes.")
         elif "404" in str(err):
-            return CommandResults(
-                readable_output="One or more objects not found. Check that the object IDs exist in Stairwell."
-            )
+            return CommandResults(readable_output="One or more objects not found. Check that the object IDs exist in Stairwell.")
         else:
             raise DemistoException(f"Failed to generate Run-To-Ground analysis: {err}") from err
 
@@ -1081,10 +960,7 @@ def asn_get_whois_command(client: Client, asn: str) -> CommandResults:
 
         readable = tableToMarkdown(f"ASN {asn} WHOIS Information", response) if isinstance(response, dict) else str(response)
         return CommandResults(
-            readable_output=readable,
-            outputs_prefix="Stairwell.ASN.WHOIS",
-            outputs_key_field="asn",
-            outputs=response
+            readable_output=readable, outputs_prefix="Stairwell.ASN.WHOIS", outputs_key_field="asn", outputs=response
         )
     except DemistoException as err:
         if "404" in str(err):
@@ -1094,7 +970,7 @@ def asn_get_whois_command(client: Client, asn: str) -> CommandResults:
 
 
 # Network Intel Command Functions - Hostname
-def hostname_get_command(client: Client, hostname: str, record_type: Optional[str] = None) -> CommandResults:
+def hostname_get_command(client: Client, hostname: str, record_type: str | None = None) -> CommandResults:
     """Get hostname entity with DNS resolution data."""
     missing = _require_args({"hostname": hostname})
     if missing:
@@ -1109,10 +985,7 @@ def hostname_get_command(client: Client, hostname: str, record_type: Optional[st
 
         readable = tableToMarkdown(f"Hostname: {hostname}", response) if isinstance(response, dict) else str(response)
         return CommandResults(
-            readable_output=readable,
-            outputs_prefix="Stairwell.Hostname",
-            outputs_key_field="hostname",
-            outputs=response
+            readable_output=readable, outputs_prefix="Stairwell.Hostname", outputs_key_field="hostname", outputs=response
         )
     except DemistoException as err:
         if "404" in str(err):
@@ -1121,9 +994,9 @@ def hostname_get_command(client: Client, hostname: str, record_type: Optional[st
             raise err
 
 
-def hostname_get_resolutions_command(client: Client, hostname: str,
-                                     start_time: Optional[str] = None,
-                                     end_time: Optional[str] = None) -> CommandResults:
+def hostname_get_resolutions_command(
+    client: Client, hostname: str, start_time: str | None = None, end_time: str | None = None
+) -> CommandResults:
     """Get all addresses resolved to by a hostname."""
     missing = _require_args({"hostname": hostname})
     if missing:
@@ -1138,15 +1011,13 @@ def hostname_get_resolutions_command(client: Client, hostname: str,
             response["hostname"] = hostname
 
         readable = (
-            tableToMarkdown(f"Resolutions for {hostname}", resolutions)
-            if resolutions
-            else f"No resolutions found for {hostname}"
+            tableToMarkdown(f"Resolutions for {hostname}", resolutions) if resolutions else f"No resolutions found for {hostname}"
         )
         return CommandResults(
             readable_output=readable,
             outputs_prefix="Stairwell.Hostname.Resolutions",
             outputs_key_field="hostname",
-            outputs=response
+            outputs=response,
         )
     except DemistoException as err:
         if "404" in str(err):
@@ -1155,11 +1026,14 @@ def hostname_get_resolutions_command(client: Client, hostname: str,
             raise err
 
 
-def hostname_batch_get_resolutions_command(client: Client, hostnames: str,
-                                           start_time: Optional[str] = None,
-                                           end_time: Optional[str] = None,
-                                           record_types: Optional[str] = None,
-                                           include_errors: Optional[str] = None) -> CommandResults:
+def hostname_batch_get_resolutions_command(
+    client: Client,
+    hostnames: str,
+    start_time: str | None = None,
+    end_time: str | None = None,
+    record_types: str | None = None,
+    include_errors: str | None = None,
+) -> CommandResults:
     """Get resolution summaries for multiple hostnames."""
     missing = _require_args({"hostnames": hostnames})
     if missing:
@@ -1179,7 +1053,8 @@ def hostname_batch_get_resolutions_command(client: Client, hostnames: str,
             include_errors_bool = argToBoolean(include_errors)
 
         response = client.batch_get_hostname_resolutions(
-            hostname_list, start_time, end_time, record_types_list, include_errors_bool)
+            hostname_list, start_time, end_time, record_types_list, include_errors_bool
+        )
 
         # Extract resolutions for display
         resolutions_data = []
@@ -1195,15 +1070,9 @@ def hostname_batch_get_resolutions_command(client: Client, hostnames: str,
                             resolutions_data.append(resolution_with_hostname)
 
         readable = (
-            tableToMarkdown("Batch Hostname Resolutions", resolutions_data)
-            if resolutions_data
-            else "No resolutions found."
+            tableToMarkdown("Batch Hostname Resolutions", resolutions_data) if resolutions_data else "No resolutions found."
         )
-        return CommandResults(
-            readable_output=readable,
-            outputs_prefix="Stairwell.Hostname.BatchResolutions",
-            outputs=response
-        )
+        return CommandResults(readable_output=readable, outputs_prefix="Stairwell.Hostname.BatchResolutions", outputs=response)
     except DemistoException as err:
         raise err
 
@@ -1224,10 +1093,7 @@ def ipaddress_get_command(client: Client, ip_address: str) -> CommandResults:
 
         readable = tableToMarkdown(f"IP Address: {ip_address}", response) if isinstance(response, dict) else str(response)
         return CommandResults(
-            readable_output=readable,
-            outputs_prefix="Stairwell.IPAddress",
-            outputs_key_field="ip",
-            outputs=response
+            readable_output=readable, outputs_prefix="Stairwell.IPAddress", outputs_key_field="ip", outputs=response
         )
     except DemistoException as err:
         if "404" in str(err):
@@ -1250,15 +1116,10 @@ def ipaddress_lookup_cloud_provider_command(client: Client, ip_address: str) -> 
             response["ip"] = ip_address
 
         readable = (
-            tableToMarkdown(f"Cloud Provider Lookup for {ip_address}", response)
-            if isinstance(response, dict)
-            else str(response)
+            tableToMarkdown(f"Cloud Provider Lookup for {ip_address}", response) if isinstance(response, dict) else str(response)
         )
         return CommandResults(
-            readable_output=readable,
-            outputs_prefix="Stairwell.IPAddress.CloudProvider",
-            outputs_key_field="ip",
-            outputs=response
+            readable_output=readable, outputs_prefix="Stairwell.IPAddress.CloudProvider", outputs_key_field="ip", outputs=response
         )
     except DemistoException as err:
         if "404" in str(err):
@@ -1267,9 +1128,9 @@ def ipaddress_lookup_cloud_provider_command(client: Client, ip_address: str) -> 
             raise err
 
 
-def ipaddress_get_hostnames_resolving_to_ip_command(client: Client, ip_address: str,
-                                                    start_time: Optional[str] = None,
-                                                    end_time: Optional[str] = None) -> CommandResults:
+def ipaddress_get_hostnames_resolving_to_ip_command(
+    client: Client, ip_address: str, start_time: str | None = None, end_time: str | None = None
+) -> CommandResults:
     """Get all hostnames resolved to by an IP address."""
     missing = _require_args({"ip_address": ip_address})
     if missing:
@@ -1284,15 +1145,12 @@ def ipaddress_get_hostnames_resolving_to_ip_command(client: Client, ip_address: 
             response["ip"] = ip_address
 
         readable = (
-            tableToMarkdown(f"Hostnames Resolving to {ip_address}", hostnames)
+            tableToMarkdown(f"Hostnames Resolving to {ip_address}", [{"Hostname": h} for h in hostnames], headers=["Hostname"])
             if hostnames
             else f"No hostnames found resolving to {ip_address}"
         )
         return CommandResults(
-            readable_output=readable,
-            outputs_prefix="Stairwell.IPAddress.Hostnames",
-            outputs_key_field="ip",
-            outputs=response
+            readable_output=readable, outputs_prefix="Stairwell.IPAddress.Hostnames", outputs_key_field="ip", outputs=response
         )
     except DemistoException as err:
         if "404" in str(err):
@@ -1320,10 +1178,7 @@ def ipaddress_get_whois_command(client: Client, ip_address: str) -> CommandResul
             else str(response)
         )
         return CommandResults(
-            readable_output=readable,
-            outputs_prefix="Stairwell.IPAddress.WHOIS",
-            outputs_key_field="ip",
-            outputs=response
+            readable_output=readable, outputs_prefix="Stairwell.IPAddress.WHOIS", outputs_key_field="ip", outputs=response
         )
     except DemistoException as err:
         if "404" in str(err):
@@ -1333,7 +1188,7 @@ def ipaddress_get_whois_command(client: Client, ip_address: str) -> CommandResul
 
 
 # Network Intel Command Functions - Utilities
-def utilities_get_cloud_ip_ranges_command(client: Client, provider: Optional[str] = None) -> CommandResults:
+def utilities_get_cloud_ip_ranges_command(client: Client, provider: str | None = None) -> CommandResults:
     """Get IP ranges for known cloud providers."""
     try:
         response = client.get_cloud_ip_ranges(provider)
@@ -1341,11 +1196,7 @@ def utilities_get_cloud_ip_ranges_command(client: Client, provider: Optional[str
         readable = tableToMarkdown("Cloud IP Ranges", ranges) if ranges else "No cloud IP ranges found"
         if provider:
             readable = f"Cloud IP Ranges for Provider: {provider}\n\n{readable}"
-        return CommandResults(
-            readable_output=readable,
-            outputs_prefix="Stairwell.Utilities.CloudIPRanges",
-            outputs=response
-        )
+        return CommandResults(readable_output=readable, outputs_prefix="Stairwell.Utilities.CloudIPRanges", outputs=response)
     except DemistoException as err:
         if "400" in str(err):
             return CommandResults(
@@ -1375,9 +1226,7 @@ def utilities_batch_canonicalize_hostnames_command(client: Client, hostnames: st
         response = client.batch_canonicalize_hostnames(hostname_list)
         readable = tableToMarkdown("Canonicalized Hostnames", response) if isinstance(response, dict) else str(response)
         return CommandResults(
-            readable_output=readable,
-            outputs_prefix="Stairwell.Utilities.CanonicalizedHostnames",
-            outputs=response
+            readable_output=readable, outputs_prefix="Stairwell.Utilities.CanonicalizedHostnames", outputs=response
         )
     except DemistoException as err:
         if "400" in str(err):
@@ -1406,16 +1255,10 @@ def utilities_batch_compute_etld_plus_one_command(client: Client, domains: str) 
                     results.append(result["response"])
 
         readable = tableToMarkdown("ETLD+1 Results", results) if results else str(response)
-        return CommandResults(
-            readable_output=readable,
-            outputs_prefix="Stairwell.Utilities.ETLDPlusOne",
-            outputs=response
-        )
+        return CommandResults(readable_output=readable, outputs_prefix="Stairwell.Utilities.ETLDPlusOne", outputs=response)
     except DemistoException as err:
         if "400" in str(err):
-            return CommandResults(
-                readable_output="Invalid domain format in request. Check that domains are properly formatted."
-            )
+            return CommandResults(readable_output="Invalid domain format in request. Check that domains are properly formatted.")
         else:
             raise DemistoException(f"Failed to compute ETLD+1 for domains: {err}") from err
 
@@ -1429,14 +1272,10 @@ def utilities_canonicalize_hostname_command(client: Client, hostname: str) -> Co
     try:
         response = client.canonicalize_hostname(hostname)
         readable = (
-            tableToMarkdown(f"Canonicalized Hostname: {hostname}", response)
-            if isinstance(response, dict)
-            else str(response)
+            tableToMarkdown(f"Canonicalized Hostname: {hostname}", response) if isinstance(response, dict) else str(response)
         )
         return CommandResults(
-            readable_output=readable,
-            outputs_prefix="Stairwell.Utilities.CanonicalizedHostname",
-            outputs=response
+            readable_output=readable, outputs_prefix="Stairwell.Utilities.CanonicalizedHostname", outputs=response
         )
     except DemistoException as err:
         if "400" in str(err):
@@ -1456,11 +1295,7 @@ def utilities_compute_etld_plus_one_command(client: Client, domain: str) -> Comm
     try:
         response = client.compute_etld_plus_one(domain)
         readable = tableToMarkdown(f"ETLD+1 for Domain: {domain}", response) if isinstance(response, dict) else str(response)
-        return CommandResults(
-            readable_output=readable,
-            outputs_prefix="Stairwell.Utilities.ETLDPlusOne",
-            outputs=response
-        )
+        return CommandResults(readable_output=readable, outputs_prefix="Stairwell.Utilities.ETLDPlusOne", outputs=response)
     except DemistoException as err:
         if "400" in str(err):
             return CommandResults(
@@ -1480,16 +1315,10 @@ def utilities_batch_canonicalize_urls_command(client: Client, urls: str) -> Comm
         url_list = [u.strip() for u in urls.split(",") if u.strip()]
         response = client.batch_canonicalize_urls(url_list)
         readable = tableToMarkdown("Canonicalized URLs", response) if isinstance(response, dict) else str(response)
-        return CommandResults(
-            readable_output=readable,
-            outputs_prefix="Stairwell.Utilities.CanonicalizedURLs",
-            outputs=response
-        )
+        return CommandResults(readable_output=readable, outputs_prefix="Stairwell.Utilities.CanonicalizedURLs", outputs=response)
     except DemistoException as err:
         if "400" in str(err):
-            return CommandResults(
-                readable_output="Invalid URL format in request. Check that URLs are properly formatted."
-            )
+            return CommandResults(readable_output="Invalid URL format in request. Check that URLs are properly formatted.")
         else:
             raise DemistoException(f"Failed to canonicalize URLs: {err}") from err
 
@@ -1503,33 +1332,29 @@ def utilities_canonicalize_url_command(client: Client, url: str) -> CommandResul
     try:
         response = client.canonicalize_url(url)
         readable = tableToMarkdown(f"Canonicalized URL: {url}", response) if isinstance(response, dict) else str(response)
-        return CommandResults(
-            readable_output=readable,
-            outputs_prefix="Stairwell.Utilities.CanonicalizedURL",
-            outputs=response
-        )
+        return CommandResults(readable_output=readable, outputs_prefix="Stairwell.Utilities.CanonicalizedURL", outputs=response)
     except DemistoException as err:
         if "400" in str(err):
-            return CommandResults(
-                readable_output=f"Invalid URL format: '{url}'. Check that the URL is properly formatted."
-            )
+            return CommandResults(readable_output=f"Invalid URL format: '{url}'. Check that the URL is properly formatted.")
         else:
             raise DemistoException(f"Failed to canonicalize URL '{url}': {err}") from err
 
 
-def intake_preflight_and_upload(client: Optional[Any] = None,
-                                asset_id: Optional[str] = None,
-                                entry_id: Optional[str] = None,
-                                url: Optional[str] = None,
-                                file_path: Optional[str] = None,
-                                sha256: Optional[str] = None,
-                                detonation_plan: Optional[str] = None,
-                                origin_type: Optional[str] = None,
-                                origin_referrer_url: Optional[str] = None,
-                                origin_host_url: Optional[str] = None,
-                                origin_zone_id: Optional[int] = None,
-                                verify: bool = True,
-                                use_proxy: bool = False) -> CommandResults:
+def intake_preflight_and_upload(
+    client: Any | None = None,
+    asset_id: str | None = None,
+    entry_id: str | None = None,
+    url: str | None = None,
+    file_path: str | None = None,
+    sha256: str | None = None,
+    detonation_plan: str | None = None,
+    origin_type: str | None = None,
+    origin_referrer_url: str | None = None,
+    origin_host_url: str | None = None,
+    origin_zone_id: int | None = None,
+    verify: bool = True,
+    use_proxy: bool = False,
+) -> CommandResults:
     """
     Implements Stairwell Intake API 'preflight' + conditional upload with retries.
     """
@@ -1546,11 +1371,7 @@ def intake_preflight_and_upload(client: Optional[Any] = None,
     try:
         # Resolve file source
         resolved_path, filename, resolve_error = _resolve_file_source(
-            entry_id=entry_id,
-            url=url,
-            file_path=file_path,
-            verify=verify,
-            use_proxy=use_proxy
+            entry_id=entry_id, url=url, file_path=file_path, verify=verify, use_proxy=use_proxy
         )
 
         if resolve_error:
@@ -1562,6 +1383,8 @@ def intake_preflight_and_upload(client: Optional[Any] = None,
 
         # Use resolved path for all operations
         file_path = resolved_path
+        if file_path is None:
+            return CommandResults(readable_output="Could not resolve file path")
 
         # Auto-calc sha256 if not provided
         if not sha256:
@@ -1570,9 +1393,9 @@ def intake_preflight_and_upload(client: Optional[Any] = None,
                 return CommandResults(readable_output=err)
 
         # Build origin object
-        origin_obj: Dict[str, Any] = {}
+        origin_obj: dict[str, Any] = {}
         if origin_type == "web":
-            origin_web: Dict[str, Any] = {}
+            origin_web: dict[str, Any] = {}
             if origin_referrer_url:
                 origin_web["referrer-url"] = origin_referrer_url
             if origin_host_url:
@@ -1585,7 +1408,7 @@ def intake_preflight_and_upload(client: Optional[Any] = None,
 
         expected_identifiers = [{"sha256": sha256}] if sha256 else []
 
-        file_obj: Dict[str, Any] = {
+        file_obj: dict[str, Any] = {
             "filePath": file_path,
             "expected_attributes": {"identifiers": expected_identifiers} if expected_identifiers else {},
             "origin": origin_obj,
@@ -1593,10 +1416,7 @@ def intake_preflight_and_upload(client: Optional[Any] = None,
         if detonation_plan:
             file_obj["detonation_plan"] = detonation_plan
 
-        payload: Dict[str, Any] = {
-            "asset": {"id": asset_id},
-            "files": [file_obj]
-        }
+        payload: dict[str, Any] = {"asset": {"id": asset_id}, "files": [file_obj]}
 
         proxies = handle_proxy() if use_proxy else None
 
@@ -1606,32 +1426,26 @@ def intake_preflight_and_upload(client: Optional[Any] = None,
             else:
                 # Fallback: direct session POST (no auth)
                 session = _create_session_with_retries()
-                resp = session.post(
-                    INTAKE_PREFLIGHT_URL,
-                    json=payload,
-                    verify=verify,
-                    proxies=proxies,
-                    timeout=HTTP_TIMEOUT
-                )
+                resp = session.post(INTAKE_PREFLIGHT_URL, json=payload, verify=verify, proxies=proxies, timeout=HTTP_TIMEOUT)
                 resp.raise_for_status()
                 preflight = resp.json() if resp.content else {}
         except requests.exceptions.Timeout:
             return CommandResults(
                 readable_output=f"Intake preflight timed out after {HTTP_TIMEOUT}s. Try again later.",
                 outputs_prefix="Stairwell.Intake",
-                outputs={"error": "timeout", "timeout_seconds": HTTP_TIMEOUT}
+                outputs={"error": "timeout", "timeout_seconds": HTTP_TIMEOUT},
             )
         except requests.exceptions.ConnectionError as e:
             return CommandResults(
                 readable_output=f"Connection error during intake preflight: {e}. Check network connectivity to Stairwell API.",
                 outputs_prefix="Stairwell.Intake",
-                outputs={"error": str(e)}
+                outputs={"error": str(e)},
             )
         except (requests.exceptions.HTTPError, DemistoException) as http_err:
             return CommandResults(
                 readable_output=f"HTTP error during Intake preflight/upload: {http_err}",
                 outputs_prefix="Stairwell.Intake",
-                outputs={"error": str(http_err)}
+                outputs={"error": str(http_err)},
             )
 
         file_actions = preflight.get("fileActions") or preflight.get("file_actions")
@@ -1639,7 +1453,7 @@ def intake_preflight_and_upload(client: Optional[Any] = None,
             return CommandResults(
                 readable_output=f"Unexpected preflight response: {preflight}",
                 outputs_prefix="Stairwell.Intake.Preflight",
-                outputs=preflight
+                outputs=preflight,
             )
 
         action_obj = file_actions[0] or {}
@@ -1660,7 +1474,7 @@ def intake_preflight_and_upload(client: Optional[Any] = None,
             return CommandResults(
                 readable_output=md,
                 outputs_prefix="Stairwell.Intake",
-                outputs={"preflight": preflight, "result": "already_exists"}
+                outputs={"preflight": preflight, "result": "already_exists"},
             )
 
         if action == "UPLOAD":
@@ -1672,7 +1486,7 @@ def intake_preflight_and_upload(client: Optional[Any] = None,
                 return CommandResults(
                     readable_output="Preflight requested UPLOAD but missing uploadUrl/fields.",
                     outputs_prefix="Stairwell.Intake",
-                    outputs={"preflight": preflight, "error": "missing_upload_instructions"}
+                    outputs={"preflight": preflight, "error": "missing_upload_instructions"},
                 )
 
             form_data = list(fields.items())
@@ -1684,58 +1498,49 @@ def intake_preflight_and_upload(client: Optional[Any] = None,
                 with open(file_path, "rb") as fh:
                     files_tup = {file_field_name: (filename, fh)}
                     upload_resp = upload_session.post(
-                        upload_url,
-                        data=form_data,
-                        files=files_tup,
-                        verify=verify,
-                        proxies=proxies,
-                        timeout=UPLOAD_TIMEOUT
+                        upload_url, data=form_data, files=files_tup, verify=verify, proxies=proxies, timeout=UPLOAD_TIMEOUT
                     )
             except requests.exceptions.Timeout:
                 return CommandResults(
                     readable_output=f"File upload timed out after {UPLOAD_TIMEOUT}s. Contact Stairwell admin if this persists.",
                     outputs_prefix="Stairwell.Intake",
-                    outputs={"preflight": preflight, "error": "upload_timeout", "timeout_seconds": UPLOAD_TIMEOUT}
+                    outputs={"preflight": preflight, "error": "upload_timeout", "timeout_seconds": UPLOAD_TIMEOUT},
                 )
             except requests.exceptions.ConnectionError as e:
                 return CommandResults(
                     readable_output=f"Connection error during file upload: {e}. Check network connectivity.",
                     outputs_prefix="Stairwell.Intake",
-                    outputs={"preflight": preflight, "error": str(e)}
+                    outputs={"preflight": preflight, "error": str(e)},
                 )
 
             if upload_resp.status_code not in (200, 201, 202, 204):
                 return CommandResults(
                     readable_output=f"Upload failed with status {upload_resp.status_code}: {upload_resp.text}",
                     outputs_prefix="Stairwell.Intake",
-                    outputs={"preflight": preflight, "upload_status": upload_resp.status_code, "upload_text": upload_resp.text}
+                    outputs={"preflight": preflight, "upload_status": upload_resp.status_code, "upload_text": upload_resp.text},
                 )
 
             md += "\nUpload completed successfully."
             return CommandResults(
                 readable_output=md,
                 outputs_prefix="Stairwell.Intake",
-                outputs={"preflight": preflight, "upload_status": upload_resp.status_code}
+                outputs={"preflight": preflight, "upload_status": upload_resp.status_code},
             )
 
         md += "\nUnrecognized action; returning raw response."
-        return CommandResults(
-            readable_output=md,
-            outputs_prefix="Stairwell.Intake",
-            outputs={"preflight": preflight}
-        )
+        return CommandResults(readable_output=md, outputs_prefix="Stairwell.Intake", outputs={"preflight": preflight})
 
     except requests.HTTPError as http_err:
         return CommandResults(
             readable_output=f"HTTP error during Intake preflight/upload: {http_err}",
             outputs_prefix="Stairwell.Intake",
-            outputs={"error": str(http_err)}
+            outputs={"error": str(http_err)},
         )
     except Exception as ex:
         return CommandResults(
             readable_output=f"Unexpected error during Intake preflight/upload: {ex}",
             outputs_prefix="Stairwell.Intake",
-            outputs={"error": str(ex)}
+            outputs={"error": str(ex)},
         )
     finally:
         # Clean up temp file if downloaded from URL
@@ -1761,16 +1566,10 @@ def yara_create_rule_command(client: Client, environment: str, rule_definition: 
     try:
         response = client.create_yara_rule(environment, rule_definition)
         readable = tableToMarkdown("Created YARA Rule", response) if isinstance(response, dict) else str(response)
-        return CommandResults(
-            readable_output=readable,
-            outputs_prefix="Stairwell.YaraRule",
-            outputs=response
-        )
+        return CommandResults(readable_output=readable, outputs_prefix="Stairwell.YaraRule", outputs=response)
     except DemistoException as err:
         if "400" in str(err):
-            return CommandResults(
-                readable_output=f"Invalid YARA rule definition. Check syntax and formatting of the rule."
-            )
+            return CommandResults(readable_output="Invalid YARA rule definition. Check syntax and formatting of the rule.")
         elif "403" in str(err):
             return CommandResults(
                 readable_output=f"Permission denied to create YARA rule in environment: {environment}. Check API key permissions."
@@ -1779,8 +1578,9 @@ def yara_create_rule_command(client: Client, environment: str, rule_definition: 
             raise DemistoException(f"Failed to create YARA rule in environment '{environment}': {err}") from err
 
 
-def yara_get_rule_command(client: Client, environment: str, yara_rule: str,
-                         match_count_envs: Optional[str] = None) -> CommandResults:
+def yara_get_rule_command(
+    client: Client, environment: str, yara_rule: str, match_count_envs: str | None = None
+) -> CommandResults:
     """Get a specific YARA rule."""
     missing = _require_args({"environment": environment, "yara_rule": yara_rule})
     if missing:
@@ -1789,11 +1589,7 @@ def yara_get_rule_command(client: Client, environment: str, yara_rule: str,
     try:
         response = client.get_yara_rule(environment, yara_rule, match_count_envs)
         readable = tableToMarkdown(f"YARA Rule: {yara_rule}", response) if isinstance(response, dict) else str(response)
-        return CommandResults(
-            readable_output=readable,
-            outputs_prefix="Stairwell.YaraRule",
-            outputs=response
-        )
+        return CommandResults(readable_output=readable, outputs_prefix="Stairwell.YaraRule", outputs=response)
     except DemistoException as err:
         if "404" in str(err):
             return CommandResults(readable_output=f"YARA rule not found: {yara_rule}")
@@ -1801,9 +1597,14 @@ def yara_get_rule_command(client: Client, environment: str, yara_rule: str,
             raise err
 
 
-def yara_query_matches_command(client: Client, environment: str, yara_rule: str,
-                               included_environments: Optional[str] = None, page_size: Optional[str] = None,
-                               page_token: Optional[str] = None) -> CommandResults:
+def yara_query_matches_command(
+    client: Client,
+    environment: str,
+    yara_rule: str,
+    included_environments: str | None = None,
+    page_size: str | None = None,
+    page_token: str | None = None,
+) -> CommandResults:
     """Query objects matching a YARA rule."""
     missing = _require_args({"environment": environment, "yara_rule": yara_rule})
     if missing:
@@ -1819,11 +1620,7 @@ def yara_query_matches_command(client: Client, environment: str, yara_rule: str,
             if matches
             else f"No matches found for YARA rule: {yara_rule}"
         )
-        return CommandResults(
-            readable_output=readable,
-            outputs_prefix="Stairwell.YaraRuleMatches",
-            outputs=response
-        )
+        return CommandResults(readable_output=readable, outputs_prefix="Stairwell.YaraRuleMatches", outputs=response)
     except DemistoException as err:
         if "404" in str(err):
             return CommandResults(readable_output=f"YARA rule not found: {yara_rule}")
@@ -1832,8 +1629,9 @@ def yara_query_matches_command(client: Client, environment: str, yara_rule: str,
 
 
 # Asset Management Command Functions
-def asset_list_command(client: Client, environment: str, page_size: Optional[str] = None,
-                      page_token: Optional[str] = None) -> CommandResults:
+def asset_list_command(
+    client: Client, environment: str, page_size: str | None = None, page_token: str | None = None
+) -> CommandResults:
     """List all assets in an environment."""
     missing = _require_args({"environment": environment})
     if missing:
@@ -1844,11 +1642,7 @@ def asset_list_command(client: Client, environment: str, page_size: Optional[str
         response = client.list_assets(environment, page_size_int, page_token)
         assets = response.get("assets", []) if isinstance(response, dict) else []
         readable = tableToMarkdown("Assets", assets) if assets else "No assets found."
-        return CommandResults(
-            readable_output=readable,
-            outputs_prefix="Stairwell.Assets",
-            outputs=response
-        )
+        return CommandResults(readable_output=readable, outputs_prefix="Stairwell.Assets", outputs=response)
     except DemistoException as err:
         if "404" in str(err):
             return CommandResults(readable_output=f"Environment not found: {environment}")
@@ -1856,9 +1650,15 @@ def asset_list_command(client: Client, environment: str, page_size: Optional[str
             raise err
 
 
-def asset_create_command(client: Client, environment: str, label: str, idempotency_key: Optional[str] = None,
-                        os: Optional[str] = None, os_version: Optional[str] = None,
-                        forwarder_version: Optional[str] = None) -> CommandResults:
+def asset_create_command(
+    client: Client,
+    environment: str,
+    label: str,
+    idempotency_key: str | None = None,
+    os: str | None = None,
+    os_version: str | None = None,
+    forwarder_version: str | None = None,
+) -> CommandResults:
     """Create a new asset in an environment."""
     missing = _require_args({"environment": environment, "label": label})
     if missing:
@@ -1867,15 +1667,11 @@ def asset_create_command(client: Client, environment: str, label: str, idempoten
     try:
         response = client.create_asset(environment, label, idempotency_key, os, os_version, forwarder_version)
         readable = tableToMarkdown("Created Asset", response) if isinstance(response, dict) else str(response)
-        return CommandResults(
-            readable_output=readable,
-            outputs_prefix="Stairwell.Asset",
-            outputs=response
-        )
+        return CommandResults(readable_output=readable, outputs_prefix="Stairwell.Asset", outputs=response)
     except DemistoException as err:
         if "400" in str(err):
             return CommandResults(
-                readable_output=f"Invalid asset parameters. Check that label and other fields are properly formatted."
+                readable_output="Invalid asset parameters. Check that label and other fields are properly formatted."
             )
         elif "403" in str(err):
             return CommandResults(
@@ -1898,11 +1694,7 @@ def asset_get_command(client: Client, asset: str) -> CommandResults:
     try:
         response = client.get_asset(asset)
         readable = tableToMarkdown(f"Asset: {asset}", response) if isinstance(response, dict) else str(response)
-        return CommandResults(
-            readable_output=readable,
-            outputs_prefix="Stairwell.Asset",
-            outputs=response
-        )
+        return CommandResults(readable_output=readable, outputs_prefix="Stairwell.Asset", outputs=response)
     except DemistoException as err:
         if "404" in str(err):
             return CommandResults(readable_output=f"Asset not found: {asset}")
@@ -1915,364 +1707,236 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
 
-    api_key = params.get('apikey', {}).get('password')
+    api_key = params.get("apikey", {}).get("password")
 
     # Params enabled by XSOAR functionality
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
 
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
     try:
         # Built-in command
-        if command == 'test-module':
+        if command == "test-module":
             # This is the call made when clicking the integration Test button.
             client = Client(
-                base_url=REPUTATION_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
+                base_url=REPUTATION_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy
+            )
             result = test_module(client)
             return_results(result)
 
-        elif command == 'stairwell-file-enrichment':
+        elif command == "stairwell-file-enrichment":
             client = Client(
-                base_url=REPUTATION_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
-            result = file_enrichment_command(client, args.get('file_hash'))
+                base_url=REPUTATION_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy
+            )
+            result = file_enrichment_command(client, args.get("file_hash"))
             return_results(result)
 
-        elif command == 'stairwell-variant-discovery':
+        elif command == "stairwell-variant-discovery":
             client = Client(
                 base_url=VARIANTS_BASE_URL,
                 verify=verify_certificate,
                 headers={"Authorization": api_key},
                 proxy=proxy,
-                timeout=HTTP_TIMEOUT)
-            result = variant_discovery_command(client, args.get('sha256'))
+                timeout=HTTP_TIMEOUT,
+            )
+            result = variant_discovery_command(client, args.get("sha256"))
             return_results(result)
 
-        elif command == 'stairwell-intake-upload':
+        elif command == "stairwell-intake-upload":
             # Uses preflight and conditionally uploads
             intake_client = Client(
-                base_url=INTAKE_PREFLIGHT_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
+                base_url=INTAKE_PREFLIGHT_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy
+            )
             result = intake_preflight_and_upload(
                 client=intake_client,
-                asset_id=args.get('asset_id'),
-                entry_id=args.get('entry_id'),
-                url=args.get('url'),
-                file_path=args.get('file_path'),
-                sha256=args.get('sha256'),
-                detonation_plan=args.get('detonation_plan'),
-                origin_type=args.get('origin_type'),
-                origin_referrer_url=args.get('origin_referrer_url'),
-                origin_host_url=args.get('origin_host_url'),
-                origin_zone_id=_parse_int_arg(args.get('origin_zone_id'), "origin_zone_id"),
+                asset_id=args.get("asset_id"),
+                entry_id=args.get("entry_id"),
+                url=args.get("url"),
+                file_path=args.get("file_path"),
+                sha256=args.get("sha256"),
+                detonation_plan=args.get("detonation_plan"),
+                origin_type=args.get("origin_type"),
+                origin_referrer_url=args.get("origin_referrer_url"),
+                origin_host_url=args.get("origin_host_url"),
+                origin_zone_id=_parse_int_arg(args.get("origin_zone_id"), "origin_zone_id"),
                 verify=verify_certificate,
-                use_proxy=proxy
+                use_proxy=proxy,
             )
             return_results(result)
 
-        elif command == 'stairwell-object-sightings':
+        elif command == "stairwell-object-sightings":
             client = Client(
-                base_url=AI_TRIAGE_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
-            result = object_sightings_command(client, args.get('object_id'))
+                base_url=AI_TRIAGE_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy
+            )
+            result = object_sightings_command(client, args.get("object_id"))
             return_results(result)
 
-        elif command == 'stairwell-object-detonation-trigger':
+        elif command == "stairwell-object-detonation-trigger":
             client = Client(
-                base_url=AI_TRIAGE_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
-            result = object_detonation_trigger_command(client, args.get('object_id'))
+                base_url=AI_TRIAGE_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy
+            )
+            result = object_detonation_trigger_command(client, args.get("object_id"))
             return_results(result)
 
-        elif command == 'stairwell-object-detonation-get':
+        elif command == "stairwell-object-detonation-get":
             client = Client(
-                base_url=AI_TRIAGE_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
-            result = object_detonation_get_command(client, args.get('object_id'))
+                base_url=AI_TRIAGE_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy
+            )
+            result = object_detonation_get_command(client, args.get("object_id"))
             return_results(result)
 
-        elif command == 'stairwell-object-opinions':
+        elif command == "stairwell-object-opinions":
             client = Client(
-                base_url=AI_TRIAGE_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
-            result = object_opinions_command(client, args.get('object_id'))
+                base_url=AI_TRIAGE_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy
+            )
+            result = object_opinions_command(client, args.get("object_id"))
             return_results(result)
 
-        elif command == 'stairwell-run-to-ground-generate':
-            client = Client(
-                base_url=V1_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
-            result = run_to_ground_generate_command(client, args.get('object_ids'))
+        elif command == "stairwell-run-to-ground-generate":
+            client = Client(base_url=V1_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy)
+            result = run_to_ground_generate_command(client, args.get("object_ids"))
             return_results(result)
 
-        elif command == 'stairwell-ai-triage-summarize':
+        elif command == "stairwell-ai-triage-summarize":
             client = Client(
-                base_url=AI_TRIAGE_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
-            result = ai_triage_summarize_command(client, args.get('object_id'))
+                base_url=AI_TRIAGE_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy
+            )
+            result = ai_triage_summarize_command(client, args.get("object_id"))
             return_results(result)
 
         # Network Intel Commands - ASN
-        elif command == 'stairwell-asn-get-whois':
-            client = Client(
-                base_url=V2_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
-            result = asn_get_whois_command(client, args.get('asn'))
+        elif command == "stairwell-asn-get-whois":
+            client = Client(base_url=V2_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy)
+            result = asn_get_whois_command(client, args.get("asn"))
             return_results(result)
 
         # Network Intel Commands - Hostname
-        elif command == 'stairwell-hostname-get':
-            client = Client(
-                base_url=V2_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
-            result = hostname_get_command(client, args.get('hostname'), args.get('record_type'))
+        elif command == "stairwell-hostname-get":
+            client = Client(base_url=V2_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy)
+            result = hostname_get_command(client, args.get("hostname"), args.get("record_type"))
             return_results(result)
 
-        elif command == 'stairwell-hostname-get-resolutions':
-            client = Client(
-                base_url=V2_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
-            result = hostname_get_resolutions_command(
-                client,
-                args.get('hostname'),
-                args.get('start_time'),
-                args.get('end_time')
-            )
+        elif command == "stairwell-hostname-get-resolutions":
+            client = Client(base_url=V2_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy)
+            result = hostname_get_resolutions_command(client, args.get("hostname"), args.get("start_time"), args.get("end_time"))
             return_results(result)
 
-        elif command == 'stairwell-hostname-batch-get-resolutions':
-            client = Client(
-                base_url=V2_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
+        elif command == "stairwell-hostname-batch-get-resolutions":
+            client = Client(base_url=V2_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy)
             result = hostname_batch_get_resolutions_command(
                 client,
-                args.get('hostnames'),
-                args.get('start_time'),
-                args.get('end_time'),
-                args.get('record_types'),
-                args.get('include_errors')
+                args.get("hostnames"),
+                args.get("start_time"),
+                args.get("end_time"),
+                args.get("record_types"),
+                args.get("include_errors"),
             )
             return_results(result)
 
         # Network Intel Commands - IP Address
-        elif command == 'stairwell-ipaddress-get':
-            client = Client(
-                base_url=V2_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
-            result = ipaddress_get_command(client, args.get('ip_address'))
+        elif command == "stairwell-ipaddress-get":
+            client = Client(base_url=V2_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy)
+            result = ipaddress_get_command(client, args.get("ip_address"))
             return_results(result)
 
-        elif command == 'stairwell-ipaddress-lookup-cloud-provider':
-            client = Client(
-                base_url=V2_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
-            result = ipaddress_lookup_cloud_provider_command(client, args.get('ip_address'))
+        elif command == "stairwell-ipaddress-lookup-cloud-provider":
+            client = Client(base_url=V2_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy)
+            result = ipaddress_lookup_cloud_provider_command(client, args.get("ip_address"))
             return_results(result)
 
-        elif command == 'stairwell-ipaddress-get-hostnames-resolving-to-ip':
-            client = Client(
-                base_url=V2_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
+        elif command == "stairwell-ipaddress-get-hostnames-resolving-to-ip":
+            client = Client(base_url=V2_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy)
             result = ipaddress_get_hostnames_resolving_to_ip_command(
-                client,
-                args.get('ip_address'),
-                args.get('start_time'),
-                args.get('end_time')
+                client, args.get("ip_address"), args.get("start_time"), args.get("end_time")
             )
             return_results(result)
 
-        elif command == 'stairwell-ipaddress-get-whois':
-            client = Client(
-                base_url=V2_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
-            result = ipaddress_get_whois_command(client, args.get('ip_address'))
+        elif command == "stairwell-ipaddress-get-whois":
+            client = Client(base_url=V2_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy)
+            result = ipaddress_get_whois_command(client, args.get("ip_address"))
             return_results(result)
 
         # Network Intel Commands - Utilities
-        elif command == 'stairwell-utilities-get-cloud-ip-ranges':
-            client = Client(
-                base_url=V2_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
-            result = utilities_get_cloud_ip_ranges_command(client, args.get('provider'))
+        elif command == "stairwell-utilities-get-cloud-ip-ranges":
+            client = Client(base_url=V2_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy)
+            result = utilities_get_cloud_ip_ranges_command(client, args.get("provider"))
             return_results(result)
 
-        elif command == 'stairwell-utilities-batch-canonicalize-hostnames':
-            client = Client(
-                base_url=V2_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
-            result = utilities_batch_canonicalize_hostnames_command(client, args.get('hostnames'))
+        elif command == "stairwell-utilities-batch-canonicalize-hostnames":
+            client = Client(base_url=V2_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy)
+            result = utilities_batch_canonicalize_hostnames_command(client, args.get("hostnames"))
             return_results(result)
 
-        elif command == 'stairwell-utilities-batch-compute-etld-plus-one':
-            client = Client(
-                base_url=V2_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
-            result = utilities_batch_compute_etld_plus_one_command(client, args.get('domains'))
+        elif command == "stairwell-utilities-batch-compute-etld-plus-one":
+            client = Client(base_url=V2_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy)
+            result = utilities_batch_compute_etld_plus_one_command(client, args.get("domains"))
             return_results(result)
 
-        elif command == 'stairwell-utilities-canonicalize-hostname':
-            client = Client(
-                base_url=V2_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
-            result = utilities_canonicalize_hostname_command(client, args.get('hostname'))
+        elif command == "stairwell-utilities-canonicalize-hostname":
+            client = Client(base_url=V2_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy)
+            result = utilities_canonicalize_hostname_command(client, args.get("hostname"))
             return_results(result)
 
-        elif command == 'stairwell-utilities-compute-etld-plus-one':
-            client = Client(
-                base_url=V2_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
-            result = utilities_compute_etld_plus_one_command(client, args.get('domain'))
+        elif command == "stairwell-utilities-compute-etld-plus-one":
+            client = Client(base_url=V2_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy)
+            result = utilities_compute_etld_plus_one_command(client, args.get("domain"))
             return_results(result)
 
-        elif command == 'stairwell-utilities-batch-canonicalize-urls':
-            client = Client(
-                base_url=V2_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
-            result = utilities_batch_canonicalize_urls_command(client, args.get('urls'))
+        elif command == "stairwell-utilities-batch-canonicalize-urls":
+            client = Client(base_url=V2_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy)
+            result = utilities_batch_canonicalize_urls_command(client, args.get("urls"))
             return_results(result)
 
-        elif command == 'stairwell-utilities-canonicalize-url':
-            client = Client(
-                base_url=V2_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
-            result = utilities_canonicalize_url_command(client, args.get('url'))
+        elif command == "stairwell-utilities-canonicalize-url":
+            client = Client(base_url=V2_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy)
+            result = utilities_canonicalize_url_command(client, args.get("url"))
             return_results(result)
 
         # YARA Rules Commands
-        elif command == 'stairwell-yara-create-rule':
-            client = Client(
-                base_url=V1_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
-            result = yara_create_rule_command(
-                client,
-                args.get('environment'),
-                args.get('rule_definition')
-            )
+        elif command == "stairwell-yara-create-rule":
+            client = Client(base_url=V1_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy)
+            result = yara_create_rule_command(client, args.get("environment"), args.get("rule_definition"))
             return_results(result)
 
-        elif command == 'stairwell-yara-get-rule':
-            client = Client(
-                base_url=V1_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
-            result = yara_get_rule_command(
-                client,
-                args.get('environment'),
-                args.get('yara_rule'),
-                args.get('match_count_envs')
-            )
+        elif command == "stairwell-yara-get-rule":
+            client = Client(base_url=V1_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy)
+            result = yara_get_rule_command(client, args.get("environment"), args.get("yara_rule"), args.get("match_count_envs"))
             return_results(result)
 
-        elif command == 'stairwell-yara-query-matches':
-            client = Client(
-                base_url=V1_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
+        elif command == "stairwell-yara-query-matches":
+            client = Client(base_url=V1_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy)
             result = yara_query_matches_command(
                 client,
-                args.get('environment'),
-                args.get('yara_rule'),
-                args.get('included_environments'),
-                args.get('page_size'),
-                args.get('page_token')
+                args.get("environment"),
+                args.get("yara_rule"),
+                args.get("included_environments"),
+                args.get("page_size"),
+                args.get("page_token"),
             )
             return_results(result)
 
         # Asset Management Commands
-        elif command == 'stairwell-asset-list':
-            client = Client(
-                base_url=V1_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
-            result = asset_list_command(
-                client,
-                args.get('environment'),
-                args.get('page_size'),
-                args.get('page_token')
-            )
+        elif command == "stairwell-asset-list":
+            client = Client(base_url=V1_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy)
+            result = asset_list_command(client, args.get("environment"), args.get("page_size"), args.get("page_token"))
             return_results(result)
 
-        elif command == 'stairwell-asset-create':
-            client = Client(
-                base_url=V1_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
+        elif command == "stairwell-asset-create":
+            client = Client(base_url=V1_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy)
             result = asset_create_command(
                 client,
-                args.get('environment'),
-                args.get('label'),
-                args.get('idempotency_key'),
-                args.get('os'),
-                args.get('os_version'),
-                args.get('forwarder_version')
+                args.get("environment"),
+                args.get("label"),
+                args.get("idempotency_key"),
+                args.get("os"),
+                args.get("os_version"),
+                args.get("forwarder_version"),
             )
             return_results(result)
 
-        elif command == 'stairwell-asset-get':
-            client = Client(
-                base_url=V1_BASE_URL,
-                verify=verify_certificate,
-                headers={"Authorization": api_key},
-                proxy=proxy)
-            result = asset_get_command(
-                client,
-                args.get('asset')
-            )
+        elif command == "stairwell-asset-get":
+            client = Client(base_url=V1_BASE_URL, verify=verify_certificate, headers={"Authorization": api_key}, proxy=proxy)
+            result = asset_get_command(client, args.get("asset"))
             return_results(result)
 
         else:
@@ -2281,10 +1945,8 @@ def main() -> None:  # pragma: no cover
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error("\n".join((f"Failed to execute {command} command.",
-                                "Error:",
-                                str(e))))
+        return_error("\n".join((f"Failed to execute {command} command.", "Error:", str(e))))
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
