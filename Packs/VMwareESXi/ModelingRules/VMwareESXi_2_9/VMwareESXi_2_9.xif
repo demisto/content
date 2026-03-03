@@ -926,7 +926,7 @@ call esxi_event_classification
     path_2 = arrayindex( regextract(_raw_log ,"on\s(\/\S+)"),0),
     mac_address = arrayindex( regextract(_raw_log , "MAC Address:\s([a-zA-Z0-9]+\:[a-zA-Z0-9]+\:[a-zA-Z0-9]+\:[a-zA-Z0-9]+\:[a-zA-Z0-9]+\:[a-zA-Z0-9]+)"),0)
 | alter
-    msg = coalesce(parsed_fields -> msg, msg_1, msg_2, msg_3),
+    msg = coalesce(msg_1, msg_2, msg_3, parsed_fields -> msg),
     path = coalesce(path_1, path_2),
     username = coalesce(username_1, username_2, username_3),
     source_ip = coalesce(source_ip_1, source_ip_2),
