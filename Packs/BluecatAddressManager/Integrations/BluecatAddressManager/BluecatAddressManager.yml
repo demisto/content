@@ -2,7 +2,6 @@ category: Network Security
 provider: BlueCat Networks
 sectionorder:
 - Connect
-- Collect
 commonfields:
   id: BluecatAddressManager
   version: -1
