@@ -696,7 +696,8 @@ class TestV79VersionDetection:
             - login() is NOT called
         """
         mocker.patch.object(
-            demisto, "getIntegrationContext",
+            demisto,
+            "getIntegrationContext",
             return_value={"auth_token": "cached_token", "is_v7_9": True},
         )
         mocker.patch.object(demisto, "params", return_value=PARAMS)
@@ -726,7 +727,8 @@ class TestV79VersionDetection:
             - login() is NOT called
         """
         mocker.patch.object(
-            demisto, "getIntegrationContext",
+            demisto,
+            "getIntegrationContext",
             return_value={"auth_token": "cached_token", "is_v7_9": False},
         )
         mocker.patch.object(demisto, "params", return_value=PARAMS)
@@ -756,7 +758,8 @@ class TestV79VersionDetection:
             - login() is NOT called
         """
         mocker.patch.object(
-            demisto, "getIntegrationContext",
+            demisto,
+            "getIntegrationContext",
             return_value={"auth_token": "cached_token"},
         )
         mocker.patch.object(demisto, "params", return_value=PARAMS)

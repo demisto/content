@@ -1048,7 +1048,7 @@ def main():
     global AUTH_TOKEN
     integration_context = demisto.getIntegrationContext()
     AUTH_TOKEN = integration_context.get("auth_token") or login()
-    
+
     global IS_V7_9
     # At this point, login() has already been called, and is_v7_9 is set within the login() function.
     IS_V7_9 = integration_context.get("is_v7_9", False)
