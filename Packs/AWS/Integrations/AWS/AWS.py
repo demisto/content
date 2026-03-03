@@ -5010,7 +5010,7 @@ class EC2:
 
         kwargs = remove_empty_elements(
             {
-                "Filters": parse_filter_field(args.get("filters")) if args.get("filters") else None,
+                "Filters": parse_filter_field(args.get("filters")),
                 "FleetIds": argToList(args.get("fleet_ids")),
             }
         )
@@ -5063,7 +5063,7 @@ class EC2:
         kwargs = remove_empty_elements(
             {
                 "FleetId": args.get("fleet_id"),
-                "Filters": parse_filter_field(args.get("filters")) if args.get("filters") else None,
+                "Filters": parse_filter_field(args.get("filters")),
             }
         )
 
