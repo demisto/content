@@ -235,7 +235,7 @@ repos:
     require_serial: true
     args:
     -  validate
-
+    
   - id: validate-conf-json
     name: validate-conf-json
     description: validate conf.json
