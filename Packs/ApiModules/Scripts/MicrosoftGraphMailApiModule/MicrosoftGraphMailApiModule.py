@@ -67,6 +67,8 @@ class MsGraphMailBaseClient(MicrosoftClient):
         Files smaller than ``MAX_ATTACHMENT_SIZE`` (3 MB) are encoded as base64 ``contentBytes``
         and included directly in the ``sendMail`` API payload.  Files that exceed the threshold
         are returned with ``requires_upload=True`` so the caller can create an upload session.
+        More information can be found here:
+        https://learn.microsoft.com/en-us/graph/api/message-post-attachments?view=graph-rest-1.0&tabs=http
 
         Args:
             inline_from_layout_attachments (list[dict]): List of dicts produced by ``handle_html()``.
