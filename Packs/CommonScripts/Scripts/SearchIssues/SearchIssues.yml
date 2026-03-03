@@ -1,5 +1,5 @@
 args:
-  - description: The unique ID of the issue.
+  - description: The unique numeric ID of the issue (integer only, e.g. 12345). Do not pass placeholder values such as 'n/a', 'unknown', or any non-numeric string.
     isArray: true
     name: issue_id
   - auto: PREDEFINED
@@ -100,13 +100,11 @@ args:
       - DESC
       - ASC
   - defaultValue: "0"
-    description: The first page from which we bring the issues.
-    isArray: true
+    description: The starting offset for pagination (integer only, e.g. 0, 50, 100).
     name: offset
     deprecated: true
   - defaultValue: "50"
-    description: The last page from which we bring the issues.
-    isArray: true
+    description: The maximum number of issues to return (integer only, e.g. 50, 100).
     name: limit
     deprecated: true
   - defaultValue: "0"
@@ -243,6 +241,9 @@ outputs:
     description: The total number of issues in the system that match all filter criteria.
     type: Number
 isInternal: true
+dependson:
+  must:
+  - core-get-issues
 script: "-"
 subtype: python3
 tags:
@@ -256,6 +257,16 @@ tests:
 marketplaces:
   - platform
 supportedModules:
-  - agentix
+  - C1
+  - C3
+  - X0
+  - X1
+  - X3
+  - X5
+  - ENT_PLUS
   - xsiam
+  - agentix
+  - cloud
   - cloud_posture
+  - cloud_runtime_security
+  - edr
