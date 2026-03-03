@@ -4743,3 +4743,117 @@ Initiates a forensics triage on the specified endpoints. You must have Cortex XD
 | PaloAltoNetworksXDR.EndpointTriage.TRIAGE_ID | String | The unique identifier assigned to the created triage action. |
 | PaloAltoNetworksXDR.EndpointTriage.SUCCESSFUL_AGENT_IDS | Array | A list of agent IDs where the triage action was successfully initiated. |
 | PaloAltoNetworksXDR.EndpointTriage.UNSUCCESSFUL_AGENT_IDS | Array | A list of agent IDs where the triage action failed to initiate. |
+### xdr-issue-list
+
+***
+Retrieve issues based on filters. Issues with an 'INFO' severity level are filtered out.
+
+#### Base Command
+
+`xdr-issue-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_id | A comma-separated list of issue IDs. | Optional | 
+| external_id | A comma-separated list of external IDs. | Optional | 
+| detection_method | A comma-separated list of methods used to detect the activity. Possible values are: BIOC, Correlation, Analytics, System, IOC. | Optional | 
+| domain | A comma-separated list of domains. | Optional | 
+| severity | A comma-separated list of severities. Possible values are: info, low, medium, high, critical. | Optional | 
+| insert_time | Filter by issues inserted after this time. | Optional | 
+| status | A comma-separated list of statuses. Possible values: 'New', 'In Progress', 'Resolved'. | Optional | 
+| sort_field | The field to sort by. Possible values are: issue_id, severity, observation_time. | Optional | 
+| sort_order | The sort order. Possible values are: asc, desc. | Optional | 
+| limit | The maximum number of results to return. | Optional | 
+| page_size | The page size. | Optional | 
+| page | The page number. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.Issue.observation_time | Number | The timestamp when the observation occurred. | 
+| PaloAltoNetworksXDR.Issue.domain | String | The security domain associated with the observation. | 
+| PaloAltoNetworksXDR.Issue.remediation | String | Suggested remediation steps. | 
+| PaloAltoNetworksXDR.Issue.impact | String | The potential impact of the observed activity. | 
+| PaloAltoNetworksXDR.Issue.status | String | The current progress status \(e.g., New\). | 
+| PaloAltoNetworksXDR.Issue.status_resolution_comment | String | Comments regarding the resolution of the status. | 
+| PaloAltoNetworksXDR.Issue.status_progress | String | The current progress status \(e.g., New\). | 
+| PaloAltoNetworksXDR.Issue.asset_ids | String | List of asset IDs involved. | 
+| PaloAltoNetworksXDR.Issue.assigned_to_pretty | String | The display name of the user assigned to this item. | 
+| PaloAltoNetworksXDR.Issue.last_update_timestamp | Number | The last time this record was updated. | 
+| PaloAltoNetworksXDR.Issue.detection_method | String | The method used to detect the activity \(e.g., BIOC\). | 
+| PaloAltoNetworksXDR.Issue.is_starred | Boolean | Whether the item has been starred/flagged. | 
+| PaloAltoNetworksXDR.Issue.name | String | The name of the observation or alert. | 
+| PaloAltoNetworksXDR.Issue.external_id | String | The unique UUID for external reference. | 
+| PaloAltoNetworksXDR.Issue.insert_time | Number | The time the record was inserted into the database. | 
+| PaloAltoNetworksXDR.Issue.detection_rule_id | String | The ID of the specific detection rule triggered. | 
+| PaloAltoNetworksXDR.Issue.tags | String | A list of tags associated with the observation. | 
+| PaloAltoNetworksXDR.Issue.type | String | The classification type of the observation. | 
+| PaloAltoNetworksXDR.Issue.id | Number | The numeric ID of the observation. | 
+| PaloAltoNetworksXDR.Issue.description | String | Detailed description of the observed activity. | 
+| PaloAltoNetworksXDR.Issue.severity | String | The severity level \(e.g., LOW\). | 
+| PaloAltoNetworksXDR.Issue.category | String | The category classification. | 
+| PaloAltoNetworksXDR.Issue.is_excluded | Boolean | Whether this observation is excluded from standard views. | 
+### xdr-issue-create
+
+***
+Create a new issue. Issues with an 'INFO' severity level will not be displayed in the UI
+
+#### Base Command
+
+`xdr-issue-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The issue name. | Required | 
+| description | The issue description. | Required | 
+| observation_time | The observation time. Should support english expressions like "one year". | Required | 
+| domain | The domain. | Required | 
+| category | The category. | Required | 
+| asset_id | A comma-separated list of asset IDs. | Optional | 
+| mitre_tactic | A comma-separated list of MITRE tactics. | Optional | 
+| mitre_tecnique | A comma-separated list of MITRE techniques. | Optional | 
+| type | The issue type. | Optional | 
+| extended_description | The extended description. | Optional | 
+| impact | The impact. | Optional | 
+| tags | A comma-separated list of tags. | Optional | 
+| is_excluded | Whether the issue is excluded. Possible values are: true, false. | Optional | 
+| is_starred | Whether the issue is starred. Possible values are: true, false. | Optional | 
+| assigned_to | The user assigned to the issue. | Optional | 
+| assigned_to_pretty | The pretty name of the user assigned to the issue. | Optional | 
+| severity | The severity. Possible values are: critical, info, low, medium, high. | Required | 
+| normalized_fields_json | The JSON to add to the "normalized_fields" field in the API. | Optional | 
+| custom_fields_json | The JSON to add to the "custom_fields" field in the API. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.Issue.external_id | String | The issue external ID. | 
+| PaloAltoNetworksXDR.Issue.detection_method | String | The issue detection method. | 
+### xdr-issue-update
+
+***
+Update an existing issue.
+
+#### Base Command
+
+`xdr-issue-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_id | The issue ID. | Required | 
+| severity | The severity. Possible values are: critical, info, low, medium, high. | Optional | 
+| status | The status. Possible values are: new, in_progress, resolved. | Optional | 
+| resolve_reason | The resolve reason. Possible values are: resolved_threat_handled, resolved_known_issue, resolved_duplicate, resolved_false_positive, resolved_other, resolved_true_positive, resolved_security_testing. | Optional | 
+| resolve_comment | The resolve comment. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
