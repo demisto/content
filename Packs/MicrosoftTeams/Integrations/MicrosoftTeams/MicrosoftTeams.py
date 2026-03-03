@@ -974,7 +974,7 @@ def create_proactive_conversation(user_id: str) -> str:
 
     if not service_url:
         raise ValueError(
-            "Service URL not found. Please ensure the bot has been added to a team and has received at least one message."
+            "Did not find service URL. Try messaging the bot on Microsoft Teams"
         )
 
     if not tenant_id:
@@ -2814,22 +2814,18 @@ def send_proactive_message_command():
     message: str = args.get("message", "")
     adaptive_card_arg = args.get("adaptive_card", "")
 
-    # Validate inputs - message and adaptive_card are both optional, but at least one must be provided
     if not message and not adaptive_card_arg:
         raise ValueError("Either message or adaptive_card must be provided.")
 
     if message and adaptive_card_arg:
         raise ValueError("Provide either message or adaptive_card, not both.")
 
-    # Step 1: Resolve user identifier to user ID and email
     demisto.debug(f"Resolving user identifier: {user_id_arg}")
     user_id = resolve_user_id_for_proactive_message(user_id_arg)
 
-    # Step 2: Create or retrieve proactive conversation
     demisto.debug(f"Creating/retrieving proactive conversation for user: {user_id}")
     conversation_id = create_proactive_conversation(user_id)
 
-    # Step 3: Prepare message or adaptive card
     adaptive_card_obj = None
     if adaptive_card_arg:
         # Parse if string, use directly if dict
@@ -2848,7 +2844,6 @@ def send_proactive_message_command():
             # Regular adaptive card
             adaptive_card_obj = handle_raw_adaptive_card(adaptive_card)
 
-    # Step 4: Send the proactive message
     demisto.debug(f"Sending proactive message to conversation: {conversation_id}")
     response = send_proactive_message_to_conversation(
         conversation_id=conversation_id, message=message, adaptive_card=adaptive_card_obj
