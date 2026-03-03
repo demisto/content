@@ -1,0 +1,801 @@
+{
+    "dashboards_data": [
+        {
+            "name": "Cortex Insights [Agent Information]",
+            "description": "Cortex Insights widgets that relate to Agent Information",
+            "status": "ENABLED",
+            "layout": [
+                {
+                    "id": "row-2252",
+                    "data": [
+                        {
+                            "key": "xql_1770838262772",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 511,
+                                "phrase": "dataset = endpoints\n  | filter endpoint_status in (ENUM.CONNECTED, ENUM.DISCONNECTED)\n  | filter is_edr_enabled = ENUM.NO\n  | fields endpoint_name as name, endpoint_type as type, assigned_prevention_policy as Policy",
+                                "entityType": "xql-widget-table-98e9b8c7-bd85-4e66-810c-6b47a6be2200",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1770838133923",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 511,
+                                "phrase": "dataset = endpoints\n  | filter endpoint_status in (ENUM.CONNECTED, ENUM.DISCONNECTED)\n  | filter is_forensics_enabled != \"FALSE\"\n  | fields endpoint_name as name, endpoint_type as type, assigned_prevention_policy as Policy\n",
+                                "entityType": "xql-widget-table-c6cd61e2-b2fd-4b01-8e8a-dfa59954e1e1",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1770845902896",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 511,
+                                "phrase": "dataset = endpoints | comp count() as total by platform, operating_system, os_version | sort desc total\n\n| view graph type = pie subtype = full xaxis = operating_system yaxis = total ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "full"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "operating_system"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "total"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-8821",
+                    "data": [
+                        {
+                            "key": "xql_1770835760483",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 36.68303740083113,
+                                "height": 511,
+                                "phrase": "dataset = endpoints\n  | filter endpoint_status in (ENUM.CONNECTION_LOST)\n  | alter daysNotSeen = timestamp_diff(current_time(), last_seen, \"DAY\")\n  | fields endpoint_name as name, endpoint_type as type, daysNotSeen, last_seen\n",
+                                "entityType": "xql-widget-table-1f85bf97-dc2b-43ea-8e7d-0141c4e6c135",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1770863542166",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 29.958443520967133,
+                                "height": 511,
+                                "phrase": "dataset = endpoints | fields endpoint_id, operational_status, platform | filter operational_status != ENUM.PROTECTED | comp count() as total by operational_status, platform\n\n| view graph type = pie subtype = full show_callouts = `true` xaxis = operational_status yaxis = total ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "full"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "operational_status"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "total"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1770863269058",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 511,
+                                "phrase": "dataset = endpoints\n  | filter endpoint_status in (ENUM.DISCONNECTED) and endpoint_type in (ENUM.TYPE_SERVER)\n  | filter timestamp_diff(current_time(), last_seen, \"DAY\") >= 20\n  | alter daysNotSeen = timestamp_diff(current_time(), last_seen, \"DAY\")\n  | fields endpoint_name as name, endpoint_type as type, daysNotSeen, last_seen\n",
+                                "entityType": "xql-widget-table-12e576dd-785f-493f-900e-582202398ebf",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-480",
+                    "data": [
+                        {
+                            "key": "xql_1770838476145",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 511,
+                                "phrase": "dataset = agent_auditing | filter agent_auditing_type = ENUM.AGENT_AUDIT_INSTALLATION and agent_auditing_subtype = ENUM.AGENT_AUDIT_UPGRADE and agent_auditing_result = ENUM.AGENT_AUDIT_FAIL | comp count(endpoint_id) as endpoint_failure_Count by endpoint_id, endpoint_name | filter endpoint_failure_Count >=3 | alter excessive_upgrade_failures = if(endpoint_id in(dataset = endpoints | filter last_upgrade_status = \"FAILED\"| fields endpoint_id),true,false) | filter excessive_upgrade_failures = true | join type = left (dataset = endpoints | alter status_description = arraystring(arraydistinct(arraymap(json_extract_array(operational_status_description , \"$.\"),  json_extract_scalar(\"@element\", \"$.reason\"))), \" , \") | alter detailed_description = arraystring(arraydistinct(arraymap(json_extract_array(operational_status_description , \"$.\"),  json_extract_scalar(\"@element\", \"$.title\"))), \" , \") | fields endpoint_name, platform, operating_system, last_upgrade_failure_reason, status_description, detailed_description, agent_version, last_upgrade_status, last_upgrade_status_time, auto_upgrade_status, installation_package,endpoint_id ) as endpoint_fields endpoint_fields.endpoint_id = endpoint_id",
+                                "entityType": "xql-widget-table-90655417-ba95-40b6-8af5-671e70aacb73",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-4178",
+                    "data": [
+                        {
+                            "key": "xql_1770863032764",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 400,
+                                "phrase": "dataset = endpoints | filter content_auto_update = ENUM.DISABLED | comp count() as total by assigned_prevention_policy\n| view graph type = pie subtype = full xaxis = assigned_prevention_policy yaxis = total ",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "full"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "assigned_prevention_policy"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "total"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1770835832774",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 400,
+                                "phrase": "dataset = endpoints\n  | filter endpoint_status in (ENUM.DISCONNECTED) and endpoint_type in (ENUM.TYPE_WORKSTATION)\n  | filter timestamp_diff(current_time(), last_seen, \"DAY\") >= 20\n  | alter daysNotSeen = timestamp_diff(current_time(), last_seen, \"DAY\")\n  | fields endpoint_name as name, endpoint_type as type, daysNotSeen, last_seen\n",
+                                "entityType": "xql-widget-table-ff0cd490-5e09-452f-b2f1-8be2afd87df3",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1770845614269",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 400,
+                                "phrase": "config case_sensitive = false | dataset = endpoints | filter endpoint_status in (ENUM.CONNECTED, ENUM.DISCONNECTED) | filter operational_status != ENUM.PROTECTED | alter opstat_reason = arraymap (json_extract_array (to_json_string(operational_status_description),\"$.\"), json_extract_scalar (\"@element\", \"$.reason\")) | arrayexpand opstat_reason | dedup endpoint_id, opstat_reason | comp count() as total by platform, opstat_reason\n\n| view graph type = pie subtype = full xaxis = opstat_reason yaxis = total ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "full"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "opstat_reason"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "total"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-4176",
+                    "data": [
+                        {
+                            "key": "xql_1770835608071",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 400,
+                                "phrase": "config case_sensitive = false | dataset = endpoints | fields endpoint_name, endpoint_id, endpoint_status, operational_status, operational_status_description, platform | filter endpoint_status in (ENUM.CONNECTED, ENUM.DISCONNECTED) | filter operational_status != ENUM.PROTECTED | alter opstat_reason = arraymap (json_extract_array (to_json_string(operational_status_description),\"$.\"), json_extract_scalar (\"@element\", \"$.reason\")) | arrayexpand opstat_reason | dedup endpoint_id, opstat_reason | fields endpoint_name, endpoint_id, endpoint_status, operational_status, opstat_reason, platform\n",
+                                "entityType": "xql-widget-table-64096e51-fce0-4fa1-bbc5-c3d23235ce30",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_dashboard_id": 1,
+            "global_id": "92e0fe9748974f55a05e73b8c799f130",
+            "metadata": {
+                "params": []
+            }
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1770838476145",
+            "title": "Agent failure - Failed upgrades (Last 30 days)",
+            "creation_time": 1771947009427,
+            "description": "Cortex Insights widgets",
+            "data": {
+                "phrase": "dataset = agent_auditing | filter agent_auditing_type = ENUM.AGENT_AUDIT_INSTALLATION and agent_auditing_subtype = ENUM.AGENT_AUDIT_UPGRADE and agent_auditing_result = ENUM.AGENT_AUDIT_FAIL | comp count(endpoint_id) as endpoint_failure_Count by endpoint_id, endpoint_name | filter endpoint_failure_Count >=3 | alter excessive_upgrade_failures = if(endpoint_id in(dataset = endpoints | filter last_upgrade_status = \"FAILED\"| fields endpoint_id),true,false) | filter excessive_upgrade_failures = true | join type = left (dataset = endpoints | alter status_description = arraystring(arraydistinct(arraymap(json_extract_array(operational_status_description , \"$.\"),  json_extract_scalar(\"@element\", \"$.reason\"))), \" , \") | alter detailed_description = arraystring(arraydistinct(arraymap(json_extract_array(operational_status_description , \"$.\"),  json_extract_scalar(\"@element\", \"$.title\"))), \" , \") | fields endpoint_name, platform, operating_system, last_upgrade_failure_reason, status_description, detailed_description, agent_version, last_upgrade_status, last_upgrade_status_time, auto_upgrade_status, installation_package,endpoint_id ) as endpoint_fields endpoint_fields.endpoint_id = endpoint_id",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "endpoints",
+                    "agent_auditing"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1770835760483",
+            "title": "Agents that are in Connection Lost state",
+            "creation_time": 1771947008855,
+            "description": "Cortex Insights widget",
+            "data": {
+                "phrase": "dataset = endpoints\n  | filter endpoint_status in (ENUM.CONNECTION_LOST)\n  | alter daysNotSeen = timestamp_diff(current_time(), last_seen, \"DAY\")\n  | fields endpoint_name as name, endpoint_type as type, daysNotSeen, last_seen\n",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "endpoints"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1770863269058",
+            "title": "Server Agents that are disconnected for more than 20 days",
+            "creation_time": 1771947010138,
+            "description": "Cortex Insights widget",
+            "data": {
+                "phrase": "dataset = endpoints\n  | filter endpoint_status in (ENUM.DISCONNECTED) and endpoint_type in (ENUM.TYPE_SERVER)\n  | filter timestamp_diff(current_time(), last_seen, \"DAY\") >= 20\n  | alter daysNotSeen = timestamp_diff(current_time(), last_seen, \"DAY\")\n  | fields endpoint_name as name, endpoint_type as type, daysNotSeen, last_seen\n",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "endpoints"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1770845902896",
+            "title": "Endpoint OS distribution",
+            "creation_time": 1771947009651,
+            "description": "Cortex Insights widgets",
+            "data": {
+                "phrase": "dataset = endpoints | comp count() as total by platform, operating_system, os_version | sort desc total\n\n| view graph type = pie subtype = full xaxis = operating_system yaxis = total ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "full"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "operating_system"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "total"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "endpoints"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1770835608071",
+            "title": "Reasons for not fully protected endpoints",
+            "creation_time": 1771947010635,
+            "description": "Cortex Insights widget",
+            "data": {
+                "phrase": "config case_sensitive = false | dataset = endpoints | fields endpoint_name, endpoint_id, endpoint_status, operational_status, operational_status_description, platform | filter endpoint_status in (ENUM.CONNECTED, ENUM.DISCONNECTED) | filter operational_status != ENUM.PROTECTED | alter opstat_reason = arraymap (json_extract_array (to_json_string(operational_status_description),\"$.\"), json_extract_scalar (\"@element\", \"$.reason\")) | arrayexpand opstat_reason | dedup endpoint_id, opstat_reason | fields endpoint_name, endpoint_id, endpoint_status, operational_status, opstat_reason, platform\n",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "endpoints"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1770835832774",
+            "title": "Workstation Agents that are disconnected for more than 20 days",
+            "creation_time": 1771947008010,
+            "description": "Cortex Insights widget",
+            "data": {
+                "phrase": "dataset = endpoints\n  | filter endpoint_status in (ENUM.DISCONNECTED) and endpoint_type in (ENUM.TYPE_WORKSTATION)\n  | filter timestamp_diff(current_time(), last_seen, \"DAY\") >= 20\n  | alter daysNotSeen = timestamp_diff(current_time(), last_seen, \"DAY\")\n  | fields endpoint_name as name, endpoint_type as type, daysNotSeen, last_seen\n",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "endpoints"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1770863032764",
+            "title": "Prevention profiles configured without automatic Content Updates",
+            "creation_time": 1771947008598,
+            "description": "Cortex insights widgets",
+            "data": {
+                "phrase": "dataset = endpoints | filter content_auto_update = ENUM.DISABLED | comp count() as total by assigned_prevention_policy\n| view graph type = pie subtype = full xaxis = assigned_prevention_policy yaxis = total ",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "full"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "assigned_prevention_policy"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "total"
+                            }
+                        }
+                    ]
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "endpoints"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1770845614269",
+            "title": "Reasons for not fully protected endpoints (Summary)",
+            "creation_time": 1771947010305,
+            "description": "Cortex Insights widgets",
+            "data": {
+                "phrase": "config case_sensitive = false | dataset = endpoints | filter endpoint_status in (ENUM.CONNECTED, ENUM.DISCONNECTED) | filter operational_status != ENUM.PROTECTED | alter opstat_reason = arraymap (json_extract_array (to_json_string(operational_status_description),\"$.\"), json_extract_scalar (\"@element\", \"$.reason\")) | arrayexpand opstat_reason | dedup endpoint_id, opstat_reason | comp count() as total by platform, opstat_reason\n\n| view graph type = pie subtype = full xaxis = opstat_reason yaxis = total ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "full"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "opstat_reason"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "total"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "endpoints"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1770838262772",
+            "title": "Agents without XDR Pro license",
+            "creation_time": 1771947009590,
+            "description": "Cortex Insights widgets",
+            "data": {
+                "phrase": "dataset = endpoints\n  | filter endpoint_status in (ENUM.CONNECTED, ENUM.DISCONNECTED)\n  | filter is_edr_enabled = ENUM.NO\n  | fields endpoint_name as name, endpoint_type as type, assigned_prevention_policy as Policy",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "endpoints"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1770838133923",
+            "title": "Agents with Forensics license",
+            "creation_time": 1771947009719,
+            "description": "Cortex Insights widgets",
+            "data": {
+                "phrase": "dataset = endpoints\n  | filter endpoint_status in (ENUM.CONNECTED, ENUM.DISCONNECTED)\n  | filter is_forensics_enabled != \"FALSE\"\n  | fields endpoint_name as name, endpoint_type as type, assigned_prevention_policy as Policy\n",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "endpoints"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1770863542166",
+            "title": "Not fully protected endpoints",
+            "creation_time": 1771947008528,
+            "description": "Cortex Insights widgets",
+            "data": {
+                "phrase": "dataset = endpoints | fields endpoint_id, operational_status, platform | filter operational_status != ENUM.PROTECTED | comp count() as total by operational_status, platform\n\n| view graph type = pie subtype = full show_callouts = `true` xaxis = operational_status yaxis = total ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "full"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "operational_status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "total"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "endpoints"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        }
+    ],
+    "id": "92e0fe9748974f55a05e73b8c799f130",
+    "name": "Cortex Insights [Agent Information]"
+}

@@ -1,0 +1,2653 @@
+{
+    "dashboards_data": [
+        {
+            "name": "Cortex Cloud posture Badges (Graph)",
+            "description": "Cortex Cloud posture dashboard widgets",
+            "status": "ENABLED",
+            "layout": [
+                {
+                    "id": "row-8740",
+                    "data": [
+                        {
+                            "key": "xql_1770754382193",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 32.98073290517567,
+                                "height": 661,
+                                "phrase": "dataset = cloud_health_auditing | comp count_distinct(account) as total_accounts, count_distinct(if(capability = \"ADS\" and classification= \"Scanned\", account, null)) as ads_enabled_accounts | alter ads_enabled_ratio = divide(ads_enabled_accounts , total_accounts ) | alter agentless_enabled_percentage = multiply(ads_enabled_ratio , 100) | alter agentless_enabled_percentage = round(agentless_enabled_percentage ) | alter status = if(agentless_enabled_percentage >0, \"Achieved\", \"Not Currently Passing\")\n\n\n\n\n| view graph type = gauge subtype = radial header = \"Enable ADS (Agentless Disc Scanning)\" yaxis = ads_enabled_accounts maxscalerange = 100 scale_threshold(\"#e50c6d\",\"#16d286\",\"1\") dataunit = \"Accounts\" default_limit = `false` font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"ads_enabled_accounts\",\">1 implies Bronze is Achieved\") ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "gauge",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "radial"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Enable ADS (Agentless Disc Scanning)\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "ads_enabled_accounts"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "maxscalerange",
+                                                "value": "100"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "#e50c6d",
+                                                    "#16d286",
+                                                    1
+                                                ],
+                                                "name": "scale_threshold"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "dataunit",
+                                                "value": "\"Accounts\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "default_limit",
+                                                "value": "false"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legendfontsize",
+                                                "value": "14"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "ads_enabled_accounts",
+                                                    ">1 implies Bronze is Achieved"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1770754027469",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.66074801662259,
+                                "height": 661,
+                                "phrase": "config timeframe = 30d |dataset in (issues) | bin xdm.issue.observation_time  span = 15d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.category = \"ATTACK_PATH\" | comp count(xdm.issue.id) as num_of_issues by date | sort desc date  | windowcomp lag(num_of_issues) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(num_of_issues , previous_issues), previous_issues),-100)) | alter issues_resolved = subtract(num_of_issues , previous_issues) | alter status = if(percent_burndown > 25, \"Achieved\", \"Not Currently Passing\" )  | filter previous_issues != null\n\n\n\n\n\n| view graph type = gauge subtype = radial header = \"25% Reduction in Risky Attack Paths\" yaxis = percent_burndown maxscalerange = 100 scale_threshold(\"#e21414\",\"#00ff45\",\"25\") dataunit = \"% attack paths reduced\" default_limit = `false` headerfontsize = 20 legendfontsize = 14 seriestitle(\"percent_burndown\",\">25% implies Silver is Achieved\") ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "gauge",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "radial"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"25% Reduction in Risky Attack Paths\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "percent_burndown"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "maxscalerange",
+                                                "value": "100"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "#e21414",
+                                                    "#00ff45",
+                                                    25
+                                                ],
+                                                "name": "scale_threshold"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "dataunit",
+                                                "value": "\"% attack paths reduced\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "default_limit",
+                                                "value": "false"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legendfontsize",
+                                                "value": "14"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "percent_burndown",
+                                                    ">25% implies Silver is Achieved"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1770755120707",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 661,
+                                "phrase": "config timeframe = 30d | dataset = cases  | top xdm.case.status_progress | filter xdm.case.status_progress = \"RESOLVED\" | alter status = if (top_percent != 100, \"Not Currently Passing\", \"Achieved\")\n\n\n\n| view graph type = gauge subtype = radial header = \"Remediation of all Cases\" yaxis = top_percent maxscalerange = 100 scale_threshold(\"#f10c0c\",\"#00ff87\",\"100\") dataunit = \"% cases resolved\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"top_percent\",\"100% implies Gold is Achieved\") ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "gauge",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "radial"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Remediation of all Cases\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "top_percent"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "maxscalerange",
+                                                "value": "100"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "#f10c0c",
+                                                    "#00ff87",
+                                                    100
+                                                ],
+                                                "name": "scale_threshold"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "dataunit",
+                                                "value": "\"% cases resolved\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legendfontsize",
+                                                "value": "14"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "top_percent",
+                                                    "100% implies Gold is Achieved"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-4115",
+                    "data": [
+                        {
+                            "key": "xql_1770760487534",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 576,
+                                "phrase": "dataset = cloud_health_auditing  | comp count_distinct(account) as total_accounts, count_distinct(if(capability = \"DSPM\" and classification= \"Success\", account, null)) as dspm_enabled_accounts | alter dspm_enabled_ratio = divide(dspm_enabled_accounts , total_accounts ) | alter dspm_enabled_percentage = multiply(dspm_enabled_ratio , 100) | alter dspm_enabled_percentage = round(dspm_enabled_percentage) | alter status = if(dspm_enabled_percentage >0, \"Achieved\", \"Not Currently Passing\")\n\n\n\n| view graph type = gauge subtype = radial header = \"Cloud Connector enabled with DSPM\" yaxis = dspm_enabled_accounts maxscalerange = 100 scale_threshold(\"#eb0a0a\",\"#18c482\",\"1\") font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"dspm_enabled_accounts\",\">=1 implies Bronze is Achieved\") ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "gauge",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "radial"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Cloud Connector enabled with DSPM\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "dspm_enabled_accounts"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "maxscalerange",
+                                                "value": "100"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "#eb0a0a",
+                                                    "#18c482",
+                                                    1
+                                                ],
+                                                "name": "scale_threshold"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legendfontsize",
+                                                "value": "14"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "dspm_enabled_accounts",
+                                                    ">=1 implies Bronze is Achieved"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1770761821283",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 576,
+                                "phrase": "dataset = asset_inventory | join type = left (dataset = dspm_asset_data_profiles) as dspm xdm.asset.id = dspm.asset_id | filter xdm.asset.type.class = \"Data\" | comp count_distinct(asset_id ) as classified_assets, count_distinct(xdm.asset.id ) as total_dspm_assets | alter classified_dspm_assets_ratio = divide(classified_assets , total_dspm_assets ) | alter classified_dspm_assets_percentage = multiply(classified_dspm_assets_ratio  , 100)| alter classified_dspm_assets_percentage = round(classified_dspm_assets_percentage )  | alter status = if(classified_dspm_assets_ratio > 75, \"Achieved \", \"Not Currently Passing\")\n\n\n\n| view graph type = gauge subtype = radial header = \"75% percent of data stores classified\" yaxis = classified_dspm_assets_percentage maxscalerange = 100 scale_threshold(\"#f90404\",\"#00ff87\",\"75\") dataunit = \"%\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"classified_dspm_assets_percentage\",\">75% implies Silver is Achieved\") ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "gauge",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "radial"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"75% percent of data stores classified\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "classified_dspm_assets_percentage"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "maxscalerange",
+                                                "value": "100"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "#f90404",
+                                                    "#00ff87",
+                                                    75
+                                                ],
+                                                "name": "scale_threshold"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "dataunit",
+                                                "value": "\"%\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legendfontsize",
+                                                "value": "14"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "classified_dspm_assets_percentage",
+                                                    ">75% implies Silver is Achieved"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1770763167183",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 576,
+                                "phrase": "config timeframe = 30d | dataset in (issues) | bin xdm.issue.observation_time  span = 15d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.category = \"DATA\" and xdm.issue.status.progress = \"NEW\" | comp count(xdm.issue.id) as num_of_issues by date | sort desc date | windowcomp lag(num_of_issues) sort asc date as previous_issues |  alter percent_burndown = round(multiply(divide(subtract(num_of_issues , previous_issues ), previous_issues),-100)) | alter issues_resolved = subtract(num_of_issues , previous_issues ) | alter status = if(previous_issues = null, 0, percent_burndown)   | limit 1\n\n\n\n\n| view graph type = gauge subtype = radial header = \"Number of data issues has gone down by 20%\" yaxis = status maxscalerange = 100 scale_threshold(\"#e21111\",\"#00ff87\",\"20\") dataunit = \"%\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"status\",\">20% implies Gold is Achieved\") ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "gauge",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "radial"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Number of data issues has gone down by 20%\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "status"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "maxscalerange",
+                                                "value": "100"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "#e21111",
+                                                    "#00ff87",
+                                                    20
+                                                ],
+                                                "name": "scale_threshold"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "dataunit",
+                                                "value": "\"%\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legendfontsize",
+                                                "value": "14"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "status",
+                                                    ">20% implies Gold is Achieved"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-8672",
+                    "data": [
+                        {
+                            "key": "xql_1770812227741",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 594,
+                                "phrase": "dataset = cloud_health_auditing |  comp count_distinct(account) as total_accounts, count_distinct(if(capability = \"Identity Security\" and classification= \"Success\", account, null)) as ciem_enabled_accounts | alter ciem_enabled_ratio = divide(ciem_enabled_accounts , total_accounts ) | alter ciem_enabled_percentage = multiply(ciem_enabled_ratio , 100) | alter ciem_enabled_percentage = round(ciem_enabled_percentage)\n\n\n\n| view graph type = gauge subtype = radial header = \"Onboarded Cloud Data Source with CIEM\" yaxis = ciem_enabled_accounts maxscalerange = 100 scale_threshold(\"#f2024a\",\"#00ff2f\",\"1\") default_limit = `false` font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"ciem_enabled_accounts\",\">1 implies Bronze is Achieved\") ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "gauge",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "radial"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Onboarded Cloud Data Source with CIEM\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "ciem_enabled_accounts"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "maxscalerange",
+                                                "value": "100"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "#f2024a",
+                                                    "#00ff2f",
+                                                    1
+                                                ],
+                                                "name": "scale_threshold"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "default_limit",
+                                                "value": "false"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legendfontsize",
+                                                "value": "14"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "ciem_enabled_accounts",
+                                                    ">1 implies Bronze is Achieved"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1770812485658",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 594,
+                                "phrase": "dataset =  issues | filter xdm.issue.category  = \"IDENTITY\" | comp count_distinct(xdm.issue.id ) as total_identity_issues, count_distinct(if(xdm.issue.status.progress = \"RESOLVED\",xdm.issue.id , 0)) as resolved_identity_issues | alter resolved_identity_issues_ratio = divide(resolved_identity_issues , total_identity_issues ) | alter resolved_identity_issues_percentage = multiply(resolved_identity_issues_ratio  , 100) |  alter resolved_identity_issues_percentage = round(resolved_identity_issues_percentage)\n\n\n| view graph type = gauge subtype = radial header = \"50% of IAM Alerts Remediated\" yaxis = resolved_identity_issues_percentage maxscalerange = 100 scale_threshold(\"#eb0b0b\",\"#1dff00\",\"50\") dataunit = \"%\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"resolved_identity_issues_percentage\",\">50% implies Silver is Achieved\") ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "gauge",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "radial"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"50% of IAM Alerts Remediated\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "resolved_identity_issues_percentage"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "maxscalerange",
+                                                "value": "100"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "#eb0b0b",
+                                                    "#1dff00",
+                                                    50
+                                                ],
+                                                "name": "scale_threshold"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "dataunit",
+                                                "value": "\"%\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legendfontsize",
+                                                "value": "14"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "resolved_identity_issues_percentage",
+                                                    ">50% implies Silver is Achieved"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1770813645629",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 594,
+                                "phrase": "config timeframe = 30d \n| dataset in (issues) \n| bin xdm.issue.observation_time span = 15d \n| alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time) \n| filter xdm.issue.category = \"IDENTITY\" and xdm.issue.status.progress = \"NEW\" \n| comp count(xdm.issue.id) as num_of_issues by date \n| windowcomp lag(num_of_issues) sort asc date as previous_issues \n| alter percent_burndown = round(multiply(divide(subtract(num_of_issues, previous_issues), previous_issues), -100)) \n| alter issues_resolved = subtract(num_of_issues, previous_issues) \n| alter status = if(previous_issues = null or percent_burndown < 0, 0, percent_burndown)\n| sort desc date \n| limit 1\n\n\n| view graph type = gauge subtype = radial header = \"Number of Identity Issues has gone down by 20%\" yaxis = status maxscalerange = 100 scale_threshold(\"#f80c0c\",\"#3eff00\",\"20\") dataunit = \"%\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"status\",\">20% implies Gold is Achieved\") ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "gauge",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "radial"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Number of Identity Issues has gone down by 20%\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "status"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "maxscalerange",
+                                                "value": "100"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "#f80c0c",
+                                                    "#3eff00",
+                                                    20
+                                                ],
+                                                "name": "scale_threshold"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "dataunit",
+                                                "value": "\"%\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legendfontsize",
+                                                "value": "14"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "status",
+                                                    ">20% implies Gold is Achieved"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-4854",
+                    "data": [
+                        {
+                            "key": "xql_1770814764056",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 626,
+                                "phrase": "config timeframe = 30d | dataset = incidents | filter timestamp_diff(current_time(),creation_time,\"DAY\") < 31 | bin creation_time  span = 15d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", creation_time ) | filter resolved_ts != null and creation_time != null  | alter resolution_time_in_days = timestamp_diff(resolved_ts, creation_time , \"DAY\") |  comp avg(ceil(resolution_time_in_days)) as MTTR_in_days by creation_time  | sort desc creation_time | windowcomp lag(MTTR_in_days ) sort asc creation_time  as previous_MTTR | alter percent_burndown = round(multiply(divide(subtract(MTTR_in_days , previous_MTTR), previous_MTTR),-100)) | alter issues_resolved = subtract(MTTR_in_days  , previous_MTTR) | sort desc creation_time  | limit 1\n\n\n\n\n| view graph type = gauge subtype = radial header = \"Remediation All badges\" yaxis = percent_burndown maxscalerange = 100 scale_threshold(\"#ff0000\",\"#cd7f32\",\"30\",\"#c0c0c0\",\"60\",\"#FF8411\",\"90\") dataunit = \"%\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "gauge",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "radial"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Remediation All badges\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "percent_burndown"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "maxscalerange",
+                                                "value": "100"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "#ff0000",
+                                                    "#cd7f32",
+                                                    30,
+                                                    "#c0c0c0",
+                                                    60,
+                                                    "#FF8411",
+                                                    90
+                                                ],
+                                                "name": "scale_threshold"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "dataunit",
+                                                "value": "\"%\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legendfontsize",
+                                                "value": "14"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-8763",
+                    "data": [
+                        {
+                            "key": "xql_1770815262577",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 534,
+                                "phrase": "dataset = cloud_health_auditing | comp count_distinct(account) as cspm_enabled_accounts\n\n\n\n| view graph type = gauge subtype = radial header = \"Onboard cloud accounts\" yaxis = cspm_enabled_accounts maxscalerange = 100 scale_threshold(\"#ff0000\",\"#12ff00\",\"1\") dataunit = \"accounts\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"cspm_enabled_accounts\",\">1 implies Bronze is Achieved\") ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "gauge",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "radial"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Onboard cloud accounts\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "cspm_enabled_accounts"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "maxscalerange",
+                                                "value": "100"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "#ff0000",
+                                                    "#12ff00",
+                                                    1
+                                                ],
+                                                "name": "scale_threshold"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "dataunit",
+                                                "value": "\"accounts\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legendfontsize",
+                                                "value": "14"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "cspm_enabled_accounts",
+                                                    ">1 implies Bronze is Achieved"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1770815504880",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 534,
+                                "phrase": "dataset = asset_inventory | comp count_distinct(xdm.asset.id ) as total_assets, count_distinct(if(xdm.asset.type.class = \"External Surface\", xdm.asset.id , null)) as shadow_asset_count | alter shadow_assets_ratio = divide(shadow_asset_count , total_assets ) | alter shadow_assets_percentage = multiply(shadow_assets_ratio , 100) | alter shadow_assets_percentage = round(shadow_assets_percentage)\n\n\n\n| view graph type = gauge subtype = radial header = \"Unmanaged/Shadow IT Assets are less than 30% of the assets\" yaxis = shadow_assets_percentage maxscalerange = 100 scale_threshold(\"#09d839\",\"#ff0037\",\"30\") dataunit = \"%\" default_limit = `false` font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"shadow_assets_percentage\",\"<30% implies Silver is Achieved\") ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "gauge",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "radial"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Unmanaged/Shadow IT Assets are less than 30% of the assets\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "shadow_assets_percentage"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "maxscalerange",
+                                                "value": "100"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "#09d839",
+                                                    "#ff0037",
+                                                    30
+                                                ],
+                                                "name": "scale_threshold"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "dataunit",
+                                                "value": "\"%\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "default_limit",
+                                                "value": "false"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legendfontsize",
+                                                "value": "14"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "shadow_assets_percentage",
+                                                    "<30% implies Silver is Achieved"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1770817417735",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 534,
+                                "phrase": "config timeframe = 30d \n| dataset in (issues) \n| bin xdm.issue.observation_time span = 15d \n| alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time) \n| alter is_target_issue = if(xdm.issue.category = \"CONFIGURATION\" and xdm.issue.severity = ENUM.CRITICAL and xdm.issue.status.progress = \"NEW\", 1, 0)\n| comp sum(is_target_issue) as num_of_issues by date \n| sort desc date \n| windowcomp lag(num_of_issues) sort asc date as previous_issues \n| alter percent_burndown = round(multiply(divide(subtract(num_of_issues, previous_issues), previous_issues), -100)) \n| alter issues_resolved = subtract(num_of_issues, previous_issues) \n| alter status = coalesce(percent_burndown, 0) \n| limit 1\n\n\n\n\n| view graph type = gauge subtype = radial header = \"Reduction of Critical Misconfigurations by 20%\" yaxis = status maxscalerange = 100 scale_threshold(\"#f60342\",\"#00ff66\",\"20\") dataunit = \"%\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"status\",\">20% implies Gold is Achieved\") ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "gauge",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "radial"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Reduction of Critical Misconfigurations by 20%\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "status"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "maxscalerange",
+                                                "value": "100"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "#f60342",
+                                                    "#00ff66",
+                                                    20
+                                                ],
+                                                "name": "scale_threshold"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "dataunit",
+                                                "value": "\"%\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legendfontsize",
+                                                "value": "14"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "status",
+                                                    ">20% implies Gold is Achieved"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_dashboard_id": 1,
+            "global_id": "2a3e86e19dc74f7091d17d39d16bf5e6",
+            "metadata": {
+                "params": []
+            }
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1770817417735",
+            "title": "Visibility into the environment - Gold",
+            "creation_time": 1772478697064,
+            "description": "Point in time widget",
+            "data": {
+                "phrase": "config timeframe = 30d \n| dataset in (issues) \n| bin xdm.issue.observation_time span = 15d \n| alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time) \n| alter is_target_issue = if(xdm.issue.category = \"CONFIGURATION\" and xdm.issue.severity = ENUM.CRITICAL and xdm.issue.status.progress = \"NEW\", 1, 0)\n| comp sum(is_target_issue) as num_of_issues by date \n| sort desc date \n| windowcomp lag(num_of_issues) sort asc date as previous_issues \n| alter percent_burndown = round(multiply(divide(subtract(num_of_issues, previous_issues), previous_issues), -100)) \n| alter issues_resolved = subtract(num_of_issues, previous_issues) \n| alter status = coalesce(percent_burndown, 0) \n| limit 1\n\n\n\n\n| view graph type = gauge subtype = radial header = \"Reduction of Critical Misconfigurations by 20%\" yaxis = status maxscalerange = 100 scale_threshold(\"#f60342\",\"#00ff66\",\"20\") dataunit = \"%\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"status\",\">20% implies Gold is Achieved\") ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "gauge",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "radial"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Reduction of Critical Misconfigurations by 20%\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "maxscalerange",
+                                "value": "100"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "#f60342",
+                                    "#00ff66",
+                                    20
+                                ],
+                                "name": "scale_threshold"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "dataunit",
+                                "value": "\"%\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legendfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "status",
+                                    ">20% implies Gold is Achieved"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "issues"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1770815504880",
+            "title": "Visibility into the environment - Silver",
+            "creation_time": 1772478694814,
+            "description": "Point in time widget",
+            "data": {
+                "phrase": "dataset = asset_inventory | comp count_distinct(xdm.asset.id ) as total_assets, count_distinct(if(xdm.asset.type.class = \"External Surface\", xdm.asset.id , null)) as shadow_asset_count | alter shadow_assets_ratio = divide(shadow_asset_count , total_assets ) | alter shadow_assets_percentage = multiply(shadow_assets_ratio , 100) | alter shadow_assets_percentage = round(shadow_assets_percentage)\n\n\n\n| view graph type = gauge subtype = radial header = \"Unmanaged/Shadow IT Assets are less than 30% of the assets\" yaxis = shadow_assets_percentage maxscalerange = 100 scale_threshold(\"#09d839\",\"#ff0037\",\"30\") dataunit = \"%\" default_limit = `false` font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"shadow_assets_percentage\",\"<30% implies Silver is Achieved\") ",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "gauge",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "radial"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Unmanaged/Shadow IT Assets are less than 30% of the assets\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "shadow_assets_percentage"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "maxscalerange",
+                                "value": "100"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "#09d839",
+                                    "#ff0037",
+                                    30
+                                ],
+                                "name": "scale_threshold"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "dataunit",
+                                "value": "\"%\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "default_limit",
+                                "value": "false"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legendfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "shadow_assets_percentage",
+                                    "<30% implies Silver is Achieved"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "asset_inventory"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1770812485658",
+            "title": "Identity Management -Silver",
+            "creation_time": 1772478692773,
+            "description": "Point in time widget",
+            "data": {
+                "phrase": "dataset =  issues | filter xdm.issue.category  = \"IDENTITY\" | comp count_distinct(xdm.issue.id ) as total_identity_issues, count_distinct(if(xdm.issue.status.progress = \"RESOLVED\",xdm.issue.id , 0)) as resolved_identity_issues | alter resolved_identity_issues_ratio = divide(resolved_identity_issues , total_identity_issues ) | alter resolved_identity_issues_percentage = multiply(resolved_identity_issues_ratio  , 100) |  alter resolved_identity_issues_percentage = round(resolved_identity_issues_percentage)\n\n\n| view graph type = gauge subtype = radial header = \"50% of IAM Alerts Remediated\" yaxis = resolved_identity_issues_percentage maxscalerange = 100 scale_threshold(\"#eb0b0b\",\"#1dff00\",\"50\") dataunit = \"%\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"resolved_identity_issues_percentage\",\">50% implies Silver is Achieved\") ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "gauge",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "radial"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"50% of IAM Alerts Remediated\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "resolved_identity_issues_percentage"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "maxscalerange",
+                                "value": "100"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "#eb0b0b",
+                                    "#1dff00",
+                                    50
+                                ],
+                                "name": "scale_threshold"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "dataunit",
+                                "value": "\"%\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legendfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "resolved_identity_issues_percentage",
+                                    ">50% implies Silver is Achieved"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "issues"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1770760487534",
+            "title": "Data Security - Bronze",
+            "creation_time": 1772478690018,
+            "description": "Point in time widget",
+            "data": {
+                "phrase": "dataset = cloud_health_auditing  | comp count_distinct(account) as total_accounts, count_distinct(if(capability = \"DSPM\" and classification= \"Success\", account, null)) as dspm_enabled_accounts | alter dspm_enabled_ratio = divide(dspm_enabled_accounts , total_accounts ) | alter dspm_enabled_percentage = multiply(dspm_enabled_ratio , 100) | alter dspm_enabled_percentage = round(dspm_enabled_percentage) | alter status = if(dspm_enabled_percentage >0, \"Achieved\", \"Not Currently Passing\")\n\n\n\n| view graph type = gauge subtype = radial header = \"Cloud Connector enabled with DSPM\" yaxis = dspm_enabled_accounts maxscalerange = 100 scale_threshold(\"#eb0a0a\",\"#18c482\",\"1\") font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"dspm_enabled_accounts\",\">=1 implies Bronze is Achieved\") ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "gauge",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "radial"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Cloud Connector enabled with DSPM\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "dspm_enabled_accounts"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "maxscalerange",
+                                "value": "100"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "#eb0a0a",
+                                    "#18c482",
+                                    1
+                                ],
+                                "name": "scale_threshold"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legendfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "dspm_enabled_accounts",
+                                    ">=1 implies Bronze is Achieved"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "cloud_health_auditing"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1770761821283",
+            "title": "Data Security - Silver",
+            "creation_time": 1772478692121,
+            "description": "Point in time widget",
+            "data": {
+                "phrase": "dataset = asset_inventory | join type = left (dataset = dspm_asset_data_profiles) as dspm xdm.asset.id = dspm.asset_id | filter xdm.asset.type.class = \"Data\" | comp count_distinct(asset_id ) as classified_assets, count_distinct(xdm.asset.id ) as total_dspm_assets | alter classified_dspm_assets_ratio = divide(classified_assets , total_dspm_assets ) | alter classified_dspm_assets_percentage = multiply(classified_dspm_assets_ratio  , 100)| alter classified_dspm_assets_percentage = round(classified_dspm_assets_percentage )  | alter status = if(classified_dspm_assets_ratio > 75, \"Achieved \", \"Not Currently Passing\")\n\n\n\n| view graph type = gauge subtype = radial header = \"75% percent of data stores classified\" yaxis = classified_dspm_assets_percentage maxscalerange = 100 scale_threshold(\"#f90404\",\"#00ff87\",\"75\") dataunit = \"%\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"classified_dspm_assets_percentage\",\">75% implies Silver is Achieved\") ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "gauge",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "radial"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"75% percent of data stores classified\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "classified_dspm_assets_percentage"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "maxscalerange",
+                                "value": "100"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "#f90404",
+                                    "#00ff87",
+                                    75
+                                ],
+                                "name": "scale_threshold"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "dataunit",
+                                "value": "\"%\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legendfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "classified_dspm_assets_percentage",
+                                    ">75% implies Silver is Achieved"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "dspm_asset_data_profiles",
+                    "asset_inventory"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1770814764056",
+            "title": "Remediation - Bronze, Silver, Gold",
+            "creation_time": 1772478691919,
+            "description": "Point in time widget",
+            "data": {
+                "phrase": "config timeframe = 30d | dataset = incidents | filter timestamp_diff(current_time(),creation_time,\"DAY\") < 31 | bin creation_time  span = 15d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", creation_time ) | filter resolved_ts != null and creation_time != null  | alter resolution_time_in_days = timestamp_diff(resolved_ts, creation_time , \"DAY\") |  comp avg(ceil(resolution_time_in_days)) as MTTR_in_days by creation_time  | sort desc creation_time | windowcomp lag(MTTR_in_days ) sort asc creation_time  as previous_MTTR | alter percent_burndown = round(multiply(divide(subtract(MTTR_in_days , previous_MTTR), previous_MTTR),-100)) | alter issues_resolved = subtract(MTTR_in_days  , previous_MTTR) | sort desc creation_time  | limit 1\n\n\n\n\n\n\n| view graph type = gauge subtype = radial header = \"Remediation All badges\" yaxis = percent_burndown maxscalerange = 100 scale_threshold(\"#ff0000\",\"#cd7f32\",\"30\",\"#c0c0c0\",\"60\",\"#FF8411\",\"90\") dataunit = \"%\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"percent_burndown\",\"30-60% implies Bronze is Achieved; 60-90% implies Silver is Achieved; >90% implies Gold is Achieved\") ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "gauge",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "radial"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Remediation All badges\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "percent_burndown"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "maxscalerange",
+                                "value": "100"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "#ff0000",
+                                    "#cd7f32",
+                                    30,
+                                    "#c0c0c0",
+                                    60,
+                                    "#FF8411",
+                                    90
+                                ],
+                                "name": "scale_threshold"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "dataunit",
+                                "value": "\"%\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legendfontsize",
+                                "value": "14"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "percent_burndown",
+                                    "30-60% implies Bronze is Achieved; 60-90% implies Silver is Achieved; >90% implies Gold is Achieved"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "incidents"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1770754382193",
+            "title": "Exposure and Risk Management - BRONZE",
+            "creation_time": 1772478691466,
+            "description": "point in time widget",
+            "data": {
+                "phrase": "dataset = cloud_health_auditing | comp count_distinct(account) as total_accounts, count_distinct(if(capability = \"ADS\" and classification= \"Scanned\", account, null)) as ads_enabled_accounts | alter ads_enabled_ratio = divide(ads_enabled_accounts , total_accounts ) | alter agentless_enabled_percentage = multiply(ads_enabled_ratio , 100) | alter agentless_enabled_percentage = round(agentless_enabled_percentage ) | alter status = if(agentless_enabled_percentage >0, \"Achieved\", \"Not Currently Passing\")\n\n\n\n\n| view graph type = gauge subtype = radial header = \"Enable ADS (Agentless Disc Scanning)\" yaxis = ads_enabled_accounts maxscalerange = 100 scale_threshold(\"#e50c6d\",\"#16d286\",\"1\") dataunit = \"Accounts\" default_limit = `false` font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"ads_enabled_accounts\",\">1 implies Bronze is Achieved\") ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "gauge",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "radial"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Enable ADS (Agentless Disc Scanning)\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "ads_enabled_accounts"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "maxscalerange",
+                                "value": "100"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "#e50c6d",
+                                    "#16d286",
+                                    1
+                                ],
+                                "name": "scale_threshold"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "dataunit",
+                                "value": "\"Accounts\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "default_limit",
+                                "value": "false"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legendfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "ads_enabled_accounts",
+                                    ">1 implies Bronze is Achieved"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "cloud_health_auditing"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1770815262577",
+            "title": "Visibility into the environment - Bronze",
+            "creation_time": 1772478692208,
+            "description": "Point in time widget",
+            "data": {
+                "phrase": "dataset = cloud_health_auditing | comp count_distinct(account) as cspm_enabled_accounts\n\n\n\n| view graph type = gauge subtype = radial header = \"Onboard cloud accounts\" yaxis = cspm_enabled_accounts maxscalerange = 100 scale_threshold(\"#ff0000\",\"#12ff00\",\"1\") dataunit = \"accounts\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"cspm_enabled_accounts\",\">1 implies Bronze is Achieved\") ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "gauge",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "radial"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Onboard cloud accounts\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "cspm_enabled_accounts"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "maxscalerange",
+                                "value": "100"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "#ff0000",
+                                    "#12ff00",
+                                    1
+                                ],
+                                "name": "scale_threshold"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "dataunit",
+                                "value": "\"accounts\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legendfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "cspm_enabled_accounts",
+                                    ">1 implies Bronze is Achieved"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "cloud_health_auditing"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1770812227741",
+            "title": "Identity Management -Bronze",
+            "creation_time": 1772478690532,
+            "description": "Point in time widget",
+            "data": {
+                "phrase": "dataset = cloud_health_auditing |  comp count_distinct(account) as total_accounts, count_distinct(if(capability = \"Identity Security\" and classification= \"Success\", account, null)) as ciem_enabled_accounts | alter ciem_enabled_ratio = divide(ciem_enabled_accounts , total_accounts ) | alter ciem_enabled_percentage = multiply(ciem_enabled_ratio , 100) | alter ciem_enabled_percentage = round(ciem_enabled_percentage)\n\n\n\n| view graph type = gauge subtype = radial header = \"Onboarded Cloud Data Source with CIEM\" yaxis = ciem_enabled_accounts maxscalerange = 100 scale_threshold(\"#f2024a\",\"#00ff2f\",\"1\") default_limit = `false` font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"ciem_enabled_accounts\",\">1 implies Bronze is Achieved\") ",
+                "time_frame": {
+                    "relativeTime": 604800000
+                },
+                "viewOptions": {
+                    "type": "gauge",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "radial"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Onboarded Cloud Data Source with CIEM\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "ciem_enabled_accounts"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "maxscalerange",
+                                "value": "100"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "#f2024a",
+                                    "#00ff2f",
+                                    1
+                                ],
+                                "name": "scale_threshold"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "default_limit",
+                                "value": "false"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legendfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "ciem_enabled_accounts",
+                                    ">1 implies Bronze is Achieved"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "cloud_health_auditing"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1770754027469",
+            "title": "Exposure and Risk Management - SILVER",
+            "creation_time": 1772478691208,
+            "description": "point in time widget",
+            "data": {
+                "phrase": "config timeframe = 30d |dataset in (issues) | bin xdm.issue.observation_time  span = 15d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.category = \"ATTACK_PATH\" | comp count(xdm.issue.id) as num_of_issues by date | sort desc date  | windowcomp lag(num_of_issues) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(num_of_issues , previous_issues), previous_issues),-100)) | alter issues_resolved = subtract(num_of_issues , previous_issues) | alter status = if(percent_burndown > 25, \"Achieved\", \"Not Currently Passing\" )  | filter previous_issues != null\n\n\n\n\n\n| view graph type = gauge subtype = radial header = \"25% Reduction in Risky Attack Paths\" yaxis = percent_burndown maxscalerange = 100 scale_threshold(\"#e21414\",\"#00ff45\",\"25\") dataunit = \"% attack paths reduced\" default_limit = `false` headerfontsize = 20 legendfontsize = 14 seriestitle(\"percent_burndown\",\">25% implies Silver is Achieved\") ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "gauge",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "radial"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"25% Reduction in Risky Attack Paths\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "percent_burndown"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "maxscalerange",
+                                "value": "100"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "#e21414",
+                                    "#00ff45",
+                                    25
+                                ],
+                                "name": "scale_threshold"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "dataunit",
+                                "value": "\"% attack paths reduced\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "default_limit",
+                                "value": "false"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legendfontsize",
+                                "value": "14"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "percent_burndown",
+                                    ">25% implies Silver is Achieved"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "issues"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1770763167183",
+            "title": "Data Security - Gold",
+            "creation_time": 1772478689740,
+            "description": "Point in time widget",
+            "data": {
+                "phrase": "config timeframe = 30d | dataset in (issues) | bin xdm.issue.observation_time  span = 15d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.category = \"DATA\" and xdm.issue.status.progress = \"NEW\" | comp count(xdm.issue.id) as num_of_issues by date | sort desc date | windowcomp lag(num_of_issues) sort asc date as previous_issues |  alter percent_burndown = round(multiply(divide(subtract(num_of_issues , previous_issues ), previous_issues),-100)) | alter issues_resolved = subtract(num_of_issues , previous_issues ) | alter status = if(previous_issues = null, 0, percent_burndown)   | limit 1\n\n\n\n\n| view graph type = gauge subtype = radial header = \"Number of data issues has gone down by 20%\" yaxis = status maxscalerange = 100 scale_threshold(\"#e21111\",\"#00ff87\",\"20\") dataunit = \"%\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"status\",\">20% implies Gold is Achieved\") ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "gauge",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "radial"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Number of data issues has gone down by 20%\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "maxscalerange",
+                                "value": "100"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "#e21111",
+                                    "#00ff87",
+                                    20
+                                ],
+                                "name": "scale_threshold"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "dataunit",
+                                "value": "\"%\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legendfontsize",
+                                "value": "14"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "status",
+                                    ">20% implies Gold is Achieved"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "issues"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1770813645629",
+            "title": "Identity Management -Gold",
+            "creation_time": 1772478694126,
+            "description": "Point in time widget",
+            "data": {
+                "phrase": "config timeframe = 30d \n| dataset in (issues) \n| bin xdm.issue.observation_time span = 15d \n| alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time) \n| filter xdm.issue.category = \"IDENTITY\" and xdm.issue.status.progress = \"NEW\" \n| comp count(xdm.issue.id) as num_of_issues by date \n| windowcomp lag(num_of_issues) sort asc date as previous_issues \n| alter percent_burndown = round(multiply(divide(subtract(num_of_issues, previous_issues), previous_issues), -100)) \n| alter issues_resolved = subtract(num_of_issues, previous_issues) \n| alter status = if(previous_issues = null or percent_burndown < 0, 0, percent_burndown)\n| sort desc date \n| limit 1\n\n\n| view graph type = gauge subtype = radial header = \"Number of Identity Issues has gone down by 20%\" yaxis = status maxscalerange = 100 scale_threshold(\"#f80c0c\",\"#3eff00\",\"20\") dataunit = \"%\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"status\",\">20% implies Gold is Achieved\") ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "gauge",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "radial"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Number of Identity Issues has gone down by 20%\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "maxscalerange",
+                                "value": "100"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "#f80c0c",
+                                    "#3eff00",
+                                    20
+                                ],
+                                "name": "scale_threshold"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "dataunit",
+                                "value": "\"%\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legendfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "status",
+                                    ">20% implies Gold is Achieved"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "issues"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1770755120707",
+            "title": "Exposure and Risk Management - GOLD",
+            "creation_time": 1772478690274,
+            "description": "Point in time widget",
+            "data": {
+                "phrase": "config timeframe = 30d | dataset = cases  | top xdm.case.status_progress | filter xdm.case.status_progress = \"RESOLVED\" | alter status = if (top_percent != 100, \"Not Currently Passing\", \"Achieved\")\n\n\n\n| view graph type = gauge subtype = radial header = \"Remediation of all Cases\" yaxis = top_percent maxscalerange = 100 scale_threshold(\"#f10c0c\",\"#00ff87\",\"100\") dataunit = \"% cases resolved\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"top_percent\",\"100% implies Gold is Achieved\") ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "gauge",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "radial"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Remediation of all Cases\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "top_percent"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "maxscalerange",
+                                "value": "100"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "#f10c0c",
+                                    "#00ff87",
+                                    100
+                                ],
+                                "name": "scale_threshold"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "dataunit",
+                                "value": "\"% cases resolved\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legendfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "top_percent",
+                                    "100% implies Gold is Achieved"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "cases"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        }
+    ],
+    "id": "2a3e86e19dc74f7091d17d39d16bf5e6",
+    "name": "Cortex Cloud posture Badges (Graph)"
+}
