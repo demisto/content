@@ -202,7 +202,7 @@ script:
     - contextPath: BlueCat.AddressManager.Entity.Parents.Name
       description: Name of the parent entity.
       type: String
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.7090913
   runonce: false
   script: '-'
   subtype: python3
