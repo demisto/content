@@ -26,6 +26,8 @@ from Unit42Intelligence import (
     create_location_indicators_and_relationships,
     get_threat_object_score,
     unit42_error_handler,
+    parse_url_list,
+    encode_url_indicator,
     INTEGRATION_NAME,
 )
 from CommonServerPython import *
@@ -1633,3 +1635,600 @@ def test_client_lookup_indicator_url_encoding(client, mocker):
     # Verify the full expected encoding
     expected_encoded_url = urllib.parse.quote("https://example.com/search?query=%3Ctest%3E", safe="")
     assert expected_encoded_url in url_suffix
+
+
+def test_parse_url_list_single_url_with_commas():
+    """
+    Given:
+        - A single URL containing commas in its query parameters (e.g., Google Fonts URL)
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with a single URL
+        - The URL is not split at the commas
+    """
+    url_input = "https://fonts.googleapis.com/css?family=Roboto:100,100italic,200,200italic,300,300italic,400,400italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic&display=swap"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 1
+    assert result[0] == url_input
+
+
+def test_parse_url_list_multiple_urls():
+    """
+    Given:
+        - Multiple URLs separated by commas
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all URLs correctly separated
+        - Each URL is properly trimmed
+    """
+    url_input = "http://google.com/path,https://amazon.com/path"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 2
+    assert result[0] == "http://google.com/path"
+    assert result[1] == "https://amazon.com/path"
+
+
+def test_parse_url_list_multiple_urls_with_spaces():
+    """
+    Given:
+        - Multiple URLs separated by commas with extra whitespace
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all URLs correctly separated and trimmed
+    """
+    url_input = "http://google.com/path , https://amazon.com/path"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 2
+    assert result[0] == "http://google.com/path"
+    assert result[1] == "https://amazon.com/path"
+
+
+def test_parse_url_list_mixed_urls_with_commas():
+    """
+    Given:
+        - Multiple URLs where one contains commas in parameters and others don't
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all URLs correctly separated
+        - URLs with commas in parameters are not split
+    """
+    url_input = "http://example.com/path?x=1,2,3,https://fonts.googleapis.com/css?family=Roboto:100,200,300,http://test.com"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 3
+    assert result[0] == "http://example.com/path?x=1,2,3"
+    assert result[1] == "https://fonts.googleapis.com/css?family=Roboto:100,200,300"
+    assert result[2] == "http://test.com"
+
+
+def test_parse_url_list_single_url_no_commas():
+    """
+    Given:
+        - A single URL without commas
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with a single URL
+    """
+    url_input = "https://example.com/path"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 1
+    assert result[0] == "https://example.com/path"
+
+
+def test_parse_url_list_empty_string():
+    """
+    Given:
+        - An empty string
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns an empty list
+    """
+    url_input = ""
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 0
+
+
+def test_parse_url_list_https_only():
+    """
+    Given:
+        - Multiple HTTPS URLs separated by commas
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all HTTPS URLs correctly separated
+    """
+    url_input = "https://site1.com,https://site2.com,https://site3.com"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 3
+    assert result[0] == "https://site1.com"
+    assert result[1] == "https://site2.com"
+    assert result[2] == "https://site3.com"
+
+
+def test_parse_url_list_none_input():
+    """
+    Given:
+        - None as input
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns an empty list without errors
+    """
+    result = parse_url_list(None)
+
+    assert result == []
+
+
+def test_parse_url_list_list_input():
+    """
+    Given:
+        - A list of URLs (as would come from playbooks)
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns the list with URLs properly trimmed
+    """
+    url_input = ["http://example.com", "https://test.com", "  https://trimmed.com  "]
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 3
+    assert result[0] == "http://example.com"
+    assert result[1] == "https://test.com"
+    assert result[2] == "https://trimmed.com"
+
+
+def test_parse_url_list_list_input_with_empty_strings():
+    """
+    Given:
+        - A list of URLs with empty strings and None values
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns only non-empty URLs
+    """
+    url_input = ["http://example.com", "", "https://test.com", None, "  "]
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 2
+    assert result[0] == "http://example.com"
+    assert result[1] == "https://test.com"
+
+
+def test_parse_url_list_newline_separator():
+    """
+    Given:
+        - URLs separated by newlines (supported by argToList)
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all URLs correctly separated
+    """
+    url_input = "http://example.com\nhttps://test.com\nftp://files.com"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 3
+    assert result[0] == "http://example.com"
+    assert result[1] == "https://test.com"
+    assert result[2] == "ftp://files.com"
+
+
+def test_parse_url_list_mixed_separators():
+    """
+    Given:
+        - URLs separated by both newlines and commas
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all URLs correctly separated
+    """
+    url_input = "http://example.com\nhttps://test.com,ftp://files.com"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 3
+    assert result[0] == "http://example.com"
+    assert result[1] == "https://test.com"
+    assert result[2] == "ftp://files.com"
+
+
+def test_parse_url_list_non_http_schemes():
+    """
+    Given:
+        - URLs with non-HTTP schemes (ftp, ftps, file, etc.)
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all URLs correctly separated
+        - Supports various URL schemes beyond http/https
+    """
+    url_input = "ftp://files.com,ftps://secure.com,file:///local/path,ssh://server.com"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 4
+    assert result[0] == "ftp://files.com"
+    assert result[1] == "ftps://secure.com"
+    assert result[2] == "file:///local/path"
+    assert result[3] == "ssh://server.com"
+
+
+def test_parse_url_list_mixed_schemes_with_commas_in_params():
+    """
+    Given:
+        - Multiple URLs with different schemes where some have commas in parameters
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all URLs correctly separated
+        - URLs with commas in parameters are not split
+    """
+    url_input = "http://example.com/path?x=1,2,3,ftp://files.com/data,https://fonts.googleapis.com/css?family=Roboto:100,200"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 3
+    assert result[0] == "http://example.com/path?x=1,2,3"
+    assert result[1] == "ftp://files.com/data"
+    assert result[2] == "https://fonts.googleapis.com/css?family=Roboto:100,200"
+
+
+def test_parse_url_list_newline_with_commas_in_params():
+    """
+    Given:
+        - URLs separated by newlines where URLs contain commas in parameters
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all URLs correctly separated
+        - Commas within URL parameters are preserved
+    """
+    url_input = "https://fonts.googleapis.com/css?family=Roboto:100,200,300\nhttp://example.com/path?x=1,2,3"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 2
+    assert result[0] == "https://fonts.googleapis.com/css?family=Roboto:100,200,300"
+    assert result[1] == "http://example.com/path?x=1,2,3"
+
+
+def test_parse_url_list_whitespace_handling():
+    """
+    Given:
+        - URLs with various whitespace (spaces, tabs, newlines)
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all URLs properly trimmed
+        - Empty lines are ignored
+    """
+    url_input = "  http://example.com  \n\n  https://test.com  \n  \nftp://files.com"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 3
+    assert result[0] == "http://example.com"
+    assert result[1] == "https://test.com"
+    assert result[2] == "ftp://files.com"
+
+
+def test_parse_url_list_custom_scheme():
+    """
+    Given:
+        - URLs with custom schemes (e.g., custom://)
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all URLs correctly separated
+        - Supports custom URL schemes
+    """
+    url_input = "custom://example.com,myscheme://test.com,http://normal.com"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 3
+    assert result[0] == "custom://example.com"
+    assert result[1] == "myscheme://test.com"
+    assert result[2] == "http://normal.com"
+
+
+def test_parse_url_list_quoted_scheme_less_urls():
+    """
+    Given:
+        - Two scheme-less URLs each wrapped in double-quote characters,
+          comma-separated (e.g. from email security tools or JSON extraction)
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns both URLs as separate entries
+        - Leading and trailing double-quote characters are stripped from each URL
+    """
+    url_input = '"share.google/abc","example.com/url?a=https://share.google/abc"'
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 2
+    assert result[0] == "share.google/abc"
+    assert result[1] == "example.com/url?a=https://share.google/abc"
+
+
+def test_parse_url_list_quoted_urls_with_commas_in_query():
+    """
+    Given:
+        - Quoted URLs where the second URL contains commas in its query string
+    When:
+        - parse_url_list is called
+    Then:
+        - Splits on the quote-comma-quote boundary between the two URLs
+        - Preserves commas that are inside a URL's query string
+        - Strips surrounding quotes from each URL
+    """
+    url_input = '"share.google/a","example.com/url?a=https://share.google/a&c=e,1,abc"'
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 2
+    assert result[0] == "share.google/a"
+    assert result[1] == "example.com/url?a=https://share.google/a&c=e,1,abc"
+
+
+def test_parse_url_list_single_quoted_url():
+    """
+    Given:
+        - A single URL wrapped in double-quote characters
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with one URL, with quotes stripped
+    """
+    url_input = '"example.com/path/to/page"'
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 1
+    assert result[0] == "example.com/path/to/page"
+
+
+def test_parse_url_list_single_quoted_multiple_urls():
+    """
+    Given:
+        - Two URLs each wrapped in single-quote characters, comma-separated
+          (e.g. 'url1','url2' — the new single-quote support added in this branch)
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns both URLs as separate entries
+        - Leading and trailing single-quote characters are stripped from each URL
+    """
+    url_input = "'https://example.com','https://test.com'"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 2
+    assert result[0] == "https://example.com"
+    assert result[1] == "https://test.com"
+
+
+def test_parse_url_list_single_quoted_scheme_less_urls():
+    """
+    Given:
+        - Two scheme-less URLs each wrapped in single-quote characters, comma-separated
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns both URLs as separate entries
+        - Leading and trailing single-quote characters are stripped from each URL
+    """
+    url_input = "'share.google/abc','example.com/url?a=https://share.google/abc'"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 2
+    assert result[0] == "share.google/abc"
+    assert result[1] == "example.com/url?a=https://share.google/abc"
+
+
+def test_parse_url_list_single_quoted_urls_with_commas_in_query():
+    """
+    Given:
+        - Single-quoted URLs where the second URL contains commas in its query string
+    When:
+        - parse_url_list is called
+    Then:
+        - Splits on the single-quote-comma-single-quote boundary between the two URLs
+        - Preserves commas that are inside a URL's query string
+        - Strips surrounding single-quotes from each URL
+    """
+    url_input = "'share.google/a','example.com/url?a=https://share.google/a&c=e,1,abc'"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 2
+    assert result[0] == "share.google/a"
+    assert result[1] == "example.com/url?a=https://share.google/a&c=e,1,abc"
+
+
+def test_encode_url_indicator_with_special_characters():
+    """
+    Given:
+        - URLs with special characters (^, |, <, >) in the path
+        - URLs with and without schemes
+    When:
+        - encode_url_indicator is called
+    Then:
+        - Returns properly encoded URLs
+        - Special characters in path are double-encoded
+        - URLs without schemes have the scheme removed after encoding
+        - URLs with schemes keep the scheme and it gets encoded
+    """
+    # Test URL without scheme and with special characters (^ and |) - from XSUP-63627
+    url_without_scheme = "example.com/path/ab^cd|ef"
+    result = encode_url_indicator(url_without_scheme)
+    # Should NOT include http:// in the final result (scheme is removed)
+    # Special characters should be double-encoded: ^ -> %5E -> %255E, | -> %7C -> %257C
+    assert result == "example.com%2Fpath%2Fab%255Ecd%257Cef"
+    assert "%255E" in result  # ^ encoded twice
+    assert "%257C" in result  # | encoded twice
+    assert "http" not in result  # Scheme should be removed
+
+    # Test URL with scheme and special characters
+    url_with_scheme = "http://example.com/path/ab^cd|ef"
+    result_with_scheme = encode_url_indicator(url_with_scheme)
+    # Should preserve and encode http://
+    assert "http%3A%2F%2Fexample.com%2Fpath%2Fab%255Ecd%257Cef" in result_with_scheme
+    assert "%255E" in result_with_scheme  # ^ encoded twice
+    assert "%257C" in result_with_scheme  # | encoded twice
+
+    # Test URL with < and > characters
+    url_with_brackets = "https://example.com/search?query=<test>"
+    result_brackets = encode_url_indicator(url_with_brackets)
+    assert result_brackets == "https%3A%2F%2Fexample.com%2Fsearch%3Fquery%3D%253Ctest%253E"
+
+    # Test normal URL without special characters
+    normal_url = "https://example.com/path?param=value"
+    result_normal = encode_url_indicator(normal_url)
+    assert result_normal == "https%3A%2F%2Fexample.com%2Fpath%3Fparam%3Dvalue"
+
+    # Test URL with commas in query parameters
+    url_with_commas = "https://fonts.googleapis.com/css?family=Roboto:100,100italic,200"
+    result_commas = encode_url_indicator(url_with_commas)
+    assert result_commas == "https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%253A100%252C100italic%252C200"
+
+
+def test_encode_url_indicator_custom_schemes():
+    """
+    Given:
+        - URLs with custom or unlisted schemes (sftp://, ldap://, etc.)
+    When:
+        - encode_url_indicator is called
+    Then:
+        - Custom schemes are preserved and properly encoded
+        - The scheme is not treated as the host
+        - The colon is not lost during reconstruction
+    """
+    # Test SFTP scheme - should preserve sftp:// and not treat it as schemeless
+    sftp_url = "sftp://example.com/path/file.txt"
+    result_sftp = encode_url_indicator(sftp_url)
+    # Should preserve and encode sftp://
+    assert result_sftp == "sftp%3A%2F%2Fexample.com%2Fpath%2Ffile.txt"
+    assert "sftp%3A%2F%2F" in result_sftp  # sftp:// should be encoded
+    assert result_sftp != "sftp%2F%2Fexample.com%2Fpath%2Ffile.txt"  # Should NOT lose the colon
+
+    # Test LDAP scheme
+    ldap_url = "ldap://ldap.example.com:389/dc=example,dc=com"
+    result_ldap = encode_url_indicator(ldap_url)
+    assert "ldap%3A%2F%2F" in result_ldap  # ldap:// should be encoded
+    assert "ldap.example.com" in result_ldap  # Host should be preserved
+
+    # Test custom scheme with path and query
+    custom_url = "custom://server.com/resource?param=value"
+    result_custom = encode_url_indicator(custom_url)
+    assert "custom%3A%2F%2F" in result_custom  # custom:// should be encoded
+    assert "server.com" in result_custom  # Host should be preserved
+
+
+def test_encode_url_indicator_strips_trailing_fragment():
+    """
+    Given:
+        - A URL with a trailing '#' (empty fragment), e.g. linkprotect.cudasvc.com/url#utm=a#
+          as seen in url (23).log — the API returns HTTP 400 TAS-0002 for such URLs
+    When:
+        - encode_url_indicator is called
+    Then:
+        - The trailing '#' (and everything after the first '#') is stripped before encoding
+        - The encoded result does NOT contain '%23' (encoded '#')
+        - The result is identical to encoding the same URL without the trailing '#'
+    """
+    # URL with trailing '#' — mirrors the failing case in url (23).log
+    url_with_trailing_hash = "linkprotect.cudasvc.com/url#utm=a#"
+    result = encode_url_indicator(url_with_trailing_hash)
+
+    # Fragment must be stripped: no encoded '#' (%23) should appear in the result
+    assert "%23" not in result, "Fragment was not stripped — encoded '#' found in result"
+
+    # Result must equal encoding the same URL without any fragment
+    url_without_fragment = "linkprotect.cudasvc.com/url"
+    expected = encode_url_indicator(url_without_fragment)
+    assert result == expected
+
+
+def test_encode_url_indicator_strips_mid_url_fragment():
+    """
+    Given:
+        - A URL with a fragment that contains another '#', e.g. linkprotect.cudasvc.com/url#utm=a#b
+          as seen in url (25).log — the API returns HTTP 400 TAS-0002 for such URLs
+    When:
+        - encode_url_indicator is called
+    Then:
+        - Everything from the first '#' onwards is stripped before encoding
+        - The encoded result does NOT contain '%23'
+        - The result is identical to encoding the base URL without any fragment
+    """
+    # URL with '#utm=a#b' fragment — mirrors the failing case in url (25).log
+    url_with_double_hash = "linkprotect.cudasvc.com/url#utm=a#b"
+    result = encode_url_indicator(url_with_double_hash)
+
+    assert "%23" not in result, "Fragment was not stripped — encoded '#' found in result"
+
+    url_without_fragment = "linkprotect.cudasvc.com/url"
+    expected = encode_url_indicator(url_without_fragment)
+    assert result == expected
+
+
+def test_encode_url_indicator_strips_fragment_with_scheme():
+    """
+    Given:
+        - A URL with a scheme and a fragment, e.g. https://example.com/page#section
+    When:
+        - encode_url_indicator is called
+    Then:
+        - The fragment is stripped and the scheme + path are encoded correctly
+        - No '%23' appears in the result
+    """
+    url_with_fragment = "https://example.com/page#section"
+    result = encode_url_indicator(url_with_fragment)
+
+    assert "%23" not in result, "Fragment was not stripped — encoded '#' found in result"
+
+    url_without_fragment = "https://example.com/page"
+    expected = encode_url_indicator(url_without_fragment)
+    assert result == expected
+
+
+def test_encode_url_indicator_no_fragment_unchanged():
+    """
+    Given:
+        - A URL with no fragment (no '#' character)
+    When:
+        - encode_url_indicator is called
+    Then:
+        - The result is identical to the pre-fix behaviour (fragment stripping is a no-op)
+        - The URL is still correctly double-encoded
+    """
+    url = "linkprotect.cudasvc.com/url?param=value"
+    result = encode_url_indicator(url)
+
+    # No fragment to strip — result should be the standard double-encoded form
+    assert "%23" not in result
+    assert result == "linkprotect.cudasvc.com%2Furl%3Fparam%3Dvalue"

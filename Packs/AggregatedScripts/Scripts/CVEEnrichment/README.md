@@ -1,5 +1,5 @@
-This script gathers CVE reputation data from multiple integrations and returns a "CVEEnrichment" object with consolidated information to the context output.
-Note: This script is available for XSOAR 8 and above.
+Enriches CVE indicators with reputation data from multiple integrations and outputs a consolidated CVEEnrichment object. This script exclusively supports indicators of type CVE and will automatically create the indicator in TIM if it is not already exists.
+Note: This script is supported in Cortex XSOAR 8.0 and later, and in Cortex XSIAM.
 
 ## Script Data
 

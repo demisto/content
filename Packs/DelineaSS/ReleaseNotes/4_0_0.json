@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The following Secret Server user management commands have been renamed: delinea-user-create to delinea-secret-server-user-create, delinea-user-delete to delinea-secret-server-user-delete, delinea-user-search to delinea-secret-server-user-search, delinea-user-update to delinea-secret-server-user-update. The playbook 'Example-Delinea-User object operations' has been renamed to 'Example-Delinea-User object operations for Secret Server'."
+}

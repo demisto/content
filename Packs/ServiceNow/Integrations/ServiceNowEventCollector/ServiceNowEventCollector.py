@@ -52,7 +52,8 @@ class Client:
     def __init__(
         self,
         use_oauth,
-        credentials,
+        username,
+        password,
         client_id,
         client_secret,
         server_url,
@@ -65,7 +66,8 @@ class Client:
         fetch_limit_outbound_http=10000,
     ):
         self.sn_client = ServiceNowClient(
-            credentials=credentials,
+            username=username,
+            password=password,
             use_oauth=use_oauth,
             client_id=client_id,
             client_secret=client_secret,
@@ -501,7 +503,8 @@ def main() -> None:  # pragma: no cover
     try:
         client = Client(
             use_oauth=use_oauth,
-            credentials=credentials,
+            username=user_name,
+            password=password,
             client_id=client_id,
             client_secret=client_secret,
             server_url=server_url,

@@ -182,7 +182,7 @@ tasks:
       - "18"
     scriptarguments:
       environment_id:
-        simple: '160: Windows 10'
+        simple: '160: Windows 10 (64-bit)'
       interval_in_seconds:
         complex:
           root: inputs.Interval
@@ -361,12 +361,6 @@ inputs:
     simple: "1"
   required: false
   description: Polling frequency - how often the polling command should run (in minutes).
-  playbookInputQuery:
-- key: Timeout
-  value:
-    simple: "10"
-  required: false
-  description: How much time to wait before a timeout occurs  (in minutes).
   playbookInputQuery:
 - key: Full Report
   value:

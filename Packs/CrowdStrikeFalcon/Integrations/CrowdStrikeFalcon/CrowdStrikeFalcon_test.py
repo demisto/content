@@ -1893,35 +1893,6 @@ class TestFetchFunctionsTimestampFormatting:
         except Exception as e:
             pytest.fail(f"Unexpected error during fetch_endpoint_detections with non-zero offset: {str(e)}")
 
-    def test_fetch_endpoint_detections__is_detection_occurred_before_fetch_time(self, mocker):
-        """
-        Tests that detection["created_timestamp"] timestamps are filtered out if they are not after the start_fetch_time.
-        Given:
-            start_fetch_time is "2025-07-25T01:01:00.000000000Z"
-            Two detections with created_timestamps, one is before the start_fetch_time and the other is not.
-        When:
-            Fetching endpoint detections
-        Then:
-            Only the detection that occurred after the start_fetch_time is returned.
-        """
-        from CrowdStrikeFalcon import fetch_endpoint_detections
-
-        mocked_res = [
-            {"created_timestamp": "2025-07-25T23:59:59.999999Z", "composite_id": "123"},
-            {"created_timestamp": "2025-07-24T01:01:00.000001Z", "composite_id": "456"},
-        ]
-        mocker.patch("CrowdStrikeFalcon.get_fetch_detections", return_value={})
-        mocker.patch(
-            "CrowdStrikeFalcon.get_detections_entities",
-            return_value={"resources": mocked_res},
-        )
-
-        start_fetch_time = "2025-07-25T01:01:00.000000000Z"
-
-        results, _ = fetch_endpoint_detections({"time": start_fetch_time}, 2, False)
-        assert len(results) == 1
-        assert results[0]["occurred"] == mocked_res[0]["created_timestamp"]
-
     @pytest.mark.parametrize(
         "product_type, detection_name_prefix",
         [
@@ -2428,6 +2399,7 @@ class TestIncidentFetch:
             },
         )
         mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
+        mocker.patch.object(demisto, "params", return_value={"fetch_incidents_or_detections": ["Endpoint Incident"]})
 
         _, incidents = fetch_items()
         for incident in incidents:
@@ -4208,7 +4180,7 @@ def test_find_incident_type():
 
     assert find_incident_type(input_data.remote_incident_id) == IncidentType.INCIDENT
     assert find_incident_type(input_data.remote_detection_id) == IncidentType.LEGACY_ENDPOINT_DETECTION
-    assert find_incident_type(input_data.remote_ngsiem_detection_id) == IncidentType.NGSIEM
+    assert find_incident_type(input_data.remote_ngsiem_detection_id) == IncidentType.NGSIEM_DETECTION
     assert find_incident_type(input_data.remote_third_party_detection_id) == IncidentType.THIRD_PARTY
     assert find_incident_type("") is None
 
@@ -4344,7 +4316,8 @@ def test_get_remote_detection_data_for_multiple_types__endpoint_detection(mocker
     "detection_type, incident_type, entity_modifications",
     [
         ("ngsiem", "ngsiem_detection", {}),
-        ("ofp", "OFP detection", {"type": "ofp", "product": "epp"}),
+        ("Detection", "detection", {"type": "ldt", "product": "epp"}),
+        ("ofp", "OFP detection", {"type": "ofp"}),
     ],
 )
 def test_get_remote_detection_data_for_multiple_types(mocker, detection_type, incident_type, entity_modifications):
@@ -4358,15 +4331,15 @@ def test_get_remote_detection_data_for_multiple_types(mocker, detection_type, in
     """
     from CrowdStrikeFalcon import get_remote_detection_data_for_multiple_types
 
+    generic_detection_id = input_data.remote_ngsiem_detection_id
+
     detection_entity = input_data.response_ngsiem_detection.copy()
     detection_entity.update(entity_modifications)
 
     mocker.patch("CrowdStrikeFalcon.get_detection_entities", return_value={"resources": [detection_entity.copy()]})
     mocker.patch.object(demisto, "debug", return_value=None)
 
-    mirrored_data, updated_object, returned_detection_type = get_remote_detection_data_for_multiple_types(
-        input_data.remote_ngsiem_detection_id
-    )
+    mirrored_data, updated_object, returned_detection_type = get_remote_detection_data_for_multiple_types(generic_detection_id)
 
     assert mirrored_data == detection_entity
     assert returned_detection_type == detection_type
@@ -7440,13 +7413,16 @@ def test_http_request_get_token_request_429(mocker, requests_mock):
 
 
 class ResMocker:
-    def __init__(self, http_response, status_code, reason):
+    def __init__(self, http_response, status_code, reason, text=None):
         self.http_response = http_response
         self.status_code = status_code
         self.reason = reason
         self.ok = False
+        self.text = text
 
     def json(self):
+        if self.http_response is None:
+            raise ValueError("No JSON object could be decoded")
         return self.http_response
 
 
@@ -7478,6 +7454,30 @@ def test_error_handler():
         error_handler(arg_res)
     except DemistoException as e:
         assert e.message == f"Error in API call to CrowdStrike Falcon: code: {status_code} - reason: {reason}"
+
+
+def test_error_handler_non_json_response():
+    """
+    Given:
+        - A response from the API that returns a non-JSON body (e.g., text/plain from NGSIEM errors).
+    When:
+        - Running error_handler
+    Then:
+        - Validate that the error message contains the status code, reason, and the plain-text body content.
+        - Validate that the body is truncated to 4000 characters.
+    """
+    from CrowdStrikeFalcon import error_handler
+
+    status_code = 500
+    reason = "Internal Server Error"
+    plain_text_body = "SearchQueryParsingError: Error parsing query at line 1:0"
+
+    arg_res = ResMocker(None, status_code, reason, text=plain_text_body)
+    with pytest.raises(DemistoException) as e:
+        error_handler(arg_res)
+    assert e.value.message == (
+        f"Error in API call to CrowdStrike Falcon: code: {status_code} - reason: {reason}\n{plain_text_body}"
+    )
 
 
 @pytest.mark.parametrize(
@@ -7937,6 +7937,9 @@ def test_fetch_items_reads_last_run_indexes_correctly(mocker, command):
         set_last_run_per_type(last_run_identifiers, index=LastRunIndex.IOA, data={"IOA ID:": 8})
         set_last_run_per_type(last_run_identifiers, index=LastRunIndex.THIRD_PARTY_DETECTIONS, data={"THIRD PARTY ID:": 9})
         set_last_run_per_type(last_run_identifiers, index=LastRunIndex.NGSIEM_DETECTIONS, data={"NGSIEM ID:": 10})
+        set_last_run_per_type(last_run_identifiers, index=LastRunIndex.NGSIEM_INCIDENTS, data={"NGSIEM INCIDENT ID:": 11})
+        set_last_run_per_type(last_run_identifiers, index=LastRunIndex.NGSIEM_AUTOMATED_LEADS, data={"AUTOMATED LEAD ID:": 12})
+        set_last_run_per_type(last_run_identifiers, index=LastRunIndex.NGSIEM_CASES, data={"NGSIEM CASE ID:": 13})
 
     # Create a copy to avoid reference issues
     last_run_identifiers_copy = list(last_run_identifiers)
@@ -7948,27 +7951,6 @@ def test_fetch_items_reads_last_run_indexes_correctly(mocker, command):
 
     # Verify that fetch_events refers to the correctly indexes for each type by last_run object.
     assert last_run_identifiers_result == last_run_identifiers
-
-
-def test_is_detection_occurred_before_fetch_time():
-    """
-    Given:
-        - A detection with a created timestamp.
-        - A start time for fetching.
-    When:
-        - Running is_detection_occurred_before_fetch_time.
-    Then:
-        - Validate that the function returns True if the detection was before the start time, False otherwise.
-    """
-    from CrowdStrikeFalcon import is_detection_occurred_before_fetch_time
-
-    detection = {"created_timestamp": "2020-05-16T17:30:38Z"}
-    start_fetch_time = "2020-05-17T17:30:38Z"
-    assert is_detection_occurred_before_fetch_time(detection["created_timestamp"], start_fetch_time)
-
-    detection = {"created_timestamp": "2020-05-17T17:30:38Z"}
-    start_fetch_time = "2020-05-17T17:30:38Z"
-    assert not is_detection_occurred_before_fetch_time(detection["created_timestamp"], start_fetch_time)
 
 
 def test_http_request_is_time_sensitive_timeout_and_retries(mocker):
@@ -8330,3 +8312,690 @@ def test_fetch_detections_by_product_type_builds_grouped_filter(
     )
 
     assert get_detections_ids_mocker.call_args[1]["filter_arg"] == expected_filter
+
+
+def test_get_cases_data(mocker):
+    """
+    Given:
+        - Filter, limit and offset.
+    When:
+        - Running get_cases_data.
+    Then:
+        - Verify that the http_request is called with the correct arguments.
+        - Verify that the function returns the correct total cases and ids.
+    """
+    from CrowdStrikeFalcon import get_cases_data
+
+    http_request_mock = mocker.patch(
+        "CrowdStrikeFalcon.http_request", return_value={"meta": {"pagination": {"total": 10}}, "resources": ["case1", "case2"]}
+    )
+
+    total, ids = get_cases_data("some_filter", 10, 0)
+
+    assert total == 10
+    assert ids == ["case1", "case2"]
+    http_request_mock.assert_called_with(
+        "GET", "/cases/queries/cases/v1?filter=some_filter", {"sort": "created_timestamp.asc", "offset": 0, "limit": 10}
+    )
+
+
+def test_get_cases_details(mocker):
+    """
+    Given:
+        - List of case IDs.
+    When:
+        - Running get_cases_details.
+    Then:
+        - Verify that the http_request is called with the correct arguments.
+        - Verify that the function returns the correct case details.
+    """
+    from CrowdStrikeFalcon import get_cases_details
+
+    http_request_mock = mocker.patch(
+        "CrowdStrikeFalcon.http_request", return_value={"resources": [{"id": "case1", "status": "new"}]}
+    )
+
+    details = get_cases_details(["case1"])
+
+    assert details == [{"id": "case1", "status": "new"}]
+    http_request_mock.assert_called_with("POST", "/cases/entities/cases/v2", data=json.dumps({"ids": ["case1"]}))
+
+
+def test_get_remote_ngsiem_case_data(mocker):
+    """
+    Given:
+        - Remote case ID.
+    When:
+        - Running get_remote_ngsiem_case_data.
+    Then:
+        - Verify that get_cases_details is called with the correct ID.
+        - Verify that the function returns the correct mirrored case and updated object.
+    """
+    from CrowdStrikeFalcon import get_remote_ngsiem_case_data, IncidentType
+
+    mocker.patch("CrowdStrikeFalcon.get_cases_details", return_value=[{"id": "case1", "status": "new", "state": "open"}])
+
+    remote_id = f"{IncidentType.NGSIEM_CASE.value}:case1"
+    mirrored_case, updated_object = get_remote_ngsiem_case_data(remote_id)
+
+    assert mirrored_case == {"id": "case1", "status": "new", "state": "open"}
+    assert updated_object == {"incident_type": "ngsiem_case", "status": "new", "state": "open"}
+
+
+@pytest.mark.parametrize(
+    "delta, inc_status, close_in_cs_falcon_param, expected_status",
+    [({"status": "in_progress"}, IncidentStatus.ACTIVE, False, "in_progress"), ({}, IncidentStatus.ACTIVE, False, None)],
+)
+def test_update_remote_ngsiem_case(mocker, delta, inc_status, close_in_cs_falcon_param, expected_status):
+    """
+    Given:
+        - Delta, incident status, and close_in_cs_falcon parameter.
+    When:
+        - Running update_remote_ngsiem_case.
+    Then:
+        - Verify that update_remote_ngsiem_case is called with the correct status if applicable.
+    """
+    from CrowdStrikeFalcon import update_remote_ngsiem_case, IncidentType
+
+    mocker.patch.object(demisto, "params", return_value={"close_in_cs_falcon": close_in_cs_falcon_param})
+    update_mock = mocker.patch("CrowdStrikeFalcon.resolve_case", return_value="success")
+
+    remote_id = f"{IncidentType.NGSIEM_CASE.value}:case1"
+    result = update_remote_ngsiem_case(delta, inc_status, remote_id)
+
+    if expected_status:
+        update_mock.assert_called_with("case1", status=expected_status)
+        assert result == "success"
+    else:
+        update_mock.assert_not_called()
+        assert result == ""
+
+
+def test_fetch_ngsiem_cases(mocker):
+    """
+    Given:
+        - Last run object, look back, and fetch query.
+    When:
+        - Running fetch_ngsiem_cases.
+    Then:
+        - Verify that the function calls dependencies correctly.
+        - Verify that it returns the correct cases and last run object.
+    """
+    from CrowdStrikeFalcon import fetch_ngsiem_cases
+
+    mocker.patch("CrowdStrikeFalcon.get_fetch_run_time_range", return_value=("start_time", "end_time"))
+    mocker.patch("CrowdStrikeFalcon.get_cases_data", return_value=(1, ["case1"]))
+    mocker.patch(
+        "CrowdStrikeFalcon.get_cases_details",
+        return_value=[{"id": "case1", "created_timestamp": "2023-01-01T00:00:00.000Z", "severity": "High"}],
+    )
+    mocker.patch(
+        "CrowdStrikeFalcon.filter_incidents_by_duplicates_and_limit", side_effect=lambda incidents_res, **kwargs: incidents_res
+    )
+    mocker.patch("CrowdStrikeFalcon.update_last_run_object", return_value={"offset": 1})
+
+    cases, last_run = fetch_ngsiem_cases({}, 3, "some_query")
+
+    assert len(cases) == 1
+    assert cases[0]["name"] == "ngsiem_case ID: case1"
+    assert cases[0]["severity"] == "High"
+    assert last_run == {"offset": 1}
+
+
+def test_list_case_summaries_command_no_given_ids(mocker):
+    """
+    Test list_case_summaries_command without ids arg
+    Given
+     - No arguments given, as is
+    When
+     - The user is running list_case_summaries_command with no ids
+    Then
+     - Function is executed properly and returns no cases found message
+    """
+    from CrowdStrikeFalcon import list_case_summaries_command
+
+    mocker.patch.object(demisto, "args", return_value={})
+
+    # Mock get_cases_data to return IDs
+    mocker.patch("CrowdStrikeFalcon.get_cases_data", return_value=(1, ["case_id_1"]))
+
+    entity_response = [
+        {
+            "assigned_to_name": "Test no ids",
+            "cid": "string",
+            "created_time": "2022-02-21T16:36:57.759Z",
+            "description": "string",
+            "id": "case_id_1",
+            "status": "new",
+            "severity": "High",
+            "tags": ["tag1"],
+            "version": "1",
+        }
+    ]
+    # Mock get_cases_entities to return case details
+    mocker.patch("CrowdStrikeFalcon.get_cases_entities", return_value=entity_response)
+
+    result = list_case_summaries_command()
+    assert result.outputs[0]["assigned_to_name"] == "Test no ids"
+    assert result.outputs[0]["id"] == "case_id_1"
+
+
+def test_list_case_summaries_command_with_given_ids(requests_mock, mocker):
+    """
+    Test list_case_summaries_command with ids arg
+    Given
+     - ids
+    When
+     - The user is running list_case_summaries_command with ids
+    Then
+     - Function is executed properly and get_cases_entities func was called
+    """
+    from CrowdStrikeFalcon import list_case_summaries_command
+
+    entity_response = {
+        "errors": [],
+        "meta": {"pagination": {"limit": 0, "offset": 0, "total": 0}, "powered_by": "string"},
+        "resources": [
+            {
+                "assigned_to_name": "Test with ids",
+                "cid": "string",
+                "created_time": "2022-02-21T16:36:57.759Z",
+                "description": "string",
+                "id": "case_id_1",
+                "status": "new",
+                "severity": "High",
+                "tags": ["tag1"],
+                "version": "1",
+            }
+        ],
+    }
+
+    requests_mock.post(
+        f"{SERVER_URL}/cases/entities/cases/v2",
+        json=entity_response,
+        status_code=200,
+    )
+    mocker.patch.object(demisto, "args", return_value={"ids": "case_id_1"})
+
+    outputs = list_case_summaries_command().outputs
+
+    assert outputs[0]["assigned_to_name"] == "Test with ids"
+    assert outputs[0]["id"] == "case_id_1"
+
+
+def test_add_case_tags_command(requests_mock):
+    """
+    Given:
+        - Case ID and tags.
+    When:
+        - Running add_case_tags_command.
+    Then:
+        - Verify that the http_request is called with the correct arguments.
+        - Verify that the function returns the correct readable output.
+    """
+    from CrowdStrikeFalcon import add_case_tags_command
+
+    requests_mock.post(f"{SERVER_URL}/cases/entities/case-tags/v1", json={})
+
+    result = add_case_tags_command({"id": "case1", "tags": "tag1,tag2"})
+
+    assert result.readable_output == "Tags were added successfully."
+    assert requests_mock.last_request.json() == {"id": "case1", "tags": ["tag1", "tag2"]}
+
+
+def test_delete_case_tags_command(requests_mock):
+    """
+    Given:
+        - Case ID and tag.
+    When:
+        - Running delete_case_tags_command.
+    Then:
+        - Verify that the http_request is called with the correct arguments.
+        - Verify that the function returns the correct readable output.
+    """
+    from CrowdStrikeFalcon import delete_case_tags_command
+
+    requests_mock.delete(f"{SERVER_URL}/cases/entities/case-tags/v1?id=case1&tag=tag1", json={})
+
+    result = delete_case_tags_command({"id": "case1", "tag": "tag1"})
+
+    assert result.readable_output == "Tags were deleted successfully."
+    assert requests_mock.last_request.qs["id"] == ["case1"]
+    assert requests_mock.last_request.qs["tag"] == ["tag1"]
+
+
+def test_get_evidence_for_case_command(requests_mock, mocker):
+    """
+    Given:
+        - Case ID.
+    When:
+        - Running get_evidence_for_case_command.
+    Then:
+        - Verify that the http_request is called with the correct arguments.
+        - Verify that the function returns the correct readable output.
+    """
+    from CrowdStrikeFalcon import get_evidence_for_case_command
+
+    response_data = load_json("test_data/get_evidence_for_case_response.json")
+    requests_mock.post(f"{SERVER_URL}/cases/entities/cases/v2", json=response_data)
+    mocker.patch.object(demisto, "args", return_value={"id": "case_id_1"})
+    result = get_evidence_for_case_command({"id": "case_id_1"})
+
+    assert result.outputs == response_data["resources"][0]["evidence"]
+
+
+def test_resolve_case_command(requests_mock):
+    """
+    Given:
+        - Case ID and fields to update.
+    When:
+        - Running resolve_case_command.
+    Then:
+        - Verify that the http_request is called with the correct arguments.
+        - Verify that the function returns the correct readable output.
+    """
+    from CrowdStrikeFalcon import resolve_case_command
+
+    requests_mock.patch(f"{SERVER_URL}/cases/entities/cases/v2", json={})
+
+    # Test case 1: Update status and description
+    args = {"id": "case1", "status": "in_progress", "description": "investigating"}
+    result = resolve_case_command(args)
+    assert "Case case1 was changed successfully" in result.readable_output
+    assert "Status" in result.readable_output
+    assert "Description" in result.readable_output
+    assert requests_mock.last_request.json() == {
+        "id": "case1",
+        "fields": {"status": "in_progress", "description": "investigating"},
+    }
+
+    # Test case 2: Remove user assignment
+    args = {"id": "case1", "remove_user_assignment": "true"}
+    result = resolve_case_command(args)
+    assert "Assigned To Uuid" in result.readable_output
+    assert "Unassigned" in result.readable_output
+    assert requests_mock.last_request.json() == {
+        "id": "case1",
+        "fields": {"remove_user_assignment": True},
+    }
+
+    # Test case 3: Invalid severity
+    with pytest.raises(ValueError, match="Severity must be an integer between 10 and 100"):
+        resolve_case_command({"id": "case1", "severity": "5"})
+
+    # Test case 4: Missing ID
+    with pytest.raises(ValueError, match="The 'id' argument is required"):
+        resolve_case_command({"status": "new"})
+
+
+# ============== NGSIEM Search Events Tests ==============
+@pytest.mark.parametrize(
+    "events, expected_rawstring",
+    [
+        # \& in string is replaced with &
+        ([{"@rawstring": "foo\\&bar"}], "foo&bar"),
+        # Multiple \& occurrences are all replaced
+        ([{"@rawstring": "a\\&b\\&c"}], "a&b&c"),
+        # String without \& is left unchanged
+        ([{"@rawstring": "plain text no escape"}], "plain text no escape"),
+        # Empty string stays empty
+        ([{"@rawstring": ""}], ""),
+        # Non-string @rawstring (dict) is left unchanged
+        ([{"@rawstring": {"already": "parsed"}}], {"already": "parsed"}),
+        # Event without @rawstring is left unchanged
+        ([{"some_field": "value"}], None),
+    ],
+)
+def test_clean_ngsiem_rawstring_field(events, expected_rawstring):
+    """
+    Given:
+        - A list of events with various @rawstring values.
+    When:
+        - Running clean_ngsiem_rawstring_field.
+    Then:
+        - Literal '\\&' sequences in string @rawstring values are replaced with '&'.
+        - Non-string or missing @rawstring values are left unchanged.
+    """
+    from CrowdStrikeFalcon import clean_ngsiem_rawstring_field
+
+    result = clean_ngsiem_rawstring_field(events)
+    if expected_rawstring is None:
+        assert "@rawstring" not in result[0]
+    else:
+        assert result[0]["@rawstring"] == expected_rawstring
+
+
+@pytest.mark.parametrize(
+    "query, limit, expected",
+    [
+        ("event_simpleName=ProcessRollup2", 100, "event_simpleName=ProcessRollup2 | tail(100)"),
+        ("event_simpleName=ProcessRollup2 | tail(50)", 100, "event_simpleName=ProcessRollup2 | tail(50)"),
+    ],
+)
+def test_build_ngsiem_query_with_limit(query, limit, expected):
+    """
+    Given:
+        - A query string and a limit.
+    When:
+        - Running build_ngsiem_query_with_limit.
+    Then:
+        - tail(limit) is appended only if not already present (case-insensitive).
+    """
+    from CrowdStrikeFalcon import build_ngsiem_query_with_limit
+
+    assert build_ngsiem_query_with_limit(query, limit) == expected
+
+
+@pytest.mark.parametrize(
+    "val, expected",
+    [
+        (None, None),
+        ("", None),
+        (1700000000, 1700000000000),
+        (1700000000000, 1700000000000),
+        ("1700000000", 1700000000000),
+        ("2023-11-14T00:00:00Z", 1699920000000),
+    ],
+)
+def test_arg_to_timestamp(val, expected):
+    """
+    Given:
+        - A raw time argument in one of the supported formats (None,
+          epoch seconds/milliseconds, or ISO-8601 string).
+    When:
+        - Converting it via arg_to_timestamp.
+    Then:
+        - Returns None for None.
+        - Returns the expected epoch-milliseconds int for all other valid inputs.
+    """
+    from CrowdStrikeFalcon import arg_to_timestamp
+
+    assert arg_to_timestamp(val) == expected
+
+
+@freeze_time("2023-11-15T00:00:00Z")
+def test_arg_to_timestamp_relative():
+    """
+    Given:
+        - A relative time expression ("24 hours").
+    When:
+        - Converting it via arg_to_timestamp with time frozen at 2023-11-15T00:00:00Z.
+    Then:
+        - Returns the epoch-milliseconds timestamp for 24 hours before the frozen time.
+    """
+    from CrowdStrikeFalcon import arg_to_timestamp
+
+    assert arg_to_timestamp("24 hours") == 1699920000000
+
+
+@pytest.mark.parametrize(
+    "events, expected_count, expected_hr_contains",
+    [
+        (
+            [{"timestamp": "2023-01-01T00:00:00Z", "id": "evt1"}, {"timestamp": "2023-01-01T00:01:00Z", "id": "evt2"}],
+            2,
+            "NGSIEM Events (Total: 2)",
+        ),
+        ([], 0, "No events found"),
+    ],
+)
+def test_process_ngsiem_search_completion(events, expected_count, expected_hr_contains):
+    """
+    Given:
+        - A response with events or no events.
+    When:
+        - Running process_ngsiem_search_completion.
+    Then:
+        - Returns a PollResult with continue_to_poll=False and correct outputs/HR.
+    """
+    from CrowdStrikeFalcon import process_ngsiem_search_completion
+
+    response = {"events": events, "done": True}
+    args = {"wait_for_result": True}
+    result = process_ngsiem_search_completion(response, args)
+
+    assert result.continue_to_poll is False
+    assert expected_hr_contains in result.response.readable_output
+    if expected_count > 0:
+        assert len(result.response.outputs) == expected_count
+        assert result.response.outputs_prefix == "CrowdStrike.NGSiemEvent"
+
+
+def test_initiate_ngsiem_search_request(requests_mock):
+    """
+    Given:
+        - A repository and search body.
+    When:
+        - Running initiate_ngsiem_search_request.
+    Then:
+        - The correct API endpoint is called and the response is returned.
+    """
+    from CrowdStrikeFalcon import initiate_ngsiem_search_request
+
+    requests_mock.post(
+        f"{SERVER_URL}/humio/api/v1/repositories/search-all/queryjobs",
+        json={"id": "job123"},
+        status_code=200,
+    )
+    result = initiate_ngsiem_search_request("search-all", {"queryString": "test"})
+    assert result["id"] == "job123"
+    assert requests_mock.last_request.json() == {"queryString": "test"}
+
+
+def test_get_ngsiem_search_results_request(requests_mock):
+    """
+    Given:
+        - A repository and job ID.
+    When:
+        - Running get_ngsiem_search_results_request.
+    Then:
+        - The correct API endpoint is called and the response is returned.
+    """
+    from CrowdStrikeFalcon import get_ngsiem_search_results_request
+
+    requests_mock.get(
+        f"{SERVER_URL}/humio/api/v1/repositories/search-all/queryjobs/job123",
+        json={"done": True, "events": [{"id": "evt1"}]},
+        status_code=200,
+    )
+    result = get_ngsiem_search_results_request("search-all", "job123")
+    assert result["done"] is True
+    assert len(result["events"]) == 1
+
+
+@pytest.mark.parametrize(
+    "args, initiate_ret, poll_ret, expect_raise, raise_match, expect_continue, expect_hr, expect_job_id",
+    [
+        # 1) First call: should initiate, set job_id, and continue polling
+        (
+            {"query": "test", "repository": "search-all", "wait_for_result": True},
+            {"id": "job123"},
+            {"done": False, "cancelled": False},
+            False,
+            None,
+            True,
+            None,
+            "job123",
+        ),
+        # 2) First call but initiate returns no id: should raise
+        (
+            {"query": "test", "repository": "search-all", "wait_for_result": True},
+            {},
+            None,
+            True,
+            "Failed to initiate",
+            None,
+            None,
+            None,
+        ),
+        # 3) Poll: in progress
+        (
+            {"query": "test", "job_id": "job123", "repository": "search-all", "wait_for_result": True},
+            None,
+            {"done": False, "cancelled": False},
+            False,
+            None,
+            True,
+            "Searching NGSIEM events:",
+            None,
+        ),
+        # 4) Poll: done with events
+        (
+            {"query": "test", "job_id": "job123", "repository": "search-all", "wait_for_result": True},
+            None,
+            {"done": True, "events": [{"id": "evt1", "timestamp": "2023-01-01T00:00:00Z"}]},
+            False,
+            None,
+            False,
+            "NGSIEM Events",
+            None,
+        ),
+        # 5) Poll: done no events
+        (
+            {"query": "test", "job_id": "job123", "repository": "search-all", "wait_for_result": True},
+            None,
+            {"done": True, "events": []},
+            False,
+            None,
+            False,
+            "No events found",
+            None,
+        ),
+        # 6) Poll: cancelled -> raise
+        (
+            {"query": "test", "job_id": "job123", "repository": "search-all", "wait_for_result": True},
+            None,
+            {"done": False, "cancelled": True},
+            True,
+            "cancelled",
+            None,
+            None,
+            None,
+        ),
+    ],
+)
+def test_cs_falcon_search_ngsiem_events_command_merged(
+    mocker,
+    args,
+    initiate_ret,
+    poll_ret,
+    expect_raise,
+    raise_match,
+    expect_continue,
+    expect_hr,
+    expect_job_id,
+):
+    """
+    Given:
+        - Args that represent either:
+          * First call (no job_id) -> build body + initiate search
+          * Polling call (job_id exists) -> only fetch results
+        - Mocked initiate/poll responses (including error cases)
+    When:
+        - Running cs_falcon_search_ngsiem_events_command(args)
+    Then:
+        - Raises DemistoException when expected (match raise_match)
+        - Otherwise returns a PollResult with expected continue_to_poll and HR content
+        - Sets args["job_id"] on first-call successful initiation when expected
+    """
+    from CrowdStrikeFalcon import cs_falcon_search_ngsiem_events_command
+
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
+
+    # If this is the "first call" flow, cs_falcon_search_ngsiem_events_command will build body + initiate.
+    if "job_id" not in args:
+        mocker.patch("CrowdStrikeFalcon.build_ngsiem_search_body", return_value={"queryString": "test | tail(50)"})
+        mocker.patch("CrowdStrikeFalcon.initiate_ngsiem_search_request", return_value=initiate_ret)
+
+        # After initiate, the command typically does a first "get results" call too (for polling).
+        if poll_ret is not None:
+            mocker.patch("CrowdStrikeFalcon.get_ngsiem_search_results_request", return_value=poll_ret)
+    else:
+        # Polling flow (job_id exists): only get results is used.
+        mocker.patch("CrowdStrikeFalcon.get_ngsiem_search_results_request", return_value=poll_ret)
+
+    if expect_raise:
+        with pytest.raises(DemistoException, match=raise_match):
+            cs_falcon_search_ngsiem_events_command(args)
+        return
+
+    result = cs_falcon_search_ngsiem_events_command(args)
+
+    if expect_continue:
+        # When polling should continue, the decorator wraps the result with a ScheduledCommand
+        assert result.scheduled_command is not None
+    else:
+        # When polling is done, the decorator returns the final CommandResults directly
+        assert result.scheduled_command is None
+    if expect_hr is not None:
+        assert expect_hr in result.readable_output
+    if expect_job_id is not None:
+        assert args["job_id"] == expect_job_id
+
+
+@pytest.mark.parametrize(
+    "events, hr_keys, expected_rows",
+    [
+        # Bare key preferred over @key and #key
+        ([{"id": "bare", "@id": "at", "#id": "hash"}], ["id"], [{"id": "bare"}]),
+        # Falls back to @key when bare key missing
+        ([{"@id": "at_val"}], ["id"], [{"id": "at_val"}]),
+        # Missing key entirely → None
+        ([{"other": "x"}], ["id"], [{"id": None}]),
+        # Timestamp int epoch-ms → date string
+        ([{"timestamp": 1700000000000}], ["timestamp"], "date_str"),
+        # Timestamp numeric string → date string
+        ([{"timestamp": "1700000000000"}], ["timestamp"], "date_str"),
+        # Timestamp float epoch-ms → date string
+        ([{"#timestamp": 1700000000000.0}], ["timestamp"], "date_str"),
+        # Timestamp non-numeric string → passthrough
+        ([{"@timestamp": "2023-01-01T00:00:00Z"}], ["timestamp"], [{"timestamp": "2023-01-01T00:00:00Z"}]),
+    ],
+)
+def test_build_ngsiem_hr_rows(events, hr_keys, expected_rows):
+    """
+    Given:
+        - Events with various key patterns (bare, @-prefixed, #-prefixed, missing)
+          and timestamp values (int, float, numeric string, non-numeric string).
+    When:
+        - Running build_ngsiem_hr_rows.
+    Then:
+        - Key resolution: bare key > @key > #key > None.
+        - Timestamp conversion: int/float/numeric-string epoch-ms → ISO date string;
+          non-numeric string passes through unchanged.
+    """
+    from CrowdStrikeFalcon import build_ngsiem_hr_rows
+
+    rows = build_ngsiem_hr_rows(events, hr_keys)
+    if expected_rows == "date_str":
+        # For epoch-ms inputs, just verify it was converted to a date string containing the year
+        assert isinstance(rows[0]["timestamp"], str)
+        assert "2023" in rows[0]["timestamp"]
+    else:
+        assert rows == expected_rows
+
+
+def test_build_ngsiem_hr_rows_multiple_events_and_keys():
+    """
+    Given:
+        - Multiple events with mixed key resolution and timestamp formats.
+    When:
+        - Running build_ngsiem_hr_rows with several hr_keys.
+    Then:
+        - Each event row resolves keys correctly and timestamps are handled per type.
+    """
+    from CrowdStrikeFalcon import build_ngsiem_hr_rows
+
+    events = [
+        {"id": "evt1", "@timestamp": 1700000000000, "#event_simpleName": "DNS"},
+        {"#id": "evt2", "timestamp": "not-a-number", "event_simpleName": "HTTP"},
+    ]
+    rows = build_ngsiem_hr_rows(events, ["id", "timestamp", "event_simpleName"])
+    assert len(rows) == 2
+    assert rows[0]["id"] == "evt1"
+    assert isinstance(rows[0]["timestamp"], str)
+    assert "2023" in rows[0]["timestamp"]
+    assert rows[0]["event_simpleName"] == "DNS"
+    assert rows[1]["id"] == "evt2"
+    assert rows[1]["timestamp"] == "not-a-number"
+    assert rows[1]["event_simpleName"] == "HTTP"

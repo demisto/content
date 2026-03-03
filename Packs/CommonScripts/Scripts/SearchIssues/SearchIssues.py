@@ -38,9 +38,17 @@ SEARCH_SHA256_FIELDS = [
 ]
 
 
-def remove_empty_string_values(args):
-    """Remove empty string values from the args dictionary."""
-    return {key: value for key, value in args.items() if value != ""}
+NUMERIC_ARGS = {"issue_id", "offset", "limit"}
+
+
+def remove_empty_string_values(args: dict) -> dict:
+    """Remove empty/invalid values from the args dictionary.
+    - Removes keys with empty string values.
+    - For numeric args, removes non-numeric values to prevent be3 crashes (e.g. 'n/a', 'invalid_offset').
+    """
+    return {
+        key: value for key, value in args.items() if value != "" and (key not in NUMERIC_ARGS or str(value).strip().isdigit())
+    }
 
 
 def prepare_start_end_time(args: dict):
@@ -176,8 +184,9 @@ def main():  # pragma: no cover
             args["issue_domain"] = f"DOMAIN_{issue_domain.upper().replace(' ', '_')}"
 
         args = remove_empty_string_values(args)
+
         demisto.debug(f"Calling core-get-issues with arguments: {args}")
-        results: dict = demisto.executeCommand("core-get-issues", args)[0]  # type: ignore
+        results = demisto.executeCommand("core-get-issues", args)[0]  # type: ignore
 
         if is_error(results):
             error = get_error(results)
@@ -187,7 +196,14 @@ def main():  # pragma: no cover
         context = results.get("EntryContext", {}).get("Core.Issue(val.internal_id && val.internal_id == obj.internal_id)")
         human_readable: str = results.get("HumanReadable", "")
 
-        return_results(CommandResults(outputs=context, outputs_prefix="Core.Issue", readable_output=human_readable))
+        return_results(
+            CommandResults(
+                outputs=context,
+                outputs_prefix="Core.Issue",
+                outputs_key_field="internal_id",
+                readable_output=human_readable,
+            )
+        )
 
     except DemistoException as error:
         return_error(f"Failed to execute SearchIssues. Error:\n{error}", error)

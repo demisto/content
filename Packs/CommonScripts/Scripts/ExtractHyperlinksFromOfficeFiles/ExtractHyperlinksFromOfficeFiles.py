@@ -1,4 +1,5 @@
 import zipfile
+from io import BytesIO
 
 import demistomock as demisto  # noqa: F401
 import openpyxl
@@ -17,7 +18,8 @@ def extract_hyperlinks_from_xlsx(file_path: str) -> Set:
     urls = set()
 
     for xml_data in xmls:
-        df = pd.read_xml(xml_data)
+        # Wrap bytes in BytesIO for compatibility with pandas 2.x
+        df = pd.read_xml(BytesIO(xml_data))
 
         if "TargetMode" in df.columns:
             filtered_df = df.loc[df["TargetMode"].eq("External"), "Target"]
