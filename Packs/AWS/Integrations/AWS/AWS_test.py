@@ -13294,9 +13294,6 @@ def test_modify_fleet_command_with_launch_template(mocker):
     assert call_kwargs["LaunchTemplateConfigs"][0]["LaunchTemplateSpecification"]["LaunchTemplateId"] == "lt-0newtemplate"
 
 
-# ── aws-ec2-vpc-delete ────────────────────────────────────────────────────────
-
-
 def test_delete_vpc_command_success(mocker):
     """
     Given: A mocked EC2 client and a valid vpc_id argument.
@@ -13334,9 +13331,6 @@ def test_delete_vpc_command_failure(mocker):
     EC2.delete_vpc_command(mock_client, args)
 
     mock_error_handler.assert_called_once()
-
-
-# ── aws-ec2-vpc-endpoint-create ───────────────────────────────────────────────
 
 
 def test_create_vpc_endpoint_command_success(mocker):
@@ -13426,7 +13420,7 @@ def test_create_vpc_endpoint_command_failure(mocker):
     """
     Given: A mocked EC2 client that returns a non-200 HTTP status.
     When: create_vpc_endpoint_command is called.
-    Then: It should invoke AWSErrorHandler.handle_response_error.
+    Then: It should invoke AWSErrorHandler.handle_response_error before any response serialization occurs.
     """
     from AWS import EC2
 
@@ -13435,10 +13429,6 @@ def test_create_vpc_endpoint_command_failure(mocker):
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
         "VpcEndpoint": {},
     }
-    mocker.patch(
-        "AWS.serialize_response_with_datetime_encoding",
-        return_value={"VpcEndpoint": {}},
-    )
     mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
 
     args = {
@@ -13487,9 +13477,6 @@ def test_create_vpc_endpoint_command_with_tags(mocker):
     assert len(tag_specs) == 1
     assert tag_specs[0]["ResourceType"] == "vpc-endpoint"
     assert any(t["Key"] == "Env" for t in tag_specs[0]["Tags"])
-
-
-# ── aws-ec2-internet-gateway-describe ─────────────────────────────────────────
 
 
 def test_describe_internet_gateways_command_success(mocker):
@@ -13557,11 +13544,34 @@ def test_describe_internet_gateways_command_no_results(mocker):
     assert "No internet gateways were found" in result.readable_output
 
 
+def test_describe_internet_gateways_command_failure(mocker):
+    """
+    Given: A mocked EC2 client that returns a non-200 HTTP status.
+    When: describe_internet_gateways_command is called.
+    Then: It should invoke AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_internet_gateways.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "InternetGateways": [],
+    }
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    EC2.describe_internet_gateways_command(mock_client, args)
+
+    mock_error_handler.assert_called_once()
+
+
 def test_describe_internet_gateways_command_with_filter(mocker):
     """
-    Given: A mocked EC2 client and a filters argument.
-    When: describe_internet_gateways_command is called.
-    Then: It should pass Filters in the API call payload.
+    Given: A mocked EC2 client, a filters argument, and an internet_gateway_ids argument.
+    When: describe_internet_gateways_command is called with both filters and internet_gateway_ids.
+    Then: It should pass both Filters and InternetGatewayIds in the API call payload,
+          and skip pagination since InternetGatewayIds is provided.
     """
     from AWS import EC2
 
@@ -13588,6 +13598,8 @@ def test_describe_internet_gateways_command_with_filter(mocker):
     call_kwargs = mock_client.describe_internet_gateways.call_args[1]
     assert "Filters" in call_kwargs
     assert call_kwargs["InternetGatewayIds"] == ["igw-filtered"]
+    assert "MaxResults" not in call_kwargs
+    assert "NextToken" not in call_kwargs
 
 
 def test_describe_internet_gateways_command_next_token_propagated(mocker):
@@ -13625,9 +13637,6 @@ def test_describe_internet_gateways_command_next_token_propagated(mocker):
     assert call_kwargs.get("MaxResults") == 5
     assert call_kwargs.get("NextToken") == "prev-igw-token"
     assert result.outputs["AWS.EC2(true)"]["InternetGatewaysNextToken"] == "next-igw-token"
-
-
-# ── aws-ec2-internet-gateway-detach ───────────────────────────────────────────
 
 
 def test_detach_internet_gateway_command_success(mocker):
@@ -13680,9 +13689,6 @@ def test_detach_internet_gateway_command_failure(mocker):
     mock_error_handler.assert_called_once()
 
 
-# ── aws-ec2-internet-gateway-delete ───────────────────────────────────────────
-
-
 def test_delete_internet_gateway_command_success(mocker):
     """
     Given: A mocked EC2 client and a valid internet_gateway_id argument.
@@ -13720,9 +13726,6 @@ def test_delete_internet_gateway_command_failure(mocker):
     EC2.delete_internet_gateway_command(mock_client, args)
 
     mock_error_handler.assert_called_once()
-
-
-# ── aws-ec2-subnet-delete ─────────────────────────────────────────────────────
 
 
 def test_delete_subnet_command_success(mocker):
@@ -13764,14 +13767,13 @@ def test_delete_subnet_command_failure(mocker):
     mock_error_handler.assert_called_once()
 
 
-# ── aws-ec2-network-acl-entry-create ─────────────────────────────────────────
-
-
 def test_create_network_acl_entry_command_success(mocker):
     """
-    Given: A mocked EC2 client and valid arguments for a TCP ingress rule.
+    Given: A mocked EC2 client and valid arguments for a TCP ingress rule with a CIDR block and port range.
     When: create_network_acl_entry_command is called with a successful response.
-    Then: It should return CommandResults with a success message containing the network ACL ID.
+    Then: It should return CommandResults with a success message containing the network ACL ID,
+          and the API call should include all required fields: NetworkAclId, RuleNumber, Protocol,
+          RuleAction, Egress, CidrBlock, and PortRange.
     """
     from AWS import EC2
 
@@ -13801,6 +13803,7 @@ def test_create_network_acl_entry_command_success(mocker):
     assert call_kwargs["Protocol"] == "tcp"
     assert call_kwargs["RuleAction"] == "allow"
     assert call_kwargs["Egress"] is False
+    assert call_kwargs["CidrBlock"] == "0.0.0.0/0"
     assert call_kwargs["PortRange"] == {"From": 80, "To": 80}
 
 
