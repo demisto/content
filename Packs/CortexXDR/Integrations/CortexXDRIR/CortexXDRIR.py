@@ -680,6 +680,53 @@ class Client(CoreClient):
             json_data=request_data,
         )
 
+    def get_vulnerability_details(self, vulnerability_id: str):
+        """
+        Gets vulnerability details by ID.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Vulnerabilities
+        """
+        res = self._http_request(
+            method="GET",
+            url_suffix="../uvem/v1/vulnerabilities",  # we want to remove the v1 from the endpoint so we use ..
+            params={"vulnerabilityId": vulnerability_id},
+        )
+        return res
+
+    def run_healthcheck(self):
+        """
+        Runs a system health check.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/System-Health-Check
+        """
+        res = self._http_request(
+            method="GET",
+            url_suffix="/healthcheck",
+        )
+        return res
+
+    def get_triage_presets(self):
+        """
+        Gets triage presets.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-triage-presets
+        """
+        res = self._http_request(
+            method="POST",
+            url_suffix="/get_triage_presets",
+            json_data={"request_data": {}},  # required to be empty
+        )
+        return res.get("reply", {}).get("triage_presets", [])
+
+    def triage_endpoint(self, request_data: dict):
+        """
+        Initiates forensics triage on endpoints.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Initiate-Forensics-Triage
+        """
+        res = self._http_request(
+            method="POST",
+            url_suffix="/triage_endpoint",
+            json_data=request_data,
+        )
+        return res.get("reply", {})
+
     def create_automation_script(self, files: dict):
         """
         Creates or updates an automation script by uploading a file.
@@ -772,31 +819,6 @@ class Client(CoreClient):
             method="POST",
             url_suffix="/playbooks/delete",
             json_data=request_data,
-        )
-
-
-    def list_issues(self, request_data: dict) -> list:
-        res = self._http_request(
-            method="POST",
-            url_suffix="/issue/search",
-            json_data=request_data,
-        )
-        return res.get("reply", {}).get("DATA", [])
-
-    def create_issue(self, request_data: dict):
-        res = self._http_request(
-            method="POST",
-            url_suffix="/issue",
-            json_data=request_data,
-        )
-        return res.get("reply", {})
-
-    def update_issue(self, issue_id: str, request_data: dict):
-        self._http_request(
-            method="POST",
-            url_suffix=f"/issue/{issue_id}",
-            json_data=request_data,
-            resp_type="response"
         )
 
     def search_cases(self, request_data: dict):
@@ -2489,6 +2511,127 @@ def update_asset_group_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output="Asset group updated successfully")
 
 
+def get_vulnerability_details_command(client: Client, args: Dict) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Vulnerabilities
+    Gets vulnerability details by ID.
+    Args:
+        client (Client): The Cortex XDR client.
+        args (Dict): The command arguments.
+    Returns:
+        CommandResults: The command results.
+    """
+    vulnerability_id = args.get("vulnerability_id", "")
+    response = client.get_vulnerability_details(vulnerability_id)
+
+    hr_data = {
+        "Vulnerability ID": response.get("vulnerabilityID"),
+        "Description": response.get("description"),
+        "Score": response.get("cvss", {}).get("score"),
+        "Publish Date": arg_to_timestamp(response.get("publishedDate"), "publishedDate")
+        if response.get("publishedDate")
+        else None,
+    }
+
+    readable_output = tableToMarkdown(
+        name="Vulnerability Details",
+        t=hr_data,
+        headers=["Vulnerability ID", "Description", "Score", "Publish Date"],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Vulnerability",
+        outputs_key_field="vulnerabilityID",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def endpoint_triage_preset_list_command(client: Client) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-triage-presets
+    Gets triage presets.
+    Args:
+        client (Client): The Cortex XDR client.
+    Returns:
+        CommandResults: The command results.
+    """
+    presets: list = client.get_triage_presets()
+    readable_output = tableToMarkdown(
+        name="Endpoint Triage Presets",
+        t=presets,
+        headers=["name", "uuid", "os", "type", "created_by", "description"],
+        headerTransform=string_to_table_header,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.EndpointTriagePreset",
+        outputs=presets,
+        outputs_key_field="uuid",
+        raw_response=presets,
+    )
+
+
+def healthcheck_run_command(client: Client) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/System-Health-Check
+    Runs a system health check.
+    Args:
+        client (Client): The Cortex XDR client.
+    Returns:
+        CommandResults: The command results.
+    """
+    response = client.run_healthcheck()
+    status = response.get("status", "unknown")
+
+    return CommandResults(
+        readable_output=f"**Cortex XDR health status: {status}**",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.HealthStatus",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def endpoint_triage_command(client: Client, args: Dict) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Initiate-Forensics-Triage
+    Initiates forensics triage on endpoints.
+    Args:
+        client (Client): The Cortex XDR client.
+        args (Dict): The command arguments.
+    Returns:
+        CommandResults: The command results.
+    """
+    agent_ids = argToList(args.get("endpoint_id"))
+    collector_uuid = args.get("collector_uuid")
+
+    request_data: Dict[str, Any] = {"agent_ids": agent_ids}
+    if collector_uuid:
+        request_data["collector_uuid"] = collector_uuid
+
+    raw_response = client.triage_endpoint({"request_data": request_data})
+
+    readable_output = tableToMarkdown(
+        name="Triage Endpoint Results",
+        t=raw_response,
+        headers=["TRIAGE_ID", "SUCCESSFUL_AGENT_IDS", "UNSUCCESSFUL_AGENT_IDS"],
+        headerTransform=string_to_table_header,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.EndpointTriage",
+        outputs=raw_response,
+        outputs_key_field="EndpointTriage",
+        raw_response=raw_response,
+    )
+
+
 def automation_script_create_command(client: Client, args: Dict) -> CommandResults:
     """
     Creates or updates an automation script by uploading a file.
@@ -2620,180 +2763,6 @@ def automation_playbook_delete_command(client: Client, args: Dict) -> CommandRes
     request_data = {"request_data": {"filter": {"field": field, "value": value}}}
     client.delete_automation_playbook(request_data)
     return CommandResults(readable_output="Automation playbook deleted successfully.")
-
-
-def list_issues_command(client: Client, args: Dict) -> CommandResults:
-    """
-    Returns a list of issues.
-
-    Parameters:
-    - client (Client): The client to use for the request.
-    - args (dict): The command arguments.
-
-    Returns:
-    - CommandResults: A CommandResults object containing the issues.
-    """
-    # Issues with an 'INFO' severity level are filtered out and will not be displayed in the UI
-    filters = []
-    if issue_ids := argToList(args.get("issue_id")):
-        converted_ids = list(map(int, issue_ids))
-        filters.append({"field": "id", "operator": "in", "value": converted_ids})
-    if external_id := argToList(args.get("external_id")):
-        filters.append({"field": "external_id", "operator": "in", "value": external_id})
-    if detection_method := argToList(args.get("detection_method")):
-        filters.append({"field": "detection.method", "operator": "in", "value": detection_method})
-    if domain := argToList(args.get("domain")):
-        filters.append({"field": "issue_domain", "operator": "in", "value": domain})
-    if severity := argToList(args.get("severity")):
-        filters.append({"field": "severity", "operator": "in", "value": severity})
-    if insert_time := args.get("insert_time"):
-        timestamp = arg_to_timestamp(insert_time, arg_name="insert_time")
-        filters.append({"field": "_insert_time", "operator": "gte", "value": timestamp})
-    if status := argToList(args.get("status")):
-        filters.append({"field": "status.progress", "operator": "in", "value": status})
-
-    limit = arg_to_number(args.get("limit")) or 50
-    page_size = arg_to_number(args.get("page_size")) or limit
-    page = arg_to_number(args.get("page")) or 0
-
-    request_data = {
-        "request_data": {
-            "search_from": page * page_size,
-            "search_to": (page + 1) * page_size,
-        }
-    }
-
-    if filters:
-        request_data["request_data"]["filters"] = filters
-
-    if sort_field := args.get("sort_field"):
-        sort_order = args.get("sort_order", "asc").lower()
-        if sort_field == "issue_id":  # converting issue_id to id as the api expects
-            sort_field = "id"
-        request_data["request_data"]["sort"] = {"field": sort_field, "keyword": sort_order}
-
-    request_data["request_data"]["include_fields"] = ["custom_fields", "normalized_fields"]
-
-    issues = client.list_issues(request_data)
-
-    readable_output = tableToMarkdown(
-        name="Issues",
-        t=issues,
-        headers=["id", "name", "type", "severity", "description"],
-        headerTransform=string_to_table_header,
-        removeNull=True
-    )
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Issue",
-        outputs_key_field="id",
-        outputs=issues,
-        raw_response=issues
-    )
-
-
-def create_issue_command(client: Client, args: Dict) -> CommandResults:
-    """
-    Creates a new issue.
-
-    Parameters:
-    - client (Client): The client to use for the request.
-    - args (dict): The command arguments.
-
-    Returns:
-    - CommandResults: A CommandResults object containing the created issue.
-    """
-    # Issues with an 'INFO' severity level are filtered out and will not be displayed in the UI
-    issue_data = {
-        # Required
-        "name": args.get("name"),
-        "description": args.get("description"),
-        "observation_time": arg_to_timestamp(args.get("observation_time"), arg_name="observation_time"),
-        "issue_domain": args.get("domain"),
-        "category": args.get("category"),
-        "severity": args.get("severity").upper(),
-
-        # Optional
-        "asset_id": argToList(args.get("asset_id")),
-        "mitre_tactic": argToList(args.get("mitre_tactic")),
-        "mitre_technique": argToList(args.get("mitre_technique")),
-        "type_": args.get("type"),
-        "extended_description": args.get("extended_description"),
-        "impact": args.get("impact"),
-        "tags": args.get("tags"),
-        "is_excluded": argToBoolean(args.get("is_excluded")) if args.get("is_excluded") is not None else None,
-        "is_starred": argToBoolean(args.get("is_starred")) if args.get("is_starred") is not None else None,
-        "assigned_to": args.get("assigned_to"),
-        "assigned_to_pretty": args.get("assigned_to_pretty"),
-    }
-
-    for field in ["normalized_fields_json", "custom_fields_json"]:
-        field_json = args.get(field)
-        try:
-            issue_data[field] = json.loads(field_json) if field_json else {}
-        except (ValueError, TypeError):
-            raise DemistoException(f"Invalid JSON format in field: {field}")
-
-    result = client.create_issue({"request_data": {"issue": issue_data}})
-
-    readable_output = tableToMarkdown(
-        name="Created Issue",
-        t=result,
-        headerTransform=string_to_table_header,
-        removeNull=True
-    )
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Issue",
-        outputs_key_field="external_id",
-        outputs=result,
-        raw_response=result
-    )
-
-
-def update_issue_command(client: Client, args: Dict) -> CommandResults:
-    """
-    Updates an existing issue.
-
-    Parameters:
-    - client (Client): The client to use for the request.
-    - args (dict): The command arguments.
-
-    Returns:
-    - CommandResults: A CommandResults object.
-    """
-    statuses_map = {
-        "new": "New",
-        "in_progress": "In Progress",
-        "resolved": "Resolved"
-    }
-
-    reason_map = {
-        "resolved_threat_handled": "resolved - threat handled",
-        "resolved_known_issue": "resolved - known issue",
-        "resolved_duplicate": "resolved - duplicate issue",
-        "resolved_false_positive": "resolved - false positive",
-        "resolved_other": "resolved - other",
-        "resolved_true_positive": "resolved - true positive",
-        "resolved_security_testing": "resolved - security testing"
-    }
-
-    update_data = assign_params(
-        severity=args.get("severity").upper() if args.get("severity") else None,
-    )
-    if status := statuses_map.get(args.get("status", "")):
-        update_data["status_progress"] = status
-    if resolution_reason := reason_map.get(args.get("resolve_reason")):
-        update_data["status_resolution_reason"] = resolution_reason
-    if resolution_comment := args.get("resolve_comment"):
-        update_data["status_resolution_comment"] = resolution_comment
-
-    issue_id = args.get("issue_id")
-    request_data = {"request_data": {"update_data": update_data}}
-    client.update_issue(issue_id, request_data)
-    return CommandResults(readable_output=f"Issue with ID {issue_id} updated successfully")
 
 
 def case_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -3483,16 +3452,17 @@ def main():  # pragma: no cover
         elif command == "xdr-api-key-delete":
             return_results(api_key_delete_command(client, args))
 
+        elif command == "xdr-vulnerability-details-get":
+            return_results(get_vulnerability_details_command(client, args))
 
-        elif command == "xdr-issue-list":
-            return_results(list_issues_command(client, args))
+        elif command == "xdr-healthcheck-run":
+            return_results(healthcheck_run_command(client))
 
-        elif command == "xdr-issue-create":
-            return_results(create_issue_command(client, args))
+        elif command == "xdr-endpoint-triage-preset-list":
+            return_results(endpoint_triage_preset_list_command(client))
 
-        elif command == "xdr-issue-update":
-            return_results(update_issue_command(client, args))
-
+        elif command == "xdr-endpoint-triage":
+            return_results(endpoint_triage_command(client, args))
         elif command == "xdr-automation-script-create":
             return_results(automation_script_create_command(client, args))
 

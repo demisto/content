@@ -340,8 +340,9 @@ script:
     - defaultValue: 'False'
       description: "Whether to exclude Network Artifacts and File Artifacts from incident data."
       name: excluding_artifacts
-    description: Returns additional data for the specified incident, for example, related alerts, file artifacts, network artifacts, and so on.
+    description: This command is deprecated. Returns additional data for the specified incident, for example, related alerts, file artifacts, network artifacts, and so on.
     name: xdr-get-incident-extra-data
+    deprecated: true
     outputs:
     - contextPath: PaloAltoNetworksXDR.Incident.incident_id
       description: Unique ID assigned to each returned incident.
@@ -725,17 +726,19 @@ script:
     - description: The alert description.
       name: alert_description
     description: |-
-      Uploads an alert from external alert sources in Cortex XDR format. Cortex XDR displays alerts that are parsed
+      This command is deprecated. Uploads an alert from external alert sources in Cortex XDR format. Cortex XDR displays alerts that are parsed
       successfully in related incidents and views. You can send 600 alerts per minute. Each request can contain a
       maximum of 60 alerts.
     name: xdr-insert-parsed-alert
+    deprecated: true
   - arguments:
     - description: List of alerts in CEF format.
       isArray: true
       name: cef_alerts
       required: true
-    description: Upload alerts in CEF format from external alert sources. After you map CEF alert fields to Cortex XDR fields, Cortex XDR displays the alerts in related incidents and views. You can send 600 requests per minute. Each request can contain a maximum of 60 alerts.
+    description: This command is deprecated. Upload alerts in CEF format from external alert sources. After you map CEF alert fields to Cortex XDR fields, Cortex XDR displays the alerts in related incidents and views. You can send 600 requests per minute. Each request can contain a maximum of 60 alerts.
     name: xdr-insert-cef-alerts
+    deprecated: true
   - arguments:
     - description: The incident ID. Allows linking the response action to the incident that triggered it.
       name: incident_id
@@ -3098,8 +3101,9 @@ script:
       predefined:
       - 'list'
       - 'dict'
-    description: Returns information about each alert ID.
+    description: This command is deprecated. Returns information about each alert ID.
     name: xdr-get-cloud-original-alerts
+    deprecated: true
     outputs:
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event._time
       description: The timestamp of the occurrence of the event.
@@ -4134,237 +4138,6 @@ script:
       name: membership_predicate_json
     description: Updates an asset group.
     name: xdr-asset-group-update
-  - name: xdr-issue-list
-    description: Retrieve issues based on filters. Issues with an 'INFO' severity level are filtered out.
-    arguments:
-    - name: issue_id
-      description: A comma-separated list of issue IDs.
-      isArray: true
-    - name: external_id
-      description: A comma-separated list of external IDs.
-      isArray: true
-    - name: detection_method
-      description: A comma-separated list of methods used to detect the activity.
-      auto: PREDEFINED
-      predefined:
-      - BIOC
-      - Correlation
-      - Analytics
-      - System
-      - IOC
-    - name: domain
-      description: A comma-separated list of domains.
-    - name: severity
-      description: A comma-separated list of severities.
-      auto: PREDEFINED
-      predefined:
-      - info
-      - low
-      - medium
-      - high
-      - critical
-    - name: insert_time
-      description: Filter by issues inserted after this time.
-    - name: status
-      description: "A comma-separated list of statuses. Possible values: 'New', 'In Progress', 'Resolved'."
-      isArray: true
-    - name: sort_field
-      description: The field to sort by.
-      auto: PREDEFINED
-      predefined:
-      - issue_id
-      - severity
-      - observation_time
-    - name: sort_order
-      description: The sort order.
-      auto: PREDEFINED
-      predefined:
-      - asc
-      - desc
-    - name: limit
-      description: The maximum number of results to return.
-    - name: page_size
-      description: The page size.
-    - name: page
-      description: The page number.
-    outputs:
-    - contextPath: PaloAltoNetworksXDR.Issue.observation_time
-      description: The timestamp when the observation occurred.
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.Issue.domain
-      description: The security domain associated with the observation.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.remediation
-      description: Suggested remediation steps.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.impact
-      description: The potential impact of the observed activity.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.status
-      description: The current progress status (e.g., New).
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.status_resolution_comment
-      description: Comments regarding the resolution of the status.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.status_progress
-      description: The current progress status (e.g., New).
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.asset_ids
-      description: List of asset IDs involved.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.assigned_to_pretty
-      description: The display name of the user assigned to this item.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.last_update_timestamp
-      description: The last time this record was updated.
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.Issue.detection_method
-      description: The method used to detect the activity (e.g., BIOC).
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.is_starred
-      description: Whether the item has been starred/flagged.
-      type: Boolean
-    - contextPath: PaloAltoNetworksXDR.Issue.name
-      description: The name of the observation or alert.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.external_id
-      description: The unique UUID for external reference.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.insert_time
-      description: The time the record was inserted into the database.
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.Issue.detection_rule_id
-      description: The ID of the specific detection rule triggered.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.tags
-      description: A list of tags associated with the observation.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.type
-      description: The classification type of the observation.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.id
-      description: The numeric ID of the observation.
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.Issue.description
-      description: Detailed description of the observed activity.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.severity
-      description: The severity level (e.g., LOW).
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.category
-      description: The category classification.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.is_excluded
-      description: Whether this observation is excluded from standard views.
-      type: Boolean
-  - name: xdr-issue-create
-    description: Create a new issue. Issues with an 'INFO' severity level will not be displayed in the UI
-    arguments:
-    - name: name
-      description: The issue name.
-      required: true
-    - name: description
-      description: The issue description.
-      required: true
-    - name: observation_time
-      description: The observation time. Should support english expressions like "one year".
-      required: true
-    - name: domain
-      description: The domain.
-      required: true
-    - name: category
-      description: The category.
-      required: true
-    - name: asset_id
-      description: A comma-separated list of asset IDs.
-      isArray: true
-    - name: mitre_tactic
-      description: A comma-separated list of MITRE tactics.
-      isArray: true
-    - name: mitre_tecnique
-      description: A comma-separated list of MITRE techniques.
-      isArray: true
-    - name: type
-      description: The issue type.
-    - name: extended_description
-      description: The extended description.
-    - name: impact
-      description: The impact.
-    - name: tags
-      description: A comma-separated list of tags.
-      isArray: true
-    - name: is_excluded
-      description: Whether the issue is excluded.
-      auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
-    - name: is_starred
-      description: Whether the issue is starred.
-      auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
-    - name: assigned_to
-      description: The user assigned to the issue.
-    - name: assigned_to_pretty
-      description: The pretty name of the user assigned to the issue.
-    - name: severity
-      description: The severity.
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - critical
-      - info
-      - low
-      - medium
-      - high
-    - name: normalized_fields_json
-      description: The JSON to add to the "normalized_fields" field in the API.
-    - name: custom_fields_json
-      description: The JSON to add to the "custom_fields" field in the API.
-    outputs:
-    - contextPath: PaloAltoNetworksXDR.Issue.external_id
-      description: The issue external ID.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.detection_method
-      description: The issue detection method.
-      type: String
-  - name: xdr-issue-update
-    description: Update an existing issue.
-    arguments:
-    - name: issue_id
-      description: The issue ID.
-      required: true
-    - name: severity
-      description: The severity.
-      auto: PREDEFINED
-      predefined:
-      - critical
-      - info
-      - low
-      - medium
-      - high
-    - name: status
-      description: The status.
-      auto: PREDEFINED
-      predefined:
-      - new
-      - in_progress
-      - resolved
-    - name: resolve_reason
-      description: The resolve reason.
-      auto: PREDEFINED
-      predefined:
-      - resolved_threat_handled
-      - resolved_known_issue
-      - resolved_duplicate
-      - resolved_false_positive
-      - resolved_other
-      - resolved_true_positive
-      - resolved_security_testing
-    - name: resolve_comment
-      description: The resolve comment.
   - arguments:
     - description: The entry ID of the file. The script should be a zipped YAML file.
       name: entry_id
@@ -5234,6 +5007,104 @@ script:
       required: true
     description: Deletes correlation rules.
     name: xdr-correlation-rule-delete
+  - arguments:
+    - description: The vulnerability ID to retrieve details for.
+      name: vulnerability_id
+      required: true
+    description: Gets vulnerability details by ID.
+    name: xdr-vulnerability-details-get
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.vulnerabilityID
+      description: The unique identifier (CVE ID).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.description
+      description: Detailed description of the vulnerability.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.publishedDate
+      description: The date the vulnerability was first published.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.epss_score
+      description: The Probability of exploitability (0-1).
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.exploitMaturity
+      description: Current state of exploit availability (e.g., weaponized).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.weaponizedExploitFound
+      description: Whether a functional exploit exists in the wild.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.reportedExploited
+      description: Whether the vulnerability has been actively exploited.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.reportedExploitedByThreatActors
+      description: Whether known threat actors are exploiting this vulnerability.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.reportedExploitedByRansomware
+      description: Whether the vulnerability is used in ransomware campaigns.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.reportedExploitedByBotnets
+      description: Whether the vulnerability is being leveraged by botnet clusters.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.firstReportedThreatActor
+      description: The timestamp of the first recorded threat actor activity.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.exploitDetails.mostRecentReportedThreatActor
+      description: The timestamp of the last recorded threat actor activity.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.cisaKevDateDue
+      description: The deadline set by CISA for federal agency remediation.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.weaknesses.cweId
+      description: The Common Weakness Enumeration ID.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.vulncheck-threat-actors
+      description: A list of specific threat actor groups associated with the vulnerability.
+      type: String
+  - description: Runs a system health check on the Cortex XDR environment.
+    name: xdr-healthcheck-run
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.HealthStatus.status
+      description: The health status of the Cortex XDR system.
+      type: String
+  - description: Gets a list of available triage presets.
+    name: xdr-endpoint-triage-preset-list
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.EndpointTriagePreset.created_by
+      description: The user or system entity that created the triage preset.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.EndpointTriagePreset.description
+      description: A brief explanation of the preset's purpose or contents.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.EndpointTriagePreset.name
+      description: The unique display name of the triage preset.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.EndpointTriagePreset.os
+      description: The operating system platform the preset targets (e.g., windows, linux, macos).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.EndpointTriagePreset.type
+      description: The category or classification of the preset (e.g., standard, custom).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.EndpointTriagePreset.uuid
+      description: The unique universal identifier (UUID) assigned to this specific preset.
+      type: String
+  - arguments:
+    - description: A comma-separated list of endpoint IDs to initiate triage on. You can find the endpoint ID under the "Inventory" section, under "All Endpoints".
+      isArray: true
+      name: endpoint_id
+      required: true
+    - description: The collector UUID to use for the triage.
+      name: collector_uuid
+    description: Initiates a forensics triage on the specified endpoints. You must have Cortex XDR with the Forensics add-on. The agent also must have the Forensics License enabled.
+    name: xdr-endpoint-triage
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.EndpointTriage.TRIAGE_ID
+      description: The unique identifier assigned to the created triage action.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.EndpointTriage.SUCCESSFUL_AGENT_IDS
+      description: A list of agent IDs where the triage action was successfully initiated.
+      type: Array
+    - contextPath: PaloAltoNetworksXDR.EndpointTriage.UNSUCCESSFUL_AGENT_IDS
+      description: A list of agent IDs where the triage action failed to initiate.
+      type: Array
   dockerimage: demisto/python3:3.12.12.7019815
   isfetch: true
   isfetch:xpanse: false
