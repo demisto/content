@@ -465,7 +465,7 @@ class Client(BaseClient):
         action: str | None = None,
         new_name: str | None = None,
         comments: str | None = None,
-        profile: list | None = None,
+        profile_overrides: list | None = None,
         color: str | None = None,
         tags: list | None = None,
     ):
@@ -476,8 +476,8 @@ class Client(BaseClient):
             body["new-name"] = new_name
         if comments:
             body["comments"] = comments
-        if profile:
-            body["profiles"] = profile
+        if profile_overrides:
+            body["profile-overrides"] = profile_overrides
         if color:
             body["color"] = color
         if tags:
@@ -1728,10 +1728,10 @@ def checkpoint_add_threat_indicator_command(
 def checkpoint_update_threat_indicator_command(
     client: Client,
     identifier: str,
+    profile_action: str,
     action: str = None,
     new_name: str = None,
     comments: str = None,
-    profile: str = None,
     color: str = None,
     tags: str = None,
 ) -> CommandResults:
@@ -1741,15 +1741,23 @@ def checkpoint_update_threat_indicator_command(
     Args:
         client (Client): CheckPoint client.
         identifier(str): uid or name.
+        profile_action (str or list): List of profile-action pairs in the format 'profile_action'.
+            Each item is split by '_' to create a profile override with 'profile' and 'action' keys.
         action (str): the action to set. available options:
                             "Inactive", "Ask", "Prevent", "Detect".
         new_name(str): New name of the object.
         comments(str): Comments string.
-        profile (str or list): Profiles to apply this indicator to.
         color (str): Object color.
         tags (str or list): Collection of tag identifiers.
     """
-    profile_list = argToList(profile) if profile else None
+    profile_action_list = argToList(profile_action)
+    profile_overrides = []
+    for item in profile_action_list:
+        parts = item.split("_", 1)
+        if len(parts) == 2:
+            profile_overrides.append({"profile": parts[0], "action": parts[1]})
+        else:
+            profile_overrides.append({"profile": parts[0], "action": ""})
     tags_list = argToList(tags) if tags else None
 
     result = client.update_threat_indicator(
@@ -1757,7 +1765,7 @@ def checkpoint_update_threat_indicator_command(
         action=action,
         new_name=new_name,
         comments=comments,
-        profile=profile_list,
+        profile_overrides=profile_overrides,
         color=color,
         tags=tags_list,
     )

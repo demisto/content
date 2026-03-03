@@ -446,7 +446,9 @@ def test_checkpoint_update_threat_indicator_command(mocker):
     mocked_client = mocker.Mock()
     mock_response = util_load_json("test_data/update_threat_indicator.json")
     mocked_client.update_threat_indicator.return_value = mock_response
-    result = checkpoint_update_threat_indicator_command(mocked_client, "address_range_1").outputs
+    result = checkpoint_update_threat_indicator_command(
+        mocked_client, "address_range_1", profile_action="Standard Threat Prevention_prevent"
+    ).outputs
     assert result.get("name") == "threat_indicator_1"
     assert result.get("uid") == "1234"
     assert result.get("type") == "threat-indicator"
@@ -1306,13 +1308,16 @@ def test_update_threat_indicator_with_new_args(mocker):
     checkpoint_update_threat_indicator_command(
         mocked_client,
         "indicator1",
-        profile="prof1",
+        profile_action="Standard Threat Prevention_prevent,Strict Threat Prevention_detect",
         color="orange",
         tags="tagZ",
     )
 
     call_kwargs = mocked_client.update_threat_indicator.call_args
-    assert call_kwargs[1]["profile"] == ["prof1"]
+    assert call_kwargs[1]["profile_overrides"] == [
+        {"profile": "Standard Threat Prevention", "action": "prevent"},
+        {"profile": "Strict Threat Prevention", "action": "detect"},
+    ]
     assert call_kwargs[1]["color"] == "orange"
     assert call_kwargs[1]["tags"] == ["tagZ"]
 
@@ -1324,10 +1329,10 @@ def test_update_threat_indicator_without_new_args(mocker):
     mock_response = util_load_json("test_data/update_threat_indicator.json")
     mocked_client.update_threat_indicator.return_value = mock_response
 
-    checkpoint_update_threat_indicator_command(mocked_client, "indicator1")
+    checkpoint_update_threat_indicator_command(mocked_client, "indicator1", profile_action="Minimal_inactive")
 
     call_kwargs = mocked_client.update_threat_indicator.call_args
-    assert call_kwargs[1]["profile"] is None
+    assert call_kwargs[1]["profile_overrides"] == [{"profile": "Minimal", "action": "inactive"}]
     assert call_kwargs[1]["tags"] is None
 
 

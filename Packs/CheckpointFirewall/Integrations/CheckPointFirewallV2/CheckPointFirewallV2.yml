@@ -1428,9 +1428,9 @@ script:
       description: Executes the command with the specified session ID.
       name: session_id
       required: true
-    - description: Profiles to apply this indicator to.
+    - description: 'List of profile-action pairs. Each item should be in the format: profile_action (e.g., "Standard Threat Prevention_prevent"). The profile and action are separated by an underscore.'
       isArray: true
-      name: profile
+      name: profile_action
     - auto: PREDEFINED
       description: 'Object color. Valid values: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow.'
       name: color
