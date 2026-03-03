@@ -825,13 +825,13 @@ class TestConnectionAndUtilities:
             activity_logs_url="https://api.monday.com",
         )
 
-        query = '{ boards (ids: [123]) { activity_logs { id event created_at data } } }'
+        query = "{ boards (ids: [123]) { activity_logs { id event created_at data } } }"
         client.get_activity_logs_request(query, "test_access_token")
 
         # Verify the API-Version header was included in the request
         call_kwargs = mock_http_request.call_args
         headers = call_kwargs.kwargs.get("headers") or call_kwargs[1].get("headers")
         assert "API-Version" in headers, "API-Version header is missing from the request"
-        assert headers["API-Version"] == MONDAY_API_VERSION, (
-            f"Expected API-Version '{MONDAY_API_VERSION}', got '{headers['API-Version']}'"
-        )
+        assert (
+            headers["API-Version"] == MONDAY_API_VERSION
+        ), f"Expected API-Version '{MONDAY_API_VERSION}', got '{headers['API-Version']}'"
