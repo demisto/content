@@ -6,9 +6,7 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 """
 
 import json
-from datetime import UTC, datetime, timezone
-import re
-import time
+from datetime import UTC, datetime
 from CommonServerPython import *
 
 from CommonServerUserPython import *
@@ -449,6 +447,7 @@ def test_fetch_incidents(requests_mock):
     assert incidents[1].get("occurred") == "2021-05-18T14:46:47.000Z"
     latest_created_time = datetime.strptime(incidents[1].get("occurred"), "%Y-%m-%dT%H:%M:%S.%fZ")
     assert next_run.get("last_fetch") == int(latest_created_time.replace(tzinfo=UTC).timestamp())
+
 
 def test_fetch_incidents_lookback_window(requests_mock):
     """
