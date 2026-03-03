@@ -4648,7 +4648,17 @@ def core_fill_support_ticket_command(args: dict[str, Any]) -> CommandResults:
     Includes dependent validation for problem_concentration based on the issue_category.
     """
 
+
     start_time = args.get("most_recent_issue_start_time")
+
+    delimiter  = "|||"
+    issue_category = args.get("issue_category")
+    problem_concentration = args.get("problem_concentration")
+
+    if issue_category == problem_concentration and delimiter in issue_category:
+        parts = issue_category.split("|||")
+        issue_category = parts[0] if len(parts) > 0 else None
+        problem_concentration = parts[1] if len(parts) > 1 else None
 
     start_time_dt = arg_to_datetime(start_time) if start_time else None
     data = {
@@ -4657,8 +4667,8 @@ def core_fill_support_ticket_command(args: dict[str, Any]) -> CommandResults:
         "OngoingIssue": args.get("issue_frequency"),
         "DateTimeOfIssue": start_time_dt.timestamp() if start_time_dt else None,
         "IssueImpact": args.get("issue_impact"),
-        "smeArea": args.get("issue_category"),
-        "subGroupName": args.get("problem_concentration"),
+        "smeArea": issue_category,
+        "subGroupName":problem_concentration,
     }
 
     return CommandResults(
