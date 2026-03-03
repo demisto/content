@@ -756,12 +756,18 @@ def start_xql_query_polling_command(client: CoreClient, args: dict) -> Union[Com
     if execution_id == "FAILURE":
         demisto.debug("Did not succeed to start query, retrying.")
         # the 'start_xql_query' function failed because it reached the maximum allowed number of parallel running queries.
-        # running the command again using polling with an interval of 'interval_in_secs' seconds.
+        # Schedule the get-results command (not the start command) with a _query_not_started flag
+        # so the retry stays within the same polling chain and respects the timeout.
         command_results = CommandResults()
         interval_in_secs = int(args.get("interval_in_seconds", 20))
         timeout_in_secs = int(args.get("timeout_in_seconds", 600))
+        args["_query_not_started"] = "true"
+        args["command_name"] = demisto.command()
         scheduled_command = ScheduledCommand(
-            command="xdr-xql-generic-query", next_run_in_seconds=interval_in_secs, args=args, timeout_in_seconds=timeout_in_secs
+            command="xdr-xql-get-query-results",
+            next_run_in_seconds=interval_in_secs,
+            args=args,
+            timeout_in_seconds=timeout_in_secs,
         )
         command_results.scheduled_command = scheduled_command
         command_results.readable_output = (
@@ -799,6 +805,34 @@ def get_xql_query_results_polling_command(client: CoreClient, args: dict) -> Uni
     max_fields = arg_to_number(args.get("max_fields", 20))
     if max_fields is None:
         raise DemistoException("Please provide a valid number for max_fields argument.")
+
+    # If the query hasn't been started yet (retry from FAILURE), attempt to start it first.
+    if argToBoolean(args.get("_query_not_started", "false")):
+        execution_id = start_xql_query(client, args)
+        if execution_id == "FAILURE":
+            demisto.debug("Still unable to start query, scheduling another retry.")
+            command_results = CommandResults()
+            scheduled_command = ScheduledCommand(
+                command="xdr-xql-get-query-results",
+                next_run_in_seconds=interval_in_secs,
+                args=args,
+                timeout_in_seconds=timeout_in_secs,
+            )
+            command_results.scheduled_command = scheduled_command
+            command_results.readable_output = (
+                "The maximum allowed number of parallel running queries has been reached."
+                f" The query will be retried in {interval_in_secs} seconds."
+            )
+            return command_results
+        if execution_id == "UNSUPPORTED":
+            return CommandResults(readable_output="Autonomous playbook slot reservation not enabled or missing")
+        if not execution_id:
+            raise DemistoException("Failed to start query\n")
+        # Query started successfully — remove the flag and set query_id
+        args.pop("_query_not_started", None)
+        args["query_id"] = execution_id
+        demisto.debug(f"Query started successfully on retry with {execution_id=}.")
+
     outputs, file_data = get_xql_query_results(client, args)  # get query results with query_id
     outputs.update({"query_name": args.get("query_name", "")})
     outputs_prefix = get_outputs_prefix(command_name)
@@ -829,6 +863,16 @@ def get_xql_query_results_polling_command(client: CoreClient, args: dict) -> Uni
         command_results.scheduled_command = scheduled_command
         command_results.readable_output = "Query is still running, it may take a little while..."
         return command_results
+
+    # If the query failed, raise an error with the details from the API response.
+    if outputs.get("status") == "FAIL":
+        error_message = outputs.get("error_message", "Unknown error")
+        query_id = args.get("query_id", "unknown")
+        demisto.debug(f"Query {query_id} failed with error: {error_message}")
+        raise DemistoException(
+            f"XQL query '{args.get('query_name', query_id)}' failed with status FAIL. "
+            f"Error: {error_message}"
+        )
 
     demisto.debug(f"Returned status '{outputs.get('status')}' for {args.get('query_id', '')}.")
     results_to_format = outputs.pop("results")
