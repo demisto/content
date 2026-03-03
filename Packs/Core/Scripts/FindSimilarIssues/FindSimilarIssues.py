@@ -2,6 +2,7 @@ import demistomock as demisto
 import pandas as pd
 from CommonServerPython import *
 from SimilarObjectApiModule import *  # noqa: E402
+from AggregatedCommandApiModule import *  # noqa: E402
 from CommonServerUserPython import *
 
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -50,7 +51,7 @@ def replace_fields(args: dict, replacements: dict) -> dict:
     Handles both comma-separated strings and lists.
 
     :param args: dictionary of arguments
-    :param replacements: dictionary of replacements, e.g. {"status": "status.progress", "domain": "alert_domain"}
+    :param replacements: dictionary of replacements
     :return: updated args dict
     """
     fields_to_check = ["text_similarity_fields", "filter_equal_fields", "discrete_match_fields"]
@@ -68,7 +69,13 @@ def replace_fields(args: dict, replacements: dict) -> dict:
         else:
             continue
 
-        updated_fields = [replacements.get(f, f) for f in fields]
+        updated_fields = []
+        for f in fields:
+            if key == "filter_equal_fields" and f == "status":
+                updated_fields.append(f)
+            else:
+                updated_fields.append(replacements.get(f, f))
+
         args[key] = ",".join(updated_fields)
 
     return args
@@ -104,67 +111,100 @@ def get_issue_by_id(issue_id: str | None, from_date: str | None, to_date: str | 
         for entry in res:
             if isinstance(entry, dict) and (contents := entry.get("Contents")):
                 if isinstance(contents, dict) and (alerts := contents.get("alerts")):
-                    issues_res = alerts
+                    issues_res = alerts if alerts is not None else []
                     break
 
     return issues_res[0].get("alert_fields") if issues_res else None
 
 
 def get_all_issues_for_time_window_and_exact_match(
-    exact_match_fields: list[str],
+    exact_match_fields: set[str],
     issue: dict,
     from_date: str | None,
     to_date: str | None,
     limit: int,
+    replacements: dict,
+    custom_filter: dict | None = None,
 ):
     """
     Get issues for a time window and exact match for some fields using core-get-issues
-    :param exact_match_fields: List of field for exact match
+    :param exact_match_fields: Set of field for exact match
     :param issue: json representing the current issue
     :param from_date: from_date
     :param to_date: to_date
     :param limit: limit of how many issues we want to query
+    :param replacements: dictionary of replacements for field mapping
+    :param custom_filter: dictionary of additional filters
     :return:
     """
     msg = ""
-    args = {
+    base_args = {
         "start_time": from_date,
         "end_time": to_date,
         "time_frame": "custom",
-        "limit": limit,
     }
 
+    if custom_filter:
+        base_args["custom_filter"] = custom_filter
+
     for exact_match_field in exact_match_fields:
-        if exact_match_field not in issue:
-            msg += f"{MESSAGE_NO_FIELD % exact_match_field} \n"
+        # The field in the 'issue' dict might be the mapped name (e.g., resolution_status)
+        # while the argument for core-get-issues might be the original name (e.g., status).
+        mapped_field = replacements.get(exact_match_field, exact_match_field)
+        if mapped_field in issue:
+            base_args[exact_match_field] = issue[mapped_field]
+        elif exact_match_field in issue:
+            base_args[exact_match_field] = issue[exact_match_field]
         else:
-            args[exact_match_field] = issue[exact_match_field]
+            msg += f"{MESSAGE_NO_FIELD % exact_match_field} \n"
 
-    demisto.debug(f"Calling core-get-issues with {args=}")
-    res = demisto.executeCommand("core-get-issues", args)
-    if is_error(res):
-        return_error(get_error(res))
+    all_issues: list[dict] = []
+    page_size = 50
+    current_issue_id = str(issue.get("internal_id"))
 
-    issues = []
-    if res and isinstance(res, list):
-        for entry in res:
-            if isinstance(entry, dict) and (contents := entry.get("Contents")):
+    # Prepare batch commands using AggregatedCommandApiModule's Command class
+    commands = []
+    for offset in range(0, limit, page_size):
+        current_batch_limit = min(limit, offset + page_size)
+        args = {**base_args, "offset": offset, "limit": current_batch_limit}
+        commands.append(Command(name="core-get-issues", args=args))
+
+    demisto.debug(f"Calling core-get-issues in batch with {len(commands)} commands using BatchExecutor.")
+    batch_executor = BatchExecutor()
+    # execute_batch returns list[CommandProcessResults], where CommandProcessResults is list[tuple[result, hr, error]]
+    batch_results = batch_executor.execute_batch(commands)
+
+    for processed_results_list in batch_results:
+        for res_tuple in processed_results_list:
+            res, _, error = res_tuple
+            if error:
+                return_error(error)
+
+            batch_issues = []
+            if res and isinstance(res, dict) and (contents := res.get("Contents")):
                 if isinstance(contents, dict) and (alerts := contents.get("alerts")):
-                    issues = alerts
-                    break
-    
-    # Filter out the current issue
-    issues = [
-        i.get("alert_fields") for i in issues
-        if str(i.get("alert_fields", {}).get("internal_id")) != str(issue.get("internal_id"))
-    ]
-    if not issues:
+                    batch_issues = alerts if alerts is not None else []
+
+            if not batch_issues:
+                continue
+
+            # Filter out the current issue and extract alert_fields
+            filtered_batch = [
+                i.get("alert_fields") for i in batch_issues
+                if str(i.get("alert_fields", {}).get("internal_id")) != current_issue_id
+            ]
+
+            all_issues.extend(filtered_batch)
+
+            # If we got fewer results than requested in a batch, it might indicate we reached the end
+            if len(batch_issues) < page_size:
+                break
+
+    demisto.debug(f"Total issues fetched: {len(all_issues)}")
+    if not all_issues:
         msg += f"{MESSAGE_NO_INCIDENT_FETCHED} \n"
         return None, msg
-    if len(issues) >= limit:
-        msg += f"{MESSAGE_WARNING_TRUNCATED % (str(len(issues)), str(limit))} \n"
-        return issues, msg
-    return issues, msg
+    return all_issues, msg
 
 
 def load_current_issue(issue_id: str | None, from_date: str | None, to_date: str | None):
@@ -179,30 +219,6 @@ def load_current_issue(issue_id: str | None, from_date: str | None, to_date: str
     if not issue:
         return None, issue_id
     return issue, issue_id
-
-
-# def get_similar_issues_by_indicators(args: dict):
-#     """
-#     Use DBotFindSimilarIncidentsByIndicators automation and return similar issues from the automation
-#     :param args: argument for DBotFindSimilarIncidentsByIndicators automation
-#     :return:  return similar issues from the automation
-#     """
-#     demisto.debug("Executing DBotFindSimilarIncidentsByIndicators")
-#     # Note: The underlying script might still be named DBotFindSimilarIncidentsByIndicators
-#     res = demisto.executeCommand("DBotFindSimilarIncidentsByIndicators", args)
-#     if is_error(res):
-#         return_error(get_error(res))
-#     res = get_data_from_indicators_automation(res, TAG_SCRIPT_INDICATORS)
-#     return res
-
-
-# def get_data_from_indicators_automation(res, tag_value):
-#     if res:
-#         for entry in res:
-#             tags = entry.get("Tags") or []
-#             if tag_value in tags:
-#                 return entry.get("Contents")
-#     return None
 
 
 def return_outputs_summary(
@@ -313,26 +329,6 @@ def return_outputs_similar_issues_empty():
     )
 
 
-# def enriched_with_indicators_similarity(full_args_indicators_script: dict, similar_issues: pd.DataFrame):
-#     """
-#     Take DataFrame of similar_issues and args for indicators script and add information about indicators
-#     to similar_issues
-#     :param full_args_indicators_script: args for indicators script
-#     :param similar_issues: DataFrame of issues
-#     :return: similar_issues enriched with indicators data
-#     """
-#     indicators_similarity_json = get_similar_issues_by_indicators(full_args_indicators_script)
-#     indicators_similarity_df = pd.DataFrame(indicators_similarity_json)
-#     if indicators_similarity_df.empty:
-#         indicators_similarity_df = pd.DataFrame(columns=[SIMILARITY_COLUNM_NAME_INDICATOR, "Identical indicators", "id"])
-#     keep_columns = [x for x in KEEP_COLUMNS_INDICATORS if x not in similar_issues]
-#     indicators_similarity_df.index = indicators_similarity_df.id
-#     similar_issues.loc[:, keep_columns] = indicators_similarity_df[keep_columns]
-#     values = {SIMILARITY_COLUNM_NAME_INDICATOR: 0, "Identical indicators": ""}
-#     similar_issues = similar_issues.fillna(value=values)
-#     return similar_issues
-
-
 def create_context_for_issues(similar_issues=pd.DataFrame()):
     """
     Return context from dataframe of issue
@@ -368,19 +364,30 @@ def main():
     args = demisto.args()
 
     # Apply mappings from SearchSimilarIssues
-    replacements = {"status": "resolution_status", "type": "issue_type", "category": "issue_category", "name": "issue_name", "description": "issue_description"}
+    replacements = {
+        "status": "resolution_status",
+        "type": "issue_type",
+        "category": "issue_category",
+        "name": "issue_name",
+        "description": "issue_description",
+        "id": "issue_id"
+    }
     args = replace_fields(args, replacements)
     args = update_args(args)
 
-    exact_match_fields = argToList(args.get("fieldExactMatch"))
-    similar_text_field = argToList(args.get("similarTextField"))
-    similar_categorical_field = argToList(args.get("similarCategoricalField"))
-    similar_json_field = argToList(args.get("similarJsonField"))
+    custom_filter = args.get("custom_filter")
+    exact_match_fields = set(argToList(args.get("fieldExactMatch")))
+    similar_text_field = set(argToList(args.get("similarTextField")))
+    similar_categorical_field = set(argToList(args.get("similarCategoricalField")))
+    similar_json_field = set(argToList(args.get("similarJsonField")))
 
-    # remove it - using the use_all_fields that is relevant only for CustomerFields.
-    # exact_match_fields, similar_text_field, similar_categorical_field, similar_json_field = get_field_args(args)
+    if not (similar_text_field | similar_categorical_field | similar_json_field):
+        raise DemistoException("Please provide at least one of the following args: text_similarity_fields, discrete_match_fields, json_similarity_fields.")
 
-    display_fields = list(set(["internal_id", "issue_name", "issue_description"] + argToList(args.get("fieldsToDisplay"))))
+    display_fields = {"internal_id", "issue_name", "issue_description"} | set(argToList(args.get("fieldsToDisplay")))
+
+    # Ensure internal_id is always present in display fields for processing
+    display_fields.add("internal_id")
 
     from_date = arg_to_datetime(args.get("fromDate"))
     to_date = arg_to_datetime(args.get("toDate"))
@@ -391,17 +398,12 @@ def main():
     confidence = float(args.get("minimunIncidentSimilarity") or 0.2)
     max_issues = int(args.get("maxIncidentsToDisplay") or 100)
     aggregate = args.get("aggreagateIncidentsDifferentDate") or "False"
-    limit = int(args.get("limit") or 1500)
+    limit = int(args.get("limit") or 300)
     show_actual_issue = args.get("showCurrentIncident")
     issue_id = args.get("incidentId")
     include_indicators_similarity = args.get("includeIndicatorsSimilarity") or "False"
 
     global_msg = ""
-
-    populate_fields = (
-        similar_text_field + similar_json_field + similar_categorical_field + exact_match_fields + display_fields + ["internal_id"]
-    )
-    # populate_high_level_fields = keep_high_level_field(populate_fields)
 
     issue, issue_id = load_current_issue(issue_id, from_date_str, to_date_str)
     if not issue:
@@ -409,9 +411,13 @@ def main():
         return None, global_msg
 
     # load the related issues
-    issues, msg = get_all_issues_for_time_window_and_exact_match(
-        exact_match_fields, issue, from_date_str, to_date_str, limit
+    issues_res = get_all_issues_for_time_window_and_exact_match(
+        exact_match_fields, issue, from_date_str, to_date_str, limit, replacements, custom_filter
     )
+    if issues_res:
+        issues, msg = issues_res
+    else:
+        issues, msg = None, ""
     global_msg += f"{msg} \n"
 
     if issues:
@@ -426,24 +432,27 @@ def main():
     issues_df = pd.DataFrame(issues)
     issues_df.index = issues_df.internal_id
 
-    issues_df = fill_nested_fields(issues_df, issues, similar_text_field, similar_categorical_field)
+    issues_df = fill_nested_fields(issues_df, issues, list(similar_text_field), list(similar_categorical_field))
 
     # Find given fields that does not exist in the issue
-    global_msg, incorrect_fields = find_incorrect_fields(populate_fields, issues_df, global_msg)
+    # We filter out fields that were used for exact match but not for similarity
+    # because they might not exist as columns in the returned dataframe (mapped fields).
+    fields_to_check_existence = [f for f in (similar_text_field | similar_json_field | similar_categorical_field)]
+    global_msg, incorrect_fields = find_incorrect_fields(fields_to_check_existence, issues_df, global_msg)
 
     # remove fields that does not exist in the issues
-    display_fields, similar_text_field, similar_json_field, similar_categorical_field = remove_fields_not_in_incident(
-        display_fields, similar_text_field, similar_json_field, similar_categorical_field, incorrect_fields=incorrect_fields
-    )
+    display_fields, similar_text_field, similar_json_field, similar_categorical_field = [
+        list(set(f) - set(incorrect_fields)) for f in [display_fields, similar_text_field, similar_json_field, similar_categorical_field]
+    ]
 
     # Dumps all dict in the current issue
     issue_df = dumps_json_field_in_incident(deepcopy(issue))
-    issue_df = fill_nested_fields(issue_df, issue, similar_text_field, similar_categorical_field)
+    issue_df = fill_nested_fields(issue_df, issue, list(similar_text_field), list(similar_categorical_field))
 
     # Model prediction
     model = Model(p_transformation=TRANSFORMATION)
     model.init_prediction(
-        issue_df, issues_df, similar_text_field, similar_categorical_field, display_fields, similar_json_field
+        issue_df, issues_df, list(similar_text_field), list(similar_categorical_field), list(display_fields), list(similar_json_field)
     )
     try:
         similar_issues, fields_used = model.predict()
@@ -452,12 +461,6 @@ def main():
         return_outputs_summary(confidence, number_issue_fetched, 0, [], global_msg)
         return_outputs_similar_issues_empty()
         return None, global_msg
-
-    # # Get similarity based on indicators
-    # if include_indicators_similarity == "True":
-    #     args_defined_by_user = {key: args.get(key) for key in KEYS_ARGS_INDICATORS}
-    #     full_args_indicators_script = {**CONST_PARAMETERS_INDICATORS_SCRIPT, **args_defined_by_user}
-    #     similar_issues = enriched_with_indicators_similarity(full_args_indicators_script, similar_issues)
 
     if isinstance(similar_issues, pd.Series):
         similar_issues = similar_issues.to_frame().T
@@ -474,7 +477,7 @@ def main():
 
     # Filter issue to investigate
     issue_filter = prepare_current_incident(
-        issue_df, display_fields, similar_text_field, similar_json_field, similar_categorical_field, exact_match_fields
+        issue_df, list(display_fields), list(similar_text_field), list(similar_json_field), list(similar_categorical_field), list(exact_match_fields)
     )
 
     # Return summary outputs of the automation

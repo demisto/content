@@ -23,7 +23,7 @@ args:
 - defaultValue: now
   description: The end date by which to filter issues. Date format will be the same as in the issues query page, for example, "3 days ago", "2019-01-01T00:00:00 +0200".
   name: to_date
-- defaultValue: '1500'
+- defaultValue: '300'
   description: The maximum number of issues to query.
   name: limit
 - auto: PREDEFINED
@@ -46,6 +46,8 @@ args:
   predefined:
   - 'True'
   - 'False'
+- description: "A custom filter. When using this argument, other filter arguments are not relevant. example: {\"OR\":[\"SEARCH_FIELD\":\"actor_process_command_line\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"path_to_file\"}]}`."
+  name: custom_filter
 # - auto: PREDEFINED
 #   defaultValue: 'False'
 #   description: Whether to include similarity of indicators from DBotFindSimilarIssuesByIndicators in the final score.
@@ -64,10 +66,10 @@ comment: |-
   Searches past similar issues based on issue fields' similarity. Includes an option to also display indicators similarity.
   Note: For the similarity calculation, at least one field must be provided in one of the "text_similarity_fields", "json_similarity_fields", "discrete_match_fields" or "use_all_fields" arguments.
 commonfields:
-  id: SearchSimilarIssues
+  id: FindSimilarIssues
   version: -1
 enabled: false
-name: SearchSimilarIssues
+name: FindSimilarIssues
 isInternal: true
 outputs:
 - contextPath: SimilarIssues.executionSummary
