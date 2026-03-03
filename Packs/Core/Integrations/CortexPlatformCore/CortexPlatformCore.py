@@ -901,17 +901,11 @@ class Client(CoreClient):
             json_data=request_data,
         )
 
-    def bulk_update_case(self, case_update_payload, case_ids):
-        request_data = {
-            "request_data": {
-                "filter_data": {"filter": {"OR": [{"SEARCH_FIELD": "CASE_ID", "SEARCH_TYPE": "IN", "SEARCH_VALUE": case_ids}]}},
-                "update_attrs": case_update_payload,
-            }
-        }
+    def get_case_grouping_graph(self, case_id: str) -> dict:
         return self._http_request(
             method="POST",
-            url_suffix="/case/bulk_update_cases",
-            json_data=request_data,
+            url_suffix="case/get_case_grouping_graph",
+            json_data={"case_id": case_id},
         )
 
     def run_playbook(self, issue_ids: list, playbook_id: str) -> dict:
@@ -5175,6 +5169,13 @@ def main():  # pragma: no cover
 
         elif command == "core-delete-profile":
             return_results(delete_profile_command(client, args))
+
+        elif command == "core-get-case-grouping-graph":
+            if not is_demisto_version_ge("8.13.0"):
+                raise DemistoException("This command is not available for this platform version")
+            return_results(get_case_grouping_graph(client, args))
+
+
 
     except Exception as err:
         demisto.error(traceback.format_exc())
