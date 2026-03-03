@@ -1338,18 +1338,6 @@ script:
       description: Executes the command with the specified session ID.
       name: session_id
       required: true
-    - description: Observable object name. Must be unique in the domain.
-      name: observables_name
-    - description: Observable hash value (md5, sha1, sha256, sha384, or sha512).
-      name: observables_hash
-    - description: Observable URL value.
-      name: observables_url
-    - description: Observable IP address value.
-      name: observables_ip
-    - description: First IP address in the observable range. Required if range is used. Must be used together with observables_ip_last.
-      name: observables_ip_first
-    - description: Last IP address in the observable range. Required if range is used. Must be used together with observables_ip_first.
-      name: observables_ip_last
     - auto: PREDEFINED
       description: 'Action for the indicator. Valid values: Inactive, Ask, Prevent, Detect.'
       name: action

@@ -1677,12 +1677,6 @@ def checkpoint_add_threat_indicator_command(
     client: Client,
     name: str,
     observables: list = None,
-    observables_name: str = None,
-    observables_hash: str = None,
-    observables_url: str = None,
-    observables_ip: str = None,
-    observables_ip_first: str = None,
-    observables_ip_last: str = None,
     action: str = None,
     profile: str = None,
     comments: str = None,
@@ -1697,12 +1691,6 @@ def checkpoint_add_threat_indicator_command(
         client (Client): CheckPoint client.
         name(str): Object name. Must be unique in the domain.
         observables(list): The indicator's observables.
-        observables_name (str): Observable object name.
-        observables_hash (str): Observable hash value.
-        observables_url (str): Observable URL value.
-        observables_ip (str): Observable IP address value.
-        observables_ip_first (str): First IP address in the observable range.
-        observables_ip_last (str): Last IP address in the observable range.
         action (str): Action for the indicator.
         profile (str or list): Profiles to apply this indicator to.
         comments (str): Comments string.
@@ -1714,21 +1702,6 @@ def checkpoint_add_threat_indicator_command(
     tags_list = argToList(tags) if tags else None
     profile_list = argToList(profile) if profile else None
     ignore_warnings_bool = argToBoolean(ignore_warnings)
-
-    # Build observable from individual fields if provided
-    if observables_name:
-        observable: dict = {"name": observables_name}
-        if observables_hash:
-            observable["md5"] = observables_hash
-        if observables_url:
-            observable["url"] = observables_url
-        if observables_ip:
-            observable["ip-address"] = observables_ip
-        if observables_ip_first:
-            observable["ip-address-first"] = observables_ip_first
-        if observables_ip_last:
-            observable["ip-address-last"] = observables_ip_last
-        observables_list.append(observable)
 
     result = client.add_threat_indicator(
         name,
