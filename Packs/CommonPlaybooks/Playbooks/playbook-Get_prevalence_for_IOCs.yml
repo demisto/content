@@ -5,6 +5,11 @@ marketplaces:
 - marketplacev2
 - platform
 - xpanse
+supportedModules:
+- cloud
+- cloud_runtime_security
+- xsiam
+- edr
 description: |+
   The playbook queries the analytics module to receive the prevalence of an IOC.
 
