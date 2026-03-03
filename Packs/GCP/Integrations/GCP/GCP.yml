@@ -4045,3 +4045,4 @@ supportsquickactions: true
 isCloudProviderIntegration: true
 tests:
 - No tests (auto formatted)
+internal: true
