@@ -144,6 +144,14 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- display: Allow secret generators commands execution
+  name: allow_secret_generators
+  defaultvalue: 'false'
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+  additionalinfo: Checking this box will allow running commands that generate and print secrets. Make sure to add restrictions to the related commands. For more information please refer to the following guide - <MFA guide>
 description: The Entra ID Users integration (formerly Azure Active Directory Users) is a Unified gateway to security insights - all from a unified Microsoft Graph User API.
 display: Entra ID Users
 name: Microsoft Graph User
@@ -1281,7 +1289,71 @@ script:
       Deletes a Temporary Access Pass authentication method from a user.
       Permission: UserAuthenticationMethod.ReadWrite.All - Delegated or Application
     name: msgraph-user-temp-access-pass-method-delete
-  dockerimage: demisto/crypto:1.0.0.5490413
+  - arguments:
+    - description: The user mail to send the MFA request to.
+      name: user_mail
+      required: true
+    - description: The timeout for the MFA request.
+      name: timeout
+      required: false
+      defaultValue: 60
+    - description: The MFA access token obtained from msgraph-user-create-mfa-client-access-token command.
+      name: access_token
+      required: true
+      secret: true
+    description: Pops a synchronous MFA request for the given user. This is a blocking call that waits for user response or timeout.
+    name: msgraph-user-request-mfa
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    description: Retrieves the authentication preferences for a user, including the default method.
+    name: msgraph-user-get-user-default-auth-method
+    outputs:
+    - contextPath: MSGraphUser.AuthMethod.User
+      description: The user principal name.
+      type: String
+    - contextPath: MSGraphUser.AuthMethod.DefaultMethod
+      description: The default authentication method for the user.
+      type: String
+    - contextPath: MSGraphUser.AuthMethod.IsSystemPreferredAuthenticationMethodEnabled
+      description: Whether system-preferred authentication is enabled.
+      type: Boolean
+    - contextPath: MSGraphUser.AuthMethod.UserPreferredMethodForSecondaryAuthentication
+      description: The user's preferred method for secondary authentication.
+      type: String
+    - contextPath: MSGraphUser.AuthMethod.SystemPreferredAuthenticationMethod
+      description: The system-preferred authentication method.
+      type: String
+  - name: msgraph-user-create-mfa-client-secret
+    hidden: true
+    description: Issue a new client secret for the MFA app.
+    outputs:
+    - contextPath: MSGraphUser.MFAClientSecret.ValidUntil
+      description: The expiration date for the client secret in ISO 8601 format.
+      type: String
+    - contextPath: MSGraphUser.MFAClientSecret.MFAClientSecret
+      description: The new MFA client secret.
+      type: String
+    - contextPath: MSGraphUser.MFAClientSecret.ValidFrom
+      description: The date of issue for the client secret.
+      type: String
+  - name: msgraph-user-create-mfa-client-access-token
+    hidden: true
+    description: Issue a new access token for the MFA app.
+    arguments:
+    - description: The MFA app client secret obtained from msgraph-user-create-mfa-client-secret command.
+      name: client_secret
+      required: true
+      secret: true
+    outputs:
+    - contextPath: MSGraphUser.MFAAccessToken.ValidUntil
+      description: The expiration date for the access token in epoch format.
+      type: String
+    - contextPath: MSGraphUser.MFAAccessToken.AccessToken
+      description: The access token value.
+      type: String
+  dockerimage: demisto/crypto:1.0.0.6932158
   runonce: false
   script: '-'
   subtype: python3

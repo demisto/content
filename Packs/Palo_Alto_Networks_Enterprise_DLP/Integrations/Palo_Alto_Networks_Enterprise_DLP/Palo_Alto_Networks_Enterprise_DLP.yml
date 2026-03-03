@@ -64,6 +64,12 @@ configuration:
   type: 8
   required: false
   section: Collect
+- display: Incident type
+  name: incidentType
+  type: 13
+  defaultvalue: "Data Loss Prevention"
+  required: false
+  section: Collect
 description: Palo Alto Networks Enterprise DLP discovers and protects company data across every data channel and repository. Integrated Enterprise DLP enables data protection and compliance everywhere without complexity.
 display: Palo Alto Networks Enterprise DLP
 name: Palo Alto Networks Enterprise DLP
