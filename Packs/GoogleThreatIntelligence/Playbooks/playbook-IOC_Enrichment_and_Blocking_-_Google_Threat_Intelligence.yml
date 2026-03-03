@@ -95,7 +95,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+      - "32"
       "yes":
       - "13"
     separatecontext: false
@@ -168,7 +168,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+      - "32"
       "yes":
       - "17"
     separatecontext: false
@@ -241,7 +241,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+      - "32"
       "yes":
       - "21"
     separatecontext: false
@@ -381,7 +381,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+      - "32"
       "yes":
       - "6"
     separatecontext: false
@@ -457,8 +457,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 1570
+          "x": 1820,
+          "y": 2580
         }
       }
     note: false
@@ -493,58 +493,9 @@ tasks:
         simple: Shared
       IP:
         complex:
-          root: ip_data
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: ip_data.attributes.gti_assessment
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: ip_data.attributes.gti_assessment.verdict
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: ip_data.attributes.gti_assessment.threat_score
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: ip_data.attributes.gti_assessment.severity
-                iscontext: true
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: ip_data.attributes.gti_assessment.verdict.value
-                iscontext: true
-              right:
-                value:
-                  simple: VERDICT_MALICIOUS
-            - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: ip_data.attributes.gti_assessment.threat_score.value
-                iscontext: true
-              right:
-                value:
-                  simple: "90"
-            - operator: isEqualString
-              left:
-                value:
-                  simple: ip_data.attributes.gti_assessment.severity.value
-                iscontext: true
-              right:
-                value:
-                  simple: SEVERITY_HIGH
+          root: Select Indicators to Block.Answers
+          accessor: "0"
           transformers:
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: id
           - operator: join
             args:
               separator:
@@ -590,7 +541,7 @@ tasks:
       {
         "position": {
           "x": -300,
-          "y": 1220
+          "y": 2330
         }
       }
     note: false
@@ -618,9 +569,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+      - "33"
       "yes":
-      - "10"
+      - "40"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -683,7 +634,7 @@ tasks:
       {
         "position": {
           "x": -300,
-          "y": 1000
+          "y": 1060
         }
       }
     note: false
@@ -778,9 +729,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+      - "33"
       "yes":
-      - "15"
+      - "41"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -843,7 +794,7 @@ tasks:
       {
         "position": {
           "x": 190,
-          "y": 1000
+          "y": 1060
         }
       }
     note: false
@@ -872,58 +823,8 @@ tasks:
     scriptarguments:
       Hash:
         complex:
-          root: file_data
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: file_data.attributes.gti_assessment
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: file_data.attributes.gti_assessment.severity
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: file_data.attributes.gti_assessment.verdict
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: file_data.attributes.gti_assessment.threat_score
-                iscontext: true
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: file_data.attributes.gti_assessment.severity.value
-                iscontext: true
-              right:
-                value:
-                  simple: SEVERITY_HIGH
-            - operator: isEqualString
-              left:
-                value:
-                  simple: file_data.attributes.gti_assessment.verdict.value
-                iscontext: true
-              right:
-                value:
-                  simple: VERDICT_MALICIOUS
-            - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: file_data.attributes.gti_assessment.threat_score.value
-                iscontext: true
-              right:
-                value:
-                  simple: "90"
-          transformers:
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: id
+          root: ${Select Indicators to Block.Answers
+          accessor: 1}
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -936,7 +837,7 @@ tasks:
       {
         "position": {
           "x": 190,
-          "y": 1220
+          "y": 2330
         }
       }
     note: false
@@ -1031,9 +932,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+      - "33"
       "yes":
-      - "19"
+      - "42"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1096,7 +997,7 @@ tasks:
       {
         "position": {
           "x": 710,
-          "y": 1000
+          "y": 1060
         }
       }
     note: false
@@ -1134,58 +1035,8 @@ tasks:
     scriptarguments:
       Domain:
         complex:
-          root: domain_data
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: domain_data.attributes.gti_assessment
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: domain_data.attributes.gti_assessment.severity
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: domain_data.attributes.gti_assessment.verdict
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: domain_data.attributes.gti_assessment.threat_score
-                iscontext: true
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: domain_data.attributes.gti_assessment.severity.value
-                iscontext: true
-              right:
-                value:
-                  simple: SEVERITY_HIGH
-            - operator: isEqualString
-              left:
-                value:
-                  simple: domain_data.attributes.gti_assessment.verdict.value
-                iscontext: true
-              right:
-                value:
-                  simple: VERDICT_MALICIOUS
-            - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: domain_data.attributes.gti_assessment.threat_score.value
-                iscontext: true
-              right:
-                value:
-                  simple: "90"
-          transformers:
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: id
+          root: ${Select Indicators to Block.Answers
+          accessor: 2}
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -1198,7 +1049,7 @@ tasks:
       {
         "position": {
           "x": 710,
-          "y": 1220
+          "y": 2330
         }
       }
     note: false
@@ -1293,9 +1144,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+      - "33"
       "yes":
-      - "23"
+      - "43"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1358,7 +1209,7 @@ tasks:
       {
         "position": {
           "x": 1220,
-          "y": 1000
+          "y": 1060
         }
       }
     note: false
@@ -1402,58 +1253,8 @@ tasks:
         simple: Shared
       URL:
         complex:
-          root: url_data.attributes
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: url_data.attributes.gti_assessment
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: url_data.attributes.gti_assessment.severity
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: url_data.attributes.gti_assessment.threat_score
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: url_data.attributes.gti_assessment.verdict
-                iscontext: true
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: url_data.attributes.gti_assessment.severity.value
-                iscontext: true
-              right:
-                value:
-                  simple: SEVERITY_HIGH
-            - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: url_data.attributes.gti_assessment.threat_score.value
-                iscontext: true
-              right:
-                value:
-                  simple: "90"
-            - operator: isEqualString
-              left:
-                value:
-                  simple: url_data.attributes.gti_assessment.verdict.value
-                iscontext: true
-              right:
-                value:
-                  simple: VERDICT_MALICIOUS
-          transformers:
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: url
+          root: ${Select Indicators to Block.Answers
+          accessor: 3}
       UserVerification:
         simple: "True"
     separatecontext: true
@@ -1467,7 +1268,7 @@ tasks:
       {
         "position": {
           "x": 1220,
-          "y": 1220
+          "y": 2330
         }
       }
     note: false
@@ -1491,7 +1292,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+      - "32"
       "yes":
       - "29"
     separatecontext: false
@@ -1553,7 +1354,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+      - "33"
       "yes":
       - "11"
     separatecontext: false
@@ -1572,7 +1373,7 @@ tasks:
       {
         "position": {
           "x": -300,
-          "y": 810
+          "y": 780
         }
       }
     note: false
@@ -1596,7 +1397,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+      - "33"
       "yes":
       - "14"
     separatecontext: false
@@ -1615,7 +1416,7 @@ tasks:
       {
         "position": {
           "x": 190,
-          "y": 810
+          "y": 770
         }
       }
     note: false
@@ -1639,7 +1440,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+      - "33"
       "yes":
       - "18"
     separatecontext: false
@@ -1658,7 +1459,7 @@ tasks:
       {
         "position": {
           "x": 710,
-          "y": 810
+          "y": 770
         }
       }
     note: false
@@ -1682,7 +1483,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+      - "33"
       "yes":
       - "22"
     separatecontext: false
@@ -1701,7 +1502,7 @@ tasks:
       {
         "position": {
           "x": 1220,
-          "y": 810
+          "y": 770
         }
       }
     note: false
@@ -1729,7 +1530,7 @@ tasks:
       - "30"
     scriptarguments:
       key:
-        simple: FoundIndicators,File,file_data,ip_data,domain_data,url_data
+        simple: FoundIndicators,File,file_data,ip_data,domain_data,url_data,file_list,url_list,ip_list,domain_list
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1845,28 +1646,785 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 00f44ec0-19fd-4afe-8dba-5107493f1a6b
+    type: title
+    task:
+      id: 00f44ec0-19fd-4afe-8dba-5107493f1a6b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1820,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 5828a3c8-4114-4de6-8f6c-e487d0dedbf9
+    type: title
+    task:
+      id: 5828a3c8-4114-4de6-8f6c-e487d0dedbf9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1820,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: a4bbdb43-87f3-4c81-8fd1-7810e4c8ec7e
+    type: title
+    task:
+      id: a4bbdb43-87f3-4c81-8fd1-7810e4c8ec7e
+      version: -1
+      name: Analyst Verification
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 38b29b42-ec11-4487-8c7b-267b1555a479
+    type: collection
+    task:
+      id: 38b29b42-ec11-4487-8c7b-267b1555a479
+      version: -1
+      name: Analyst Verification Prompt to Block Indicators
+      description: Analyst verification prompt to block the indicators using XSOAR Generic Playbooks.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+      - "37"
+      - "38"
+      - "39"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+        simple: Block Indicators Playbook - Analyst's Verification
+      body:
+        simple: |-
+          Dear XSOAR user,
+          This notification informs you that the following list of Indicators will be blocked using XSOAR Generic playbook.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Select Malicious IPs to Block
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - simple: ${ip_list}
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Select Malicious Files to Block
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - simple: ${file_list}
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Select Malicious Domains to Block
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: ${domain_list}
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: Select Malicious URLs to Block
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - simple: ${url_list}
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Select Indicators to Block
+      description: 'Note: To proceed without affecting any indicators, click "Submit Answers" without selecting any options.'
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 8991fede-ea6d-4fc6-8b51-496bae4b9011
+    type: condition
+    task:
+      id: 8991fede-ea6d-4fc6-8b51-496bae4b9011
+      version: -1
+      name: Check whether the user has selected any IPs for blocking?
+      description: Check whether the user has selected any IPs to block using the XSOAR generic playbook "Block IP".
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Select Indicators to Block.Answers.0
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 2080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 1ee97668-e281-45b7-8042-8dd419c2011c
+    type: condition
+    task:
+      id: 1ee97668-e281-45b7-8042-8dd419c2011c
+      version: -1
+      name: Check whether the user has selected any Files for blocking?
+      description: Check whether the user has selected any Files to block using the XSOAR generic playbook "Block File".
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Select Indicators to Block.Answers.1
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 2080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 3b771483-f2e7-43ff-8b93-4d2ca9781f61
+    type: condition
+    task:
+      id: 3b771483-f2e7-43ff-8b93-4d2ca9781f61
+      version: -1
+      name: Check whether the user has selected any Domains for blocking?
+      description: Check whether the user has selected any Domains to block using the XSOAR generic playbook "Block Domain".
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Select Indicators to Block.Answers.2
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 2080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 266b6e5c-1411-4641-837f-45db989ec6fc
+    type: condition
+    task:
+      id: 266b6e5c-1411-4641-837f-45db989ec6fc
+      version: -1
+      name: Check whether the user has selected any URLs for blocking?
+      description: Check whether the user has selected any URLs to block using the XSOAR generic playbook "Block URL".
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Select Indicators to Block.Answers.3
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 2080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 59dcb766-3ed3-4b29-8340-bf9c9a60da24
+    type: regular
+    task:
+      id: 59dcb766-3ed3-4b29-8340-bf9c9a60da24
+      version: -1
+      name: Set the Malicious IPs value
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      key:
+        simple: ip_list
+      value:
+        complex:
+          root: ip_data
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ip_data.attributes.gti_assessment
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ip_data.attributes.gti_assessment.verdict
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ip_data.attributes.gti_assessment.threat_score
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ip_data.attributes.gti_assessment.verdict
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: ip_data.attributes.gti_assessment.severity.value
+                iscontext: true
+              right:
+                value:
+                  simple: SEVERITY_HIGH
+            - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: ip_data.attributes.gti_assessment.threat_score.value
+                iscontext: true
+              right:
+                value:
+                  simple: "90"
+            - operator: isEqualString
+              left:
+                value:
+                  simple: ip_data.attributes.gti_assessment.verdict.value
+                iscontext: true
+              right:
+                value:
+                  simple: VERDICT_MALICIOUS
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 081ab61b-dfd9-4389-837a-ff06cae1bd47
+    type: regular
+    task:
+      id: 081ab61b-dfd9-4389-837a-ff06cae1bd47
+      version: -1
+      name: Set the Malicious Files value
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      key:
+        simple: file_list
+      value:
+        complex:
+          root: file_data
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: file_data.attributes.gti_assessment
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: file_data.attributes.gti_assessment.severity
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: file_data.attributes.gti_assessment.verdict
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: file_data.attributes.gti_assessment.threat_score
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: file_data.attributes.gti_assessment.severity.value
+                iscontext: true
+              right:
+                value:
+                  simple: SEVERITY_HIGH
+            - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: file_data.attributes.gti_assessment.threat_score.value
+                iscontext: true
+              right:
+                value:
+                  simple: "90"
+            - operator: isEqualString
+              left:
+                value:
+                  simple: file_data.attributes.gti_assessment.verdict.value
+                iscontext: true
+              right:
+                value:
+                  simple: VERDICT_MALICIOUS
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 114f0f1a-f1cc-47ba-81eb-7e046023b0e2
+    type: regular
+    task:
+      id: 114f0f1a-f1cc-47ba-81eb-7e046023b0e2
+      version: -1
+      name: Set the Malicious Domain value
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      key:
+        simple: domain_list
+      value:
+        complex:
+          root: domain_data
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: domain_data.attributes.gti_assessment
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: domain_data.attributes.gti_assessment.severity
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: domain_data.attributes.gti_assessment.verdict
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: domain_data.attributes.gti_assessment.threat_score
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: domain_data.attributes.gti_assessment.severity.value
+                iscontext: true
+              right:
+                value:
+                  simple: SEVERITY_HIGH
+            - operator: isEqualString
+              left:
+                value:
+                  simple: domain_data.attributes.gti_assessment.verdict.value
+                iscontext: true
+              right:
+                value:
+                  simple: VERDICT_MALICIOUS
+            - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: domain_data.attributes.gti_assessment.threat_score.value
+                iscontext: true
+              right:
+                value:
+                  simple: "90"
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 91aef1d8-bdf8-4df0-81ca-6154d25ffe12
+    type: regular
+    task:
+      id: 91aef1d8-bdf8-4df0-81ca-6154d25ffe12
+      version: -1
+      name: Set the Malicious URLs value
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      key:
+        simple: url_list
+      value:
+        complex:
+          root: url_data.attributes
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: url_data.attributes.gti_assessment
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: url_data.attributes.gti_assessment.severity
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: url_data.attributes.gti_assessment.threat_score
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: url_data.attributes.gti_assessment.verdict
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: url_data.attributes.gti_assessment.severity.value
+                iscontext: true
+              right:
+                value:
+                  simple: SEVERITY_HIGH
+            - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: url_data.attributes.gti_assessment.threat_score.value
+                iscontext: true
+              right:
+                value:
+                  simple: "90"
+            - operator: isEqualString
+              left:
+                value:
+                  simple: url_data.attributes.gti_assessment.verdict.value
+                iscontext: true
+              right:
+                value:
+                  simple: VERDICT_MALICIOUS
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: url
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "11_8_#default#": 0.15,
-      "14_8_#default#": 0.21,
-      "18_8_#default#": 0.14,
-      "22_8_#default#": 0.16,
-      "24_8_#default#": 0.1,
-      "25_8_#default#": 0.12,
-      "26_8_#default#": 0.17,
-      "27_8_#default#": 0.1,
-      "28_8_#default#": 0.13,
+      "11_33_#default#": 0.1,
+      "11_40_yes": 0.58,
+      "14_33_#default#": 0.1,
+      "14_41_yes": 0.52,
+      "18_33_#default#": 0.14,
+      "18_42_yes": 0.46,
+      "22_33_#default#": 0.28,
+      "22_43_yes": 0.46,
+      "24_32_#default#": 0.1,
+      "25_33_#default#": 0.12,
+      "26_14_yes": 0.66,
+      "26_33_#default#": 0.1,
+      "27_18_yes": 0.6,
+      "27_33_#default#": 0.1,
+      "28_22_yes": 0.57,
+      "28_33_#default#": 0.12,
       "30_31_yes": 0.26,
-      "3_8_#default#": 0.14,
-      "4_8_#default#": 0.1,
-      "5_8_#default#": 0.11,
-      "7_8_#default#": 0.1
+      "36_10_yes": 0.67,
+      "36_8_#default#": 0.1,
+      "37_15_yes": 0.62,
+      "37_8_#default#": 0.1,
+      "38_19_yes": 0.55,
+      "38_8_#default#": 0.1,
+      "39_23_yes": 0.55,
+      "39_8_#default#": 0.16,
+      "3_32_#default#": 0.1,
+      "4_32_#default#": 0.1,
+      "5_32_#default#": 0.12,
+      "7_32_#default#": 0.1
     },
     "paper": {
       "dimensions": {
-        "height": 2415,
-        "width": 1900,
+        "height": 3425,
+        "width": 2500,
         "x": -300,
         "y": -780
       }

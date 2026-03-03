@@ -24,6 +24,9 @@ SECONDS_IN_DAY = 86400  # Number of seconds in one day
 MIN_DIFF_SECONDS = 2 * 3600  # Minimum allowed difference = 2 hours
 MAX_GET_SYSTEM_USERS_LIMIT = 50
 MAX_GET_EXCEPTION_RULES_LIMIT = 100
+MALWARE_TYPE = "Malware"
+EXPLOIT_TYPE = "Exploit"
+WINDOWS_PLATFORM = "Windows"
 
 
 ASSET_FIELDS = {
@@ -68,10 +71,14 @@ WEBAPP_COMMANDS = [
     "core-list-exception-rules",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
+    "core-get-ai-model-activity",
+    "core-update-windows-malware-profile",
+    "core-update-windows-exploit-profile",
+    "core-delete-profile",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
-ENDPOINT_COMMANDS = ["core-get-endpoint-support-file"]
+ENDPOINT_COMMANDS = ["core-get-endpoint-support-file", "core-send-endpoint-heartbeat"]
 XSOAR_COMMANDS = ["core-run-playbook", "core-get-case-resolution-statuses"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
@@ -80,6 +87,82 @@ ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
 CASES_TABLE = "CASE_MANAGER_TABLE"
 SCRIPTS_TABLE = "SCRIPTS_TABLE"
+AI_MODEL_ACTIVITY_TABLE = "AISPM_MODEL_ACTIVITY"
+
+
+class Profile:
+    FIELDS = {
+        "examinePortableExecutables": "portable_executables_and_dll_examination",
+        "examineOfficeFiles": "office_files_with_macros_examination",
+        "examineJScriptFiles": "jscript_file_examination",
+        "aspFiles": "asp_aspx_files",
+        "powerShellScriptFiles": "powershell_script_files",
+        "scanEndpoints": "on_demand_file_examination",
+        "endUserInitiatedLocalScan": "end_user_initiated_local_scan",
+        "examineVBScriptFiles": "vb_scripts_examination",
+        "dynamicSecurityEngine": "global_behavioral_threat_protection_rules",
+        "passwordStealing": "credential_gathering_protection",
+        "webshellDroppers": "anti_webshell_protection",
+        "financialMalwareThreat": "financial_malware_threat_protection",
+        "cryptominers": "cryptominers_protection",
+        "inProcessShellcode": "in_process_shellcode_protection",
+        "maliciousDevice": "malicious_device_prevention",
+        "uacBypass": "uac_bypass_prevention",
+        "antiTampering": "anti_tampering_protection",
+        "iisProtection": "iis_protection",
+        "uefiProtection": "uefi_protection",
+        "ransomware": "ransomware_protection",
+        "legitimateProcesses": "malicious_child_process_protection",
+        "passwordTheftProtection": "password_theft_protection",
+        "maliciousCausalityChainsResponse": "respond_to_malicious_causality_chains",
+        "networkSignature": "network_packet_inspection_engine",
+        "dynamicKernelProtection": "dynamic_kernel_protection",
+        "dynamicDriverProtection": "dynamic_driver_protection",
+        "securityMeasuresBypass": "security_measures_bypass",
+        "basTools": "breach_attack_simulation_tools_settings",
+        "browserExploitKits": "browser_exploits_protection",
+        "logicalExploits": "logical_exploits_protection",
+        "vulnerableApps": "known_vulnerable_processes_protection",
+        "osKernelExploits": "operating_system_exploit_protection",
+        "additionalProcesses": "exploit_protection_for_additional_processes",
+        "manualScan": "end_user_initiated_local_scan",  # for update command
+    }
+
+    VALIDATION = {
+        "asp_aspx_files": ["block", "disabled", "report"],
+        "breach_attack_simulation_tools_settings": ["enabled", "disabled"],
+        "uac_bypass_prevention": ["block", "disabled", "report"],
+        "on_demand_file_examination": ["disabled", "enabled"],
+        "end_user_initiated_local_scan": ["disabled", "enabled"],
+        "ransomware_protection": ["block", "disabled", "report"],
+        "cryptominers_protection": ["block", "disabled", "report"],
+        "anti_tampering_protection": ["block", "disabled", "report"],
+        "iis_protection": ["block", "disabled", "report"],
+        "uefi_protection": ["block", "disabled", "report"],
+        "malicious_device_prevention": ["block", "disabled", "report"],
+        "network_packet_inspection_engine": ["terminateSession", "disabled", "report"],
+        "credential_gathering_protection": ["block", "disabled", "report"],
+        "anti_webshell_protection": ["block", "disabled", "report"],
+        "office_files_with_macros_examination": ["block", "disabled", "report"],
+        "in_process_shellcode_protection": ["block", "disabled", "report"],
+        "jscript_file_examination": ["block", "disabled", "report"],
+        "malicious_child_process_protection": ["block", "disabled", "report"],
+        "vb_scripts_examination": ["block", "disabled", "report"],
+        "global_behavioral_threat_protection_rules": ["block", "disabled", "report"],
+        "powershell_script_files": ["block", "disabled", "report"],
+        "financial_malware_threat_protection": ["block", "disabled", "report"],
+        "security_measures_bypass": ["block", "disabled", "report"],
+        "dynamic_driver_protection": ["block", "disabled", "report"],
+        "dynamic_kernel_protection": ["block", "disabled", "report"],
+        "password_theft_protection": ["disabled", "enabled"],
+        "portable_executables_and_dll_examination": ["block", "disabled", "report"],
+        "respond_to_malicious_causality_chains": ["disabled", "enabled"],
+        "browser_exploits_protection": ["block", "disabled", "report"],
+        "logical_exploits_protection": ["block", "disabled", "report"],
+        "known_vulnerable_processes_protection": ["block", "disabled", "report"],
+        "operating_system_exploit_protection": ["block", "disabled", "report"],
+        "exploit_protection_for_additional_processes": ["block", "disabled", "report"],
+    }
 
 
 class ScriptManagement:
@@ -770,6 +853,20 @@ class Client(CoreClient):
             url_suffix="/retrieve_endpoint_tsf",
         )
 
+    def send_endpoint_heartbeat(self, json_data: dict) -> dict:
+        """
+        Perform endpoint heartbeat.
+        Args:
+            json_data (dict[str, Any]): The json data containing endpoint information.
+        Returns:
+            dict: The response from the API.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/call_home/",
+            json_data=json_data,
+        )
+
     def get_endpoint_update_version(self, request_data):
         reply = self._http_request(
             method="POST",
@@ -957,6 +1054,34 @@ class Client(CoreClient):
             method="POST",
             url_suffix="/cases/get_ai_case_details",
             json_data={"case_id": case_id},
+        )
+
+    def create_profile(self, profile_data: dict) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/profiles/prevention/add",
+            json_data=profile_data,
+        )
+
+    def get_profile(self, profile_id: str) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/profiles/get_profile_view_by_id",
+            json_data={"profile_id": profile_id},
+        )
+
+    def update_profile(self, update_data: dict) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/profiles/edit_profile",
+            json_data=update_data,
+        )
+
+    def delete_profile(self, profile_ids: list) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/profiles/delete_profiles",
+            json_data={"profile_ids": profile_ids},
         )
 
 
@@ -1529,16 +1654,19 @@ def get_case_extra_data(client, args):
     """
     demisto.debug(f"Calling core-get-case-extra-data, {args=}")
     # Set the base URL for this API call to use the public API v1 endpoint
-    case_extra_data = get_extra_data_for_case_id_command(init_client("public"), args).outputs
+    try:
+        case_extra_data = get_extra_data_for_case_id_command(init_client("public"), args).outputs
+    except Exception as e:
+        demisto.debug(f"Failed to retrieve extra data for case ID {args.get('case_id')}: {str(e)}")
+        return {}
     demisto.debug(f"After calling core-get-case-extra-data, {case_extra_data=}")
     issue_ids = extract_ids(case_extra_data)
     case_data = case_extra_data.get("case", {})
     notes = case_data.get("notes")
     xdr_url = case_data.get("xdr_url")
     starred_manually = case_data.get("starred_manually")
-    manual_description = case_data.get("manual_description")
     detection_time = case_data.get("detection_time")
-    manual_description = case_extra_data.get("manual_description")
+    manual_description = case_extra_data.get("manual_description") or case_data.get("manual_description")
     network_artifacts = case_extra_data.get("network_artifacts")
     file_artifacts = case_extra_data.get("file_artifacts")
     extra_data = {
@@ -1787,10 +1915,9 @@ def get_cases_command(client, args):
 
     get_enriched_case_data = argToBoolean(args.get("get_enriched_case_data", "false"))
     # In case enriched case data was requested
-    if get_enriched_case_data and len(data) <= 10:
-        if isinstance(data, dict):
-            data = [data]
-
+    if isinstance(data, dict):
+        data = [data] if data else []
+    if get_enriched_case_data and 0 < len(data) <= 10:
         case_extra_data = add_cases_extra_data(client, data)
 
         command_results.append(
@@ -1805,13 +1932,16 @@ def get_cases_command(client, args):
 
     else:
         if get_enriched_case_data:
+            demisto.info(
+                f"Enriched case data requested but {len(data)} cases were returned (limit is 10). "
+                "Falling back to standard case data."
+            )
             command_results.append(
                 CommandResults(
-                    readable_output="Cannot retrieve enriched case data for more than 10 cases. "
-                    "Only standard case data will be shown. "
+                    readable_output="Note: Cannot retrieve enriched case data for more than 10 cases. "
+                    "Returning standard case data instead. "
                     "Try using a more specific query, "
                     "for example specific case IDs you want to get enriched data for.",
-                    entry_type=4,
                 )
             )
 
@@ -1968,6 +2098,14 @@ def get_extra_data_for_case_id_command(client: CoreClient, args):
                         raw response, and outputs for integration context.
     """
     case_id = args.get("case_id")
+    if not case_id:
+        raise DemistoException("case_id is required. Please provide a valid numeric case ID.")
+    case_id = str(case_id).strip()
+    if not case_id.isdigit():
+        raise DemistoException(
+            f"Invalid case_id '{case_id}'. The case_id must be a valid numeric identifier. "
+            "Use the core-get-cases command to retrieve valid case IDs."
+        )
     issues_limit = min(int(args.get("issues_limit", 1000)), 1000)
     response = client.get_incident_data(case_id, issues_limit, full_alert_fields=True)
     mapped_response = preprocess_get_case_extra_data_outputs(response)
@@ -2407,6 +2545,55 @@ def get_asset_coverage_histogram_command(client: Client, args: dict):
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Coverage.Histogram",
         outputs=outputs,
+        raw_response=response,
+    )
+
+
+def get_ai_model_activity_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves AI model activity information using the generic /api/webapp/get_data endpoint.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - asset_id (str): Comma-separated list of asset IDs to query.
+
+    Returns:
+        CommandResults: Object containing the formatted AI model activity data,
+                        raw response, and outputs for integration context.
+    """
+    demisto.debug(f"get_ai_model_activity_command called with args: {args}")
+    asset_ids = argToList(args.get("asset_id"))
+    filter_builder = FilterBuilder()
+    filter_builder.add_field("asset_id", FilterType.EQ, asset_ids)
+    filter_dict = filter_builder.to_dict()
+    demisto.debug(f"Built filter_dict: {filter_dict}")
+
+    request_data = build_webapp_request_data(
+        table_name=AI_MODEL_ACTIVITY_TABLE,
+        filter_dict=filter_dict,
+        limit=len(asset_ids),
+        sort_field=None,
+    )
+    demisto.debug(f"Built request_data: {request_data}")
+
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+
+    readable_output = tableToMarkdown(
+        "AI Model Activity",
+        data,
+        headerTransform=string_to_table_header,
+        sort_headers=False,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AIModelActivity",
+        outputs_key_field="asset_id",
+        outputs=data,
         raw_response=response,
     )
 
@@ -2930,6 +3117,36 @@ def get_endpoint_support_file_command(client: Client, args: dict) -> CommandResu
         outputs_key_field="group_action_id",
         outputs=reply,
         raw_response=response,
+    )
+
+
+def send_endpoint_heartbeat_command(client: Client, args: dict) -> CommandResults:
+    """
+    Perform endpoint heartbeat.
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - endpoint_id (str): The ID of the endpoint.
+    Returns:
+        CommandResults: Object containing the formatted output.
+    """
+    call_home_type_heartbeat = 6
+    endpoint_id = args.get("endpoint_id")
+    if not endpoint_id:
+        raise ValueError("endpoint_id is required")
+
+    json_data = {
+        "request_data": {
+            "endpoint_id": endpoint_id,
+            "call_home_type": call_home_type_heartbeat,
+        }
+    }
+
+    client.send_endpoint_heartbeat(json_data)
+
+    return CommandResults(
+        readable_output=f"Heartbeat sent successfully for endpoint {endpoint_id}",
     )
 
 
@@ -4523,12 +4740,26 @@ def get_case_resolution_statuses(client, args):
     case_ids = argToList(args.get("case_id"))
     raw_responses = []
     outputs = []
+    headers = ["category", "itemType", "id", "name", "description", "taskName"]
     for case_id in case_ids:
         response = client.get_case_resolution_statuses(case_id)
         raw_responses.append(response)
         outputs.append(postprocess_case_resolution_statuses(client, response))
+
+    readable_parts = []
+    for case_id, case_output in zip(case_ids, outputs):
+        readable_parts.append(
+            tableToMarkdown(
+                f"Case {case_id} Resolution Statuses",
+                case_output,
+                headers=headers,
+                headerTransform=pascalToSpace,
+            )
+        )
+    readable_output = "\n".join(readable_parts)
+
     return CommandResults(
-        readable_output=tableToMarkdown("Case Resolution Statuses", outputs, headerTransform=string_to_table_header),
+        readable_output=readable_output,
         outputs_prefix="Core.CaseResolutionStatus",
         outputs=outputs,
         raw_response=raw_responses,
@@ -4538,6 +4769,257 @@ def get_case_resolution_statuses(client, args):
 def verify_platform_version(version: str = "8.13.0"):
     if not is_demisto_version_ge(version):
         raise DemistoException("This command is not available for this platform version")
+
+
+def create_profile_modules_by_type(args: dict, profile_type: str):
+    """
+    Creates the modules configuration for a profile based on the profile type.
+
+    Args:
+        args (dict): The arguments containing the configuration for the profile modules.
+        profile_type (str): The type of the profile ("Malware" or "Exploit").
+
+    Returns:
+        dict: A dictionary containing the configured modules for the profile.
+    """
+    profile_modules = {}
+    if profile_type == MALWARE_TYPE:
+        # Configuration for periodic scan to be used when enabled
+        scan_endpoints_periodic_config = {"type": "weekly", "days": ["sun"], "hour": "00:00", "removableMedia": "disabled"}
+
+        scan_endpoints_arg = args.get(Profile.FIELDS.get("scanEndpoints"), "disabled")
+        if scan_endpoints_arg == "enabled":
+            periodic_scan_config = {"mode": "enabled", **scan_endpoints_periodic_config}
+        else:
+            periodic_scan_config = {"mode": "disabled"}
+
+        profile_modules = {
+            "aspFiles": {
+                "mode": args.get(Profile.FIELDS.get("aspFiles"), "disabled"),
+                "upload": "enabled",
+                "actionOnUnknown": "runLocalAnalysis",
+            },
+            "basTools": {"mode": args.get(Profile.FIELDS.get("basTools"), "disabled")},
+            "uacBypass": {"mode": args.get(Profile.FIELDS.get("uacBypass"), "block"), "quarantine": "enabled"},
+            "ransomware": {
+                "mode": args.get(Profile.FIELDS.get("ransomware"), "block"),
+                "quarantine": "disabled",
+                "smbEncryption": "enabled",
+                "protectionMode": "normal",
+            },
+            "cryptominers": {"mode": args.get(Profile.FIELDS.get("cryptominers"), "block"), "quarantine": "enabled"},
+            "antiTampering": {
+                "mode": args.get(Profile.FIELDS.get("antiTampering"), "block"),
+                "safeMode": args.get(Profile.FIELDS.get("antiTampering"), "block"),
+                "quarantine": "enabled",
+            },
+            "iisProtection": {"mode": args.get(Profile.FIELDS.get("iisProtection"), "block"), "quarantine": "enabled"},
+            "scanEndpoints": {
+                "periodicScan": periodic_scan_config,
+                "endUserInitiatedLocalScan": args.get(Profile.FIELDS.get("endUserInitiatedLocalScan"), "enabled"),
+            },
+            "uefiProtection": {"mode": args.get(Profile.FIELDS.get("uefiProtection"), "block"), "quarantine": "enabled"},
+            "maliciousDevice": {"mode": args.get(Profile.FIELDS.get("maliciousDevice"), "block"), "quarantine": "disabled"},
+            "networkSignature": {"mode": args.get(Profile.FIELDS.get("networkSignature"), "terminateSession")},
+            "passwordStealing": {"mode": args.get(Profile.FIELDS.get("passwordStealing"), "block"), "quarantine": "enabled"},
+            "webshellDroppers": {"mode": args.get(Profile.FIELDS.get("webshellDroppers"), "block"), "quarantine": "enabled"},
+            "onWriteProtection": {
+                "examinePortableExecutables": "disabled",
+                "examineOfficeFiles": "disabled",
+                "powerShellScriptFiles": "disabled",
+                "aspFiles": "disabled",
+                "examineVBScriptFiles": "disabled",
+                "examineJScriptFiles": "disabled",
+            },
+            "examineOfficeFiles": {
+                "mode": args.get(Profile.FIELDS.get("examineOfficeFiles"), "block"),
+                "upload": "enabled",
+                "networkDrives": "enabled",
+                "actionOnUnknown": "runLocalAnalysis",
+                "actionOnLowConfidence": "runLocalAnalysis",
+            },
+            "inProcessShellcode": {
+                "mode": args.get(Profile.FIELDS.get("inProcessShellcode"), "block"),
+                "quarantine": "enabled",
+                "processInjection32Bit": "enabled",
+                "aiPoweredShellcodeProtection": "enabled",
+            },
+            "examineJScriptFiles": {
+                "mode": args.get(Profile.FIELDS.get("examineJScriptFiles"), "block"),
+                "upload": "enabled",
+                "quarantine": "disabled",
+                "actionOnUnknown": "runLocalAnalysis",
+            },
+            "legitimateProcesses": {"mode": args.get(Profile.FIELDS.get("legitimateProcesses"), "block")},
+            "examineVBScriptFiles": {
+                "mode": args.get(Profile.FIELDS.get("examineVBScriptFiles"), "block"),
+                "upload": "enabled",
+                "quarantine": "disabled",
+                "actionOnUnknown": "runLocalAnalysis",
+            },
+            "dynamicSecurityEngine": {
+                "mode": args.get(Profile.FIELDS.get("dynamicSecurityEngine"), "block"),
+                "quarantine": "enabled",
+                "advancedApiMonitoring": "enabled",
+                "driversProtectionMode": "block",
+            },
+            "powerShellScriptFiles": {
+                "mode": args.get(Profile.FIELDS.get("powerShellScriptFiles"), "block"),
+                "upload": "enabled",
+                "quarantine": "disabled",
+                "actionOnUnknown": "runLocalAnalysis",
+            },
+            "financialMalwareThreat": {
+                "mode": args.get(Profile.FIELDS.get("financialMalwareThreat"), "block"),
+                "quarantine": "enabled",
+                "cryptoWalletProtection": "enabled",
+            },
+            "securityMeasuresBypass": {
+                "mode": args.get(Profile.FIELDS.get("securityMeasuresBypass"), "block"),
+                "quarantine": "enabled",
+            },
+            "dynamicDriverProtection": {
+                "mode": args.get(Profile.FIELDS.get("dynamicDriverProtection"), "block"),
+                "quarantine": "disabled",
+            },
+            "dynamicKernelProtection": {"mode": args.get(Profile.FIELDS.get("dynamicKernelProtection"), "block")},
+            "passwordTheftProtection": {"mode": args.get(Profile.FIELDS.get("passwordTheftProtection"), "enabled")},
+            "examinePortableExecutables": {
+                "mode": args.get(Profile.FIELDS.get("examinePortableExecutables"), "block"),
+                "upload": "enabled",
+                "grayware": "disabled",
+                "quarantine": "disabled",
+                "actionOnUnknown": "runLocalAnalysis",
+                "actionOnLowConfidence": "runLocalAnalysis",
+            },
+            "maliciousCausalityChainsResponse": {
+                "mode": args.get(Profile.FIELDS.get("maliciousCausalityChainsResponse"), "enabled")
+            },
+        }
+
+    elif profile_type == EXPLOIT_TYPE:
+        profile_modules = {
+            "vulnerableApps": {"mode": args.get(Profile.FIELDS.get("vulnerableApps"), "block"), "javaProtection": "enabled"},
+            "logicalExploits": {"mode": args.get(Profile.FIELDS.get("logicalExploits"), "block"), "forbidDllLoad": []},
+            "osKernelExploits": {"mode": args.get(Profile.FIELDS.get("osKernelExploits"), "block")},
+            "browserExploitKits": {"mode": args.get(Profile.FIELDS.get("browserExploitKits"), "block")},
+            "additionalProcesses": {"mode": args.get(Profile.FIELDS.get("additionalProcesses"), "disabled"), "processes": []},
+        }
+
+    return profile_modules
+
+
+def validate_profile_args(args: dict):
+    """
+    Validates that the arguments provided in args match the predefined values in Profile.VALIDATION.
+    """
+    invalid_args = []
+    for arg, value in args.items():
+        if arg in Profile.VALIDATION:
+            allowed_values = Profile.VALIDATION[arg]
+            if value not in allowed_values:
+                invalid_args.append(
+                    f"Invalid value '{value}' for argument '{arg}'. Allowed values are: {', '.join(allowed_values)}."
+                )
+
+    if invalid_args:
+        raise DemistoException("\n".join(invalid_args))
+
+
+def create_profile_command(
+    client: Client, args: dict, profile_type: str, profile_platform: str = WINDOWS_PLATFORM
+) -> CommandResults:
+    """
+    Creates a new profile in the Cortex Platform.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): The arguments containing the profile details.
+        profile_type (str): The type of the profile ("Malware" or "Exploit").
+
+    Returns:
+        CommandResults: The command results containing the ID of the created profile.
+    """
+    validate_profile_args(args)
+    profile_name = args.get("profile_name")
+    profile_description = args.get("profile_description", "")
+
+    profile_modules = create_profile_modules_by_type(args, profile_type)
+    payload = {
+        "request_data": {
+            "name": profile_name,
+            "profile_type": profile_type,
+            "platform": profile_platform,
+            "description": profile_description,
+            "modules": profile_modules,
+        }
+    }
+    response = client.create_profile(payload).get("reply", "")
+
+    return CommandResults(
+        readable_output=f"Profile {response} created successfully.",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Profile",
+        outputs={"profile_id": response},
+        raw_response={"profile_id": response},
+    )
+
+
+def update_profile_command(client, args):
+    """
+    Updates an existing profile in the Cortex Platform.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): The arguments containing the profile ID and fields to update.
+
+    Returns:
+        CommandResults: The command results indicating the success of the update.
+    """
+    validate_profile_args(args)
+    profile_id = args.get("profile_id")
+
+    current_profile = client.get_profile(profile_id)
+    if not current_profile or current_profile.get("reply") is None:
+        raise DemistoException(f"Profile {profile_id} doesn't exist.")
+
+    update_data = current_profile.get("reply", {})
+    current_profile_modules = update_data.get("PROFILE_MODULES", {})
+
+    for module_name, module_data in current_profile_modules.items():
+        arg_value = args.get(Profile.FIELDS.get(module_name))
+        if arg_value and "mode" in module_data:
+            module_data["mode"]["value"] = arg_value
+            if "safeMode" in module_data:
+                module_data["safeMode"]["value"] = arg_value
+
+    if profile_name := args.get("profile_name"):
+        update_data["PROFILE_NAME"] = profile_name
+
+    if profile_description := args.get("profile_description"):
+        update_data["PROFILE_DESCRIPTION"] = profile_description
+
+    update_data["PROFILE_MODULES"] = current_profile_modules
+    update_profile = {"profile_id": profile_id, "update_data": update_data}
+
+    client.update_profile(update_profile)
+
+    return CommandResults(readable_output=f"Profile {profile_id} updated successfully.")
+
+
+def delete_profile_command(client, args):
+    """
+    Deletes one or more profiles from the Cortex Platform.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): The arguments containing the profile IDs to delete.
+
+    Returns:
+        CommandResults: The command results indicating the success of the deletion.
+    """
+    profile_ids = argToList(args.get("profile_ids"))
+    client.delete_profile(profile_ids)
+    return CommandResults(readable_output="Your request was sent successfully.")
 
 
 def main():  # pragma: no cover
@@ -4649,6 +5131,9 @@ def main():  # pragma: no cover
         elif command == "core-get-endpoint-support-file":
             return_results(get_endpoint_support_file_command(client, args))
 
+        elif command == "core-send-endpoint-heartbeat":
+            return_results(send_endpoint_heartbeat_command(client, args))
+
         elif command == "core-list-exception-rules":
             return_results(list_exception_rules_command(client, args))
         elif command == "core-list-system-users":
@@ -4673,6 +5158,23 @@ def main():  # pragma: no cover
         elif command == "core-xql-generic-query-platform":
             verify_platform_version()
             return_results(xql_query_platform_command(client, args))
+        elif command == "core-get-ai-model-activity":
+            return_results(get_ai_model_activity_command(client, args))
+
+        elif command == "core-create-windows-malware-profile":
+            return_results(create_profile_command(client, args, MALWARE_TYPE, WINDOWS_PLATFORM))
+
+        elif command == "core-create-windows-exploit-profile":
+            return_results(create_profile_command(client, args, EXPLOIT_TYPE, WINDOWS_PLATFORM))
+
+        elif command == "core-update-windows-malware-profile":
+            return_results(update_profile_command(client, args))
+
+        elif command == "core-update-windows-exploit-profile":
+            return_results(update_profile_command(client, args))
+
+        elif command == "core-delete-profile":
+            return_results(delete_profile_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
