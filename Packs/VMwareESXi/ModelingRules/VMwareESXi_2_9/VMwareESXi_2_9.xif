@@ -904,8 +904,14 @@ call esxi_event_classification
 
 call esxi_event_classification
 | filter esxi_event_type = null
+// Extract the <PRI> value from the syslog header
 | alter
-    event_type = arrayindex( regextract(_raw_log ,"\d+-\d+-\d+T\d+:\d+:\d+\.*\d*Z[\s|\|]\s*([a-zA-Z0-9-_]+)"),0),
+    syslog_priority = to_integer(parsed_fields -> pri)
+// Extract the syslog facility from the priority value by dividing it by 8
+| alter
+    syslog_facility = floor(divide(syslog_priority, 8))
+| alter
+    syslog_severity = subtract(syslog_priority, multiply(syslog_facility, 8)), // Extract the severity remainder by subtracting (facility * 8) from the priority
     username_1 = arrayindex(regextract(_raw_log ,"User\s\'([a-zA-Z]+)\'"),0),
     username_2 = arrayindex(regextract(_raw_log ,"for\s+(\S+)\s+from"),0),
     username_3 = arrayindex(regextract(_raw_log , "[Uu]ser\s+(?:name\:\s+)*(\w+)"),0),
@@ -920,13 +926,18 @@ call esxi_event_classification
     path_2 = arrayindex( regextract(_raw_log ,"on\s(\/\S+)"),0),
     mac_address = arrayindex( regextract(_raw_log , "MAC Address:\s([a-zA-Z0-9]+\:[a-zA-Z0-9]+\:[a-zA-Z0-9]+\:[a-zA-Z0-9]+\:[a-zA-Z0-9]+\:[a-zA-Z0-9]+)"),0)
 | alter
-    msg = coalesce(msg_1, msg_2, msg_3),
+    msg = coalesce(parsed_fields -> msg, msg_1, msg_2, msg_3),
     path = coalesce(path_1, path_2),
     username = coalesce(username_1, username_2, username_3),
-    source_ip = coalesce(source_ip_1, source_ip_2)
-| alter
-    xdm.event.type = event_type,
+    source_ip = coalesce(source_ip_1, source_ip_2),
+    process_name = arrayindex(regextract(parsed_fields -> process_pid, "(\w+)\["),0),
+    pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    severity = to_string(syslog_severity) // Convert the numeric severity result back to string for mapping compatibility
+| alter // XDM Mapping
     xdm.source.user.username = username,
+    xdm.source.host.hostname = parsed_fields -> hostname,
+    xdm.source.process.name = process_name,
+    xdm.source.process.pid = to_integer(pid),
     xdm.target.process.command_line = command_line,
     xdm.source.ipv4 = if(is_ipv4(source_ip), source_ip),
     xdm.source.ipv6 = if(is_ipv6(source_ip), source_ip),
@@ -936,5 +947,16 @@ call esxi_event_classification
     xdm.source.host.ipv6_public_addresses = if(is_known_private_ipv6(source_ip) = FALSE, arraycreate(source_ip)),
     xdm.source.port = to_number(source_port),
     xdm.event.description = msg,
+    xdm.event.format = if(_raw_log ~= "\<\d+\>1", "RFC-5424", _raw_log ~= "\<\d+\>", "RFC-3164"),
+    xdm.event.log_level = if(
+        severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY ,
+        severity = "1", XDM_CONST.LOG_LEVEL_ALERT ,
+        severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL,
+        severity = "3", XDM_CONST.LOG_LEVEL_ERROR,
+        severity = "4", XDM_CONST.LOG_LEVEL_WARNING,
+        severity = "5", XDM_CONST.LOG_LEVEL_NOTICE,
+        severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL,
+        severity = "7", XDM_CONST.LOG_LEVEL_DEBUG,
+        severity),
     xdm.target.process.executable.path = path,
     xdm.source.host.mac_addresses = arraycreate(coalesce(mac_address ,""));
