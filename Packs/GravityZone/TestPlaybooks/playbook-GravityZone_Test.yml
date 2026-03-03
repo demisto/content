@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -73,8 +74,8 @@ tasks:
     task:
       id: fe4eb3f5-e38d-4d43-8433-1d9cf5ea3553
       version: -1
-      name: gz-list-endpoints
-      script: GravityZone|||gz-list-endpoints
+      name: gz-endpoint-list
+      script: GravityZone|||gz-endpoint-list
       type: regular
       iscommand: true
       brand: ""
@@ -104,8 +105,8 @@ tasks:
     task:
       id: dad1db7b-7066-4686-841b-70721872bade
       version: -1
-      name: gz-get-endpoint-by-id
-      script: GravityZone|||gz-get-endpoint-by-id
+      name: gz-endpoint-get
+      script: GravityZone|||gz-endpoint-get
       type: regular
       iscommand: true
       brand: ""
@@ -208,8 +209,8 @@ tasks:
     task:
       id: 3e5d1dae-14b1-482b-82d2-6931f6f9c237
       version: -1
-      name: gz-download-investigation-package-from-endpoint
-      script: GravityZone|||gz-download-investigation-package-from-endpoint
+      name: gz-endpoint-download-investigation-package
+      script: GravityZone|||gz-endpoint-download-investigation-package
       type: regular
       iscommand: true
       brand: ""
@@ -354,8 +355,8 @@ tasks:
     task:
       id: bbba8842-0db4-4276-8e69-3cd9bc4f1e27
       version: -1
-      name: gz-download-file-from-endpoint
-      script: GravityZone|||gz-download-file-from-endpoint
+      name: gz-endpoint-download-file
+      script: GravityZone|||gz-endpoint-download-file
       type: regular
       iscommand: true
       brand: GravityZone
@@ -502,8 +503,8 @@ tasks:
     task:
       id: 1cf27364-1c9e-403a-8284-ef93990acccd
       version: -1
-      name: gz-isolate-endpoint
-      script: GravityZone|||gz-isolate-endpoint
+      name: gz-endpoint-isolate
+      script: GravityZone|||gz-endpoint-isolate
       type: regular
       iscommand: true
       brand: ""
@@ -616,8 +617,8 @@ tasks:
     task:
       id: 52af4b37-2e2c-4cf1-8e66-642193009660
       version: -1
-      name: gz-deisolate-endpoint
-      script: GravityZone|||gz-deisolate-endpoint
+      name: gz-endpoint-deisolate
+      script: GravityZone|||gz-endpoint-deisolate
       type: regular
       iscommand: true
       brand: ""
@@ -728,8 +729,8 @@ tasks:
     task:
       id: 0cf940fd-6601-4a25-89b5-1bec28ffbd98
       version: -1
-      name: gz-kill-process-on-endpoint
-      script: GravityZone|||gz-kill-process-on-endpoint
+      name: gz-endpoint-kill-process
+      script: GravityZone|||gz-endpoint-kill-process
       type: regular
       iscommand: true
       brand: GravityZone
@@ -854,8 +855,8 @@ tasks:
     task:
       id: 4bb49da0-c4a5-4ac3-8fc4-3a0dac95fde7
       version: -1
-      name: gz-upload-file-to-endpoint
-      script: GravityZone|||gz-upload-file-to-endpoint
+      name: gz-endpoint-upload-file
+      script: GravityZone|||gz-endpoint-upload-file
       type: regular
       iscommand: true
       brand: GravityZone
@@ -980,8 +981,8 @@ tasks:
     task:
       id: 39845517-3284-49d3-8f8b-b04b13dfca09
       version: -1
-      name: gz-get-endpoints-running-process-hash
-      script: GravityZone|||gz-get-endpoints-running-process-hash
+      name: gz-endpoint-list-by-running-process-hash
+      script: GravityZone|||gz-endpoint-list-by-running-process-hash
       type: regular
       iscommand: true
       brand: ""
@@ -1062,8 +1063,8 @@ tasks:
     task:
       id: d2e2ce49-edd5-4b6b-8311-de8a4264ac06
       version: -1
-      name: gz-get-process-tree-for-hash-on-endpoint
-      script: GravityZone|||gz-get-process-tree-for-hash-on-endpoint
+      name: gz-endpoint-get-process-tree-by-hash
+      script: GravityZone|||gz-endpoint-get-process-tree-by-hash
       type: regular
       iscommand: true
       brand: ""
@@ -1156,8 +1157,8 @@ tasks:
     task:
       id: a19bb687-7205-4299-8877-e013b713adcb
       version: -1
-      name: gz-get-incident-by-id
-      script: GravityZone|||gz-get-incident-by-id
+      name: gz-incident-get
+      script: GravityZone|||gz-incident-get
       type: regular
       iscommand: true
       brand: GravityZone
@@ -1290,8 +1291,8 @@ tasks:
     task:
       id: 9749dcc3-148d-4e88-8552-9b1d0a09d3a0
       version: -1
-      name: gz-list-incidents
-      script: GravityZone|||gz-list-incidents
+      name: gz-incident-list
+      script: GravityZone|||gz-incident-list
       type: regular
       iscommand: true
       brand: ""
@@ -1417,8 +1418,8 @@ tasks:
     task:
       id: f4c1aa68-a8ab-4ede-81c5-bebc919797bb
       version: -1
-      name: gz-add-incident-note
-      script: GravityZone|||gz-add-incident-note
+      name: gz-incident-add-note
+      script: GravityZone|||gz-incident-add-note
       type: regular
       iscommand: true
       brand: ""
@@ -1501,8 +1502,8 @@ tasks:
     task:
       id: b86579a6-ac64-43a1-89c7-4446f5425e3a
       version: -1
-      name: gz-change-incident-status
-      script: GravityZone|||gz-change-incident-status
+      name: gz-incident-change-status
+      script: GravityZone|||gz-incident-change-status
       type: regular
       iscommand: true
       brand: ""
@@ -1589,6 +1590,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1612,10 +1614,9 @@ tasks:
     task:
       id: 558f73d8-e6eb-4abc-8a39-8301217a9c58
       version: -1
-      name: gz-run-command-on-endpoint
-      description: Runs a command on the endpoint. The applied policy must have Remote
-        Shell enabled for this action to work.
-      script: '|||gz-run-command-on-endpoint'
+      name: gz-endpoint-run-command
+      description: Runs a command on the endpoint. The applied policy must have Remote Shell enabled for this action to work.
+      script: '|||gz-endpoint-run-command'
       type: regular
       iscommand: true
       brand: ""

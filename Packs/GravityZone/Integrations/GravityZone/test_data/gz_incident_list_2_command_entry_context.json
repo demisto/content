@@ -18,6 +18,9 @@
             "AttackTypes": [
                 "Malware"
             ],
+            "EndpointID": "ENDPOINT_ID",
+            "EndpointHostname": "ENDPOINT_NAME",
+            "EndpointIP": "ENDPOINT_IP",
             "RawJSON": {
                 "incidentId": "INCIDENT_ID_1",
                 "incidentNumber": 477,

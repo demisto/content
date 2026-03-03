@@ -19,6 +19,9 @@
             "Permalink": "https://localhost/#!/incidents/view/INCIDENT_ID_1",
             "AssignedPriority": "unknown",
             "AssignedUser": null,
+            "EndpointID": "ENDPOINT_ID",
+            "EndpointHostname": "ENDPOINT_NAME",
+            "EndpointIP": "ENDPOINT_IP",
             "Notes": [],
             "Alerts": [
                 {

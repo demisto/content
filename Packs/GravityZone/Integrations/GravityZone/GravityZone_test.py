@@ -139,7 +139,7 @@ def test_fetch_incidents_command(mock_demisto, requests_mock):
         assert "rawJSON" in incident
 
     incident_names = [incident.get("name") for incident in incidents]
-    assert incident_names == ["477", "475"]
+    assert incident_names == ["GravityZone Incident #477", "GravityZone Incident #475"]
 
 
 @patch("GravityZone.demisto")
@@ -250,132 +250,132 @@ def test_test_module(mock_demisto, requests_mock):
 
 
 @patch("GravityZone.demisto")
-def test_gz_list_endpoints_command(mock_demisto, requests_mock):
+def test_gz_endpoint_list_command(mock_demisto, requests_mock):
     """
     Given
             All relevant arguments for the command that is executed
     When
-            Calling gz-list-endpoints command
+            Calling gz-endpoint-list command
     Then
             Make sure the outputs, outputs_prefix and outputs_key_field values are as expected.
     """
 
     # Prepare
-    from GravityZone import gz_list_endpoints_command
+    from GravityZone import gz_endpoint_list_command
 
-    mock_demisto.command.return_value = "gz-list-endpoints"
+    mock_demisto.command.return_value = "gz-endpoint-list"
     mock_demisto.params.return_value = {}
-    load_api_mocked_data(requests_mock, "gz-list-endpoints")
+    load_api_mocked_data(requests_mock, "gz-endpoint-list")
     client = get_client()
 
     # Execute command
-    command_response = gz_list_endpoints_command(client=client, args={})
+    command_response = gz_endpoint_list_command(client=client, args={})
 
     # Assert command response
-    assert_command_mocked_data("gz-list-endpoints", command_response)
+    assert_command_mocked_data("gz-endpoint-list", command_response)
 
 
 @patch("GravityZone.demisto")
-def test_get_endpoint_by_id_command(mock_demisto, requests_mock):
+def test_gz_endpoint_get_command(mock_demisto, requests_mock):
     """
     Given
             All relevant arguments for the command that is executed
     When
-            Calling gz-get-endpoint-by-id command
+            Calling gz-endpoint-get command
     Then
             Make sure the outputs, outputs_prefix and outputs_key_field values are as expected.
     """
     # Prepare
-    from GravityZone import gz_get_endpoint_by_id_command
+    from GravityZone import gz_endpoint_get_command
 
-    mock_demisto.command.return_value = "gz_get_endpoint_by_id"
+    mock_demisto.command.return_value = "gz-endpoint-get"
     mock_demisto.params.return_value = {}
-    load_api_mocked_data(requests_mock, "gz_get_endpoint_by_id")
+    load_api_mocked_data(requests_mock, "gz-endpoint-get")
     client = get_client()
 
     # Execute command
-    command_response = gz_get_endpoint_by_id_command(client=client, args={"id": "ENDPOINT_ID"})
+    command_response = gz_endpoint_get_command(client=client, args={"id": "ENDPOINT_ID"})
 
     # Assert command response
-    assert_command_mocked_data("gz_get_endpoint_by_id", command_response)
+    assert_command_mocked_data("gz-endpoint-get", command_response)
 
 
 @patch("GravityZone.demisto")
-def test_gz_isolate_endpoint_command(mock_demisto, requests_mock):
+def test_gz_endpoint_isolate_command(mock_demisto, requests_mock):
     """
     Given
             All relevant arguments for the command that is executed
     When
-            Calling gz-isolate-endpoint command
-    Then
-            Make sure the outputs, outputs_prefix and outputs_key_field values are as expected.
-    """
-
-    # Prepare
-    from GravityZone import gz_isolate_endpoint_command, gz_poll_task_status_command
-
-    mock_demisto.command.return_value = "gz-isolate-endpoint"
-    mock_demisto.params.return_value = {}
-    load_api_mocked_data(requests_mock, "gz-isolate-endpoint")
-    client = get_client()
-
-    # Execute command
-    command_response = gz_isolate_endpoint_command(client=client, args={"id": "ENDPOINT_ID"})
-
-    # Assert command response
-    assert_command_mocked_data("gz-isolate-endpoint", command_response, polling_func=gz_poll_task_status_command, client=client)
-
-
-@patch("GravityZone.demisto")
-def test_gz_deisolate_endpoint_command(mock_demisto, requests_mock):
-    """
-    Given
-            All relevant arguments for the command that is executed
-    When
-            Calling gz-deisolate-endpoint command
+            Calling gz-endpoint-isolate command
     Then
             Make sure the outputs, outputs_prefix and outputs_key_field values are as expected.
     """
 
     # Prepare
-    from GravityZone import gz_deisolate_endpoint_command, gz_poll_task_status_command
+    from GravityZone import gz_endpoint_isolate_command, gz_poll_task_status_command
 
-    mock_demisto.command.return_value = "gz-deisolate-endpoint"
+    mock_demisto.command.return_value = "gz-endpoint-isolate"
     mock_demisto.params.return_value = {}
-    load_api_mocked_data(requests_mock, "gz-deisolate-endpoint")
+    load_api_mocked_data(requests_mock, "gz-endpoint-isolate")
     client = get_client()
 
     # Execute command
-    command_response = gz_deisolate_endpoint_command(client=client, args={"id": "ENDPOINT_ID"})
+    command_response = gz_endpoint_isolate_command(client=client, args={"id": "ENDPOINT_ID"})
 
     # Assert command response
-    assert_command_mocked_data("gz-deisolate-endpoint", command_response, polling_func=gz_poll_task_status_command, client=client)
+    assert_command_mocked_data("gz-endpoint-isolate", command_response, polling_func=gz_poll_task_status_command, client=client)
 
 
 @patch("GravityZone.demisto")
-def test_gz_kill_process_on_endpoint_command(mock_demisto, requests_mock):
+def test_gz_endpoint_deisolate_command(mock_demisto, requests_mock):
     """
     Given
             All relevant arguments for the command that is executed
     When
-            Calling gz-kill-process-on-endpoint command
+            Calling gz-endpoint-deisolate command
+    Then
+            Make sure the outputs, outputs_prefix and outputs_key_field values are as expected.
+    """
+
+    # Prepare
+    from GravityZone import gz_endpoint_deisolate_command, gz_poll_task_status_command
+
+    mock_demisto.command.return_value = "gz-endpoint-deisolate"
+    mock_demisto.params.return_value = {}
+    load_api_mocked_data(requests_mock, "gz-endpoint-deisolate")
+    client = get_client()
+
+    # Execute command
+    command_response = gz_endpoint_deisolate_command(client=client, args={"id": "ENDPOINT_ID"})
+
+    # Assert command response
+    assert_command_mocked_data("gz-endpoint-deisolate", command_response, polling_func=gz_poll_task_status_command, client=client)
+
+
+@patch("GravityZone.demisto")
+def test_gz_endpoint_kill_process_command(mock_demisto, requests_mock):
+    """
+    Given
+            All relevant arguments for the command that is executed
+    When
+            Calling gz-endpoint-kill-process command
     Then
             Make sure the outputs, outputs_prefix and outputs_key_field values are as expected.
     """
 
     # Prepare
     from GravityZone import (
-        gz_kill_process_on_endpoint_command,
+        gz_endpoint_kill_process_command,
         gz_poll_task_status_command,
     )
 
-    mock_demisto.command.return_value = "gz-kill-process-on-endpoint"
+    mock_demisto.command.return_value = "gz-endpoint-kill-process"
     mock_demisto.params.return_value = {}
-    load_api_mocked_data(requests_mock, "gz-kill-process-on-endpoint")
+    load_api_mocked_data(requests_mock, "gz-endpoint-kill-process")
     client = get_client()
 
     # Execute command
-    command_response = gz_kill_process_on_endpoint_command(
+    command_response = gz_endpoint_kill_process_command(
         client=client,
         args={
             "id": "ENDPOINT_ID",
@@ -385,34 +385,34 @@ def test_gz_kill_process_on_endpoint_command(mock_demisto, requests_mock):
 
     # Assert command response
     assert_command_mocked_data(
-        "gz-kill-process-on-endpoint", command_response, polling_func=gz_poll_task_status_command, client=client
+        "gz-endpoint-kill-process", command_response, polling_func=gz_poll_task_status_command, client=client
     )
 
 
 @patch("GravityZone.demisto")
-def test_gz_run_command_on_endpoint_command(mock_demisto, requests_mock):
+def test_gz_endpoint_run_command_command(mock_demisto, requests_mock):
     """
     Given
             All relevant arguments for the command that is executed
     When
-            Calling gz-run-command-on-endpoint command
+            Calling gz-endpoint-run-command command
     Then
             Make sure the outputs, outputs_prefix and outputs_key_field values are as expected.
     """
 
     # Prepare
     from GravityZone import (
-        gz_run_command_on_endpoint_command,
+        gz_endpoint_run_command_command,
         gz_poll_investigation_activity_status_command,
     )
 
-    mock_demisto.command.return_value = "gz-run-command-on-endpoint"
+    mock_demisto.command.return_value = "gz-endpoint-run-command"
     mock_demisto.params.return_value = {}
-    load_api_mocked_data(requests_mock, "gz-run-command-on-endpoint")
+    load_api_mocked_data(requests_mock, "gz-endpoint-run-command")
     client = get_client()
 
     # Execute command
-    command_response = gz_run_command_on_endpoint_command(
+    command_response = gz_endpoint_run_command_command(
         client=client,
         args={
             "id": "6942a43afe8d4e463ca5c197",
@@ -422,34 +422,34 @@ def test_gz_run_command_on_endpoint_command(mock_demisto, requests_mock):
 
     # Assert command response
     assert_command_mocked_data(
-        "gz-run-command-on-endpoint", command_response, polling_func=gz_poll_investigation_activity_status_command, client=client
+        "gz-endpoint-run-command", command_response, polling_func=gz_poll_investigation_activity_status_command, client=client
     )
 
 
 @patch("GravityZone.demisto")
-def test_gz_get_process_tree_for_hash_on_endpoint(mock_demisto, requests_mock):
+def test_gz_endpoint_get_process_tree_by_hash(mock_demisto, requests_mock):
     """
     Given
             All relevant arguments for the command that is executed
     When
-            Calling gz-get-process-tree-for-hash-on-endpoint command
+            Calling gz-endpoint-get-process-tree-by-hash command
     Then
             Make sure the outputs, outputs_prefix and outputs_key_field values are as expected.
     """
 
     # Prepare
     from GravityZone import (
-        gz_get_process_tree_for_hash_on_endpoint_command,
+        gz_endpoint_get_process_tree_by_hash_command,
         gz_poll_live_search_status_command,
     )
 
-    mock_demisto.command.return_value = "gz-get-process-tree-for-hash-on-endpoint"
+    mock_demisto.command.return_value = "gz-endpoint-get-process-tree-by-hash"
     mock_demisto.params.return_value = {}
-    load_api_mocked_data(requests_mock, "gz-get-process-tree-for-hash-on-endpoint")
+    load_api_mocked_data(requests_mock, "gz-endpoint-get-process-tree-by-hash")
     client = get_client()
 
     # Execute command
-    command_response = gz_get_process_tree_for_hash_on_endpoint_command(
+    command_response = gz_endpoint_get_process_tree_by_hash_command(
         client=client,
         args={
             "id": "ENDPOINT_ID",
@@ -459,7 +459,7 @@ def test_gz_get_process_tree_for_hash_on_endpoint(mock_demisto, requests_mock):
 
     # Assert command response
     assert_command_mocked_data(
-        "gz-get-process-tree-for-hash-on-endpoint",
+        "gz-endpoint-get-process-tree-by-hash",
         command_response,
         polling_func=gz_poll_live_search_status_command,
         client=client,
@@ -467,29 +467,29 @@ def test_gz_get_process_tree_for_hash_on_endpoint(mock_demisto, requests_mock):
 
 
 @patch("GravityZone.demisto")
-def test_gz_get_endpoints_running_process_hash_command(mock_demisto, requests_mock):
+def test_gz_endpoint_list_by_running_process_hash_command(mock_demisto, requests_mock):
     """
     Given
             All relevant arguments for the command that is executed
     When
-            Calling gz-get-endpoints-running-process-hash command
+            Calling gz-endpoint-list-by-running-process-hash command
     Then
             Make sure the outputs, outputs_prefix and outputs_key_field values are as expected.
     """
 
     # Prepare
     from GravityZone import (
-        gz_get_endpoints_running_process_hash_command,
+        gz_endpoint_list_by_running_process_hash_command,
         gz_poll_live_search_status_command,
     )
 
-    mock_demisto.command.return_value = "gz-get-endpoints-running-process-hash"
+    mock_demisto.command.return_value = "gz-endpoint-list-by-running-process-hash"
     mock_demisto.params.return_value = {}
-    load_api_mocked_data(requests_mock, "gz-get-endpoints-running-process-hash")
+    load_api_mocked_data(requests_mock, "gz-endpoint-list-by-running-process-hash")
     client = get_client()
 
     # Execute command
-    command_response = gz_get_endpoints_running_process_hash_command(
+    command_response = gz_endpoint_list_by_running_process_hash_command(
         client=client,
         args={
             "process_hash": "PROCESS_HASH",
@@ -498,7 +498,10 @@ def test_gz_get_endpoints_running_process_hash_command(mock_demisto, requests_mo
 
     # Assert command response
     assert_command_mocked_data(
-        "gz-get-endpoints-running-process-hash", command_response, polling_func=gz_poll_live_search_status_command, client=client
+        "gz-endpoint-list-by-running-process-hash",
+        command_response,
+        polling_func=gz_poll_live_search_status_command,
+        client=client,
     )
 
 
@@ -613,31 +616,31 @@ def test_gz_poll_investigation_activity_status_command(mock_demisto, mocker, req
 @pytest.mark.parametrize(
     "args, api_mock_name",
     [
-        ({}, "gz-list-incidents"),
-        ({"endpoint_id": "ENDPOINT_ID"}, "gz-list-incidents-2"),
+        ({}, "gz-incident-list"),
+        ({"endpoint_id": "ENDPOINT_ID"}, "gz-incident-list-2"),
     ],
 )
 @patch("GravityZone.demisto")
-def test_gz_list_incidents_command(mock_demisto, requests_mock, args, api_mock_name):
+def test_gz_incident_list_command(mock_demisto, requests_mock, args, api_mock_name):
     """
     Given
             All relevant arguments for the command that is executed
     When
-            Calling gz-list-incidents command
+            Calling gz-incident-list command
     Then
             Make sure the outputs, outputs_prefix and outputs_key_field values are as expected.
     """
 
     # Prepare
-    from GravityZone import gz_list_incidents_command
+    from GravityZone import gz_incident_list_command
 
-    mock_demisto.command.return_value = "gz-list-incidents"
+    mock_demisto.command.return_value = "gz-incident-list"
     mock_demisto.params.return_value = {}
     load_api_mocked_data(requests_mock, api_mock_name)
     client = get_client()
 
     # Execute command
-    command_response = gz_list_incidents_command(client=client, args=args)
+    command_response = gz_incident_list_command(client=client, args=args)
 
     # Assert command response
     assert_command_mocked_data(api_mock_name, command_response)
@@ -650,29 +653,29 @@ def test_gz_list_incidents_command(mock_demisto, requests_mock, args, api_mock_n
     ],
 )
 @patch("GravityZone.demisto")
-def test_gz_get_incident_by_id_edr_command(mock_demisto, requests_mock, incident_id):
+def test_gz_incident_get_edr_command(mock_demisto, requests_mock, incident_id):
     """
     Given
             All relevant arguments for the command that is executed
     When
-            Calling gz-get-incident-by-id command
+            Calling gz-incident-get command
     Then
             Make sure the outputs, outputs_prefix and outputs_key_field values are as expected.
     """
 
     # Prepare
-    from GravityZone import gz_get_incident_by_id_command
+    from GravityZone import gz_incident_get_command
 
-    mock_demisto.command.return_value = "gz-get-incident-by-id"
+    mock_demisto.command.return_value = "gz-incident-get"
     mock_demisto.params.return_value = {}
-    load_api_mocked_data(requests_mock, "gz-get-incident-by-id-edr")
+    load_api_mocked_data(requests_mock, "gz-incident-get-edr")
     client = get_client()
 
     # Execute command
-    command_response = gz_get_incident_by_id_command(client=client, args={"id": incident_id})
+    command_response = gz_incident_get_command(client=client, args={"id": incident_id})
 
     # Assert command response
-    assert_command_mocked_data("gz-get-incident-by-id-edr", command_response)
+    assert_command_mocked_data("gz-incident-get-edr", command_response)
 
 
 @pytest.mark.parametrize(
@@ -682,29 +685,29 @@ def test_gz_get_incident_by_id_edr_command(mock_demisto, requests_mock, incident
     ],
 )
 @patch("GravityZone.demisto")
-def test_gz_get_incident_by_id_xdr_command(mock_demisto, requests_mock, incident_id):
+def test_gz_incident_get_xdr_command(mock_demisto, requests_mock, incident_id):
     """
     Given
             All relevant arguments for the command that is executed
     When
-            Calling gz-get-incident-by-id command
+            Calling gz-incident-get command
     Then
             Make sure the outputs, outputs_prefix and outputs_key_field values are as expected.
     """
 
     # Prepare
-    from GravityZone import gz_get_incident_by_id_command
+    from GravityZone import gz_incident_get_command
 
-    mock_demisto.command.return_value = "gz-get-incident-by-id"
+    mock_demisto.command.return_value = "gz-incident-get"
     mock_demisto.params.return_value = {}
-    load_api_mocked_data(requests_mock, "gz-get-incident-by-id-xdr")
+    load_api_mocked_data(requests_mock, "gz-incident-get-xdr")
     client = get_client()
 
     # Execute command
-    command_response = gz_get_incident_by_id_command(client=client, args={"id": incident_id})
+    command_response = gz_incident_get_command(client=client, args={"id": incident_id})
 
     # Assert command response
-    assert_command_mocked_data("gz-get-incident-by-id-xdr", command_response)
+    assert_command_mocked_data("gz-incident-get-xdr", command_response)
 
 
 @pytest.mark.parametrize(
@@ -714,26 +717,26 @@ def test_gz_get_incident_by_id_xdr_command(mock_demisto, requests_mock, incident
     ],
 )
 @patch("GravityZone.demisto")
-def test_gz_add_incident_note_command(mock_demisto, requests_mock, incident_id, note):
+def test_gz_incident_add_note_command(mock_demisto, requests_mock, incident_id, note):
     """
     Given
             All relevant arguments for the command that is executed
     When
-            Calling gz-add-incident-note command
+            Calling gz-incident-add-note command
     Then
             Make sure the outputs, outputs_prefix and outputs_key_field values are as expected.
     """
 
     # Prepare
-    from GravityZone import gz_add_incident_note_command
+    from GravityZone import gz_incident_add_note_command
 
-    mock_demisto.command.return_value = "gz-add-incident-note"
+    mock_demisto.command.return_value = "gz-incident-add-note"
     mock_demisto.params.return_value = {}
-    load_api_mocked_data(requests_mock, "gz-add-incident-note")
+    load_api_mocked_data(requests_mock, "gz-incident-add-note")
     client = get_client()
 
     # Execute command
-    command_response = gz_add_incident_note_command(
+    command_response = gz_incident_add_note_command(
         client=client,
         args={
             "id": incident_id,
@@ -742,38 +745,38 @@ def test_gz_add_incident_note_command(mock_demisto, requests_mock, incident_id, 
     )
 
     # Assert command response
-    assert_command_mocked_data("gz-add-incident-note", command_response)
+    assert_command_mocked_data("gz-incident-add-note", command_response)
 
 
 @pytest.mark.parametrize(
     "incident_id, status_param, api_mock_name",
     [
-        ("INCIDENT_ID_1", "PENDING", "gz-change-incident-status-pending"),
-        ("INCIDENT_ID_1", "ACTIVE", "gz-change-incident-status-active"),
-        ("INCIDENT_ID_1", "DONE", "gz-change-incident-status-done"),
+        ("INCIDENT_ID_1", "PENDING", "gz-incident-change-status-pending"),
+        ("INCIDENT_ID_1", "ACTIVE", "gz-incident-change-status-active"),
+        ("INCIDENT_ID_1", "DONE", "gz-incident-change-status-done"),
     ],
 )
 @patch("GravityZone.demisto")
-def test_gz_change_incident_status_command(mock_demisto, requests_mock, incident_id, status_param, api_mock_name):
+def test_gz_incident_change_status_command(mock_demisto, requests_mock, incident_id, status_param, api_mock_name):
     """
     Given
             All relevant arguments for the command that is executed
     When
-            Calling gz-change-incident-status command
+            Calling gz-incident-change-status command
     Then
             Make sure the outputs, outputs_prefix and outputs_key_field values are as expected.
     """
 
     # Prepare
-    from GravityZone import gz_change_incident_status_command
+    from GravityZone import gz_incident_change_status_command
 
-    mock_demisto.command.return_value = "gz-change-incident-status"
+    mock_demisto.command.return_value = "gz-incident-change-status"
     mock_demisto.params.return_value = {}
     load_api_mocked_data(requests_mock, api_mock_name)
     client = get_client()
 
     # Execute command
-    command_response = gz_change_incident_status_command(
+    command_response = gz_incident_change_status_command(
         client=client,
         args={
             "id": incident_id,
@@ -834,23 +837,23 @@ def test_update_remote_system_command(mock_demisto, requests_mock, incident_id, 
     [("6942a43afe8d4e463ca5c197", ""), ("ENDPOINT_ID", "-failed")],
 )
 @patch("GravityZone.demisto")
-def test_gz_download_file_from_endpoint_command(mock_demisto, mocker, requests_mock, endpoint_id, mock_data_suffix):
+def test_gz_endpoint_download_file_command(mock_demisto, mocker, requests_mock, endpoint_id, mock_data_suffix):
     """
     Given
             All relevant arguments for the command that is executed
     When
-            Calling gz-download-file-from-endpoint command
+            Calling gz-endpoint-download-file command
     Then
             Make sure the outputs, outputs_prefix and outputs_key_field values are as expected.
     """
 
     # Prepare
     from GravityZone import (
-        gz_download_file_from_endpoint_command,
+        gz_endpoint_download_file_command,
         gz_poll_investigation_activity_status_command,
     )
 
-    mock_demisto.command.return_value = "gz-download-file-from-endpoint"
+    mock_demisto.command.return_value = "gz-endpoint-download-file"
     mock_demisto.params.return_value = {}
     mocker.patch(
         "GravityZone.fileResult",
@@ -862,11 +865,11 @@ def test_gz_download_file_from_endpoint_command(mock_demisto, mocker, requests_m
             "FileID": "abc",
         },
     )
-    load_api_mocked_data(requests_mock, f"gz-download-file-from-endpoint{mock_data_suffix}")
+    load_api_mocked_data(requests_mock, f"gz-endpoint-download-file{mock_data_suffix}")
     client = get_client()
 
     # Execute command
-    command_response = gz_download_file_from_endpoint_command(
+    command_response = gz_endpoint_download_file_command(
         client=client,
         args={
             "id": endpoint_id,
@@ -877,7 +880,7 @@ def test_gz_download_file_from_endpoint_command(mock_demisto, mocker, requests_m
 
     # Assert command response
     assert_command_mocked_data(
-        f"gz-download-file-from-endpoint{mock_data_suffix}",
+        f"gz-endpoint-download-file{mock_data_suffix}",
         command_response,
         polling_func=gz_poll_investigation_activity_status_command,
         client=client,
@@ -889,23 +892,23 @@ def test_gz_download_file_from_endpoint_command(mock_demisto, mocker, requests_m
     [("6942a43afe8d4e463ca5c197")],
 )
 @patch("GravityZone.demisto")
-def test_gz_download_investigation_package_from_endpoint_command(mock_demisto, mocker, requests_mock, endpoint_id):
+def test_gz_endpoint_download_investigation_package_command(mock_demisto, mocker, requests_mock, endpoint_id):
     """
     Given
             All relevant arguments for the command that is executed
     When
-            Calling gz-download-investigation-package-from-endpoint command
+            Calling gz-endpoint-download-investigation-package command
     Then
             Make sure the outputs, outputs_prefix and outputs_key_field values are as expected.
     """
 
     # Prepare
     from GravityZone import (
-        gz_download_investigation_package_from_endpoint_command,
+        gz_endpoint_download_investigation_package_command,
         gz_poll_investigation_activity_status_command,
     )
 
-    mock_demisto.command.return_value = "gz-download-investigation-package-from-endpoint"
+    mock_demisto.command.return_value = "gz-endpoint-download-investigation-package"
     mock_demisto.params.return_value = {}
     mocker.patch(
         "GravityZone.fileResult",
@@ -917,18 +920,18 @@ def test_gz_download_investigation_package_from_endpoint_command(mock_demisto, m
             "FileID": "abc",
         },
     )
-    load_api_mocked_data(requests_mock, "gz-download-investigation-package-from-endpoint")
+    load_api_mocked_data(requests_mock, "gz-endpoint-download-investigation-package")
     client = get_client()
 
     # Execute command
-    command_response = gz_download_investigation_package_from_endpoint_command(
+    command_response = gz_endpoint_download_investigation_package_command(
         client=client,
         args={"id": endpoint_id, "output_file": "investigation_package.zip"},
     )
 
     # Assert command response
     assert_command_mocked_data(
-        "gz-download-investigation-package-from-endpoint",
+        "gz-endpoint-download-investigation-package",
         command_response,
         polling_func=gz_poll_investigation_activity_status_command,
         client=client,
@@ -941,35 +944,35 @@ def test_gz_download_investigation_package_from_endpoint_command(mock_demisto, m
 )
 @patch("GravityZone.demisto")
 @patch("GravityZone.FileManagement.get_file")
-def test_gz_upload_file_to_endpoint_command(mock_get_file, mock_demisto, requests_mock, endpoint_id):
+def test_gz_endpoint_upload_file_command(mock_get_file, mock_demisto, requests_mock, endpoint_id):
     """
     Given
             All relevant arguments for the command that is executed
     When
-            Calling gz-upload-file-to-endpoint command
+            Calling gz-endpoint-upload-file command
     Then
             Make sure the outputs, outputs_prefix and outputs_key_field values are as expected.
     """
 
     # Prepare
     from GravityZone import (
-        gz_upload_file_to_endpoint_command,
+        gz_endpoint_upload_file_command,
         gz_poll_task_status_command,
     )
 
-    mock_demisto.command.return_value = "gz-upload-file-to-endpoint"
+    mock_demisto.command.return_value = "gz-endpoint-upload-file"
     mock_get_file.return_value = ("file_to_upload.txt", b"file_content")
     mock_demisto.params.return_value = {}
-    load_api_mocked_data(requests_mock, "gz-upload-file-to-endpoint")
+    load_api_mocked_data(requests_mock, "gz-endpoint-upload-file")
     client = get_client()
 
     # Execute command
-    command_response = gz_upload_file_to_endpoint_command(
+    command_response = gz_endpoint_upload_file_command(
         client=client,
         args={"id": endpoint_id, "remote_location": "/home/ENDPOINT_NAME/", "entry_id": "abc"},
     )
 
     # Assert command response
     assert_command_mocked_data(
-        "gz-upload-file-to-endpoint", command_response, polling_func=gz_poll_task_status_command, client=client
+        "gz-endpoint-upload-file", command_response, polling_func=gz_poll_task_status_command, client=client
     )

@@ -18,6 +18,9 @@
             "AttackTypes": [
                 "Malware"
             ],
+            "EndpointID": "ENDPOINT_ID",
+            "EndpointHostname": "ENDPOINT_NAME",
+            "EndpointIP": "ENDPOINT_IP",
             "RawJSON": {
                 "incidentId": "INCIDENT_ID_1",
                 "incidentNumber": 477,
@@ -78,6 +81,9 @@
             "AttackTypes": [
                 "Other"
             ],
+            "EndpointID": "67c87017f3e11f09dc9143e8",
+            "EndpointHostname": "HOST_NAME",
+            "EndpointIP": "IP_158",
             "RawJSON": {
                 "incidentId": "69424023997e9c48ed12d11c",
                 "incidentNumber": 475,
@@ -303,6 +309,9 @@
             "AttackTypes": [
                 "Malware"
             ],
+            "EndpointID": "ENDPOINT_ID",
+            "EndpointHostname": "ENDPOINT_NAME",
+            "EndpointIP": "ENDPOINT_IP",
             "RawJSON": {
                 "incidentId": "69415c9d5f5c8b75247c58d1",
                 "incidentNumber": 473,
@@ -363,6 +372,9 @@
             "AttackTypes": [
                 "Other"
             ],
+            "EndpointID": "67c87017f3e11f09dc9143e8",
+            "EndpointHostname": "HOST_NAME",
+            "EndpointIP": "IP_158",
             "RawJSON": {
                 "incidentId": "6940ee975f5c8b75247c3f38",
                 "incidentNumber": 471,
@@ -506,6 +518,9 @@
             "AttackTypes": [
                 "Other"
             ],
+            "EndpointID": "67c87017f3e11f09dc9143e8",
+            "EndpointHostname": "HOST_NAME",
+            "EndpointIP": "IP_158",
             "RawJSON": {
                 "incidentId": "693ba8ad997e9c48ed123303",
                 "incidentNumber": 464,

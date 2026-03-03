@@ -707,7 +707,6 @@ class FileManagement:
                     if filename:
                         result = fileResult(save_path, response.content)
                         return result
-                demisto.debug(f"Cannot determine the file name from the response ( bucket: {bucket_name}, file: {file_name} ).")
                 return None
             else:
                 unpacked_archive = self._get_file_content_from_archive(response.content)
@@ -716,8 +715,7 @@ class FileManagement:
                 else:
                     unique_filename = f"command_output_{uuid.uuid4().hex}.7z"
                     return fileResult(unique_filename, response.content)
-        except Exception as e:
-            demisto.debug(f"Failed to download the file {file_name}, {str(e)}, {traceback.format_exc()}")
+        except Exception:
             return None
 
 
@@ -1084,7 +1082,7 @@ def generate_context_for_incident(raw_incident: dict[str, Any]) -> dict[str, Any
     Returns:
         Dict[str, Any]: The formatted incident context.
     """
-    return {
+    data = {
         "ID": raw_incident.get("incidentId"),
         "Number": raw_incident.get("incidentNumber"),
         "Type": raw_incident.get("incidentType"),
@@ -1105,6 +1103,16 @@ def generate_context_for_incident(raw_incident: dict[str, Any]) -> dict[str, Any
         "Alerts": format_incident_alerts_for_context(raw_incident),
         "RawJSON": raw_incident,
     }
+    computer_id = raw_incident.get("details", {}).get("computerId")
+    computer_name = raw_incident.get("details", {}).get("computerName")
+    computer_ip = raw_incident.get("details", {}).get("computerIp")
+    if computer_id:
+        data["EndpointID"] = computer_id
+    if computer_name:
+        data["EndpointHostname"] = computer_name
+    if computer_ip:
+        data["EndpointIP"] = computer_ip
+    return data
 
 
 def format_incident_assignee_for_context(
@@ -1170,8 +1178,6 @@ def format_incident_alerts_for_context(
     elif incident_type == INCIDENT_TYPE_XDR:
         for item in raw_incident.get("details", {}).get("alerts"):
             alerts.append(format_xdr_alert_for_context(item, raw_incident))
-    else:
-        demisto.debug(f"Unknown incident type: {incident_type}. Skipping 'alerts' formating for context")
     return alerts
 
 
@@ -1283,6 +1289,15 @@ def generate_context_for_summarized_incidents(
             "AttackTypes": raw_incident.get("attackTypes"),
             "RawJSON": raw_incident,
         }
+        computer_id = raw_incident.get("details", {}).get("computerId")
+        computer_name = raw_incident.get("details", {}).get("computerName")
+        computer_ip = raw_incident.get("details", {}).get("computerIp")
+        if computer_id:
+            incident["EndpointID"] = computer_id
+        if computer_name:
+            incident["EndpointHostname"] = computer_name
+        if computer_ip:
+            incident["EndpointIP"] = computer_ip
         incidents.append(incident)
     return incidents
 
@@ -1415,6 +1430,15 @@ def get_incident_human_readable_output(context_incident: dict[str, Any]) -> str:
         data["Assigned User"] = "Unassigned"
     else:
         data["Assigned User"] = assignee.get("Email") + " (" + assignee.get("ID") + ")"
+    computer_id = context_incident.get("EndpointID")
+    computer_name = context_incident.get("EndpointHostname")
+    computer_ip = context_incident.get("EndpointIP")
+    if computer_id:
+        data["Endpoint ID"] = computer_id
+    if computer_name:
+        data["Endpoint Name"] = computer_name
+    if computer_ip:
+        data["Endpoint IP"] = computer_ip
     return tableToMarkdown("Gravity Zone Incident", data)
 
 
@@ -1505,6 +1529,15 @@ def generate_human_readable_summarized_incidents_from_context(
             "Assigned User ID": (incident.get("AssignedUserId") if incident.get("AssignedUserId") else "Unassigned"),
             "Attack Types": ", ".join(incident.get("AttackTypes", [])),
         }
+        computer_id = incident.get("EndpointID")
+        computer_name = incident.get("EndpointHostname")
+        computer_ip = incident.get("EndpointIP")
+        if computer_id:
+            processed_incident["Endpoint ID"] = computer_id
+        if computer_name:
+            processed_incident["Endpoint Name"] = computer_name
+        if computer_ip:
+            processed_incident["Endpoint IP"] = computer_ip
         processed_incidents.append(processed_incident)
     return tableToMarkdown("Summarized Incidents List", processed_incidents)
 
@@ -1539,7 +1572,7 @@ def convert_from_gz_to_cortex(gz_incident: dict, include_json: bool) -> dict:
     gz_incident_type = gz_incident.get("incidentType")
     incident = {
         "incidentId": gz_incident.get("incidentId"),
-        "name": gz_incident["name"],
+        "name": "GravityZone Incident #" + gz_incident["name"],
         "incident_type": gz_incident_type,
         "occurred": gz_incident.get("created"),
         "status": status,
@@ -2076,7 +2109,7 @@ def update_remote_system_command(client: Client, args: dict[str, Any]) -> str:
 
 
 @logger
-def gz_get_incident_by_id_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def gz_incident_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get an incident from GravityZone by its ID.
     Args:
@@ -2102,7 +2135,7 @@ def gz_get_incident_by_id_command(client: Client, args: dict[str, Any]) -> Comma
 
 
 @logger
-def gz_list_incidents_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def gz_incident_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     List incidents from GravityZone within a specified time range and optional endpoint ID.
     Args:
@@ -2142,7 +2175,7 @@ def gz_list_incidents_command(client: Client, args: dict[str, Any]) -> CommandRe
 
 
 @logger
-def gz_add_incident_note_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def gz_incident_add_note_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Add a note to an incident in GravityZone.
     Args:
@@ -2201,7 +2234,7 @@ def gz_add_incident_note_command(client: Client, args: dict[str, Any]) -> Comman
 
 
 @logger
-def gz_change_incident_status_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def gz_incident_change_status_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Change the status of an incident in GravityZone.
     Args:
@@ -2259,7 +2292,7 @@ def gz_change_incident_status_command(client: Client, args: dict[str, Any]) -> C
 
 
 @logger
-def gz_get_process_tree_for_hash_on_endpoint_command(client: Client, args: dict[str, Any]) -> PollResult:
+def gz_endpoint_get_process_tree_by_hash_command(client: Client, args: dict[str, Any]) -> PollResult:
     """
     Get the process tree for a given process hash on a specific endpoint.
     Args:
@@ -2279,7 +2312,7 @@ def gz_get_process_tree_for_hash_on_endpoint_command(client: Client, args: dict[
 
 
 @logger
-def gz_get_endpoints_running_process_hash_command(client: Client, args: dict[str, Any]) -> PollResult:
+def gz_endpoint_list_by_running_process_hash_command(client: Client, args: dict[str, Any]) -> PollResult:
     """
     Get the endpoints running a specific process hash.
     Args:
@@ -2302,7 +2335,7 @@ def gz_get_endpoints_running_process_hash_command(client: Client, args: dict[str
 
 
 @logger
-def gz_list_endpoints_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def gz_endpoint_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     List all endpoints in GravityZone.
     Args:
@@ -2333,7 +2366,7 @@ def gz_list_endpoints_command(client: Client, args: dict[str, Any]) -> CommandRe
 
 
 @logger
-def gz_get_endpoint_by_id_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def gz_endpoint_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get an endpoint from GravityZone by its ID.
     Args:
@@ -2374,7 +2407,7 @@ def gz_get_endpoint_by_id_command(client: Client, args: dict[str, Any]) -> Comma
 
 
 @logger
-def gz_isolate_endpoint_command(client: Client, args: dict[str, Any]) -> PollResult:
+def gz_endpoint_isolate_command(client: Client, args: dict[str, Any]) -> PollResult:
     """
     Isolate an endpoint in GravityZone by its ID.
     Args:
@@ -2392,7 +2425,7 @@ def gz_isolate_endpoint_command(client: Client, args: dict[str, Any]) -> PollRes
 
 
 @logger
-def gz_deisolate_endpoint_command(client: Client, args: dict[str, Any]) -> PollResult:
+def gz_endpoint_deisolate_command(client: Client, args: dict[str, Any]) -> PollResult:
     """
     Deisolate an endpoint in GravityZone by its ID.
     Args:
@@ -2410,7 +2443,7 @@ def gz_deisolate_endpoint_command(client: Client, args: dict[str, Any]) -> PollR
 
 
 @logger
-def gz_run_command_on_endpoint_command(client: Client, args: dict[str, Any]) -> PollResult:
+def gz_endpoint_run_command_command(client: Client, args: dict[str, Any]) -> PollResult:
     """
     Run a command on an endpoint in GravityZone by its ID.
     Args:
@@ -2440,7 +2473,7 @@ def gz_run_command_on_endpoint_command(client: Client, args: dict[str, Any]) -> 
 
 
 @logger
-def gz_download_file_from_endpoint_command(client: Client, args: dict[str, Any]) -> PollResult:
+def gz_endpoint_download_file_command(client: Client, args: dict[str, Any]) -> PollResult:
     """
     Download a file from an endpoint in GravityZone by its ID.
     Args:
@@ -2473,7 +2506,7 @@ def gz_download_file_from_endpoint_command(client: Client, args: dict[str, Any])
 
 
 @logger
-def gz_upload_file_to_endpoint_command(client: Client, args: dict[str, Any]) -> PollResult:
+def gz_endpoint_upload_file_command(client: Client, args: dict[str, Any]) -> PollResult:
     """
     Upload a file to an endpoint in GravityZone by its ID.
     Args:
@@ -2508,7 +2541,7 @@ def gz_upload_file_to_endpoint_command(client: Client, args: dict[str, Any]) -> 
 
 
 @logger
-def gz_download_investigation_package_from_endpoint_command(client: Client, args: dict[str, Any]) -> PollResult:
+def gz_endpoint_download_investigation_package_command(client: Client, args: dict[str, Any]) -> PollResult:
     """
     Download an investigation package from an endpoint in GravityZone by its ID.
     Args:
@@ -2549,7 +2582,7 @@ def gz_download_investigation_package_from_endpoint_command(client: Client, args
 
 
 @logger
-def gz_kill_process_on_endpoint_command(client: Client, args: dict[str, Any]) -> PollResult:
+def gz_endpoint_kill_process_command(client: Client, args: dict[str, Any]) -> PollResult:
     """
     Kill a process on an endpoint in GravityZone by its Process ID.
     Args:
@@ -2602,23 +2635,23 @@ def main():
             "gz-poll-investigation-activity-status": gz_poll_investigation_activity_status_command,
             "gz-poll-live-search-status": gz_poll_live_search_status_command,
             ### GravityZone Endpoint Commands ###
-            "gz-list-endpoints": gz_list_endpoints_command,
-            "gz-get-endpoint-by-id": gz_get_endpoint_by_id_command,
-            "gz-download-investigation-package-from-endpoint": gz_download_investigation_package_from_endpoint_command,
-            "gz-download-file-from-endpoint": gz_download_file_from_endpoint_command,
-            "gz-isolate-endpoint": gz_isolate_endpoint_command,
-            "gz-deisolate-endpoint": gz_deisolate_endpoint_command,
-            "gz-kill-process-on-endpoint": gz_kill_process_on_endpoint_command,
-            "gz-run-command-on-endpoint": gz_run_command_on_endpoint_command,
-            "gz-upload-file-to-endpoint": gz_upload_file_to_endpoint_command,
-            "gz-get-endpoints-running-process-hash": gz_get_endpoints_running_process_hash_command,
-            "gz-get-process-tree-for-hash-on-endpoint": gz_get_process_tree_for_hash_on_endpoint_command,
+            "gz-endpoint-list": gz_endpoint_list_command,
+            "gz-endpoint-get": gz_endpoint_get_command,
+            "gz-endpoint-download-investigation-package": gz_endpoint_download_investigation_package_command,
+            "gz-endpoint-download-file": gz_endpoint_download_file_command,
+            "gz-endpoint-isolate": gz_endpoint_isolate_command,
+            "gz-endpoint-deisolate": gz_endpoint_deisolate_command,
+            "gz-endpoint-kill-process": gz_endpoint_kill_process_command,
+            "gz-endpoint-run-command": gz_endpoint_run_command_command,
+            "gz-endpoint-upload-file": gz_endpoint_upload_file_command,
+            "gz-endpoint-list-by-running-process-hash": gz_endpoint_list_by_running_process_hash_command,
+            "gz-endpoint-get-process-tree-by-hash": gz_endpoint_get_process_tree_by_hash_command,
             ### GravityZone Incident Commands ###
             "fetch-incidents": fetch_incidents_command,
-            "gz-get-incident-by-id": gz_get_incident_by_id_command,
-            "gz-list-incidents": gz_list_incidents_command,
-            "gz-add-incident-note": gz_add_incident_note_command,
-            "gz-change-incident-status": gz_change_incident_status_command,
+            "gz-incident-get": gz_incident_get_command,
+            "gz-incident-list": gz_incident_list_command,
+            "gz-incident-add-note": gz_incident_add_note_command,
+            "gz-incident-change-status": gz_incident_change_status_command,
             ### Cortex XSOAR EDL Commands ###
             "get-modified-remote-data": get_modified_remote_data_command,
             "get-remote-data": get_remote_data_command,

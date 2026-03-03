@@ -33,14 +33,14 @@ Retrieves incidents from GravityZone Cloud.
 
 There is no context output for this command.
 
-### gz-list-endpoints
+### gz-endpoint-list
 
 ***
 Retrieves the list of managed endpoints.
 
 #### Base Command
 
-`gz-list-endpoints`
+`gz-endpoint-list`
 
 #### Input
 
@@ -61,7 +61,7 @@ Retrieves the list of managed endpoints.
 
 #### Command example
 
-```!gz-list-endpoints```
+```!gz-endpoint-list```
 
 #### Context Example
 
@@ -90,14 +90,14 @@ Retrieves the list of managed endpoints.
 >|---|---|---|---|---|---|
 >| 67c87017f3e11f09dc9143e8 | SL-WIN10-PC2 | 1.1.1.1 | Windows 10 Pro | 005056b1ef97 | GravityZone |
 
-### gz-get-endpoint-by-id
+### gz-endpoint-get
 
 ***
 Retrieves endpoint details by endpoint ID.
 
 #### Base Command
 
-`gz-get-endpoint-by-id`
+`gz-endpoint-get`
 
 #### Input
 
@@ -125,7 +125,7 @@ Retrieves endpoint details by endpoint ID.
 
 #### Command example
 
-```!gz-get-endpoint-by-id id=6942a43afe8d4e463ca5c197```
+```!gz-endpoint-get id=6942a43afe8d4e463ca5c197```
 
 #### Context Example
 
@@ -161,14 +161,14 @@ Retrieves endpoint details by endpoint ID.
 >|---|---|---|---|---|---|---|
 >| 6942a43afe8d4e463ca5c197 | bdvm | 1.1.1.1 | Linux Ubuntu 24.04.2 LTS | Online | GravityZone |  |
 
-### gz-download-investigation-package-from-endpoint
+### gz-endpoint-download-investigation-package
 
 ***
 Collects and downloads an investigation package from an endpoint.
 
 #### Base Command
 
-`gz-download-investigation-package-from-endpoint`
+`gz-endpoint-download-investigation-package`
 
 #### Input
 
@@ -201,7 +201,7 @@ Collects and downloads an investigation package from an endpoint.
 
 #### Command example
 
-```!gz-download-investigation-package-from-endpoint id=6942a43afe8d4e463ca5c197 output_file=investigation_package.zip```
+```!gz-endpoint-download-investigation-package id=6942a43afe8d4e463ca5c197 output_file=investigation_package.zip```
 
 #### Context Example
 
@@ -233,14 +233,14 @@ Collects and downloads an investigation package from an endpoint.
 >|---|---|---|---|---|---|
 >| 6942a43afe8d4e463ca5c197 | Success |  | investigation_package.zip | | LtvQ6B8eCFvTNo7bf3vDUD@25729aa7-7442-4231-8b98-ecb0fc29a642 |
 
-### gz-download-file-from-endpoint
+### gz-endpoint-download-file
 
 ***
 Downloads a file from an endpoint.
 
 #### Base Command
 
-`gz-download-file-from-endpoint`
+`gz-endpoint-download-file`
 
 #### Input
 
@@ -274,7 +274,7 @@ Downloads a file from an endpoint.
 
 #### Command example
 
-```!gz-download-file-from-endpoint id=6942a43afe8d4e463ca5c197 remote_file=/root/test/test.txt output_file=downloaded_file.gzip```
+```!gz-endpoint-download-file id=6942a43afe8d4e463ca5c197 remote_file=/root/test/test.txt output_file=downloaded_file.gzip```
 
 #### Context Example
 
@@ -306,14 +306,14 @@ Downloads a file from an endpoint.
 >|---|---|---|---|---|---|
 >| 6942a43afe8d4e463ca5c197 | Success |  | downloaded_file.gzip | /root/test/test.txt | LtvQ6B8eCFvTNo7bf3vDUD@25729aa7-7442-4231-8b98-ecb0fc29a642 |
 
-### gz-isolate-endpoint
+### gz-endpoint-isolate
 
 ***
 Isolates an endpoint from the network.
 
 #### Base Command
 
-`gz-isolate-endpoint`
+`gz-endpoint-isolate`
 
 #### Input
 
@@ -337,7 +337,7 @@ Isolates an endpoint from the network.
 
 #### Command example
 
-```!gz-isolate-endpoint id=6942a43afe8d4e463ca5c197```
+```!gz-endpoint-isolate id=6942a43afe8d4e463ca5c197```
 
 #### Context Example
 
@@ -369,14 +369,14 @@ Isolates an endpoint from the network.
 >|---|---|---|---|---|
 >| 6942a43afe8d4e463ca5c197 | ENDPOINT_NAME | 2025-12-16T22:06:33 | 2025-12-16T22:06:33 | Success |
 
-### gz-deisolate-endpoint
+### gz-endpoint-deisolate
 
 ***
 Restores an isolated endpoint to the network.
 
 #### Base Command
 
-`gz-deisolate-endpoint`
+`gz-endpoint-deisolate`
 
 #### Input
 
@@ -400,7 +400,7 @@ Restores an isolated endpoint to the network.
 
 #### Command example
 
-```!gz-deisolate-endpoint id=6942a43afe8d4e463ca5c197```
+```!gz-endpoint-deisolate id=6942a43afe8d4e463ca5c197```
 
 #### Context Example
 
@@ -432,14 +432,14 @@ Restores an isolated endpoint to the network.
 >|---|---|---|---|---|
 >| 6942a43afe8d4e463ca5c197 | ENDPOINT_NAME | 2025-12-16T22:08:33 | 2025-12-16T22:08:33 | Success |
 
-### gz-kill-process-on-endpoint
+### gz-endpoint-kill-process
 
 ***
 Terminates a process on an endpoint by process ID.
 
 #### Base Command
 
-`gz-kill-process-on-endpoint`
+`gz-endpoint-kill-process`
 
 #### Input
 
@@ -466,7 +466,7 @@ Terminates a process on an endpoint by process ID.
 
 #### Command example
 
-```!gz-kill-process-on-endpoint id=6942a43afe8d4e463ca5c197 pid=5876```
+```!gz-endpoint-kill-process id=6942a43afe8d4e463ca5c197 pid=5876```
 
 #### Context Example
 
@@ -500,14 +500,14 @@ Terminates a process on an endpoint by process ID.
 >|---|---|---|---|---|---|
 >| 6942a43afe8d4e463ca5c197 | ENDPOINT_NAME | 2025-12-16T21:46:07 | 2025-12-16T21:46:08 | Success | 5876 |
 
-### gz-run-command-on-endpoint
+### gz-endpoint-run-command
 
 ***
 Runs a command on the endpoint. The applied policy must have Remote Shell enabled for this action to work.
 
 #### Base Command
 
-`gz-run-command-on-endpoint`
+`gz-endpoint-run-command`
 
 #### Input
 
@@ -531,7 +531,7 @@ Runs a command on the endpoint. The applied policy must have Remote Shell enable
 
 #### Command example
 
-```!gz-run-command-on-endpoint id=6942a43afe8d4e463ca5c197 command=whoami```
+```!gz-endpoint-run-command id=6942a43afe8d4e463ca5c197 command=whoami```
 
 #### Context Example
 
@@ -561,14 +561,14 @@ Runs a command on the endpoint. The applied policy must have Remote Shell enable
 >|---|---|---|---|---|
 >| 6942a43afe8d4e463ca5c197 | Success |  | whoami | root |
 
-### gz-upload-file-to-endpoint
+### gz-endpoint-upload-file
 
 ***
 Uploads a file to an endpoint.
 
 #### Base Command
 
-`gz-upload-file-to-endpoint`
+`gz-endpoint-upload-file`
 
 #### Input
 
@@ -594,14 +594,14 @@ Uploads a file to an endpoint.
 | GravityZone.Command.UploadFile.EntryID | String | The entry ID of the uploaded file. |
 | GravityZone.Command.UploadFile.DestinationPath | String | The destination path of the uploaded file. |
 
-### gz-get-endpoints-running-process-hash
+### gz-endpoint-list-by-running-process-hash
 
 ***
 Retrieves endpoints that are running processes with a specified hash. The API key and the applied policy must allow Live Search. Endpoints must be online. The command waits up to five minutes for responses before timing out.
 
 #### Base Command
 
-`gz-get-endpoints-running-process-hash`
+`gz-endpoint-list-by-running-process-hash`
 
 #### Input
 
@@ -619,7 +619,7 @@ Retrieves endpoints that are running processes with a specified hash. The API ke
 
 #### Command example
 
-```!gz-get-endpoints-running-process-hash process_hash=b8412bcc6f47b2a11e4c39bc1bc9fab74969ff0648ba22db4c5254a0457af0c7```
+```!gz-endpoint-list-by-running-process-hash process_hash=b8412bcc6f47b2a11e4c39bc1bc9fab74969ff0648ba22db4c5254a0457af0c7```
 
 #### Context Example
 
@@ -645,14 +645,14 @@ Retrieves endpoints that are running processes with a specified hash. The API ke
 >|---|---|---|
 >| 6942a43afe8d4e463ca5c197 | b8412bcc6f47b2a11e4c39bc1bc9fab74969ff0648ba22db4c5254a0457af0c7 | {"hostname":"ENDPOINT_NAME","path":"/opt/bitdefender-security-tools/bin/epagngd"} |
 
-### gz-get-process-tree-for-hash-on-endpoint
+### gz-endpoint-get-process-tree-by-hash
 
 ***
 Retrieves the process tree on an endpoint for a specified process hash. The applied policy must allow Live Search, and the endpoint must be online.
 
 #### Base Command
 
-`gz-get-process-tree-for-hash-on-endpoint`
+`gz-endpoint-get-process-tree-by-hash`
 
 #### Input
 
@@ -673,7 +673,7 @@ Retrieves the process tree on an endpoint for a specified process hash. The appl
 
 #### Command example
 
-```!gz-get-process-tree-for-hash-on-endpoint id=6942a43afe8d4e463ca5c197 process_hash=b8412bcc6f47b2a11e4c39bc1bc9fab74969ff0648ba22db4c5254a0457af0c7```
+```!gz-endpoint-get-process-tree-by-hash id=6942a43afe8d4e463ca5c197 process_hash=b8412bcc6f47b2a11e4c39bc1bc9fab74969ff0648ba22db4c5254a0457af0c7```
 
 #### Context Example
 
@@ -701,14 +701,14 @@ Retrieves the process tree on an endpoint for a specified process hash. The appl
 >|---|---|---|
 >| 6942a43afe8d4e463ca5c197 | b8412bcc6f47b2a11e4c39bc1bc9fab74969ff0648ba22db4c5254a0457af0c7 | {"cmdline":"/usr/lib/systemd/systemd --system --deserialize=73","parent":"0","path":"/usr/lib/systemd/systemd","pid":"1"} |
 
-### gz-get-incident-by-id
+### gz-incident-get
 
 ***
 Retrieves incident details by ID.
 
 #### Base Command
 
-`gz-get-incident-by-id`
+`gz-incident-get`
 
 #### Input
 
@@ -739,13 +739,16 @@ Retrieves incident details by ID.
 | GravityZone.Incident.Alerts.Name | String | The alert name. |
 | GravityZone.Incident.Alerts.Date | Date | The date of when the alert was generated. |
 | GravityZone.Incident.Alerts.Sensors | String | The list of sensors that generated the alert. Available only for 'extendedIncident'-type incidents. |
-| GravityZone.Incident.Alerts.Tactic | String | The list of sensors that generated the alert. Available only for 'extendedIncident'-type incidents. |
+| GravityZone.Incident.Alerts.Tactic | String | The list of tactics that generated the alert. Available only for 'extendedIncident'-type incidents. |
 | GravityZone.Incident.Alerts.Resources | Array | The list of resources involved in the 'incident'-type incidents. |
 | GravityZone.Incident.RawJSON | JSON | The raw JSON response from the GravityZone API. |
+| GravityZone.Incident.EndpointID | String | The endpoint ID. Available only for 'incident'-type incidents. |
+| GravityZone.Incident.EndpointHostname | String | The endpoint hostname. Available only for 'incident'-type incidents. |
+| GravityZone.Incident.EndpointIP | String | The endpoint IP address. Available only for 'incident'-type incidents. |
 
 #### Command example
 
-```!gz-get-incident-by-id id=69415c9d5f5c8b75247c58d1```
+```!gz-incident-get id=69415c9d5f5c8b75247c58d1```
 
 #### Context Example
 
@@ -799,6 +802,9 @@ Retrieves incident details by ID.
             ],
             "Number": 473,
             "Permalink": "https://gravityzone.domain/#!/incidents/view/69415c9d5f5c8b75247c58d1",
+            "EndpointID" : "694148bffe8d4e463ca5bd1e",
+            "EndpointHostname": "TA66H0I6F225",
+            "EndpointIP": "1.1.1.1",
             "RawJSON": {
                 "assignee": null,
                 "attackTypes": [
@@ -968,9 +974,9 @@ Retrieves incident details by ID.
 
 >### Gravity Zone Incident
 >
->|Action Taken|Assigned Priority|Assigned User|Company Name|Created|ID|Last Processed|Last Updated|Number|Permalink|Severity Score|Status|Type|
+>|Action Taken|Assigned Priority|Assigned User|Company Name|Created|Endpoint ID|Endpoint IP|Endpoint Name|ID|Last Processed|Last Updated|Number|Permalink|Severity Score|Status|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| Blocked | Unknown | Unassigned | Company | 2025-12-16T15:20:21+02:00 | 69415c9d5f5c8b75247c58d1 | 2025-12-16T15:21:48+02:00 | 2025-12-16T15:21:38+02:00 | 473 | https:<span>//</span>gravityzone.domain/#!/incidents/view/69415c9d5f5c8b75247c58d1 | 43% | 0 (Pending) | Incident (EDR) |
+>| Blocked | Unknown | Unassigned | Company | 2025-12-16T15:20:21+02:00 | 694148bffe8d4e463ca5bd1e | 1.1.1.1 | TA66H0I6F225 | 69415c9d5f5c8b75247c58d1 | 2025-12-16T15:21:48+02:00 | 2025-12-16T15:21:38+02:00 | 473 | <https://gravityzone.domain/#!/incidents/view/69415c9d5f5c8b75247c58d1> | 43% | 0 (Pending) | Incident (EDR) |
 >
 >### Incident Notes
 >
@@ -982,16 +988,16 @@ Retrieves incident details by ID.
 >
 >|Date|Detected By|Name|Resources|
 >|---|---|---|---|
->| 2025-12-16T15:20:19+02:00 | KeyloggingAPICall (EDR Detection) | KeyloggingAPICall | [<br/>  {<br/>    "Pid": 2592,<br/>    "ProcessPath": "c:\\windows\\system32\\notepad.exe",<br/>    "CommandLine": "\"C:\\Windows\\System32\\notepad.exe\" C:\\Users\\bdvm\\Desktop\\New Text Document.txt",<br/>    "ParentPid": 5212,<br/>    "ParentProcessPath": "c:\\windows\\explorer.exe",<br/>    "ParentProcessUser": "TA66H0I6F225\\bdvm",<br/>    "User": "TA66H0I6F225\\bdvm",<br/>    "ProcessAccessPrivileges": "elevated",<br/>    "ParentProcessAccessPrivileges": "elevated",<br/>    "ProcessIntegrityLevel": "high",<br/>    "ParentProcessIntegrityLevel": "high",<br/>    "Type": "process"<br/>  }<br/>] |
+>| 2025-12-16T15:20:19+02:00 | KeyloggingAPICall (EDR Detection) | KeyloggingAPICall | [{"Pid": 2592,"ProcessPath": "c:\\windows\\system32\\notepad.exe","CommandLine": "\"C:\\Windows\\System32\\notepad.exe\" C:\\Users\\bdvm\\Desktop\\New Text Document.txt","ParentPid": 5212,"ParentProcessPath": "c:\\windows\\explorer.exe","ParentProcessUser": "TA66H0I6F225\\bdvm","User": "TA66H0I6F225\\bdvm","ProcessAccessPrivileges": "elevated","ParentProcessAccessPrivileges": "elevated","ProcessIntegrityLevel": "high","ParentProcessIntegrityLevel": "high","Type": "process"}] |
 
-### gz-list-incidents
+### gz-incident-list
 
 ***
 Retrieves incidents within the last three days from all endpoints or a specific endpoint.
 
 #### Base Command
 
-`gz-list-incidents`
+`gz-incident-list`
 
 #### Input
 
@@ -1020,10 +1026,13 @@ Retrieves incidents within the last three days from all endpoints or a specific 
 | GravityZone.SummarizedIncidents.AssignedPriority | String | The priority assigned to the incident \('unknown' / 'low' / 'medium' / 'high' / 'critical'\). |
 | GravityZone.SummarizedIncidents.AssignedUserId | String | The ID of the user assigned to the incident. |
 | GravityZone.SummarizedIncidents.RawJSON | JSON | The raw JSON response from the GravityZone API. |
+| GravityZone.SummarizedIncidents.EndpointID | String | The endpoint ID. Available only for 'incident'-type incidents. |
+| GravityZone.SummarizedIncidents.EndpointHostname | String | The endpoint hostname. Available only for 'incident'-type incidents. |
+| GravityZone.SummarizedIncidents.EndpointIP | String | The endpoint IP address. Available only for 'incident'-type incidents. |
 
 #### Command example
 
-```!gz-list-incidents```
+```!gz-incident-list```
 
 #### Context Example
 
@@ -1124,11 +1133,11 @@ Retrieves incidents within the last three days from all endpoints or a specific 
 >
 >|ActionTaken|Assigned Priority|Assigned User ID|Attack Types|Company Name|Created|ID|Last Processed|Last Updated|Number|Permalink|Severity Score|Status|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| Reported | Unknown | Unassigned | Persistence | Company | 2026-02-23T13:09:34+02:00 | 699c367136732459d7d3b1af | 2026-02-23T13:13:53+02:00 | 2026-02-23T13:09:34+02:00 | 1017 | https:<span>//</span>gravityzone.domain/#!/incidents/view/699c367136732459d7d3b1af | 71% | 1 (Active) | Extended Incident (XDR) |
+>| Reported | Unknown | Unassigned | Persistence | Company | 2026-02-23T13:09:34+02:00 | 699c367136732459d7d3b1af | 2026-02-23T13:13:53+02:00 | 2026-02-23T13:09:34+02:00 | 1017 | <https://gravityzone.domain/#!/incidents/view/699c367136732459d7d3b1af> | 71% | 1 (Active) | Extended Incident (XDR) |
 
 #### Command example
 
-```!gz-list-incidents from_date="2026-02-20" to_date="2026-02-21" limit="1"```
+```!gz-incident-list from_date="2026-02-20" to_date="2026-02-21" limit="1"```
 
 #### Context Example
 
@@ -1229,11 +1238,11 @@ Retrieves incidents within the last three days from all endpoints or a specific 
 >
 >|ActionTaken|Assigned Priority|Assigned User ID|Attack Types|Company Name|Created|ID|Last Processed|Last Updated|Number|Permalink|Severity Score|Status|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| Reported | Unknown | Unassigned | Persistence | Company | 2026-02-20T20:58:17+02:00 | 6998b40f36732459d7d3aa58 | 2026-02-20T21:20:47+02:00 | 2026-02-20T20:58:17+02:00 | 998 | https:<span>//</span>gravityzone.domain/#!/incidents/view/6998b40f36732459d7d3aa58 | 71% | 0 (Pending) | Extended Incident (XDR) |
+>| Reported | Unknown | Unassigned | Persistence | Company | 2026-02-20T20:58:17+02:00 | 6998b40f36732459d7d3aa58 | 2026-02-20T21:20:47+02:00 | 2026-02-20T20:58:17+02:00 | 998 | <http://gravityzone.domain/#!/incidents/view/6998b40f36732459d7d3aa58> | 71% | 0 (Pending) | Extended Incident (XDR) |
 
 #### Command example
 
-```!gz-list-incidents endpoint_id=694148bffe8d4e463ca5bd1e from_date="2025-11-20"```
+```!gz-incident-list endpoint_id=694148bffe8d4e463ca5bd1e from_date="2025-11-20"```
 
 #### Context Example
 
@@ -1256,6 +1265,9 @@ Retrieves incidents within the last three days from all endpoints or a specific 
                 "LastUpdated": "2025-12-17T09:02:03+02:00",
                 "Number": 477,
                 "Permalink": "https://gravityzone.domain/#!/incidents/view/694255755f5c8b75247c7ce2",
+                "EndpointID" : "694148bffe8d4e463ca5bd1e",
+                "EndpointHostname": "TA66H0I6F225",
+                "EndpointIP": "1.1.1.1",
                 "RawJSON": {
                     "assignee": "6540b72b1ffbc14e1808bc00",
                     "attackTypes": [
@@ -1310,18 +1322,18 @@ Retrieves incidents within the last three days from all endpoints or a specific 
 
 >### Summarized Incidents List
 >
->|ActionTaken|Assigned Priority|Assigned User ID|Attack Types|Company Name|Created|ID|Last Processed|Last Updated|Number|Permalink|Severity Score|Status|Type|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| Reported | Critical | 6540b72b1ffbc14e1808bc00 | Malware | Company | 2025-12-17T09:02:03+02:00 | 694255755f5c8b75247c7ce2 | 2025-12-17T09:02:13+02:00 | 2025-12-17T09:02:03+02:00 | 477 | https:<span>//</span>gravityzone.domain/#!/incidents/view/694255755f5c8b75247c7ce2 | 33% | 2 (Done) | Incident (EDR) |
+>|ActionTaken|Assigned Priority|Assigned User ID|Attack Types|Company Name|Created|Endpoint ID|Endpoint IP|Endpoint Name|ID|Last Processed|Last Updated|Number|Permalink|Severity Score|Status|Type|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| Reported | Critical | 6540b72b1ffbc14e1808bc00 | Malware | Company | 2025-12-17T09:02:03+02:00 | 694148bffe8d4e463ca5bd1e | 1.1.1.1 | TA66H0I6F225 | 694255755f5c8b75247c7ce2 | 2025-12-17T09:02:13+02:00 | 2025-12-17T09:02:03+02:00 | 477 | <https://gravityzone.domain/#!/incidents/view/694255755f5c8b75247c7ce2> | 33% | 2 (Done) | Incident (EDR) |
 
-### gz-add-incident-note
+### gz-incident-add-note
 
 ***
 Adds a note to one or more incidents.
 
 #### Base Command
 
-`gz-add-incident-note`
+`gz-incident-add-note`
 
 #### Input
 
@@ -1340,7 +1352,7 @@ Adds a note to one or more incidents.
 
 #### Command example
 
-```!gz-add-incident-note id=69415c9d5f5c8b75247c58d1 note=InvestigationInProgress```
+```!gz-incident-add-note id=69415c9d5f5c8b75247c58d1 note=InvestigationInProgress```
 
 #### Context Example
 
@@ -1366,14 +1378,14 @@ Adds a note to one or more incidents.
 >|---|---|---|
 >| 69415c9d5f5c8b75247c58d1 | InvestigationInProgress | Success |
 
-### gz-change-incident-status
+### gz-incident-change-status
 
 ***
 Changes the status of one or more incidents.
 
 #### Base Command
 
-`gz-change-incident-status`
+`gz-incident-change-status`
 
 #### Input
 
@@ -1392,7 +1404,7 @@ Changes the status of one or more incidents.
 
 #### Command example
 
-```!gz-change-incident-status id=69415c9d5f5c8b75247c58d1 status=ACTIVE```
+```!gz-incident-change-status id=69415c9d5f5c8b75247c58d1 status=ACTIVE```
 
 #### Context Example
 
