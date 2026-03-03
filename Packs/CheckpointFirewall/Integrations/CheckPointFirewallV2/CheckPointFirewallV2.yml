@@ -982,6 +982,73 @@ script:
     - description: Collection of group identifiers.
       isArray: true
       name: groups
+    - description: Comments for the object.
+      name: comments
+    - auto: PREDEFINED
+      description: 'Object color. Valid values: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow.'
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - auto: PREDEFINED
+      description: Whether to enable automatic NAT rule generation. Required only when any nat_* argument is provided; otherwise omitted.
+      name: nat_auto_rule
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: 'NAT translation method. Valid values: hide, static.'
+      name: nat_method
+      predefined:
+      - hide
+      - static
+    - description: NAT IPv4 or IPv6 address. Not required when nat_method is "hide" and nat_hide_behind is "gateway".
+      name: nat_ip
+    - description: Gateway object name or UID for NAT install-on setting.
+      name: nat_install_on
+    - auto: PREDEFINED
+      description: 'Hide behind method. Valid values: gateway, ip_address. Forbidden when nat_method is "static".'
+      name: nat_hide_behind
+      predefined:
+      - gateway
+      - ip_address
+    - description: Collection of tag identifiers.
+      isArray: true
+      name: tags
     description: Adds an address range object.
     name: checkpoint-address-range-add
     outputs:
