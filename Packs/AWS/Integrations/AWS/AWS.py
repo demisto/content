@@ -168,7 +168,7 @@ def build_pagination_kwargs(
 
     # Validate limit lower constraints
     if limit is not None and limit < minimum_limit:
-        raise ValueError(f"Limit must be greater than {minimum_limit}")
+        raise ValueError(f"Limit must be at least {minimum_limit}.")
 
     # AWS API upper constraints
     if limit is not None and limit > max_limit:
@@ -4920,7 +4920,11 @@ class EC2:
             outputs_key_field="FleetId",
             outputs=outputs,
             readable_output=tableToMarkdown(
-                "The AWS EC2 Fleet was created successfully", outputs, headers=["FleetId"], removeNull=True, headerTransform=pascalToSpace
+                "The AWS EC2 Fleet was created successfully",
+                outputs,
+                headers=["FleetId"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
             ),
             raw_response=response,
         )
@@ -5077,16 +5081,14 @@ class EC2:
         if not active_instances:
             return CommandResults(readable_output="No active instances were found.")
 
+        response["FleetInstancesNextToken"] = response.pop("NextToken")
         response_data = {k: v for k, v in response.items() if k != "ResponseMetadata"}
-        outputs = {
-            "AWS.EC2.Fleets(val.FleetId && val.FleetId == obj.FleetId)": response_data,
-            "AWS.EC2.Fleets(true)": {"FleetInstancesNextToken": response_data.get("NextToken")},
-        }
 
         return CommandResults(
-            outputs=outputs,
+            outputs=response_data,
+            outputs_key_field="FleetId",
             readable_output=tableToMarkdown(
-                "AWS EC2 Fleets Instances",
+                f"AWS EC2 Fleet {args.get('fleet_id')} Instances",
                 active_instances,
                 headers=["InstanceId", "InstanceType", "SpotInstanceRequestId", "InstanceHealth"],
                 removeNull=True,

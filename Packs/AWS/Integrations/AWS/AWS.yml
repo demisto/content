@@ -12323,85 +12323,10 @@ script:
       description: The ID of the EC2 Fleet.
       type: string
     - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
-      description: The ID of the launch template.
-      type: string
-    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
-      description: The name of the launch template.
-      type: string
-    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
-      description: The version number of the launch template.
-      type: string
-    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
-      description: The instance type.
-      type: string
-    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
-      description: The maximum price per unit hour that you are willing to pay for a Spot Instance.
-      type: string
-    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
-      description: The ID of the subnet in which to launch the instances.
-      type: string
-    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
-      description: The Availability Zone in which to launch the instances.
-      type: string
-    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
-      description: The number of units provided by the specified instance type.
-      type: number
-    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
-      description: The priority for the launch template override.
-      type: number
-    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
-      description: The name of the placement group the instance is in.
-      type: string
-    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
-      description: Whether the instance that could not be launched was a Spot Instance or an on-demand instance.
-      type: string
-    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
-      description: The error code that indicates why the instance could not be launched.
-      type: string
-    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
-      description: The error message that describes why the instance could not be launched.
+      description: Information about the instances that could not be launched by the fleet.
       type: string
     - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
-      description: The ID of the launch template.
-      type: string
-    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
-      description: The name of the launch template.
-      type: string
-    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
-      description: The version number of the launch template.
-      type: string
-    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
-      description: The instance type.
-      type: string
-    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
-      description: The maximum price per unit hour that you are willing to pay for a Spot Instance.
-      type: string
-    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
-      description: The ID of the subnet in which to launch the instances.
-      type: string
-    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
-      description: The Availability Zone in which to launch the instances.
-      type: string
-    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
-      description: The number of units provided by the specified instance type.
-      type: number
-    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
-      description: The priority for the launch template override.
-      type: number
-    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
-      description: The name of the placement group the instance is in.
-      type: string
-    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
-      description: Whether the instance that was launched is a Spot Instance or an on-demand instance.
-      type: string
-    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
-      description: The IDs of the instances.
-      type: array
-    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
-      description: The instance type.
-      type: string
-    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
-      description: The value is Windows for Windows instances; otherwise blank.
+      description: The launch templates and overrides that were used for launching the instances. The values that you specify in the Overrides replace the values in of the launch template.
       type: string
 
   - name: aws-ec2-fleet-delete
@@ -12472,10 +12397,7 @@ script:
       description: The ID of the EC2 Fleet.
       type: string
     - contextPath: AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.Error
-      description: The error code.
-      type: string
-    - contextPath: AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.Error
-      description: The description for the error code.
+      description: Information about the EC2 Fleets that are not successfully deleted.
       type: string
     - contextPath: AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.FleetId
       description: The ID of the EC2 Fleet.
@@ -12565,34 +12487,7 @@ script:
       description: The number of units fulfilled by this request compared to the set target On-Demand capacity.
       type: number
     - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
-      description: The ID of the launch template.
-      type: string
-    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
-      description: The name of the launch template.
-      type: string
-    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
-      description: The version number of the launch template.
-      type: string
-    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
-      description: The instance type.
-      type: string
-    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
-      description: The maximum price per unit hour that you are willing to pay for a Spot Instance.
-      type: string
-    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
-      description: The ID of the subnet in which to launch the instances.
-      type: string
-    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
-      description: The Availability Zone in which to launch the instances.
-      type: string
-    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
-      description: The number of units provided by the specified instance type.
-      type: number
-    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
-      description: The priority for the launch template override.
-      type: number
-    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
-      description: The name of the placement group the instance is in.
+      description: Describes a launch template and overrides.
       type: string
     - contextPath: AWS.EC2.Fleets.TargetCapacitySpecification.TotalTargetCapacity
       description: The number of units to request, filled using DefaultTargetCapacityType.

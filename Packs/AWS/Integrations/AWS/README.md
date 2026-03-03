@@ -4348,33 +4348,8 @@ Launches an EC2 Fleet.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AWS.EC2.Fleets.FleetId | string | The ID of the EC2 Fleet. |
-| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The ID of the launch template. |
-| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The name of the launch template. |
-| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The version number of the launch template. |
-| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The instance type. |
-| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The maximum price per unit hour that you are willing to pay for a Spot Instance. |
-| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The ID of the subnet in which to launch the instances. |
-| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The Availability Zone in which to launch the instances. |
-| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | number | The number of units provided by the specified instance type. |
-| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | number | The priority for the launch template override. |
-| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The name of the placement group the instance is in. |
-| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | Whether the instance that could not be launched was a Spot Instance or an on-demand instance. |
-| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The error code that indicates why the instance could not be launched. |
-| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The error message that describes why the instance could not be launched. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The ID of the launch template. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The name of the launch template. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The version number of the launch template. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The instance type. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The maximum price per unit hour that you are willing to pay for a Spot Instance. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The ID of the subnet in which to launch the instances. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The Availability Zone in which to launch the instances. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | number | The number of units provided by the specified instance type. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | number | The priority for the launch template override. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The name of the placement group the instance is in. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | Whether the instance that was launched is a Spot Instance or an on-demand instance. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | array | The IDs of the instances. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The instance type. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The value is Windows for Windows instances; otherwise blank. |
+| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | Information about the instances that could not be launched by the fleet. |
+| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The launch templates and overrides that were used for launching the instances. The values that you specify in the Overrides replace the values in of the launch template. |
 
 ### aws-ec2-fleet-delete
 
@@ -4401,8 +4376,7 @@ Deletes the specified EC2 Fleet.
 | AWS.EC2.DeletedFleets.SuccessfulFleetDeletions.CurrentFleetState | string | The current state of the EC2 Fleet. |
 | AWS.EC2.DeletedFleets.SuccessfulFleetDeletions.PreviousFleetState | string | The previous state of the EC2 Fleet. |
 | AWS.EC2.DeletedFleets.SuccessfulFleetDeletions.FleetId | string | The ID of the EC2 Fleet. |
-| AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.Error | string | The error code. |
-| AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.Error | string | The description for the error code. |
+| AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.Error | string | Information about the EC2 Fleets that are not successfully deleted. |
 | AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.FleetId | string | The ID of the EC2 Fleet. |
 
 ### aws-ec2-fleets-describe
@@ -4437,16 +4411,7 @@ Describes one or more of your EC2 Fleets.
 | AWS.EC2.Fleets.ExcessCapacityTerminationPolicy | string | Whether running instances should be terminated if the target capacity of the EC2 Fleet is decreased below the current size of the EC2 Fleet. |
 | AWS.EC2.Fleets.FulfilledCapacity | number | The number of units fulfilled by this request compared to the set target capacity. |
 | AWS.EC2.Fleets.FulfilledOnDemandCapacity | number | The number of units fulfilled by this request compared to the set target On-Demand capacity. |
-| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | string | The ID of the launch template. |
-| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | string | The name of the launch template. |
-| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | string | The version number of the launch template. |
-| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | string | The instance type. |
-| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | string | The maximum price per unit hour that you are willing to pay for a Spot Instance. |
-| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | string | The ID of the subnet in which to launch the instances. |
-| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | string | The Availability Zone in which to launch the instances. |
-| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | number | The number of units provided by the specified instance type. |
-| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | number | The priority for the launch template override. |
-| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | string | The name of the placement group the instance is in. |
+| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | string | Describes a launch template and overrides. |
 | AWS.EC2.Fleets.TargetCapacitySpecification.TotalTargetCapacity | number | The number of units to request, filled using DefaultTargetCapacityType. |
 | AWS.EC2.Fleets.TargetCapacitySpecification.OnDemandTargetCapacity | number | The number of On-Demand units to request. |
 | AWS.EC2.Fleets.TargetCapacitySpecification.SpotTargetCapacity | number | The maximum number of Spot units to launch. |
