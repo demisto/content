@@ -87,6 +87,20 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+- name: API-Key-Violation
+  display: API Key Violation
+  required: false
+  section: Connect
+- name: Invalid_Type_Param
+  display: Invalid Type Param
+  required: false
+  type: 999
+  section: Connect
+- name: vague-param
+  display: param
+  type: 0
+  required: false
+  section: Connect
 description: This is the Hello World integration for getting started.
 display: HelloWorld
 name: HelloWorld
