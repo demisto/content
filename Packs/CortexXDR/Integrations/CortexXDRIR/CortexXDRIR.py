@@ -1745,6 +1745,11 @@ def replace_featured_field_command(client: Client, args: Dict) -> CommandResults
 
 
 def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Deprecated. Use update_issue_command (xdr-issue-update) instead.
+
+    Update one or more alerts with the provided arguments.
+    """
     alerts_list = argToList(args.get("alert_ids"))
     array_of_all_ids = []
     severity = args.get("severity")
@@ -3473,6 +3478,7 @@ def main():  # pragma: no cover
             return_results(get_original_alerts_command(client, args))
 
         elif command == "xdr-get-alerts":
+            # This command is Deprecated, use xdr-issue-list instead.
             return_results(get_alerts_by_filter_command(client, args))
 
         elif command == "xdr-run-script-execute-commands":
@@ -3603,6 +3609,7 @@ def main():  # pragma: no cover
             return_results(change_user_role_command(client, args))
 
         elif command == "xdr-update-alert":
+            # This command is Deprecated, use xdr-issue-update instead.
             return_results(update_alerts_in_xdr_command(client, args))
 
         elif command == "xdr-bioc-list":
