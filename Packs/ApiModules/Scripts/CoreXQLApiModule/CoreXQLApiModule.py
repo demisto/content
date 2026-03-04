@@ -870,8 +870,7 @@ def get_xql_query_results_polling_command(client: CoreClient, args: dict) -> Uni
         query_id = args.get("query_id", "unknown")
         demisto.debug(f"Query {query_id} failed with error: {error_message}")
         raise DemistoException(
-            f"XQL query '{args.get('query_name', query_id)}' failed with status FAIL. "
-            f"Error: {error_message}"
+            f"XQL query '{args.get('query_name', query_id)}' failed with status FAIL. " f"Error: {error_message}"
         )
 
     demisto.debug(f"Returned status '{outputs.get('status')}' for {args.get('query_id', '')}.")
