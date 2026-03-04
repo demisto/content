@@ -278,9 +278,9 @@ def create_last_iocs_query(from_date, to_date):
 def get_last_iocs(batch_size=200) -> list:
     time_now: datetime = datetime.utcnow()
     last_run: dict = get_integration_context()
-    if not "time" in last_run:
+    if "time" not in last_run:
         from_date = (time_now - timedelta(days=1)).strftime(DEMISTO_TIME_FORMAT)
-        demisto.info(f"Could not find 'time' in integration context, will use {from_date=}")
+        demisto.info(f"Could not find 'time' field in integration context, will use {from_date=}")
     else:
         from_date = last_run["time"]
     current_run = time_now.strftime(DEMISTO_TIME_FORMAT)
