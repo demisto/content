@@ -748,7 +748,9 @@ class TestCommands:
         mocker.patch.object(demisto, "searchIndicators", return_value=iocs)
         mocker.patch("CoreIOCs.return_outputs")
         tim_insert_jsons(client)
-        info_logger.assert_called_with("Could not find 'time' field in integration context, will use from_date='2020-06-02T02:00:00Z'")
+        info_logger.assert_called_with(
+            "Could not find 'time' field in integration context, will use from_date='2020-06-02T02:00:00Z'"
+        )
         assert http_request.call_args.kwargs["url_suffix"] == "tim_insert_jsons/", "tim_insert_jsons command url changed"
 
 
