@@ -781,3 +781,66 @@ def test_client_search_incidents_error_response(mock_client, mocker, capfd):
 
     with capfd.disabled(), pytest.raises(DemistoException, match="Invalid request"):
         mock_client.search_incidents(limit=10, page=1)
+        
+def test_fetch_incidents_no_alarms(mock_client, mocker):
+    """Test fetch when API returns no alarms"""
+    from SOCRadarIncidentsV4MultiTenant import fetch_incidents
+
+    mocker.patch.object(mock_client, "search_incidents", return_value={
+        "is_success": True,
+        "data": [],
+        "total_records": 0,
+        "total_pages": 0,
+        "current_page": 1,
+    })
+
+    next_run, incidents = fetch_incidents(
+        client=mock_client,
+        max_results=100,
+        last_run={},
+        first_fetch_time="3 days",
+        fetch_interval_minutes=1,
+    )
+
+    assert len(incidents) == 0
+    assert "last_fetch" in next_run
+    assert "last_alarm_ids" in next_run
+
+
+def test_fetch_incidents_partial_page(mock_client, mocker):
+    """Test fetch stops on partial page"""
+    from SOCRadarIncidentsV4MultiTenant import fetch_incidents
+
+    mock_response = {
+        "is_success": True,
+        "data": [
+            {
+                "alarm_id": 999,
+                "company_id": "111",
+                "alarm_risk_level": "LOW",
+                "alarm_asset": "example.com",
+                "status": "OPEN",
+                "date": "2024-01-15T10:30:00",
+                "alarm_type_details": {"alarm_main_type": "Test", "alarm_sub_type": ""},
+                "alarm_text": "test",
+                "tags": [],
+                "alarm_related_entities": [],
+            }
+        ],
+        "total_records": 1,
+        "total_pages": 5,
+        "current_page": 1,
+    }
+
+    mocker.patch.object(mock_client, "search_incidents", return_value=mock_response)
+
+    next_run, incidents = fetch_incidents(
+        client=mock_client,
+        max_results=100,
+        last_run={"last_fetch": "2024-01-14T00:00:00Z"},
+        first_fetch_time="3 days",
+        fetch_interval_minutes=1,
+    )
+
+    assert len(incidents) == 1
+    assert next_run["last_alarm_ids"] == [999]
