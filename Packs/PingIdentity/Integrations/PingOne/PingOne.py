@@ -134,6 +134,24 @@ class Client(BaseClient):
 
         return self._http_request(method="PUT", url_suffix=uri, headers=new_headers, json_data=body)
 
+    def force_password_change(self, user_id):
+        uri = f"users/{user_id}/password"
+
+        new_headers = dict(self._headers)
+        new_headers["Content-Type"] = "application/vnd.pingidentity.password.forceChange"
+
+        return self._http_request(
+            method="POST",
+            url_suffix=uri,
+            headers=new_headers,
+            return_empty_response=True,
+            ok_codes=(204,),
+        )
+
+    def read_password_state(self, user_id):
+        uri = f"users/{user_id}/password"
+        return self._http_request(method="GET", url_suffix=uri)
+
     def add_user_to_group(self, user_id, group_id):
         uri = f"users/{user_id}/memberOfGroups"
 
@@ -304,6 +322,20 @@ def set_password_command(client, args):
     return (readable_output, {}, raw_response)
 
 
+def force_password_change_command(client, args):
+    user_id = client.get_user_id(args.get("username"))
+    raw_response = client.force_password_change(user_id)
+    readable_output = f"{args.get('username')} password was set to force change."
+    return (readable_output, {}, raw_response)
+
+
+def read_password_state_command(client, args):
+    user_id = client.get_user_id(args.get("username"))
+    raw_response = client.read_password_state(user_id)
+    readable_output = tableToMarkdown(f"Password state for {args.get('username')}", raw_response)
+    return (readable_output, {}, raw_response)
+
+
 def add_user_to_group_command(client, args):
     group_id = args.get("groupId")
     user_id = args.get("userId")
@@ -460,6 +492,8 @@ def main():
         "pingone-deactivate-user": deactivate_user_command,
         "pingone-activate-user": activate_user_command,
         "pingone-set-password": set_password_command,
+        "pingone-password-force-change": force_password_change_command,
+        "pingone-read-password-state": read_password_state_command,
         "pingone-add-to-group": add_user_to_group_command,
         "pingone-remove-from-group": remove_from_group_command,
         "pingone-get-groups": get_groups_for_user_command,

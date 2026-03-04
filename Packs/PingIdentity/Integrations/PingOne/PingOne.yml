@@ -70,6 +70,20 @@ script:
       required: true
       description: The new password.
     description: "Sets a user's password. Further password details available here: https://apidocs.pingidentity.com/pingone/platform/v1/api/#put-update-password-self ."
+  - name: pingone-password-force-change
+    arguments:
+    - name: username
+      required: true
+      default: true
+      description: The username to force a password change for.
+    description: Force a user's password change on next login.
+  - name: pingone-read-password-state
+    arguments:
+    - name: username
+      required: true
+      default: true
+      description: The username to read password state for.
+    description: Read a user's password state.
   - name: pingone-add-to-group
     arguments:
     - name: username
