@@ -1,0 +1,59 @@
+category: Analytics & SIEM
+provider: Adaptive Shield
+name: AdaptiveShieldSSPMEventCollector
+display: Adaptive Shield SSPM Event Collector
+description: Adaptive Shield SSPM.
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: AdaptiveShieldSSPMEventCollector
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+  defaultvalue: 'https://api.adaptive-shield.com'
+  section: Connect
+- display: Account ID
+  name: account_id
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: The Adaptive Shield account ID. Can be retrieved from the List Accounts endpoint or from your user settings in the Adaptive Shield dashboard (API tab).
+- displaypassword: API Key
+  hiddenusername: true
+  name: credentials
+  required: true
+  type: 9
+  section: Connect
+- display: The maximum number of Security Checks per fetch
+  additionalinfo: 'The maximum number of Security Checks per fetch. The default is 5000.'
+  defaultvalue: '5000'
+  name: max_fetch
+  section: Collect
+  type: 0
+  required: false
+- display: Trust any certificate (not secure)
+  section: Connect
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  section: Connect
+  name: proxy
+  type: 8
+  required: false
+script:
+  dockerimage: demisto/fastapi:0.123.5.6111791
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+  isfetchevents: true
+tests:
+- No tests (auto formatted)
+marketplaces:
+- xsoar
+fromversion: 6.8.0
