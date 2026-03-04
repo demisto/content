@@ -491,7 +491,7 @@ def test_add_comment_success(mock_client, mocker):
     from SOCRadarIncidentsV4 import add_comment_command
 
     mocker.patch.object(mock_client, "add_alarm_comment", return_value={"is_success": True})
-    result = add_comment_command(mock_client, {"alarm_id": "1", "user_email": "a@b.com", "comment": "test"})
+    result = add_comment_command(mock_client, {"alarm_id": "1", "user_email": "user@example.com", "comment": "test"})
     assert "Comment added" in result.readable_output
 
 
@@ -506,7 +506,7 @@ def test_add_assignee_success(mock_client, mocker):
     from SOCRadarIncidentsV4 import add_assignee_command
 
     mocker.patch.object(mock_client, "add_alarm_assignee", return_value={"is_success": True})
-    result = add_assignee_command(mock_client, {"alarm_id": "1", "user_emails": "a@b.com"})
+    result = add_assignee_command(mock_client, {"alarm_id": "1", "user_emails": "user@example.com"})
     assert "Assignee added" in result.readable_output
 
 

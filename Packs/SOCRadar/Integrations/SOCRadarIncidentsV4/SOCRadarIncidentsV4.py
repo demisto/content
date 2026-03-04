@@ -562,8 +562,8 @@ def fetch_incidents(
     # Previously 'last_fetch' was reused later as a datetime object which
     # shadowed this string value and could cause confusion.
     last_fetch_str = last_run.get("last_fetch")
-    cached_alarms = last_run.get("cached_alarms", [])
-    cache_backup = cached_alarms
+    last_alarm_ids = set(last_run.get("last_alarm_ids", []))
+    last_alarm_ids_backup = last_alarm_ids.copy()
     current_time = datetime.now()
 
     demisto.debug(f"[SOCRadar] Last fetch: {last_fetch_str}")
@@ -637,7 +637,7 @@ def fetch_incidents(
             page_dup = 0
 
             for alarm in alarms[next_run_incidents_to_skip:]:
-                if alarm.get("alarm_id") in cached_alarms:
+                if alarm.get("alarm_id") in last_alarm_ids:
                     page_dup += 1
                     continue
                 if total_incidents_created < max_results:
@@ -645,7 +645,7 @@ def fetch_incidents(
                     incident = alarm_to_incident(alarm, show_content=show_content)
                     page_incidents.append(incident)
                     total_incidents_created += 1
-                    cached_alarms.append(alarm.get("alarm_id"))
+                    last_alarm_ids.add(alarm.get("alarm_id"))
                     page_new += 1
 
             demisto.debug(f"[SOCRadar] Page {current_page}: Created {page_new} incidents, skipped {page_dup} duplicates")
@@ -692,14 +692,14 @@ def fetch_incidents(
             next_fetch_time = start_datetime
         else:
             next_fetch_time = current_time + timedelta(seconds=1)
-        cached_alarms = cached_alarms[-1000:]
+        combined = list(last_alarm_ids)[:10000]
         next_run = {
             "last_fetch": next_fetch_time.isoformat(),
             "start_date": start_date,
             "end_date": end_date,
             "next_run_incidents_to_skip": next_run_incidents_to_skip,
             "latest_page": current_page if next_run_incidents_to_skip else 1,
-            "cached_alarms": cached_alarms,
+            "last_alarm_ids": combined,
         }
 
         demisto.debug(f"[SOCRadar] Returning {len(all_incidents)} incidents to XSOAR")
@@ -711,7 +711,7 @@ def fetch_incidents(
         demisto.error(f"[SOCRadar] Traceback: {traceback.format_exc()}")
 
         return {
-            "cached_alarms": cache_backup,
+            "last_alarm_ids": list(last_alarm_ids_backup)[:1000],
             "last_fetch": start_date,
             "start_date": start_date,
             "end_date": end_date,
