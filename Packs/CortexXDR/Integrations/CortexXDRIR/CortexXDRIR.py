@@ -3018,7 +3018,7 @@ def list_issues_command(client: Client, args: Dict) -> CommandResults:
             "Type": issue.get("type"),
             "Severity": issue.get("severity"),
             "Status": issue.get("status.progress"),
-            "Description": issue.get("description")
+            "Description": issue.get("description"),
         }
         for issue in issues
     ]
