@@ -2,7 +2,7 @@
     "name": "Citrix",
     "description": "Citrix is a unified platform that provides management, monitoring, and delivery services for Citrix products and resources across cloud and on-premise environments. It centralizes administration, enhances visibility, and simplifies operational workflows.",
     "support": "xsoar",
-    "currentVersion": "1.0.5",
+    "currentVersion": "1.0.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -16,8 +16,19 @@
         "Security"
     ],
     "defaultDataSource": "CitrixCloud",
-    "useCases": [],
-    "keywords": [],
+    "useCases": [
+        "Network Security"
+    ],
+    "keywords": [
+        "virtual",
+        "desktop",
+        "infrastructure",
+        "machine",
+        "vm",
+        "service",
+        "cloud",
+        "Citrix"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"
