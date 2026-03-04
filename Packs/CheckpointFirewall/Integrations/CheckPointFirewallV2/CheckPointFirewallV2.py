@@ -3062,9 +3062,28 @@ def build_interfaces_list(
     """Build the interfaces list for the Check Point API from individual arguments.
 
     Returns None if no interface arguments are provided.
+
+    Raises:
+        ValueError: If any interfaces_* argument is provided but interfaces_name,
+            interfaces_subnet, or interfaces_mask_length is missing.
     """
-    if not interfaces_name and not interfaces_subnet:
+    has_any_interface_arg = any([interfaces_name, interfaces_subnet, interfaces_mask_length])
+    if not has_any_interface_arg:
         return None
+
+    missing = []
+    if not interfaces_name:
+        missing.append("interfaces_name")
+    if not interfaces_subnet:
+        missing.append("interfaces_subnet")
+    if not interfaces_mask_length:
+        missing.append("interfaces_mask_length")
+    if missing:
+        raise ValueError(
+            f"When defining interfaces, all interface arguments are required. "
+            f"Missing: {', '.join(missing)}."
+        )
+
     interface: dict = {}
     if interfaces_name:
         interface["name"] = interfaces_name
