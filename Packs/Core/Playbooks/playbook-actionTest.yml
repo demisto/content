@@ -1,0 +1,153 @@
+id: actionTest
+version: 6
+vcShouldKeepItemLegacyProdMachine: false
+name: actionTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7d68cb89-ce55-46cf-8826-6e335ad0a516
+    type: start
+    task:
+      id: 7d68cb89-ce55-46cf-8826-6e335ad0a516
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 55c00362-0956-4792-b89c-a76b3a3c377f
+    type: regular
+    task:
+      id: 55c00362-0956-4792-b89c-a76b3a3c377f
+      version: -1
+      name: SetPlaybookInputs
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: example_input
+      value:
+        simple: ${inputs.example_input}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 3687708c-af03-4add-87bf-b8641f23e7e7
+    type: aiTask
+    task:
+      id: 3687708c-af03-4add-87bf-b8641f23e7e7
+      version: -1
+      name: EnhancePlaybookInput
+      aiTaskId: 8b111eb9-c73a-4947-86f2-674bdd6a0eae
+      type: aiTask
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    scriptarguments:
+      example_input:
+        simple: ${example_input}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    formDisplay:
+      headerbackgroundcolor: ""
+      headerfontcolor: ""
+      sender: ""
+      bodybackgroundcolor: ""
+      bodyfontcolor: ""
+      submitbuttonbackgroundcolor: ""
+      submitbuttonfontcolor: ""
+      submittext: ""
+      isexternalrtl: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 455,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: example_input
+  value: {}
+  required: false
+  description: example_input
+  playbookInputQuery: null
+inputSections:
+- inputs:
+  - example_input
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs:
+  - exampleOutput
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs:
+- contextPath: exampleOutput
+  description: example output
+  type: unknown
+dirtyInputs: true
+adopted: true
