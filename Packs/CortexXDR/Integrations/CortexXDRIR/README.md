@@ -1147,8 +1147,8 @@ Builtin Roles with this permission includes: "Viewer" and "Instance Admin".
 | PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_RESULT | String | Audit result. |
 | PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_REASON | String | Audit reason. |
 | PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_DESCRIPTION | String | Description of the audit. |
-| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ENTITY | String | Audit entity \(e.g., AUTH, DISTRIBUTIONS\). |
-| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ENTITY_SUBTYPE | String | Entity subtype \(e.g., Login, Create\). |
+| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ENTITY | String | Audit entity (e.g., AUTH, DISTRIBUTIONS). |
+| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ENTITY_SUBTYPE | String | Entity subtype (e.g., Login, Create). |
 | PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_CASE_ID | Number | Audit case ID. |
 | PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_INSERT_TIME | Date | Log's insert time. |
 
@@ -1194,9 +1194,9 @@ Builtin Roles with this permission includes: "Viewer" and "Instance Admin".
 | PaloAltoNetworksXDR.AuditAgentReports.TRAPSVERSION | String | Traps version. |
 | PaloAltoNetworksXDR.AuditAgentReports.RECEIVEDTIME | Date | Received time in Epoch time. |
 | PaloAltoNetworksXDR.AuditAgentReports.TIMESTAMP | Date | Timestamp in Epoch time. |
-| PaloAltoNetworksXDR.AuditAgentReports.CATEGORY | String | Report category \(e.g., Audit\). |
-| PaloAltoNetworksXDR.AuditAgentReports.TYPE | String | Report type \(e.g., Action, Policy\). |
-| PaloAltoNetworksXDR.AuditAgentReports.SUBTYPE | String | Report subtype \(e.g., Fully Protected,Policy Update,Cancel Isolation\). |
+| PaloAltoNetworksXDR.AuditAgentReports.CATEGORY | String | Report category (e.g., Audit). |
+| PaloAltoNetworksXDR.AuditAgentReports.TYPE | String | Report type (e.g., Action, Policy). |
+| PaloAltoNetworksXDR.AuditAgentReports.SUBTYPE | String | Report subtype (e.g., Fully Protected,Policy Update,Cancel Isolation\). |
 | PaloAltoNetworksXDR.AuditAgentReports.RESULT | String | Report result. |
 | PaloAltoNetworksXDR.AuditAgentReports.REASON | String | Report reason. |
 | PaloAltoNetworksXDR.AuditAgentReports.DESCRIPTION | String | Agent report description. |

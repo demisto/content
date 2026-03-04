@@ -5139,12 +5139,12 @@ script:
     - name: insert_time
       description: Filter by issues inserted after this time.
     - name: status
-      description: "A comma-separated list of statuses. Possible values: 'New', 'In Progress', 'Resolved'."
+      description: "A comma-separated list of statuses. Possible values: 'new', 'in_progress', 'resolved'."
       auto: PREDEFINED
       predefined:
-        - New
-        - In Progress
-        - Resolved
+        - new
+        - in_progress
+        - resolved
       isArray: true
     - name: sort_field
       description: The field to sort by.

@@ -2981,7 +2981,9 @@ def list_issues_command(client: Client, args: Dict) -> CommandResults:
         timestamp = arg_to_timestamp(insert_time, arg_name="insert_time")
         filters.append({"field": "_insert_time", "operator": "gte", "value": timestamp})
     if status := argToList(args.get("status")):
-        filters.append({"field": "status.progress", "operator": "in", "value": status})
+        statuses_map = {"new": "New", "in_progress": "In Progress", "resolved": "Resolved"}
+        mapped_statuses = [statuses_map.get(s) for s in status if s in statuses_map]
+        filters.append({"field": "status.progress", "operator": "in", "value": mapped_statuses})
 
     limit = arg_to_number(args.get("limit")) or 50
     page_size = arg_to_number(args.get("page_size")) or limit
@@ -3006,12 +3008,22 @@ def list_issues_command(client: Client, args: Dict) -> CommandResults:
     request_data["request_data"]["include_fields"] = ["custom_fields", "normalized_fields"]
 
     issues = client.list_issues(request_data)
+    hr_issues = [
+        {
+            "ID": issue.get("id"),
+            "Name": issue.get("name"),
+            "Type": issue.get("type"),
+            "Severity": issue.get("severity"),
+            "Status": issue.get("status.progress"),
+            "Description": issue.get("description")
+        }
+        for issue in issues
+    ]
 
     readable_output = tableToMarkdown(
         name="Issues",
-        t=issues,
-        headers=["id", "name", "type", "severity", "status", "description"],
-        headerTransform=string_to_table_header,
+        t=hr_issues,
+        headers=["ID", "Name", "Type", "Severity", "Status", "Description"],
         removeNull=True,
     )
 
