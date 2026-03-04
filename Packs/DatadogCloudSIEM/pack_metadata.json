@@ -2,7 +2,7 @@
     "name": "Datadog Cloud SIEM",
     "description": "Datadog Cloud SIEM is a scalable, cloud-native SIEM that analyzes telemetry from cloud and on-premises systems to surface actionable security signals, with out-of-the-box detection rules and dashboards to help teams investigate and respond faster.",
     "support": "partner",
-    "currentVersion": "1.1.1",
+    "currentVersion": "1.1.2",
     "author": "Cortex XSOAR",
     "url": "",
     "email": "team-cloudsiem@datadoghq.com",
@@ -31,10 +31,6 @@
     ],
     "githubUser": [],
     "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
         "agentix",
         "xsiam"
     ],

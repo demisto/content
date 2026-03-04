@@ -2,8 +2,8 @@
     "name": "Blueliv ThreatContext",
     "description": "The Threat Context module provides SOC, Incident Response and Threat Intelligence teams with continuously updated and intuitive information around threat actors, campaigns, malware indicators, attack patterns, tools, signatures and CVEs. Analysts can rapidly gather enriched, contextualized information to enhance cybersecurity processes before, during and after an attack.",
     "support": "community",
-    "currentVersion": "1.0.15",
-    "author": "Oriol Campderrós",
+    "currentVersion": "1.0.16",
+    "author": "Oriol Campderr\u00f3s",
     "url": " ",
     "email": "",
     "created": "2020-06-08T15:37:54Z",
@@ -19,10 +19,6 @@
         "platform"
     ],
     "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
         "agentix",
         "xsiam"
     ]

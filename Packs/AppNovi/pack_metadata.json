@@ -2,7 +2,7 @@
     "name": "AppNovi",
     "description": "Search your combined security data in appNovi via simplified search or search via the appNovi security graph.",
     "support": "partner",
-    "currentVersion": "1.0.30",
+    "currentVersion": "1.0.31",
     "author": "appNovi",
     "url": "https://appnovi.com/support",
     "email": "",
@@ -62,10 +62,6 @@
         "CommonScripts"
     ],
     "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
         "agentix",
         "xsiam"
     ]
