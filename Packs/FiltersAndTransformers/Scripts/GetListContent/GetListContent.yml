@@ -7,7 +7,8 @@ args:
   - string
   - json
   defaultValue: string
-comment: Returns the content of the List with the given Name. If type is "JSON", the content of the List will be parsed and returned as a JSON object.
+  description: The format to return the list content in, such as 'json' or 'string'. The Type does not have to match the format configured in the list, but controls how the content of the list is handled
+comment: Returns the content of the List with the given Name as a string or JSON object, depending on the selected `type`.
 commonfields:
   id: GetListContent
   version: -1
