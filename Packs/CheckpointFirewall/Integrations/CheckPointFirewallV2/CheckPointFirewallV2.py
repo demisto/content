@@ -762,6 +762,23 @@ class Client(BaseClient):
         return self._http_request(method="POST", url_suffix="set-threat-protection", headers=self.headers, json_data=args)
 
 
+def validate_domains_to_process(domains_to_process: str | None, details_level: str | None) -> None:
+    """Validate domains_to_process argument constraints.
+
+    Args:
+        domains_to_process: Indicates which domains to process the commands on.
+        details_level: The level of detail for returned objects.
+
+    Raises:
+        ValueError: If domains_to_process is used with details_level 'full'.
+    """
+    if domains_to_process and details_level == "full":
+        raise ValueError(
+            "The 'domains_to_process' argument cannot be used with 'details_level' set to 'full'. "
+            "Please change 'details_level' or remove 'domains_to_process'."
+        )
+
+
 def checkpoint_list_hosts_command(
     client: Client,
     limit: int,
@@ -779,6 +796,7 @@ def checkpoint_list_hosts_command(
         details_level (str): The level of detail for returned objects.
         domains_to_process (str): Indicates which domains to process the commands on.
     """
+    validate_domains_to_process(domains_to_process, details_level)
     printable_result = []
     readable_output = ""
     domains_list = argToList(domains_to_process) if domains_to_process else None
