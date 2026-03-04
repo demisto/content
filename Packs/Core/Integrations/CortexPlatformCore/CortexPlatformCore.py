@@ -191,8 +191,8 @@ class CaseManagement:
         "known_issue": "STATUS_040_RESOLVED_KNOWN_ISSUE",
         "duplicate": "STATUS_050_RESOLVED_DUPLICATE",
         "false_positive": "STATUS_060_RESOLVED_FALSE_POSITIVE",
-        "true_positive": "STATUS_090_RESOLVED_TRUE_POSITIVE",
-        "security_testing": "STATUS_100_RESOLVED_SECURITY_TESTING",
+        "true_positive": "STATUS_090_TRUE_POSITIVE",
+        "security_testing": "STATUS_100_SECURITY_TESTING",
         "other": "STATUS_070_RESOLVED_OTHER",
     }
 
