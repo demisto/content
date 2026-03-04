@@ -3398,14 +3398,15 @@ def entitlement_handler(integration_context: dict, request_body: dict, value: di
         user_email = team_member.get("user_email", "")
         demisto.debug(f"Found user in team cache: {user_email}")
     except ValueError:
+        demisto.debug(f"Cant Find user in team cache, check proactive users cache")
         # Not in team cache - check proactive users cache
         proactive_users: dict = json.loads(integration_context.get("proactive_users", "{}"))
         if team_members_id in proactive_users:
             user_email = proactive_users[team_members_id].get("email", "")
             demisto.debug(f"Found user in proactive users cache: {user_email}")
         else:
-            # Fallback: use Graph API to get user details (reusing shared function)
-            demisto.debug(f"User {team_members_id} not in cache, querying Graph API")
+            # Fallback: use Graph API to get user details
+            demisto.debug(f"User {team_members_id} not in proactive users cache, querying Graph API")
             try:
                 user_data = get_user(team_members_id, select_fields="mail,userPrincipalName")
                 if user_data and user_data[0]:
