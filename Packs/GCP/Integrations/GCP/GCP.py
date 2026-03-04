@@ -2293,7 +2293,7 @@ def bq_dataset_policy_update_command(creds: Credentials, args: dict[str, Any]) -
     else:
         demisto.debug(f"[GCP] Adding emails to access list for dataset {dataset_id}")
         if not role:
-            raise DemistoException("If you wish to add a new user to the policy, choose the role it should have.")
+            raise DemistoException("If you wish to add a new user or a new group to the policy, choose the role it should have.")
         new_role = {
             "role": role,
             "userByEmail": user_email,
