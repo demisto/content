@@ -2,9 +2,19 @@ args:
 - description: The value to print to the war-room of specified alert.
   name: value
   required: true
+  supportedModules: []
 - description: The alert ID to print to.
   name: alert_id
   required: true
+  supportedModules: []
+- auto: PREDEFINED
+  defaultValue: "false"
+  description: Whether to mark the printed war-room entry as a note.
+  name: mark_as_note
+  predefined:
+  - "true"
+  - "false"
+  supportedModules: []
 comment: Prints a value to the specified alert's war-room. The alert must be in status "Under Investigation".
 commonfields:
   id: PrintToAlert
