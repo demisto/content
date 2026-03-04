@@ -2967,8 +2967,11 @@ def list_issues_command(client: Client, args: Dict) -> CommandResults:
     # Issues with an 'INFO' severity level are filtered out and will not be displayed in the UI
     filters = []
     if issue_ids := argToList(args.get("issue_id")):
-        converted_ids = list(map(int, issue_ids))
-        filters.append({"field": "id", "operator": "in", "value": converted_ids})
+        try:
+            converted_ids = [int(i) for i in issue_ids]
+            filters.append({"field": "id", "operator": "in", "value": converted_ids})
+        except (ValueError, TypeError):
+            return_error("Invalid Issue ID provided. Please ensure all IDs are numbers.")
     if external_id := argToList(args.get("external_id")):
         filters.append({"field": "external_id", "operator": "in", "value": external_id})
     if detection_method := argToList(args.get("detection_method")):
@@ -3060,7 +3063,7 @@ def create_issue_command(client: Client, args: Dict) -> CommandResults:
         "asset_id": argToList(args.get("asset_id")),
         "mitre_tactic": argToList(args.get("mitre_tactic")),
         "mitre_technique": argToList(args.get("mitre_technique")),
-        "type_": args.get("type"),
+        "type": args.get("type"),
         "extended_description": args.get("extended_description"),
         "impact": args.get("impact"),
         "tags": args.get("tags"),
@@ -3124,6 +3127,9 @@ def update_issue_command(client: Client, args: Dict) -> CommandResults:
         update_data["status_resolution_comment"] = resolution_comment
 
     issue_id = args.get("issue_id", "")
+    if not str(issue_id).isdigit():
+        return CommandResults(readable_output=f"Error: '{issue_id}' is not a valid numeric ID.")
+
     request_data = {"request_data": {"update_data": update_data}}
     client.update_issue(issue_id, request_data)
     return CommandResults(readable_output=f"Issue with ID {issue_id} updated successfully")

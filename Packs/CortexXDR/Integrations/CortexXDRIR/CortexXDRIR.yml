@@ -5119,6 +5119,7 @@ script:
     - name: detection_method
       description: "A comma-separated list of methods used to detect the activity. Possible values: 'BIOC', 'Correlation', 'Analytics', 'System', 'IOC'."
       auto: PREDEFINED
+      isArray: true
       predefined:
         - BIOC
         - Correlation
@@ -5127,6 +5128,7 @@ script:
         - IOC
     - name: domain
       description: A comma-separated list of domains.
+      isArray: true
     - name: severity
       description: "A comma-separated list of severities. Possible values: 'critical', 'high', 'medium', 'low', 'info'."
       auto: PREDEFINED
