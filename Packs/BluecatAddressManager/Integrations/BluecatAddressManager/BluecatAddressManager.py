@@ -129,7 +129,27 @@ class Client:
 
         return confs[0].get("id")
 
-    def get_entity_by_name(self, name: str, parent_id: int | None, entity_type: str | None, include_ha: bool = True):
+    def get_entity_by_name(self, name: str, parent_id: int | None, entity_type: str | None, include_ha: bool = True) -> dict:
+        """
+        Retrieves an entity from BlueCat Address Manager by its name.
+
+        Calls the GET /v1/getEntityByName API endpoint. If no parent_id is provided,
+        defaults to the root configuration ID. Returns the first matching entity if
+        multiple objects share the same name. Returns an object with null values if
+        no match is found.
+
+        :param name: The name of the target entity (e.g., a DNS name or FQDN).
+        :param parent_id: The ID of the parent entity to search within. Defaults to
+            the root configuration ID if None.
+        :param entity_type: The BlueCat object type constant to filter by
+            (e.g., 'HostRecord', 'IP4Address'). If None, no type filter is applied.
+        :param include_ha: When True, includes xHA pair status details in the response.
+            When False, returns only basic server info without polling xHA status.
+            Defaults to True.
+
+        :return: A dict representing the APIEntity object returned by the API.
+        :rtype: dict
+        """
         params = {
             "parentId": parent_id if parent_id else self.conf,
             "name": name,
@@ -365,7 +385,17 @@ def search_response_policy_by_domain(client: Client, domain: str):
     return client.http_request("GET", "/findResponsePoliciesWithItem", params=params)
 
 
-def get_entity_by_name_command(client: Client):
+def get_entity_by_name_command(client: Client) -> None:
+    """
+    Implements the bluecat-am-get-entity-by-name command.
+
+    Retrieves a BlueCat Address Manager entity by its DNS name or FQDN using the
+    GET /v1/getEntityByName API. Resolves the entity's parent hierarchy and returns
+    a CommandResults object with the entity data under the BlueCat.AddressManager.Entity
+    context path. Returns a human-readable not-found message if no entity matches.
+
+    :param client: An authenticated BlueCat Address Manager Client instance.
+    """
     name = demisto.getArg("name")
     parent_id = arg_to_number(demisto.getArg("parent_id"))
     entity_type = demisto.getArg("type")
@@ -409,7 +439,22 @@ def get_entity_by_name_command(client: Client):
     )
 
 
-def create_human_readable_entity(entity_obj: dict, name: str):
+def create_human_readable_entity(entity_obj: dict, name: str) -> str:
+    """
+    Builds a markdown human-readable output string for a BlueCat entity.
+
+    Produces two tables: one for the entity's own fields (ID, Name, Type, and any
+    properties parsed from the properties string), and one for its parent hierarchy
+    listed in ascending order (root first). The Parents key is excluded from the
+    first table to avoid rendering a nested list.
+
+    :param entity_obj: The entity dict as built by get_entity_by_name_command,
+        including an optional 'Parents' key containing a list of parent dicts.
+    :param name: The name used in the search query, shown in the table title.
+
+    :return: A markdown string suitable for CommandResults.readable_output.
+    :rtype: str
+    """
     entity_obj_cpy = dict(entity_obj)
     reversed_parents = list(reversed(entity_obj_cpy.get("Parents", [])))
     entity_obj_cpy.pop("Parents", None)
