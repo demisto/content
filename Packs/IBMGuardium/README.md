@@ -96,4 +96,82 @@ You can configure the specific vendor and product for this instance.
 > [!NOTE]
 This content refers to IBM Guardium version 10.0
 
+
+
+
+# IBM Guardium Data Security Center
+
+The IBM Guardium Data Security Center is a unified, SaaS-native platform designed to centralize data security, compliance, and risk management across hybrid cloud and on-premises environments. It integrates advanced Data Security Posture Management (DSPM) with specialized modules for AI security and quantum-safe cryptography to provide proactive threat detection and streamlined regulatory reporting through a single dashboard.
+
+## What this pack contains?
+
+- API Integration for Data Security Center.
+- Modeling rules for activity log report.
+
+## API Integration
+
+### Authentication and authorization
+
+1. Open the IBM Guardium Data Security Center.
+2. In the left pane go to **Preferences** > **Authentication** > **API keys**.
+3. Click **Create API key** and enter an API key descritpion (key name).
+4. Copy and store your **API Key** and **Secret API Key** securely.
+
+**IMPORTANT:** For security reasons, the API key details will **not** be displayed again once you leave this page. Please ensure you have copied and safely stored your credentials before closing this window.
+
+### Configure IBM Security Guardium in Cortex XSIAM
+
+1. Go to XSIAM and navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
+2. On the searchbar loook for the **IBM Security Guardium** integration and click **Add instance**.
+3. Name your instance (eg. IBM_Guardium_Integration) and paste your credentials.
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | The URL of your IBM Guardium instance. The default value is an example - replace it with your specific instance URL. | True |
+| API Key | The API Key for authentication | True |
+| API Secret | The API Secret for authentication | True |
+| Report ID | The ID of the report to fetch events from. | True |
+| Fetch events | Whether to automatically fetch events. | False |
+| Maximum number of events to fetch | Maximum number of events to fetch per run. Default is 10000. Recommended maximum is 10000. | False |
+| Timestamp Field Name | The display name of the header in the report that contains the timestamp field, e.g., "Date created (local time)".<br> Note: This field name varies between different reports. | False (Required when Fetch events is enabled) |
+| Trust any certificate (not secure) | Trust any certificate (not secure). | False |
+| Use system proxy settings | Use system proxy settings. | False |
+
+## Commands
+
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### ibm-guardium-get-events
+
+***
+Manual command to fetch and display events.
+
+#### Base Command
+
+`ibm-guardium-get-events`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| should_push_events | If true, the command creates events; otherwise, it only displays them. Possible values are: true, false. Default is false. | Required |
+| timestamp_field | The name of the field in the event data that contains the timestamp. <br>Note: This field name varies between different reports. If not provided, uses the value from integration configuration. | Optional (Required when should_push_events is true) |
+| limit | Maximum number of results to return. Maximum allowed is 1000. Default is 50. | Optional |
+| start_time | Start time for fetching events. Supports ISO format ("2023-01-01T00:00:00") or natural language ("7 days ago", "yesterday", "1 week ago"). Defaults to 1 hour ago if not provided. | Optional |
+| end_time | End time for fetching events. Supports ISO format ("2023-01-01T23:59:59") or natural language ("2 hours ago", "now"). If not provided, defaults to now. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```!ibm-guardium-get-events limit=50 start_time="2024-01-01T00:00:00" end_time="2024-01-01T23:59:59" should_push_events=true```
+
+## Additional Information
+
+**Note:** The integration fetches events from the last 12 hours by default on first run. This accounts for IBM Guardium's event indexing delays and ensures events are captured even when indexed with significant delays.
+
+
 </~XSIAM>
