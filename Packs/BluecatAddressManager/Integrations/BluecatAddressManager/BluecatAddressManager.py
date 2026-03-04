@@ -407,7 +407,12 @@ def get_entity_by_name_command(client: Client) -> None:
 
     if not raw_res or raw_res.get("id") in (None, 0):
         demisto.debug(f"Entity with name '{name}' was not found (id={raw_res.get('id') if raw_res else None})")
-        return_results(f"Entity with name: {name} was not found.")
+        return_results(
+            CommandResults(
+                entry_type=EntryType.ERROR,
+                readable_output=f"Entity with name: {name} was not found.",
+            )
+        )
         return
 
     entity_id = raw_res.get("id")

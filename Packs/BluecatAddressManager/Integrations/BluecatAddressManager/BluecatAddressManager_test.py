@@ -57,4 +57,6 @@ def test_get_entity_by_name_not_found(mocker):
     get_entity_by_name_command(mock_client)
 
     assert results_mock.called
-    assert "was not found" in results_mock.call_args[0][0]
+    results = results_mock.call_args[0][0]
+    assert results.entry_type == EntryType.ERROR
+    assert "was not found" in results.readable_output
