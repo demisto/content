@@ -690,14 +690,14 @@ def test_build_nat_settings_all_fields():
         nat_method="hide",
         nat_ip="10.0.0.1",
         nat_install_on="GW1",
-        nat_hide_behind="gateway",
+        nat_hide_behind="ip_address",
     )
     assert result == {
         "auto-rule": True,
         "method": "hide",
         "ipv4-address": "10.0.0.1",
         "install-on": "GW1",
-        "hide-behind": "gateway",
+        "hide-behind": "ip_address",
     }
 
 
@@ -730,8 +730,11 @@ def test_build_interfaces_list_returns_none_when_all_none():
 
 
 def test_build_interfaces_list_name_only():
-    result = CheckPointFirewallV2.build_interfaces_list(interfaces_name="eth0")
-    assert result == [{"name": "eth0"}]
+    """When only interfaces_name is provided, should raise ValueError since all interface args are required."""
+    import pytest
+
+    with pytest.raises(ValueError, match="all interface arguments are required"):
+        CheckPointFirewallV2.build_interfaces_list(interfaces_name="eth0")
 
 
 def test_build_interfaces_list_all_fields():
@@ -744,8 +747,11 @@ def test_build_interfaces_list_all_fields():
 
 
 def test_build_interfaces_list_subnet_only():
-    result = CheckPointFirewallV2.build_interfaces_list(interfaces_subnet="192.168.1.0")
-    assert result == [{"subnet4": "192.168.1.0"}]
+    """When only interfaces_subnet is provided, should raise ValueError since all interface args are required."""
+    import pytest
+
+    with pytest.raises(ValueError, match="all interface arguments are required"):
+        CheckPointFirewallV2.build_interfaces_list(interfaces_subnet="192.168.1.0")
 
 
 def test_add_host_with_nat_settings(mocker):
@@ -761,7 +767,6 @@ def test_add_host_with_nat_settings(mocker):
         "1.2.3.4",
         nat_auto_rule="true",
         nat_method="hide",
-        nat_ip="10.0.0.1",
         nat_install_on="GW1",
         nat_hide_behind="gateway",
     )
@@ -770,7 +775,6 @@ def test_add_host_with_nat_settings(mocker):
     assert call_kwargs[1]["nat_settings"] == {
         "auto-rule": True,
         "method": "hide",
-        "ipv4-address": "10.0.0.1",
         "install-on": "GW1",
         "hide-behind": "gateway",
     }
@@ -1145,7 +1149,6 @@ def test_add_address_range_with_nat_and_color(mocker):
         comments="range comment",
         nat_auto_rule="true",
         nat_method="hide",
-        nat_ip="192.168.1.1",
         nat_install_on="GW1",
         nat_hide_behind="gateway",
     )
@@ -1157,7 +1160,6 @@ def test_add_address_range_with_nat_and_color(mocker):
     assert call_kwargs[1]["nat_settings"] == {
         "auto-rule": True,
         "method": "hide",
-        "ipv4-address": "192.168.1.1",
         "install-on": "GW1",
         "hide-behind": "gateway",
     }

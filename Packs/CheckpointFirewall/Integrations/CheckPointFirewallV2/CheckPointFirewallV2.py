@@ -3097,10 +3097,7 @@ def build_interfaces_list(
     if not interfaces_mask_length:
         missing.append("interfaces_mask_length")
     if missing:
-        raise ValueError(
-            f"When defining interfaces, all interface arguments are required. "
-            f"Missing: {', '.join(missing)}."
-        )
+        raise ValueError(f"When defining interfaces, all interface arguments are required. " f"Missing: {', '.join(missing)}.")
 
     interface: dict = {}
     if interfaces_name:
