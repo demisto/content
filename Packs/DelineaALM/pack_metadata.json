@@ -9,10 +9,18 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "IAM",
+        "Compliance"
+    ],
     "useCases": [],
     "keywords": [
-        "Thycotic"
+        "Thycotic",
+        "Delinea",
+        "ALM",
+        "Account Lifecycle Manager",
+        "Service Account"
     ],
     "marketplaces": [
         "marketplacev2",

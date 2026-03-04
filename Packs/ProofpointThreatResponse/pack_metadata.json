@@ -15,7 +15,12 @@
         "Network"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Proofpoint",
+        "TRAP",
+        "Threat Response",
+        "incident response"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

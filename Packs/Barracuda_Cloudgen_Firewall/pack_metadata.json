@@ -11,7 +11,8 @@
         "Cloud Security"
     ],
     "tags": [
-        "Network"
+        "Network",
+        "Security"
     ],
     "useCases": [
         "Network Security"
@@ -19,7 +20,11 @@
     "keywords": [
         "barracuda ng fw",
         "barracuda nextgen",
-        "barracuda cg fw"
+        "barracuda cg fw",
+        "Barracuda",
+        "CloudGen",
+        "Firewall",
+        "Barracuda CloudGen Firewall"
     ],
     "marketplaces": [
         "marketplacev2",

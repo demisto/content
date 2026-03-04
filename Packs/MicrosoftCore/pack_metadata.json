@@ -9,10 +9,16 @@
     "categories": [
         "IT Services"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
     "hidden": true,
-    "keywords": [],
+    "keywords": [
+        "Microsoft",
+        "Windows",
+        "event logs"
+    ],
     "marketplaces": [
         "marketplacev2"
     ]

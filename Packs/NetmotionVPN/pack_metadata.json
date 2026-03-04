@@ -12,7 +12,9 @@
         "Cloud Services"
     ],
     "tags": [
-        "IT"
+        "IT",
+        "VPN",
+        "Network"
     ],
     "useCases": [
         "Network Security",
@@ -21,7 +23,8 @@
     "keywords": [
         "netmotion",
         "vpn",
-        "netmotion vpn"
+        "netmotion vpn",
+        "remote access"
     ],
     "marketplaces": [
         "marketplacev2",

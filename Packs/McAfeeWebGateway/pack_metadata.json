@@ -10,9 +10,19 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "McAfee",
+        "MWG",
+        "Web Gateway",
+        "Trellix",
+        "Skyhigh",
+        "proxy"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

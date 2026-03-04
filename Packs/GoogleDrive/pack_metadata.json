@@ -10,9 +10,17 @@
     "categories": [
         "Utilities"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Google",
+        "Google Drive",
+        "Drive",
+        "Cloud Storage",
+        "Google Workspace"
+    ],
     "githubUser": [],
     "marketplaces": [
         "xsoar",

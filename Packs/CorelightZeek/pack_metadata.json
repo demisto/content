@@ -9,9 +9,20 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "Security",
+        "Security Analytics"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Corelight",
+        "Zeek",
+        "Bro",
+        "Network Analysis",
+        "NDR",
+        "PCAP"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

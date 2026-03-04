@@ -9,9 +9,18 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Network"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Forcepoint",
+        "SWG",
+        "Secure Web Gateway",
+        "Web Gateway",
+        "Proxy"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

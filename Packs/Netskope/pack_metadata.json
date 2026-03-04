@@ -10,9 +10,19 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Network"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Netskope",
+        "CASB",
+        "cloud security",
+        "SWG",
+        "SASE",
+        "DLP"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

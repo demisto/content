@@ -9,7 +9,10 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "IT"
+    ],
     "useCases": [],
     "keywords": [
         "HP",
@@ -17,7 +20,8 @@
         "Switch",
         "Aruba",
         "Aruba Networking",
-        "Hewlett Packard Enterprise"
+        "Hewlett Packard Enterprise",
+        "Network Switch"
     ],
     "marketplaces": [
         "marketplacev2",

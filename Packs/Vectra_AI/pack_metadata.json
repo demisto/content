@@ -21,7 +21,10 @@
     "itemPrefix": "Vectra",
     "keywords": [
         "Vectra",
-        "Vectra AI"
+        "Vectra AI",
+        "NDR",
+        "network detection",
+        "AI threat detection"
     ],
     "marketplaces": [
         "xsoar",
@@ -30,7 +33,10 @@
     ],
     "name": "Vectra AI",
     "support": "partner",
-    "tags": [],
+    "tags": [
+        "Network",
+        "Security"
+    ],
     "url": "https://support.vectra.ai",
     "useCases": [],
     "defaultDataSource": "VectraAIEventCollector",

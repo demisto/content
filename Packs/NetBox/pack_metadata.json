@@ -9,9 +9,17 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "IT",
+        "Network"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "NetBox",
+        "DCIM",
+        "IPAM",
+        "network documentation"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

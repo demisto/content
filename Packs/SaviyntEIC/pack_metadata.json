@@ -11,7 +11,8 @@
         "Identity and Access Management"
     ],
     "tags": [
-        "IAM"
+        "IAM",
+        "Security"
     ],
     "useCases": [
         "Identity and Access Management"
@@ -20,7 +21,11 @@
         "role",
         "entitlements",
         "on-prem",
-        "provision"
+        "provision",
+        "Saviynt",
+        "identity governance",
+        "IGA",
+        "PAM"
     ],
     "marketplaces": [
         "marketplacev2",

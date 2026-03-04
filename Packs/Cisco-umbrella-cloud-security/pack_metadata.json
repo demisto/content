@@ -10,9 +10,18 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Cisco",
+        "Umbrella",
+        "Cisco Umbrella",
+        "DNS Security",
+        "OpenDNS"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

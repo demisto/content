@@ -9,9 +9,18 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "SonicWall",
+        "NSv",
+        "virtual firewall",
+        "firewall",
+        "next-gen firewall"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

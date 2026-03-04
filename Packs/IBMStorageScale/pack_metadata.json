@@ -16,7 +16,10 @@
     "useCases": [],
     "keywords": [
         "Spectrum Scale",
-        "GPFS"
+        "GPFS",
+        "IBM",
+        "Storage Scale",
+        "IBM Storage Scale"
     ],
     "marketplaces": [
         "marketplacev2"

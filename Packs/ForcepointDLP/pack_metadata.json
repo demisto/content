@@ -9,9 +9,17 @@
     "categories": [
         "Endpoint"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Compliance"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Forcepoint",
+        "DLP",
+        "Data Loss Prevention",
+        "Data Protection"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

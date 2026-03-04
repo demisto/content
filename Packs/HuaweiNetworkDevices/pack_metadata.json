@@ -9,9 +9,18 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Huawei",
+        "Network Devices",
+        "Router",
+        "Switch",
+        "Firewall"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

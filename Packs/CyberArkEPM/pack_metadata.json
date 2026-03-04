@@ -9,9 +9,17 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "IAM"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "CyberArk",
+        "EPM",
+        "Endpoint Privilege Manager",
+        "Privilege Management"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform",

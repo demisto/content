@@ -9,9 +9,16 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "MySQL",
+        "MySQL Enterprise",
+        "database",
+        "Oracle MySQL"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

@@ -10,9 +10,18 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Email",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Trend Micro",
+        "email security",
+        "phishing",
+        "ransomware",
+        "BEC"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

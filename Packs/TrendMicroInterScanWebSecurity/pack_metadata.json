@@ -9,7 +9,10 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "Security"
+    ],
     "useCases": [],
     "keywords": [
         "Trend Micro",
@@ -17,7 +20,9 @@
         "IWSS",
         "IWSVA",
         "InterScan",
-        "Inter Scan"
+        "Inter Scan",
+        "web security",
+        "web gateway"
     ],
     "marketplaces": [
         "marketplacev2",

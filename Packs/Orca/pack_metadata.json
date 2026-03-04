@@ -10,9 +10,17 @@
     "categories": [
         "Cloud Security"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Orca",
+        "Orca Security",
+        "cloud security",
+        "CSPM",
+        "CWPP"
+    ],
     "githubUser": "edenorca",
     "marketplaces": [
         "xsoar",

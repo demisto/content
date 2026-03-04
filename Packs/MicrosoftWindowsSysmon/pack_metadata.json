@@ -9,9 +9,17 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Microsoft",
+        "Sysmon",
+        "System Monitor",
+        "Windows",
+        "event log"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

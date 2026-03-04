@@ -9,9 +9,16 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Siemens",
+        "SiPass",
+        "access control",
+        "physical security"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

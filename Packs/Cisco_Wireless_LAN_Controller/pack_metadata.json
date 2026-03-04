@@ -9,9 +9,19 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Cisco",
+        "WLC",
+        "Wireless LAN Controller",
+        "WiFi",
+        "Wireless",
+        "WLAN"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

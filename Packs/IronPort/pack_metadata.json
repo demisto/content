@@ -10,9 +10,18 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Email"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Cisco",
+        "IronPort",
+        "ESA",
+        "Email Security Appliance",
+        "Email Security"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

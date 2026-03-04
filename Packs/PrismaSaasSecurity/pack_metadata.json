@@ -11,10 +11,17 @@
         "Cloud Security"
     ],
     "tags": [
-        "Palo Alto Networks Products"
+        "Palo Alto Networks Products",
+        "Security"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Prisma SaaS",
+        "SaaS Security",
+        "DLP",
+        "data classification",
+        "CASB"
+    ],
     "itemPrefix": [
         "Saas Security"
     ],

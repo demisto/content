@@ -9,9 +9,16 @@
     "categories": [
         "IT Services"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Microsoft",
+        "DHCP",
+        "Dynamic Host Configuration Protocol"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

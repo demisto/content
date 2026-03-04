@@ -9,9 +9,18 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "IAM",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "ManageEngine",
+        "ADSelfService Plus",
+        "MFA",
+        "SSO",
+        "Active Directory"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

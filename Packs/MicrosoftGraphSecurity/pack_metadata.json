@@ -10,9 +10,16 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Microsoft",
+        "Graph",
+        "Graph Security",
+        "Microsoft 365"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

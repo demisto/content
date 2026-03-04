@@ -11,9 +11,17 @@
         "Code Repositories",
         "CI/CD"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "GitLab",
+        "Git",
+        "Source Control",
+        "CI/CD",
+        "DevOps"
+    ],
     "marketplaces": [
         "marketplacev2",
         "xsoar",

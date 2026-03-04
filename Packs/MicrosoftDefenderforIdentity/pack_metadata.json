@@ -9,9 +9,18 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "IAM",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Microsoft",
+        "MDI",
+        "Defender for Identity",
+        "Active Directory",
+        "Azure ATP"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

@@ -10,9 +10,18 @@
     "categories": [
         "IT Services"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Jamf",
+        "Apple",
+        "MDM",
+        "device management",
+        "macOS",
+        "iOS"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

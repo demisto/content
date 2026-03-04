@@ -11,14 +11,18 @@
         "Cloud Service Provider"
     ],
     "tags": [
-        "marketplacev2:Data Source"
+        "marketplacev2:Data Source",
+        "Security",
+        "Compliance"
     ],
     "useCases": [],
     "keywords": [
         "Amazon",
         "AWS",
         "CloudTrail",
-        "Cloud Trail"
+        "Cloud Trail",
+        "AWS CloudTrail",
+        "Audit"
     ],
     "marketplaces": [
         "xsoar",

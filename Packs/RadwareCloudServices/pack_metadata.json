@@ -9,14 +9,19 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "Security"
+    ],
     "useCases": [],
     "keywords": [
         "Radware",
         "WAF",
         "DDoS",
         "WAAP",
-        "AppWall"
+        "AppWall",
+        "cloud WAF",
+        "web application firewall"
     ],
     "marketplaces": [
         "marketplacev2",

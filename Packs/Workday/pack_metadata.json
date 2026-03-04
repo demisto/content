@@ -10,9 +10,18 @@
     "categories": [
         "IT Services"
     ],
-    "tags": [],
+    "tags": [
+        "IAM",
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Workday",
+        "HCM",
+        "HR",
+        "human resources",
+        "identity"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

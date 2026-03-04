@@ -11,11 +11,15 @@
         "Case Management"
     ],
     "tags": [
-        "Security"
+        "Security",
+        "IT"
     ],
     "useCases": [],
     "keywords": [
-        "salesforce"
+        "salesforce",
+        "CRM",
+        "Salesforce Shield",
+        "SFDC"
     ],
     "marketplaces": [
         "xsoar",
