@@ -2,7 +2,7 @@
     "name": "PCI DSS Compliance",
     "description": "Ensure your organization is following PCI DSS guidelines with the relevant dashboard and report evidence.",
     "support": "xsoar",
-    "currentVersion": "2.0.1",
+    "currentVersion": "2.0.2",
     "author": "Cortex XSIAM",
     "url": "https://www.paloaltonetworks.com/cortex",
     "categories": [
