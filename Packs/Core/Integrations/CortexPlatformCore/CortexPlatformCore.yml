@@ -3509,7 +3509,7 @@ script:
             - Cortex cli scanner
             - Cortex data security
             - Rapid7 insightvm
-            - THIRD_PARTY_SCANNER
+            - Third party scanner
         - name: page
           description: Page number for pagination.
           defaultValue: "0"
