@@ -283,6 +283,38 @@ class TestEndpointCommandRunner:
         mock_run_execute_command.assert_called_once()
         mock_get_command_results.assert_called_once()
 
+    def test_run_command_no_output_no_error(self, setup, mocker):
+        """
+        Given:
+            A command that returns NO context and NO errors and NO human readable.
+            (This triggered the original crash).
+        When:
+            run_command is executed.
+        Then:
+            1. It should NOT raise IndexError.
+            2. It should return empty results (because the code checks readable_errors, which is empty).
+        """
+        command_runner, module_manager, command = setup
+        endpoint_args = {"endpoint_id": "123"}
+
+        # Mocks
+        module_manager.is_brand_available.return_value = True
+        mocker.patch("GetEndpointData.prepare_args", return_value={"id": "123"})
+        mocker.patch("GetEndpointData.demisto.debug")
+        mocker.patch.object(command_runner, "run_execute_command", return_value=[])
+
+        mocker.patch.object(command_runner, "get_command_results", return_value=([], [], []))
+
+        # Mock get_endpoint_not_found
+        mocker.patch("GetEndpointData.get_endpoint_not_found", return_value=[])
+
+        # Execute
+        hr, endpoints = command_runner.run_command(command, endpoint_args)
+
+        # Assertions
+        assert hr == []
+        assert endpoints == []
+
 
 def test_is_private_ip():
     """

@@ -2,16 +2,30 @@
     "name": "HPE Aruba Central",
     "description": "Aruba Central helps manage and monitor your network infrastructure from a centralized platform.",
     "support": "xsoar",
-    "currentVersion": "1.1.2",
+    "currentVersion": "1.1.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Analytics & SIEM"
+        "Analytics & SIEM",
+        "Cloud Services",
+        "IT Services",
+        "Network Security"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [
+        "Network",
+        "Security",
+        "IoT"
+    ],
+    "useCases": [
+        "Network Security"
+    ],
+    "keywords": [
+        "AI",
+        "IoT",
+        "wireless",
+        "SD-WAN"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

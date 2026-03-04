@@ -93,6 +93,8 @@ For more information, visit [TAXII2 Documentation](http://docs.oasis-open.org/ct
 
 For more information, visit [TAXII2 Documentation](https://docs.oasis-open.org/cti/taxii/v2.1/taxii-v2.1.html).
 
+- When retrieving Objects (Cortex XSOAR Indicators and Relationships) from a collection, use the **next** parameter to paginate through additional records.
+
 ## Known Limitations
 
 - GET objects by ID is not allowed.

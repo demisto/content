@@ -4,7 +4,8 @@ commonfields:
 name: AlphaSOC Network Behavior Analytics
 display: AlphaSOC Network Behavior Analytics
 category: Analytics & SIEM
-description: Retrieve alerts from the AlphaSOC Analytics Engine
+provider: AlphaSOC
+description: Retrieve alerts from the AlphaSOC Analytics Engine.
 configuration:
 - display: AlphaSOC Analytics Engine URL
   name: server

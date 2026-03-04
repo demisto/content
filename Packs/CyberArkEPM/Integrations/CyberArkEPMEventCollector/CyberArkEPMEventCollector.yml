@@ -1,4 +1,5 @@
 category: Analytics & SIEM
+provider: CyberArk
 sectionorder:
 - Connect
 - Collect
@@ -170,12 +171,13 @@ script:
     description: Gets events from Cyber Ark EPM.
     execution: false
     name: cyberarkepm-get-events
-  dockerimage: demisto/btfl-soup:1.0.1.4885491
+  dockerimage: demisto/btfl-soup:1.0.1.6977863
   isfetchevents: true
   runonce: false
   script: ''
   subtype: python3
   type: python
+supportlevelheader: xsoar
 marketplaces:
 - marketplacev2
 - platform

@@ -12,7 +12,7 @@ urllib3.disable_warnings()
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-VENDOR = "decyfir"
+VENDOR = "cyfirma"
 PRODUCT = "decyfir"
 PAGE_SIZE = 1000
 MAX_EVENTS_PER_FETCH = 3000

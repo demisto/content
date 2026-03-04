@@ -1,4 +1,5 @@
 category: Network Security
+provider: Liberty Strategic Capital
 commonfields:
   id: Zimperium
   version: -1
@@ -660,7 +661,7 @@ script:
       type: String
   - arguments:
     - defaultValue: 1 day
-      description: <number> <time unit>, e.g., 7 days, 3 months, 1 year
+      description: <number> <time unit>, e.g., 7 days, 3 months, 1 year.
       name: from_last_update
     - auto: PREDEFINED
       defaultValue: 'true'
@@ -902,7 +903,7 @@ script:
       description: Detection rate of the application.
       type: String
     - contextPath: Zimperium.Reports.risk_profile.intell_privacy
-      description: Privacy intelligence,
+      description: Privacy intelligence.
       type: String
     - contextPath: Zimperium.Reports.risk_profile.intell_security
       description: Security intelligence.
@@ -911,7 +912,7 @@ script:
       description: Overall risk.
       type: String
     - contextPath: Zimperium.Reports.risk_profile.privacy.Category
-      description: Privacy category
+      description: Privacy category.
       type: String
     - contextPath: Zimperium.Reports.risk_profile.privacy.Risk Level
       description: Privacy risk level.

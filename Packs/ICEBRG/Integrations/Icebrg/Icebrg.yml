@@ -4,6 +4,7 @@ commonfields:
 name: icebrg
 display: Icebrg
 category: Network Security
+provider: Gigamon
 description: Reduces risk by accelerating threat detection, triage, and response to rapidly-evolving breaches across global networks.
 configuration:
 - display: Server URL for the search API (e.g. https://192.168.0.1)
@@ -52,7 +53,7 @@ script:
     - name: end_date
       description: The end of the temporal extent by which to restrict filter results, exclusive.
     - name: limit
-      description: A limit on the number of events returned in filter results. Default is 100. Max is 10000
+      description: A limit on the number of events returned in filter results. Default is 100. Max is 10000.
     - name: order_by
       description: The event property by which to order results. Default is timestamp.
     - name: order
@@ -65,49 +66,49 @@ script:
       description: When true, the service will include the service_traffic aggregation. Default is false.
     outputs:
     - contextPath: Icebrg.Events.QueryType
-      description: Query type
+      description: Query type.
     - contextPath: Icebrg.Events.Total
-      description: Total events
+      description: Total events.
     - contextPath: Icebrg.Events.OrderBy
-      description: Key to order events by
+      description: Key to order events by.
     - contextPath: Icebrg.Events.Order
-      description: Order of the events
+      description: Order of the events.
     - contextPath: Icebrg.Events.Offset
-      description: Events offset
+      description: Events offset.
     - contextPath: Icebrg.Events.History
-      description: History of events
+      description: History of events.
     - contextPath: Icebrg.Events.Limit
-      description: Limit number of events to show
+      description: Limit number of events to show.
     description: Perform an ICEBRG datastore event search
   - name: icebrg-get-history
     arguments: []
     outputs:
     - contextPath: Icebrg.UserQueryHistory.Total
-      description: Total user queries
+      description: Total user queries.
     - contextPath: Icebrg.UserQueryHistory.Timestamp
-      description: Timestamp of user query
+      description: Timestamp of user query.
     - contextPath: Icebrg.UserQueryHistory.Query
-      description: Called query
+      description: Called query.
     - contextPath: Icebrg.UserQueryHistory.QueryId
-      description: ID of query
+      description: ID of query.
     - contextPath: Icebrg.UserQueryHistory.UserId
-      description: User ID
+      description: User ID.
     description: Gets history of the events
   - name: icebrg-saved-searches
     arguments: []
     outputs:
     - contextPath: Icebrg.SavedSearches.Tags
-      description: Query tags
+      description: Query tags.
     - contextPath: Icebrg.SavedSearches.Description
-      description: Query description
+      description: Query description.
     - contextPath: Icebrg.SavedSearches.Title
-      description: Query title
+      description: Query title.
     - contextPath: Icebrg.SavedSearches.Timestamp
-      description: Query timestamp
+      description: Query timestamp.
     - contextPath: Icebrg.SavedSearches.Query
-      description: Called query
+      description: Called query.
     - contextPath: Icebrg.SavedSearches.Id
-      description: Query ID
+      description: Query ID.
     description: Gets user saved searches
   - name: icebrg-get-reports
     arguments:
@@ -142,68 +143,68 @@ script:
     - name: status
       description: Status to filter by.
     - name: published_start
-      description: Published start date to filter by (inclusive). RFC3339 format, i.e. 2017-01-24T10:13:13.418Z
+      description: Published start date to filter by (inclusive). RFC3339 format, i.e. 2017-01-24T10:13:13.418Z.
     - name: published_end
-      description: Published end date to filter by (exclusive). RFC3339 format, i.e. 2017-01-24T10:13:13.418Z
+      description: Published end date to filter by (exclusive). RFC3339 format, i.e. 2017-01-24T10:13:13.418Z.
     outputs:
     - contextPath: Icebrg.Reports.Publishes.UserUuid
-      description: User UUID that published the report
+      description: User UUID that published the report.
     - contextPath: Icebrg.Reports.Publishes.Published
-      description: Timestamp of published report
+      description: Timestamp of published report.
     - contextPath: Icebrg.Reports.AssetCount
-      description: Asset count of report
+      description: Asset count of report.
     - contextPath: Icebrg.Reports.IndicatorCount
-      description: Indicator count of report
+      description: Indicator count of report.
     - contextPath: Icebrg.Reports.Archived
-      description: True if archived, else false
+      description: True if archived, else false.
     - contextPath: Icebrg.Reports.Details
-      description: Report details
+      description: Report details.
     - contextPath: Icebrg.Reports.Summary
-      description: Report summary
+      description: Report summary.
     - contextPath: Icebrg.Reports.Category
-      description: Category of the report
+      description: Category of the report.
     - contextPath: Icebrg.Reports.Confidence
-      description: Confidence of report
+      description: Confidence of report.
     - contextPath: Icebrg.Reports.Risk
-      description: Risk of report
+      description: Risk of report.
     - contextPath: Icebrg.Reports.Title
-      description: Report title
+      description: Report title.
     - contextPath: Icebrg.Reports.Status
-      description: Status of report
+      description: Status of report.
     - contextPath: Icebrg.Reports.AccountUuid
-      description: Account UUID of report
+      description: Account UUID of report.
     - contextPath: Icebrg.Reports.UpdatedUserUuid
-      description: User UUID that updated the report
+      description: User UUID that updated the report.
     - contextPath: Icebrg.Reports.CreatedUserUuid
-      description: User UUID that created the report
+      description: User UUID that created the report.
     - contextPath: Icebrg.Reports.Updated
-      description: Timestamp of report update
+      description: Timestamp of report update.
     - contextPath: Icebrg.Reports.Created
-      description: Timestamp of report creation
+      description: Timestamp of report creation.
     - contextPath: Icebrg.Reports.Uuid
-      description: Report UUID
+      description: Report UUID.
     description: Gets a list of reports
   - name: icebrg-get-report-indicators
     arguments:
     - name: report_uuid
       required: true
       default: true
-      description: Report UUID to get indicator of
+      description: Report UUID to get indicator of.
     outputs:
     - contextPath: Icebrg.ReportIndicators.Type
-      description: Type of indicator
+      description: Type of indicator.
     - contextPath: Icebrg.ReportIndicators.Indicators.Observable
-      description: Observable of Indicator
+      description: Observable of Indicator.
     description: Gets indicators for a reports
   - name: icebrg-get-report-assets
     arguments:
     - name: report_uuid
       required: true
       default: true
-      description: Report UUID to get asset of
+      description: Report UUID to get asset of.
     outputs:
     - contextPath: Icebrg.ReportAssets.Asset
-      description: Assets of Report UUID
+      description: Assets of Report UUID.
     description: Gets impacted assets for a report
   isfetch: true
 tests:

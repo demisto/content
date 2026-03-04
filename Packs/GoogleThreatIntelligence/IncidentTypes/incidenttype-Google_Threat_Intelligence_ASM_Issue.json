@@ -6,6 +6,7 @@
     "name": "Google Threat Intelligence ASM Issue",
     "prevName": "Google Threat Intelligence ASM Issue",
     "color": "#C9C598",
+    "playbookId": "ASM Issue Incident Response - Google Threat Intelligence",
     "hours": 0,
     "days": 0,
     "weeks": 0,
@@ -24,7 +25,27 @@
     "extractSettings": {
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {
+            "description": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "details": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
             "gtiasmissueentityname": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "gtiasmissueidentifiers": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "gtiasmissuename": {
                 "extractAsIsIndicatorTypeId": "",
                 "isExtractingAllIndicatorTypes": true,
                 "extractIndicatorTypesIDs": []

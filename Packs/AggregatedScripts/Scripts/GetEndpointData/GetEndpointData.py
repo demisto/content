@@ -255,10 +255,13 @@ class EndpointCommandRunner:
         entry_context, human_readable, readable_errors = self.get_command_results(command.name, raw_outputs, args)
 
         if not entry_context:
-            endpoints = get_endpoint_not_found(command, readable_errors[0].readable_output or "", [], endpoint_args)
+            # Note: In some cases, entry_context and readable_errors may be empty lists.
+            hr = readable_errors[0].readable_output if readable_errors and readable_errors[0].readable_output else ""
+            endpoints = get_endpoint_not_found(command, hr, [], endpoint_args)
             return readable_errors, endpoints
+        hr = human_readable[0].readable_output if human_readable and human_readable[0].readable_output else ""
         endpoints = entry_context_to_endpoints(command, entry_context, self.add_additional_fields)
-        endpoints.extend(get_endpoint_not_found(command, human_readable[0].readable_output or "", endpoints, endpoint_args))
+        endpoints.extend(get_endpoint_not_found(command, hr, endpoints, endpoint_args))
 
         if command.post_processing:
             demisto.debug(f"command with post processing: {command.name}")
@@ -316,7 +319,7 @@ class EndpointCommandRunner:
 
         Args:
             command (Command): An instance of MappedCommand that contains the command information.
-            results (Dict[str, Any]): A dictionary containing the command results.
+            results (List[Dict[str, Any]]): A list of dictionaries containing the command results.
             args (Dict[str, Any]): A dictionary containing the specific arguments for the command.
 
         Returns:

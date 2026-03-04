@@ -132,10 +132,7 @@ class IronDefense:
     def event_context_table_to_dict(self, event_context_table):
         table_data = {}
         for column in event_context_table.get("columns"):
-            val = [
-                str(list(d.values())[0]) if len(list(d.values())) > 0 else ""
-                for d in column.get("values")[0].get("data")
-            ]
+            val = [str(list(d.values())[0]) if len(list(d.values())) > 0 else "" for d in column.get("values")[0].get("data")]
             table_data[column.get("name")] = ",".join(val)
 
         return table_data
@@ -352,9 +349,7 @@ class IronDefense:
             return "Submitted analyst rating to IronDefense!"
 
     def add_comment_to_alert(self, alert_id, comment="", share_irondome=False):
-        self.logger.debug(
-            f"Submitting comment: Alert ID={alert_id} Comment={comment} Share w/IronDome={share_irondome}"
-        )
+        self.logger.debug(f"Submitting comment: Alert ID={alert_id} Comment={comment} Share w/IronDome={share_irondome}")
 
         req_body = {"alert_id": alert_id, "comment": comment, "share_comment_with_irondome": share_irondome}
         response = self._http_request("POST", "/CommentOnAlert", body=json.dumps(req_body))
@@ -766,9 +761,7 @@ def get_events_command():
     offset = results.get("constraint").get("offset")
     for i, event in enumerate(events):
         vue_markdown_link = IRON_DEFENSE.create_markdown_link("Open in IronVue", event.get("vue_url"))
-        event_readable_output = tableToMarkdown(
-            f"IronDefense Event {i + offset + 1}/{total_count}\n{vue_markdown_link}", event
-        )
+        event_readable_output = tableToMarkdown(f"IronDefense Event {i + offset + 1}/{total_count}\n{vue_markdown_link}", event)
         # Send each event
         return_outputs(
             readable_output=event_readable_output,

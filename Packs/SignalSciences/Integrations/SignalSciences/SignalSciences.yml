@@ -7,6 +7,7 @@ sectionorder:
 name: Signal Sciences WAF
 display: Signal Sciences WAF
 category: Network Security
+provider: Fastly
 description: Protect your web application using Signal Sciences.
 configuration:
 - display: Email
@@ -93,7 +94,7 @@ script:
       description: Note associated with the tag.
       type: string
     - contextPath: SigSciences.Corp.Site.Whitelist.CreatedDate
-      description: The created date timestamp
+      description: The created date timestamp.
       type: date
     - contextPath: SigSciences.Corp.Site.Whitelist.CreatedBy
       description: The user who added this source.
@@ -103,7 +104,7 @@ script:
     arguments:
     - name: siteName
       required: true
-      description: The site that holds the block list you wish to get
+      description: The site that holds the block list you wish to get.
     outputs:
     - contextPath: SigSciences.Corp.Site.Blacklist.ID
       description: The ID for this entry.
@@ -118,7 +119,7 @@ script:
       description: The note associated with the tag.
       type: string
     - contextPath: SigSciences.Corp.Site.Blacklist.CreatedDate
-      description: The created date timestamp
+      description: The created date timestamp.
       type: date
     - contextPath: SigSciences.Corp.Site.Blacklist.CreatedBy
       description: The user who added this source.
@@ -151,7 +152,7 @@ script:
       description: The user who added this source.
       type: string
     - contextPath: SigSciences.Corp.Site.Whitelist.CreatedDate
-      description: The created date timestamp
+      description: The created date timestamp.
       type: date
     - contextPath: SigSciences.Corp.Site.Whitelist.ExpiryDate
       description: The expiration timestamp.
@@ -161,7 +162,7 @@ script:
     arguments:
     - name: siteName
       required: true
-      description: The site that holds the block list you wish to add to
+      description: The site that holds the block list you wish to add to.
     - name: ip
       required: true
       description: The IP address to add to the site's block list in CSV format.
@@ -234,7 +235,7 @@ script:
       - String
       - Country
       - Wildcard
-      description: The type for the list you wish to create on Signal Sciences. Legal types are IP, String, Country or Wildcard
+      description: The type for the list you wish to create on Signal Sciences. Legal types are IP, String, Country or Wildcard.
     - name: entries_list
       required: true
       description: A CSV list of values, consistent with the list's type.
@@ -695,17 +696,17 @@ script:
     arguments:
     - name: list_id
       required: true
-      description: The ID of the list you wish to update
+      description: The ID of the list you wish to update.
     - name: method
       required: true
       auto: PREDEFINED
       predefined:
       - Add
       - Remove
-      description: The method you wish to use - must be "Add" or "Remove". The method will determine whether the entries you provide are added to the list or removed from it
+      description: The method you wish to use - must be "Add" or "Remove". The method will determine whether the entries you provide are added to the list or removed from it.
     - name: entries_list
       required: true
-      description: A list of values, consistent with the list's type, separated by commas
+      description: A list of values, consistent with the list's type, separated by commas.
       isArray: true
     - name: description
       description: A description for the updated list.
@@ -828,7 +829,7 @@ script:
     arguments:
     - name: siteName
       required: true
-      description: Name of the site to get the event from
+      description: Name of the site to get the event from.
     - name: event_id
       required: true
       description: The ID of the event.
@@ -920,7 +921,7 @@ script:
     arguments:
     - name: siteName
       required: true
-      description: The name of the site to get from
+      description: The name of the site to get from.
     - name: request_id
       required: true
       description: The ID of the request to get.

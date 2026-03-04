@@ -1,0 +1,93 @@
+{
+    "id": "Dataminr Pulse ReGenAI Alert",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Dataminr Pulse ReGenAI Alert",
+    "prevName": "Dataminr Pulse ReGenAI Alert",
+    "color": "#F06292",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "Dataminr Pulse ReGenAI Alert",
+    "playbookId": "Enrich Custom IOCs - Dataminr Pulse",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {
+            "dataminrpulsemetadatacyberaddress": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "ipRep",
+                    "IPv6",
+                    "IPv6CIDR",
+                    "Onion Address",
+                    "urlRep",
+                    "domainRepUnified"
+                ]
+            },
+            "dataminrpulsemetadatacyberasorgs": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "ASN"
+                ]
+            },
+            "dataminrpulsemetadatacyberhashvalues": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "unifiedFileRep"
+                ]
+            },
+            "dataminrpulsemalware": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "Dataminr Pulse Malware Indicator"
+                ]
+            },
+            "dataminrpulsethreatactor": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "Dataminr Pulse Threat Actor Indicator"
+                ]
+            },
+            "dataminrpulsemetadatacyberurl": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "domainRepUnified",
+                    "ipRep",
+                    "IPv6",
+                    "IPv6CIDR",
+                    "Onion Address",
+                    "urlRep"
+                ]
+            },
+            "dataminrpulsevulnerability": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "Dataminr Pulse Vulnerability Indicator"
+                ]
+            }
+        }
+    },
+    "fromVersion": "6.10.0",
+    "marketplaces": [
+        "xsoar"
+    ]
+}

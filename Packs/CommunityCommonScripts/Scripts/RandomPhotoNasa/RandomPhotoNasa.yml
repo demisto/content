@@ -1,11 +1,11 @@
 args:
-- description: Search query
+- description: Search query.
   name: search
   defaultValue: nebula
 commonfields:
   id: RandomPhotoNasa
   version: -1
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.12.6204436
 enabled: true
 name: RandomPhotoNasa
 runas: DBotWeakRole

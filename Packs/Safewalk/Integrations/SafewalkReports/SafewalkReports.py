@@ -17,9 +17,7 @@ HELLOWORLD_SEVERITIES = ["Low", "Medium", "High", "Critical"]
 class Client(BaseClient):
     def get_associated_users(self, devicetype):
         return json.loads(
-            self._http_request(
-                method="GET", url_suffix=f"/reports/associated_users/?device_type={devicetype}", resp_type="text"
-            )
+            self._http_request(method="GET", url_suffix=f"/reports/associated_users/?device_type={devicetype}", resp_type="text")
         )
 
     def get_authentication_methods_distribution(self):

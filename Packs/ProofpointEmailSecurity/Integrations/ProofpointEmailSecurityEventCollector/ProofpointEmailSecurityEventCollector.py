@@ -247,7 +247,7 @@ def fetch_events(
     event_type = connection.event_type
     demisto.debug(f"[{event_type}] Starting to fetch events.")
     events: list[dict] = []
-    event_ids = set()
+    event_ids = set()  # For deduplication within the *same* fetch cycle only! (Cannot deduplicate all events from the websocket)
     fetch_start_time = datetime.utcnow()
 
     demisto.info(f"[{event_type}] Preparing to acquire lock & recv.")
@@ -255,8 +255,12 @@ def fetch_events(
         while not is_interval_passed(fetch_start_time, fetch_interval):
             try:
                 event = receive_event(connection, timeout=RECEIVE_TIMEOUT)
+                event_id = get_event_id(event)
+                if event_id in event_ids:
+                    demisto.debug(f"[{event_type}] Already fetched {event_id=}. Skipping duplicate.")
+                    continue
+                event_ids.add(event_id)
                 events.append(event)
-                event_ids.add(event.get("id", event.get("guid")))
 
             except TimeoutError:
                 # This exception typically indicates no new events from websocket stream
@@ -295,9 +299,7 @@ def fetch_events(
 
     demisto.info(f"[{event_type}] Released the lock and finished recv.")
     num_events = len(events)
-    last_event_time = None
-    if events:
-        last_event_time = events[-1].get("_time")
+    last_event_time = events[-1].get("_time") if events else None
     demisto.debug(f"[{event_type}] Fetched {num_events} events with {last_event_time=}")
     demisto.debug(f"[{event_type}] Fetched events IDs: {', '.join([str(event_id) for event_id in event_ids])}.")
     if write_to_integration_context:
@@ -308,6 +310,20 @@ def fetch_events(
         )
     should_skip_sleeping.append(True)
     return events
+
+
+def get_event_id(event: dict):
+    """
+    Extracts event ID using either the `id`, `guid`, or `filter.qid` field.
+    Used for id-based deduplication and logging.
+
+    Args:
+        event (dict): The raw event.
+
+    Returns:
+        str: Event ID.
+    """
+    return event.get("id") or event.get("guid") or event.get("filter", {}).get("qid")
 
 
 def receive_event(connection: EventConnection, timeout: int = RECEIVE_TIMEOUT) -> dict[str, Any]:
@@ -322,7 +338,7 @@ def receive_event(connection: EventConnection, timeout: int = RECEIVE_TIMEOUT) -
         dict[str, Any]: The processed event with '_time' and 'event_type' fields.
     """
     event = connection.receive(timeout=timeout)
-    event_id = event.get("id", event.get("guid"))
+    event_id = get_event_id(event)
     event_ts = event.get("ts")
     if not event_ts:
         # if timestamp is not in the response, use the current time
@@ -372,8 +388,14 @@ def recover_after_disconnection(connection: EventConnection, events: list[dict],
     """
     demisto.debug(f"[{connection.event_type}] Recovering after disconnection.")
     in_transit_events = receive_events_after_disconnection(connection)
-    events.extend(in_transit_events)
-    event_ids.update([event.get("id", event.get("guid")) for event in in_transit_events])
+    for event in in_transit_events:
+        event_id = get_event_id(event)
+        if event_id in event_ids:
+            demisto.debug(f"[{connection.event_type}] Already fetched {event_id=}. Skipping duplicate.")
+            continue
+        event_ids.add(event_id)
+        events.append(event)
+
     demisto.debug(
         f"[{connection.event_type}] Received {len(in_transit_events)} in-transit events and event ids after disconnection."
     )
@@ -449,7 +471,7 @@ def long_running_execution_command(host: str, cluster_id: str, api_key: str, fet
         event_types (List[str]): The list of event types to collect.
     """
     support_multithreading()
-    demisto.info("starting long running execution.")
+    demisto.info(f"Starting long running execution. Fetching {event_types=}.")
     while True:
         try:
             with websocket_connections(
@@ -534,7 +556,7 @@ def main():  # pragma: no cover
     cluster_id = params.get("cluster_id", "")
     api_key = params.get("api_key", {}).get("password", "")
     fetch_interval = int(params.get("fetch_interval", FETCH_INTERVAL_IN_SECONDS))
-    event_types = params.get("event_types", EVENT_TYPES)
+    event_types = argToList(params.get("event_types")) or EVENT_TYPES
     try:
         if command == "long-running-execution":
             if params.get("isFetchEvents", False):

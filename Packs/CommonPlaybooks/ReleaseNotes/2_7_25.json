@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The Detonate File - Generic and Detonate URL - Generic v1.5 playbooks have been updated to use the new versions of ANYRUN detonate playbooks which no longer support the incident_info parameter. Custom playbooks that rely on passing incident_info through these generic detonation playbooks to ANYRUN must be updated accordingly."
+}

@@ -1,4 +1,8 @@
 category: Analytics & SIEM
+provider: Druva
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: DruvaEventCollector
   version: -1
@@ -23,12 +27,22 @@ configuration:
   name: proxy
   section: Connect
   type: 8
-- display: The maximum number of events per fetch.
+- display: The maximum number of events per fetch per type.
   additionalinfo: The API only returns up to 500 events at a time without limiting capabilities, so it is best to enter this parameter in multiples of 500.
   name: max_fetch
   type: 0
   defaultvalue: "10000"
   section: Collect
+- display: Events to fetch
+  name: event_types
+  type: 16
+  additionalinfo: Select the types of events to fetch.
+  defaultvalue: "InSync events"
+  options:
+  - InSync events
+  - Cybersecurity events
+  section: Collect
+  required: false
 description: Druva Ransomware Response Integration provides ransomware protection for endpoints, SaaS applications and data center workloads for Druva Ransomware Recovery customers.
 display: Druva Event Collector
 name: DruvaEventCollector
@@ -44,9 +58,18 @@ script:
       - 'true'
       - 'false'
       required: true
-    - description: A string received in a previous run, marking the point in time from which we want to fetch.
+    - description: A string received in a previous run, marking the point in time from which we want to fetch. For InSync events, this is a tracker. For Cybersecurity events, this is a pageToken.
       name: tracker
       required: false
+    - auto: PREDEFINED
+      description: The type of events to fetch.
+      name: event_types
+      predefined:
+      - InSync events
+      - Cybersecurity events
+      defaultValue: InSync events
+      required: false
+      isArray: true
     description: Gets events from Druva API in one batch (max 500). If tracker is given, only its successive events will be fetched.
     execution: false
     name: druva-get-events

@@ -297,11 +297,7 @@
             "selectValues": null
         }
     ],
-    "defaultRows": [
-        {},
-        {},
-        {}
-    ],
+    "defaultRows": [{}, {}, {}],
     "sla": 0,
     "threshold": 72,
     "fromVersion": "6.8.0"

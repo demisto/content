@@ -28,6 +28,6 @@ isllm: false
 subtype: python3
 runas: DBotWeakRole
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.12.6204436
 tests:
 - Base64Decode - Test

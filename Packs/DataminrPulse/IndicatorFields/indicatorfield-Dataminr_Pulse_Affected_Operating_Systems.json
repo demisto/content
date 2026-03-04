@@ -1,0 +1,31 @@
+{
+    "id": "indicator_dataminrpulseaffectedoperatingsystems",
+    "version": -1,
+    "modified": "2025-09-23T21:59:57.147710815+05:30",
+    "name": "Dataminr Pulse Affected Operating Systems",
+    "ownerOnly": false,
+    "cliName": "dataminrpulseaffectedoperatingsystems",
+    "type": "tagsSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": true,
+    "associatedTypes": [
+        "Dataminr Pulse Malware Indicator"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

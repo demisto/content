@@ -4,7 +4,8 @@ commonfields:
 name: ProtectWise
 display: ProtectWise
 category: Network Security
-description: Cloud based Security Network DVR
+provider: Verizon Communications
+description: Cloud based Security Network DVR.
 configuration:
 - display: Url
   name: url
@@ -182,7 +183,7 @@ script:
     - contextPath: Protectwise.Event.killChainStage
       description: The Kill Chain Stage of the event.
     - contextPath: Protectwise.Event.confidence
-      description: The confidence level (0-100)
+      description: The confidence level (0-100).
     - contextPath: Protectwise.Event.startedAt
       description: The time that Event started.
     - contextPath: Protectwise.Event.observedAt
@@ -282,32 +283,32 @@ script:
       description: The sensor ID or a comma-separated list of sensor IDs.
     - name: start
       required: true
-      description: 'The timestamp of the start time of the event. For example, 1401451200000, or 2015-03-25T12:00:00'
+      description: 'The timestamp of the start time of the event. For example, 1401451200000, or 2015-03-25T12:00:00.'
     - name: end
       required: true
-      description: 'The timestamp of the end of the event. For example, 1401451500000, or 2015-03-25T12:00:00'
+      description: 'The timestamp of the end of the event. For example, 1401451500000, or 2015-03-25T12:00:00.'
     - name: type
       description: 'Filter by observation type. Can be: "ids", "http", "iprep", "urlrep", "protocol" or "file".'
     - name: hasKillChain
-      description: Search for observations in every kill chain stage (true false)
+      description: Search for observations in every kill chain stage (true false).
     - name: killChainStage
-      description: Filter by kill chain stage (Methodology  Recon  Delivery  Exploit  Beacon  CnC  Fortification  Data_Theft)
+      description: Filter by kill chain stage (Methodology  Recon  Delivery  Exploit  Beacon  CnC  Fortification  Data_Theft).
     - name: ip
-      description: Filter observations by IP address in the src/dst fields
+      description: Filter observations by IP address in the src/dst fields.
     - name: threatLevel
-      description: Filter by Low, Medium, or High threats (NONE  LOW  MEDIUM  HIGH)
+      description: Filter by Low, Medium, or High threats (NONE  LOW  MEDIUM  HIGH).
     - name: threatCategory
-      description: Filter by threat category (ExploitsAndAttacks  DenialOfService  Malware  Scanning  Botnets  Phishing  Suspicious  MaliciousHost  APT  Misc  Unknown)
+      description: Filter by threat category (ExploitsAndAttacks  DenialOfService  Malware  Scanning  Botnets  Phishing  Suspicious  MaliciousHost  APT  Misc  Unknown).
     - name: signatureId
-      description: 'Filter by threat signature (find observations of the same type of threat) -  Example: 69020504'
+      description: 'Filter by threat signature (find observations of the same type of threat) -  Example: 69020504.'
     - name: minLimit
-      description: Try to return at least this many results per page
+      description: Try to return at least this many results per page.
     - name: maxLimit
-      description: Do not return more than this many results
+      description: Do not return more than this many results.
     - name: reverseOrder
-      description: Return results sorted by descending timestamp (default = true)
+      description: Return results sorted by descending timestamp (default = true).
     - name: nextPage
-      description: An identifier to fetch the next page in the result set
+      description: An identifier to fetch the next page in the result set.
     description: Searches for observations in ProtectWise.
   - name: protectwise-search-observations
     arguments:
@@ -319,7 +320,7 @@ script:
       description: 'Timestamp of the start time of the event. For example, 1401451200000, or 2015-03-25T12:00:00.'
     - name: end
       required: true
-      description: 'Timestamp of the end of the event. For example, 1401451500000, or 2015-03-25T12:00:00'
+      description: 'Timestamp of the end of the event. For example, 1401451500000, or 2015-03-25T12:00:00.'
     - name: type
       description: 'Filter by observation type. Can be: "ids", "http", "iprep", "urlrep", "protocol", or "file".'
     - name: hasKillChain
@@ -392,7 +393,7 @@ script:
     - contextPath: Protectwise.Observation.killChainStage
       description: The Killchain Stage of the observation.
     - contextPath: Protectwise.Observation.source
-      description: Observation Source
+      description: Observation Source.
     - contextPath: Protectwise.Observation.sensorId
       description: ID of the Protectwise sensor that generated the observation.
     - contextPath: Protectwise.Observation.threatScore
@@ -500,7 +501,7 @@ script:
     - contextPath: Protectwise.Observation.sensorId
       description: The Sensor ID of the observation.
     - contextPath: Protectwise.Observation.PCAPSize
-      description: Estimated PCAP size in bytes
+      description: Estimated PCAP size in bytes.
     description: Returns ProtectWise Observation PCAP file information.
   - name: get-token
     deprecated: true

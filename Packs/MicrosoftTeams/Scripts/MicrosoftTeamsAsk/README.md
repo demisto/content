@@ -28,7 +28,7 @@ This script uses the following commands and scripts.
 | option1 | First reply option. Options cannot contain whitespaces. |
 | option2 | Second reply option. Options cannot contain whitespaces. |
 | additional_options | A CSV list of additional options \(in case more than 2 options are required\). Options cannot contain whitespaces. |
-| team_member | Team member to which to send the question. |
+| team_member | The question recipient. Accepts the team member's email address or username.|
 | task_id | Task ID of the playbook task to close with the reply. If not provided, no playbook task will be closed. |
 | channel | Channel to which to send the question. |
 | team | The team in which to mirror the Cortex XSOAR investigation. If not specified, the default team configured in the integration parameters will be used. |

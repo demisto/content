@@ -8,6 +8,7 @@ TASK_STATES = {
     "skipped": "WillNotBeExecuted",
     "willnotbeexecuted": "WillNotBeExecuted",
     "blocked": "Blocked",
+    undefined: undefined
 }
 
 

@@ -116,7 +116,7 @@ script:
     - contextPath: Sixgill.CVE.rawJSON
       description: The raw JSON of the CVE entich information.
       type: String
-  dockerimage: demisto/sixgill:1.0.0.4887903
+  dockerimage: demisto/sixgill:1.0.0.6979213
   runonce: false
   script: '-'
   subtype: python3
@@ -126,3 +126,4 @@ tests:
 - No tests (auto formatted)
 sectionorder:
 - Connect
+provider: BitSight

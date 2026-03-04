@@ -26,8 +26,8 @@ def cve_enrichment_script(
     Returns:
         CommandResults: The enriched CVE data.
     """
-    cve_list = extract_indicators(cve_list, "cve")
-
+    cve_instances, extract_verbose = create_and_extract_indicators(cve_list, "cve")
+    valid_inputs = [cve_instance.extracted_value for cve_instance in cve_instances if cve_instance.extracted_value]
     indicator_mapping = {
         "ID": "ID",
         "Brand": "Brand",
@@ -36,7 +36,7 @@ def cve_enrichment_script(
         "Published": "Published",
     }
 
-    cve_indicator = Indicator(
+    cve_indicator_schema = IndicatorSchema(
         type="cve",
         value_field="ID",
         context_path_prefix="CVE(",  # add ( to prefix to distinct from CVESearch v2 integration context path
@@ -47,7 +47,7 @@ def cve_enrichment_script(
     create_new_indicator_commands = [
         Command(
             name="CreateNewIndicatorsOnly",
-            args={"indicator_values": cve_list, "type": "CVE"},
+            args={"indicator_values": valid_inputs, "type": "CVE"},
             command_type=CommandType.BUILTIN,
             context_output_mapping=None,
             ignore_using_brand=True,  # never inject using-brand for server builtins
@@ -58,7 +58,7 @@ def cve_enrichment_script(
     enrich_indicator_commands = [
         Command(
             name="enrichIndicators",
-            args={"indicatorsValues": cve_list},
+            args={"indicatorsValues": valid_inputs},
             command_type=CommandType.EXTERNAL,
         )
     ]
@@ -77,8 +77,9 @@ def cve_enrichment_script(
         external_enrichment=external_enrichment,
         final_context_path="CVEEnrichment",
         args=demisto.args(),
-        data=cve_list,
-        indicator=cve_indicator,
+        indicator_schema=cve_indicator_schema,
+        indicator_instances=cve_instances,
+        verbose_outputs=[extract_verbose],
     )
     return cve_reputation.run()
 

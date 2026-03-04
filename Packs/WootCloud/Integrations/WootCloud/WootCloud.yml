@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: Netskope
 description: Append HyperContext™ insights to your SIEM data and feed them into your orchestration workflows.
 display: WootCloud
 name: WootCloud
@@ -62,238 +63,238 @@ script:
       description: Examples are (2 hours, 4 minutes, 6 month, 1 day, etc.)
       required: true
     - name: severity
-      description: severity with values of 'notice', 'warning', 'critical'
+      description: severity with values of 'notice', 'warning', 'critical'.
       defaultValue:
     - name: skip
       description: 'Integer value for pagination. Default value is 0.'
       defaultValue: 0
     - name: limit
-      description: 'Integer value for pagination. Default value: 10. Max Value: 500'
+      description: 'Integer value for pagination. Default value: 10. Max Value: 500.'
       defaultValue: 10
     - name: site_id
-      description: Array of site ids. Only entered if you want results for a particular site(s) (building, city, region)
+      description: Array of site ids. Only entered if you want results for a particular site(s) (building, city, region).
     outputs:
     - contextPath: WootCloud.PacketAlert.id
-      description: 'ID of alert'
+      description: 'ID of alert.'
       type: String
     - contextPath: WootCloud.PacketAlert.address
-      description: 'Mac Address of device'
+      description: 'Mac Address of device.'
       type: String
     - contextPath: WootCloud.PacketAlert.timestamp
-      description: 'Alert timestamp'
+      description: 'Alert timestamp.'
       type: Date
     - contextPath: WootCloud.PacketAlert.severity
-      description: 'Severity level'
+      description: 'Severity level.'
       type: String
     - contextPath: WootCloud.PacketAlert.category
-      description: 'Alert Category'
+      description: 'Alert Category.'
       type: String
     - contextPath: WootCloud.PacketAlert.signature
-      description: 'signature'
+      description: 'signature.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.city
-      description: 'source city'
+      description: 'source city.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.continent
-      description: 'source continent'
+      description: 'source continent.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.country
-      description: 'source country'
+      description: 'source country.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.ip
-      description: 'source ip'
+      description: 'source ip.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.latitude
-      description: 'source latitude'
+      description: 'source latitude.'
       type: Number
     - contextPath: WootCloud.PacketAlert.source.longitude
-      description: 'source longitude'
+      description: 'source longitude.'
       type: Number
     - contextPath: WootCloud.PacketAlert.source.mac
-      description: 'source mac address'
+      description: 'source mac address.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.network
-      description: 'source network'
+      description: 'source network.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.port
-      description: 'source port'
+      description: 'source port.'
       type: Number
     - contextPath: WootCloud.PacketAlert.source.state
-      description: 'source state'
+      description: 'source state.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.subnet
-      description: 'source subnet'
+      description: 'source subnet.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.time_zone
-      description: 'source time zone'
+      description: 'source time zone.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.zip
-      description: 'source zip'
+      description: 'source zip.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.inferred.device_id
-      description: 'source inferred device ID'
+      description: 'source inferred device ID.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.inferred.asset
-      description: 'source inferred asset'
+      description: 'source inferred asset.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.inferred.managed
-      description: 'source inferred managed'
+      description: 'source inferred managed.'
       type: Number
     - contextPath: WootCloud.PacketAlert.source.inferred.category
-      description: 'source inferred category'
+      description: 'source inferred category.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.inferred.control
-      description: 'source inferred control'
+      description: 'source inferred control.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.inferred.host_name
-      description: 'source inferred host name'
+      description: 'source inferred host name.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.inferred.os
-      description: 'source inferred OS'
+      description: 'source inferred OS.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.inferred.os_version
-      description: 'source inferred OS version'
+      description: 'source inferred OS version.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.inferred.ownership
-      description: 'source inferred ownership'
+      description: 'source inferred ownership.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.inferred.total_risk
-      description: 'source inferred total risk score'
+      description: 'source inferred total risk score.'
       type: Number
     - contextPath: WootCloud.PacketAlert.source.inferred.type
-      description: 'source inferred type'
+      description: 'source inferred type.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.inferred.username
-      description: 'source inferred username'
+      description: 'source inferred username.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.inferred.managed_info.host_name
-      description: 'source inferred managed host name'
+      description: 'source inferred managed host name.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.city
-      description: 'destination city'
+      description: 'destination city.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.continent
-      description: 'destination continent'
+      description: 'destination continent.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.country
-      description: 'destination country'
+      description: 'destination country.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.ip
-      description: 'destination ip'
+      description: 'destination ip.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.latitude
-      description: 'destination latitude'
+      description: 'destination latitude.'
       type: Number
     - contextPath: WootCloud.PacketAlert.destination.longitude
-      description: 'destination longitude'
+      description: 'destination longitude.'
       type: Number
     - contextPath: WootCloud.PacketAlert.destination.mac
-      description: 'destination mac address'
+      description: 'destination mac address.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.network
-      description: 'destination network'
+      description: 'destination network.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.port
-      description: 'destination port'
+      description: 'destination port.'
       type: Number
     - contextPath: WootCloud.PacketAlert.destination.state
-      description: 'destination state'
+      description: 'destination state.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.subnet
-      description: 'destination subnet'
+      description: 'destination subnet.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.time_zone
-      description: 'destination time zone'
+      description: 'destination time zone.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.zip
-      description: 'destination zip'
+      description: 'destination zip.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.inferred.device_id
-      description: 'destination inferred device ID'
+      description: 'destination inferred device ID.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.inferred.asset
-      description: 'destination inferred asset'
+      description: 'destination inferred asset.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.inferred.managed
-      description: 'destination inferred managed'
+      description: 'destination inferred managed.'
       type: Number
     - contextPath: WootCloud.PacketAlert.destination.inferred.category
-      description: 'destination inferred category'
+      description: 'destination inferred category.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.inferred.control
-      description: 'destination inferred control'
+      description: 'destination inferred control.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.inferred.host_name
-      description: 'destination inferred host name'
+      description: 'destination inferred host name.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.inferred.os
-      description: 'destination inferred OS'
+      description: 'destination inferred OS.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.inferred.os_version
-      description: 'destination inferred OS version'
+      description: 'destination inferred OS version.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.inferred.ownership
-      description: 'destination inferred ownership'
+      description: 'destination inferred ownership.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.inferred.total_risk
-      description: 'destination inferred total risk score'
+      description: 'destination inferred total risk score.'
       type: Number
     - contextPath: WootCloud.PacketAlert.destination.inferred.type
-      description: 'destination inferred type'
+      description: 'destination inferred type.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.inferred.username
-      description: 'destination inferred username'
+      description: 'destination inferred username.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.inferred.managed_info.host_name
-      description: 'destination inferred managed info hostname'
+      description: 'destination inferred managed info hostname.'
       type: String
     - contextPath: WootCloud.PacketAlert.payload
-      description: 'payload'
+      description: 'payload.'
       type: String
     - contextPath: WootCloud.PacketAlert.http.hostname
-      description: 'http hostname'
+      description: 'http hostname.'
       type: String
     - contextPath: WootCloud.PacketAlert.http.http_method
-      description: 'http methon'
+      description: 'http methon.'
       type: String
     - contextPath: WootCloud.PacketAlert.http.http_user_agent
-      description: 'http user agent'
+      description: 'http user agent.'
       type: String
     - contextPath: WootCloud.PacketAlert.http.length
-      description: 'http length'
+      description: 'http length.'
       type: Number
     - contextPath: WootCloud.PacketAlert.http.protocol
-      description: 'http protocol'
+      description: 'http protocol.'
       type: String
     - contextPath: WootCloud.PacketAlert.http.redirect
-      description: 'http redirect'
+      description: 'http redirect.'
       type: String
     - contextPath: WootCloud.PacketAlert.http.http_refer
-      description: 'http referal'
+      description: 'http referal.'
       type: String
     - contextPath: WootCloud.PacketAlert.http.status
-      description: 'http status code'
+      description: 'http status code.'
       type: Number
     - contextPath: WootCloud.PacketAlert.http.url
-      description: 'http url'
+      description: 'http url.'
       type: String
     - contextPath: WootCloud.PacketAlert.type
-      description: 'http type'
+      description: 'http type.'
       type: String
     - contextPath: WootCloud.PacketAlert.group
-      description: 'group'
+      description: 'group.'
       type: String
     - contextPath: WootCloud.PacketAlert.subtype
-      description: 'subtype'
+      description: 'subtype.'
       type: String
     - contextPath: WootCloud.PacketAlert.title
-      description: 'title'
+      description: 'title.'
       type: String
     - contextPath: WootCloud.PacketAlert.description
-      description: 'description'
+      description: 'description.'
       type: String
     - contextPath: WootCloud.PacketAlert.references
-      description: 'references'
+      description: 'references.'
       type: String
 
   - name: wootcloud-get-bt-alerts
@@ -303,84 +304,84 @@ script:
       description: Examples are (2 hours, 4 minutes, 6 month, 1 day, etc.)
       required: true
     - name: severity
-      description: severity with values of 'notice', 'warning', 'critical'
+      description: severity with values of 'notice', 'warning', 'critical'.
     - name: skip
       description: 'Integer value for pagination. Default value is 0.'
       defaultValue: 0
     - name: limit
-      description: 'Integer value for pagination. Default value: 10. Max Value: 500'
+      description: 'Integer value for pagination. Default value: 10. Max Value: 500.'
       defaultValue: 10
     - name: site_id
-      description: Array of site ids. Only entered if you want results for a particular site(s) (building, city, region)
+      description: Array of site ids. Only entered if you want results for a particular site(s) (building, city, region).
     outputs:
     - contextPath: WootCloud.BluetoothAlert.id
-      description: 'ID'
+      description: 'ID.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.timestamp
-      description: 'timestamp'
+      description: 'timestamp.'
       type: Date
     - contextPath: WootCloud.BluetoothAlert.severity
-      description: 'severity'
+      description: 'severity.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.signature
-      description: 'signature'
+      description: 'signature.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.description
-      description: 'description'
+      description: 'description.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.address
-      description: 'address'
+      description: 'address.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.inferred.device_id
-      description: 'inferred device ID'
+      description: 'inferred device ID.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.inferred.asset
-      description: 'inferred asset'
+      description: 'inferred asset.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.inferred.managed
-      description: 'inferred managed'
+      description: 'inferred managed.'
       type: Number
     - contextPath: WootCloud.BluetoothAlert.inferred.category
-      description: 'inferred category'
+      description: 'inferred category.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.inferred.control
-      description: 'inferred control'
+      description: 'inferred control.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.inferred.host_name
-      description: 'inferred host name'
+      description: 'inferred host name.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.inferred.os
-      description: 'inferred OS'
+      description: 'inferred OS.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.inferred.os_version
-      description: 'inferred OS version'
+      description: 'inferred OS version.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.inferred.ownership
-      description: 'inferred ownership'
+      description: 'inferred ownership.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.inferred.total_risk
-      description: 'inferred total risk score'
+      description: 'inferred total risk score.'
       type: Number
     - contextPath: WootCloud.BluetoothAlert.inferred.type
-      description: 'inferred type'
+      description: 'inferred type.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.inferred.username
-      description: 'inferred username'
+      description: 'inferred username.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.inferred.managed_info.host_name
-      description: 'inferred managed info host name'
+      description: 'inferred managed info host name.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.type
-      description: 'type'
+      description: 'type.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.group
-      description: 'group'
+      description: 'group.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.subtype
-      description: 'subtype'
+      description: 'subtype.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.title
-      description: 'title'
+      description: 'title.'
       type: String
 
   - name: wootcloud-get-anomaly-alerts
@@ -390,547 +391,547 @@ script:
       description: Examples are (2 hours, 4 minutes, 6 month, 1 day, etc.)
       required: true
     - name: severity
-      description: severity with values of 'info, ''notice', 'warning', 'critical'
+      description: severity with values of 'info, ''notice', 'warning', 'critical'.
     - name: skip
-      description: 'integer value for pagination. Default value: 0'
+      description: 'integer value for pagination. Default value: 0.'
       defaultValue: 0
     - name: limit
-      description: 'Integer value for pagination. Default value: 10. Max Value: 500'
+      description: 'Integer value for pagination. Default value: 10. Max Value: 500.'
       defaultValue: 10
     - name: site_id
-      description: Array of site ids. Only entered if you want results for a particular site(s) (building, city, region)
+      description: Array of site ids. Only entered if you want results for a particular site(s) (building, city, region).
     outputs:
     - contextPath: WootCloud.AnomalyAlert.id
-      description: 'ID'
+      description: 'ID.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.timestamp
-      description: 'timestamp'
+      description: 'timestamp.'
       type: Date
     - contextPath: WootCloud.AnomalyAlert.anomaly_type
-      description: 'anomaly type'
+      description: 'anomaly type.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.signature
-      description: 'signature'
+      description: 'signature.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.description
-      description: 'description'
+      description: 'description.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.severity
-      description: 'severity'
+      description: 'severity.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.count
-      description: 'count'
+      description: 'count.'
       type: Number
     - contextPath: WootCloud.AnomalyAlert.average
-      description: 'average'
+      description: 'average.'
       type: Number
     - contextPath: WootCloud.AnomalyAlert.minimum
-      description: 'minimum'
+      description: 'minimum.'
       type: Number
     - contextPath: WootCloud.AnomalyAlert.maximum
-      description: 'maximum'
+      description: 'maximum.'
       type: Number
     - contextPath: WootCloud.AnomalyAlert.standard_deviation
-      description: 'standard deviation'
+      description: 'standard deviation.'
       type: Number
     - contextPath: WootCloud.AnomalyAlert.anomaly_score
-      description: 'anomaly score'
+      description: 'anomaly score.'
       type: Number
     - contextPath: WootCloud.AnomalyAlert.observed_value
-      description: 'observed value'
+      description: 'observed value.'
       type: Number
     - contextPath: WootCloud.AnomalyAlert.deviation_from_norm
-      description: 'deviation from the norm'
+      description: 'deviation from the norm.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.units
-      description: 'units'
+      description: 'units.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.address
-      description: 'address'
+      description: 'address.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.type
-      description: 'type'
+      description: 'type.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.group
-      description: 'group'
+      description: 'group.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.subtype
-      description: 'subtype'
+      description: 'subtype.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.title
-      description: 'title'
+      description: 'title.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.device_details.device_id
-      description: 'device details device ID'
+      description: 'device details device ID.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.device_details.asset
-      description: 'device details asset'
+      description: 'device details asset.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.device_details.managed
-      description: 'device details managed'
+      description: 'device details managed.'
       type: Number
     - contextPath: WootCloud.AnomalyAlert.device_details.category
-      description: 'device details category'
+      description: 'device details category.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.device_details.control
-      description: 'device details control'
+      description: 'device details control.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.device_details.host_name
-      description: 'device details host name'
+      description: 'device details host name.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.device_details.os
-      description: 'device details OS'
+      description: 'device details OS.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.device_details.os_version
-      description: 'device details OS version'
+      description: 'device details OS version.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.device_details.ownership
-      description: 'device details ownership'
+      description: 'device details ownership.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.device_details.total_risk
-      description: 'device details total risk score'
+      description: 'device details total risk score.'
       type: Number
     - contextPath: WootCloud.AnomalyAlert.device_details.type
-      description: 'device details type'
+      description: 'device details type.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.device_details.username
-      description: 'device details username'
+      description: 'device details username.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.device_details.managed_info.host_name
-      description: 'device details managed info host name'
+      description: 'device details managed info host name.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.connections.ip
-      description: 'connections ip'
+      description: 'connections ip.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.connections.port
-      description: 'connections port'
+      description: 'connections port.'
       type: Number
     - contextPath: WootCloud.AnomalyAlert.connections.connection_count
-      description: 'connections connection count'
+      description: 'connections connection count.'
       type: Number
 
   - name: wootcloud-fetch-packet-alert
     description: retrieve single packet alert given packet id
     arguments:
     - name: alert_id
-      description: the ID of the packet alert
+      description: the ID of the packet alert.
       default: true
       required: true
     outputs:
     - contextPath: WootCloud.PacketAlert.id
-      description: 'ID of alert'
+      description: 'ID of alert.'
       type: String
     - contextPath: WootCloud.PacketAlert.address
-      description: 'Mac Address of device'
+      description: 'Mac Address of device.'
       type: String
     - contextPath: WootCloud.PacketAlert.timestamp
-      description: 'Alert timestamp'
+      description: 'Alert timestamp.'
       type: Date
     - contextPath: WootCloud.PacketAlert.severity
-      description: 'Severity level'
+      description: 'Severity level.'
       type: String
     - contextPath: WootCloud.PacketAlert.category
-      description: 'Alert Category'
+      description: 'Alert Category.'
       type: String
     - contextPath: WootCloud.PacketAlert.signature
-      description: 'signature'
+      description: 'signature.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.city
-      description: 'source city'
+      description: 'source city.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.continent
-      description: 'source continent'
+      description: 'source continent.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.country
-      description: 'source country'
+      description: 'source country.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.ip
-      description: 'source ip'
+      description: 'source ip.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.latitude
-      description: 'source latitude'
+      description: 'source latitude.'
       type: Number
     - contextPath: WootCloud.PacketAlert.source.longitude
-      description: 'source longitude'
+      description: 'source longitude.'
       type: Number
     - contextPath: WootCloud.PacketAlert.source.mac
-      description: 'source mac address'
+      description: 'source mac address.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.network
-      description: 'source network'
+      description: 'source network.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.port
-      description: 'source port'
+      description: 'source port.'
       type: Number
     - contextPath: WootCloud.PacketAlert.source.state
-      description: 'source state'
+      description: 'source state.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.subnet
-      description: 'source subnet'
+      description: 'source subnet.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.time_zone
-      description: 'source time zone'
+      description: 'source time zone.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.zip
-      description: 'source zip'
+      description: 'source zip.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.inferred.device_id
-      description: 'source inferred device ID'
+      description: 'source inferred device ID.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.inferred.asset
-      description: 'source inferred asset'
+      description: 'source inferred asset.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.inferred.managed
-      description: 'source inferred managed'
+      description: 'source inferred managed.'
       type: Number
     - contextPath: WootCloud.PacketAlert.source.inferred.category
-      description: 'source inferred category'
+      description: 'source inferred category.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.inferred.control
-      description: 'source inferred control'
+      description: 'source inferred control.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.inferred.host_name
-      description: 'source inferred host name'
+      description: 'source inferred host name.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.inferred.os
-      description: 'source inferred OS'
+      description: 'source inferred OS.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.inferred.os_version
-      description: 'source inferred OS version'
+      description: 'source inferred OS version.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.inferred.ownership
-      description: 'source inferred ownership'
+      description: 'source inferred ownership.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.inferred.total_risk
-      description: 'source inferred total risk score'
+      description: 'source inferred total risk score.'
       type: Number
     - contextPath: WootCloud.PacketAlert.source.inferred.type
-      description: 'source inferred type'
+      description: 'source inferred type.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.inferred.username
-      description: 'source inferred username'
+      description: 'source inferred username.'
       type: String
     - contextPath: WootCloud.PacketAlert.source.inferred.managed_info.host_name
-      description: 'source inferred managed host name'
+      description: 'source inferred managed host name.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.city
-      description: 'destination city'
+      description: 'destination city.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.continent
-      description: 'destination continent'
+      description: 'destination continent.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.country
-      description: 'destination country'
+      description: 'destination country.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.ip
-      description: 'destination ip'
+      description: 'destination ip.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.latitude
-      description: 'destination latitude'
+      description: 'destination latitude.'
       type: Number
     - contextPath: WootCloud.PacketAlert.destination.longitude
-      description: 'destination longitude'
+      description: 'destination longitude.'
       type: Number
     - contextPath: WootCloud.PacketAlert.destination.mac
-      description: 'destination mac address'
+      description: 'destination mac address.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.network
-      description: 'destination network'
+      description: 'destination network.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.port
-      description: 'destination port'
+      description: 'destination port.'
       type: Number
     - contextPath: WootCloud.PacketAlert.destination.state
-      description: 'destination state'
+      description: 'destination state.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.subnet
-      description: 'destination subnet'
+      description: 'destination subnet.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.time_zone
-      description: 'destination time zone'
+      description: 'destination time zone.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.zip
-      description: 'destination zip'
+      description: 'destination zip.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.inferred.device_id
-      description: 'destination inferred device ID'
+      description: 'destination inferred device ID.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.inferred.asset
-      description: 'destination inferred asset'
+      description: 'destination inferred asset.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.inferred.managed
-      description: 'destination inferred managed'
+      description: 'destination inferred managed.'
       type: Number
     - contextPath: WootCloud.PacketAlert.destination.inferred.category
-      description: 'destination inferred category'
+      description: 'destination inferred category.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.inferred.control
-      description: 'destination inferred control'
+      description: 'destination inferred control.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.inferred.host_name
-      description: 'destination inferred host name'
+      description: 'destination inferred host name.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.inferred.os
-      description: 'destination inferred OS'
+      description: 'destination inferred OS.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.inferred.os_version
-      description: 'destination inferred OS version'
+      description: 'destination inferred OS version.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.inferred.ownership
-      description: 'destination inferred ownership'
+      description: 'destination inferred ownership.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.inferred.total_risk
-      description: 'destination inferred total risk score'
+      description: 'destination inferred total risk score.'
       type: Number
     - contextPath: WootCloud.PacketAlert.destination.inferred.type
-      description: 'destination inferred type'
+      description: 'destination inferred type.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.inferred.username
-      description: 'destination inferred username'
+      description: 'destination inferred username.'
       type: String
     - contextPath: WootCloud.PacketAlert.destination.inferred.managed_info.host_name
-      description: 'destination inferred managed info hostname'
+      description: 'destination inferred managed info hostname.'
       type: String
     - contextPath: WootCloud.PacketAlert.payload
-      description: 'payload'
+      description: 'payload.'
       type: String
     - contextPath: WootCloud.PacketAlert.http.hostname
-      description: 'http hostname'
+      description: 'http hostname.'
       type: String
     - contextPath: WootCloud.PacketAlert.http.http_method
-      description: 'http methon'
+      description: 'http methon.'
       type: String
     - contextPath: WootCloud.PacketAlert.http.http_user_agent
-      description: 'http user agent'
+      description: 'http user agent.'
       type: String
     - contextPath: WootCloud.PacketAlert.http.length
-      description: 'http length'
+      description: 'http length.'
       type: Number
     - contextPath: WootCloud.PacketAlert.http.protocol
-      description: 'http protocol'
+      description: 'http protocol.'
       type: String
     - contextPath: WootCloud.PacketAlert.http.redirect
-      description: 'http redirect'
+      description: 'http redirect.'
       type: String
     - contextPath: WootCloud.PacketAlert.http.http_refer
-      description: 'http referal'
+      description: 'http referal.'
       type: String
     - contextPath: WootCloud.PacketAlert.http.status
-      description: 'http status code'
+      description: 'http status code.'
       type: Number
     - contextPath: WootCloud.PacketAlert.http.url
-      description: 'http url'
+      description: 'http url.'
       type: String
     - contextPath: WootCloud.PacketAlert.type
-      description: 'http type'
+      description: 'http type.'
       type: String
     - contextPath: WootCloud.PacketAlert.group
-      description: 'group'
+      description: 'group.'
       type: String
     - contextPath: WootCloud.PacketAlert.subtype
-      description: 'subtype'
+      description: 'subtype.'
       type: String
     - contextPath: WootCloud.PacketAlert.title
-      description: 'title'
+      description: 'title.'
       type: String
     - contextPath: WootCloud.PacketAlert.description
-      description: 'description'
+      description: 'description.'
       type: String
     - contextPath: WootCloud.PacketAlert.references
-      description: 'references'
+      description: 'references.'
       type: String
   - name: wootcloud-fetch-bluetooth-alert
     description: retrieve single bluetooth alert given packet id
     arguments:
     - name: alert_id
-      description: the ID of the bluetooth alert
+      description: the ID of the bluetooth alert.
       default: true
       required: true
     outputs:
     - contextPath: WootCloud.BluetoothAlert.id
-      description: 'ID'
+      description: 'ID.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.timestamp
-      description: 'timestamp'
+      description: 'timestamp.'
       type: Date
     - contextPath: WootCloud.BluetoothAlert.severity
-      description: 'severity'
+      description: 'severity.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.signature
-      description: 'signature'
+      description: 'signature.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.description
-      description: 'description'
+      description: 'description.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.address
-      description: 'address'
+      description: 'address.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.inferred.device_id
-      description: 'inferred device ID'
+      description: 'inferred device ID.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.inferred.asset
-      description: 'inferred asset'
+      description: 'inferred asset.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.inferred.managed
-      description: 'inferred managed'
+      description: 'inferred managed.'
       type: Number
     - contextPath: WootCloud.BluetoothAlert.inferred.category
-      description: 'inferred category'
+      description: 'inferred category.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.inferred.control
-      description: 'inferred control'
+      description: 'inferred control.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.inferred.host_name
-      description: 'inferred host name'
+      description: 'inferred host name.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.inferred.os
-      description: 'inferred OS'
+      description: 'inferred OS.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.inferred.os_version
-      description: 'inferred OS version'
+      description: 'inferred OS version.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.inferred.ownership
-      description: 'inferred ownership'
+      description: 'inferred ownership.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.inferred.total_risk
-      description: 'inferred total risk score'
+      description: 'inferred total risk score.'
       type: Number
     - contextPath: WootCloud.BluetoothAlert.inferred.type
-      description: 'inferred type'
+      description: 'inferred type.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.inferred.username
-      description: 'inferred username'
+      description: 'inferred username.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.inferred.managed_info.host_name
-      description: 'inferred managed info host name'
+      description: 'inferred managed info host name.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.type
-      description: 'type'
+      description: 'type.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.group
-      description: 'group'
+      description: 'group.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.subtype
-      description: 'subtype'
+      description: 'subtype.'
       type: String
     - contextPath: WootCloud.BluetoothAlert.title
-      description: 'title'
+      description: 'title.'
       type: String
   - name: wootcloud-fetch-anomaly-alert
     description: retrieve single anomaly alert given packet id
     arguments:
     - name: alert_id
-      description: the ID of the anomaly alert
+      description: the ID of the anomaly alert.
       default: true
       required: true
     outputs:
     - contextPath: WootCloud.AnomalyAlert.id
-      description: 'ID'
+      description: 'ID.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.timestamp
-      description: 'timestamp'
+      description: 'timestamp.'
       type: Date
     - contextPath: WootCloud.AnomalyAlert.anomaly_type
-      description: 'anomaly type'
+      description: 'anomaly type.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.signature
-      description: 'signature'
+      description: 'signature.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.description
-      description: 'description'
+      description: 'description.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.severity
-      description: 'severity'
+      description: 'severity.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.count
-      description: 'count'
+      description: 'count.'
       type: Number
     - contextPath: WootCloud.AnomalyAlert.average
-      description: 'average'
+      description: 'average.'
       type: Number
     - contextPath: WootCloud.AnomalyAlert.minimum
-      description: 'minimum'
+      description: 'minimum.'
       type: Number
     - contextPath: WootCloud.AnomalyAlert.maximum
-      description: 'maximum'
+      description: 'maximum.'
       type: Number
     - contextPath: WootCloud.AnomalyAlert.standard_deviation
-      description: 'standard deviation'
+      description: 'standard deviation.'
       type: Number
     - contextPath: WootCloud.AnomalyAlert.anomaly_score
-      description: 'anomaly score'
+      description: 'anomaly score.'
       type: Number
     - contextPath: WootCloud.AnomalyAlert.observed_value
-      description: 'observed value'
+      description: 'observed value.'
       type: Number
     - contextPath: WootCloud.AnomalyAlert.deviation_from_norm
-      description: 'deviation from the norm'
+      description: 'deviation from the norm.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.units
-      description: 'units'
+      description: 'units.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.address
-      description: 'address'
+      description: 'address.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.type
-      description: 'type'
+      description: 'type.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.group
-      description: 'group'
+      description: 'group.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.subtype
-      description: 'subtype'
+      description: 'subtype.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.title
-      description: 'title'
+      description: 'title.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.device_details.device_id
-      description: 'device details device ID'
+      description: 'device details device ID.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.device_details.asset
-      description: 'device details asset'
+      description: 'device details asset.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.device_details.managed
-      description: 'device details managed'
+      description: 'device details managed.'
       type: Number
     - contextPath: WootCloud.AnomalyAlert.device_details.category
-      description: 'device details category'
+      description: 'device details category.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.device_details.control
-      description: 'device details control'
+      description: 'device details control.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.device_details.host_name
-      description: 'device details host name'
+      description: 'device details host name.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.device_details.os
-      description: 'device details OS'
+      description: 'device details OS.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.device_details.os_version
-      description: 'device details OS version'
+      description: 'device details OS version.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.device_details.ownership
-      description: 'device details ownership'
+      description: 'device details ownership.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.device_details.total_risk
-      description: 'device details total risk score'
+      description: 'device details total risk score.'
       type: Number
     - contextPath: WootCloud.AnomalyAlert.device_details.type
-      description: 'device details type'
+      description: 'device details type.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.device_details.username
-      description: 'device details username'
+      description: 'device details username.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.device_details.managed_info.host_name
-      description: 'device details managed info host name'
+      description: 'device details managed info host name.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.connections.ip
-      description: 'connections ip'
+      description: 'connections ip.'
       type: String
     - contextPath: WootCloud.AnomalyAlert.connections.port
-      description: 'connections port'
+      description: 'connections port.'
       type: Number
     - contextPath: WootCloud.AnomalyAlert.connections.connection_count
-      description: 'connections connection count'
+      description: 'connections connection count.'
       type: Number
   isfetch: true
   runonce: false
@@ -938,4 +939,6 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.12.8.3296088
+tests:
+- No tests
 fromversion: 5.0.0

@@ -4,7 +4,8 @@ commonfields:
 name: Sample Incident Generator
 display: Sample Incident Generator
 category: Analytics & SIEM
-description: Generate random incidents per given parameter
+provider: Open Source
+description: Generate random incidents per given parameter.
 configuration:
 - display: Fetch incidents
   name: isFetch

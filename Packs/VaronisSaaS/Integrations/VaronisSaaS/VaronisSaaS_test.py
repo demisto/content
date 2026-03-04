@@ -260,6 +260,7 @@ def test_convert_to_demisto_severity():
     assert convert_to_demisto_severity("Low") == IncidentSeverity.LOW
     assert convert_to_demisto_severity("Medium") == IncidentSeverity.MEDIUM
     assert convert_to_demisto_severity("High") == IncidentSeverity.HIGH
+    assert convert_to_demisto_severity("Informational") == IncidentSeverity.INFO
 
 
 def test_get_excluded_severitires():
@@ -269,3 +270,4 @@ def test_get_excluded_severitires():
     assert get_included_severitires("Low") == ["high", "medium", "low"]
     assert get_included_severitires("Medium") == ["high", "medium"]
     assert get_included_severitires("High") == ["high"]
+    assert get_included_severitires("Informational") == ["high", "medium", "low", "informational"]

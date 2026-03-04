@@ -49,4 +49,4 @@ runas: DBotWeakRole
 tests:
 - FilterByList - Test
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.12.6204436

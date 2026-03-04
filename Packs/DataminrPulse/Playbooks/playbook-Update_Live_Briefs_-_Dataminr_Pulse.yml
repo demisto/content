@@ -1,0 +1,298 @@
+id: Update Live Briefs - Dataminr Pulse
+version: -1
+name: Update Live Briefs - Dataminr Pulse
+description: This playbook will update the previously fetched Dataminr Pulse ReGenAI incidents with the latest briefs.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9e370634-0237-4c9b-82f0-8021697d33ef
+    type: start
+    task:
+      id: 9e370634-0237-4c9b-82f0-8021697d33ef
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "76"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 195.25,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: a4f3f7fa-cb0c-48bb-8f63-fb4340a52865
+    type: title
+    task:
+      id: a4f3f7fa-cb0c-48bb-8f63-fb4340a52865
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 195.25,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: d67723db-d036-456f-8851-f6e974ef98d8
+    type: regular
+    task:
+      id: d67723db-d036-456f-8851-f6e974ef98d8
+      version: -1
+      name: Search Incidents with same Parent Alert ID or Parent Alert Incident
+      description: "Searches Demisto incidents. A summarized version of this scrips is available with the summarizedversion argument.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script\nhttps://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations"
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      limit:
+        complex:
+          root: inputs.number_of_incidents_to_update
+      query:
+        simple: -status:closed -category:job (dataminrpulseparentalertid:"${incident.dataminrpulseparentalertid}" or alertid:"${incident.dataminrpulseparentalertid}") -alertid:"${incident.alertid}" occurred:<${incident.occurred}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 388
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 462799e8-28a7-4e07-8322-265bd4a1f1a5
+    type: regular
+    task:
+      id: 462799e8-28a7-4e07-8322-265bd4a1f1a5
+      version: -1
+      name: Set Incident with latest Live Brief data
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      dataminrpulselivebrief:
+        complex:
+          root: incident
+          accessor: dataminrpulselivebrief
+      dataminrpulselivebrieftimestamp:
+        complex:
+          root: incident
+          accessor: dataminrpulselivebrieftimestamp
+      id:
+        complex:
+          root: foundIncidents
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 813
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 571a3504-772d-4863-8e2d-da799d22d364
+    type: condition
+    task:
+      id: 571a3504-772d-4863-8e2d-da799d22d364
+      version: -1
+      name: Is Parent Alert ID Present?
+      description: Check if Parent Alert ID is present or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "74"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: dataminrpulseparentalertid
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 195.25,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: 44020560-609e-46a3-8adf-c4ed5aeaa1a4
+    type: condition
+    task:
+      id: 44020560-609e-46a3-8adf-c4ed5aeaa1a4
+      version: -1
+      name: Is Incident with same Parent Alert ID Or Parent Alert Incident Present?
+      description: Check if Incident with same Parent Alert ID or Parent Alert Incident is present or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "78"
+      "yes":
+      - "75"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: foundIncidents
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 03419143-114a-4576-85e4-7761da836280
+    type: regular
+    task:
+      id: 03419143-114a-4576-85e4-7761da836280
+      version: -1
+      name: Print exit message
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value:
+        simple: No Incident with same Parent Alert ID or Parent Alert Incident was found.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 813
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "76_2_#default#": 0.31,
+      "76_74_yes": 0.46,
+      "77_75_yes": 0.49
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1015,
+        "width": 820,
+        "x": -20,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: number_of_incidents_to_update
+  value:
+    simple: "100"
+  required: false
+  description: Provide the number of incidents you want to update with the latest Live Brief.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

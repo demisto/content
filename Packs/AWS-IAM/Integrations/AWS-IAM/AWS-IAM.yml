@@ -1,4 +1,5 @@
 category: IT Services
+provider: Amazon
 sectionorder:
 - Connect
 - Collect
@@ -230,9 +231,9 @@ script:
       required: true
     - description: The new password for the specified IAM user.
       name: newPassword
-      required: true
+      required: false
     - auto: PREDEFINED
-      description: Allows this new password to be used only once by requiring the specified IAM user to set a new password on next sign-in.
+      description: Requires the specified IAM user to set a new password at the next sign-in. The temporary password can be used only once.
       name: passwordResetRequired
       predefined:
       - 'True'

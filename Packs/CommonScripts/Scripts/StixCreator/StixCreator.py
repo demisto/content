@@ -41,6 +41,7 @@ SCOs: dict[str, str] = {  # pragma: no cover
     "host": "domain-name:value",
     "registry key": "windows-registry-key:key",
     "asn": "autonomous-system:name",
+    "software": "software:name",
 }
 
 SDOs: dict[str, Callable] = {  # pragma: no cover
@@ -163,6 +164,17 @@ def create_stix_sco_indicator(stix_id: Optional[str], stix_type: Optional[str], 
     elif stix_type == "autonomous-system":
         stix_indicator["number"] = value
         stix_indicator["name"] = xsoar_indicator.get("name", "")
+    elif stix_type == "software":
+        # Software type requires 'name' as the primary field
+        stix_indicator["name"] = value
+        # Add optional software fields if available in CustomFields
+        custom_fields = xsoar_indicator.get("CustomFields") or {}
+        if vendor := custom_fields.get("vendor"):
+            stix_indicator["vendor"] = vendor
+        if version := custom_fields.get("version"):
+            stix_indicator["version"] = version
+        if cpe := custom_fields.get("cpe"):
+            stix_indicator["cpe"] = cpe
     else:
         stix_indicator["value"] = value
     return stix_indicator

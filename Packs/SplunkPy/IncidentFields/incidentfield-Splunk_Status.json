@@ -1,0 +1,48 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Splunk Finding"
+    ],
+    "caseInsensitive": true,
+    "cliName": "splunkstatus",
+    "closeForm": false,
+    "content": true,
+    "description": "The status from Splunk.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_splunkstatus",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Splunk Status",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "selectValues": [
+        "New",
+        "In Progress",
+        "Pending",
+        "Resolved",
+        "Closed"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "supportedModules": [
+        "xsiam",
+        "agentix",
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
+}

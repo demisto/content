@@ -1,4 +1,5 @@
 category: IT Services
+provider: IBM
 commonfields:
   id: AnsibleACME
   version: -1
@@ -52,7 +53,7 @@ configuration:
   name: become_password
   type: 4
   required: false
-description: Control Automatic Certificate Management Environment on Linux hosts
+description: Control Automatic Certificate Management Environment on Linux hosts.
 display: Ansible ACME
 fromversion: 6.0.0
 name: AnsibleACME
@@ -329,7 +330,7 @@ script:
       name: private_key_src
     - description: "Content of the certificate's private key.\nNote that exactly one of `account_key_src`, `account_key_content`, `private_key_src` or `private_key_content` must be specified.\n`Warning`: the content will be written into a temporary file, which will be deleted by Ansible when the module completes. Since this is an important private key — it can be used to change the account key, or to revoke your certificates without knowing their private keys —, this might not be acceptable.\nIn case `cryptography` is used, the content is not written into a temporary file. It can still happen that it is written to disk by Ansible in the process of moving the module with its argument to the node where it is executed."
       name: private_key_content
-    - description: 'One of the revocation reasonCodes defined in `Section 5.3.1 of RFC5280,https://tools.ietf.org/html/rfc5280#section-5.3.1`. Possible values are `0` (unspecified), `1` (keyCompromise), `2` (cACompromise), `3` (affiliationChanged), `4` (superseded), `5` (cessationOfOperation), `6` (certificateHold), `8` (removeFromCRL), `9` (privilegeWithdrawn), `10` (aACompromise)'
+    - description: 'One of the revocation reasonCodes defined in `Section 5.3.1 of RFC5280,https://tools.ietf.org/html/rfc5280#section-5.3.1`. Possible values are `0` (unspecified), `1` (keyCompromise), `2` (cACompromise), `3` (affiliationChanged), `4` (superseded), `5` (cessationOfOperation), `6` (certificateHold), `8` (removeFromCRL), `9` (privilegeWithdrawn), `10` (aACompromise).'
       name: revoke_reason
     - description: If specified, assumes that the account URI is as given. If the account key does not match this account, or an account with this URI does not exist, the module fails.
       name: account_uri
@@ -457,16 +458,16 @@ script:
     name: acme-inspect
     outputs:
     - contextPath: ACME.AcmeInspect.directory
-      description: The ACME directory's content
+      description: The ACME directory's content.
       type: unknown
     - contextPath: ACME.AcmeInspect.headers
-      description: The request's HTTP headers (with lowercase keys)
+      description: The request's HTTP headers (with lowercase keys).
       type: unknown
     - contextPath: ACME.AcmeInspect.output_text
-      description: The raw text output
+      description: The raw text output.
       type: string
     - contextPath: ACME.AcmeInspect.output_json
-      description: The output parsed as JSON
+      description: The output parsed as JSON.
       type: unknown
   dockerimage: demisto/ansible-runner:1.0.0.3262406
   script: ''

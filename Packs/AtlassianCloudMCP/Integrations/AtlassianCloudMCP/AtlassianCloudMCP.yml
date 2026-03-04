@@ -1,0 +1,44 @@
+category: Case Management
+provider: Atlassian
+sectionorder:
+- Connect
+commonfields:
+  id: Atlassian Cloud MCP
+  version: -1
+configuration:
+  - name: auth_code
+    type: 9
+    displaypassword: Authorization code
+    hiddenusername: true
+    section: Connect
+description: Use this integration to connect securely with an Atlassian Cloud Model Context Protocol (MCP) server and access its tools in real time.
+display: Atlassian Cloud MCP
+name: Atlassian Cloud MCP
+script:
+  commands:
+  - arguments: []
+    description: Retrieves a list of available tools in the Atlassian Cloud MCP server.
+    name: list-tools
+    hidden: true
+    outputs: []
+  - arguments:
+    - name: name
+      description: The name of the tool to call.
+    - name: arguments
+      description: Parameters for the tool execution.
+    description: Calls a specific tool on the MCP server with optional input parameters.
+    name: call-tool
+    hidden: true
+    outputs: []
+  - description: Test the authentication configuration with the MCP server.
+    name: atlassian-cloud-mcp-auth-test
+  - description: Generate an authentication login URL.
+    name: atlassian-cloud-mcp-generate-login-url
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/mcp:1.0.0.6978288
+  mcp: true
+fromversion: 8.13.0
+tests:
+- No tests (auto formatted)

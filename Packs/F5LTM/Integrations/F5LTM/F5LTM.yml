@@ -1,4 +1,5 @@
 category: IT Services
+provider: F5
 commonfields:
   id: F5LTM
   version: -1
@@ -31,7 +32,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Manages F5 LTM
+description: Manages F5 LTM.
 display: F5 LTM
 name: F5LTM
 script:
@@ -39,7 +40,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Expand pools in the response
+      description: Expand pools in the response.
       name: expand
       predefined:
       - 'True'
@@ -50,22 +51,22 @@ script:
     name: f5-ltm-get-pools
     outputs:
     - contextPath: F5.LTM.Pools.membersReference.isSubcollection
-      description: Member reference subcollection retrieved
+      description: Member reference subcollection retrieved.
       type: Boolean
     - contextPath: F5.LTM.Pools.membersReference.link
-      description: Member reference links
+      description: Member reference links.
       type: String
     - contextPath: F5.LTM.Pools.monitor
-      description: Pool monitor listener
+      description: Pool monitor listener.
       type: String
     - contextPath: F5.LTM.Pools.name
-      description: Pool names
+      description: Pool names.
       type: String
     - contextPath: F5.LTM.Pools.partition
-      description: Configuration partition
+      description: Configuration partition.
       type: String
   - arguments:
-    - description: Pool Name
+    - description: Pool Name.
       name: pool_name
       required: true
     - description: The administrative partition name.
@@ -74,88 +75,88 @@ script:
     name: f5-ltm-get-pool
     outputs:
     - contextPath: F5.LTM.Pools.allowNat
-      description: Pool Nat allowed
+      description: Pool Nat allowed.
       type: String
     - contextPath: F5.LTM.Pools.allowSnat
-      description: Pool SNat allowed
+      description: Pool SNat allowed.
       type: String
     - contextPath: F5.LTM.Pools.fullPath
-      description: Pool full path
+      description: Pool full path.
       type: String
     - contextPath: F5.LTM.Pools.generation
-      description: Pool generation
+      description: Pool generation.
       type: Number
     - contextPath: F5.LTM.Pools.ignorePersistedWeight
-      description: Ignore Persisted Weight status
+      description: Ignore Persisted Weight status.
       type: String
     - contextPath: F5.LTM.Pools.ipTosToClient
-      description: Client pass through status
+      description: Client pass through status.
       type: String
     - contextPath: F5.LTM.Pools.ipTosToServer
-      description: Server pass through status
+      description: Server pass through status.
       type: String
     - contextPath: F5.LTM.Pools.kind
-      description: Pool kind
+      description: Pool kind.
       type: String
     - contextPath: F5.LTM.Pools.linkQosToClient
-      description: Link QOS to client status
+      description: Link QOS to client status.
       type: String
     - contextPath: F5.LTM.Pools.linkQosToServer
-      description: Link QOS to server status
+      description: Link QOS to server status.
       type: String
     - contextPath: F5.LTM.Pools.loadBalancingMode
-      description: Pool load balancing mode
+      description: Pool load balancing mode.
       type: String
     - contextPath: F5.LTM.Pools.membersReference.isSubcollection
-      description: Members reference subcollection retrieved
+      description: Members reference subcollection retrieved.
       type: Boolean
     - contextPath: F5.LTM.Pools.membersReference.link
-      description: Members reference link
+      description: Members reference link.
       type: String
     - contextPath: F5.LTM.Pools.minActiveMembers
-      description: Pool minimum active members
+      description: Pool minimum active members.
       type: Number
     - contextPath: F5.LTM.Pools.minUpMembers
-      description: Pool minimum Up members
+      description: Pool minimum Up members.
       type: Number
     - contextPath: F5.LTM.Pools.minUpMembersAction
-      description: Pool minimum Up members action
+      description: Pool minimum Up members action.
       type: String
     - contextPath: F5.LTM.Pools.minUpMembersChecking
-      description: Pool minimum Up members checking
+      description: Pool minimum Up members checking.
       type: String
     - contextPath: F5.LTM.Pools.monitor
-      description: Pool monitor listener
+      description: Pool monitor listener.
       type: String
     - contextPath: F5.LTM.Pools.name
-      description: Pool name
+      description: Pool name.
       type: String
     - contextPath: F5.LTM.Pools.partition
-      description: Configuration partition
+      description: Configuration partition.
       type: String
     - contextPath: F5.LTM.Pools.queueDepthLimit
-      description: Pool depth limit
+      description: Pool depth limit.
       type: Number
     - contextPath: F5.LTM.Pools.queueOnConnectionLimit
-      description: Pool depth queue on connection limit
+      description: Pool depth queue on connection limit.
       type: String
     - contextPath: F5.LTM.Pools.queueTimeLimit
-      description: Pool queue time limit
+      description: Pool queue time limit.
       type: Number
     - contextPath: F5.LTM.Pools.reselectTries
-      description: Pool reselect tries
+      description: Pool reselect tries.
       type: Number
     - contextPath: F5.LTM.Pools.selfLink
-      description: Pool self link
+      description: Pool self link.
       type: String
     - contextPath: F5.LTM.Pools.serviceDownAction
-      description: Pool service down action
+      description: Pool service down action.
       type: String
     - contextPath: F5.LTM.Pools.slowRampTime
-      description: Pool slow ramp time
+      description: Pool slow ramp time.
       type: Number
   - arguments:
-    - description: Pool Name
+    - description: Pool Name.
       name: pool_name
       required: true
     - description: The administrative partition name.
@@ -164,61 +165,61 @@ script:
     name: f5-ltm-get-pool-members
     outputs:
     - contextPath: F5.LTM.Pools.members.address
-      description: Pool member address
+      description: Pool member address.
       type: String
     - contextPath: F5.LTM.Pools.members.connectionLimit
-      description: Pool member connection limit
+      description: Pool member connection limit.
       type: Number
     - contextPath: F5.LTM.Pools.members.dynamicRatio
-      description: Pool member dynamic ratio
+      description: Pool member dynamic ratio.
       type: Number
     - contextPath: F5.LTM.Pools.members.ephemeral
-      description: Pool member ephemeral
+      description: Pool member ephemeral.
       type: String
     - contextPath: F5.LTM.Pools.members.fqdn.autopopulate
-      description: Pool member fqdn autopopulate
+      description: Pool member fqdn autopopulate.
       type: String
     - contextPath: F5.LTM.Pools.members.fullPath
-      description: Pool member full path
+      description: Pool member full path.
       type: String
     - contextPath: F5.LTM.Pools.members.generation
-      description: Pool member generation
+      description: Pool member generation.
       type: Number
     - contextPath: F5.LTM.Pools.members.inheritProfile
-      description: Pool member inherit profile
+      description: Pool member inherit profile.
       type: String
     - contextPath: F5.LTM.Pools.members.kind
-      description: Pool member kind
+      description: Pool member kind.
       type: String
     - contextPath: F5.LTM.Pools.members.logging
-      description: Pool member logging
+      description: Pool member logging.
       type: String
     - contextPath: F5.LTM.Pools.members.monitor
-      description: Pool member monitor
+      description: Pool member monitor.
       type: String
     - contextPath: F5.LTM.Pools.members.name
-      description: Pool member name
+      description: Pool member name.
       type: String
     - contextPath: F5.LTM.Pools.members.partition
-      description: Pool member config partition
+      description: Pool member config partition.
       type: String
     - contextPath: F5.LTM.Pools.members.priorityGroup
-      description: Pool member priority group
+      description: Pool member priority group.
       type: Number
     - contextPath: F5.LTM.Pools.members.rateLimit
-      description: Pool member rate limit
+      description: Pool member rate limit.
       type: String
     - contextPath: F5.LTM.Pools.members.ratio
-      description: Pool member ratio
+      description: Pool member ratio.
       type: Number
     - contextPath: F5.LTM.Pools.members.selfLink
-      description: Pool member self link
+      description: Pool member self link.
       type: String
     - contextPath: F5.LTM.Pools.members.session
-      description: Pool member session
+      description: Pool member session.
       type: String
     - contextPath: F5.LTM.Pools.members.state
-      description: Pool member state
+      description: Pool member state.
       type: String
   - arguments:
     - description: The administrative partition name.
@@ -227,22 +228,22 @@ script:
     name: f5-ltm-get-nodes
     outputs:
     - contextPath: F5.LTM.Nodes.address
-      description: Node address
+      description: Node address.
       type: String
     - contextPath: F5.LTM.Nodes.name
-      description: Node name
+      description: Node name.
       type: String
     - contextPath: F5.LTM.Nodes.partition
-      description: Configuration parition
+      description: Configuration partition.
       type: String
     - contextPath: F5.LTM.Nodes.session
-      description: Node session status
+      description: Node session status.
       type: String
     - contextPath: F5.LTM.Nodes.state
-      description: Node checking state
+      description: Node checking state.
       type: String
   - arguments:
-    - description: Node Name
+    - description: Node Name.
       name: node_name
       required: true
     - description: The administrative partition name.
@@ -251,67 +252,67 @@ script:
     name: f5-ltm-get-node
     outputs:
     - contextPath: F5.LTM.Nodes.address
-      description: Node address
+      description: Node address.
       type: String
     - contextPath: F5.LTM.Nodes.connectionLimit
-      description: Pool node connection limit
+      description: Pool node connection limit.
       type: Number
     - contextPath: F5.LTM.Nodes.dynamicRatio
-      description: Pool node dynamic ratio
+      description: Pool node dynamic ratio.
       type: Number
     - contextPath: F5.LTM.Nodes.ephemeral
-      description: Pool node ephemeral
+      description: Pool node ephemeral.
       type: String
     - contextPath: F5.LTM.Nodes.fqdn.addressFamily
-      description: Pool node fqdn address family
+      description: Pool node fqdn address family.
       type: String
     - contextPath: F5.LTM.Nodes.fqdn.autopopulate
-      description: Pool node fqdn autopopulate
+      description: Pool node fqdn autopopulate.
       type: String
     - contextPath: F5.LTM.Nodes.fqdn.downInterval
-      description: Pool node fqdn down interval
+      description: Pool node fqdn down interval.
       type: Number
     - contextPath: F5.LTM.Nodes.fqdn.interval
-      description: Pool node fqdn interval
+      description: Pool node fqdn interval.
       type: String
     - contextPath: F5.LTM.Nodes.fullPath
-      description: Pool member full path
+      description: Pool member full path.
       type: String
     - contextPath: F5.LTM.Nodes.generation
-      description: Pool node generation
+      description: Pool node generation.
       type: Number
     - contextPath: F5.LTM.Nodes.kind
-      description: Pool node kind
+      description: Pool node kind.
       type: String
     - contextPath: F5.LTM.Nodes.logging
-      description: Pool node logging status
+      description: Pool node logging status.
       type: String
     - contextPath: F5.LTM.Nodes.monitor
-      description: Pool node monitor listener
+      description: Pool node monitor listener.
       type: String
     - contextPath: F5.LTM.Nodes.name
-      description: Pool node name
+      description: Pool node name.
       type: String
     - contextPath: F5.LTM.Nodes.partition
-      description: Pool node configuration partition
+      description: Pool node configuration partition.
       type: String
     - contextPath: F5.LTM.Nodes.rateLimit
-      description: Pool node rate limit
+      description: Pool node rate limit.
       type: String
     - contextPath: F5.LTM.Nodes.ratio
-      description: Pool node ratio
+      description: Pool node ratio.
       type: Number
     - contextPath: F5.LTM.Nodes.selfLink
-      description: Pool node self link
+      description: Pool node self link.
       type: String
     - contextPath: F5.LTM.Nodes.session
-      description: Pool node session status
+      description: Pool node session status.
       type: String
     - contextPath: F5.LTM.Nodes.state
-      description: Pool node checking state
+      description: Pool node checking state.
       type: String
   - arguments:
-    - description: Node to disable
+    - description: Node to disable.
       name: node_name
       required: true
     - description: The administrative partition name.
@@ -320,67 +321,67 @@ script:
     name: f5-ltm-disable-node
     outputs:
     - contextPath: F5.LTM.Nodes.address
-      description: Node address
+      description: Node address.
       type: String
     - contextPath: F5.LTM.Nodes.connectionLimit
-      description: Pool node connection limit
+      description: Pool node connection limit.
       type: Number
     - contextPath: F5.LTM.Nodes.dynamicRatio
-      description: Pool node dynamic ratio
+      description: Pool node dynamic ratio.
       type: Number
     - contextPath: F5.LTM.Nodes.ephemeral
-      description: Pool node ephemeral
+      description: Pool node ephemeral.
       type: String
     - contextPath: F5.LTM.Nodes.fqdn.addressFamily
-      description: Pool node fqdn address family
+      description: Pool node fqdn address family.
       type: String
     - contextPath: F5.LTM.Nodes.fqdn.autopopulate
-      description: Pool node fqdn autopopulate
+      description: Pool node fqdn autopopulate.
       type: String
     - contextPath: F5.LTM.Nodes.fqdn.downInterval
-      description: Pool node fqdn down interval
+      description: Pool node fqdn down interval.
       type: Number
     - contextPath: F5.LTM.Nodes.fqdn.interval
-      description: Pool node fqdn interval
+      description: Pool node fqdn interval.
       type: String
     - contextPath: F5.LTM.Nodes.fullPath
-      description: Pool member full path
+      description: Pool member full path.
       type: String
     - contextPath: F5.LTM.Nodes.generation
-      description: Pool node generation
+      description: Pool node generation.
       type: Number
     - contextPath: F5.LTM.Nodes.kind
-      description: Pool node kind
+      description: Pool node kind.
       type: String
     - contextPath: F5.LTM.Nodes.logging
-      description: Pool node logging status
+      description: Pool node logging status.
       type: String
     - contextPath: F5.LTM.Nodes.monitor
-      description: Pool node monitor listener
+      description: Pool node monitor listener.
       type: String
     - contextPath: F5.LTM.Nodes.name
-      description: Pool node name
+      description: Pool node name.
       type: String
     - contextPath: F5.LTM.Nodes.partition
-      description: Pool node configuration partition
+      description: Pool node configuration partition.
       type: String
     - contextPath: F5.LTM.Nodes.rateLimit
-      description: Pool node rate limit
+      description: Pool node rate limit.
       type: String
     - contextPath: F5.LTM.Nodes.ratio
-      description: Pool node ratio
+      description: Pool node ratio.
       type: Number
     - contextPath: F5.LTM.Nodes.selfLink
-      description: Pool node self link
+      description: Pool node self link.
       type: String
     - contextPath: F5.LTM.Nodes.session
-      description: Pool node session status
+      description: Pool node session status.
       type: String
     - contextPath: F5.LTM.Nodes.state
-      description: Pool node checking state
+      description: Pool node checking state.
       type: String
   - arguments:
-    - description: Node to enable
+    - description: Node to enable.
       name: node_name
       required: true
     - description: The administrative partition name.
@@ -389,70 +390,70 @@ script:
     name: f5-ltm-enable-node
     outputs:
     - contextPath: F5.LTM.Nodes.address
-      description: Node address
+      description: Node address.
       type: String
     - contextPath: F5.LTM.Nodes.connectionLimit
-      description: Pool node connection limit
+      description: Pool node connection limit.
       type: Number
     - contextPath: F5.LTM.Nodes.dynamicRatio
-      description: Pool node dynamic ratio
+      description: Pool node dynamic ratio.
       type: Number
     - contextPath: F5.LTM.Nodes.ephemeral
-      description: Pool node ephemeral
+      description: Pool node ephemeral.
       type: String
     - contextPath: F5.LTM.Nodes.fqdn.addressFamily
-      description: Pool node fqdn address family
+      description: Pool node fqdn address family.
       type: String
     - contextPath: F5.LTM.Nodes.fqdn.autopopulate
-      description: Pool node fqdn autopopulate
+      description: Pool node fqdn autopopulate.
       type: String
     - contextPath: F5.LTM.Nodes.fqdn.downInterval
-      description: Pool node fqdn down interval
+      description: Pool node fqdn down interval.
       type: Number
     - contextPath: F5.LTM.Nodes.fqdn.interval
-      description: Pool node fqdn interval
+      description: Pool node fqdn interval.
       type: String
     - contextPath: F5.LTM.Nodes.fullPath
-      description: Pool member full path
+      description: Pool member full path.
       type: String
     - contextPath: F5.LTM.Nodes.generation
-      description: Pool node generation
+      description: Pool node generation.
       type: Number
     - contextPath: F5.LTM.Nodes.kind
-      description: Pool node kind
+      description: Pool node kind.
       type: String
     - contextPath: F5.LTM.Nodes.logging
-      description: Pool node logging status
+      description: Pool node logging status.
       type: String
     - contextPath: F5.LTM.Nodes.monitor
-      description: Pool node monitor listener
+      description: Pool node monitor listener.
       type: String
     - contextPath: F5.LTM.Nodes.name
-      description: Pool node name
+      description: Pool node name.
       type: String
     - contextPath: F5.LTM.Nodes.partition
-      description: Pool node configuration partition
+      description: Pool node configuration partition.
       type: String
     - contextPath: F5.LTM.Nodes.rateLimit
-      description: Pool node rate limit
+      description: Pool node rate limit.
       type: String
     - contextPath: F5.LTM.Nodes.ratio
-      description: Pool node ratio
+      description: Pool node ratio.
       type: Number
     - contextPath: F5.LTM.Nodes.selfLink
-      description: Pool node self link
+      description: Pool node self link.
       type: String
     - contextPath: F5.LTM.Nodes.session
-      description: Pool node session status
+      description: Pool node session status.
       type: String
     - contextPath: F5.LTM.Nodes.state
-      description: Pool node checking state
+      description: Pool node checking state.
       type: String
   - arguments:
-    - description: Pool to get its stats
+    - description: Pool to get its stats.
       name: pool_name
       required: true
-    - description: Member to get its stats
+    - description: Member to get its stats.
       name: member_name
       required: true
     - description: The administrative partition name.
@@ -461,16 +462,16 @@ script:
     name: f5-ltm-get-pool-member-stats
     outputs:
     - contextPath: F5.LTM.Stats.members.stats.serverside\.curConns.value
-      description: The current connections of the Pool Member
+      description: The current connections of the Pool Member.
       type: String
     - contextPath: F5.LTM.Stats.members.name
-      description: The pool member name
+      description: The pool member name.
       type: String
     - contextPath: F5.LTM.Stats.members.stats.sessionStatus.description
-      description: The pool member status
+      description: The pool member status.
       type: String
   - arguments:
-    - description: Node To Query
+    - description: Node To Query.
       name: node_name
       required: true
     - description: The administrative partition name.
@@ -479,16 +480,16 @@ script:
     name: f5-ltm-get-node-stats
     outputs:
     - contextPath: F5.LTM.Nodes.stats.serverside\.curConns.value
-      description: The current connections of the Node
+      description: The current connections of the Node.
       type: String
     - contextPath: F5.LTM.Nodes.name
-      description: The node name
+      description: The node name.
       type: String
     - contextPath: F5.LTM.Nodes.stats.sessionStatus.description
-      description: The node status
+      description: The node status.
       type: String
   - arguments:
-    - description: IP address of the node
+    - description: IP address of the node.
       name: ip_address
       required: true
     - description: The administrative partition name.
@@ -497,13 +498,13 @@ script:
     name: f5-ltm-get-node-by-address
     outputs:
     - contextPath: F5.LTM.Nodes.name
-      description: The node name
+      description: The node name.
       type: String
     - contextPath: F5.LTM.Nodes.address
-      description: The node address
+      description: The node address.
       type: String
   - arguments:
-    - description: Node name
+    - description: Node name.
       name: node_name
       required: true
     - description: The administrative partition name.
@@ -512,10 +513,10 @@ script:
     name: f5-ltm-get-pool-by-node
     outputs:
     - contextPath: F5.LTM.Nodes.pools
-      description: The pool names
+      description: The pool names.
       type: String
     - contextPath: F5.LTM.Nodes.name
-      description: The node name
+      description: The node name.
       type: String
   dockerimage: demisto/python3:3.12.8.3296088
   runonce: false

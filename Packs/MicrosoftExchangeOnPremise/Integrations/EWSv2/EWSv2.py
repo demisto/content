@@ -1630,7 +1630,14 @@ def test_module(client: EWSClient):  # pragma: no cover
                 "Check user permissions. You can try !ews-find-folders command to "
                 "get all the folders structure that the user has permissions to"
             )
-
+    except Exception as e:
+        if "403" in str(e):
+            error_message_simple = (
+                "Got invalid response with status code: 403."
+                " Please make sure you have the right permissions to your application.\n"
+            )
+            raise DemistoException(error_message_simple)
+        raise DemistoException(str(e))
     demisto.results("ok")
 
 
