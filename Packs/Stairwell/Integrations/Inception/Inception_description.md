@@ -1,19 +1,36 @@
-## Stairwell Inception
-Inception's APIs leverage auth tokens via the web interface. Directions for generating these tokens, along with API documentation, are available within your Inception tenant.
+## Stairwell Integration for Cortex XSOAR
 
-Not a customer and interested in signing up? You can request access [here](https://stairwell.com/contact/).
+Stairwell continuously collects, stores, and analyzes threat intelligence and artifacts in a private vault to accelerate security investigations.
 
-### Variant Discovery
-- This command enables rapid, DFIR-level hunts for variants of a provided hash. This hunt will leverage data from your organization, along with Inceptions shared malware corpus.
-- The results will include any variant file hashes discovered, along with a `similarity` score.
+### Key Capabilities
+- Reanalyze files continuously as new threat intelligence is identified.
+- Correlate threat and signal intelligence with your existing artifacts.
+- Perform retrospective analysis to investigate alerts regardless of when they occurred.
+- Identify file variants and hidden relationships across your environment.
+- Gain definitive visibility into the presence or absence of specific files within your enterprise.
 
-### File Enrichment
-This command enables instant enrichment of a provided hash. This enrichment will leverage data from your organization, along with Inceptions shared malware corpus.
-The results will include:
-- Hash details
-- Seen asset(s)
-- Matching YARA 
-- AV verdicts
-- Path/filename details
+## Configuration
 
----
+### Prerequisite
+1. **API Key** — Obtain from Stairwell platform under Settings → API Keys.
+
+### Optional Settings
+- Select **Use system proxy settings** to leverage Cortex XSOAR proxy configuration.
+- Select **Trust any certificate (not secure)** to skip verification of SSL certificates. This is not recommended for production environments.
+
+> **Note:** For multi-line YARA rule definitions, use backticks (`` ` ``) instead of quotes to prevent parsing errors in the Cortex XSOAR CLI.
+
+## Common Workflows
+
+### File Analysis
+1. Enrich file → `stairwell-file-enrichment`
+2. Discover variants → `stairwell-variant-discovery`
+3. Get AI analysis → `stairwell-ai-triage-summarize`
+4. Check sightings → `stairwell-object-sightings`
+
+### Threat Hunting
+1. Create YARA rule → `stairwell-yara-create-rule`
+2. Query matches → `stairwell-yara-query-matches`
+3. Analyze matches → `stairwell-file-enrichment`
+
+Not a customer? Request access at [stairwell.com/contact](https://stairwell.com/contact/).
