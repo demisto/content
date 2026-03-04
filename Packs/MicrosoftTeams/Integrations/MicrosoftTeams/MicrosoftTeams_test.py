@@ -4418,7 +4418,7 @@ def test_create_proactive_conversation_cached(mocker):
         - Calling create_proactive_conversation
     Then:
         - Verify cached conversation ID is returned
-        - Verify no new conversation is created
+        - Verify no new conversation is created (no API call, no set_integration_context)
     """
     from MicrosoftTeams import create_proactive_conversation
 
@@ -4429,10 +4429,13 @@ def test_create_proactive_conversation_cached(mocker):
     test_context["proactive_conversations"] = json.dumps({user_id: cached_conversation_id})
 
     mocker.patch("MicrosoftTeams.get_integration_context", return_value=test_context)
+    set_context_mock = mocker.patch("MicrosoftTeams.set_integration_context")
 
     result = create_proactive_conversation(user_id)
 
     assert result == cached_conversation_id
+    # On a cache hit, no context write should occur (no new state to persist)
+    set_context_mock.assert_not_called()
 
 
 def test_send_proactive_message_to_conversation_with_message(mocker, requests_mock):
@@ -4487,3 +4490,257 @@ def test_send_proactive_message_to_conversation_with_adaptive_card(mocker, reque
     assert sent_payload["type"] == "message"
     assert sent_payload["attachments"] == [adaptive_card]
     assert "text" not in sent_payload
+
+
+def test_lru_cache_get_hit_and_miss():
+    """
+    Given:
+        - An LRU cache (OrderedDict) with some entries
+    When:
+        - Calling lru_cache_get with an existing key (cache hit)
+        - Calling lru_cache_get with a non-existing key (cache miss)
+    Then:
+        - Cache hit returns the correct value and moves the key to the end (MRU position)
+        - Cache miss returns None and does not modify the cache
+    """
+    from collections import OrderedDict
+    from MicrosoftTeams import lru_cache_get
+
+    cache: OrderedDict = OrderedDict([("key1", "val1"), ("key2", "val2"), ("key3", "val3")])
+
+    # Cache hit: key2 should be moved to end (MRU)
+    result = lru_cache_get(cache, "key2")
+    assert result == "val2"
+    assert list(cache.keys()) == ["key1", "key3", "key2"]  # key2 moved to end
+
+    # Cache miss: returns None, cache unchanged
+    result = lru_cache_get(cache, "nonexistent")
+    assert result is None
+    assert list(cache.keys()) == ["key1", "key3", "key2"]  # unchanged
+
+
+def test_lru_cache_set_insert_and_update():
+    """
+    Given:
+        - An LRU cache (OrderedDict)
+    When:
+        - Inserting a new key
+        - Updating an existing key
+    Then:
+        - New key is added at the end (MRU position)
+        - Updated key is moved to the end (MRU position)
+        - Cache size does not exceed max_size
+    """
+    from collections import OrderedDict
+    from MicrosoftTeams import lru_cache_set
+
+    cache: OrderedDict = OrderedDict([("key1", "val1"), ("key2", "val2")])
+
+    # Insert new key
+    lru_cache_set(cache, "key3", "val3", max_size=10)
+    assert list(cache.keys()) == ["key1", "key2", "key3"]
+    assert cache["key3"] == "val3"
+
+    # Update existing key (should move to end)
+    lru_cache_set(cache, "key1", "val1_updated", max_size=10)
+    assert list(cache.keys()) == ["key2", "key3", "key1"]
+    assert cache["key1"] == "val1_updated"
+
+
+def test_lru_cache_set_eviction():
+    """
+    Given:
+        - An LRU cache at maximum capacity (max_size=3)
+    When:
+        - Inserting a new entry that exceeds the max size
+    Then:
+        - The least-recently-used entry (oldest/first) is evicted
+        - The new entry is added at the end (MRU position)
+        - Cache size stays at max_size
+    """
+    from collections import OrderedDict
+    from MicrosoftTeams import lru_cache_set
+
+    cache: OrderedDict = OrderedDict([("key1", "val1"), ("key2", "val2"), ("key3", "val3")])
+
+    # Insert 4th entry into a max_size=3 cache → key1 (LRU) should be evicted
+    lru_cache_set(cache, "key4", "val4", max_size=3)
+
+    assert len(cache) == 3
+    assert "key1" not in cache  # LRU entry evicted
+    assert list(cache.keys()) == ["key2", "key3", "key4"]
+    assert cache["key4"] == "val4"
+
+
+def test_lru_cache_set_eviction_after_access():
+    """
+    Given:
+        - An LRU cache at maximum capacity (max_size=3)
+        - key1 is accessed (making key2 the LRU)
+    When:
+        - Inserting a new entry that exceeds the max size
+    Then:
+        - key2 (now the LRU) is evicted, not key1
+    """
+    from collections import OrderedDict
+    from MicrosoftTeams import lru_cache_get, lru_cache_set
+
+    cache: OrderedDict = OrderedDict([("key1", "val1"), ("key2", "val2"), ("key3", "val3")])
+
+    # Access key1 → key1 moves to end, key2 becomes LRU
+    lru_cache_get(cache, "key1")
+    assert list(cache.keys()) == ["key2", "key3", "key1"]
+
+    # Insert key4 → key2 (LRU) should be evicted
+    lru_cache_set(cache, "key4", "val4", max_size=3)
+
+    assert len(cache) == 3
+    assert "key2" not in cache  # LRU entry evicted
+    assert "key1" in cache  # recently accessed, should survive
+    assert list(cache.keys()) == ["key3", "key1", "key4"]
+
+
+def test_lru_cache_max_size_500_enforced():
+    """
+    Given:
+        - An LRU cache filled with exactly PROACTIVE_CACHE_MAX_SIZE (500) entries
+    When:
+        - Adding one more entry
+    Then:
+        - The oldest entry is evicted
+        - Cache size remains at 500
+    """
+    from collections import OrderedDict
+    from MicrosoftTeams import lru_cache_set, PROACTIVE_CACHE_MAX_SIZE
+
+    cache: OrderedDict = OrderedDict()
+    for i in range(PROACTIVE_CACHE_MAX_SIZE):
+        cache[f"user-{i}"] = f"conv-{i}"
+
+    assert len(cache) == PROACTIVE_CACHE_MAX_SIZE
+
+    # Add one more entry using the default max_size (PROACTIVE_CACHE_MAX_SIZE)
+    lru_cache_set(cache, "user-new", "conv-new")
+
+    assert len(cache) == PROACTIVE_CACHE_MAX_SIZE
+    assert "user-0" not in cache  # oldest entry evicted
+    assert "user-new" in cache
+    assert cache["user-new"] == "conv-new"
+
+
+def test_proactive_conversations_lru_eviction_on_new_conversation(mocker, requests_mock):
+    """
+    Given:
+        - A proactive_conversations cache already at PROACTIVE_CACHE_MAX_SIZE (500) entries
+    When:
+        - create_proactive_conversation is called for a new user
+    Then:
+        - A new conversation is created via the API
+        - The oldest cached entry is evicted
+        - The new entry is added to the cache
+        - Cache size stays at PROACTIVE_CACHE_MAX_SIZE
+    """
+    from collections import OrderedDict
+    from MicrosoftTeams import create_proactive_conversation, PROACTIVE_CACHE_MAX_SIZE
+
+    # Build a full cache with 500 entries
+    full_cache: OrderedDict = OrderedDict()
+    for i in range(PROACTIVE_CACHE_MAX_SIZE):
+        full_cache[f"user-{i}"] = f"conv-{i}"
+
+    oldest_user = "user-0"
+    new_user_id = "brand-new-user"
+    new_conversation_id = "19:brand-new-conversation"
+
+    test_context = integration_context.copy()
+    test_context["proactive_conversations"] = json.dumps(full_cache)
+
+    mocker.patch("MicrosoftTeams.get_integration_context", return_value=test_context)
+    set_context_mock = mocker.patch("MicrosoftTeams.set_integration_context")
+
+    requests_mock.post(f"{service_url}/v3/conversations", json={"id": new_conversation_id})
+
+    result = create_proactive_conversation(new_user_id)
+
+    assert result == new_conversation_id
+
+    # Verify the cache was updated correctly
+    assert set_context_mock.called
+    updated_context = set_context_mock.call_args[0][0]
+    cached_conversations = json.loads(updated_context["proactive_conversations"])
+
+    assert len(cached_conversations) == PROACTIVE_CACHE_MAX_SIZE
+    assert oldest_user not in cached_conversations  # LRU evicted
+    assert new_user_id in cached_conversations
+    assert cached_conversations[new_user_id] == new_conversation_id
+
+
+def test_proactive_users_lru_eviction_on_new_user(mocker, requests_mock):
+    """
+    Given:
+        - A proactive_users cache already at PROACTIVE_CACHE_MAX_SIZE (500) entries
+    When:
+        - entitlement_handler is called for a new user not in team cache or proactive_users cache
+    Then:
+        - User email is fetched from Graph API
+        - The oldest cached entry is evicted
+        - The new entry is added to the cache
+        - Cache size stays at PROACTIVE_CACHE_MAX_SIZE
+    """
+    from collections import OrderedDict
+    from MicrosoftTeams import entitlement_handler, PROACTIVE_CACHE_MAX_SIZE
+
+    # Build a full proactive_users cache with 500 entries
+    full_cache: OrderedDict = OrderedDict()
+    for i in range(PROACTIVE_CACHE_MAX_SIZE):
+        full_cache[f"user-{i}"] = {"email": f"user{i}@example.com"}
+
+    oldest_user = "user-0"
+    new_proactive_user_id = "29:brand-new-proactive-user"
+    new_user_email = "new.proactive@example.com"
+    conversation_id = "19:test-conversation"
+    activity_id = "1:activity-id"
+
+    # Mock Graph API user lookup
+    requests_mock.get(
+        f"{GRAPH_BASE_URL}/v1.0/users",
+        json={"value": [{"id": new_proactive_user_id, "mail": new_user_email, "userPrincipalName": new_user_email}]},
+    )
+
+    # Mock update message
+    requests_mock.put(f"{service_url}/v3/conversations/{conversation_id}/activities/{activity_id}", json={"id": "update-id"})
+
+    test_context = integration_context.copy()
+    test_context["proactive_users"] = json.dumps(full_cache)
+
+    mocker.patch("MicrosoftTeams.get_integration_context", return_value=test_context)
+    set_context_mock = mocker.patch("MicrosoftTeams.set_integration_context")
+    mocker.patch.object(demisto, "handleEntitlementForUser")
+
+    request_body = {"from": {"id": new_proactive_user_id}, "replyToId": activity_id}
+    value = {
+        "response": "Approved",
+        "entitlement": "test-entitlement-guid",
+        "investigation_id": "300",
+        "task_id": "15",
+    }
+
+    entitlement_handler(test_context, request_body, value, conversation_id)
+
+    # Verify the cache was updated correctly
+    assert set_context_mock.called
+    # Find the call that updated proactive_users
+    proactive_users_context = None
+    for call in set_context_mock.call_args_list:
+        ctx = call[0][0]
+        if "proactive_users" in ctx:
+            proactive_users_context = ctx
+            break
+
+    assert proactive_users_context is not None
+    cached_users = json.loads(proactive_users_context["proactive_users"])
+
+    assert len(cached_users) == PROACTIVE_CACHE_MAX_SIZE
+    assert oldest_user not in cached_users  # LRU evicted
+    assert new_proactive_user_id in cached_users
+    assert cached_users[new_proactive_user_id]["email"] == new_user_email

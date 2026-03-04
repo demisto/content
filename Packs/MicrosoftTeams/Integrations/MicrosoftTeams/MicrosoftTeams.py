@@ -5,6 +5,7 @@ from CommonServerPython import *  # noqa: F401
 import re
 import time
 import urllib.parse
+from collections import OrderedDict
 from enum import Enum
 from re import Match
 from ssl import PROTOCOL_TLSv1_2, SSLContext, SSLError
@@ -105,6 +106,7 @@ MAX_ITEMS_PER_RESPONSE = 50
 
 EXTERNAL_FORM = "external/form"
 MAX_SAMPLES = 10
+PROACTIVE_CACHE_MAX_SIZE = 500
 
 TOKEN_EXPIRED_ERROR_CODES = {
     50173,
@@ -336,6 +338,39 @@ def handle_teams_proxy_and_ssl():
 PROXIES, USE_SSL = handle_teams_proxy_and_ssl()
 
 """ HELPER FUNCTIONS """
+
+
+def lru_cache_get(cache: OrderedDict, key: str) -> Any | None:
+    """
+    Retrieves a value from an LRU cache OrderedDict, moving the accessed key to the end
+    (most-recently-used position).
+
+    :param cache: The OrderedDict acting as the LRU cache.
+    :param key: The key to look up.
+    :return: The cached value, or None if the key is not present.
+    """
+    if key not in cache:
+        return None
+    cache.move_to_end(key)
+    return cache[key]
+
+
+def lru_cache_set(cache: OrderedDict, key: str, value: Any, max_size: int = PROACTIVE_CACHE_MAX_SIZE) -> None:
+    """
+    Inserts or updates a key/value pair in an LRU cache OrderedDict.
+    If the cache exceeds *max_size* after insertion, the least-recently-used
+    entry (the first item) is evicted.
+
+    :param cache: The OrderedDict acting as the LRU cache.
+    :param key: The key to insert or update.
+    :param value: The value to store.
+    :param max_size: Maximum number of entries allowed in the cache (default: PROACTIVE_CACHE_MAX_SIZE).
+    """
+    cache[key] = value
+    cache.move_to_end(key)
+    if len(cache) > max_size:
+        evicted_key, _ = cache.popitem(last=False)
+        demisto.debug(f"LRU cache eviction: removed oldest entry with key '{evicted_key}' (cache size limit: {max_size})")
 
 
 def epoch_seconds(d: datetime = None) -> int:
@@ -1002,14 +1037,14 @@ def create_proactive_conversation(user_id: str) -> str:
     if not tenant_id:
         raise ValueError(MISS_CONFIGURATION_ERROR_MESSAGE)
 
-    # Check if we have a cached conversation for this user
-    cached_conversations: dict = integration_context.get("proactive_conversations", {})
-    demisto.debug("cached_conversations: type(cached_conversations)")
-    if isinstance(cached_conversations, str):
-        cached_conversations = json.loads(cached_conversations)
+    # Load the proactive_conversations LRU cache (OrderedDict preserves insertion order)
+    raw_conversations = integration_context.get("proactive_conversations", "{}")
+    if isinstance(raw_conversations, str):
+        raw_conversations = json.loads(raw_conversations)
+    cached_conversations: OrderedDict = OrderedDict(raw_conversations)
 
-    if user_id in cached_conversations:
-        cached_conversation_id = cached_conversations[user_id]
+    cached_conversation_id = lru_cache_get(cached_conversations, user_id)
+    if cached_conversation_id:
         demisto.debug(f"Using cached conversation ID for user {user_id}: {cached_conversation_id}")
         return cached_conversation_id
 
@@ -1030,8 +1065,8 @@ def create_proactive_conversation(user_id: str) -> str:
     if not conversation_id:
         raise ValueError("Failed to create conversation: No conversation ID returned")
 
-    # Cache the conversation ID
-    cached_conversations[user_id] = conversation_id
+    # Cache the conversation ID using LRU eviction (max PROACTIVE_CACHE_MAX_SIZE entries)
+    lru_cache_set(cached_conversations, user_id, conversation_id)
     integration_context["proactive_conversations"] = json.dumps(cached_conversations)
     set_integration_context(integration_context)
 
@@ -2733,11 +2768,15 @@ def send_message():
     original_message: str = demisto.args().get("originalMessage", "")
     message: str = demisto.args().get("message", "")
     message_id: str = demisto.args().get("message_id", "")
-    adaptive_card: str = demisto.args().get("adaptive_card", "")
     team_name: str = demisto.args().get("team", "") or demisto.params().get("team", "")
     external_form_url_header: str | None = demisto.args().get("external_form_url_header") or demisto.params().get(
         "external_form_url_header"
     )
+    try:
+        adaptive_card: dict = json.loads(demisto.args().get("adaptive_card", "{}"))
+    except ValueError as e:
+        raise ValueError(f"Given adaptive card is not in valid JSON format. Error: {str(e)}")
+
     demisto.debug(f"In send message with message type: {message_type}, and channel name:{demisto.args().get('channel')}")
 
     if message_type == MESSAGE_TYPES["mirror_entry"] and ENTRY_FOOTER in original_message:
@@ -2782,11 +2821,6 @@ def send_message():
 
     if message and adaptive_card:
         raise ValueError("Provide either message or adaptive to send, not both.")
-
-    try:
-        adaptive_card: dict = json.loads(demisto.args().get("adaptive_card", "{}"))
-    except ValueError as e:
-        raise ValueError(f"Given adaptive card is not in valid JSON format. Error: {str(e)}")
 
     integration_context: dict = get_integration_context()
     channel_id = ""
@@ -3399,10 +3433,15 @@ def entitlement_handler(integration_context: dict, request_body: dict, value: di
         demisto.debug(f"Found user in team cache: {user_email}")
     except ValueError:
         demisto.debug("Cant Find user in team cache, check proactive users cache")
-        # Not in team cache - check proactive users cache
-        proactive_users: dict = json.loads(integration_context.get("proactive_users", "{}"))
-        if team_members_id in proactive_users:
-            user_email = proactive_users[team_members_id].get("email", "")
+        # Load the proactive_users LRU cache (OrderedDict preserves insertion order)
+        raw_proactive_users = integration_context.get("proactive_users", "{}")
+        if isinstance(raw_proactive_users, str):
+            raw_proactive_users = json.loads(raw_proactive_users)
+        proactive_users: OrderedDict = OrderedDict(raw_proactive_users)
+
+        cached_user = lru_cache_get(proactive_users, team_members_id)
+        if cached_user:
+            user_email = cached_user.get("email", "")
             demisto.debug(f"Found user in proactive users cache: {user_email}")
         else:
             # Fallback: use Graph API to get user details
@@ -3413,9 +3452,9 @@ def entitlement_handler(integration_context: dict, request_body: dict, value: di
                     user_email = user_data[0].get("mail") or user_data[0].get("userPrincipalName", "")
                     demisto.debug(f"Retrieved user email from Graph API: {user_email}")
 
-                    # Cache the user email for future entitlement responses
+                    # Cache the user email using LRU eviction (max PROACTIVE_CACHE_MAX_SIZE entries)
                     if user_data[0].get("mail"):
-                        proactive_users[team_members_id] = {"email": user_email}
+                        lru_cache_set(proactive_users, team_members_id, {"email": user_email})
                         integration_context["proactive_users"] = json.dumps(proactive_users)
                         set_integration_context(integration_context)
                         demisto.debug(f"Cached user email in integration context: {team_members_id} -> {user_email}")
