@@ -3010,7 +3010,7 @@ def list_issues_command(client: Client, args: Dict) -> CommandResults:
     readable_output = tableToMarkdown(
         name="Issues",
         t=issues,
-        headers=["id", "name", "type", "severity", "description"],
+        headers=["id", "name", "type", "severity", "status", "description"],
         headerTransform=string_to_table_header,
         removeNull=True,
     )

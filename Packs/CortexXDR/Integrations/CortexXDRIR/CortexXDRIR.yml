@@ -5117,7 +5117,7 @@ script:
       description: A comma-separated list of external IDs.
       isArray: true
     - name: detection_method
-      description: A comma-separated list of methods used to detect the activity.
+      description: "A comma-separated list of methods used to detect the activity. Possible values: 'BIOC', 'Correlation', 'Analytics', 'System', 'IOC'."
       auto: PREDEFINED
       predefined:
         - BIOC
@@ -5128,7 +5128,7 @@ script:
     - name: domain
       description: A comma-separated list of domains.
     - name: severity
-      description: A comma-separated list of severities.
+      description: "A comma-separated list of severities. Possible values: 'critical', 'high', 'medium', 'low', 'info'."
       auto: PREDEFINED
       predefined:
         - info
@@ -5140,6 +5140,11 @@ script:
       description: Filter by issues inserted after this time.
     - name: status
       description: "A comma-separated list of statuses. Possible values: 'New', 'In Progress', 'Resolved'."
+      auto: PREDEFINED
+      predefined:
+        - New
+        - In Progress
+        - Resolved
       isArray: true
     - name: sort_field
       description: The field to sort by.
@@ -5254,7 +5259,7 @@ script:
     - name: mitre_tactic
       description: A comma-separated list of MITRE tactics.
       isArray: true
-    - name: mitre_tecnique
+    - name: mitre_technique
       description: A comma-separated list of MITRE techniques.
       isArray: true
     - name: type
