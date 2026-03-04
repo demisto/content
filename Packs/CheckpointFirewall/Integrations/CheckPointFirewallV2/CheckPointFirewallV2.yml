@@ -57,7 +57,7 @@ script:
       description: Executes the command with the specified session ID.
       name: session_id
     - auto: PREDEFINED
-      description: 'The level of detail for returned objects. Valid values: standard, full, uid.'
+      description: details_level.
       name: details_level
       predefined:
       - standard
@@ -128,7 +128,7 @@ script:
       description: Executes the command with the specified session ID.
       name: session_id
     - auto: PREDEFINED
-      description: 'The level of detail for returned objects. Valid values: standard, full, uid.'
+      description: details_level.
       name: details_level
       predefined:
       - standard
@@ -221,13 +221,13 @@ script:
     - description: Comments string.
       name: comments
     - auto: PREDEFINED
-      description: Whether to enable automatic NAT rule generation. Required only when any nat argument is provided.
+      description: Required only when any nat_* argument is provided; otherwise omitted.
       name: nat_auto_rule
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: 'Object color. Valid values: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow.'
+      description: Object color.
       name: color
       predefined:
       - aquamarine
@@ -267,17 +267,17 @@ script:
       - sienna
       - yellow
     - auto: PREDEFINED
-      description: 'NAT translation method. Valid values: hide, static.'
+      description: NAT method.
       name: nat_method
       predefined:
       - hide
       - static
-    - description: NAT IPv4 or IPv6 address. Not required when nat_method is "hide" and nat_hide_behind is "gateway".
+    - description: IPv4. This parameter is not required in case nat_method parameter is "hide" and nat_hide_behind parameter is "gateway".
       name: nat_ip
-    - description: Gateway object name or UID for NAT install-on setting.
+    - description: Gateway for NAT rule.
       name: nat_install_on
     - auto: PREDEFINED
-      description: 'Hide behind method. Valid values: gateway, ip_address. Forbidden when nat_method is "static".'
+      description: Hide behind method. This parameter is forbidden in case "nat_method" parameter is "static".
       name: nat_hide_behind
       predefined:
       - gateway
@@ -285,12 +285,12 @@ script:
     - description: Interface name.
       name: interfaces_name
       required: true
-    - description: IPv4 or IPv6 network address for the interface. If both addresses are required use subnet4 and subnet6 fields explicitly.
+    - description: IPv4.
       name: interfaces_subnet
       required: true
-    - description: IPv4 or IPv6 network mask length for the interface. If both masks are required use mask-length4 and mask-length6 fields explicitly.
+    - description: IPv4.
       name: interfaces_mask_length
-    - description: Collection of tag identifiers.
+    - description: Tags to assign.
       isArray: true
       name: tags
     description: Adds a new host.
@@ -379,13 +379,13 @@ script:
       name: session_id
       required: true
     - auto: PREDEFINED
-      description: Whether to enable automatic NAT rule generation. Required only when any nat_* argument is provided; otherwise omitted.
+      description: Required only when any nat_* argument is provided; otherwise omitted.
       name: nat_auto_rule
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: 'Object color. Valid values: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow.'
+      description: Object color.
       name: color
       predefined:
       - aquamarine
@@ -425,28 +425,28 @@ script:
       - sienna
       - yellow
     - auto: PREDEFINED
-      description: 'NAT translation method. Valid values: hide, static.'
+      description: NAT method.
       name: nat_method
       predefined:
       - hide
       - static
-    - description: NAT IPv4 or IPv6 address. Not required when nat_method is "hide" and nat_hide_behind is "gateway".
+    - description: IPv4. This parameter is not required in case nat_method parameter is "hide" and nat_hide_behind parameter is "gateway".
       name: nat_ip
-    - description: Gateway object name or UID for NAT install-on setting.
+    - description: Gateway for NAT rule.
       name: nat_install_on
     - auto: PREDEFINED
-      description: 'Hide behind method. Valid values: gateway, ip_address. Forbidden when nat_method is "static".'
+      description: Hide behind method. This parameter is forbidden in case "nat_method" parameter is "static".
       name: nat_hide_behind
       predefined:
       - gateway
       - ip_address
     - description: Interface name. Required only when defining interfaces (when any interfaces_* arg is provided).
       name: interfaces_name
-    - description: IPv4 or IPv6 network address for the interface. Required only when defining interfaces (when any interfaces_* arg is provided).
+    - description: IPv4. Required only when defining interfaces (when any interfaces_* arg is provided).
       name: interfaces_subnet
-    - description: IPv4 or IPv6 network mask length for the interface. Required only when defining interfaces (when any interfaces_* arg is provided).
+    - description: IPv4 network mask length. Required only when defining interfaces (when any interfaces_* arg is provided).
       name: interfaces_mask_length
-    - description: Collection of tag identifiers.
+    - description: Tags to assign.
       isArray: true
       name: tags
     description: Updates the specified host.
@@ -543,16 +543,16 @@ script:
       description: Executes the command with the specified session ID.
       name: session_id
     - auto: PREDEFINED
-      description: 'The level of detail for returned objects. Valid values: standard, full, uid.'
+      description: Level of detail for the results.
       name: details_level
       predefined:
       - standard
       - full
       - uid
-    - description: 'Indicates which domains to process the commands on. It cannot be used with the details-level full, must be run from the System Domain only and with ignore-warnings true. Valid values are: CURRENT_DOMAIN, ALL_DOMAINS_ON_THIS_SERVER.'
+    - description: Indicates which domains to process the commands on.
       isArray: true
       name: domains_to_process
-    - description: Search expression to filter objects by. The provided text should be exactly the same as it would be given in SmartConsole Object Explorer. The logical operators in the expression ('AND', 'OR') should be provided in capital letters.
+    - description: Search expression to filter objects by. The provided text should be exactly the same as it would be given in SmartConsole Object Explorer. The logical operators in the expression ('AND', 'OR') should be provided in capital letters. The search involves both a IP search and a textual search in name, comment, tags etc.
       name: filter
     description: Gets a list of all groups.
     name: checkpoint-group-list
@@ -583,7 +583,7 @@ script:
       description: Executes the command with the specified session ID.
       name: session_id
     - auto: PREDEFINED
-      description: 'The level of detail for returned objects. Valid values: standard, full, uid.'
+      description: Level of detail for the results.
       name: details_level
       predefined:
       - standard
@@ -661,13 +661,13 @@ script:
       description: Executes the command with the specified session ID.
       name: session_id
       required: true
-    - description: Collection of network objects identified by the name or UID to be added as members.
+    - description: Collection of group identifiers (names or UIDs).
       isArray: true
       name: members
     - description: Comments string.
       name: comments
     - auto: PREDEFINED
-      description: 'Object color. Valid values: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow.'
+      description: 'Valid values: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. Default: black.'
       name: color
       predefined:
       - aquamarine
@@ -706,19 +706,19 @@ script:
       - red
       - sienna
       - yellow
-    - description: Collection of tag identifiers.
+    - description: Tags to assign.
       isArray: true
       name: tags
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Whether to ignore warnings when adding a group.
+      description: Apply changes ignoring warnings.
       name: ignore_warnings
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Whether to ignore errors when adding a group.
+      description: Apply changes ignoring errors.
       name: ignore_errors
       predefined:
       - 'true'
@@ -769,9 +769,9 @@ script:
     - description: Object unique identifier (UID) or name.
       name: identifier
       required: true
-    - description: New name of the group object.
+    - description: New name of the object.
       name: new_name
-    - description: Comments for the group object.
+    - description: Update comments.
       name: comments
     - auto: PREDEFINED
       defaultValue: 'true'
@@ -806,7 +806,7 @@ script:
       - remove
       - modify
     - auto: PREDEFINED
-      description: 'Object color. Valid values: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow.'
+      description: 'Valid values: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. Default: black.'
       name: color
       predefined:
       - aquamarine
@@ -845,11 +845,11 @@ script:
       - red
       - sienna
       - yellow
-    - description: Collection of tag identifiers.
+    - description: Update tags.
       isArray: true
       name: tags
     - auto: PREDEFINED
-      description: 'The level of detail for returned objects. Valid values: standard, full, uid.'
+      description: details_level.
       name: details_level
       predefined:
       - standard
@@ -920,13 +920,13 @@ script:
       description: Executes the command with the specified session ID.
       name: session_id
     - auto: PREDEFINED
-      description: 'The level of detail for returned objects. Valid values: standard, full, uid.'
+      description: Level of detail for the results.
       name: details_level
       predefined:
       - standard
       - full
       - uid
-    - description: 'Indicates which domains to process the commands on. It cannot be used with the details-level full, must be run from the System Domain only and with ignore-warnings true. Valid values are: CURRENT_DOMAIN, ALL_DOMAINS_ON_THIS_SERVER.'
+    - description: Indicates which domains to process the commands on.
       isArray: true
       name: domains_to_process
     description: Gets a list all address range objects.
@@ -982,10 +982,10 @@ script:
     - description: Collection of group identifiers.
       isArray: true
       name: groups
-    - description: Comments for the object.
+    - description: Comments string.
       name: comments
     - auto: PREDEFINED
-      description: 'Object color. Valid values: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow.'
+      description: Object color.
       name: color
       predefined:
       - aquamarine
@@ -1025,28 +1025,28 @@ script:
       - sienna
       - yellow
     - auto: PREDEFINED
-      description: Whether to enable automatic NAT rule generation. Required only when any nat_* argument is provided; otherwise omitted.
+      description: Required only when any nat_* argument is provided; otherwise omitted.
       name: nat_auto_rule
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: 'NAT translation method. Valid values: hide, static.'
+      description: NAT method.
       name: nat_method
       predefined:
       - hide
       - static
-    - description: NAT IPv4 or IPv6 address. Not required when nat_method is "hide" and nat_hide_behind is "gateway".
+    - description: NAT IP.
       name: nat_ip
-    - description: Gateway object name or UID for NAT install-on setting.
+    - description: NAT gateway.
       name: nat_install_on
     - auto: PREDEFINED
-      description: 'Hide behind method. Valid values: gateway, ip_address. Forbidden when nat_method is "static".'
+      description: Hide behind method. This parameter is forbidden in case "nat_method" parameter is "static".
       name: nat_hide_behind
       predefined:
       - gateway
       - ip_address
-    - description: Collection of tag identifiers.
+    - description: Tags to assign.
       isArray: true
       name: tags
     description: Adds an address range object.
@@ -1104,7 +1104,7 @@ script:
       name: ip_address_last
     - description: New name of the object.
       name: new_name
-    - description: Comments for the object.
+    - description: Update comments.
       name: comments
     - auto: PREDEFINED
       defaultValue: 'true'
@@ -1131,7 +1131,7 @@ script:
       name: session_id
       required: true
     - auto: PREDEFINED
-      description: 'Object color. Valid values: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow.'
+      description: Update color.
       name: color
       predefined:
       - aquamarine
@@ -1171,22 +1171,22 @@ script:
       - sienna
       - yellow
     - auto: PREDEFINED
-      description: 'NAT translation method. Valid values: hide, static.'
+      description: Update NAT method.
       name: nat_method
       predefined:
       - hide
       - static
-    - description: NAT IPv4 or IPv6 address. Not required when nat_method is "hide" and nat_hide_behind is "gateway".
+    - description: Update NAT IP.
       name: nat_ip
-    - description: Gateway object name or UID for NAT install-on setting.
+    - description: Update NAT gateway.
       name: nat_install_on
     - auto: PREDEFINED
-      description: 'Hide behind method. Valid values: gateway, ip_address. Forbidden when nat_method is "static".'
+      description: Hide behind method. This parameter is forbidden in case "nat_method" parameter is "static".
       name: nat_hide_behind
       predefined:
       - gateway
       - ip_address
-    - description: Collection of tag identifiers.
+    - description: Update tags.
       isArray: true
       name: tags
     description: Updates the specified address range object.
@@ -1265,17 +1265,17 @@ script:
     - defaultValue: None
       description: Executes the command with the specified session ID.
       name: session_id
-    - description: Indicates which domains to process the commands on.
+    - description: Indicates which domains to process.
       isArray: true
       name: domain_names
     - auto: PREDEFINED
-      description: 'The level of detail for returned objects. Valid values: standard, full, uid.'
+      description: details_level.
       name: details_level
       predefined:
       - standard
       - full
       - uid
-    - description: Search expression to filter objects by. The provided text should be exactly the same as it would be given in SmartConsole Object Explorer. The logical operators in the expression ('AND', 'OR') should be provided in capital letters.
+    - description: Search expression to filter objects by. The provided text should be exactly the same as it would be given in SmartConsole Object Explorer. The logical operators in the expression ('AND', 'OR') should be provided in capital letters. The search involves both a IP search and a textual search in name, comment, tags etc.
       name: filter
     description: Gets a list of all threat indicators.
     name: checkpoint-threat-indicator-list
@@ -1339,20 +1339,20 @@ script:
       name: session_id
       required: true
     - auto: PREDEFINED
-      description: 'Action for the indicator. Valid values: Inactive, Ask, Prevent, Detect.'
+      description: Action for the indicator.
       name: action
       predefined:
       - Inactive
       - Ask
       - Prevent
       - Detect
-    - description: 'List of profile-action pairs. Each item should be in the format: <profile>_<action> (e.g., "Standard Threat Prevention_Prevent"). The profile and action are separated by an underscore.'
+    - description: <Profiles to apply this indicator to>_<The indicator's action in this profile.>
       isArray: true
       name: profile_action
     - description: Comments string.
       name: comments
     - auto: PREDEFINED
-      description: 'Object color. Valid values: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow.'
+      description: Object color.
       name: color
       predefined:
       - aquamarine
@@ -1391,12 +1391,12 @@ script:
       - red
       - sienna
       - yellow
-    - description: Collection of tag identifiers.
+    - description: Tags to assign.
       isArray: true
       name: tags
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Whether to ignore warnings when adding a threat indicator.
+      description: Apply changes ignoring warnings.
       name: ignore_warnings
       predefined:
       - 'true'
@@ -1428,11 +1428,11 @@ script:
       description: Executes the command with the specified session ID.
       name: session_id
       required: true
-    - description: 'List of profile-action pairs. Each item should be in the format: <profile>_<action> (e.g., "Standard Threat Prevention_Prevent"). The profile and action are separated by an underscore.'
+    - description: <Profiles to apply this indicator to>_<The indicator's action in this profile.>.
       isArray: true
       name: profile_action
     - auto: PREDEFINED
-      description: 'Object color. Valid values: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow.'
+      description: Update color.
       name: color
       predefined:
       - aquamarine
@@ -1471,7 +1471,7 @@ script:
       - red
       - sienna
       - yellow
-    - description: Collection of tag identifiers.
+    - description: Update tags.
       isArray: true
       name: tags
     description: Updates the specified indicator.
@@ -1579,14 +1579,14 @@ script:
       description: Executes the command with the specified session ID.
       name: session_id
     - auto: PREDEFINED
-      description: 'The level of detail for returned objects. Valid values: standard, full, uid.'
+      description: Level of detail for the results.
       name: details_level
       predefined:
       - standard
       - full
       - uid
     - auto: PREDEFINED
-      description: Whether to include hit count data in the output.
+      description: Include hit count data in the output.
       name: show_hits
       predefined:
       - 'true'
@@ -1664,7 +1664,7 @@ script:
       required: true
     - description: Comments string.
       name: comments
-    - description: Which gateways identified by the name or UID to install the policy on.
+    - description: Install targets.
       isArray: true
       name: install_on
     - auto: PREDEFINED
@@ -1776,7 +1776,7 @@ script:
       description: Executes the command with the specified session ID.
       name: session_id
       required: true
-    - description: Comments string.
+    - description: Update comments.
       name: comments
     - auto: PREDEFINED
       description: 'Track settings for the rule. Valid values: Log, Extended Log, Detailed Log, None.'
@@ -1798,25 +1798,25 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Which gateways identified by the name or UID to install the policy on.
+    - description: Update targets.
       isArray: true
       name: install_on
-    - description: Adds to the collection of source network objects. Identified by name or UID.
+    - description: Adds to collection of values.
       isArray: true
       name: source_add
-    - description: Removes from the collection of source network objects. Identified by name or UID.
+    - description: Removes from collection of values.
       isArray: true
       name: source_remove
-    - description: Adds to the collection of service objects. Identified by name or UID.
+    - description: Adds to collection of values.
       isArray: true
       name: service_add
-    - description: Removes from the collection of service objects. Identified by name or UID.
+    - description: Removes from collection of values.
       isArray: true
       name: service_remove
-    - description: Adds to the collection of destination network objects. Identified by name or UID.
+    - description: Adds to collection of values.
       isArray: true
       name: destination_add
-    - description: Removes from the collection of destination network objects. Identified by name or UID.
+    - description: Removes from collection of values.
       isArray: true
       name: destination_remove
     description: Modifies an existing access rule, using object name or UID.
@@ -1896,13 +1896,13 @@ script:
       description: Executes the command with the specified session ID.
       name: session_id
     - auto: PREDEFINED
-      description: 'The level of detail for returned objects. Valid values: standard, full, uid.'
+      description: Level of detail for results.
       name: details_level
       predefined:
       - standard
       - full
       - uid
-    - description: 'Indicates which domains to process the commands on. It cannot be used with the details-level full, must be run from the System Domain only and with ignore-warnings true. Valid values are: CURRENT_DOMAIN, ALL_DOMAINS_ON_THIS_SERVER.'
+    - description: Domains to process.
       isArray: true
       name: domains_to_process
     description: Retrieves all application site objects.
@@ -1938,12 +1938,12 @@ script:
     - description: Collection of group identifiers.
       isArray: true
       name: groups
-    - description: A description of the application site.
+    - description: Description of the application site.
       name: description
     - description: Comments string.
       name: comments
     - auto: PREDEFINED
-      description: 'Object color. Valid values: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow.'
+      description: Object color.
       name: color
       predefined:
       - aquamarine
@@ -1982,7 +1982,7 @@ script:
       - red
       - sienna
       - yellow
-    - description: Collection of tag identifiers.
+    - description: Tags to assign.
       isArray: true
       name: tags
     description: Adds an application site.
@@ -2062,16 +2062,16 @@ script:
     - description: Removes from collection of URLs.
       isArray: true
       name: url_list_to_remove
-    - description: Collection of group identifiers. Can be a single group or a list of groups.
+    - description: Update group membership.
       isArray: true
       name: groups
     - description: Executes the command with the specified session ID.
       name: session_id
       required: true
-    - description: Comments string.
+    - description: Update comments.
       name: comments
     - auto: PREDEFINED
-      description: 'Object color. Valid values: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow.'
+      description: Update color.
       name: color
       predefined:
       - aquamarine
@@ -2110,7 +2110,7 @@ script:
       - red
       - sienna
       - yellow
-    - description: Collection of tag identifiers.
+    - description: Update tags.
       isArray: true
       name: tags
     description: "Edits an existing application using the object name or UID. \nIt's impossible to set 'application-signature' when the application was initialized with 'url-list' and vice-versa."
